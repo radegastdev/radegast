@@ -1,0 +1,941 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A6D955CD-1F55-459F-A7AD-01E591404989}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Radegast</RootNamespace>
+    <AssemblyName>Radegast</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ApplicationIcon>radegast.ico</ApplicationIcon>
+    <ManifestCertificateThumbprint>2C0F63F54505B755B8250B9B8AEB3E55EA2C80B6</ManifestCertificateThumbprint>
+    <ManifestKeyFile>SLeek_TemporaryKey.pfx</ManifestKeyFile>
+    <GenerateManifests>true</GenerateManifests>
+    <TargetZone>LocalIntranet</TargetZone>
+    <SignManifests>true</SignManifests>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.1.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AIMLbot, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Nini, Version=1.1.0.0, Culture=neutral, PublicKeyToken=691faec150a7fa7b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Nini\Bin\DotNet\2.0\Release\Nini.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\AutoPilot.cs" />
+    <Compile Include="Core\ChatBufferItem.cs" />
+    <Compile Include="Core\Config\Config.cs" />
+    <Compile Include="Core\Config\ConfigManager.cs" />
+    <Compile Include="Core\Config\IPreferencePane.cs" />
+    <Compile Include="Core\ListItems\PreferencePaneListItem.cs" />
+    <Compile Include="Core\DebugLogMessage.cs" />
+    <Compile Include="Core\Config\ConfigAppliedEventArgs.cs" />
+    <Compile Include="Core\ListItems\FriendsListItem.cs" />
+    <Compile Include="Core\ImageCache.cs" />
+    <Compile Include="Core\ImageHelper.cs" />
+    <Compile Include="Core\ListItems\ObjectsListItem.cs" />
+    <Compile Include="Core\ListItems\RegionSearchResultItem.cs" />
+    <Compile Include="Core\PrimDeserializer.cs" />
+    <Compile Include="Core\PrimSerializer.cs" />
+    <Compile Include="Core\RadegastInstance.cs" />
+    <Compile Include="Core\SleekMovement.cs" />
+    <Compile Include="Core\StateManager.cs" />
+    <Compile Include="Core\Tabs\ISleekTabControl.cs" />
+    <Compile Include="Core\Tabs\SleekTab.cs" />
+    <Compile Include="Core\Tabs\SleekTabEvents.cs" />
+    <Compile Include="Core\WebBrowser2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FormFlash.cs" />
+    <Compile Include="GUI\Consoles\AnimDetail.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\AnimDetail.Designer.cs">
+      <DependentUpon>AnimDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\AnimTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\AnimTab.Designer.cs">
+      <DependentUpon>AnimTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\AttachmentDetail.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\AttachmentDetail.Designer.cs">
+      <DependentUpon>AttachmentDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\AttachmentTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\AttachmentTab.Designer.cs">
+      <DependentUpon>AttachmentTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\ConferenceIMTabWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\ConferenceIMTabWindow.Designer.cs">
+      <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\GroupIMTabWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\GroupIMTabWindow.Designer.cs">
+      <DependentUpon>GroupIMTabWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\FriendsConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\FriendsConsole.Designer.cs">
+      <DependentUpon>FriendsConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\Inventory\InventoryConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\Inventory\InventoryConsole.Designer.cs">
+      <DependentUpon>InventoryConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\MasterTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\MasterTab.Designer.cs">
+      <DependentUpon>MasterTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\OutfitTextures.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\OutfitTextures.Designer.cs">
+      <DependentUpon>OutfitTextures.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\Preferences\PrefGeneralConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\Preferences\PrefGeneralConsole.Designer.cs">
+      <DependentUpon>PrefGeneralConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\Preferences\PrefTextConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\Preferences\PrefTextConsole.Designer.cs">
+      <DependentUpon>PrefTextConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\SLImageHandler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\SLImageHandler.Designer.cs">
+      <DependentUpon>SLImageHandler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\DebugLog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\DebugLog.Designer.cs">
+      <DependentUpon>DebugLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\DetachedTab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\DetachedTab.Designer.cs">
+      <DependentUpon>DetachedTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\FindPeopleConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\FindPeopleConsole.Designer.cs">
+      <DependentUpon>FindPeopleConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\SearchConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\SearchConsole.Designer.cs">
+      <DependentUpon>SearchConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\MainConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\MainConsole.Designer.cs">
+      <DependentUpon>MainConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\TabsConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\TabsConsole.Designer.cs">
+      <DependentUpon>TabsConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\FriendshipOfferDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\FriendshipOfferDialog.Designer.cs">
+      <DependentUpon>FriendshipOfferDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupInvitationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupInvitationDialog.Designer.cs">
+      <DependentUpon>GroupInvitationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupsDialog.Designer.cs">
+      <DependentUpon>GroupsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\ImageFullSize.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\ImageFullSize.Designer.cs">
+      <DependentUpon>ImageFullSize.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Map.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Map.Designer.cs">
+      <DependentUpon>Map.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Objects.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Objects.Designer.cs">
+      <DependentUpon>Objects.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Pay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Pay.Designer.cs">
+      <DependentUpon>Pay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\PermissionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\PermissionsDialog.Designer.cs">
+      <DependentUpon>PermissionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Preferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Preferences.Designer.cs">
+      <DependentUpon>Preferences.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Profile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Profile.Designer.cs">
+      <DependentUpon>Profile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\ScriptDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\ScriptDialog.Designer.cs">
+      <DependentUpon>ScriptDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Teleport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Teleport.Designer.cs">
+      <DependentUpon>Teleport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\ChatConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\ChatConsole.Designer.cs">
+      <DependentUpon>ChatConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\ChatTextManager.cs" />
+    <Compile Include="GUI\Consoles\IMTabWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\IMTabWindow.Designer.cs">
+      <DependentUpon>IMTabWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\IMTextManager.cs" />
+    <Compile Include="Core\ITextPrinter.cs" />
+    <Compile Include="GUI\Dialogs\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\RichTextBoxPrinter.cs" />
+    <Compile Include="GUI\Consoles\TPTabWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\TPTabWindow.Designer.cs">
+      <DependentUpon>TPTabWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="GUI\Consoles\AnimDetail.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AnimDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\AnimTab.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AnimTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\AttachmentDetail.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AttachmentDetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\AttachmentTab.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AttachmentTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\ChatConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ChatConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\ConferenceIMTabWindow.resx">
+      <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\GroupIMTabWindow.resx">
+      <DependentUpon>GroupIMTabWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\FriendsConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FriendsConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\Inventory\InventoryConsole.resx">
+      <DependentUpon>InventoryConsole.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\MasterTab.resx">
+      <DependentUpon>MasterTab.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\OutfitTextures.resx">
+      <DependentUpon>OutfitTextures.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\Preferences\PrefGeneralConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PrefGeneralConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\Preferences\PrefTextConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>PrefTextConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\SLImageHandler.resx">
+      <DependentUpon>SLImageHandler.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\DebugLog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DebugLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\DetachedTab.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DetachedTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\FindPeopleConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FindPeopleConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\SearchConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SearchConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\IMTabWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>IMTabWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\MainConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\FriendshipOfferDialog.resx">
+      <DependentUpon>FriendshipOfferDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\GroupInvitationDialog.resx">
+      <DependentUpon>GroupInvitationDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\GroupsDialog.resx">
+      <DependentUpon>GroupsDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\ImageFullSize.resx">
+      <DependentUpon>ImageFullSize.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\TabsConsole.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TabsConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Map.resx">
+      <DependentUpon>Map.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Objects.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Objects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Pay.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Pay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\PermissionsDialog.resx">
+      <DependentUpon>PermissionsDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Preferences.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Preferences.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Profile.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Profile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\ScriptDialog.resx">
+      <DependentUpon>ScriptDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Teleport.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Teleport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\TPTabWindow.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TPTabWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-forward_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\computer_16.png" />
+    <None Include="Resources\applications_16.png" />
+    <None Include="Resources\delete_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
+      <Project>{235DD548-2A5B-4E41-BACC-AF9378CC729F}</Project>
+      <Name>OpenMetaverse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
+      <Project>{A65C6BF0-4D18-4F20-AE4C-92003ED4A7FD}</Project>
+      <Name>OpenMetaverse.StructuredData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
+      <Project>{6E362F7C-F6B0-4F42-B678-5E7F9D0C22F4}</Project>
+      <Name>OpenMetaverseTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RadegastNetcom\RadegastNetcom.csproj">
+      <Project>{8EE25E10-46BC-486E-87B5-5E49B879E0D1}</Project>
+      <Name>RadegastNetcom</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder-closed_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder-open_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\add_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\paste_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\copy_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cut_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\documents_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\lsl_scripts_16.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\arrow-up_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\documents_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\applications_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GreenOrbFaded_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BaseApplicationManifest Include="Properties\app.manifest" />
+    <None Include="Resources\GreenOrb_16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="aiml\AI.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Atomic.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Biography.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Bot.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Botmaster.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Client.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Computers.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\CustomTagTest.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Default.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Emotion.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Food.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Geography.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\History.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Inquiry.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Interjection.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\IU.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Knowledge.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Literature.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Money.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Movies.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Music.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Philosophy.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Pickup.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Predicates.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Reduce.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Reductions.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Salutations.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Science.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Stack.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\Stories.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="aiml\That.aiml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\blush_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\bodyfreckles_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\body_skingrain.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\bump_face_wrinkles.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\bump_head_base.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\bump_lowerbody_base.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\bump_pants_wrinkles.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\bump_shirt_wrinkles.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\bump_upperbody_base.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\eyebrows_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\eyeliner_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\eyeshadow_inner_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\eyeshadow_outer_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\eyewhite.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\facehair_chincurtains_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\facehair_moustache_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\facehair_sideburns_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\facehair_soulpatch_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\freckles_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\gloves_fingers_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\glove_length_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\head_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\head_color.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\head_hair.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\head_highlights_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\head_shading_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\head_skingrain.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\jacket_length_lower_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\jacket_length_upper_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\jacket_open_lower_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\jacket_open_upper_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\lipgloss_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\lipstick_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\lips_mask.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\lowerbody_color.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\lowerbody_highlights_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\lowerbody_shading_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\nailpolish_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\pants_length_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\pants_waist_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\rosyface_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\rouge_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\shirt_bottom_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\shirt_collar_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\shirt_collar_back_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\shirt_sleeve_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\shoe_height_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\skirt_length_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\skirt_slit_back_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\skirt_slit_front_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\skirt_slit_left_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\skirt_slit_right_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\underpants_trial_female.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\underpants_trial_male.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\undershirt_trial_female.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\upperbodyfreckles_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\upperbody_color.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\upperbody_highlights_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openmetaverse_data\upperbody_shading_alpha.tga">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\secondlife.bmp" />
+    <None Include="Resources\inv_folder_animation.png" />
+    <None Include="Resources\inv_folder_object.png" />
+    <None Include="Resources\inv_folder_plain_closed.png" />
+    <None Include="Resources\inv_folder_plain_open.png" />
+    <None Include="Resources\inv_folder_script.png" />
+    <None Include="Resources\inv_folder_snapshot.png" />
+    <None Include="Resources\inv_folder_sound.png" />
+    <None Include="Resources\inv_folder_texture.png" />
+    <None Include="Resources\inv_folder_trash.png" />
+    <None Include="Resources\inv_item_animation.png" />
+    <None Include="Resources\inv_item_attach.png" />
+    <None Include="Resources\inv_item_callingcard_offline.png" />
+    <None Include="Resources\inv_item_callingcard_online.png" />
+    <None Include="Resources\inv_item_clothing.png" />
+    <None Include="Resources\inv_item_eyes.png" />
+    <None Include="Resources\inv_item_gesture.png" />
+    <None Include="Resources\inv_item_gloves.png" />
+    <None Include="Resources\inv_item_hair.png" />
+    <None Include="Resources\inv_item_jacket.png" />
+    <None Include="Resources\inv_item_landmark.png" />
+    <None Include="Resources\inv_item_landmark_visited.png" />
+    <None Include="Resources\inv_item_notecard.png" />
+    <None Include="Resources\inv_item_object.png" />
+    <None Include="Resources\inv_item_object_multi.png" />
+    <None Include="Resources\inv_item_pants.png" />
+    <None Include="Resources\inv_item_script.png" />
+    <None Include="Resources\inv_item_script_dangerous.png" />
+    <None Include="Resources\inv_item_shape.png" />
+    <None Include="Resources\inv_item_shirt.png" />
+    <None Include="Resources\inv_item_shoes.png" />
+    <None Include="Resources\inv_item_skin.png" />
+    <None Include="Resources\inv_item_skirt.png" />
+    <None Include="Resources\inv_item_snapshot.png" />
+    <None Include="Resources\inv_item_socks.png" />
+    <None Include="Resources\inv_item_sound.png" />
+    <None Include="Resources\inv_item_texture.png" />
+    <None Include="Resources\inv_item_underpants.png" />
+    <None Include="Resources\inv_item_undershirt.png" />
+    <None Include="Resources\inv_folder_bodypart.png" />
+    <None Include="Resources\inv_folder_callingcard.png" />
+    <None Include="Resources\inv_folder_clothing.png" />
+    <None Include="Resources\inv_folder_gesture.png" />
+    <None Include="Resources\inv_folder_landmark.png" />
+    <None Include="Resources\inv_folder_lostandfound.png" />
+    <None Include="Resources\inv_folder_notecard.png" />
+    <Content Include="aiml_config\DefaultPredicates.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="aiml_config\GenderSubstitutions.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="aiml_config\Person2Substitutions.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="aiml_config\PersonSubstitutions.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="aiml_config\Settings.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="aiml_config\Splitters.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="aiml_config\Substitutions.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="assemblies\Nini.dll" />
+    <None Include="assemblies\AIMLbot.dll" />
+    <Content Include="openjpeg-dotnet.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="openmetaverse_data\avatar_lad.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="radegast.ico" />
+    <Content Include="slmap.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Inventory\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
