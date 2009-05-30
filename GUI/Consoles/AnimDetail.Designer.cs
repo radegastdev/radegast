@@ -1,0 +1,148 @@
+namespace Radegast
+{
+    partial class AnimDetail
+    {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null)) {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Component Designer generated code
+
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.playBox = new System.Windows.Forms.CheckBox();
+            this.pnlSave = new System.Windows.Forms.Panel();
+            this.btnSend = new System.Windows.Forms.Button();
+            this.boxAnimName = new System.Windows.Forms.TextBox();
+            this.cbFriends = new System.Windows.Forms.ComboBox();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.groupBox1.SuspendLayout();
+            this.pnlSave.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.pnlSave);
+            this.groupBox1.Controls.Add(this.playBox);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(635, 41);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            // 
+            // btnSave
+            // 
+            this.btnSave.Location = new System.Drawing.Point(14, 11);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.TabIndex = 1;
+            this.btnSave.Text = "Save...";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // playBox
+            // 
+            this.playBox.AutoSize = true;
+            this.playBox.Location = new System.Drawing.Point(6, 15);
+            this.playBox.Name = "playBox";
+            this.playBox.Size = new System.Drawing.Size(46, 17);
+            this.playBox.TabIndex = 0;
+            this.playBox.Text = "Play";
+            this.playBox.UseVisualStyleBackColor = true;
+            this.playBox.CheckStateChanged += new System.EventHandler(this.playBox_CheckStateChanged);
+            // 
+            // pnlSave
+            // 
+            this.pnlSave.BackColor = System.Drawing.Color.Transparent;
+            this.pnlSave.Controls.Add(this.lblStatus);
+            this.pnlSave.Controls.Add(this.cbFriends);
+            this.pnlSave.Controls.Add(this.boxAnimName);
+            this.pnlSave.Controls.Add(this.btnSend);
+            this.pnlSave.Controls.Add(this.btnSave);
+            this.pnlSave.Location = new System.Drawing.Point(58, 0);
+            this.pnlSave.Name = "pnlSave";
+            this.pnlSave.Size = new System.Drawing.Size(577, 41);
+            this.pnlSave.TabIndex = 2;
+            // 
+            // btnSend
+            // 
+            this.btnSend.Enabled = false;
+            this.btnSend.Location = new System.Drawing.Point(95, 11);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(89, 23);
+            this.btnSend.TabIndex = 2;
+            this.btnSend.Text = "$L10 Send to";
+            this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // boxAnimName
+            // 
+            this.boxAnimName.Location = new System.Drawing.Point(358, 13);
+            this.boxAnimName.Name = "boxAnimName";
+            this.boxAnimName.Size = new System.Drawing.Size(119, 20);
+            this.boxAnimName.TabIndex = 4;
+            // 
+            // cbFriends
+            // 
+            this.cbFriends.FormattingEnabled = true;
+            this.cbFriends.Location = new System.Drawing.Point(190, 13);
+            this.cbFriends.Name = "cbFriends";
+            this.cbFriends.Size = new System.Drawing.Size(162, 21);
+            this.cbFriends.TabIndex = 5;
+            this.cbFriends.SelectedValueChanged += new System.EventHandler(this.cbFriends_SelectedValueChanged);
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.Location = new System.Drawing.Point(483, 16);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(91, 18);
+            this.lblStatus.TabIndex = 6;
+            // 
+            // AnimDetail
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox1);
+            this.Name = "AnimDetail";
+            this.Size = new System.Drawing.Size(635, 41);
+            this.Load += new System.EventHandler(this.AnimDetail_Load);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.pnlSave.ResumeLayout(false);
+            this.pnlSave.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.CheckBox playBox;
+        private System.Windows.Forms.Panel pnlSave;
+        private System.Windows.Forms.Button btnSend;
+        private System.Windows.Forms.TextBox boxAnimName;
+        private System.Windows.Forms.ComboBox cbFriends;
+        private System.Windows.Forms.Label lblStatus;
+    }
+}
