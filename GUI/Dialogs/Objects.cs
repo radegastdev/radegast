@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using OpenMetaverse;
 
@@ -12,36 +14,70 @@ namespace Radegast
     public partial class frmObjects : Form
     {
         private RadegastInstance instance;
-        private GridClient client;
+        private GridClient client { get { return instance.Client;} }
+        private Primitive currentPrim;
         private float searchRadius = 35.0f;
-
-        private Dictionary<uint, ObjectsListItem> listItems = new Dictionary<uint,ObjectsListItem>();
 
         public frmObjects(RadegastInstance instance)
         {
             InitializeComponent();
 
             this.instance = instance;
-            client = this.instance.Client;
             
-            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-
             btnPointAt.Text = (this.instance.State.IsPointing ? "Unpoint" : "Point At");
             btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
-            SorterClass sc = new SorterClass();
 
-        }
+            lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
 
-        private void AddObjectEvents()
-        {
+            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
+            instance.OnAvatarName += new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
         }
 
-        private void RemoveObjectEvents()
+        void instance_OnAvatarName(UUID agentID, string agentName)
         {
-            client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
-            client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    instance_OnAvatarName(agentID, agentName);
+                }));
+                return;
+            }
+
+            foreach (ListViewItem item in lstPrims.Items)
+            {
+                Primitive prim = item.Tag as Primitive;
+                if (prim.Properties != null && prim.Properties.OwnerID == agentID)
+                {
+                    item.Text = GetObjectName(prim);
+                }
+            }
+  
+        }
+
+        void Objects_OnObjectPropertiesFamily(Simulator simulator, Primitive.ObjectProperties props, ReportType type)
+        {
+            if (simulator.Handle != client.Network.CurrentSim.Handle) return;
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    Objects_OnObjectPropertiesFamily(simulator, props, type);
+                }));
+                return;
+            }
+            foreach (ListViewItem item in lstPrims.Items)
+            {
+                Primitive prim = item.Tag as Primitive;
+                if (prim.ID == props.ObjectID)
+                {
+                    item.Text = GetObjectName(prim);
+                    break;
+                }
+            }
         }
 
         private void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
@@ -49,57 +85,111 @@ namespace Radegast
             this.Close();
         }
 
-        private void lbxPrims_DrawItem(object sender, DrawItemEventArgs e)
+        private string GetObjectName(Primitive prim, int distance)
         {
-            e.DrawBackground();
+            string name = "Loading...";
+            string ownerName = "Loading...";
 
-            if (e.Index < 0) return;
-
-            ObjectsListItem itemToDraw = (ObjectsListItem)lbxPrims.Items[e.Index];
-            Brush textBrush = null;
-            Font boldFont = new Font(e.Font, FontStyle.Bold);
-            Font regularFont = new Font(e.Font, FontStyle.Regular);
-
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
+            if (prim.Properties == null)
             {
-                textBrush = new SolidBrush(Color.FromKnownColor(KnownColor.HighlightText));
+                client.Objects.RequestObjectPropertiesFamily(client.Network.CurrentSim, prim.ID);
             }
             else
             {
-                textBrush = new SolidBrush(Color.FromKnownColor(KnownColor.ControlText));
+                name = prim.Properties.Name;
+                ownerName = instance.getAvatarName(prim.Properties.OwnerID);
             }
+            return String.Format("{0} ({1}m) owned by {2}", name, distance, ownerName);
 
-            string name;
-            string description;
-            int distance = (int)Vector3.Distance(itemToDraw.Prim.Position, client.Self.SimPosition);
-
-            if (string.IsNullOrEmpty(itemToDraw.Prim.Properties.Name))
-            {
-                name = "... (" + distance.ToString() + "m)";
-                description = "...";
-            }
-            else
-            {
-                name = itemToDraw.Prim.Properties.Name + " (" + distance.ToString() + "m)";
-                description = itemToDraw.Prim.Properties.Description;
-            }
-
-            SizeF nameSize = e.Graphics.MeasureString(name, boldFont);
-            float nameX = e.Bounds.Left + 4;
-            float nameY = e.Bounds.Top + 2;
-
-            e.Graphics.DrawString(name, boldFont, textBrush, nameX, nameY);
-            e.Graphics.DrawString(description, regularFont, textBrush, nameX + nameSize.Width + 8, nameY);
-
-            e.DrawFocusRectangle();
-
-            boldFont.Dispose();
-            regularFont.Dispose();
-            textBrush.Dispose();
-            boldFont = null;
-            regularFont = null;
-            textBrush = null;
         }
+
+        private string GetObjectName(Primitive prim)
+        {
+            int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
+            return GetObjectName(prim, distance);
+        }
+
+        private void AddPrim(Primitive prim)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        AddPrim(prim);
+                    }
+                ));
+                return;
+            }
+
+            ListViewItem item = null;
+
+            foreach (ListViewItem sitem in lstPrims.Items)
+            {
+                if (((Primitive)sitem.Tag).LocalID == prim.LocalID)
+                {
+                    item = sitem;
+                    break;
+                }
+            }
+
+            if (item == null)
+            {
+                item = new ListViewItem(prim.LocalID.ToString());
+                item.Text = GetObjectName(prim);
+                item.Tag = prim;
+                if (txtSearch.Text.Length == 0 || item.Text.ToLower().Contains(txtSearch.Text.ToLower()))
+                {
+                    lstPrims.Items.Add(item);
+                }
+            }
+            else
+            {
+                item.Text = GetObjectName(prim);
+            }
+        }
+
+        private void Objects_OnNewPrim(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
+        {
+            if (regionHandle != client.Network.CurrentSim.Handle || prim.Position == Vector3.Zero) return;
+            int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
+            if (distance < searchRadius)
+            {
+                AddPrim(prim);
+            }
+        }
+
+        private void Objects_OnObjectKilled(Simulator simulator, uint objectID)
+        {
+            if (simulator.Handle != client.Network.CurrentSim.Handle) return;
+ 
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    Objects_OnObjectKilled(simulator, objectID);
+                }
+                ));
+                return;
+            }
+
+            ListViewItem item = null;
+
+            foreach (ListViewItem sitem in lstPrims.Items)
+            {
+                if (((Primitive)sitem.Tag).LocalID == objectID)
+                {
+                    item = sitem;
+                    break;
+                }
+            }
+
+            if (item != null)
+            {
+                lstPrims.Items.Remove(item);
+            }
+
+        }
+
 
         private void AddAllObjects()
         {
@@ -109,202 +199,82 @@ namespace Radegast
                 new Action<Primitive>(
                 delegate(Primitive prim)
                 {
-                    Vector3 pos = prim.Position;
-    
-                    if (prim.ParentID == 0 && (pos != Vector3.Zero) && (Vector3.Distance(pos, location) < searchRadius)) //root prims only
+                    int distance = (int)Vector3.Distance(prim.Position, location);
+                    if (prim.ParentID == 0 && (prim.Position != Vector3.Zero) && (distance < searchRadius)) //root prims only
                     {
-                        ObjectsListItem item = new ObjectsListItem(prim, client, lbxPrims);
-                        try {
-                            listItems.Add(prim.LocalID, item);
-                            item.PropertiesReceived += new EventHandler(item_PropertiesReceived);
-                            item.RequestProperties();
-                        } catch {
-                        }
+                        AddPrim(prim);
                     }
                 }
                 ));
         }
 
-        private void item_PropertiesReceived(object sender, EventArgs e)
-        {
-            lbxPrims.Items.Add(sender);
-        }
-
-        private void ResetObjects()
-        {
-            lbxPrims.Items.Clear();
-            listItems.Clear();
-            AddAllObjects();
-        }
-
         private void frmObjects_Load(object sender, EventArgs e)
         {
-            lbxPrims.BeginUpdate();
-
             AddAllObjects();
-            AddObjectEvents();
         }
 
-        //Separate thread
-        private void Objects_OnNewPrim(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
-        {
-            if (prim.ParentID != 0 || Vector3.Distance(client.Self.SimPosition, prim.Position) > searchRadius) {
-                return;
-            }
-
-            lock (listItems)
-            {
-                if (listItems.ContainsKey(prim.LocalID)) return;
-
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    ObjectsListItem item = new ObjectsListItem(prim, client, lbxPrims);
-                    try {
-                        listItems.Add(prim.LocalID, item);
-                        item.PropertiesReceived += new EventHandler(item_PropertiesReceived);
-                        item.RequestProperties();
-                    } catch {
-                    }
-
-                }));
-            }
-        }
-
-        //Separate thread
-        private void Objects_OnObjectKilled(Simulator simulator, uint objectID)
-        {
-            lock (listItems)
-            {
-                if (!listItems.ContainsKey(objectID)) return;
-
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    ObjectsListItem item = listItems[objectID];
-                    lbxPrims.Items.Remove(item);
-                    listItems.Remove(objectID);
-                }));
-            }
-        }
-
-        private void lbxPrims_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            gbxInworld.Enabled = (lbxPrims.SelectedItem != null);
-        }
 
         private void btnPointAt_Click(object sender, EventArgs e)
         {
-            ObjectsListItem item = lbxPrims.SelectedItem as ObjectsListItem;
-            if (item == null) return;
-
             if (btnPointAt.Text == "Point At")
             {
-                instance.State.SetPointing(true, item.Prim.ID);
+                instance.State.SetPointing(true, currentPrim.ID);
                 btnPointAt.Text = "Unpoint";
             }
             else if (btnPointAt.Text == "Unpoint")
             {
-                instance.State.SetPointing(false, item.Prim.ID);
+                instance.State.SetPointing(false, currentPrim.ID);
                 btnPointAt.Text = "Point At";
             }
         }
 
         private void btnSitOn_Click(object sender, EventArgs e)
         {
-            ObjectsListItem item = lbxPrims.SelectedItem as ObjectsListItem;
-            if (item == null) return;
-
             if (btnSitOn.Text == "Sit On")
             {
-                instance.State.SetSitting(true, item.Prim.ID);
+                instance.State.SetSitting(true, currentPrim.ID);
                 btnSitOn.Text = "Stand Up";
             }
             else if (btnSitOn.Text == "Stand Up")
             {
-                instance.State.SetSitting(false, item.Prim.ID);
+                instance.State.SetSitting(false, currentPrim.ID);
                 btnSitOn.Text = "Sit On";
             }
         }
 
         private void btnTouch_Click(object sender, EventArgs e)
         {
-            ObjectsListItem item = lbxPrims.SelectedItem as ObjectsListItem;
-            if (item == null) return;
-
-            client.Self.Touch(item.Prim.LocalID);
-        }
-
-        private void frmObjects_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            RemoveObjectEvents();
+            client.Self.Touch(currentPrim.LocalID);
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            string query = txtSearch.Text.Trim();
-
-            if (query.Length == 0)
-            {
-                lbxPrims.BeginUpdate();
-
-                RemoveObjectEvents();
-                ResetObjects();
-                AddObjectEvents();
-
-                lbxPrims.EndUpdate();
-            }
-            else
-            {
-                SearchFor(query);
-            }
+            ApplySearch();
         }
 
-        private void SearchFor(string text)
+        private void ApplySearch()
         {
-            RemoveObjectEvents();
-
-            lbxPrims.BeginUpdate();
-            lbxPrims.Items.Clear();
-            listItems.Clear();
-
-            string query = text.ToLower();
-
-            List<Primitive> results =
-                client.Network.CurrentSim.ObjectsPrimitives.FindAll(
-                new Predicate<Primitive>(delegate(Primitive prim)
-                {
-                    //evil comparison of death!
-                    return (prim.Properties != null && prim.ParentID == 0 && prim.Properties.Name != null) &&
-                        (prim.Properties.Name.ToLower().Contains(query) ||
-                        prim.Properties.Description.ToLower().Contains(query));
-                }));
-
-            lock (listItems)
+            List<ListViewItem> toRemove = new List<ListViewItem>();
+            foreach (ListViewItem item in lstPrims.Items)
             {
-                foreach (Primitive prim in results)
+                if (!item.Text.ToLower().Contains(txtSearch.Text.ToLower()))
                 {
-                    ObjectsListItem item = new ObjectsListItem(prim, client, lbxPrims);
-                    listItems.Add(prim.LocalID, item);
-                    lbxPrims.Items.Add(item);
+                    toRemove.Add(item);
                 }
             }
+            foreach (ListViewItem item in toRemove)
+            {
+                lstPrims.Items.Remove(item);
+            }
+            AddAllObjects();
 
-            lbxPrims.EndUpdate();
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            timer1.Enabled = false;
-
-            lblStatus.Visible = false;
-            lbxPrims.EndUpdate();
-            lbxPrims.Visible = true;
-            txtSearch.Enabled = true;
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
             txtSearch.Clear();
             txtSearch.Select();
+            ApplySearch();
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -314,8 +284,56 @@ namespace Radegast
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            lstPrims.Items.Clear();
             AddAllObjects();
         }
 
+        private void lstPrims_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstPrims.SelectedItems.Count == 1)
+            {
+                gbxInworld.Enabled = true;
+                currentPrim = lstPrims.SelectedItems[0].Tag as Primitive;
+            }
+            else
+            {
+                gbxInworld.Enabled = false;
+            }
+
+        }
+    }
+
+    public class ObjectSorter : IComparer
+    {
+        private AgentManager me;
+
+        public ObjectSorter(AgentManager me)
+        {
+            this.me = me;
+        }
+
+        //this routine should return -1 if xy and 0 if x==y.
+        // for our sample we'll just use string comparison
+        public int Compare(object x, object y)
+        {
+
+            ListViewItem item1 = (ListViewItem)x;
+            ListViewItem item2 = (ListViewItem)y;
+            float dist1 = Vector3.Distance(me.SimPosition, ((Primitive)item1.Tag).Position);
+            float dist2 = Vector3.Distance(me.SimPosition, ((Primitive)item2.Tag).Position);
+
+            if (dist1 == dist2)
+            {
+                return String.Compare(item1.Text, item2.Text);
+            }
+            else
+            {
+                if (dist1 < dist2)
+                {
+                    return -1;
+                }
+                return 1;
+            }
+       }
     }
 }

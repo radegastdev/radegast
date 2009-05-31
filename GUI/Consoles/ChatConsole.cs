@@ -105,7 +105,7 @@ namespace Radegast
 
         void Grid_OnCoarseLocationUpdate(Simulator sim, List<UUID> newEntries, List<UUID> removedEntries)
         {
-            if (client.Network.CurrentSim.ID != sim.ID)
+            if (client.Network.CurrentSim.ID != sim.ID || !sim.AvatarPositions.ContainsKey(client.Self.AgentID))
             {
                 return;
             }

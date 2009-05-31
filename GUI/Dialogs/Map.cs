@@ -178,6 +178,8 @@ namespace Radegast
         #region JavascriptHooks
         void focusMap(int regX, int regY, int zoom)
         {
+            if (!Visible) return;
+
             object[] parms = new object[3];
             parms[0] = regX;
             parms[1] = regY;
@@ -188,15 +190,12 @@ namespace Radegast
 
         void gotoRegion(string regionName)
         {
+            if (!Visible) return;
+
             object[] param = new object[1];
             param[0] = regionName;
 
             map.Document.InvokeScript("gotoRegion", param);
-        }
-
-        void closeInfoWindow()
-        {
-            map.Document.InvokeScript("closeInfoWindow");
         }
 
         public void doNavigate(string region, string strx, string stry)

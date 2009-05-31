@@ -98,7 +98,6 @@
     <Compile Include="Core\ListItems\FriendsListItem.cs" />
     <Compile Include="Core\ImageCache.cs" />
     <Compile Include="Core\ImageHelper.cs" />
-    <Compile Include="Core\ListItems\ObjectsListItem.cs" />
     <Compile Include="Core\ListItems\RegionSearchResultItem.cs" />
     <Compile Include="Core\PrimDeserializer.cs" />
     <Compile Include="Core\PrimSerializer.cs" />

@@ -44,13 +44,12 @@ namespace Radegast
             console = new FindPeopleConsole(instance, UUID.Random());
             console.Dock = DockStyle.Fill;
             console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
-            client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
             pnlFindPeople.Controls.Add(console);
         }
 
         private void console_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnNewIM.Enabled = btnProfile.Enabled = btnLocate.Enabled = (console.SelectedName != null);
+            btnNewIM.Enabled = btnProfile.Enabled = (console.SelectedName != null);
         }
 
         private void AddClientEvents()
@@ -82,152 +81,6 @@ namespace Radegast
         private void txtPersonName_TextChanged(object sender, EventArgs e)
         {
             btnFind.Enabled = (txtPersonName.Text.Trim().Length > 2);
-        }
-
-        private void btnLocate_Click(object sender, EventArgs e)
-        {
-            client.Inventory.GiveItem(UUID.Zero, "", AssetType.Unknown, console.SelectedAgentUUID, false);
-        }
-
-        private string getHttp(string url)
-        {
-            // used to build entire input
-            StringBuilder sb = new StringBuilder();
-
-            // used on each read operation
-            byte[] buf = new byte[8192];
-
-            // prepare the web page we will be asking for
-            HttpWebRequest request = (HttpWebRequest)
-                WebRequest.Create(url);
-
-            // execute the request
-            HttpWebResponse response = (HttpWebResponse)
-                request.GetResponse();
-
-            // we will read data via the response stream
-            Stream resStream = response.GetResponseStream();
-
-            string tempString = null;
-            int count = 0;
-
-            do {
-                // fill the buffer with data
-                count = resStream.Read(buf, 0, buf.Length);
-
-                // make sure we read some data
-                if (count != 0) {
-                    // translate from bytes to ASCII text
-                    tempString = Encoding.UTF8.GetString(buf, 0, count);
-
-                    // continue building the string
-                    sb.Append(tempString);
-                }
-            }
-            while (count > 0); // any more data to read?
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Blocking <:O
-        /// </summary>
-        /// <param name="regionId"></param>
-        /// <returns></returns>
-        public string GetRegionName(UUID regionId)
-        {
-            RegionHandleRequestPacket handleRequest = new RegionHandleRequestPacket();
-            handleRequest.Header.Reliable = true;
-            handleRequest.RequestBlock = new RegionHandleRequestPacket.RequestBlockBlock();
-            handleRequest.RequestBlock.RegionID = regionId;
-
-            ulong handle = 0;
-            ManualResetEvent evt = new ManualResetEvent(false);
-
-            NetworkManager.PacketCallback handleReplyCallback = delegate(Packet packet, Simulator sender)
-            {
-                RegionIDAndHandleReplyPacket handleReply = (RegionIDAndHandleReplyPacket)packet;
-                if (handleReply.ReplyBlock.RegionID == regionId) {
-                    handle = handleReply.ReplyBlock.RegionHandle;
-                    evt.Set();
-                }
-            };
-
-            client.Network.RegisterCallback(PacketType.RegionIDAndHandleReply, handleReplyCallback);
-            client.Network.SendPacket(handleRequest);
-
-            bool ok = evt.WaitOne(10000, false);
-            client.Network.UnregisterCallback(PacketType.RegionIDAndHandleReply, handleReplyCallback);
-            if (!ok)
-                return null;
-
-            ushort X = (ushort)(handle >> 40);
-            ushort Y = (ushort)((handle & 0xFFFFFFFF) >> 8);
-
-            MapBlockRequestPacket mapRequest = new MapBlockRequestPacket();
-            mapRequest.Header.Reliable = true;
-            mapRequest.AgentData = new MapBlockRequestPacket.AgentDataBlock();
-            mapRequest.AgentData.AgentID = client.Self.AgentID;
-            mapRequest.AgentData.SessionID = client.Self.SessionID;
-            mapRequest.AgentData.Flags = 0;
-            mapRequest.AgentData.Godlike = false;
-            mapRequest.PositionData = new MapBlockRequestPacket.PositionDataBlock();
-            mapRequest.PositionData.MinX = X;
-            mapRequest.PositionData.MaxX = X;
-            mapRequest.PositionData.MinY = Y;
-            mapRequest.PositionData.MaxY = Y;
-
-            string name = null;
-            evt.Reset();
-
-            NetworkManager.PacketCallback mapReplyCallback = delegate(Packet packet, Simulator sender)
-            {
-                MapBlockReplyPacket mapReply = (MapBlockReplyPacket)packet;
-                foreach (MapBlockReplyPacket.DataBlock block in mapReply.Data) {
-                    if ((block.X == X) && (block.Y == Y)) {
-                        name = Utils.BytesToString(block.Name);
-                        evt.Set();
-                    }
-                }
-            };
-
-            client.Network.RegisterCallback(PacketType.MapBlockReply, mapReplyCallback);
-            client.Network.SendPacket(mapRequest);
-
-            ok = evt.WaitOne(10000, false);
-            client.Network.UnregisterCallback(PacketType.MapBlockReply, mapReplyCallback);
-            if (!ok)
-                return null;
-
-            return name;
-        }
-
-        void Self_OnInstantMessage(InstantMessage im, Simulator simulator)
-        {
-            if (InvokeRequired) {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    Self_OnInstantMessage(im, simulator);
-                }));
-            }
-
-            if (im.Dialog == InstantMessageDialog.InventoryDeclined) {
-                try {
-                    /*
-                    string reginfo = "";
-                    reginfo = getHttp("http://world.GridClient.com/region/" + im.RegionID);
-                    Regex r = new Regex("GridClient:///app/teleport/([^/]*)");
-                    Match m = r.Match(reginfo);
-                    */
-                    string url = "GridClient:///" + GetRegionName(im.RegionID) + "/" + ((int)im.Position.X) + "/" + ((int)im.Position.Y) + "/" + ((int)im.Position.Z);
-                    btnLink.Text = im.FromAgentName + " is at " + url;
-                    btnLink.Tag = url;
-                    btnLink.Visible = true;
-                } catch (Exception ex) {
-                    System.Console.WriteLine(ex.Message);
-                }
-                
-
-            }
         }
 
         private void btnNewIM_Click(object sender, EventArgs e)

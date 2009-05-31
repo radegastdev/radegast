@@ -39,7 +39,6 @@ namespace Radegast
             this.btnProfile = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tpgPeople = new System.Windows.Forms.TabPage();
-            this.btnLocate = new System.Windows.Forms.Button();
             this.btnLink = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tpgPeople.SuspendLayout();
@@ -157,7 +156,6 @@ namespace Radegast
             // tpgPeople
             // 
             this.tpgPeople.Controls.Add(this.btnLink);
-            this.tpgPeople.Controls.Add(this.btnLocate);
             this.tpgPeople.Controls.Add(this.label1);
             this.tpgPeople.Controls.Add(this.btnProfile);
             this.tpgPeople.Controls.Add(this.pnlFindPeople);
@@ -174,17 +172,6 @@ namespace Radegast
             this.tpgPeople.TabIndex = 0;
             this.tpgPeople.Text = "People";
             this.tpgPeople.UseVisualStyleBackColor = true;
-            // 
-            // btnLocate
-            // 
-            this.btnLocate.Enabled = false;
-            this.btnLocate.Location = new System.Drawing.Point(6, 91);
-            this.btnLocate.Name = "btnLocate";
-            this.btnLocate.Size = new System.Drawing.Size(78, 23);
-            this.btnLocate.TabIndex = 9;
-            this.btnLocate.Text = "Locate";
-            this.btnLocate.UseVisualStyleBackColor = true;
-            this.btnLocate.Click += new System.EventHandler(this.btnLocate_Click);
             // 
             // btnLink
             // 
@@ -224,7 +211,6 @@ namespace Radegast
         private System.Windows.Forms.Button btnProfile;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tpgPeople;
-        private System.Windows.Forms.Button btnLocate;
         private System.Windows.Forms.Button btnLink;
     }
 }
