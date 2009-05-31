@@ -26,6 +26,9 @@ namespace Radegast
         public Dictionary<UUID, Group> groups;
         public Dictionary<UUID, string> nameCache = new Dictionary<UUID,string>();
 
+        public delegate void OnAvatarNameCallBack(UUID agentID, string agentName);
+        public event OnAvatarNameCallBack OnAvatarName;
+
         public readonly bool advancedDebugging = false;
 
         public RadegastInstance()
@@ -52,7 +55,7 @@ namespace Radegast
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ENABLE_SIMSTATS = true;
             client.Settings.FETCH_MISSING_INVENTORY = true;
-            client.Settings.MULTIPLE_SIMS = false;
+            client.Settings.MULTIPLE_SIMS = true;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
 
@@ -90,6 +93,9 @@ namespace Radegast
             {
                 foreach (KeyValuePair<UUID, string> av in names)
                 {
+                    if (OnAvatarName != null) try { OnAvatarName(av.Key, av.Value); }
+                        catch (Exception) { };
+
                     if (!nameCache.ContainsKey(av.Key))
                     {
                         nameCache.Add(av.Key, av.Value);

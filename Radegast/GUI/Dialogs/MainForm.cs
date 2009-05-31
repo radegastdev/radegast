@@ -449,5 +449,15 @@ namespace Radegast
                 worldMap.Focus();
             }
         }
+
+        private void standToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            client.Self.Stand();
+        }
+
+        private void groundSitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            client.Self.SitOnGround();
+        }
     }
 }

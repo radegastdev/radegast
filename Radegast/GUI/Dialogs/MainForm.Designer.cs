@@ -72,6 +72,8 @@ namespace Radegast
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groundSitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -208,7 +210,9 @@ namespace Radegast
             this.tbtnControl.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnControl.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmnuControlFly,
-            this.tmnuControlAlwaysRun});
+            this.tmnuControlAlwaysRun,
+            this.groundSitToolStripMenuItem,
+            this.standToolStripMenuItem});
             this.tbtnControl.Enabled = false;
             this.tbtnControl.Image = ((System.Drawing.Image)(resources.GetObject("tbtnControl.Image")));
             this.tbtnControl.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -421,6 +425,20 @@ namespace Radegast
             this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.toolTip1.ToolTipTitle = "Detailed Info";
             // 
+            // standToolStripMenuItem
+            // 
+            this.standToolStripMenuItem.Name = "standToolStripMenuItem";
+            this.standToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.standToolStripMenuItem.Text = "Stand";
+            this.standToolStripMenuItem.Click += new System.EventHandler(this.standToolStripMenuItem_Click);
+            // 
+            // groundSitToolStripMenuItem
+            // 
+            this.groundSitToolStripMenuItem.Name = "groundSitToolStripMenuItem";
+            this.groundSitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.groundSitToolStripMenuItem.Text = "Sit on ground";
+            this.groundSitToolStripMenuItem.Click += new System.EventHandler(this.groundSitToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -487,6 +505,8 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem rebakeTexturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem groupsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem standToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem groundSitToolStripMenuItem;
     }
 }
 
