@@ -59,6 +59,7 @@ namespace Radegast
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autopilotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aLICEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nearbyObjectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,7 +72,6 @@ namespace Radegast
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.groupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -294,6 +294,13 @@ namespace Radegast
             this.aLICEToolStripMenuItem.Text = "A.L.I.C.E chatbot";
             this.aLICEToolStripMenuItem.Click += new System.EventHandler(this.aLICEToolStripMenuItem_Click);
             // 
+            // groupsToolStripMenuItem
+            // 
+            this.groupsToolStripMenuItem.Name = "groupsToolStripMenuItem";
+            this.groupsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.groupsToolStripMenuItem.Text = "Groups";
+            this.groupsToolStripMenuItem.Click += new System.EventHandler(this.groupsToolStripMenuItem_Click);
+            // 
             // cleanCacheToolStripMenuItem
             // 
             this.cleanCacheToolStripMenuItem.Name = "cleanCacheToolStripMenuItem";
@@ -413,12 +420,6 @@ namespace Radegast
             this.toolTip1.ReshowDelay = 100;
             this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.toolTip1.ToolTipTitle = "Detailed Info";
-            // 
-            // groupsToolStripMenuItem
-            // 
-            this.groupsToolStripMenuItem.Name = "groupsToolStripMenuItem";
-            this.groupsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
-            this.groupsToolStripMenuItem.Text = "Groups";
             // 
             // frmMain
             // 
