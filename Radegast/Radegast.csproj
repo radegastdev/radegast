@@ -846,6 +846,7 @@
     <None Include="openmetaverse_data\upperbody_shading_alpha.tga">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="radegast.nsi" />
     <None Include="Resources\secondlife.bmp" />
     <None Include="Resources\inv_folder_animation.png" />
     <None Include="Resources\inv_folder_object.png" />
