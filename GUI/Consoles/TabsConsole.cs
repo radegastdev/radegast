@@ -14,8 +14,8 @@ namespace Radegast
     public partial class TabsConsole : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
-        private GridClient client;
+        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
         private ChatTextManager mainChatManger;
 
         public Dictionary<string, SleekTab> tabs = new Dictionary<string, SleekTab>();
@@ -27,20 +27,53 @@ namespace Radegast
         public TabsConsole(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(TabsConsole_Disposed);
 
             this.instance = instance;
-            netcom = this.instance.Netcom;
-            client = this.instance.Client;
+
             AddNetcomEvents();
 
             InitializeMainTab();
             InitializeChatTab();
 
             ApplyConfig(this.instance.Config.CurrentConfig);
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
-            this.client.Self.OnScriptQuestion += new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
-            this.client.Self.OnScriptDialog += new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
+
+            // Callbacks
+            instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            client.Self.OnScriptQuestion += new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
+            client.Self.OnScriptDialog += new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
             client.Inventory.OnObjectOffered += new InventoryManager.ObjectOfferedCallback(Inventory_OnObjectOffered);
+        }
+
+        void TabsConsole_Disposed(object sender, EventArgs e)
+        {
+            RemoveNetcomEvents();
+            instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            client.Self.OnScriptQuestion -= new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
+            client.Self.OnScriptDialog -= new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
+            client.Inventory.OnObjectOffered -= new InventoryManager.ObjectOfferedCallback(Inventory_OnObjectOffered);
+        }
+
+        private void AddNetcomEvents()
+        {
+            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
+            netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
+            netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
+            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
+        }
+
+        private void RemoveNetcomEvents()
+        {
+            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
+            netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
+            netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
+            netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
         }
 
         bool Inventory_OnObjectOffered(InstantMessage offerDetails, AssetType type, UUID objectID, bool fromTask)
@@ -72,17 +105,6 @@ namespace Radegast
                 tstTabs.RenderMode = ToolStripRenderMode.ManagerRenderMode;
         }
 
-        private void AddNetcomEvents()
-        {
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
-            netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
-            netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
-            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
-        }
-
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
         {
             if (e.Status != LoginStatus.Success) return;
@@ -94,6 +116,9 @@ namespace Radegast
             if (selectedTab.Name == "main")
                 tabs["chat"].Select();
 
+            tabs["main"].AllowClose = true;
+            tabs["main"].Close();
+
             client.Self.RetrieveInstantMessages();
         }
 
@@ -103,7 +128,9 @@ namespace Radegast
             DisposeInventoryTab();
             DisposeFriendsTab();
 
-            tabs["main"].Select();
+            tabs["chat"].Select();
+            DisplayNotificationInChat("Logged out.");
+            
         }
 
         private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
@@ -114,7 +141,8 @@ namespace Radegast
             DisposeInventoryTab();
             DisposeFriendsTab();
 
-            tabs["main"].Select();
+            tabs["chat"].Select();
+            DisplayNotificationInChat("Disconnected.");
         }
 
         private void netcom_AlertMessageReceived(object sender, AlertMessageEventArgs e)
@@ -392,7 +420,6 @@ namespace Radegast
             button.AutoToolTip = false;
             button.Tag = tab.Name;
             button.Click += new EventHandler(TabButtonClick);
-
             tab.Button = button;
             tabs.Add(tab.Name, tab);
         }
@@ -406,7 +433,7 @@ namespace Radegast
             button.Tag = name.ToLower();
             button.Click += new EventHandler(TabButtonClick);
 
-            SleekTab tab = new SleekTab(button, control, name.ToLower(), label);
+            SleekTab tab = new SleekTab(instance, button, control, name.ToLower(), label);
             tab.TabAttached += new EventHandler(tab_TabAttached);
             tab.TabDetached += new EventHandler(tab_TabDetached);
             tab.TabSelected += new EventHandler(tab_TabSelected);
@@ -463,6 +490,11 @@ namespace Radegast
 
         public void RemoveTabEntry(SleekTab tab)
         {
+            if (tstTabs.Items.Contains(tab.Button))
+            {
+                tstTabs.Items.Remove(tab.Button);
+            }
+
             tab.Button.Dispose();
             tabs.Remove(tab.Name);
         }
@@ -707,6 +739,56 @@ namespace Radegast
         private void TabsConsole_Load(object sender, EventArgs e)
         {
             owner = this.FindForm();
+        }
+
+        private void ctxTabs_Opening(object sender, CancelEventArgs e)
+        {
+            Point pt = this.PointToClient(Cursor.Position);
+            ToolStripItem stripItem = tstTabs.GetItemAt(pt);
+
+            if (stripItem == null)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                tabs[stripItem.Tag.ToString()].Select();
+
+                ctxBtnClose.Enabled = selectedTab.AllowClose;
+                ctxBtnDetach.Enabled = selectedTab.AllowDetach;
+                ctxBtnMerge.Enabled = selectedTab.AllowMerge;
+                ctxBtnMerge.DropDown.Items.Clear();
+
+                if (!ctxBtnClose.Enabled && !ctxBtnDetach.Enabled && !ctxBtnMerge.Enabled)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+
+                if (!selectedTab.AllowMerge) return;
+                if (!selectedTab.Merged)
+                {
+                    ctxBtnMerge.Text = "Merge With";
+
+                    List<SleekTab> otherTabs = GetOtherTabs();
+
+                    ctxBtnMerge.Enabled = (otherTabs.Count > 0);
+                    if (!ctxBtnMerge.Enabled) return;
+
+                    foreach (SleekTab tab in otherTabs)
+                    {
+                        ToolStripItem item = ctxBtnMerge.DropDown.Items.Add(tab.Label);
+                        item.Tag = tab.Name;
+                        item.Click += new EventHandler(MergeItemClick);
+                    }
+                }
+                else
+                {
+                    ctxBtnMerge.Text = "Split";
+                    ctxBtnMerge.Click += new EventHandler(SplitClick);
+                }
+
+            }
         }
     }
 }

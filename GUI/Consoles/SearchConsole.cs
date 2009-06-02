@@ -19,10 +19,8 @@ namespace Radegast
     public partial class SearchConsole : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
-        private GridClient client;
+        private GridClient client { get { return instance.Client; } }
 
-        private TabsConsole tabConsole;
         private FindPeopleConsole console;
 
         private string lastQuery = string.Empty;
@@ -33,13 +31,12 @@ namespace Radegast
         public SearchConsole(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(SearchConsole_Disposed);
 
             this.instance = instance;
-            netcom = this.instance.Netcom;
-            client = this.instance.Client;
-            AddClientEvents();
 
-            tabConsole = this.instance.TabConsole;
+            // Callbacks
+            client.Directory.OnDirPeopleReply += new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
 
             console = new FindPeopleConsole(instance, UUID.Random());
             console.Dock = DockStyle.Fill;
@@ -47,15 +44,16 @@ namespace Radegast
             pnlFindPeople.Controls.Add(console);
         }
 
+        void SearchConsole_Disposed(object sender, EventArgs e)
+        {
+            client.Directory.OnDirPeopleReply -= new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
+        }
+
         private void console_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnNewIM.Enabled = btnProfile.Enabled = (console.SelectedName != null);
         }
 
-        private void AddClientEvents()
-        {
-            client.Directory.OnDirPeopleReply += new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
-        }
 
         //Separate thread
         private void Directory_OnDirPeopleReply(UUID queryID, List<DirectoryManager.AgentSearchData> matchedPeople)
@@ -85,13 +83,13 @@ namespace Radegast
 
         private void btnNewIM_Click(object sender, EventArgs e)
         {
-            if (tabConsole.TabExists((client.Self.AgentID ^ console.SelectedAgentUUID).ToString()))
+            if (instance.TabConsole.TabExists((client.Self.AgentID ^ console.SelectedAgentUUID).ToString()))
             {
-                tabConsole.SelectTab((client.Self.AgentID ^ console.SelectedAgentUUID).ToString());
+                instance.TabConsole.SelectTab((client.Self.AgentID ^ console.SelectedAgentUUID).ToString());
                 return;
             }
 
-            tabConsole.AddIMTab(console.SelectedAgentUUID, client.Self.AgentID ^ console.SelectedAgentUUID, console.SelectedName);
+            instance.TabConsole.AddIMTab(console.SelectedAgentUUID, client.Self.AgentID ^ console.SelectedAgentUUID, console.SelectedName);
         }
 
         private void btnFind_Click(object sender, EventArgs e)

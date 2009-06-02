@@ -52,6 +52,8 @@ namespace Radegast
             this.tbtnControl = new System.Windows.Forms.ToolStripDropDownButton();
             this.tmnuControlFly = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuControlAlwaysRun = new System.Windows.Forms.ToolStripMenuItem();
+            this.groundSitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbnTeleprotMulti = new System.Windows.Forms.ToolStripDropDownButton();
             this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,8 +74,6 @@ namespace Radegast
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groundSitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -83,6 +83,7 @@ namespace Radegast
             // toolStrip1
             // 
             this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtnSLeek,
             this.toolStripSeparator1,
@@ -93,7 +94,6 @@ namespace Radegast
             this.tbnTeleprotMulti});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.toolStrip1.Size = new System.Drawing.Size(738, 25);
             this.toolStrip1.Stretch = true;
             this.toolStrip1.TabIndex = 8;
@@ -224,7 +224,7 @@ namespace Radegast
             // 
             this.tmnuControlFly.CheckOnClick = true;
             this.tmnuControlFly.Name = "tmnuControlFly";
-            this.tmnuControlFly.Size = new System.Drawing.Size(152, 22);
+            this.tmnuControlFly.Size = new System.Drawing.Size(146, 22);
             this.tmnuControlFly.Text = "Fly";
             this.tmnuControlFly.Click += new System.EventHandler(this.tmnuControlFly_Click);
             // 
@@ -232,9 +232,23 @@ namespace Radegast
             // 
             this.tmnuControlAlwaysRun.CheckOnClick = true;
             this.tmnuControlAlwaysRun.Name = "tmnuControlAlwaysRun";
-            this.tmnuControlAlwaysRun.Size = new System.Drawing.Size(152, 22);
+            this.tmnuControlAlwaysRun.Size = new System.Drawing.Size(146, 22);
             this.tmnuControlAlwaysRun.Text = "Always Run";
             this.tmnuControlAlwaysRun.Click += new System.EventHandler(this.tmnuControlAlwaysRun_Click);
+            // 
+            // groundSitToolStripMenuItem
+            // 
+            this.groundSitToolStripMenuItem.Name = "groundSitToolStripMenuItem";
+            this.groundSitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.groundSitToolStripMenuItem.Text = "Sit on ground";
+            this.groundSitToolStripMenuItem.Click += new System.EventHandler(this.groundSitToolStripMenuItem_Click);
+            // 
+            // standToolStripMenuItem
+            // 
+            this.standToolStripMenuItem.Name = "standToolStripMenuItem";
+            this.standToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.standToolStripMenuItem.Text = "Stand";
+            this.standToolStripMenuItem.Click += new System.EventHandler(this.standToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -425,20 +439,6 @@ namespace Radegast
             this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.toolTip1.ToolTipTitle = "Detailed Info";
             // 
-            // standToolStripMenuItem
-            // 
-            this.standToolStripMenuItem.Name = "standToolStripMenuItem";
-            this.standToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.standToolStripMenuItem.Text = "Stand";
-            this.standToolStripMenuItem.Click += new System.EventHandler(this.standToolStripMenuItem_Click);
-            // 
-            // groundSitToolStripMenuItem
-            // 
-            this.groundSitToolStripMenuItem.Name = "groundSitToolStripMenuItem";
-            this.groundSitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.groundSitToolStripMenuItem.Text = "Sit on ground";
-            this.groundSitToolStripMenuItem.Click += new System.EventHandler(this.groundSitToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -469,7 +469,6 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton tbtnSLeek;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem tmnuExit;
@@ -481,7 +480,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripDropDownButton tbtnDebug;
         private System.Windows.Forms.ToolStripMenuItem tmnuPrefs;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripContainer toolStripContainer1;
         private System.Windows.Forms.ToolStripMenuItem tmnuDebugLog;
         private System.Windows.Forms.ToolStripDropDownButton tbtnStatus;
         private System.Windows.Forms.ToolStripMenuItem tmnuStatusAway;
@@ -507,6 +505,8 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem groupsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem standToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem groundSitToolStripMenuItem;
+        public System.Windows.Forms.ToolStrip toolStrip1;
+        public System.Windows.Forms.ToolStripContainer toolStripContainer1;
     }
 }
 

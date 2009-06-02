@@ -12,8 +12,6 @@ namespace Radegast
 {
     public partial class OutfitTextures : UserControl
     {
-        private GridClient client;
-        private RadegastNetcom netcom;
         private RadegastInstance instance;
         private Avatar avatar;
 
@@ -22,8 +20,6 @@ namespace Radegast
             InitializeComponent();
 
             this.instance = instance;
-            this.netcom = this.instance.Netcom;
-            this.client = this.instance.Client;
             this.avatar = avatar;
         }
 
@@ -50,7 +46,7 @@ namespace Radegast
                             break;
                     }
 
-                    if (true ||type != ImageType.Baked) {
+                    if (type != ImageType.Baked && face.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE) {
                         SLImageHandler img = new SLImageHandler(instance, face.TextureID, ((AppearanceManager.TextureIndex)j).ToString());
                         img.Location = new Point(0, nTextures++ * img.Height);
                         img.Dock = DockStyle.Top;

@@ -133,6 +133,7 @@ namespace Radegast
         public void CleanUp()
         {
             RemoveNetcomEvents();
+            instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
 
             textBuffer.Clear();
             textBuffer = null;

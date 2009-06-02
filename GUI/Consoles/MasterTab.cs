@@ -12,18 +12,17 @@ namespace Radegast
 {
     public partial class MasterTab : UserControl
     {
-        private GridClient client;
-        private RadegastNetcom netcom;
         private RadegastInstance instance;
+        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
         private Avatar avatar;
-        private AvatarManager.PointAtCallback callback;
-        private ObjectManager.ObjectPropertiesCallback objectCallback;
         private UUID selectedID;
         private Primitive selectedPrim;
 
         public MasterTab(RadegastInstance instance, Avatar avatar)
         {
             InitializeComponent();
+            Disposed += new EventHandler(MasterTab_Disposed);
 
             if (!instance.advancedDebugging)
             {
@@ -32,26 +31,18 @@ namespace Radegast
             }
 
             this.instance = instance;
-            this.netcom = this.instance.Netcom;
-            this.client = this.instance.Client;
             this.avatar = avatar;
-
-            callback = new AvatarManager.PointAtCallback(Avatars_OnPointAt);
-            client.Avatars.OnPointAt += callback;
-
-            objectCallback = new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
-            client.Objects.OnObjectProperties += objectCallback;
+            
+            // Callbacks
+            client.Avatars.OnPointAt += new AvatarManager.PointAtCallback(Avatars_OnPointAt);
+            client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
 
         }
 
-        ~MasterTab()
+        void MasterTab_Disposed(object sender, EventArgs e)
         {
-            if (callback != null) {
-                client.Avatars.OnPointAt -= callback;
-            }
-            if (objectCallback != null) {
-                client.Objects.OnObjectProperties -= objectCallback;
-            }
+            client.Avatars.OnPointAt -= new AvatarManager.PointAtCallback(Avatars_OnPointAt);
+            client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
         }
 
         void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties properties)

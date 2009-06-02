@@ -13,7 +13,7 @@ namespace Radegast
     public partial class FriendsConsole : UserControl
     {
         private RadegastInstance instance;
-        private GridClient client;
+        private GridClient client { get { return instance.Client; } }
         private FriendInfo selectedFriend;
 
         private bool settingFriend = false;
@@ -22,8 +22,8 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new EventHandler(FriendsConsole_Disposed);
+
             this.instance = instance;
-            client = this.instance.Client;
 
             // Callbacks
             client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);

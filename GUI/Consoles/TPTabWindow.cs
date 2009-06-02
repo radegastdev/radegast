@@ -13,8 +13,7 @@ namespace Radegast
     public partial class TPTabWindow : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
-        private GridClient client;
+        private GridClient client { get { return instance.Client; } }
         private string targetName;
         private UUID targetUUID;
 
@@ -23,8 +22,6 @@ namespace Radegast
             InitializeComponent();
 
             this.instance = instance;
-            netcom = this.instance.Netcom;
-            client = this.instance.Client;
             ProcessEventArgs(e);
         }
 

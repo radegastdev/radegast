@@ -8,6 +8,7 @@ namespace Radegast
 {
     public partial class SleekTab
     {
+        private RadegastInstance instance;
         private ToolStripButton button;
         private Control control;
         private Button defaultControlButton;
@@ -27,8 +28,9 @@ namespace Radegast
         private bool detached = false;
         private bool merged = false;
 
-        public SleekTab(ToolStripButton button, Control control, string name, string label)
+        public SleekTab(RadegastInstance instance, ToolStripButton button, Control control, string name, string label)
         {
+            this.instance = instance;
             this.button = button;
             this.control = control;
             this.name = name;
@@ -39,17 +41,26 @@ namespace Radegast
         {
             if (!allowClose) return;
 
+            if (control != null)
+            {
+                if (instance.TabConsole.toolStripContainer1.ContentPanel.Contains(control))
+                {
+                    instance.TabConsole.toolStripContainer1.ContentPanel.Controls.Remove(control);
+                }
+                control.Dispose();
+                control = null;
+            }
+
             if (button != null)
             {
+                if (instance.TabConsole.tstTabs.Items.Contains(button))
+                {
+                    instance.TabConsole.tstTabs.Items.Remove(button);
+                }
                 button.Dispose();
                 button = null;
             }
 
-            if (control != null)
-            {
-                control.Dispose();
-                control = null;
-            }
 
             OnTabClosed(EventArgs.Empty);
         }
