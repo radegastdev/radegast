@@ -28,6 +28,8 @@ namespace Radegast
         public frmMap(RadegastInstance i)
         {
             InitializeComponent();
+            Disposed += new EventHandler(frmMap_Disposed);
+
             instance = i;
             map = new WebBrowser();
             map.Dock = DockStyle.Fill;
@@ -39,10 +41,21 @@ namespace Radegast
             map.AllowNavigation = false;
             pnlMap.Controls.Add(map);
             pnlSearch.Visible = Active;
+
+            // Register callbacks
             client.Grid.OnGridRegion += new GridManager.GridRegionCallback(Grid_OnGridRegion);
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
             client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
+        }
+
+        void frmMap_Disposed(object sender, EventArgs e)
+        {
+            // Unregister callbacks
+            client.Grid.OnGridRegion -= new GridManager.GridRegionCallback(Grid_OnGridRegion);
+            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
+            client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
         }
 
         #region PublicMethods

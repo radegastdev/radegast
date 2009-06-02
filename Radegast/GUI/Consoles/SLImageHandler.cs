@@ -20,13 +20,12 @@ namespace Radegast
         private RadegastInstance instance;
         private UUID imageID;
         private ImageCache cache;
-        AssetManager.ImageReceiveProgressCallback ImageProgressHandler;
-
 
         public SLImageHandler(RadegastInstance instance, UUID image, string label)
         {
             InitializeComponent();
-
+            Disposed += new EventHandler(SLImageHandler_Disposed);
+  
             if (!instance.advancedDebugging)
             {
                 topPanel.Visible = false;
@@ -41,14 +40,15 @@ namespace Radegast
             this.cache = this.instance.ImageCache;
             tboxImageId.Text = image.ToString();
 
+            // Callbacks
+            client.Assets.OnImageRecieveProgress += new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
+
             if (cache.ContainsImage(image)) {
                 pictureBox1.Image = cache.GetImage(imageID);
                 pictureBox1.Enabled = true;
                 btnSave.Enabled = true;
                 pnlProgress.Hide();
             } else {
-                ImageProgressHandler = new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
-                client.Assets.OnImageRecieveProgress += ImageProgressHandler;
                 client.Assets.RequestImage(imageID, ImageType.Normal, delegate(TextureRequestState state, AssetTexture assetTexture)
                 {
                     if (state == TextureRequestState.Finished || state == TextureRequestState.Timeout)
@@ -61,6 +61,11 @@ namespace Radegast
                     }
                 }, true);
             }
+        }
+
+        void SLImageHandler_Disposed(object sender, EventArgs e)
+        {
+            client.Assets.OnImageRecieveProgress -= new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
         }
 
         private void Assets_OnImageProgress(UUID imageID, int recieved, int total)

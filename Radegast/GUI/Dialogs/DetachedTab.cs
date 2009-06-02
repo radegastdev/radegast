@@ -22,7 +22,8 @@ namespace Radegast
         public frmDetachedTab(RadegastInstance instance, SleekTab tab)
         {
             InitializeComponent();
-
+            Disposed += new EventHandler(frmDetachedTab_Disposed);
+            
             this.instance = instance;
             this.tab = tab;
             this.Controls.Add(tab.Control);
@@ -33,6 +34,12 @@ namespace Radegast
 
             ApplyConfig(this.instance.Config.CurrentConfig);
             this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+        }
+
+        void frmDetachedTab_Disposed(object sender, EventArgs e)
+        {
+            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            RemoveTabEvents();
         }
 
         private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
@@ -52,6 +59,12 @@ namespace Radegast
         {
             tab.TabPartiallyHighlighted += new EventHandler(tab_TabPartiallyHighlighted);
             tab.TabUnhighlighted += new EventHandler(tab_TabUnhighlighted);
+        }
+
+        private void RemoveTabEvents()
+        {
+            tab.TabPartiallyHighlighted -= new EventHandler(tab_TabPartiallyHighlighted);
+            tab.TabUnhighlighted -= new EventHandler(tab_TabUnhighlighted);
         }
 
         private void tab_TabUnhighlighted(object sender, EventArgs e)

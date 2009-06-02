@@ -28,7 +28,6 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmObjects));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
             this.btnTouch = new System.Windows.Forms.Button();
             this.btnSitOn = new System.Windows.Forms.Button();
@@ -173,8 +172,8 @@ namespace Radegast
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.gbxInworld);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmObjects";
+            this.ShowIcon = false;
             this.Text = "Objects - SLeek";
             this.Load += new System.EventHandler(this.frmObjects_Load);
             this.gbxInworld.ResumeLayout(false);

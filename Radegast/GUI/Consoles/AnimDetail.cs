@@ -17,19 +17,26 @@ namespace Radegast
         private Avatar av;
         private UUID anim;
         private int n;
-        private AssetManager.AssetReceivedCallback assetCallback;
-        private InventoryManager.ItemCreatedFromAssetCallback invCallback;
         private List<FriendInfo> friends;
         private FriendInfo friend;
 
         public AnimDetail(RadegastInstance instance, Avatar av, UUID anim, int n)
         {
+            InitializeComponent();
+            Disposed += new EventHandler(AnimDetail_Disposed);
             this.instance = instance;
             this.av = av;
             this.anim = anim;
             this.n = n;
 
-            InitializeComponent();
+            // Callbacks
+            instance.Client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
+
+        }
+
+        void AnimDetail_Disposed(object sender, EventArgs e)
+        {
+            instance.Client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
         }
 
         private void AnimDetail_Load(object sender, EventArgs e)
@@ -57,10 +64,6 @@ namespace Radegast
                 return;
             }
 
-            if (assetCallback == null) {
-                assetCallback = new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
-                instance.Client.Assets.OnAssetReceived += assetCallback;
-            }
 
             instance.Client.Assets.RequestAsset(anim, AssetType.Animation, true);
         }
@@ -120,11 +123,8 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            if (invCallback == null) {
-                invCallback = new InventoryManager.ItemCreatedFromAssetCallback(On_ItemCreated);
-            }
             byte[] data = File.ReadAllBytes(instance.animCacheDir + "/" + anim + ".sla");
-            instance.Client.Inventory.RequestCreateItemFromAsset(data, boxAnimName.Text, "(No description)", AssetType.Animation, InventoryType.Animation, instance.Client.Inventory.FindFolderForType(AssetType.Animation), invCallback);
+            instance.Client.Inventory.RequestCreateItemFromAsset(data, boxAnimName.Text, "(No description)", AssetType.Animation, InventoryType.Animation, instance.Client.Inventory.FindFolderForType(AssetType.Animation), On_ItemCreated);
             lblStatus.Text = "Uploading...";
             cbFriends.Enabled = false;
         }

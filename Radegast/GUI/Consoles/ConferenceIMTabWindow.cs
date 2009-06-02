@@ -24,6 +24,7 @@ namespace Radegast
         public ConferenceIMTabWindow(RadegastInstance instance, UUID session)
         {
             InitializeComponent();
+            Disposed += new EventHandler(IMTabWindow_Disposed);
 
             this.instance = instance;
             this.client = instance.Client;
@@ -32,10 +33,23 @@ namespace Radegast
             this.session = session;
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session);
-            this.Disposed += new EventHandler(IMTabWindow_Disposed);
+            
             ApplyConfig(this.instance.Config.CurrentConfig);
+
+            // Callbacks
+            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
             this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+
             this.client.Self.ChatterBoxAcceptInvite(session);
+        }
+
+        private void IMTabWindow_Disposed(object sender, EventArgs e)
+        {
+            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            CleanUp();
         }
 
         private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
@@ -53,12 +67,6 @@ namespace Radegast
              */
         }
 
-        private void AddNetcomEvents()
-        {
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-        }
-
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
         {
             if (e.Status != LoginStatus.Success) return;
@@ -69,11 +77,6 @@ namespace Radegast
         private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
         {
             RefreshControls();
-        }
-
-        private void IMTabWindow_Disposed(object sender, EventArgs e)
-        {
-            CleanUp();
         }
 
         public void CleanUp()

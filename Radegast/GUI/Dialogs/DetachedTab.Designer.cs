@@ -28,7 +28,6 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmDetachedTab));
             this.tstMain = new System.Windows.Forms.ToolStrip();
             this.tbtnReattach = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -56,7 +55,7 @@ namespace Radegast
             this.tbtnReattach.Image = global::Radegast.Properties.Resources.arrow_up_16;
             this.tbtnReattach.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnReattach.Name = "tbtnReattach";
-            this.tbtnReattach.Size = new System.Drawing.Size(71, 22);
+            this.tbtnReattach.Size = new System.Drawing.Size(73, 22);
             this.tbtnReattach.Text = "Reattach";
             this.tbtnReattach.Click += new System.EventHandler(this.tbtnReattach_Click);
             // 
@@ -80,8 +79,8 @@ namespace Radegast
             this.ClientSize = new System.Drawing.Size(508, 362);
             this.Controls.Add(this.tstMain);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmDetachedTab";
+            this.ShowIcon = false;
             this.Text = "DetachedTab";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmDetachedTab_FormClosing);
             this.tstMain.ResumeLayout(false);

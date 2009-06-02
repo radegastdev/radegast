@@ -14,22 +14,28 @@ namespace Radegast
         private GridClient client;
         private Avatar av;
         private Primitive attachment;
-        private ObjectManager.ObjectPropertiesCallback callback;
 
         public AttachmentDetail(GridClient iclinet, Avatar iav, Primitive iattachment)
         {
+            InitializeComponent();
+            Disposed += new EventHandler(AttachmentDetail_Disposed);
+
             client = iclinet;
             av = iav;
             attachment = iattachment;
-            InitializeComponent();
 
+            // Callbacks
+            client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+        }
+
+        void AttachmentDetail_Disposed(object sender, EventArgs e)
+        {
+            client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
         }
 
         private void AttachmentDetail_Load(object sender, EventArgs e)
         {
             boxID.Text = attachment.ID.ToString();
-            callback = new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
-            client.Objects.OnObjectProperties += callback;
             client.Objects.SelectObject(client.Network.CurrentSim, attachment.LocalID);
         }
 
@@ -55,8 +61,6 @@ namespace Radegast
         void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties properties)
         {
             if (properties.ObjectID == attachment.ID) {
-                client.Objects.OnObjectProperties -= callback;
-                callback = null;
                 attachment.Properties = properties;
                 UpdateControls();
             }

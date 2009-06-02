@@ -28,29 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMap));
             this.pnlSearch = new System.Windows.Forms.Panel();
-            this.pnlMap = new System.Windows.Forms.Panel();
-            this.txtRegion = new System.Windows.Forms.TextBox();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.lstRegions = new System.Windows.Forms.ListView();
+            this.btnGoHome = new System.Windows.Forms.Button();
+            this.pnlProgress = new System.Windows.Forms.Panel();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.prgTeleport = new System.Windows.Forms.ProgressBar();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnTeleport = new System.Windows.Forms.Button();
             this.nudX = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.nudY = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.nudZ = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnTeleport = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.pnlProgress = new System.Windows.Forms.Panel();
-            this.prgTeleport = new System.Windows.Forms.ProgressBar();
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.btnGoHome = new System.Windows.Forms.Button();
+            this.lstRegions = new System.Windows.Forms.ListView();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.txtRegion = new System.Windows.Forms.TextBox();
+            this.pnlMap = new System.Windows.Forms.Panel();
             this.pnlSearch.SuspendLayout();
+            this.pnlProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudZ)).BeginInit();
-            this.pnlProgress.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlSearch
@@ -74,46 +73,65 @@
             this.pnlSearch.Size = new System.Drawing.Size(194, 511);
             this.pnlSearch.TabIndex = 0;
             // 
-            // pnlMap
+            // btnGoHome
             // 
-            this.pnlMap.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlMap.Location = new System.Drawing.Point(0, 0);
-            this.pnlMap.Name = "pnlMap";
-            this.pnlMap.Size = new System.Drawing.Size(619, 511);
-            this.pnlMap.TabIndex = 1;
+            this.btnGoHome.Location = new System.Drawing.Point(10, 338);
+            this.btnGoHome.Name = "btnGoHome";
+            this.btnGoHome.Size = new System.Drawing.Size(75, 23);
+            this.btnGoHome.TabIndex = 21;
+            this.btnGoHome.Text = "Go home";
+            this.btnGoHome.UseVisualStyleBackColor = true;
+            this.btnGoHome.Click += new System.EventHandler(this.btnGoHome_Click);
             // 
-            // txtRegion
+            // pnlProgress
             // 
-            this.txtRegion.Location = new System.Drawing.Point(6, 12);
-            this.txtRegion.Name = "txtRegion";
-            this.txtRegion.Size = new System.Drawing.Size(124, 20);
-            this.txtRegion.TabIndex = 0;
-            this.txtRegion.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtRegion_KeyDown);
+            this.pnlProgress.Controls.Add(this.lblStatus);
+            this.pnlProgress.Controls.Add(this.prgTeleport);
+            this.pnlProgress.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlProgress.Location = new System.Drawing.Point(0, 453);
+            this.pnlProgress.Name = "pnlProgress";
+            this.pnlProgress.Size = new System.Drawing.Size(194, 58);
+            this.pnlProgress.TabIndex = 20;
             // 
-            // btnSearch
+            // lblStatus
             // 
-            this.btnSearch.Location = new System.Drawing.Point(136, 11);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(52, 21);
-            this.btnSearch.TabIndex = 1;
-            this.btnSearch.Text = "Search";
-            this.btnSearch.UseVisualStyleBackColor = true;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStatus.Location = new System.Drawing.Point(3, 0);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(185, 21);
+            this.lblStatus.TabIndex = 1;
+            this.lblStatus.Text = "Teleport status";
+            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lstRegions
+            // prgTeleport
             // 
-            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lstRegions.Location = new System.Drawing.Point(6, 38);
-            this.lstRegions.MultiSelect = false;
-            this.lstRegions.Name = "lstRegions";
-            this.lstRegions.ShowGroups = false;
-            this.lstRegions.Size = new System.Drawing.Size(182, 211);
-            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lstRegions.TabIndex = 2;
-            this.lstRegions.UseCompatibleStateImageBehavior = false;
-            this.lstRegions.View = System.Windows.Forms.View.List;
-            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
-            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
+            this.prgTeleport.Enabled = false;
+            this.prgTeleport.Location = new System.Drawing.Point(6, 24);
+            this.prgTeleport.MarqueeAnimationSpeed = 50;
+            this.prgTeleport.Name = "prgTeleport";
+            this.prgTeleport.Size = new System.Drawing.Size(182, 23);
+            this.prgTeleport.TabIndex = 0;
+            // 
+            // btnClose
+            // 
+            this.btnClose.Location = new System.Drawing.Point(112, 309);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(76, 23);
+            this.btnClose.TabIndex = 19;
+            this.btnClose.Text = "Close";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // btnTeleport
+            // 
+            this.btnTeleport.Enabled = false;
+            this.btnTeleport.Location = new System.Drawing.Point(10, 309);
+            this.btnTeleport.Name = "btnTeleport";
+            this.btnTeleport.Size = new System.Drawing.Size(75, 23);
+            this.btnTeleport.TabIndex = 18;
+            this.btnTeleport.Text = "Teleport";
+            this.btnTeleport.UseVisualStyleBackColor = true;
+            this.btnTeleport.Click += new System.EventHandler(this.btnTeleport_Click);
             // 
             // nudX
             // 
@@ -188,65 +206,46 @@
             this.label4.TabIndex = 16;
             this.label4.Text = "Y";
             // 
-            // btnTeleport
+            // lstRegions
             // 
-            this.btnTeleport.Enabled = false;
-            this.btnTeleport.Location = new System.Drawing.Point(10, 309);
-            this.btnTeleport.Name = "btnTeleport";
-            this.btnTeleport.Size = new System.Drawing.Size(75, 23);
-            this.btnTeleport.TabIndex = 18;
-            this.btnTeleport.Text = "Teleport";
-            this.btnTeleport.UseVisualStyleBackColor = true;
-            this.btnTeleport.Click += new System.EventHandler(this.btnTeleport_Click);
+            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstRegions.Location = new System.Drawing.Point(6, 38);
+            this.lstRegions.MultiSelect = false;
+            this.lstRegions.Name = "lstRegions";
+            this.lstRegions.ShowGroups = false;
+            this.lstRegions.Size = new System.Drawing.Size(182, 211);
+            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lstRegions.TabIndex = 2;
+            this.lstRegions.UseCompatibleStateImageBehavior = false;
+            this.lstRegions.View = System.Windows.Forms.View.List;
+            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
+            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
             // 
-            // btnClose
+            // btnSearch
             // 
-            this.btnClose.Location = new System.Drawing.Point(112, 309);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(76, 23);
-            this.btnClose.TabIndex = 19;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnSearch.Location = new System.Drawing.Point(136, 11);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(52, 21);
+            this.btnSearch.TabIndex = 1;
+            this.btnSearch.Text = "Search";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
             // 
-            // pnlProgress
+            // txtRegion
             // 
-            this.pnlProgress.Controls.Add(this.lblStatus);
-            this.pnlProgress.Controls.Add(this.prgTeleport);
-            this.pnlProgress.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlProgress.Location = new System.Drawing.Point(0, 453);
-            this.pnlProgress.Name = "pnlProgress";
-            this.pnlProgress.Size = new System.Drawing.Size(194, 58);
-            this.pnlProgress.TabIndex = 20;
+            this.txtRegion.Location = new System.Drawing.Point(6, 12);
+            this.txtRegion.Name = "txtRegion";
+            this.txtRegion.Size = new System.Drawing.Size(124, 20);
+            this.txtRegion.TabIndex = 0;
+            this.txtRegion.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtRegion_KeyDown);
             // 
-            // prgTeleport
+            // pnlMap
             // 
-            this.prgTeleport.Enabled = false;
-            this.prgTeleport.Location = new System.Drawing.Point(6, 24);
-            this.prgTeleport.MarqueeAnimationSpeed = 50;
-            this.prgTeleport.Name = "prgTeleport";
-            this.prgTeleport.Size = new System.Drawing.Size(182, 23);
-            this.prgTeleport.TabIndex = 0;
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(3, 0);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(185, 21);
-            this.lblStatus.TabIndex = 1;
-            this.lblStatus.Text = "Teleport status";
-            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // btnGoHome
-            // 
-            this.btnGoHome.Location = new System.Drawing.Point(10, 338);
-            this.btnGoHome.Name = "btnGoHome";
-            this.btnGoHome.Size = new System.Drawing.Size(75, 23);
-            this.btnGoHome.TabIndex = 21;
-            this.btnGoHome.Text = "Go home";
-            this.btnGoHome.UseVisualStyleBackColor = true;
-            this.btnGoHome.Click += new System.EventHandler(this.btnGoHome_Click);
+            this.pnlMap.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlMap.Location = new System.Drawing.Point(0, 0);
+            this.pnlMap.Name = "pnlMap";
+            this.pnlMap.Size = new System.Drawing.Size(619, 511);
+            this.pnlMap.TabIndex = 1;
             // 
             // frmMap
             // 
@@ -255,7 +254,6 @@
             this.ClientSize = new System.Drawing.Size(813, 511);
             this.Controls.Add(this.pnlMap);
             this.Controls.Add(this.pnlSearch);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMap";
             this.ShowIcon = false;
             this.Text = "Map";
@@ -263,10 +261,10 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMap_FormClosing);
             this.pnlSearch.ResumeLayout(false);
             this.pnlSearch.PerformLayout();
+            this.pnlProgress.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudZ)).EndInit();
-            this.pnlProgress.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

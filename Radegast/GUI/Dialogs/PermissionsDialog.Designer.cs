@@ -80,6 +80,7 @@ namespace Radegast
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "PermissionsDialog";
+            this.ShowIcon = false;
             this.Text = "Permissions Request";
             this.TopMost = true;
             this.ResumeLayout(false);

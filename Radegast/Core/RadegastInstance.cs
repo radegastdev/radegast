@@ -12,7 +12,6 @@ namespace Radegast
     {
         private GridClient client;
         private RadegastNetcom netcom;
-        private GridManager grid;
 
         private ImageCache imageCache;
         private StateManager state;
@@ -68,7 +67,6 @@ namespace Radegast
             client.Settings.THROTTLE_OUTGOING_PACKETS = false;
             
             netcom = new RadegastNetcom(client);
-            grid = new GridManager(client);
 
             imageCache = new ImageCache();
             state = new StateManager(this);
@@ -80,11 +78,24 @@ namespace Radegast
 
             Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
             groups = new Dictionary<UUID, Group>();
+         
             client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Groups.OnGroupLeft += new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
             client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
             client.Groups.OnGroupProfile += new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+        }
+
+        public void CleanUp()
+        {
+            client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
+            client.Groups.OnGroupLeft -= new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
+            client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
+            client.Groups.OnGroupProfile -= new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
+            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+
+            client = null;
+            netcom = null;
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
@@ -173,11 +184,6 @@ namespace Radegast
             get { return netcom; }
         }
 
-        public GridManager Grid
-        {
-            get { return grid; }
-        }
-
         public ImageCache ImageCache
         {
             get { return imageCache; }
@@ -202,6 +208,5 @@ namespace Radegast
         {
             get { return tabsConsole; }
         }
-
     }
 }

@@ -16,11 +16,6 @@ namespace Radegast
             if (disposing && (components != null)) {
                 components.Dispose();
             }
-            if (disposing && (animCallback != null)) {
-                client.Avatars.OnAvatarAnimation -= animCallback;
-                animCallback = null;
-            }
-
             base.Dispose(disposing);
         }
 
