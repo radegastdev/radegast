@@ -24,7 +24,7 @@ namespace Radegast
         private RadegastNetcom netcom;
         private GridClient client;
 
-        public static TabsConsole tabsConsole;
+        public TabsConsole tabsConsole;
         public frmMap worldMap;
         private frmDebugLog debugLogForm;
         private System.Timers.Timer statusTimer;
@@ -34,12 +34,18 @@ namespace Radegast
         public frmMain(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(frmMain_Disposed);
 
             this.instance = instance;
             client = this.instance.Client;
             netcom = this.instance.Netcom;
             netcom.NetcomSync = this;
-            AddNetcomEvents();
+
+            // Callbacks
+            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
             client.Parcels.OnParcelProperties += new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
             
             InitializeStatusTimer();
@@ -47,6 +53,18 @@ namespace Radegast
 
             ApplyConfig(this.instance.Config.CurrentConfig, true);
             this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+        }
+
+        void frmMain_Disposed(object sender, EventArgs e)
+        {
+            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
+            client.Parcels.OnParcelProperties -= new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
+
+            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            this.instance.CleanUp();
         }
 
         //Separate thread
@@ -105,14 +123,6 @@ namespace Radegast
         {
             RefreshWindowTitle();
             RefreshStatusBar();
-        }
-
-        private void AddNetcomEvents()
-        {
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
         }
 
         private void netcom_InstantMessageReceived(object sender, InstantMessageEventArgs e)

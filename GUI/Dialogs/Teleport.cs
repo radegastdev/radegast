@@ -22,25 +22,25 @@ namespace Radegast
         public frmTeleport(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(frmTeleport_Disposed);
 
             this.instance = instance;
             netcom = this.instance.Netcom;
             client = this.instance.Client;
 
-            AddNetcomEvents();
-            AddClientEvents();
+            // Callbacks
+            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            client.Grid.OnGridRegion += new GridManager.GridRegionCallback(Grid_OnGridRegion);
+            client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
+
             SetDefaultValues();
         }
 
-        private void AddNetcomEvents()
+        void frmTeleport_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-        }
-
-        private void AddClientEvents()
-        {
-            client.Grid.OnGridRegion += new GridManager.GridRegionCallback(Grid_OnGridRegion);
-            client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
+            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            client.Grid.OnGridRegion -= new GridManager.GridRegionCallback(Grid_OnGridRegion);
+            client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
         }
 
         void Self_OnTeleport(string message, TeleportStatus status, TeleportFlags flags)

@@ -13,22 +13,23 @@ namespace Radegast
 {
     public partial class InventoryConsole : UserControl
     {
-        RadegastInstance Instance;
-        GridClient Client;
+        RadegastInstance instance;
+        GridClient client { get { return instance.Client; } }
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
 
         private InventoryManager Manager;
         private OpenMetaverse.Inventory Inventory;
 
 
-        public InventoryConsole(RadegastInstance i)
+        public InventoryConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            Instance = i;
-            Client = i.Client;
-            Manager = Client.Inventory;
+            Disposed += new EventHandler(InventoryConsole_Disposed);
+
+            this.instance = instance;
+            Manager = client.Inventory;
             Inventory = Manager.Store;
-            Inventory.RootFolder.OwnerID = Client.Self.AgentID;
+            Inventory.RootFolder.OwnerID = client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
             invTree.AfterExpand += new TreeViewEventHandler(TreeView_AfterExpand);
             invTree.MouseClick += new MouseEventHandler(invTree_MouseClick);
@@ -36,8 +37,15 @@ namespace Radegast
             invTree.TreeViewNodeSorter = new InvNodeSorter();
             AddDir(null, Inventory.RootFolder);
             invTree.Nodes[0].Expand();
-            Client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
 
+            // Callbacks
+            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+
+        }
+
+        void InventoryConsole_Disposed(object sender, EventArgs e)
+        {
+            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
@@ -60,7 +68,7 @@ namespace Radegast
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
-            (new frmProfile(Instance, txtCreator.Text, (UUID)txtCreator.Tag)).Show();
+            (new frmProfile(instance, txtCreator.Text, (UUID)txtCreator.Tag)).Show();
             
         }
 
@@ -68,7 +76,7 @@ namespace Radegast
         {
             btnProfile.Enabled = true;
             txtItemName.Text = item.Name;
-            txtCreator.Text = Instance.getAvatarName(item.CreatorID);
+            txtCreator.Text = instance.getAvatarName(item.CreatorID);
             txtCreator.Tag = item.CreatorID;
             if (item.AssetUUID != null)
             {
@@ -83,7 +91,7 @@ namespace Radegast
             switch (item.AssetType)
             {
                 case AssetType.Texture:
-                    SLImageHandler image = new SLImageHandler(Instance, item.AssetUUID, item.Name);
+                    SLImageHandler image = new SLImageHandler(instance, item.AssetUUID, item.Name);
                     image.Dock = DockStyle.Fill;
                     pnlDetail.Controls.Add(image);
                     break;
@@ -99,8 +107,8 @@ namespace Radegast
                 {
                         
                     case AssetType.Landmark:
-                        frmMain.tabsConsole.DisplayNotificationInChat("Teleporting to " + item.Name);
-                        Client.Self.RequestTeleport(item.AssetUUID);
+                        instance.TabConsole.DisplayNotificationInChat("Teleporting to " + item.Name);
+                        client.Self.RequestTeleport(item.AssetUUID);
                         break;
                 }
             }
@@ -138,7 +146,7 @@ namespace Radegast
                     
                     folderContext.Show(invTree, new Point(e.X, e.Y));
                 }
-                Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, Client);
+                Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, client);
             }
         }
 
@@ -262,7 +270,7 @@ namespace Radegast
             }
 
             List<InventoryBase> contents =
-                Client.Inventory.FolderContents(folder.UUID, folder.OwnerID, true, true, InventorySortOrder.ByName, 3000);
+                client.Inventory.FolderContents(folder.UUID, folder.OwnerID, true, true, InventorySortOrder.ByName, 3000);
             parent.Nodes.Clear();
             if (contents == null) return;
 

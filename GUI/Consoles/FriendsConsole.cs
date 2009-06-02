@@ -21,9 +21,20 @@ namespace Radegast
         public FriendsConsole(RadegastInstance instance)
         {
             InitializeComponent();
-
+            Disposed += new EventHandler(FriendsConsole_Disposed);
             this.instance = instance;
             client = this.instance.Client;
+
+            // Callbacks
+            client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
+            client.Friends.OnFriendOnline += new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
+
+        }
+
+        void FriendsConsole_Disposed(object sender, EventArgs e)
+        {
+            client.Friends.OnFriendOffline -= new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
+            client.Friends.OnFriendOnline -= new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
         }
 
         private void InitializeFriendsList()
@@ -36,9 +47,6 @@ namespace Radegast
                 lbxFriends.Items.Add(new FriendsListItem(friend));
 
             lbxFriends.EndUpdate();
-            
-            client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
-            client.Friends.OnFriendOnline += new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
         }
 
         private void RefreshFriendsList()

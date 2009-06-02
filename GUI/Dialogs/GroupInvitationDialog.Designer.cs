@@ -80,6 +80,7 @@ namespace Radegast
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "GroupInvitationDialog";
+            this.ShowIcon = false;
             this.Text = "Group Invitation";
             this.TopMost = true;
             this.ResumeLayout(false);

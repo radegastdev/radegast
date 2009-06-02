@@ -16,10 +16,6 @@ namespace Radegast
             if (disposing && (components != null)) {
                 components.Dispose();
             }
-            if (callback != null) {
-                client.Objects.OnObjectProperties -= callback;
-                callback = null;
-            }
             base.Dispose(disposing);
         }
 

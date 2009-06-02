@@ -25,6 +25,7 @@ namespace Radegast
         public frmProfile(RadegastInstance instance, string fullName, UUID agentID)
         {
             InitializeComponent();
+            Disposed += new EventHandler(frmProfile_Disposed);
 
             // Picks tab is not made yet
             tabProfile.TabPages.Remove(tbpPicks);
@@ -37,23 +38,23 @@ namespace Radegast
             
             this.Text = fullName + " (profile) - TheLBot";
 
-            AddClientEvents();
-            AddNetcomEvents();
-            InitializeProfile();
-        }
-
-        private void CleanUp()
-        {
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-            client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
-        }
-
-        private void AddClientEvents()
-        {
+            // Callbacks
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             client.Avatars.OnAvatarPicks += new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
             client.Avatars.OnPickInfo += new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
+            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+
+            InitializeProfile();
+        }
+
+        void frmProfile_Disposed(object sender, EventArgs e)
+        {
+            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
+            client.Avatars.OnAvatarPicks -= new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
+            client.Avatars.OnPickInfo -= new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
+            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
         }
 
         void Avatars_OnPickInfo(UUID pickid, ProfilePick pick)
@@ -69,11 +70,6 @@ namespace Radegast
                 System.Console.WriteLine(pick.Value + ": " + pick.Key);
                 client.Avatars.RequestPickInfo(id, pick.Key);
             }
-        }
-
-        private void AddNetcomEvents()
-        {
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
@@ -166,11 +162,6 @@ namespace Radegast
             client.Avatars.RequestAvatarPicks(agentID);
         }
 
-        private void frmProfile_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            CleanUp();
-        }
-
         private void btnClose_Click(object sender, EventArgs e)
         {
             Close();
@@ -240,13 +231,13 @@ namespace Radegast
             {
                 InventoryItem item = node.Tag as InventoryItem;
                 client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, agentID, true);
-                frmMain.tabsConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + fullName + ".");
+                instance.TabConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + fullName + ".");
             }
             else if (node.Tag is InventoryFolder)
             {
                 InventoryFolder folder = node.Tag as InventoryFolder;
                 client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, agentID, true);
-                frmMain.tabsConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + fullName + ".");
+                instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + fullName + ".");
             }
         }
     }

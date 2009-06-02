@@ -28,7 +28,6 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProfile));
             this.tabProfile = new System.Windows.Forms.TabControl();
             this.tpgProfile = new System.Windows.Forms.TabPage();
             this.slPicPanel = new System.Windows.Forms.Panel();
@@ -457,10 +456,9 @@ namespace Radegast
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.tabProfile);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmProfile";
+            this.ShowIcon = false;
             this.Text = "Profile";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmProfile_FormClosing);
             this.tabProfile.ResumeLayout(false);
             this.tpgProfile.ResumeLayout(false);
             this.tpgProfile.PerformLayout();

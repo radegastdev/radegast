@@ -21,7 +21,6 @@ namespace Radegast
         private ChatTextManager chatManager;
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
-        private GridManager grid;
         private SleekMovement movement;
         private AIMLbot.Bot Alice;
         private Hashtable AliceUsers = new Hashtable();
@@ -33,6 +32,7 @@ namespace Radegast
         public ChatConsole(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(ChatConsole_Disposed);
 
             if (!instance.advancedDebugging)
             {
@@ -48,8 +48,15 @@ namespace Radegast
             this.instance = instance;
             netcom = this.instance.Netcom;
             client = this.instance.Client;
-            grid = this.instance.Grid;
-            AddNetcomEvents();
+
+            // Callbacks
+            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
+            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
+            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            client.Grid.OnCoarseLocationUpdate += new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
+            client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
 
             movement = new SleekMovement(client);
 
@@ -58,8 +65,6 @@ namespace Radegast
 
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
-            ApplyConfig(this.instance.Config.CurrentConfig);
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             SorterClass sc = new SorterClass();
             lvwObjects.ListViewItemSorter = sc;
 
@@ -76,9 +81,18 @@ namespace Radegast
                 System.Console.WriteLine("Failed loading ALICE: " + ex.Message);
             }
 
-            client.Grid.OnCoarseLocationUpdate += new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
-            client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
+            ApplyConfig(this.instance.Config.CurrentConfig);
+        }
 
+        void ChatConsole_Disposed(object sender, EventArgs e)
+        {
+            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
+            netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
+            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            client.Grid.OnCoarseLocationUpdate -= new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
+            client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
         }
 
         void Avatars_OnAvatarProperties(UUID avatarID, Avatar.AvatarProperties properties)
@@ -185,14 +199,6 @@ namespace Radegast
                 toolStrip1.RenderMode = ToolStripRenderMode.System;
             else if (config.InterfaceStyle == 1) //Office 2003
                 toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
-        }
-
-        private void AddNetcomEvents()
-        {
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
-            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
         }
 
         void netcom_InstantMessageReceived(object sender, InstantMessageEventArgs e)
@@ -553,13 +559,13 @@ namespace Radegast
             {
                 InventoryItem item = node.Tag as InventoryItem;
                 client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, (UUID)litem.Tag, true);
-                frmMain.tabsConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + instance.getAvatarName((UUID)litem.Tag) + ".");
+                instance.TabConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + instance.getAvatarName((UUID)litem.Tag) + ".");
             }
             else if (node.Tag is InventoryFolder)
             {
                 InventoryFolder folder = node.Tag as InventoryFolder;
                 client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, (UUID)litem.Tag, true);
-                frmMain.tabsConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + instance.getAvatarName((UUID)litem.Tag) + ".");
+                instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + instance.getAvatarName((UUID)litem.Tag) + ".");
             }
         }
 

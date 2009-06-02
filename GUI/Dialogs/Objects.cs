@@ -21,6 +21,7 @@ namespace Radegast
         public frmObjects(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(frmObjects_Disposed);
 
             this.instance = instance;
             
@@ -29,11 +30,21 @@ namespace Radegast
 
             lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
 
+            // Callbacks
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             instance.OnAvatarName += new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
+        }
+
+        void frmObjects_Disposed(object sender, EventArgs e)
+        {
+            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
+            client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
+            instance.OnAvatarName -= new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
         }
 
         void instance_OnAvatarName(UUID agentID, string agentName)

@@ -16,20 +16,25 @@ namespace Radegast
         private GridClient client;
         private RadegastInstance instance;
         private Avatar av;
-        private AvatarManager.AvatarAnimationCallback animCallback;
         private List<UUID> seenAnim = new List<UUID>();
         private int n = 0;
         private static bool checkedDir = false;
 
         public AnimTab(RadegastInstance instance, Avatar av)
         {
+            InitializeComponent();
+            Disposed += new EventHandler(AnimTab_Disposed);
             this.instance = instance;
             this.av = av;
             this.client = instance.Client;
 
-            animCallback = new AvatarManager.AvatarAnimationCallback(Avatars_OnAvatarAnimationUpdate);
-            client.Avatars.OnAvatarAnimation += animCallback;
-            InitializeComponent();
+            // Callbacks
+            client.Avatars.OnAvatarAnimation += new AvatarManager.AvatarAnimationCallback(Avatars_OnAvatarAnimationUpdate);
+        }
+
+        void AnimTab_Disposed(object sender, EventArgs e)
+        {
+            client.Avatars.OnAvatarAnimation -= new AvatarManager.AvatarAnimationCallback(Avatars_OnAvatarAnimationUpdate);
         }
 
         void Avatars_OnAvatarAnimationUpdate(UUID avatarID, InternalDictionary<UUID, int> anims)

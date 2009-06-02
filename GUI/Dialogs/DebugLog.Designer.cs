@@ -172,6 +172,7 @@ namespace Radegast
             this.Controls.Add(this.tabLogs);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "frmDebugLog";
+            this.ShowIcon = false;
             this.Text = "Debug Log - SLeek";
             this.Shown += new System.EventHandler(this.frmDebugLog_Shown);
             this.tabLogs.ResumeLayout(false);

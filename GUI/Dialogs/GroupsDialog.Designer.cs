@@ -106,6 +106,7 @@ namespace Radegast
             this.Controls.Add(this.label1);
             this.Controls.Add(this.grpsCombo);
             this.Name = "GroupsDialog";
+            this.ShowIcon = false;
             this.Text = "Groups";
             this.TopMost = true;
             this.ResumeLayout(false);

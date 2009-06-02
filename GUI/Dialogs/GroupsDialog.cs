@@ -14,17 +14,24 @@ namespace Radegast
         GridClient client;
         RadegastInstance instance;
         Dictionary<UUID, Group> groups = new Dictionary<UUID, Group>();
-        GroupManager.CurrentGroupsCallback cb = null;
 
         public GroupsDialog(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(GroupsDialog_Disposed);
             this.client = instance.Client;
             this.instance = instance;
-            cb = new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
-            client.Groups.OnCurrentGroups += cb;
+
+            // Callbacks
+            client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
+
             client.Groups.RequestCurrentGroups();
 
+        }
+
+        void GroupsDialog_Disposed(object sender, EventArgs e)
+        {
+            client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
         }
 
         public void UpdateDisplay()
@@ -44,7 +51,6 @@ namespace Radegast
         void Groups_OnCurrentGroups(Dictionary<UUID, Group> igroups)
         {
             groups = igroups;
-            client.Groups.OnCurrentGroups -= cb;
             this.Invoke(new MethodInvoker(UpdateDisplay));
         }
 

@@ -24,6 +24,7 @@ namespace Radegast
         public FindPeopleConsole(RadegastInstance instance, UUID queryID)
         {
             InitializeComponent();
+            Disposed += new EventHandler(FindPeopleConsole_Disposed);
 
             findPeopleResults = new Dictionary<string, UUID>();
             this.queryID = queryID;
@@ -31,12 +32,14 @@ namespace Radegast
             this.instance = instance;
             netcom = this.instance.Netcom;
             client = this.instance.Client;
-            AddClientEvents();
+
+            // Callbacks
+            client.Directory.OnDirPeopleReply += new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
         }
 
-        private void AddClientEvents()
+        void FindPeopleConsole_Disposed(object sender, EventArgs e)
         {
-            client.Directory.OnDirPeopleReply += new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
+            client.Directory.OnDirPeopleReply -= new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
         }
 
         //Separate thread

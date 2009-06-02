@@ -47,6 +47,7 @@ namespace Radegast
             this.ClientSize = new System.Drawing.Size(292, 273);
             this.Controls.Add(this.pictureBox1);
             this.Name = "ImageFullSize";
+            this.ShowIcon = false;
             this.Text = "ImageFullSize";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

@@ -80,6 +80,7 @@ namespace Radegast
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FriendshipOfferDialog";
+            this.ShowIcon = false;
             this.Text = "Friendship Offer";
             this.TopMost = true;
             this.ResumeLayout(false);
