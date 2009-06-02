@@ -14,33 +14,38 @@ namespace Radegast
     public partial class GroupIMTabWindow : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
+        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
         private UUID session;
         private IMTextManager textManager;
-        private GridClient client;
-        private AgentManager.GroupChatJoinedCallback grpJoinCallback;
 
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);
 
         public GroupIMTabWindow(RadegastInstance instance, UUID session)
         {
             InitializeComponent();
+            Disposed += new EventHandler(IMTabWindow_Disposed);
 
             this.instance = instance;
-            this.client = instance.Client;
-            netcom = this.instance.Netcom;
-
             this.session = session;
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session);
-            this.Disposed += new EventHandler(IMTabWindow_Disposed);
             ApplyConfig(this.instance.Config.CurrentConfig);
+            
+            // Callbacks
             this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
-            client.Self.RequestJoinGroupChat(session);
-            grpJoinCallback = new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
-            client.Self.OnGroupChatJoin += grpJoinCallback;
+            client.Self.OnGroupChatJoin += new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
 
+            client.Self.RequestJoinGroupChat(session);
         }
+
+        private void IMTabWindow_Disposed(object sender, EventArgs e)
+        {
+            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            client.Self.OnGroupChatJoin -= new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
+            CleanUp();
+        }
+
 
         void Self_OnGroupChatJoin(UUID groupChatSessionID, string sessionName, UUID tmpSessionID, bool success)
         {
@@ -99,16 +104,8 @@ namespace Radegast
             RefreshControls();
         }
 
-        private void IMTabWindow_Disposed(object sender, EventArgs e)
-        {
-            CleanUp();
-        }
-
         public void CleanUp()
         {
-            if (grpJoinCallback != null) {
-                client.Self.OnGroupChatJoin -= grpJoinCallback;
-            }
             textManager.CleanUp();
             textManager = null;
         }

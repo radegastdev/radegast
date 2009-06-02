@@ -13,23 +13,43 @@ namespace Radegast
     public partial class MainConsole : UserControl, ISleekTabControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
 
         public MainConsole(RadegastInstance instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(MainConsole_Disposed);
 
             this.instance = instance;
-            netcom = this.instance.Netcom;
             AddNetcomEvents();
 
             cbxLocation.SelectedIndex = 0;
             InitializeConfig();
-
-            this.instance.MainForm.FormClosing += new FormClosingEventHandler(MainForm_FormClosing);
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        void MainConsole_Disposed(object sender, EventArgs e)
+        {
+            RemoveNetcomEvents();
+        }
+
+
+        private void AddNetcomEvents()
+        {
+            netcom.ClientLoggingIn += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingIn);
+            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggingOut += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
+            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+        }
+
+        private void RemoveNetcomEvents()
+        {
+            netcom.ClientLoggingIn -= new EventHandler<OverrideEventArgs>(netcom_ClientLoggingIn);
+            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggingOut -= new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
+            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+        }
+
+        private void SaveConfig()
         {
             instance.Config.CurrentConfig.FirstName = txtFirstName.Text;
             instance.Config.CurrentConfig.LastName = txtLastName.Text;
@@ -44,14 +64,7 @@ namespace Radegast
 
             instance.Config.CurrentConfig.LoginGrid = cbxGrid.SelectedIndex;
             instance.Config.CurrentConfig.LoginUri = txtCustomLoginUri.Text;
-        }
-
-        private void AddNetcomEvents()
-        {
-            netcom.ClientLoggingIn += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingIn);
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggingOut += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            instance.Config.SaveCurrentConfig();
         }
 
         private void InitializeConfig()
@@ -197,6 +210,7 @@ namespace Radegast
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
+            SaveConfig();
             switch (btnLogin.Text)
             {
                 case "Login": BeginLogin(); break;

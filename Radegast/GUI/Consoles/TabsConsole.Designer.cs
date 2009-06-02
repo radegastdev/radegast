@@ -28,17 +28,22 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.tstTabs = new System.Windows.Forms.ToolStrip();
             this.tbtnCloseTab = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnTabOptions = new System.Windows.Forms.ToolStripDropDownButton();
             this.tmnuMergeWith = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuDetachTab = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxTabs = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxBtnDetach = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxBtnClose = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxBtnMerge = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.tstTabs.SuspendLayout();
+            this.ctxTabs.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripContainer1
@@ -73,14 +78,14 @@ namespace Radegast
             // 
             // tstTabs
             // 
+            this.tstTabs.ContextMenuStrip = this.ctxTabs;
             this.tstTabs.Dock = System.Windows.Forms.DockStyle.None;
+            this.tstTabs.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tstTabs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtnCloseTab,
-            this.toolStripSeparator1,
             this.tbtnTabOptions});
             this.tstTabs.Location = new System.Drawing.Point(0, 0);
             this.tstTabs.Name = "tstTabs";
-            this.tstTabs.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.tstTabs.Size = new System.Drawing.Size(623, 25);
             this.tstTabs.Stretch = true;
             this.tstTabs.TabIndex = 0;
@@ -97,13 +102,8 @@ namespace Radegast
             this.tbtnCloseTab.Name = "tbtnCloseTab";
             this.tbtnCloseTab.Size = new System.Drawing.Size(23, 22);
             this.tbtnCloseTab.ToolTipText = "Close Tab";
+            this.tbtnCloseTab.Visible = false;
             this.tbtnCloseTab.Click += new System.EventHandler(this.tbtnCloseTab_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // tbtnTabOptions
             // 
@@ -118,26 +118,57 @@ namespace Radegast
             this.tbtnTabOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnTabOptions.Name = "tbtnTabOptions";
             this.tbtnTabOptions.Size = new System.Drawing.Size(29, 22);
+            this.tbtnTabOptions.Visible = false;
             this.tbtnTabOptions.Click += new System.EventHandler(this.tbtnTabOptions_Click);
             // 
             // tmnuMergeWith
             // 
             this.tmnuMergeWith.Name = "tmnuMergeWith";
-            this.tmnuMergeWith.Size = new System.Drawing.Size(140, 22);
+            this.tmnuMergeWith.Size = new System.Drawing.Size(152, 22);
             this.tmnuMergeWith.Text = "Merge With";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(137, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
             // 
             // tmnuDetachTab
             // 
             this.tmnuDetachTab.Image = global::Radegast.Properties.Resources.copy_16;
             this.tmnuDetachTab.Name = "tmnuDetachTab";
-            this.tmnuDetachTab.Size = new System.Drawing.Size(140, 22);
+            this.tmnuDetachTab.Size = new System.Drawing.Size(152, 22);
             this.tmnuDetachTab.Text = "Detach Tab";
             this.tmnuDetachTab.Click += new System.EventHandler(this.tmnuDetachTab_Click);
+            // 
+            // ctxTabs
+            // 
+            this.ctxTabs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxBtnDetach,
+            this.ctxBtnMerge,
+            this.ctxBtnClose});
+            this.ctxTabs.Name = "ctxTabs";
+            this.ctxTabs.Size = new System.Drawing.Size(135, 70);
+            this.ctxTabs.Opening += new System.ComponentModel.CancelEventHandler(this.ctxTabs_Opening);
+            // 
+            // ctxBtnDetach
+            // 
+            this.ctxBtnDetach.Name = "ctxBtnDetach";
+            this.ctxBtnDetach.Size = new System.Drawing.Size(152, 22);
+            this.ctxBtnDetach.Text = "Detach";
+            this.ctxBtnDetach.Click += new System.EventHandler(this.tmnuDetachTab_Click);
+            // 
+            // ctxBtnClose
+            // 
+            this.ctxBtnClose.Name = "ctxBtnClose";
+            this.ctxBtnClose.Size = new System.Drawing.Size(152, 22);
+            this.ctxBtnClose.Text = "Close";
+            this.ctxBtnClose.Click += new System.EventHandler(this.tbtnCloseTab_Click);
+            // 
+            // ctxBtnMerge
+            // 
+            this.ctxBtnMerge.Name = "ctxBtnMerge";
+            this.ctxBtnMerge.Size = new System.Drawing.Size(152, 22);
+            this.ctxBtnMerge.Text = "Merge with";
             // 
             // TabsConsole
             // 
@@ -154,19 +185,23 @@ namespace Radegast
             this.toolStripContainer1.PerformLayout();
             this.tstTabs.ResumeLayout(false);
             this.tstTabs.PerformLayout();
+            this.ctxTabs.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private System.Windows.Forms.ToolStrip tstTabs;
+        public System.Windows.Forms.ToolStripContainer toolStripContainer1;
+        public System.Windows.Forms.ToolStrip tstTabs;
         private System.Windows.Forms.ToolStripDropDownButton tbtnTabOptions;
         private System.Windows.Forms.ToolStripMenuItem tmnuMergeWith;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem tmnuDetachTab;
         private System.Windows.Forms.ToolStripButton tbtnCloseTab;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ContextMenuStrip ctxTabs;
+        private System.Windows.Forms.ToolStripMenuItem ctxBtnDetach;
+        private System.Windows.Forms.ToolStripMenuItem ctxBtnClose;
+        private System.Windows.Forms.ToolStripMenuItem ctxBtnMerge;
     }
 }

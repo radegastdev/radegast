@@ -15,9 +15,8 @@ namespace Radegast
 {
     public partial class SLImageHandler : UserControl
     {
-        private GridClient client;
-        private RadegastNetcom netcom;
         private RadegastInstance instance;
+        private GridClient client { get { return instance.Client; } }
         private UUID imageID;
         private ImageCache cache;
 
@@ -34,8 +33,6 @@ namespace Radegast
             }
 
             this.instance = instance;
-            this.netcom = this.instance.Netcom;
-            this.client = this.instance.Client;
             this.imageID = image;
             this.cache = this.instance.ImageCache;
             tboxImageId.Text = image.ToString();

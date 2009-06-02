@@ -168,10 +168,16 @@ namespace Radegast
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (debugLogForm != null) {
-                debugLogForm.Dispose();
                 debugLogForm.Close();
                 debugLogForm = null;
             };
+
+            if (worldMap != null)
+            {
+                worldMap.Close();
+                worldMap = null;
+            }
+
             if (netcom.IsLoggedIn) netcom.Logout();
 
             instance.Config.CurrentConfig.MainWindowState = (int)this.WindowState;
