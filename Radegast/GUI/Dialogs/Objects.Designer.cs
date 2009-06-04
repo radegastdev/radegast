@@ -39,26 +39,28 @@ namespace Radegast
             this.lstPrims = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnSource = new System.Windows.Forms.Button();
             this.gbxInworld.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbxInworld
             // 
             this.gbxInworld.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxInworld.Controls.Add(this.btnSource);
             this.gbxInworld.Controls.Add(this.btnTouch);
             this.gbxInworld.Controls.Add(this.btnSitOn);
             this.gbxInworld.Controls.Add(this.btnPointAt);
             this.gbxInworld.Enabled = false;
             this.gbxInworld.Location = new System.Drawing.Point(380, 10);
             this.gbxInworld.Name = "gbxInworld";
-            this.gbxInworld.Size = new System.Drawing.Size(100, 110);
+            this.gbxInworld.Size = new System.Drawing.Size(100, 152);
             this.gbxInworld.TabIndex = 2;
             this.gbxInworld.TabStop = false;
             this.gbxInworld.Text = "In-world";
             // 
             // btnTouch
             // 
-            this.btnTouch.Location = new System.Drawing.Point(6, 78);
+            this.btnTouch.Location = new System.Drawing.Point(6, 107);
             this.btnTouch.Name = "btnTouch";
             this.btnTouch.Size = new System.Drawing.Size(88, 23);
             this.btnTouch.TabIndex = 2;
@@ -68,7 +70,7 @@ namespace Radegast
             // 
             // btnSitOn
             // 
-            this.btnSitOn.Location = new System.Drawing.Point(6, 49);
+            this.btnSitOn.Location = new System.Drawing.Point(6, 78);
             this.btnSitOn.Name = "btnSitOn";
             this.btnSitOn.Size = new System.Drawing.Size(88, 23);
             this.btnSitOn.TabIndex = 1;
@@ -159,6 +161,16 @@ namespace Radegast
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // btnSource
+            // 
+            this.btnSource.Location = new System.Drawing.Point(6, 49);
+            this.btnSource.Name = "btnSource";
+            this.btnSource.Size = new System.Drawing.Size(88, 23);
+            this.btnSource.TabIndex = 3;
+            this.btnSource.Text = "Set source";
+            this.btnSource.UseVisualStyleBackColor = true;
+            this.btnSource.Click += new System.EventHandler(this.btnSource_Click);
+            // 
             // frmObjects
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -195,5 +207,6 @@ namespace Radegast
         private System.Windows.Forms.ListView lstPrims;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnSource;
     }
 }

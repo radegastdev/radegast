@@ -402,13 +402,30 @@ namespace Radegast
                 instance.State.Follow(string.Empty);
         }
 
+        private void ctxPoint_Click(object sender, EventArgs e)
+        {
+            if (!instance.State.IsPointing)
+            {
+                Avatar av = currentAvatar;
+                if (av == null) return;
+                instance.State.SetPointing(av, 5);
+                ctxPoint.Text = "Unpoint";
+            }
+            else
+            {
+                ctxPoint.Text = "Point at";
+                instance.State.UnSetPointing();
+            }
+        }
+
+
         private void lvwObjects_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lvwObjects.SelectedItems.Count == 0)
             {
                 currentAvatar = null;
                 tbtnStartIM.Enabled = tbtnFollow.Enabled = tbtnProfile.Enabled = tbtnTextures.Enabled = tbtnMaster.Enabled = tbtnAttach.Enabled = tbtnAnim.Enabled = false;
-                ctxStartIM.Enabled = ctxFollow.Enabled = ctxProfile.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = false;
+                ctxSource.Enabled = ctxPoint.Enabled = ctxStartIM.Enabled = ctxFollow.Enabled = ctxProfile.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = false;
             }
             else
             {
@@ -420,14 +437,18 @@ namespace Radegast
                 tbtnStartIM.Enabled = tbtnProfile.Enabled = true;
                 tbtnFollow.Enabled = tbtnTextures.Enabled = tbtnMaster.Enabled = tbtnAttach.Enabled = tbtnAnim.Enabled = currentAvatar != null;
 
-                ctxStartIM.Enabled = ctxProfile.Enabled = true;
-                ctxFollow.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = currentAvatar != null;
+                ctxSource.Enabled = ctxStartIM.Enabled = ctxProfile.Enabled = true;
+                ctxPoint.Enabled = ctxFollow.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = currentAvatar != null;
 
                 if ((UUID)lvwObjects.SelectedItems[0].Tag == client.Self.AgentID)
                 {
                     tbtnFollow.Enabled = tbtnStartIM.Enabled = false;
                     ctxFollow.Enabled = ctxStartIM.Enabled = false;
                 }
+            }
+            if (instance.State.IsPointing)
+            {
+                ctxPoint.Enabled = true;
             }
         }
 
@@ -579,6 +600,27 @@ namespace Radegast
 
             e.Effect = DragDropEffects.Copy;
         }
+
+        private void avatarContext_Opening(object sender, CancelEventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count == 0 && !instance.State.IsPointing)
+            {
+                e.Cancel = true;
+            }
+            else if (instance.State.IsPointing)
+            {
+                ctxPoint.Enabled = true;
+                ctxPoint.Text = "Unpoint";
+            }
+        }
+
+        private void ctxSource_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+
+            instance.State.EffectSource = (UUID)lvwObjects.SelectedItems[0].Tag;
+        }
+
     }
 }
 

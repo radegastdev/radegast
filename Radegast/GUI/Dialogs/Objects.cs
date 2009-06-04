@@ -44,6 +44,7 @@ namespace Radegast
             client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
+
             instance.OnAvatarName -= new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
         }
 
@@ -229,15 +230,21 @@ namespace Radegast
         {
             if (btnPointAt.Text == "Point At")
             {
-                instance.State.SetPointing(true, currentPrim.ID);
+                instance.State.SetPointing(currentPrim, 3);
                 btnPointAt.Text = "Unpoint";
             }
             else if (btnPointAt.Text == "Unpoint")
             {
-                instance.State.SetPointing(false, currentPrim.ID);
+                instance.State.UnSetPointing();
                 btnPointAt.Text = "Point At";
             }
         }
+
+        private void btnSource_Click(object sender, EventArgs e)
+        {
+            instance.State.EffectSource = currentPrim.ID;
+        }
+
 
         private void btnSitOn_Click(object sender, EventArgs e)
         {
@@ -310,7 +317,6 @@ namespace Radegast
             {
                 gbxInworld.Enabled = false;
             }
-
         }
     }
 
