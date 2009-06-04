@@ -29,6 +29,7 @@ namespace Radegast
         public event OnAvatarNameCallBack OnAvatarName;
 
         public readonly bool advancedDebugging = false;
+        public readonly bool MonoRuntime;
 
         public RadegastInstance()
         {
@@ -45,6 +46,16 @@ namespace Radegast
                 userDir = System.Environment.CurrentDirectory;
             };
             animCacheDir = Path.Combine(userDir, @"anim_cache");
+
+            // Are we running mono?
+            if (null == Type.GetType("Mono.Runtime"))
+            {
+                MonoRuntime = false;
+            }
+            else
+            {
+                MonoRuntime = true;
+            }
 
             Settings.PIPELINE_REFRESH_INTERVAL = 2000.0f;
 
@@ -95,14 +106,13 @@ namespace Radegast
                 client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
                 client.Groups.OnGroupProfile -= new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-
-                client = null;
             }
 
-            if (netcom != null)
+            if (MonoRuntime)
             {
-                netcom = null;
+                Environment.Exit(0);
             }
+
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
