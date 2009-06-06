@@ -108,6 +108,9 @@
     <Compile Include="Core\Tabs\SleekTab.cs" />
     <Compile Include="Core\Tabs\SleekTabEvents.cs" />
     <Compile Include="Core\Types\CircularList.cs" />
+    <Compile Include="Core\Types\TransparentButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\WebBrowser2.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -226,12 +229,6 @@
     <Compile Include="GUI\Consoles\TabsConsole.Designer.cs">
       <DependentUpon>TabsConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Dialogs\GroupInvitationDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\GroupInvitationDialog.Designer.cs">
-      <DependentUpon>GroupInvitationDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Dialogs\GroupsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -262,12 +259,6 @@
     <Compile Include="GUI\Dialogs\Pay.Designer.cs">
       <DependentUpon>Pay.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Dialogs\PermissionsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\PermissionsDialog.Designer.cs">
-      <DependentUpon>PermissionsDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Dialogs\Preferences.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -279,12 +270,6 @@
     </Compile>
     <Compile Include="GUI\Dialogs\Profile.Designer.cs">
       <DependentUpon>Profile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Dialogs\ScriptDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\ScriptDialog.Designer.cs">
-      <DependentUpon>ScriptDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\Teleport.cs">
       <SubType>Form</SubType>
@@ -319,6 +304,30 @@
     </Compile>
     <Compile Include="GUI\Notifications\FriendshipOfferNotification.Designer.cs">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Notifications\GenericNotification.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Notifications\GenericNotification.Designer.cs">
+      <DependentUpon>GenericNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Notifications\GroupInvitationNotification.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Notifications\GroupInvitationNotification.Designer.cs">
+      <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Notifications\PermissionsNotification.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Notifications\PermissionsNotification.Designer.cs">
+      <DependentUpon>PermissionsNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Notifications\ScriptDialog.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Notifications\ScriptDialog.Designer.cs">
+      <DependentUpon>ScriptDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Notifications\TeleportNotification.cs">
       <SubType>UserControl</SubType>
@@ -408,10 +417,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>MainConsole.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\GroupInvitationDialog.resx">
-      <DependentUpon>GroupInvitationDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\GroupsDialog.resx">
       <DependentUpon>GroupsDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -440,10 +445,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>Pay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\PermissionsDialog.resx">
-      <DependentUpon>PermissionsDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\Preferences.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Preferences.cs</DependentUpon>
@@ -452,16 +453,28 @@
       <SubType>Designer</SubType>
       <DependentUpon>Profile.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\ScriptDialog.resx">
-      <DependentUpon>ScriptDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\Teleport.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Teleport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Notifications\FriendshipOfferNotification.resx">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Notifications\GenericNotification.resx">
+      <DependentUpon>GenericNotification.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Notifications\GroupInvitationNotification.resx">
+      <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Notifications\PermissionsNotification.resx">
+      <DependentUpon>PermissionsNotification.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Notifications\ScriptDialog.resx">
+      <DependentUpon>ScriptDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Notifications\TeleportNotification.resx">

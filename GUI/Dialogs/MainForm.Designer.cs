@@ -75,12 +75,10 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.pnlDialog = new System.Windows.Forms.Panel();
-            this.btnDialogNextControl = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
-            this.pnlDialog.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -447,27 +445,10 @@ namespace Radegast
             this.pnlDialog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlDialog.AutoSize = true;
             this.pnlDialog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(170)))), ((int)(((byte)(255)))));
-            this.pnlDialog.Controls.Add(this.btnDialogNextControl);
             this.pnlDialog.Location = new System.Drawing.Point(540, 0);
             this.pnlDialog.Name = "pnlDialog";
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
-            // 
-            // btnDialogNextControl
-            // 
-            this.btnDialogNextControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDialogNextControl.FlatAppearance.BorderSize = 0;
-            this.btnDialogNextControl.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDialogNextControl.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDialogNextControl.Location = new System.Drawing.Point(165, 128);
-            this.btnDialogNextControl.Margin = new System.Windows.Forms.Padding(0);
-            this.btnDialogNextControl.Name = "btnDialogNextControl";
-            this.btnDialogNextControl.Size = new System.Drawing.Size(33, 23);
-            this.btnDialogNextControl.TabIndex = 0;
-            this.btnDialogNextControl.Text = ">>";
-            this.btnDialogNextControl.UseVisualStyleBackColor = true;
-            this.btnDialogNextControl.Visible = false;
-            this.btnDialogNextControl.Click += new System.EventHandler(this.btnDialogNextControl_Click);
             // 
             // frmMain
             // 
@@ -493,7 +474,6 @@ namespace Radegast
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
-            this.pnlDialog.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -539,7 +519,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem groundSitToolStripMenuItem;
         public System.Windows.Forms.ToolStrip toolStrip1;
         public System.Windows.Forms.ToolStripContainer toolStripContainer1;
-        private System.Windows.Forms.Button btnDialogNextControl;
         public System.Windows.Forms.Panel pnlDialog;
     }
 }

@@ -84,12 +84,12 @@ namespace Radegast
 
         void Self_OnScriptDialog(string message, string objectName, UUID imageID, UUID objectID, string firstName, string lastName, int chatChannel, List<string> buttons)
         {
-            (new ScriptDialog(client, message, objectName, imageID, objectID, firstName, lastName, chatChannel, buttons)).ShowDialog();
+            instance.MainForm.AddNotification(new ntfScriptDialog(instance, message, objectName, imageID, objectID, firstName, lastName, chatChannel, buttons));
         }
 
         void Self_OnScriptQuestion(Simulator simulator, UUID taskID, UUID itemID, string objectName, string objectOwner, ScriptPermission questions)
         {
-            (new PermissionsDialog(client, simulator, taskID, itemID, objectName, objectOwner, questions)).ShowDialog();
+            instance.MainForm.AddNotification(new ntfPermissions(instance, simulator, taskID, itemID, objectName, objectOwner, questions));
         }
 
         private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
@@ -218,12 +218,16 @@ namespace Radegast
 
                     break;
 
+                case InstantMessageDialog.MessageBox:
+                    instance.MainForm.AddNotification(new ntfGeneric(instance, e.IM));
+                    break;
+
                 case InstantMessageDialog.RequestTeleport:
                     instance.MainForm.AddNotification(new ntfTeleport(instance, e.IM));
                     break;
 
                 case InstantMessageDialog.GroupInvitation:
-                    (new GroupInvitationDialog(client, e.IM)).ShowDialog();
+                    instance.MainForm.AddNotification(new ntfGroupInvitation(instance, e.IM));
                     break;
 
                 case InstantMessageDialog.FriendshipOffered:
