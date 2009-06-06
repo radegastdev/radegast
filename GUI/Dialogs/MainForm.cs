@@ -41,6 +41,8 @@ namespace Radegast
             netcom = this.instance.Netcom;
             netcom.NetcomSync = this;
 
+            pnlDialog.Visible = false;
+
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
@@ -475,5 +477,87 @@ namespace Radegast
         {
             client.Self.SitOnGround();
         }
+
+        #region Notifications
+        CircularList<Control> notifications = new CircularList<Control>();
+
+        public Color NotificationBackground
+        {
+            get { return pnlDialog.BackColor; }
+        }
+
+        void ResizeNotificationByControl(Control active)
+        {
+            int Width = active.Size.Width + 6;
+            int Height = notifications.HasNext ? active.Size.Height + 20 : active.Size.Height + 6;
+            pnlDialog.Size = new Size(Width, Height);
+            pnlDialog.Top = 0;
+            pnlDialog.Left = pnlDialog.Parent.ClientSize.Width - Width;
+            btnDialogNextControl.BringToFront();
+        }
+
+        public void AddNotification(Control control)
+        {
+            this.Focus();
+            pnlDialog.Visible = true;
+
+            foreach (Control existing in notifications)
+            {
+                existing.Visible = false;
+            }
+
+            notifications.Add(control);
+            control.Visible = true;
+            control.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            control.Top = 3;
+            control.Left = 3;
+            pnlDialog.Controls.Add(control);
+            ResizeNotificationByControl(control);
+
+            btnDialogNextControl.Visible = notifications.Count > 1;
+        }
+
+        public void RemoveNotification(Control control)
+        {
+            pnlDialog.Controls.Remove(control);
+            notifications.Remove(control);
+            control.Dispose();
+
+            if (notifications.HasNext)
+            {
+                pnlDialog.Visible = true;
+                Control active = notifications.Next;
+                active.Visible = true;
+                ResizeNotificationByControl(active);
+            }
+            else
+            {
+                pnlDialog.Visible = false;
+            }
+
+            btnDialogNextControl.Visible = notifications.Count > 1;
+        }
+
+        private void btnDialogNextControl_Click(object sender, EventArgs e)
+        {
+            foreach (Control existing in notifications)
+            {
+                existing.Visible = false;
+            }
+
+            if (notifications.HasNext)
+            {
+                pnlDialog.Visible = true;
+                Control active = notifications.Next;
+                active.Visible = true;
+                ResizeNotificationByControl(active);
+            }
+            else
+            {
+                pnlDialog.Visible = false;
+            }
+
+        }
+        #endregion Notifications
     }
 }
