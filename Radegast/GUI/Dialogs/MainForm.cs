@@ -30,6 +30,7 @@ namespace Radegast
         private System.Timers.Timer statusTimer;
         private AutoPilot ap;
         private bool AutoPilotActive = false;
+        TransparentButton btnDialogNextControl;
 
         public frmMain(RadegastInstance instance)
         {
@@ -42,6 +43,23 @@ namespace Radegast
             netcom.NetcomSync = this;
 
             pnlDialog.Visible = false;
+            btnDialogNextControl = new TransparentButton();
+            pnlDialog.Controls.Add(btnDialogNextControl);
+
+            btnDialogNextControl.Size = new Size(35, 20);
+            btnDialogNextControl.BackColor = Color.Transparent;
+            btnDialogNextControl.ForeColor = Color.Gold;
+            btnDialogNextControl.FlatAppearance.BorderSize = 0;
+            btnDialogNextControl.FlatStyle = FlatStyle.Flat;
+            btnDialogNextControl.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDialogNextControl.Text = ">>";
+            btnDialogNextControl.Font = new Font(btnDialogNextControl.Font, FontStyle.Bold);
+            btnDialogNextControl.Margin = new Padding(0);
+            btnDialogNextControl.Padding = new Padding(0);
+            btnDialogNextControl.UseVisualStyleBackColor = false;
+            btnDialogNextControl.Top = btnDialogNextControl.Parent.ClientSize.Height - btnDialogNextControl.Size.Height;
+            btnDialogNextControl.Left = btnDialogNextControl.Parent.ClientSize.Width - btnDialogNextControl.Size.Width;
+            btnDialogNextControl.Click += new EventHandler(btnDialogNextControl_Click);
 
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
@@ -489,17 +507,32 @@ namespace Radegast
         void ResizeNotificationByControl(Control active)
         {
             int Width = active.Size.Width + 6;
-            int Height = notifications.HasNext ? active.Size.Height + 20 : active.Size.Height + 6;
+            int Height = notifications.Count > 1 ? active.Size.Height + 3 + btnDialogNextControl.Size.Height : active.Size.Height + 3;
             pnlDialog.Size = new Size(Width, Height);
             pnlDialog.Top = 0;
             pnlDialog.Left = pnlDialog.Parent.ClientSize.Width - Width;
+
+            btnDialogNextControl.Top = btnDialogNextControl.Parent.ClientSize.Height - btnDialogNextControl.Size.Height;
+            btnDialogNextControl.Left = btnDialogNextControl.Parent.ClientSize.Width - btnDialogNextControl.Size.Width;
+
             btnDialogNextControl.BringToFront();
         }
 
         public void AddNotification(Control control)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    AddNotification(control);
+                }
+                ));
+                return;
+            }
+            
             this.Focus();
             pnlDialog.Visible = true;
+            pnlDialog.BringToFront();
 
             foreach (Control existing in notifications)
             {
