@@ -219,7 +219,7 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.RequestTeleport:
-                    HandleTP(e);
+                    instance.MainForm.AddNotification(new ntfTeleport(instance, e.IM));
                     break;
 
                 case InstantMessageDialog.GroupInvitation:
@@ -227,7 +227,7 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.FriendshipOffered:
-                    (new FriendshipOfferDialog(client, e.IM)).ShowDialog();
+                    instance.MainForm.AddNotification(new ntfFriendshipOffer(instance, e.IM));
                     break;
 
                 case InstantMessageDialog.InventoryAccepted:
@@ -301,19 +301,6 @@ namespace Radegast
 
             GroupIMTabWindow imTab = AddGroupIMTab(e);
             tabs[e.IM.IMSessionID.ToString()].Highlight();
-        }
-
-
-        private void HandleTP(InstantMessageEventArgs e)
-        {
-            string fromAgentID = e.IM.FromAgentID.ToString();
-
-            if (TabExists(fromAgentID))
-                tabs[fromAgentID].Close();
-
-            TPTabWindow tpTab = AddTPTab(e);
-            tabs[tpTab.TargetUUID.ToString()].Highlight();
-            tabs[tpTab.TargetUUID.ToString()].Select();
         }
 
         private void InitializeMainTab()
@@ -599,17 +586,6 @@ namespace Radegast
             IMTabWindow imTab = AddIMTab(e.IM.FromAgentID, e.IM.IMSessionID, e.IM.FromAgentName);
             imTab.TextManager.ProcessIM(e);
             return imTab;
-        }
-
-        public TPTabWindow AddTPTab(InstantMessageEventArgs e)
-        {
-            TPTabWindow tpTab = new TPTabWindow(instance, e);
-            tpTab.Dock = DockStyle.Fill;
-
-            toolStripContainer1.ContentPanel.Controls.Add(tpTab);
-            SleekTab tab = AddTab(tpTab.TargetUUID.ToString(), "TP: " + tpTab.TargetName, tpTab);
-
-            return tpTab;
         }
 
         public OutfitTextures AddOTTab(Avatar avatar)

@@ -107,6 +107,7 @@
     <Compile Include="Core\Tabs\ISleekTabControl.cs" />
     <Compile Include="Core\Tabs\SleekTab.cs" />
     <Compile Include="Core\Tabs\SleekTabEvents.cs" />
+    <Compile Include="Core\Types\CircularList.cs" />
     <Compile Include="Core\WebBrowser2.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -225,12 +226,6 @@
     <Compile Include="GUI\Consoles\TabsConsole.Designer.cs">
       <DependentUpon>TabsConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Dialogs\FriendshipOfferDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\FriendshipOfferDialog.Designer.cs">
-      <DependentUpon>FriendshipOfferDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Dialogs\GroupInvitationDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -319,11 +314,17 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Core\RichTextBoxPrinter.cs" />
-    <Compile Include="GUI\Consoles\TPTabWindow.cs">
+    <Compile Include="GUI\Notifications\FriendshipOfferNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\TPTabWindow.Designer.cs">
-      <DependentUpon>TPTabWindow.cs</DependentUpon>
+    <Compile Include="GUI\Notifications\FriendshipOfferNotification.Designer.cs">
+      <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Notifications\TeleportNotification.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Notifications\TeleportNotification.Designer.cs">
+      <DependentUpon>TeleportNotification.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -407,10 +408,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>MainConsole.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\FriendshipOfferDialog.resx">
-      <DependentUpon>FriendshipOfferDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\GroupInvitationDialog.resx">
       <DependentUpon>GroupInvitationDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -463,9 +460,13 @@
       <SubType>Designer</SubType>
       <DependentUpon>Teleport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Consoles\TPTabWindow.resx">
+    <EmbeddedResource Include="GUI\Notifications\FriendshipOfferNotification.resx">
+      <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
       <SubType>Designer</SubType>
-      <DependentUpon>TPTabWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Notifications\TeleportNotification.resx">
+      <DependentUpon>TeleportNotification.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
