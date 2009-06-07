@@ -94,6 +94,15 @@ namespace Radegast
 
         private void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        Network_OnDisconnected(reason, message);
+                    }
+                ));
+                return;
+            }
             this.Close();
         }
 
