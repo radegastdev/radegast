@@ -28,7 +28,9 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmObjects));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
+            this.btnSource = new System.Windows.Forms.Button();
             this.btnTouch = new System.Windows.Forms.Button();
             this.btnSitOn = new System.Windows.Forms.Button();
             this.btnPointAt = new System.Windows.Forms.Button();
@@ -39,7 +41,6 @@ namespace Radegast
             this.lstPrims = new System.Windows.Forms.ListView();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnSource = new System.Windows.Forms.Button();
             this.gbxInworld.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,6 +58,16 @@ namespace Radegast
             this.gbxInworld.TabIndex = 2;
             this.gbxInworld.TabStop = false;
             this.gbxInworld.Text = "In-world";
+            // 
+            // btnSource
+            // 
+            this.btnSource.Location = new System.Drawing.Point(6, 49);
+            this.btnSource.Name = "btnSource";
+            this.btnSource.Size = new System.Drawing.Size(88, 23);
+            this.btnSource.TabIndex = 3;
+            this.btnSource.Text = "Set source";
+            this.btnSource.UseVisualStyleBackColor = true;
+            this.btnSource.Click += new System.EventHandler(this.btnSource_Click);
             // 
             // btnTouch
             // 
@@ -161,16 +172,6 @@ namespace Radegast
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
-            // btnSource
-            // 
-            this.btnSource.Location = new System.Drawing.Point(6, 49);
-            this.btnSource.Name = "btnSource";
-            this.btnSource.Size = new System.Drawing.Size(88, 23);
-            this.btnSource.TabIndex = 3;
-            this.btnSource.Text = "Set source";
-            this.btnSource.UseVisualStyleBackColor = true;
-            this.btnSource.Click += new System.EventHandler(this.btnSource_Click);
-            // 
             // frmObjects
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -184,9 +185,9 @@ namespace Radegast
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.gbxInworld);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmObjects";
-            this.ShowIcon = false;
-            this.Text = "Objects - SLeek";
+            this.Text = "Objects - Radegast";
             this.Load += new System.EventHandler(this.frmObjects_Load);
             this.gbxInworld.ResumeLayout(false);
             this.ResumeLayout(false);
