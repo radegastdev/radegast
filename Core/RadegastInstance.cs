@@ -28,7 +28,7 @@ namespace Radegast
         public delegate void OnAvatarNameCallBack(UUID agentID, string agentName);
         public event OnAvatarNameCallBack OnAvatarName;
 
-        public readonly bool advancedDebugging = true;
+        public readonly bool advancedDebugging = false;
         public readonly bool MonoRuntime;
 
         public RadegastInstance()
