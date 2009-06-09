@@ -30,6 +30,7 @@ namespace Radegast
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmObjects));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
+            this.btnView = new System.Windows.Forms.Button();
             this.btnPay = new System.Windows.Forms.Button();
             this.btnSource = new System.Windows.Forms.Button();
             this.btnTouch = new System.Windows.Forms.Button();
@@ -48,6 +49,7 @@ namespace Radegast
             // gbxInworld
             // 
             this.gbxInworld.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxInworld.Controls.Add(this.btnView);
             this.gbxInworld.Controls.Add(this.btnPay);
             this.gbxInworld.Controls.Add(this.btnSource);
             this.gbxInworld.Controls.Add(this.btnTouch);
@@ -56,10 +58,20 @@ namespace Radegast
             this.gbxInworld.Enabled = false;
             this.gbxInworld.Location = new System.Drawing.Point(380, 10);
             this.gbxInworld.Name = "gbxInworld";
-            this.gbxInworld.Size = new System.Drawing.Size(100, 173);
+            this.gbxInworld.Size = new System.Drawing.Size(100, 199);
             this.gbxInworld.TabIndex = 2;
             this.gbxInworld.TabStop = false;
             this.gbxInworld.Text = "In-world";
+            // 
+            // btnView
+            // 
+            this.btnView.Location = new System.Drawing.Point(6, 165);
+            this.btnView.Name = "btnView";
+            this.btnView.Size = new System.Drawing.Size(88, 23);
+            this.btnView.TabIndex = 5;
+            this.btnView.Text = "3D Wireframe";
+            this.btnView.UseVisualStyleBackColor = true;
+            this.btnView.Click += new System.EventHandler(this.btnView_Click);
             // 
             // btnPay
             // 
@@ -224,5 +236,6 @@ namespace Radegast
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnSource;
         private System.Windows.Forms.Button btnPay;
+        private System.Windows.Forms.Button btnView;
     }
 }
