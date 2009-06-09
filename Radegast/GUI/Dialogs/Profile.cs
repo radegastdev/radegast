@@ -206,7 +206,7 @@ namespace Radegast
 
         private void btnPay_Click(object sender, EventArgs e)
         {
-            (new frmPay(instance, agentID, fullName)).ShowDialog();
+            (new frmPay(instance, agentID, fullName, false)).ShowDialog();
         }
 
         private void textBox1_DragEnter(object sender, DragEventArgs e)

@@ -38,6 +38,7 @@ namespace Radegast
             this.lvwObjects = new System.Windows.Forms.ListView();
             this.avatarContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxStartIM = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxFollow = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxTextures = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,6 +46,7 @@ namespace Radegast
             this.ctxMaster = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnStartIM = new System.Windows.Forms.ToolStripButton();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
@@ -64,7 +66,6 @@ namespace Radegast
             this.btnTurnRight = new System.Windows.Forms.Button();
             this.btnTurnLeft = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -171,6 +172,7 @@ namespace Radegast
             // 
             this.avatarContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ctxProfile,
+            this.ctxPay,
             this.ctxStartIM,
             this.ctxFollow,
             this.ctxTextures,
@@ -180,7 +182,7 @@ namespace Radegast
             this.ctxPoint,
             this.ctxSource});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(157, 224);
+            this.avatarContext.Size = new System.Drawing.Size(157, 246);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
@@ -189,6 +191,14 @@ namespace Radegast
             this.ctxProfile.Size = new System.Drawing.Size(156, 22);
             this.ctxProfile.Text = "Profile";
             this.ctxProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
+            // 
+            // ctxPay
+            // 
+            this.ctxPay.Enabled = false;
+            this.ctxPay.Name = "ctxPay";
+            this.ctxPay.Size = new System.Drawing.Size(156, 22);
+            this.ctxPay.Text = "Pay";
+            this.ctxPay.Click += new System.EventHandler(this.ctxPay_Click);
             // 
             // ctxStartIM
             // 
@@ -238,6 +248,13 @@ namespace Radegast
             this.ctxPoint.Size = new System.Drawing.Size(156, 22);
             this.ctxPoint.Text = "Point at";
             this.ctxPoint.Click += new System.EventHandler(this.ctxPoint_Click);
+            // 
+            // ctxSource
+            // 
+            this.ctxSource.Name = "ctxSource";
+            this.ctxSource.Size = new System.Drawing.Size(156, 22);
+            this.ctxSource.Text = "Set as source";
+            this.ctxSource.Click += new System.EventHandler(this.ctxSource_Click);
             // 
             // toolStrip1
             // 
@@ -446,13 +463,6 @@ namespace Radegast
             this.panel1.Size = new System.Drawing.Size(516, 24);
             this.panel1.TabIndex = 8;
             // 
-            // ctxSource
-            // 
-            this.ctxSource.Name = "ctxSource";
-            this.ctxSource.Size = new System.Drawing.Size(156, 22);
-            this.ctxSource.Text = "Set as source";
-            this.ctxSource.Click += new System.EventHandler(this.ctxSource_Click);
-            // 
             // ChatConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -512,5 +522,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem ctxAnim;
         private System.Windows.Forms.ToolStripMenuItem ctxPoint;
         private System.Windows.Forms.ToolStripMenuItem ctxSource;
+        private System.Windows.Forms.ToolStripMenuItem ctxPay;
     }
 }

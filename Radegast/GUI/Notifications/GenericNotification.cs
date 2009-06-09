@@ -13,16 +13,14 @@ namespace Radegast
     public partial class ntfGeneric : UserControl
     {
         private RadegastInstance instance;
-        private InstantMessage msg;
 
-        public ntfGeneric(RadegastInstance instance, InstantMessage msg)
+        public ntfGeneric(RadegastInstance instance, string msg)
         {
             InitializeComponent();
 
             this.instance = instance;
-            this.msg = msg;
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
-            txtMessage.Text = msg.Message.Replace("\n", "\r\n");
+            txtMessage.Text = msg.Replace("\n", "\r\n");
             btnOk.Focus();
         }
 

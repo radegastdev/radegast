@@ -30,7 +30,7 @@ namespace Radegast
         {
             this.primInfoPanel = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.payAmount = new System.Windows.Forms.TextBox();
+            this.btnPoint = new System.Windows.Forms.Button();
             this.standBtn = new System.Windows.Forms.Button();
             this.sitBitn = new System.Windows.Forms.Button();
             this.touchBtn = new System.Windows.Forms.Button();
@@ -61,7 +61,7 @@ namespace Radegast
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.payAmount);
+            this.groupBox1.Controls.Add(this.btnPoint);
             this.groupBox1.Controls.Add(this.standBtn);
             this.groupBox1.Controls.Add(this.sitBitn);
             this.groupBox1.Controls.Add(this.touchBtn);
@@ -81,13 +81,16 @@ namespace Radegast
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Prim";
             // 
-            // payAmount
+            // btnPoint
             // 
-            this.payAmount.Enabled = false;
-            this.payAmount.Location = new System.Drawing.Point(6, 102);
-            this.payAmount.Name = "payAmount";
-            this.payAmount.Size = new System.Drawing.Size(77, 20);
-            this.payAmount.TabIndex = 7;
+            this.btnPoint.Enabled = false;
+            this.btnPoint.Location = new System.Drawing.Point(89, 100);
+            this.btnPoint.Name = "btnPoint";
+            this.btnPoint.Size = new System.Drawing.Size(75, 23);
+            this.btnPoint.TabIndex = 9;
+            this.btnPoint.Text = "Point at";
+            this.btnPoint.UseVisualStyleBackColor = true;
+            this.btnPoint.Click += new System.EventHandler(this.btnPoint_Click);
             // 
             // standBtn
             // 
@@ -127,7 +130,7 @@ namespace Radegast
             this.texturesBtn.Location = new System.Drawing.Point(170, 100);
             this.texturesBtn.Name = "texturesBtn";
             this.texturesBtn.Size = new System.Drawing.Size(75, 23);
-            this.texturesBtn.TabIndex = 9;
+            this.texturesBtn.TabIndex = 10;
             this.texturesBtn.Text = "Te&xtures";
             this.texturesBtn.UseVisualStyleBackColor = true;
             this.texturesBtn.Click += new System.EventHandler(this.texturesBtn_Click);
@@ -137,7 +140,7 @@ namespace Radegast
             this.loadBtn.Location = new System.Drawing.Point(332, 99);
             this.loadBtn.Name = "loadBtn";
             this.loadBtn.Size = new System.Drawing.Size(75, 23);
-            this.loadBtn.TabIndex = 10;
+            this.loadBtn.TabIndex = 12;
             this.loadBtn.Text = "&Load...";
             this.loadBtn.UseVisualStyleBackColor = true;
             this.loadBtn.Visible = false;
@@ -149,7 +152,7 @@ namespace Radegast
             this.saveBtn.Location = new System.Drawing.Point(251, 99);
             this.saveBtn.Name = "saveBtn";
             this.saveBtn.Size = new System.Drawing.Size(75, 23);
-            this.saveBtn.TabIndex = 10;
+            this.saveBtn.TabIndex = 11;
             this.saveBtn.Text = "&Save...";
             this.saveBtn.UseVisualStyleBackColor = true;
             this.saveBtn.Click += new System.EventHandler(this.saveBtn_Click);
@@ -157,7 +160,7 @@ namespace Radegast
             // payBtn
             // 
             this.payBtn.Enabled = false;
-            this.payBtn.Location = new System.Drawing.Point(89, 100);
+            this.payBtn.Location = new System.Drawing.Point(8, 100);
             this.payBtn.Name = "payBtn";
             this.payBtn.Size = new System.Drawing.Size(75, 23);
             this.payBtn.TabIndex = 8;
@@ -251,7 +254,6 @@ namespace Radegast
 
         private System.Windows.Forms.Panel primInfoPanel;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TextBox payAmount;
         private System.Windows.Forms.Button standBtn;
         private System.Windows.Forms.Button sitBitn;
         private System.Windows.Forms.Button touchBtn;
@@ -266,5 +268,6 @@ namespace Radegast
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel pnlImages;
         private System.Windows.Forms.Button loadBtn;
+        private System.Windows.Forms.Button btnPoint;
     }
 }

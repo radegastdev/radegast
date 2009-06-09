@@ -190,7 +190,7 @@ namespace Radegast
 
         private void btnPay_Click(object sender, EventArgs e)
         {
-            (new frmPay(instance, selectedFriend.UUID, selectedFriend.Name)).ShowDialog();
+            (new frmPay(instance, selectedFriend.UUID, selectedFriend.Name, false)).ShowDialog();
         }
     }
 }

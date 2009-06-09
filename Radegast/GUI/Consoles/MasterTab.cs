@@ -84,12 +84,19 @@ namespace Radegast
                 objInfoBtn.Enabled = false;
             }
             touchBtn.Enabled = true;
-            payBtn.Enabled = true;
-            payAmount.Enabled = true;
+            if ((selectedPrim.Flags & PrimFlags.Money) != 0)
+            {
+                payBtn.Enabled = true;
+            }
+            else
+            {
+                payBtn.Enabled = false;
+            }
             saveBtn.Enabled = true;
             if (selectedPrim.Textures != null) {
                 texturesBtn.Enabled = true;
             }
+            btnPoint.Enabled = true;
         }
 
 
@@ -138,14 +145,7 @@ namespace Radegast
 
         private void payBtn_Click(object sender, EventArgs e)
         {
-            int amount = 0;
-            try {
-                amount = int.Parse(payAmount.Text);
-            } catch {
-            }
-            if (amount > 0) {
-                client.Self.GiveObjectMoney(selectedPrim.ID, amount, selectedPrim.Properties.Name);
-            }
+            (new frmPay(instance, selectedPrim.ID, selectedPrim.Properties.Name, true)).ShowDialog();
         }
 
         private void texturesBtn_Click(object sender, EventArgs e)
@@ -231,6 +231,20 @@ namespace Radegast
 
             t.IsBackground = true;
             t.Start();
+        }
+
+        private void btnPoint_Click(object sender, EventArgs e)
+        {
+            if (instance.State.IsPointing)
+            {
+                instance.State.UnSetPointing();
+                btnPoint.Text = "Point at";
+            }
+            else
+            {
+                instance.State.SetPointing(selectedPrim, 3);
+                btnPoint.Text = "Unpoint";
+            }
         }
 
 

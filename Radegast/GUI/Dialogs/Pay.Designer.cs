@@ -28,107 +28,143 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.nudAmount = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.txtPerson = new System.Windows.Forms.TextBox();
+            this.lblResident = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnPay = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.nudAmount)).BeginInit();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btnFastPay1 = new System.Windows.Forms.Button();
+            this.btnFastPay2 = new System.Windows.Forms.Button();
+            this.btnFastPay3 = new System.Windows.Forms.Button();
+            this.btnFastPay4 = new System.Windows.Forms.Button();
+            this.txtAmount = new System.Windows.Forms.TextBox();
+            this.lblObject = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // label1
+            // lblResident
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(113, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "You are about to pay:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(12, 28);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(20, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "L$";
-            // 
-            // nudAmount
-            // 
-            this.nudAmount.Location = new System.Drawing.Point(38, 25);
-            this.nudAmount.Maximum = new decimal(new int[] {
-            999999999,
-            0,
-            0,
-            0});
-            this.nudAmount.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nudAmount.Name = "nudAmount";
-            this.nudAmount.Size = new System.Drawing.Size(87, 21);
-            this.nudAmount.TabIndex = 3;
-            this.nudAmount.ThousandsSeparator = true;
-            this.nudAmount.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 49);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(86, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "To the recipient:";
-            // 
-            // txtPerson
-            // 
-            this.txtPerson.Location = new System.Drawing.Point(12, 65);
-            this.txtPerson.Name = "txtPerson";
-            this.txtPerson.ReadOnly = true;
-            this.txtPerson.Size = new System.Drawing.Size(220, 21);
-            this.txtPerson.TabIndex = 5;
+            this.lblResident.AutoSize = true;
+            this.lblResident.Location = new System.Drawing.Point(12, 9);
+            this.lblResident.Name = "lblResident";
+            this.lblResident.Size = new System.Drawing.Size(74, 13);
+            this.lblResident.TabIndex = 0;
+            this.lblResident.Text = "Pay resident: ";
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(76, 92);
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(202, 107);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 7;
+            this.btnCancel.Size = new System.Drawing.Size(54, 23);
+            this.btnCancel.TabIndex = 3;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // btnPay
             // 
-            this.btnPay.Location = new System.Drawing.Point(157, 92);
+            this.btnPay.Enabled = false;
+            this.btnPay.Location = new System.Drawing.Point(153, 107);
             this.btnPay.Name = "btnPay";
-            this.btnPay.Size = new System.Drawing.Size(75, 23);
-            this.btnPay.TabIndex = 8;
+            this.btnPay.Size = new System.Drawing.Size(43, 23);
+            this.btnPay.TabIndex = 2;
             this.btnPay.Text = "Pay";
             this.btnPay.UseVisualStyleBackColor = true;
             this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 112);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(44, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Amount";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 57);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(49, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Fast pay";
+            // 
+            // btnFastPay1
+            // 
+            this.btnFastPay1.Location = new System.Drawing.Point(69, 52);
+            this.btnFastPay1.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
+            this.btnFastPay1.Name = "btnFastPay1";
+            this.btnFastPay1.Size = new System.Drawing.Size(92, 23);
+            this.btnFastPay1.TabIndex = 4;
+            this.btnFastPay1.Text = "L$1";
+            this.btnFastPay1.UseVisualStyleBackColor = true;
+            // 
+            // btnFastPay2
+            // 
+            this.btnFastPay2.Location = new System.Drawing.Point(164, 52);
+            this.btnFastPay2.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
+            this.btnFastPay2.Name = "btnFastPay2";
+            this.btnFastPay2.Size = new System.Drawing.Size(92, 23);
+            this.btnFastPay2.TabIndex = 5;
+            this.btnFastPay2.Text = "L$5";
+            this.btnFastPay2.UseVisualStyleBackColor = true;
+            // 
+            // btnFastPay3
+            // 
+            this.btnFastPay3.Location = new System.Drawing.Point(69, 81);
+            this.btnFastPay3.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
+            this.btnFastPay3.Name = "btnFastPay3";
+            this.btnFastPay3.Size = new System.Drawing.Size(92, 23);
+            this.btnFastPay3.TabIndex = 6;
+            this.btnFastPay3.Text = "L$10";
+            this.btnFastPay3.UseVisualStyleBackColor = true;
+            // 
+            // btnFastPay4
+            // 
+            this.btnFastPay4.Location = new System.Drawing.Point(164, 81);
+            this.btnFastPay4.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
+            this.btnFastPay4.Name = "btnFastPay4";
+            this.btnFastPay4.Size = new System.Drawing.Size(92, 23);
+            this.btnFastPay4.TabIndex = 7;
+            this.btnFastPay4.Text = "L$20";
+            this.btnFastPay4.UseVisualStyleBackColor = true;
+            // 
+            // txtAmount
+            // 
+            this.txtAmount.Location = new System.Drawing.Point(69, 107);
+            this.txtAmount.Name = "txtAmount";
+            this.txtAmount.Size = new System.Drawing.Size(78, 21);
+            this.txtAmount.TabIndex = 1;
+            this.txtAmount.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtAmount_KeyPress);
+            // 
+            // lblObject
+            // 
+            this.lblObject.AutoSize = true;
+            this.lblObject.Location = new System.Drawing.Point(12, 30);
+            this.lblObject.Name = "lblObject";
+            this.lblObject.Size = new System.Drawing.Size(58, 13);
+            this.lblObject.TabIndex = 0;
+            this.lblObject.Text = "Via object:";
+            // 
             // frmPay
             // 
+            this.AcceptButton = this.btnPay;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(244, 127);
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(268, 142);
+            this.Controls.Add(this.txtAmount);
+            this.Controls.Add(this.btnFastPay4);
+            this.Controls.Add(this.btnFastPay3);
+            this.Controls.Add(this.btnFastPay2);
+            this.Controls.Add(this.btnFastPay1);
             this.Controls.Add(this.btnPay);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.txtPerson);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.nudAmount);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblObject);
+            this.Controls.Add(this.lblResident);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -137,7 +173,6 @@ namespace Radegast
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Pay";
-            ((System.ComponentModel.ISupportInitialize)(this.nudAmount)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -145,12 +180,16 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown nudAmount;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox txtPerson;
+        private System.Windows.Forms.Label lblResident;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnPay;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnFastPay1;
+        private System.Windows.Forms.Button btnFastPay2;
+        private System.Windows.Forms.Button btnFastPay3;
+        private System.Windows.Forms.Button btnFastPay4;
+        private System.Windows.Forms.TextBox txtAmount;
+        private System.Windows.Forms.Label lblObject;
     }
 }

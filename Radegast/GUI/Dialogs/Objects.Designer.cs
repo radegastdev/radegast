@@ -30,6 +30,7 @@ namespace Radegast
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmObjects));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
+            this.btnPay = new System.Windows.Forms.Button();
             this.btnSource = new System.Windows.Forms.Button();
             this.btnTouch = new System.Windows.Forms.Button();
             this.btnSitOn = new System.Windows.Forms.Button();
@@ -47,6 +48,7 @@ namespace Radegast
             // gbxInworld
             // 
             this.gbxInworld.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxInworld.Controls.Add(this.btnPay);
             this.gbxInworld.Controls.Add(this.btnSource);
             this.gbxInworld.Controls.Add(this.btnTouch);
             this.gbxInworld.Controls.Add(this.btnSitOn);
@@ -54,10 +56,20 @@ namespace Radegast
             this.gbxInworld.Enabled = false;
             this.gbxInworld.Location = new System.Drawing.Point(380, 10);
             this.gbxInworld.Name = "gbxInworld";
-            this.gbxInworld.Size = new System.Drawing.Size(100, 152);
+            this.gbxInworld.Size = new System.Drawing.Size(100, 173);
             this.gbxInworld.TabIndex = 2;
             this.gbxInworld.TabStop = false;
             this.gbxInworld.Text = "In-world";
+            // 
+            // btnPay
+            // 
+            this.btnPay.Location = new System.Drawing.Point(6, 136);
+            this.btnPay.Name = "btnPay";
+            this.btnPay.Size = new System.Drawing.Size(88, 23);
+            this.btnPay.TabIndex = 4;
+            this.btnPay.Text = "Pay";
+            this.btnPay.UseVisualStyleBackColor = true;
+            this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
             // 
             // btnSource
             // 
@@ -132,6 +144,7 @@ namespace Radegast
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnClose.Location = new System.Drawing.Point(380, 391);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(100, 23);
@@ -176,6 +189,7 @@ namespace Radegast
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(492, 426);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.lstPrims);
@@ -209,5 +223,6 @@ namespace Radegast
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnSource;
+        private System.Windows.Forms.Button btnPay;
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using System.Windows.Forms;
 using RadegastNc;
 using OpenMetaverse;
 
@@ -213,9 +212,9 @@ namespace Radegast
             if (string.IsNullOrEmpty(e.Message)) return;
 
             StringBuilder sb = new StringBuilder();
-            if (e.SourceType == ChatSourceType.Object) {
-                sb.Append(e.Position + " ");
-            }
+            // if (e.SourceType == ChatSourceType.Object) {
+            //    sb.Append(e.Position + " ");
+            // }
             if (e.Message.StartsWith("/me "))
             {
                 sb.Append(e.FromName);

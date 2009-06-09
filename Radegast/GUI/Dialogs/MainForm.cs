@@ -65,8 +65,8 @@ namespace Radegast
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
             client.Parcels.OnParcelProperties += new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
+            client.Self.OnMoneyBalanceReplyReceived += new AgentManager.MoneyBalanceReplyCallback(Self_OnMoneyBalanceReplyReceived);
             
             InitializeStatusTimer();
             RefreshWindowTitle();
@@ -80,11 +80,19 @@ namespace Radegast
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
             client.Parcels.OnParcelProperties -= new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
+            client.Self.OnMoneyBalanceReplyReceived -= new AgentManager.MoneyBalanceReplyCallback(Self_OnMoneyBalanceReplyReceived);
 
             this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             this.instance.CleanUp();
+        }
+
+        void Self_OnMoneyBalanceReplyReceived(UUID transactionID, bool transactionSuccess, int balance, int metersCredit, int metersCommitted, string description)
+        {
+            if (!String.IsNullOrEmpty(description))
+            {
+                AddNotification(new ntfGeneric(instance, description));
+            }
         }
 
         //Separate thread
@@ -143,15 +151,6 @@ namespace Radegast
         {
             RefreshWindowTitle();
             RefreshStatusBar();
-        }
-
-        private void netcom_InstantMessageReceived(object sender, InstantMessageEventArgs e)
-        {
-            if (e.IM.Dialog == InstantMessageDialog.StartTyping ||
-                e.IM.Dialog == InstantMessageDialog.StopTyping)
-                return;
-
-            if (!this.Focused) FormFlash.Flash(this);
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
@@ -308,6 +307,11 @@ namespace Radegast
         {
             if (e.Control && e.Alt && e.KeyCode == Keys.D)
                 tbtnDebug.Visible = !tbtnDebug.Visible;
+
+            if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
+            {
+                (new frmObjects(instance)).Show();
+            }
         }
 
         private void tbtnTeleport_Click(object sender, EventArgs e)
@@ -529,8 +533,8 @@ namespace Radegast
                 ));
                 return;
             }
-            
-            this.Focus();
+
+            FormFlash.StartFlash(this);
             pnlDialog.Visible = true;
             pnlDialog.BringToFront();
 
