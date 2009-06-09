@@ -84,6 +84,8 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Tao.OpenGl, Version=2.1.0.12, Culture=neutral, PublicKeyToken=1ca010269a4501ef, processorArchitecture=MSIL" />
+    <Reference Include="Tao.Platform.Windows, Version=1.0.0.5, Culture=neutral, PublicKeyToken=701104b2da67a104, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\AutoPilot.cs" />
@@ -227,6 +229,12 @@
     </Compile>
     <Compile Include="GUI\Consoles\TabsConsole.Designer.cs">
       <DependentUpon>TabsConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\PrimWorkshop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\PrimWorkshop.designer.cs">
+      <DependentUpon>PrimWorkshop.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\GroupsDialog.cs">
       <SubType>Form</SubType>
@@ -415,6 +423,10 @@
     <EmbeddedResource Include="GUI\Consoles\MainConsole.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\PrimWorkshop.resx">
+      <DependentUpon>PrimWorkshop.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\GroupsDialog.resx">
       <DependentUpon>GroupsDialog.cs</DependentUpon>
@@ -682,6 +694,18 @@
     <None Include="aiml\That.aiml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="libopenjpeg-dotnet-2.1.3.0-dotnet-1-i686.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="libopenjpeg-dotnet-2.1.3.0-dotnet-1-x86_64.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="libopenjpeg-dotnet-2.1.3.0-dotnet-1.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="OpenMetaverse.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="openmetaverse_data\blush_alpha.tga">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -860,7 +884,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="radegast.nsi">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\secondlife.bmp" />
     <None Include="Resources\inv_folder_animation.png" />
@@ -931,9 +955,14 @@
     </Content>
     <None Include="assemblies\Nini.dll" />
     <None Include="assemblies\AIMLbot.dll" />
-    <Content Include="openjpeg-dotnet.dll">
+    <None Include="assemblies\Tao.OpenGl.dll" />
+    <None Include="assemblies\Tao.Platform.Windows.dll" />
+    <None Include="openjpeg-dotnet.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
+    <None Include="OpenMetaverse.Rendering.Meshmerizer.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

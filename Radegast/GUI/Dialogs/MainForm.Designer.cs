@@ -75,6 +75,7 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.pnlDialog = new System.Windows.Forms.Panel();
+            this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -92,7 +93,8 @@ namespace Radegast
             this.tbtnStatus,
             this.tbtnControl,
             this.toolStripSeparator2,
-            this.tbnTeleprotMulti});
+            this.tbnTeleprotMulti,
+            this.tbnObjects});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(738, 25);
@@ -450,6 +452,18 @@ namespace Radegast
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
             // 
+            // tbnObjects
+            // 
+            this.tbnObjects.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbnObjects.Enabled = false;
+            this.tbnObjects.Image = ((System.Drawing.Image)(resources.GetObject("tbnObjects.Image")));
+            this.tbnObjects.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbnObjects.Name = "tbnObjects";
+            this.tbnObjects.Size = new System.Drawing.Size(51, 22);
+            this.tbnObjects.Text = "Objects";
+            this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on";
+            this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -520,6 +534,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStrip toolStrip1;
         public System.Windows.Forms.ToolStripContainer toolStripContainer1;
         public System.Windows.Forms.Panel pnlDialog;
+        private System.Windows.Forms.ToolStripButton tbnObjects;
     }
 }
 

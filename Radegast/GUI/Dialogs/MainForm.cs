@@ -157,14 +157,14 @@ namespace Radegast
         {
             if (e.Status != LoginStatus.Success) return;
 
-            tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = true;
+            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = true;
             statusTimer.Start();
             RefreshWindowTitle();
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = false;
+            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = false;
 
             statusTimer.Stop();
 
@@ -176,7 +176,7 @@ namespace Radegast
         {
             if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
 
-            tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = false;
+            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = false;
 
             statusTimer.Stop();
 
@@ -596,5 +596,10 @@ namespace Radegast
 
         }
         #endregion Notifications
+
+        private void tbnObjects_Click(object sender, EventArgs e)
+        {
+            (new frmObjects(instance)).Show();
+        }
     }
 }

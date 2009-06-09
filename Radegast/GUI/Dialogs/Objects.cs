@@ -29,6 +29,11 @@ namespace Radegast
             btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
 
             lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
+ 
+            if (instance.MonoRuntime)
+            {
+                btnView.Visible = false;
+            }
 
             // Callbacks
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
@@ -339,6 +344,23 @@ namespace Radegast
         private void btnPay_Click(object sender, EventArgs e)
         {
             (new frmPay(instance, currentPrim.ID, currentPrim.Properties.Name, true)).ShowDialog();
+        }
+
+        private void btnView_Click(object sender, EventArgs e)
+        {
+            List<Primitive> prims = new List<Primitive>();
+
+            client.Network.CurrentSim.ObjectsPrimitives.ForEach(delegate(KeyValuePair<uint, Primitive> kvp)
+            {
+                if (kvp.Key == currentPrim.LocalID || kvp.Value.ParentID == currentPrim.LocalID)
+                {
+                    prims.Add(kvp.Value);
+                }
+            });
+
+            frmPrimWorkshop pw = new frmPrimWorkshop(instance);
+            pw.loadPrims(prims);
+            pw.Show();
         }
     }
 
