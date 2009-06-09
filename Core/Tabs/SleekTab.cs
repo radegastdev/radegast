@@ -108,14 +108,11 @@ namespace Radegast
 
         public void Highlight()
         {
+            FormFlash.StartFlash(instance.MainForm);
+
             if (selected) return;
 
-            if (detached)
-            {
-                if (!owner.Focused)
-                    FormFlash.Flash(owner);
-            }
-            else
+            if (!detached)
             {
                 button.Image = Properties.Resources.arrow_forward_16;
                 button.ForeColor = Color.Red;
@@ -127,11 +124,9 @@ namespace Radegast
 
         public void Unhighlight()
         {
-            if (detached)
-            {
-                FormFlash.Unflash(owner);
-            }
-            else
+            FormFlash.StopFlash(instance.MainForm);
+
+            if (!detached)
             {
                 button.Image = null;
                 button.ForeColor = Color.FromKnownColor(KnownColor.ControlText);

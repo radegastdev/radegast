@@ -321,11 +321,24 @@ namespace Radegast
             {
                 gbxInworld.Enabled = true;
                 currentPrim = lstPrims.SelectedItems[0].Tag as Primitive;
+                if ((currentPrim.Flags & PrimFlags.Money) != 0)
+                {
+                    btnPay.Enabled = true;
+                }
+                else
+                {
+                    btnPay.Enabled = false;
+                }
             }
             else
             {
                 gbxInworld.Enabled = false;
             }
+        }
+
+        private void btnPay_Click(object sender, EventArgs e)
+        {
+            (new frmPay(instance, currentPrim.ID, currentPrim.Properties.Name, true)).ShowDialog();
         }
     }
 

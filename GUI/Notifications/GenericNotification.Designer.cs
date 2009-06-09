@@ -35,7 +35,7 @@
             // txtMessage
             // 
             this.txtMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtMessage.Location = new System.Drawing.Point(4, 3);
+            this.txtMessage.Location = new System.Drawing.Point(5, 24);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.ReadOnly = true;
@@ -47,7 +47,7 @@
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.btnOk.Location = new System.Drawing.Point(4, 73);
+            this.btnOk.Location = new System.Drawing.Point(5, 94);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 4;
@@ -62,7 +62,7 @@
             this.Controls.Add(this.txtMessage);
             this.Controls.Add(this.btnOk);
             this.Name = "ntfGeneric";
-            this.Size = new System.Drawing.Size(245, 98);
+            this.Size = new System.Drawing.Size(245, 124);
             this.ResumeLayout(false);
             this.PerformLayout();
 

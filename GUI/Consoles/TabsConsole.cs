@@ -219,7 +219,7 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.MessageBox:
-                    instance.MainForm.AddNotification(new ntfGeneric(instance, e.IM));
+                    instance.MainForm.AddNotification(new ntfGeneric(instance, e.IM.Message));
                     break;
 
                 case InstantMessageDialog.RequestTeleport:
