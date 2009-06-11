@@ -518,17 +518,17 @@
     <None Include="Resources\delete_16.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Project>{235DD548-2A5B-4E41-BACC-AF9378CC729F}</Project>
-      <Name>OpenMetaverse</Name>
-    </ProjectReference>
     <ProjectReference Include="..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Project>{A65C6BF0-4D18-4F20-AE4C-92003ED4A7FD}</Project>
+      <Project>{5D27958B-E8F7-4FD3-9CBB-B7A5148F983E}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
     <ProjectReference Include="..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
-      <Project>{6E362F7C-F6B0-4F42-B678-5E7F9D0C22F4}</Project>
+      <Project>{6E88BCFB-E68B-4B6D-BC57-888CB7640217}</Project>
       <Name>OpenMetaverseTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
+      <Project>{1133A791-5AB5-4F2B-80A2-7496237BB61F}</Project>
+      <Name>OpenMetaverse</Name>
     </ProjectReference>
     <ProjectReference Include="..\RadegastNetcom\RadegastNetcom.csproj">
       <Project>{8EE25E10-46BC-486E-87B5-5E49B879E0D1}</Project>

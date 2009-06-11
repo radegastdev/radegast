@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using RadegastNc;
 using OpenMetaverse;
 
@@ -195,42 +196,31 @@ namespace Radegast
             dlg.Filter = "XML file (*.xml)|*.xml";
             DialogResult res = dlg.ShowDialog();
 
-            try {
-                if (res == DialogResult.OK) {
-                    PrimSerializer s = new PrimSerializer(client);
-                    string primsXmls = s.GetSerializedPrims(client.Network.CurrentSim, selectedPrim.LocalID);
-                    System.IO.File.WriteAllText(dlg.FileName, primsXmls);
-                    MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            } catch (Exception excp) {
-                MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (res == DialogResult.OK)
+            {
+                Thread t = new Thread(new ThreadStart(delegate()
+                    {
+                        try
+                        {
+                            PrimSerializer s = new PrimSerializer(client);
+                            string primsXmls = s.GetSerializedPrims(client.Network.CurrentSim, selectedPrim.LocalID);
+                            System.IO.File.WriteAllText(dlg.FileName, primsXmls);
+                            s.CleanUp();
+                            s = null;
+                            MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception excp)
+                        {
+                            MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }));
+                t.IsBackground = true;
+                t.Start();
             }
         }
         private void loadBtn_Click(object sender, EventArgs e)
         {
-            WindowWrapper mainWindow = new WindowWrapper(frmMain.ActiveForm.Handle);
-            System.Windows.Forms.OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Open object file";
-            dlg.Filter = "XML file (*.xml)|*.xml";
-            dlg.Multiselect = false;
-            DialogResult res = dlg.ShowDialog();
-
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(delegate()
-            {
-                try {
-                    if (res == DialogResult.OK) {
-                        PrimDeserializer d = new PrimDeserializer(client);
-                        string primsXmls = System.IO.File.ReadAllText(dlg.FileName);
-                        d.CreateObjectFromXml(primsXmls);
-                        MessageBox.Show(mainWindow, "Successfully imported " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                } catch (Exception excp) {
-                    MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }));
-
-            t.IsBackground = true;
-            t.Start();
+            PrimDeserializer.ImportFromFile(client);
         }
 
         private void btnPoint_Click(object sender, EventArgs e)

@@ -10,7 +10,6 @@ namespace Radegast
     public class PrimSerializer
     {
         List<UUID> Textures = new List<UUID>();
-        //Primitive.ObjectProperties Properties;
         UUID SelectedObject = UUID.Zero;
 
         Dictionary<UUID, Primitive> PrimsWaiting = new Dictionary<UUID, Primitive>();
@@ -24,6 +23,10 @@ namespace Radegast
             Client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
         }
 
+        public void CleanUp()
+        {
+            Client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+        }
 
         public string GetSerializedAttachmentPrims(Simulator sim, uint localID)
         {
@@ -34,7 +37,7 @@ namespace Radegast
                 }
             );
 
-            bool complete = RequestObjectProperties(prims, 500);
+            RequestObjectProperties(prims, 500);
 
             int i = prims.FindIndex(
                 delegate(Primitive prim)
@@ -68,10 +71,7 @@ namespace Radegast
                 }
             );
 
-            if (!RequestObjectProperties(prims, 500))
-            {
-                Logger.Log("Failed to retrieve object properties for " + PrimsWaiting.Count + " prims out of " + prims.Count, Helpers.LogLevel.Warning, Client);
-            }
+            RequestObjectProperties(prims, 500);
 
             return OSDParser.SerializeLLSDXmlString(Helpers.PrimListToOSD(prims));
         }
@@ -84,19 +84,24 @@ namespace Radegast
             lock (PrimsWaiting) {
                 PrimsWaiting.Clear();
 
-                for (int i = 0; i < objects.Count; ++i) {
-                    if (objects[i].Properties == null)
-                    {
-                        localids[i] = objects[i].LocalID;
-                        PrimsWaiting.Add(objects[i].ID, objects[i]);
-                    }
+                for (int i = 0; i < objects.Count; ++i)
+                {
+                    localids[i] = objects[i].LocalID;
+                    PrimsWaiting.Add(objects[i].ID, objects[i]);
                 }
             }
 
             if (localids.Length > 0)
             {
                 Client.Objects.SelectObjects(Client.Network.CurrentSim, localids, false);
-                return AllPropertiesReceived.WaitOne(2000 + msPerRequest * localids.Length, false);
+                bool success = AllPropertiesReceived.WaitOne(2000 + msPerRequest * localids.Length, false);
+                if (PrimsWaiting.Count > 0)
+                {
+                    Logger.Log("Failed to retrieve object properties for " + PrimsWaiting.Count + " prims out of " + localids.Length, Helpers.LogLevel.Warning, Client);
+
+                }
+                Client.Objects.DeselectObjects(Client.Network.CurrentSim, localids);
+                return success;
             }
             return true;
         }

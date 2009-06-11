@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast
@@ -97,15 +98,27 @@ namespace Radegast
             dlg.Filter = "XML file (*.xml)|*.xml";
             DialogResult res = dlg.ShowDialog();
 
-            try {
-                if (res == DialogResult.OK) {
-                    PrimSerializer s = new PrimSerializer(client);
-                    string primsXmls = s.GetSerializedAttachmentPrims(client.Network.CurrentSim, attachment.LocalID);
-                    System.IO.File.WriteAllText(dlg.FileName, primsXmls);
-                    MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            } catch (Exception excp) {
-                MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (res == DialogResult.OK)
+            {
+                Thread t = new Thread(new ThreadStart(delegate()
+                    {
+                        try
+                        {
+                            PrimSerializer s = new PrimSerializer(client);
+                            string primsXmls = s.GetSerializedAttachmentPrims(client.Network.CurrentSim, attachment.LocalID);
+                            System.IO.File.WriteAllText(dlg.FileName, primsXmls);
+                            s.CleanUp();
+                            s = null;
+                            MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception excp)
+                        {
+                            MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                ));
+                t.IsBackground = true;
+                t.Start();
             }
 
         }
