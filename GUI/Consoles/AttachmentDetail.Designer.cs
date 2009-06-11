@@ -34,12 +34,13 @@ namespace Radegast
             this.btnTouch = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.lblPrimCount = new System.Windows.Forms.Label();
+            this.lblAttachmentPoint = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblAttachment
             // 
             this.lblAttachment.AutoSize = true;
-            this.lblAttachment.Location = new System.Drawing.Point(4, 6);
+            this.lblAttachment.Location = new System.Drawing.Point(207, 5);
             this.lblAttachment.Name = "lblAttachment";
             this.lblAttachment.Size = new System.Drawing.Size(75, 13);
             this.lblAttachment.TabIndex = 0;
@@ -49,16 +50,16 @@ namespace Radegast
             // 
             this.boxID.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.boxID.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.boxID.Location = new System.Drawing.Point(85, 6);
+            this.boxID.Location = new System.Drawing.Point(288, 5);
             this.boxID.Name = "boxID";
             this.boxID.ReadOnly = true;
-            this.boxID.Size = new System.Drawing.Size(410, 13);
+            this.boxID.Size = new System.Drawing.Size(227, 13);
             this.boxID.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 25);
+            this.label1.Location = new System.Drawing.Point(3, 25);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(35, 13);
             this.label1.TabIndex = 0;
@@ -98,11 +99,20 @@ namespace Radegast
             // lblPrimCount
             // 
             this.lblPrimCount.AutoSize = true;
-            this.lblPrimCount.Location = new System.Drawing.Point(177, 51);
+            this.lblPrimCount.Location = new System.Drawing.Point(123, 5);
             this.lblPrimCount.Name = "lblPrimCount";
             this.lblPrimCount.Size = new System.Drawing.Size(81, 13);
             this.lblPrimCount.TabIndex = 3;
             this.lblPrimCount.Text = "Prims: loading...";
+            // 
+            // lblAttachmentPoint
+            // 
+            this.lblAttachmentPoint.AutoSize = true;
+            this.lblAttachmentPoint.Location = new System.Drawing.Point(3, 5);
+            this.lblAttachmentPoint.Name = "lblAttachmentPoint";
+            this.lblAttachmentPoint.Size = new System.Drawing.Size(31, 13);
+            this.lblAttachmentPoint.TabIndex = 0;
+            this.lblAttachmentPoint.Text = "Point";
             // 
             // AttachmentDetail
             // 
@@ -115,6 +125,7 @@ namespace Radegast
             this.Controls.Add(this.boxName);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.boxID);
+            this.Controls.Add(this.lblAttachmentPoint);
             this.Controls.Add(this.lblAttachment);
             this.Name = "AttachmentDetail";
             this.Size = new System.Drawing.Size(518, 74);
@@ -133,5 +144,6 @@ namespace Radegast
         private System.Windows.Forms.Button btnTouch;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label lblPrimCount;
+        private System.Windows.Forms.Label lblAttachmentPoint;
     }
 }

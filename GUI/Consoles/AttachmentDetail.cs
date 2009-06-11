@@ -11,18 +11,26 @@ namespace Radegast
 {
     public partial class AttachmentDetail : UserControl
     {
-        private GridClient client;
+        private RadegastInstance instance;
+        private GridClient client { get { return instance.Client; } }
         private Avatar av;
         private Primitive attachment;
 
-        public AttachmentDetail(GridClient iclinet, Avatar iav, Primitive iattachment)
+        public AttachmentDetail(RadegastInstance instance, Avatar av, Primitive attachment)
         {
             InitializeComponent();
             Disposed += new EventHandler(AttachmentDetail_Disposed);
 
-            client = iclinet;
-            av = iav;
-            attachment = iattachment;
+            this.instance = instance;
+            this.av = av;
+            this.attachment = attachment;
+
+            if (!instance.advancedDebugging)
+            {
+                btnSave.Visible = false;
+                boxID.Visible = false;
+                lblAttachment.Visible = false;
+            }
 
             // Callbacks
             client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
@@ -48,16 +56,24 @@ namespace Radegast
                 }));
                 return;
             }
+            lblAttachmentPoint.Text = attachment.PrimData.AttachmentPoint.ToString();
             boxName.Text = attachment.Properties.Name;
+
+            if ((attachment.Flags & PrimFlags.Touch) == 0)
+            {
+                btnTouch.Visible = false;
+            }
+
             List<Primitive> parts = client.Network.CurrentSim.ObjectsPrimitives.FindAll(
                 delegate(Primitive prim)
                 {
                     return (prim.LocalID == attachment.LocalID || prim.ParentID == attachment.LocalID);
                 }
             ); 
-            lblPrimCount.Text = "Prims: " + parts.Count.ToString(); ;
-                
+
+            lblPrimCount.Text = "Prims: " + parts.Count.ToString();
         }
+
         void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties properties)
         {
             if (properties.ObjectID == attachment.ID) {

@@ -11,12 +11,13 @@ namespace Radegast
 {
     public partial class AttachmentTab : UserControl
     {
-        private GridClient client;
+        private RadegastInstance instance;
+        private GridClient client { get { return instance.Client; } }
         private Avatar av;
 
         public AttachmentTab(RadegastInstance instance, Avatar iav)
         {
-            client = instance.Client;
+            this.instance = instance;
             av = iav;
             InitializeComponent();
             AutoScrollPosition = new Point(0, 0);
@@ -39,7 +40,7 @@ namespace Radegast
             int n = 0;
             foreach (Primitive prim in attachments) {
                 if (!added.Contains(prim.ID)) {
-                    AttachmentDetail ad = new AttachmentDetail(client, av, prim);
+                    AttachmentDetail ad = new AttachmentDetail(instance, av, prim);
                     ad.Location = new Point(0, n++ * ad.Height);
                     ad.Dock = DockStyle.Top;
                     Controls.Add(ad);

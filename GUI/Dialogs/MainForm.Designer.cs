@@ -66,6 +66,7 @@ namespace Radegast
             this.nearbyObjectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tlblLoginName = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblMoneyBalance = new System.Windows.Forms.ToolStripStatusLabel();
@@ -75,7 +76,6 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.pnlDialog = new System.Windows.Forms.Panel();
-            this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -350,6 +350,18 @@ namespace Radegast
             this.rebakeTexturesToolStripMenuItem.Text = "Rebake textures";
             this.rebakeTexturesToolStripMenuItem.Click += new System.EventHandler(this.rebakeTexturesToolStripMenuItem_Click);
             // 
+            // tbnObjects
+            // 
+            this.tbnObjects.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbnObjects.Enabled = false;
+            this.tbnObjects.Image = ((System.Drawing.Image)(resources.GetObject("tbnObjects.Image")));
+            this.tbnObjects.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbnObjects.Name = "tbnObjects";
+            this.tbnObjects.Size = new System.Drawing.Size(51, 22);
+            this.tbnObjects.Text = "Objects";
+            this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on";
+            this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -452,18 +464,6 @@ namespace Radegast
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
             // 
-            // tbnObjects
-            // 
-            this.tbnObjects.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbnObjects.Enabled = false;
-            this.tbnObjects.Image = ((System.Drawing.Image)(resources.GetObject("tbnObjects.Image")));
-            this.tbnObjects.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbnObjects.Name = "tbnObjects";
-            this.tbnObjects.Size = new System.Drawing.Size(51, 22);
-            this.tbnObjects.Text = "Objects";
-            this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on";
-            this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
-            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -475,6 +475,7 @@ namespace Radegast
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
+            this.MinimumSize = new System.Drawing.Size(754, 541);
             this.Name = "frmMain";
             this.Text = "Radegast";
             this.Load += new System.EventHandler(this.frmMain_Load);

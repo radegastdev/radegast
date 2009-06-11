@@ -37,11 +37,9 @@ namespace Radegast
             if (!instance.advancedDebugging)
             {
                 tbtnAnim.Visible = false;
-                tbtnAttach.Visible = false;
                 tbtnTextures.Visible = false;
 
                 ctxAnim.Visible = false;
-                ctxAttach.Visible = false;
                 ctxTextures.Visible = false;
             }
 

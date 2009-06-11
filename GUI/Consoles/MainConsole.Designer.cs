@@ -46,7 +46,7 @@ namespace Radegast
             this.lblLoginStatus = new System.Windows.Forms.Label();
             this.proLogin = new System.Windows.Forms.ProgressBar();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.topPanel = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -75,7 +75,7 @@ namespace Radegast
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.ForeColor = System.Drawing.Color.Silver;
+            this.label6.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label6.Location = new System.Drawing.Point(272, 73);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 13);
@@ -107,7 +107,7 @@ namespace Radegast
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.ForeColor = System.Drawing.Color.Silver;
+            this.label5.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label5.Location = new System.Drawing.Point(3, 73);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(26, 13);
@@ -117,7 +117,7 @@ namespace Radegast
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.Silver;
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label1.Location = new System.Drawing.Point(0, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(58, 13);
@@ -134,7 +134,7 @@ namespace Radegast
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.Silver;
+            this.label4.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label4.Location = new System.Drawing.Point(170, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(57, 13);
@@ -151,7 +151,7 @@ namespace Radegast
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.Color.Silver;
+            this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label2.Location = new System.Drawing.Point(340, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 13);
@@ -181,7 +181,7 @@ namespace Radegast
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.Color.Silver;
+            this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label3.Location = new System.Drawing.Point(3, 46);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(47, 13);
@@ -190,10 +190,8 @@ namespace Radegast
             // 
             // btnLogin
             // 
-            this.btnLogin.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.btnLogin.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnLogin.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnLogin.ForeColor = System.Drawing.Color.White;
+            this.btnLogin.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnLogin.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnLogin.Location = new System.Drawing.Point(6, 66);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(116, 23);
@@ -205,8 +203,8 @@ namespace Radegast
             // pnlLoggingIn
             // 
             this.pnlLoggingIn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlLoggingIn.Controls.Add(this.lblLoginStatus);
             this.pnlLoggingIn.Controls.Add(this.proLogin);
+            this.pnlLoggingIn.Controls.Add(this.lblLoginStatus);
             this.pnlLoggingIn.Location = new System.Drawing.Point(128, 3);
             this.pnlLoggingIn.Name = "pnlLoggingIn";
             this.pnlLoggingIn.Size = new System.Drawing.Size(554, 94);
@@ -221,17 +219,16 @@ namespace Radegast
             this.lblLoginStatus.ForeColor = System.Drawing.Color.Silver;
             this.lblLoginStatus.Location = new System.Drawing.Point(3, 0);
             this.lblLoginStatus.Name = "lblLoginStatus";
-            this.lblLoginStatus.Size = new System.Drawing.Size(548, 42);
+            this.lblLoginStatus.Size = new System.Drawing.Size(548, 86);
             this.lblLoginStatus.TabIndex = 12;
             this.lblLoginStatus.Text = "Login status goes here.";
-            this.lblLoginStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblLoginStatus.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // proLogin
             // 
             this.proLogin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.proLogin.BackColor = System.Drawing.Color.Black;
-            this.proLogin.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.proLogin.Location = new System.Drawing.Point(0, 62);
             this.proLogin.MarqueeAnimationSpeed = 50;
             this.proLogin.Name = "proLogin";
@@ -242,36 +239,37 @@ namespace Radegast
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
-            this.panel1.Controls.Add(this.btnLogin);
             this.panel1.Controls.Add(this.pnlLoginPrompt);
+            this.panel1.Controls.Add(this.btnLogin);
             this.panel1.Controls.Add(this.pnlLoggingIn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 369);
+            this.panel1.ForeColor = System.Drawing.Color.Transparent;
+            this.panel1.Location = new System.Drawing.Point(0, 335);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(682, 97);
             this.panel1.TabIndex = 18;
             // 
-            // topPanel
+            // panel2
             // 
-            this.topPanel.BackgroundImage = global::Radegast.Properties.Resources.GridClient;
-            this.topPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.topPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.topPanel.Location = new System.Drawing.Point(0, 0);
-            this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(682, 369);
-            this.topPanel.TabIndex = 20;
+            this.panel2.BackgroundImage = global::Radegast.Properties.Resources.radegast_main_screen2;
+            this.panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(682, 335);
+            this.panel2.TabIndex = 19;
             // 
             // MainConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Controls.Add(this.topPanel);
+            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "MainConsole";
-            this.Size = new System.Drawing.Size(682, 466);
+            this.Size = new System.Drawing.Size(682, 432);
             this.pnlLoginPrompt.ResumeLayout(false);
             this.pnlLoginPrompt.PerformLayout();
             this.pnlLoggingIn.ResumeLayout(false);
@@ -300,6 +298,6 @@ namespace Radegast
         private System.Windows.Forms.TextBox txtCustomLoginUri;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel topPanel;
+        private System.Windows.Forms.Panel panel2;
     }
 }
