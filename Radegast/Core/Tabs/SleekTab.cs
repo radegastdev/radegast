@@ -108,9 +108,8 @@ namespace Radegast
 
         public void Highlight()
         {
-            FormFlash.StartFlash(instance.MainForm);
-
             if (selected) return;
+            FormFlash.StartFlash(instance.MainForm);
 
             if (!detached)
             {

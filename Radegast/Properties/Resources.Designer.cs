@@ -165,13 +165,6 @@ namespace Radegast.Properties {
             }
         }
         
-        public static System.Drawing.Bitmap GridClient {
-            get {
-                object obj = ResourceManager.GetObject("GridClient", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         public static System.Drawing.Bitmap inv_folder_animation {
             get {
                 object obj = ResourceManager.GetObject("inv_folder_animation", resourceCulture);
@@ -510,8 +503,15 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap radegast_main_screen2 {
+            get {
+                object obj = ResourceManager.GetObject("radegast_main_screen2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
-        ///   Looks up a localized string similar to Radegast 1.4.
+        ///   Looks up a localized string similar to Radegast 1.5.
         /// </summary>
         public static string RadegastTitle {
             get {

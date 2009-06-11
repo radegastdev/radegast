@@ -112,9 +112,6 @@
     <Compile Include="Core\Types\TransparentButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\WebBrowser2.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="FormFlash.cs" />
     <Compile Include="GUI\Consoles\AnimDetail.cs">
       <SubType>UserControl</SubType>
@@ -886,7 +883,6 @@
     <None Include="radegast.nsi">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\secondlife.bmp" />
     <None Include="Resources\inv_folder_animation.png" />
     <None Include="Resources\inv_folder_object.png" />
     <None Include="Resources\inv_folder_plain_closed.png" />
@@ -967,6 +963,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="radegast.ico" />
+    <None Include="Resources\radegast-main screen2.jpg" />
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
