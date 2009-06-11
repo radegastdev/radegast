@@ -20,22 +20,30 @@ namespace Radegast
             dlg.Multiselect = false;
             DialogResult res = dlg.ShowDialog();
 
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(delegate()
+            if (res == DialogResult.OK)
             {
-                try {
-                    if (res == DialogResult.OK) {
+
+                System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(delegate()
+                {
+                    try
+                    {
                         PrimDeserializer d = new PrimDeserializer(client);
                         string primsXmls = System.IO.File.ReadAllText(dlg.FileName);
                         d.CreateObjectFromXml(primsXmls);
+                        d.CleanUp();
+                        d = null;
                         MessageBox.Show(mainWindow, "Successfully imported " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                } catch (Exception excp) {
-                    MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }));
+                    catch (Exception excp)
+                    {
+                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }));
 
-            t.IsBackground = true;
-            t.Start();
+                t.IsBackground = true;
+                t.Start();
+
+            }
         }
 
         private enum ImporterState
@@ -70,22 +78,16 @@ namespace Radegast
         List<uint> linkQueue;
         uint rootLocalID;
         ImporterState state = ImporterState.Idle;
-        ObjectManager.NewPrimCallback newPrimCallback = null;
 
         public PrimDeserializer(GridClient c)
         {
             Client = c;
-            if (newPrimCallback == null) {
-                newPrimCallback = new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
-                Client.Objects.OnNewPrim += newPrimCallback;
-            }
+            Client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
         }
 
-        ~PrimDeserializer()
+        public void CleanUp()
         {
-            if (newPrimCallback != null) {
-                Client.Objects.OnNewPrim -= newPrimCallback;
-            }
+            Client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
         }
 
         public bool CreateObjectFromXml(string xml)
