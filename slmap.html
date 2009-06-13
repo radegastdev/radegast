@@ -1268,12 +1268,15 @@ function gotoSLURL(x,y,slMap)
 		{
 			if (slRegionName == null || slRegionName.error)
 			{
-		        window.external.setStatus("No region at " + int_x + ", " + int_y);
+			    if (window.external)
+			    {
+		            window.external.setStatus("No region at " + int_x + ", " + int_y);
+		        }
 				//alert("The co-ordinates of the SLURL (" + int_x + ", " + int_y + ") were not recognised as being in a SecondLife region.");
             }
             else
             {
-                var url = "secondlife://" + encodeURIComponent(slRegionName)
+                var url = "http://slurl.com/secondlife/" + encodeURIComponent(slRegionName)
                         + "/" + local_x + "/" + local_y;
 				var debugInfo = '';
 				if (slDebugMap)
@@ -1319,7 +1322,12 @@ function closeInfoWindow()
 
 function loadmap() {
   mapInstance = new SLMap(document.getElementById('map-container'));
-  focus(1000, 1000, 1);
+  // focus(1000, 1000, 1);
+}
+
+var gReg = "Chub";
+function monosucks() {
+    gotoRegion(gReg);
 }
 
 </script>
