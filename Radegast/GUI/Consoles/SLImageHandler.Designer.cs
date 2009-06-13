@@ -36,8 +36,8 @@ namespace Radegast
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.topPanel = new System.Windows.Forms.Panel();
             this.tboxImageId = new System.Windows.Forms.TextBox();
-            this.lblID = new System.Windows.Forms.Label();
             this.lblDesc = new System.Windows.Forms.Label();
+            this.lblID = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             this.pnlSave.SuspendLayout();
@@ -102,6 +102,7 @@ namespace Radegast
             this.btnSave.TabIndex = 0;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // pictureBox1
             // 
@@ -137,15 +138,6 @@ namespace Radegast
             this.tboxImageId.TabIndex = 1;
             this.tboxImageId.Text = "uuid";
             // 
-            // lblID
-            // 
-            this.lblID.AutoSize = true;
-            this.lblID.Location = new System.Drawing.Point(119, 11);
-            this.lblID.Name = "lblID";
-            this.lblID.Size = new System.Drawing.Size(16, 13);
-            this.lblID.TabIndex = 0;
-            this.lblID.Text = "Id";
-            // 
             // lblDesc
             // 
             this.lblDesc.AutoSize = true;
@@ -154,6 +146,15 @@ namespace Radegast
             this.lblDesc.Size = new System.Drawing.Size(32, 13);
             this.lblDesc.TabIndex = 0;
             this.lblDesc.Text = "Desc";
+            // 
+            // lblID
+            // 
+            this.lblID.AutoSize = true;
+            this.lblID.Location = new System.Drawing.Point(119, 11);
+            this.lblID.Name = "lblID";
+            this.lblID.Size = new System.Drawing.Size(16, 13);
+            this.lblID.TabIndex = 0;
+            this.lblID.Text = "Id";
             // 
             // SLImageHandler
             // 
