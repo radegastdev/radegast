@@ -1,0 +1,7 @@
+TODO
+====
+1. On object list, allow specifing search radius
+2. Object list needs a "Buy" button
+3. Allow sorting nearby object by their name in addition to distance
+4. Allow teleport from parsed SLURLs in chat and IM
+5. Allow activating group "(none)" to remove any name tag

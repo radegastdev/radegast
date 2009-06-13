@@ -527,5 +527,68 @@ namespace Radegast.Properties {
                 return ResourceManager.GetString("SleekAuthor", resourceCulture);
             }
         }
+        
+        public static System.Drawing.Bitmap status_buy_currency {
+            get {
+                object obj = ResourceManager.GetObject("status_buy_currency", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_health {
+            get {
+                object obj = ResourceManager.GetObject("status_health", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_no_build {
+            get {
+                object obj = ResourceManager.GetObject("status_no_build", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_no_fly {
+            get {
+                object obj = ResourceManager.GetObject("status_no_fly", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_no_push {
+            get {
+                object obj = ResourceManager.GetObject("status_no_push", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_no_scripts {
+            get {
+                object obj = ResourceManager.GetObject("status_no_scripts", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_no_voice {
+            get {
+                object obj = ResourceManager.GetObject("status_no_voice", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_script_debug {
+            get {
+                object obj = ResourceManager.GetObject("status_script_debug", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap status_search {
+            get {
+                object obj = ResourceManager.GetObject("status_search", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

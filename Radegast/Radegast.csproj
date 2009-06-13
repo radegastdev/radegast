@@ -964,6 +964,15 @@
     </Content>
     <Content Include="radegast.ico" />
     <None Include="Resources\radegast-main screen2.jpg" />
+    <None Include="Resources\status_no_fly.png" />
+    <None Include="Resources\status_no_push.png" />
+    <None Include="Resources\status_no_scripts.png" />
+    <None Include="Resources\status_no_voice.png" />
+    <None Include="Resources\status_script_debug.png" />
+    <None Include="Resources\status_search.png" />
+    <None Include="Resources\status_buy_currency.png" />
+    <None Include="Resources\status_health.png" />
+    <None Include="Resources\status_no_build.png" />
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

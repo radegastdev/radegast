@@ -559,8 +559,6 @@ namespace Radegast
         {
             lock (sync)
             {
-                if (props.Count == 0) return;
-
                 for (int i = 0; i < 50 && props.Count > 0; i++)
                 {
                     instance.Client.Objects.RequestObjectPropertiesFamily(instance.Client.Network.CurrentSim, props.Dequeue());

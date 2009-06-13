@@ -316,4 +316,31 @@
   <data name="radegast_main_screen2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\radegast-main screen2.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="status_buy_currency" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_buy_currency.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_health" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_health.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_no_build" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_no_build.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_no_fly" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_no_fly.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_no_push" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_no_push.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_no_scripts" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_no_scripts.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_no_voice" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_no_voice.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_script_debug" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_script_debug.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="status_search" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\status_search.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

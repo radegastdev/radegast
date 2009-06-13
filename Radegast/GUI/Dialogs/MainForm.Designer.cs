@@ -34,10 +34,10 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnSLeek = new System.Windows.Forms.ToolStripDropDownButton();
+            this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuImport = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuPrefs = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,12 +70,16 @@ namespace Radegast
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tlblLoginName = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblMoneyBalance = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tlblHealth = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblRegionInfo = new System.Windows.Forms.ToolStripStatusLabel();
+            this.icoHealth = new System.Windows.Forms.ToolStripStatusLabel();
+            this.icoNoFly = new System.Windows.Forms.ToolStripStatusLabel();
+            this.icoNoBuild = new System.Windows.Forms.ToolStripStatusLabel();
+            this.icoNoScript = new System.Windows.Forms.ToolStripStatusLabel();
+            this.icoNoPush = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.pnlDialog = new System.Windows.Forms.Panel();
+            this.icoNoVoice = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -107,6 +111,7 @@ namespace Radegast
             this.tbtnSLeek.AutoToolTip = false;
             this.tbtnSLeek.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnSLeek.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newWindowToolStripMenuItem,
             this.tmnuImport,
             this.toolStripMenuItem3,
             this.tmnuPrefs,
@@ -117,6 +122,13 @@ namespace Radegast
             this.tbtnSLeek.Name = "tbtnSLeek";
             this.tbtnSLeek.Size = new System.Drawing.Size(38, 22);
             this.tbtnSLeek.Text = "&File";
+            // 
+            // newWindowToolStripMenuItem
+            // 
+            this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
+            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.newWindowToolStripMenuItem.Text = "&New window...";
+            this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
             // 
             // tmnuImport
             // 
@@ -367,12 +379,20 @@ namespace Radegast
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tlblLoginName,
             this.tlblMoneyBalance,
-            this.tlblHealth,
             this.tlblRegionInfo,
+            this.icoHealth,
+            this.icoNoFly,
+            this.icoNoBuild,
+            this.icoNoScript,
+            this.icoNoPush,
+            this.icoNoVoice,
             this.tlblParcel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 481);
+            this.statusStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
+            this.statusStrip1.Location = new System.Drawing.Point(0, 480);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(738, 24);
+            this.statusStrip1.ShowItemToolTips = true;
+            this.statusStrip1.Size = new System.Drawing.Size(738, 25);
+            this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 9;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -388,32 +408,82 @@ namespace Radegast
             // 
             this.tlblMoneyBalance.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.tlblMoneyBalance.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.tlblMoneyBalance.Image = global::Radegast.Properties.Resources.status_buy_currency;
             this.tlblMoneyBalance.Name = "tlblMoneyBalance";
-            this.tlblMoneyBalance.Size = new System.Drawing.Size(29, 19);
-            this.tlblMoneyBalance.Text = "L$0";
-            // 
-            // tlblHealth
-            // 
-            this.tlblHealth.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.tlblHealth.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
-            this.tlblHealth.Name = "tlblHealth";
-            this.tlblHealth.Size = new System.Drawing.Size(58, 19);
-            this.tlblHealth.Text = "Health: 0";
+            this.tlblMoneyBalance.Size = new System.Drawing.Size(33, 20);
+            this.tlblMoneyBalance.Text = "0";
             // 
             // tlblRegionInfo
             // 
             this.tlblRegionInfo.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.tlblRegionInfo.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.tlblRegionInfo.Name = "tlblRegionInfo";
-            this.tlblRegionInfo.Size = new System.Drawing.Size(67, 19);
+            this.tlblRegionInfo.Size = new System.Drawing.Size(67, 20);
             this.tlblRegionInfo.Text = "No Region";
+            this.tlblRegionInfo.Click += new System.EventHandler(this.tlblRegionInfo_Click);
+            // 
+            // icoHealth
+            // 
+            this.icoHealth.Image = global::Radegast.Properties.Resources.status_health;
+            this.icoHealth.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.icoHealth.Name = "icoHealth";
+            this.icoHealth.Size = new System.Drawing.Size(67, 19);
+            this.icoHealth.Text = "100%";
+            this.icoHealth.ToolTipText = "Damage enabled on the parcel";
+            this.icoHealth.Visible = false;
+            // 
+            // icoNoFly
+            // 
+            this.icoNoFly.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.icoNoFly.Image = global::Radegast.Properties.Resources.status_no_fly;
+            this.icoNoFly.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.icoNoFly.Name = "icoNoFly";
+            this.icoNoFly.Size = new System.Drawing.Size(32, 19);
+            this.icoNoFly.Text = "Fly";
+            this.icoNoFly.ToolTipText = "Flying not allowed here";
+            this.icoNoFly.Visible = false;
+            // 
+            // icoNoBuild
+            // 
+            this.icoNoBuild.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.icoNoBuild.Image = global::Radegast.Properties.Resources.status_no_build;
+            this.icoNoBuild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.icoNoBuild.Name = "icoNoBuild";
+            this.icoNoBuild.Size = new System.Drawing.Size(32, 19);
+            this.icoNoBuild.Text = "Build";
+            this.icoNoBuild.ToolTipText = "No building or rezzing objects allowed on this parcel";
+            this.icoNoBuild.Visible = false;
+            // 
+            // icoNoScript
+            // 
+            this.icoNoScript.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.icoNoScript.Image = global::Radegast.Properties.Resources.status_no_scripts;
+            this.icoNoScript.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.icoNoScript.Name = "icoNoScript";
+            this.icoNoScript.Size = new System.Drawing.Size(32, 19);
+            this.icoNoScript.Text = "Script";
+            this.icoNoScript.ToolTipText = "Scripts disallowd on the parcel";
+            this.icoNoScript.Visible = false;
+            // 
+            // icoNoPush
+            // 
+            this.icoNoPush.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.icoNoPush.Image = global::Radegast.Properties.Resources.status_no_push;
+            this.icoNoPush.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.icoNoPush.Name = "icoNoPush";
+            this.icoNoPush.Size = new System.Drawing.Size(32, 19);
+            this.icoNoPush.Text = "Push";
+            this.icoNoPush.ToolTipText = "No pushing by scripts allowed";
+            this.icoNoPush.Visible = false;
             // 
             // tlblParcel
             // 
-            this.tlblParcel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.tlblParcel.AutoToolTip = true;
             this.tlblParcel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.tlblParcel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tlblParcel.Margin = new System.Windows.Forms.Padding(0, 3, -5, 2);
             this.tlblParcel.Name = "tlblParcel";
-            this.tlblParcel.Size = new System.Drawing.Size(62, 19);
+            this.tlblParcel.Size = new System.Drawing.Size(58, 19);
             this.tlblParcel.Text = "No Parcel";
             // 
             // toolStripContainer1
@@ -425,7 +495,7 @@ namespace Radegast
             // 
             // toolStripContainer1.ContentPanel
             // 
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(738, 456);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(738, 455);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // toolStripContainer1.LeftToolStripPanel
@@ -437,7 +507,7 @@ namespace Radegast
             // toolStripContainer1.RightToolStripPanel
             // 
             this.toolStripContainer1.RightToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStripContainer1.Size = new System.Drawing.Size(738, 481);
+            this.toolStripContainer1.Size = new System.Drawing.Size(738, 480);
             this.toolStripContainer1.TabIndex = 10;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -445,14 +515,6 @@ namespace Radegast
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
             this.toolStripContainer1.TopToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            // 
-            // toolTip1
-            // 
-            this.toolTip1.AutoPopDelay = 5000;
-            this.toolTip1.InitialDelay = 500;
-            this.toolTip1.ReshowDelay = 100;
-            this.toolTip1.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            this.toolTip1.ToolTipTitle = "Detailed Info";
             // 
             // pnlDialog
             // 
@@ -463,6 +525,17 @@ namespace Radegast
             this.pnlDialog.Name = "pnlDialog";
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
+            // 
+            // icoNoVoice
+            // 
+            this.icoNoVoice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.icoNoVoice.Image = global::Radegast.Properties.Resources.status_no_voice;
+            this.icoNoVoice.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.icoNoVoice.Name = "icoNoVoice";
+            this.icoNoVoice.Size = new System.Drawing.Size(32, 19);
+            this.icoNoVoice.Text = "Push";
+            this.icoNoVoice.ToolTipText = "Voice chat disabled";
+            this.icoNoVoice.Visible = false;
             // 
             // frmMain
             // 
@@ -502,7 +575,6 @@ namespace Radegast
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tlblLoginName;
         private System.Windows.Forms.ToolStripStatusLabel tlblRegionInfo;
-        private System.Windows.Forms.ToolStripStatusLabel tlblHealth;
         private System.Windows.Forms.ToolStripStatusLabel tlblMoneyBalance;
         private System.Windows.Forms.ToolStripDropDownButton tbtnDebug;
         private System.Windows.Forms.ToolStripMenuItem tmnuPrefs;
@@ -516,7 +588,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem tmnuControlAlwaysRun;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
-        private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ToolStripStatusLabel tlblParcel;
         private System.Windows.Forms.ToolStripDropDownButton tbnTeleprotMulti;
         private System.Windows.Forms.ToolStripMenuItem locationToolStripMenuItem;
@@ -536,6 +607,13 @@ namespace Radegast
         public System.Windows.Forms.ToolStripContainer toolStripContainer1;
         public System.Windows.Forms.Panel pnlDialog;
         private System.Windows.Forms.ToolStripButton tbnObjects;
+        private System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel icoNoBuild;
+        private System.Windows.Forms.ToolStripStatusLabel icoHealth;
+        private System.Windows.Forms.ToolStripStatusLabel icoNoFly;
+        private System.Windows.Forms.ToolStripStatusLabel icoNoScript;
+        private System.Windows.Forms.ToolStripStatusLabel icoNoPush;
+        private System.Windows.Forms.ToolStripStatusLabel icoNoVoice;
     }
 }
 
