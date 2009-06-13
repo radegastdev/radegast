@@ -147,10 +147,7 @@ namespace Radegast
 
         private void rtbIMText_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            if (e.LinkText.StartsWith("http://") || e.LinkText.StartsWith("ftp://"))
-                System.Diagnostics.Process.Start(e.LinkText);
-            else
-                System.Diagnostics.Process.Start("http://" + e.LinkText);
+            instance.MainForm.processLink(e.LinkText);
         }
 
         private void tbtnProfile_Click(object sender, EventArgs e)

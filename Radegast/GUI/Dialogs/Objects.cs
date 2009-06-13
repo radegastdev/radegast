@@ -91,6 +91,16 @@ namespace Radegast
 
         void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    Network_OnCurrentSimChanged(PreviousSimulator);
+                }
+                ));
+                return;
+            }
+
             btnRefresh_Click(null, null);
         }
 
@@ -258,6 +268,7 @@ namespace Radegast
 
         private void Objects_OnObjectKilled(Simulator simulator, uint objectID)
         {
+            return;
             if (simulator.Handle != client.Network.CurrentSim.Handle) return;
 
             if (InvokeRequired)

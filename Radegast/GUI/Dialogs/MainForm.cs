@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Timers;
 using System.Windows.Forms;
 using System.Resources;
@@ -17,21 +18,29 @@ namespace Radegast
 {
     public partial class frmMain : Form
     {
+        #region Public members
         public static ImageList ResourceImages = new ImageList();
         public static List<string> ImageNames = new List<string>();
+        public frmMap worldMap;
+        public TabsConsole TabConsole
+        {
+            get { return tabsConsole; }
+        }
+        #endregion
 
+        #region Private members
         private RadegastInstance instance;
         private RadegastNetcom netcom;
         private GridClient client;
-
-        public TabsConsole tabsConsole;
-        public frmMap worldMap;
+        private TabsConsole tabsConsole;
         private frmDebugLog debugLogForm;
         private System.Timers.Timer statusTimer;
         private AutoPilot ap;
         private bool AutoPilotActive = false;
-        TransparentButton btnDialogNextControl;
+        private TransparentButton btnDialogNextControl;
+        #endregion
 
+        #region Constructor and disposal
         public frmMain(RadegastInstance instance)
         {
             InitializeComponent();
@@ -61,6 +70,11 @@ namespace Radegast
             btnDialogNextControl.Left = btnDialogNextControl.Parent.ClientSize.Width - btnDialogNextControl.Size.Width;
             btnDialogNextControl.Click += new EventHandler(btnDialogNextControl_Click);
 
+            if (instance.MonoRuntime)
+            {
+                statusStrip1.LayoutStyle = ToolStripLayoutStyle.Table;
+            }
+
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
@@ -86,64 +100,15 @@ namespace Radegast
             this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             this.instance.CleanUp();
         }
+        #endregion
 
+        #region Event handlers
         void Self_OnMoneyBalanceReplyReceived(UUID transactionID, bool transactionSuccess, int balance, int metersCredit, int metersCommitted, string description)
         {
             if (!String.IsNullOrEmpty(description))
             {
                 AddNotification(new ntfGeneric(instance, description));
             }
-        }
-
-        //Separate thread
-        private void Parcels_OnParcelProperties(Simulator simulator, Parcel parcel, ParcelResult result, int selectedPrims,
-            int sequenceID, bool snapSelection)
-        {
-            if (result != ParcelResult.Single) return;
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Parcels_OnParcelProperties(simulator, parcel, result, selectedPrims, sequenceID, snapSelection);
-                    }
-                ));
-                return;
-            }
-
-            tlblParcel.Text = parcel.Name;
-            tlblParcel.ToolTipText = parcel.Desc;
-
-            if ((parcel.Flags & ParcelFlags.AllowFly) != ParcelFlags.AllowFly)
-                icoNoFly.Visible = true;
-            else
-                icoNoFly.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.CreateObjects) != ParcelFlags.CreateObjects)
-                icoNoBuild.Visible = true;
-            else
-                icoNoBuild.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.AllowOtherScripts) != ParcelFlags.AllowOtherScripts)
-                icoNoScript.Visible = true;
-            else
-                icoNoScript.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.RestrictPushObject) == ParcelFlags.RestrictPushObject)
-                icoNoPush.Visible = true;
-            else
-                icoNoPush.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.AllowDamage) == ParcelFlags.AllowDamage)
-                icoHealth.Visible = true;
-            else
-                icoHealth.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.AllowVoiceChat) != ParcelFlags.AllowVoiceChat)
-                icoNoVoice.Visible = true;
-            else
-                icoNoVoice.Visible = false;
-
-
         }
 
         private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
@@ -167,12 +132,6 @@ namespace Radegast
         {
             InitializeTabsConsole();
             InitializeDebugLogForm();
-        }
-
-        private void statusTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            RefreshWindowTitle();
-            RefreshStatusBar();
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
@@ -222,6 +181,57 @@ namespace Radegast
             if (netcom.IsLoggedIn) netcom.Logout();
 
             instance.Config.CurrentConfig.MainWindowState = (int)this.WindowState;
+        }
+        #endregion
+
+        # region Update status
+
+        private void Parcels_OnParcelProperties(Simulator simulator, Parcel parcel, ParcelResult result, int selectedPrims,
+    int sequenceID, bool snapSelection)
+        {
+            if (result != ParcelResult.Single) return;
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    Parcels_OnParcelProperties(simulator, parcel, result, selectedPrims, sequenceID, snapSelection);
+                }
+                ));
+                return;
+            }
+
+            tlblParcel.Text = parcel.Name;
+            tlblParcel.ToolTipText = parcel.Desc;
+
+            if ((parcel.Flags & ParcelFlags.AllowFly) != ParcelFlags.AllowFly)
+                icoNoFly.Visible = true;
+            else
+                icoNoFly.Visible = false;
+
+            if ((parcel.Flags & ParcelFlags.CreateObjects) != ParcelFlags.CreateObjects)
+                icoNoBuild.Visible = true;
+            else
+                icoNoBuild.Visible = false;
+
+            if ((parcel.Flags & ParcelFlags.AllowOtherScripts) != ParcelFlags.AllowOtherScripts)
+                icoNoScript.Visible = true;
+            else
+                icoNoScript.Visible = false;
+
+            if ((parcel.Flags & ParcelFlags.RestrictPushObject) == ParcelFlags.RestrictPushObject)
+                icoNoPush.Visible = true;
+            else
+                icoNoPush.Visible = false;
+
+            if ((parcel.Flags & ParcelFlags.AllowDamage) == ParcelFlags.AllowDamage)
+                icoHealth.Visible = true;
+            else
+                icoHealth.Visible = false;
+
+            if ((parcel.Flags & ParcelFlags.AllowVoiceChat) != ParcelFlags.AllowVoiceChat)
+                icoNoVoice.Visible = true;
+            else
+                icoNoVoice.Visible = false;
         }
 
         private void RefreshStatusBar()
@@ -296,6 +306,14 @@ namespace Radegast
             statusTimer.Elapsed += new ElapsedEventHandler(statusTimer_Elapsed);
         }
 
+        private void statusTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            RefreshWindowTitle();
+            RefreshStatusBar();
+        }
+        #endregion
+
+        #region Initialization, configuration, and key shortcuts
         private void InitializeTabsConsole()
         {
             tabsConsole = new TabsConsole(instance);
@@ -337,11 +355,42 @@ namespace Radegast
                 }
             }
         }
+        #endregion
 
-        public TabsConsole TabConsole
+        #region Public methods
+        public void processLink(string link)
         {
-            get { return tabsConsole; }
+            if (!(link.StartsWith("http://") || link.StartsWith("ftp://")))
+            {
+                link = "http://" + link;
+            }
+
+            Regex r = new Regex(@"^(http://slurl.com/secondlife/|secondlife://)([^/]+)/(\d+)/(\d+)(/(\d+))?");
+            Match m = r.Match(link);
+
+            if (m.Groups.Count > 3)
+            {
+                string region = m.Groups[2].Value;
+                int x = int.Parse(m.Groups[3].Value);
+                int y = int.Parse(m.Groups[4].Value);
+                int z = 0;
+
+                if (m.Groups.Count > 5 && m.Groups[6].Value != String.Empty)
+                {
+                    z = int.Parse(m.Groups[6].Value);
+                }
+            
+                worldMap.Show();
+                worldMap.Focus();
+                worldMap.displayLocation(region, x, y, z);
+            }
+            else
+            {
+                System.Diagnostics.Process.Start(link);
+            }
+
         }
+        #endregion
 
         #region Notifications
         CircularList<Control> notifications = new CircularList<Control>();

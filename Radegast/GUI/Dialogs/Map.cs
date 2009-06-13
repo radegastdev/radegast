@@ -31,15 +31,28 @@ namespace Radegast
             Disposed += new EventHandler(frmMap_Disposed);
 
             instance = i;
-            map = new WebBrowser();
-            map.Dock = DockStyle.Fill;
-            map.AllowWebBrowserDrop = false;
-            map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/slmap.html");
-            map.WebBrowserShortcutsEnabled = false;
-            // map.ScriptErrorsSuppressed = true;
-            map.ObjectForScripting = this;
-            map.AllowNavigation = false;
-            pnlMap.Controls.Add(map);
+            try
+            {
+                map = new WebBrowser();
+                map.Dock = DockStyle.Fill;
+                map.AllowWebBrowserDrop = false;
+                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/slmap.html");
+                map.WebBrowserShortcutsEnabled = false;
+                // map.ScriptErrorsSuppressed = true;
+                map.ObjectForScripting = this;
+                map.AllowNavigation = false;
+                if (instance.MonoRuntime)
+                {
+                    map.Navigating += new WebBrowserNavigatingEventHandler(map_Navigating);
+                }
+                pnlMap.Controls.Add(map);
+            }
+            catch (Exception e)
+            {
+                Logger.Log(e.Message, Helpers.LogLevel.Warning, client, e);
+                pnlMap.Visible = false;
+                map = null;
+            }
             pnlSearch.Visible = Active;
 
             // Register callbacks
@@ -47,6 +60,7 @@ namespace Radegast
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
             client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
+            client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
         }
 
         void frmMap_Disposed(object sender, EventArgs e)
@@ -56,6 +70,7 @@ namespace Radegast
             client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
             client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
+            client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
         }
 
         #region PublicMethods
@@ -63,9 +78,50 @@ namespace Radegast
         {
             btnGoHome_Click(this, new EventArgs());
         }
+
+        public void doNavigate(string region, string x, string y)
+        {
+            displayLocation(region, int.Parse(x), int.Parse(y), 0);
+        }
+
+        public void displayLocation(string region, int x, int y, int z)
+        {
+            txtRegion.Text = region;
+            nudX.Value = x;
+            nudY.Value = y;
+            nudZ.Value = z;
+            gotoRegion(txtRegion.Text);
+            btnTeleport.Enabled = true;
+            AcceptButton = btnTeleport;
+            btnTeleport.Focus();
+            lblStatus.Text = "Ready for " + region;
+        }
+
+        public void setStatus(string msg)
+        {
+            lblStatus.Text = msg;
+            btnTeleport.Enabled = false;
+        }
+
         #endregion
 
         #region NetworkEvents
+
+        void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        Network_OnCurrentSimChanged(PreviousSimulator);
+                    }
+                ));
+                return;
+            }
+
+            gotoRegion(client.Network.CurrentSim.Name);
+            lblStatus.Text = "Now in " + client.Network.CurrentSim.Name;
+        }
 
         void Self_OnTeleport(string message, TeleportStatus status, TeleportFlags flags)
         {
@@ -99,8 +155,7 @@ namespace Radegast
                 
                 case TeleportStatus.Finished:
                     InTeleport = false;
-                    lblStatus.Text = "Success, now in " + client.Network.CurrentSim.Name;
-                    gotoRegion(client.Network.CurrentSim.Name);
+                    lblStatus.Text = "Success";
                     break;
 
                 default:
@@ -161,6 +216,27 @@ namespace Radegast
         }
         #endregion NetworkEvents
 
+        void map_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            e.Cancel = true;
+            Regex r = new Regex(@"^(http://slurl.com/secondlife/|secondlife://)([^/]+)/(\d+)/(\d+)(/(\d+))?");
+            Match m = r.Match(e.Url.ToString());
+
+            if (m.Groups.Count > 3)
+            {
+                txtRegion.Text = m.Groups[2].Value;
+                nudX.Value = int.Parse(m.Groups[3].Value);
+                nudY.Value = int.Parse(m.Groups[4].Value);
+                nudZ.Value = 0;
+
+                if (m.Groups.Count > 5 && m.Groups[6].Value != String.Empty)
+                {
+                    nudZ.Value = int.Parse(m.Groups[6].Value);
+                }
+                BeginInvoke(new MethodInvoker(DoTeleport));
+            }
+        }
+
         void DoSearch()
         {
             if (!Active || txtRegion.Text.Length < 2) return;
@@ -172,6 +248,11 @@ namespace Radegast
         void DoTeleport()
         {
             if (InTeleport || !Active) return;
+
+            if (instance.MonoRuntime)
+            {
+                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/slmap.html");
+            }
 
             Thread t = new Thread(new ThreadStart(delegate()
                 {
@@ -189,43 +270,17 @@ namespace Radegast
         }
 
         #region JavascriptHooks
-        void focusMap(int regX, int regY, int zoom)
-        {
-            if (!Visible) return;
-
-            object[] parms = new object[3];
-            parms[0] = regX;
-            parms[1] = regY;
-            parms[2] = zoom;
-
-            map.Document.InvokeScript("focus", parms);
-        }
-
         void gotoRegion(string regionName)
         {
-            if (!Visible) return;
-
-            object[] param = new object[1];
-            param[0] = regionName;
-
-            map.Document.InvokeScript("gotoRegion", param);
-        }
-
-        public void doNavigate(string region, string strx, string stry)
-        {
-            txtRegion.Text = region;
-            nudX.Value = int.Parse(strx);
-            nudY.Value = int.Parse(stry);
-            nudZ.Value = 0;
-            btnTeleport.Enabled = true;
-            btnTeleport.Focus();
-            lblStatus.Text = "Ready for " + region;
-        }
-
-        public void setStatus(string msg)
-        {
-            lblStatus.Text = msg;
-            btnTeleport.Enabled = false;
+            if (!Visible || map == null) return;
+            if (instance.MonoRuntime)
+            {
+                map.Document.InvokeScript(string.Format("gReg = \"{0}\"; monosucks", regionName));
+            }
+            else
+            {
+                map.Document.InvokeScript("gotoRegion", new object[] { regionName });
+            }
         }
 
         #endregion
@@ -315,7 +370,12 @@ namespace Radegast
             t.IsBackground = true;
             t.Start();
         }
-        #endregion GUIEvents
 
+        private void txtRegion_Enter(object sender, EventArgs e)
+        {
+            AcceptButton = btnSearch;
+        }
+
+        #endregion GUIEvents
     }
 }

@@ -238,6 +238,7 @@
             this.txtRegion.Size = new System.Drawing.Size(124, 20);
             this.txtRegion.TabIndex = 0;
             this.txtRegion.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtRegion_KeyDown);
+            this.txtRegion.Enter += new System.EventHandler(this.txtRegion_Enter);
             // 
             // pnlMap
             // 
