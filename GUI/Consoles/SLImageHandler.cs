@@ -35,6 +35,7 @@ namespace Radegast
             this.instance = instance;
             this.imageID = image;
             this.cache = this.instance.ImageCache;
+            lblDesc.Text = label;
             tboxImageId.Text = image.ToString();
 
             // Callbacks
