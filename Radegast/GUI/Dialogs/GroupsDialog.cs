@@ -37,20 +37,28 @@ namespace Radegast
         public void UpdateDisplay()
         {
             grpsCombo.Items.Clear();
-            grpsCombo.Text = "";
-            int i = 0;
+            Group none = new Group();
+            none.Name = "(none)";
+            none.ID = UUID.Zero;
+            grpsCombo.Items.Add(none);
+
             foreach (Group g in groups.Values) {
-                grpsCombo.Items.Add(g.Name);
-                if (g.ID == client.Self.ActiveGroup) {
-                    grpsCombo.SelectedIndex = i;
+                grpsCombo.Items.Add(g);
+            }
+
+            foreach (Group g in grpsCombo.Items)
+            {
+                if (g.ID == client.Self.ActiveGroup)
+                {
+                    grpsCombo.SelectedItem = g;
+                    break;
                 }
-                i++;
             }
         }
 
-        void Groups_OnCurrentGroups(Dictionary<UUID, Group> igroups)
+        void Groups_OnCurrentGroups(Dictionary<UUID, Group> groups)
         {
-            groups = igroups;
+            this.groups = groups;
             this.Invoke(new MethodInvoker(UpdateDisplay));
         }
 
@@ -61,67 +69,44 @@ namespace Radegast
 
         private void activateBtn_Click(object sender, EventArgs e)
         {
-            if (groups == null) {
-                return;
-            }
-
-            int i = 0;
-
-            foreach (Group g in groups.Values) {
-                if (grpsCombo.Text == g.Name) {
-                    client.Groups.ActivateGroup(g.ID);
-                    break;
-                }
-                i++;
-            }
+            if (grpsCombo.SelectedItem == null) return;
+            Group g = (Group)grpsCombo.SelectedItem;
+            client.Groups.ActivateGroup(g.ID);
         }
 
         private void leaveBtn_Click(object sender, EventArgs e)
         {
-            if (groups == null) {
-                return;
-            }
+            if (grpsCombo.SelectedItem == null) return;
+            Group g = (Group)grpsCombo.SelectedItem;
+            if (g.ID == UUID.Zero) return;
 
-            int i = 0;
-
-            foreach (Group g in groups.Values) {
-                if (grpsCombo.Text == g.Name) {
-                    client.Groups.LeaveGroup(g.ID);
-                    groups.Remove(g.ID);
-                    UpdateDisplay();
-                    break;
-                }
-                i++;
-            }
+            client.Groups.LeaveGroup(g.ID);
+            groups.Remove(g.ID);
+            grpsCombo.Items.Remove(g);
         }
 
         private void imBtn_Click(object sender, EventArgs e)
         {
-            if (groups == null) {
-                return;
+            if (grpsCombo.SelectedItem == null) return;
+            Group g = (Group)grpsCombo.SelectedItem;
+            if (g.ID == UUID.Zero) return;
+
+            if (!instance.TabConsole.TabExists(g.ID.ToString()))
+            {
+                instance.TabConsole.AddGroupIMTab(g.ID, g.Name);
+                instance.TabConsole.tabs[g.ID.ToString()].Highlight();
+                instance.TabConsole.tabs[g.ID.ToString()].Select();
+
             }
-
-            int i = 0;
-
-            foreach (Group g in groups.Values) {
-                if (grpsCombo.Text == g.Name) {
-                    if (!instance.TabConsole.TabExists(g.ID.ToString()))
-                    {
-                        instance.TabConsole.AddGroupIMTab(g.ID, g.Name);
-                        instance.TabConsole.tabs[g.ID.ToString()].Highlight();
-                        instance.TabConsole.tabs[g.ID.ToString()].Select();
-
-                    } else {
-                        SleekTab t = instance.TabConsole.tabs[g.ID.ToString()];
-                        if (!t.Selected) {
-                            t.Highlight();
-                        }
-                    }
-                    break;
+            else
+            {
+                SleekTab t = instance.TabConsole.tabs[g.ID.ToString()];
+                if (!t.Selected)
+                {
+                    t.Highlight();
                 }
-                i++;
             }
-
+            Close();
         }
     }
 }

@@ -36,7 +36,8 @@ namespace Radegast
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.topPanel = new System.Windows.Forms.Panel();
             this.tboxImageId = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblID = new System.Windows.Forms.Label();
+            this.lblDesc = new System.Windows.Forms.Label();
             this.bottomPanel.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             this.pnlSave.SuspendLayout();
@@ -106,9 +107,9 @@ namespace Radegast
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Enabled = false;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 32);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(400, 351);
+            this.pictureBox1.Size = new System.Drawing.Size(400, 319);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
@@ -117,7 +118,8 @@ namespace Radegast
             // topPanel
             // 
             this.topPanel.Controls.Add(this.tboxImageId);
-            this.topPanel.Controls.Add(this.label1);
+            this.topPanel.Controls.Add(this.lblDesc);
+            this.topPanel.Controls.Add(this.lblID);
             this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.topPanel.Location = new System.Drawing.Point(0, 0);
             this.topPanel.Name = "topPanel";
@@ -128,28 +130,37 @@ namespace Radegast
             // 
             this.tboxImageId.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tboxImageId.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tboxImageId.Location = new System.Drawing.Point(25, 11);
+            this.tboxImageId.Location = new System.Drawing.Point(141, 11);
             this.tboxImageId.Name = "tboxImageId";
             this.tboxImageId.ReadOnly = true;
-            this.tboxImageId.Size = new System.Drawing.Size(353, 13);
+            this.tboxImageId.Size = new System.Drawing.Size(237, 13);
             this.tboxImageId.TabIndex = 1;
             this.tboxImageId.Text = "uuid";
             // 
-            // label1
+            // lblID
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 11);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(16, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Id";
+            this.lblID.AutoSize = true;
+            this.lblID.Location = new System.Drawing.Point(119, 11);
+            this.lblID.Name = "lblID";
+            this.lblID.Size = new System.Drawing.Size(16, 13);
+            this.lblID.TabIndex = 0;
+            this.lblID.Text = "Id";
+            // 
+            // lblDesc
+            // 
+            this.lblDesc.AutoSize = true;
+            this.lblDesc.Location = new System.Drawing.Point(3, 11);
+            this.lblDesc.Name = "lblDesc";
+            this.lblDesc.Size = new System.Drawing.Size(32, 13);
+            this.lblDesc.TabIndex = 0;
+            this.lblDesc.Text = "Desc";
             // 
             // SLImageHandler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.topPanel);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.topPanel);
             this.Controls.Add(this.bottomPanel);
             this.Name = "SLImageHandler";
             this.Size = new System.Drawing.Size(400, 373);
@@ -175,7 +186,8 @@ namespace Radegast
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.TextBox tboxImageId;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblID;
+        private System.Windows.Forms.Label lblDesc;
 
     }
 }

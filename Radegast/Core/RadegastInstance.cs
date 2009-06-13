@@ -75,7 +75,7 @@ namespace Radegast
     
             client.Throttle.Texture = 2446000.0f;
             client.Throttle.Asset = 2446000.0f;
-            client.Settings.THROTTLE_OUTGOING_PACKETS = false;
+            client.Settings.THROTTLE_OUTGOING_PACKETS = true;
             client.Settings.LOGIN_TIMEOUT = 120 * 1000;
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
 

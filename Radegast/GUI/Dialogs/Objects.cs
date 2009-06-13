@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Threading;
+using System.Timers;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using OpenMetaverse;
@@ -16,7 +18,8 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client;} }
         private Primitive currentPrim;
-        private float searchRadius = 35.0f;
+        private float searchRadius = 40.0f;
+        PropertiesQueue propRequester;
 
         public frmObjects(RadegastInstance instance)
         {
@@ -27,7 +30,10 @@ namespace Radegast
             
             btnPointAt.Text = (this.instance.State.IsPointing ? "Unpoint" : "Point At");
             btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
+            nudRadius.Value = (decimal)searchRadius;
 
+            propRequester = new PropertiesQueue(instance);
+            propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
             lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
  
             if (instance.MonoRuntime)
@@ -40,17 +46,52 @@ namespace Radegast
             client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
+            client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             instance.OnAvatarName += new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
         }
 
         void frmObjects_Disposed(object sender, EventArgs e)
         {
+            propRequester.Dispose();
             client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
+            client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
 
             instance.OnAvatarName -= new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
+        }
+
+        void propRequester_OnTick(int remaining)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        propRequester_OnTick(remaining);
+                    }
+                ));
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("Tracking {0} objects", lstPrims.Items.Count);
+
+            if (remaining > 10)
+            {
+                sb.AppendFormat(", fetching {0} object names.", remaining);
+            }
+            else
+            {
+                sb.Append(".");
+            }
+
+            lblStatus.Text = sb.ToString();
+        }
+
+        void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
+        {
+            btnRefresh_Click(null, null);
         }
 
         void instance_OnAvatarName(UUID agentID, string agentName)
@@ -91,10 +132,38 @@ namespace Radegast
                 Primitive prim = item.Tag as Primitive;
                 if (prim.ID == props.ObjectID)
                 {
+                    prim.Properties = props;
                     item.Text = GetObjectName(prim);
                     break;
                 }
             }
+
+            #region Update buy button
+            Primitive p = btnBuy.Tag as Primitive;
+            if (p != null && p.ID == props.ObjectID)
+            {
+                if (props.SaleType != SaleType.Not)
+                {
+                    btnBuy.Text = string.Format("Buy $L{0}", props.SalePrice);
+                    btnBuy.Enabled = true;
+                }
+                else
+                {
+                    btnBuy.Text = "Buy";
+                    btnBuy.Enabled = false;
+                }
+            }
+            #endregion
+
+            #region Update selected prim text box
+            p = txtCurrentPrim.Tag as Primitive;
+            if (p != null && p.ID == props.ObjectID)
+            {
+                p.Properties = props;
+                txtCurrentPrim.Text = GetObjectName(p);
+            }
+            #endregion
+
         }
 
         private void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
@@ -118,7 +187,8 @@ namespace Radegast
 
             if (prim.Properties == null)
             {
-                client.Objects.RequestObjectPropertiesFamily(client.Network.CurrentSim, prim.ID);
+                if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
+                propRequester.RequestProps(prim.ID);
             }
             else
             {
@@ -176,10 +246,12 @@ namespace Radegast
 
         private void Objects_OnNewPrim(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
         {
-            if (regionHandle != client.Network.CurrentSim.Handle || prim.Position == Vector3.Zero) return;
+            if (regionHandle != client.Network.CurrentSim.Handle || prim.Position == Vector3.Zero || prim.ParentID != 0 || prim is Avatar) return;
             int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
             if (distance < searchRadius)
             {
+                if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
+                propRequester.RequestProps(prim.ID);
                 AddPrim(prim);
             }
         }
@@ -187,7 +259,7 @@ namespace Radegast
         private void Objects_OnObjectKilled(Simulator simulator, uint objectID)
         {
             if (simulator.Handle != client.Network.CurrentSim.Handle) return;
- 
+
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(delegate()
@@ -213,32 +285,29 @@ namespace Radegast
             {
                 lstPrims.Items.Remove(item);
             }
-
         }
-
 
         private void AddAllObjects()
         {
             Vector3 location = client.Self.SimPosition;
+            List<ListViewItem> items = new List<ListViewItem>();
 
             client.Network.CurrentSim.ObjectsPrimitives.ForEach(
                 new Action<Primitive>(
                 delegate(Primitive prim)
                 {
                     int distance = (int)Vector3.Distance(prim.Position, location);
-                    if (prim.ParentID == 0 && (prim.Position != Vector3.Zero) && (distance < searchRadius)) //root prims only
+                    if (prim.ParentID == 0 && (prim.Position != Vector3.Zero) && (distance < searchRadius) && (txtSearch.Text.Length == 0 || (prim.Properties != null && prim.Properties.Name.ToLower().Contains(txtSearch.Text.ToLower())))) //root prims only
                     {
-                        AddPrim(prim);
+                        ListViewItem item = new ListViewItem(prim.LocalID.ToString());
+                        item.Text = GetObjectName(prim);
+                        item.Tag = prim;
+                        items.Add(item);
                     }
                 }
                 ));
+            lstPrims.Items.AddRange(items.ToArray());
         }
-
-        private void frmObjects_Load(object sender, EventArgs e)
-        {
-            AddAllObjects();
-        }
-
 
         private void btnPointAt_Click(object sender, EventArgs e)
         {
@@ -281,43 +350,29 @@ namespace Radegast
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            ApplySearch();
-        }
-
-        private void ApplySearch()
-        {
-            List<ListViewItem> toRemove = new List<ListViewItem>();
-            foreach (ListViewItem item in lstPrims.Items)
-            {
-                if (!item.Text.ToLower().Contains(txtSearch.Text.ToLower()))
-                {
-                    toRemove.Add(item);
-                }
-            }
-            foreach (ListViewItem item in toRemove)
-            {
-                lstPrims.Items.Remove(item);
-            }
-            AddAllObjects();
-
+            btnRefresh_Click(null, null);
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
             txtSearch.Clear();
             txtSearch.Select();
-            ApplySearch();
+            btnRefresh_Click(null, null);
         }
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            lstPrims.BeginUpdate();
+            Cursor.Current = Cursors.WaitCursor;
             lstPrims.Items.Clear();
             AddAllObjects();
+            Cursor.Current = Cursors.Default;
+            lstPrims.EndUpdate();
         }
 
         private void lstPrims_SelectedIndexChanged(object sender, EventArgs e)
@@ -326,6 +381,10 @@ namespace Radegast
             {
                 gbxInworld.Enabled = true;
                 currentPrim = lstPrims.SelectedItems[0].Tag as Primitive;
+                btnBuy.Tag = currentPrim;
+                txtCurrentPrim.Text = GetObjectName(currentPrim);
+                txtCurrentPrim.Tag = currentPrim;
+
                 if ((currentPrim.Flags & PrimFlags.Money) != 0)
                 {
                     btnPay.Enabled = true;
@@ -333,6 +392,17 @@ namespace Radegast
                 else
                 {
                     btnPay.Enabled = false;
+                }
+
+                if (currentPrim.Properties != null && currentPrim.Properties.SaleType != SaleType.Not)
+                {
+                    btnBuy.Text = string.Format("Buy $L{0}", currentPrim.Properties.SalePrice);
+                    btnBuy.Enabled = true;
+                }
+                else
+                {
+                    btnBuy.Text = "Buy";
+                    btnBuy.Enabled = false;
                 }
             }
             else
@@ -362,24 +432,82 @@ namespace Radegast
             pw.loadPrims(prims);
             pw.Show();
         }
+
+        private void nudRadius_ValueChanged(object sender, EventArgs e)
+        {
+            searchRadius = (float)nudRadius.Value;
+            btnRefresh_Click(null, null);
+        }
+
+        private void btnBuy_Click(object sender, EventArgs e)
+        {
+            if (lstPrims.SelectedItems.Count != 1) return;
+            btnBuy.Enabled = false;
+            client.Objects.BuyObject(client.Network.CurrentSim, currentPrim.LocalID, currentPrim.Properties.SaleType, currentPrim.Properties.SalePrice, client.Self.ActiveGroup, client.Inventory.FindFolderForType(AssetType.Object));
+        }
+
+        private void rbDistance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbDistance.Checked)
+            {
+                lstPrims.BeginUpdate();
+                ((ObjectSorter)lstPrims.ListViewItemSorter).SortByName = false;
+                lstPrims.Sort();
+                lstPrims.EndUpdate();
+            }
+        }
+
+        private void rbName_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbName.Checked)
+            {
+                lstPrims.BeginUpdate();
+                ((ObjectSorter)lstPrims.ListViewItemSorter).SortByName = true;
+                lstPrims.Sort();
+                lstPrims.EndUpdate();
+            }
+        }
+
+        private void frmObjects_Activated(object sender, EventArgs e)
+        {
+            lstPrims.Focus();
+            if (lstPrims.Items.Count > 0)
+            {
+                lstPrims.FocusedItem = lstPrims.Items[0];
+            }
+        }
+
+        private void frmObjects_Shown(object sender, EventArgs e)
+        {
+            btnRefresh_Click(null, null);
+        }
     }
 
     public class ObjectSorter : IComparer
     {
         private AgentManager me;
+        private bool sortByName = false;
+
+        public bool SortByName { get { return sortByName; } set { sortByName = value; } }
 
         public ObjectSorter(AgentManager me)
         {
             this.me = me;
         }
 
+
         //this routine should return -1 if xy and 0 if x==y.
         // for our sample we'll just use string comparison
         public int Compare(object x, object y)
         {
-
             ListViewItem item1 = (ListViewItem)x;
             ListViewItem item2 = (ListViewItem)y;
+
+            if (sortByName)
+            {
+                return string.Compare(item1.Text, item2.Text);
+            }
+
             float dist1 = Vector3.Distance(me.SimPosition, ((Primitive)item1.Tag).Position);
             float dist2 = Vector3.Distance(me.SimPosition, ((Primitive)item2.Tag).Position);
 
@@ -397,4 +525,62 @@ namespace Radegast
             }
        }
     }
+
+    public class PropertiesQueue : IDisposable
+    {
+        Object sync = new Object();
+        RadegastInstance instance;
+        System.Timers.Timer qTimer;
+        Queue<UUID> props = new Queue<UUID>();
+
+        public delegate void TickCallback(int remaining);
+        public event TickCallback OnTick;
+
+        public PropertiesQueue(RadegastInstance instance)
+        {
+            this.instance = instance;
+            qTimer = new System.Timers.Timer(1500);
+            qTimer.Enabled = true;
+            qTimer.Elapsed += new ElapsedEventHandler(qTimer_Elapsed);
+        }
+
+        public void RequestProps(UUID objectID)
+        {
+            lock (sync)
+            {
+                if (!props.Contains(objectID))
+                {
+                    props.Enqueue(objectID);
+                }
+            }
+        }
+
+        void qTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            lock (sync)
+            {
+                if (props.Count == 0) return;
+
+                for (int i = 0; i < 50 && props.Count > 0; i++)
+                {
+                    instance.Client.Objects.RequestObjectPropertiesFamily(instance.Client.Network.CurrentSim, props.Dequeue());
+                }
+
+                if (OnTick != null)
+                {
+                    OnTick(props.Count);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            qTimer.Elapsed -= new ElapsedEventHandler(qTimer_Elapsed);
+            qTimer.Enabled = false;
+            qTimer = null;
+            props = null;
+            instance = null;
+        }
+    }
+
 }

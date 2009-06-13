@@ -43,8 +43,8 @@ namespace Radegast
             this.label3 = new System.Windows.Forms.Label();
             this.btnLogin = new System.Windows.Forms.Button();
             this.pnlLoggingIn = new System.Windows.Forms.Panel();
-            this.lblLoginStatus = new System.Windows.Forms.Label();
             this.proLogin = new System.Windows.Forms.ProgressBar();
+            this.lblLoginStatus = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pnlLoginPrompt.SuspendLayout();
@@ -93,7 +93,7 @@ namespace Radegast
             // cbxGrid
             // 
             this.cbxGrid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbxGrid.FormattingEnabled = true;
+            this.cbxGrid.ForeColor = System.Drawing.Color.Black;
             this.cbxGrid.Items.AddRange(new object[] {
             "Main Grid or Teen Grid (Agni)",
             "Beta Grid (Aditi)",
@@ -169,7 +169,7 @@ namespace Radegast
             // 
             // cbxLocation
             // 
-            this.cbxLocation.FormattingEnabled = true;
+            this.cbxLocation.ForeColor = System.Drawing.Color.Black;
             this.cbxLocation.Items.AddRange(new object[] {
             "My Home",
             "My Last Location"});
@@ -211,6 +211,17 @@ namespace Radegast
             this.pnlLoggingIn.TabIndex = 17;
             this.pnlLoggingIn.Visible = false;
             // 
+            // proLogin
+            // 
+            this.proLogin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.proLogin.Location = new System.Drawing.Point(0, 62);
+            this.proLogin.MarqueeAnimationSpeed = 50;
+            this.proLogin.Name = "proLogin";
+            this.proLogin.Size = new System.Drawing.Size(550, 23);
+            this.proLogin.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.proLogin.TabIndex = 11;
+            // 
             // lblLoginStatus
             // 
             this.lblLoginStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -223,18 +234,6 @@ namespace Radegast
             this.lblLoginStatus.TabIndex = 12;
             this.lblLoginStatus.Text = "Login status goes here.";
             this.lblLoginStatus.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // proLogin
-            // 
-            this.proLogin.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.proLogin.BackColor = System.Drawing.Color.Black;
-            this.proLogin.Location = new System.Drawing.Point(0, 62);
-            this.proLogin.MarqueeAnimationSpeed = 50;
-            this.proLogin.Name = "proLogin";
-            this.proLogin.Size = new System.Drawing.Size(550, 23);
-            this.proLogin.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.proLogin.TabIndex = 11;
             // 
             // panel1
             // 
