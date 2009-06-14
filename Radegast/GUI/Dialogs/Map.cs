@@ -185,7 +185,6 @@ namespace Radegast
                 
                 case TeleportStatus.Finished:
                     InTeleport = false;
-                    lblStatus.Text = "Success";
                     break;
 
                 default:
@@ -404,6 +403,19 @@ namespace Radegast
         private void txtRegion_Enter(object sender, EventArgs e)
         {
             AcceptButton = btnSearch;
+        }
+
+        private void btnMyPos_Click(object sender, EventArgs e)
+        {
+            gotoRegion(client.Network.CurrentSim.Name);
+        }
+
+        private void btnDestination_Click(object sender, EventArgs e)
+        {
+            if (txtRegion.Text != string.Empty)
+            {
+                gotoRegion(txtRegion.Text);
+            }
         }
 
         #endregion GUIEvents

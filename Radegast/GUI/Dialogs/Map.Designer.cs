@@ -58,6 +58,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMap));
             this.pnlSearch = new System.Windows.Forms.Panel();
             this.btnGoHome = new System.Windows.Forms.Button();
             this.pnlProgress = new System.Windows.Forms.Panel();
@@ -75,6 +76,8 @@
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.pnlMap = new System.Windows.Forms.Panel();
+            this.btnMyPos = new System.Windows.Forms.Button();
+            this.btnDestination = new System.Windows.Forms.Button();
             this.pnlSearch.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).BeginInit();
@@ -84,6 +87,8 @@
             // 
             // pnlSearch
             // 
+            this.pnlSearch.Controls.Add(this.btnDestination);
+            this.pnlSearch.Controls.Add(this.btnMyPos);
             this.pnlSearch.Controls.Add(this.btnGoHome);
             this.pnlSearch.Controls.Add(this.pnlProgress);
             this.pnlSearch.Controls.Add(this.btnClose);
@@ -278,6 +283,26 @@
             this.pnlMap.Size = new System.Drawing.Size(619, 511);
             this.pnlMap.TabIndex = 1;
             // 
+            // btnMyPos
+            // 
+            this.btnMyPos.Location = new System.Drawing.Point(10, 367);
+            this.btnMyPos.Name = "btnMyPos";
+            this.btnMyPos.Size = new System.Drawing.Size(75, 23);
+            this.btnMyPos.TabIndex = 21;
+            this.btnMyPos.Text = "My position";
+            this.btnMyPos.UseVisualStyleBackColor = true;
+            this.btnMyPos.Click += new System.EventHandler(this.btnMyPos_Click);
+            // 
+            // btnDestination
+            // 
+            this.btnDestination.Location = new System.Drawing.Point(10, 396);
+            this.btnDestination.Name = "btnDestination";
+            this.btnDestination.Size = new System.Drawing.Size(75, 23);
+            this.btnDestination.TabIndex = 21;
+            this.btnDestination.Text = "Destination";
+            this.btnDestination.UseVisualStyleBackColor = true;
+            this.btnDestination.Click += new System.EventHandler(this.btnDestination_Click);
+            // 
             // frmMap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -285,8 +310,8 @@
             this.ClientSize = new System.Drawing.Size(813, 511);
             this.Controls.Add(this.pnlMap);
             this.Controls.Add(this.pnlSearch);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMap";
-            this.ShowIcon = false;
             this.Text = "Map";
             this.VisibleChanged += new System.EventHandler(this.frmMap_VisibleChanged);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMap_FormClosing);
@@ -319,5 +344,7 @@
         private System.Windows.Forms.ProgressBar prgTeleport;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnGoHome;
+        private System.Windows.Forms.Button btnDestination;
+        private System.Windows.Forms.Button btnMyPos;
     }
 }
