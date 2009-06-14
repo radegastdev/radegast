@@ -1,4 +1,6 @@
 $Id$
+
+Radegast Metaverse Client
 Copyright (c) 2009, Latif Khalifa
 All rights reserved.
 
