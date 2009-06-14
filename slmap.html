@@ -823,6 +823,27 @@ SLMap.prototype.gotoRegion = function(regionName)
             //  alert("Going to " + x + "," + y);
 				
 				var pos = new XYPoint(x, y);
+				var opt = { 
+				    clickable: true,
+                    title: regionName
+                };
+		        var marker = new GMarker(pos.GetGLatLng(), opt);
+
+		        GEvent.addListener(marker, "click", function() {
+		            SLMap.centerAndZoomAtSLCoord(pos, 1);
+		        });
+		        
+		        GEvent.addListener(marker, "mouseover", function() {
+		            marker.openInfoWindowHtml("Region: <b>" + regionName + "</b><br><br><small><i>Clik on the marker to zoom in</i></small>");
+		        });
+
+		        GEvent.addListener(marker, "mouseout", function() {
+		            marker.closeInfoWindow() 
+		        });
+		        
+		        SLMap.removeAllMarkers();
+                SLMap.GMap.addOverlay(marker);
+
 				SLMap.panOrRecenterToSLCoord(pos);
             }
 		};
@@ -1256,7 +1277,7 @@ function gotoSLURL(x,y,slMap)
 		var local_y = Math.round((y - int_y) * 256);
 
 		if (window.external) {
-			window.external.setStatus("Looking up " + int_x + ", " + int_y);
+		    window.external.setStatus("Looking up " + int_x + ", " + int_y);
 		}
 		// Add a dynamic script to get this region name, and then trigger a URL change
 		// based on the results
@@ -1270,7 +1291,7 @@ function gotoSLURL(x,y,slMap)
 			{
 			    if (window.external)
 			    {
-		            window.external.setStatus("No region at " + int_x + ", " + int_y);
+	                window.external.setStatus("No region at " + int_x + ", " + int_y);
 		        }
 				//alert("The co-ordinates of the SLURL (" + int_x + ", " + int_y + ") were not recognised as being in a SecondLife region.");
             }
@@ -1286,7 +1307,7 @@ function gotoSLURL(x,y,slMap)
 
 		        if (window.external)
 		        {
-                	window.external.doNavigate(slRegionName, local_x, local_y);
+               	    window.external.doNavigate(slRegionName, local_x, local_y);
 		        }
 		        else
 		        {
@@ -1315,14 +1336,14 @@ function gotoRegion(sim_name)
     mapInstance.gotoRegion(sim_name);
 }
 
-function closeInfoWindow()
+function maxZoom()
 {
-    mapInstance.GMap.closeInfoWindow();
+    mapInstance.setCurrentZoomLevel(1);
 }
 
 function loadmap() {
-  mapInstance = new SLMap(document.getElementById('map-container'));
-  // focus(1000, 1000, 1);
+    mapInstance = new SLMap(document.getElementById('map-container'));
+  // gotoRegion("Chub");
 }
 
 var gReg = "Chub";
