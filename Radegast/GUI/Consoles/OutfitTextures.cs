@@ -46,7 +46,7 @@ namespace Radegast
                             break;
                     }
 
-                    if (type != ImageType.Baked && face.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE) {
+                    if (face.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE) {
                         SLImageHandler img = new SLImageHandler(instance, face.TextureID, ((AppearanceManager.TextureIndex)j).ToString());
                         img.Location = new Point(0, nTextures++ * img.Height);
                         img.Dock = DockStyle.Top;

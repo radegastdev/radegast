@@ -167,6 +167,12 @@
     <Compile Include="GUI\Consoles\MasterTab.Designer.cs">
       <DependentUpon>MasterTab.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\Notecard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\Notecard.Designer.cs">
+      <DependentUpon>Notecard.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\OutfitTextures.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -379,6 +385,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\MasterTab.resx">
       <DependentUpon>MasterTab.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\Notecard.resx">
+      <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\OutfitTextures.resx">

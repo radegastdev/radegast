@@ -37,14 +37,16 @@
             this.txtCreator = new System.Windows.Forms.TextBox();
             this.txtAssetID = new System.Windows.Forms.TextBox();
             this.txtItemName = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblAsset = new System.Windows.Forms.Label();
+            this.lblCreator = new System.Windows.Forms.Label();
+            this.lblItemName = new System.Windows.Forms.Label();
             this.folderContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.folderContextTitle = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderContextDelete = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblCreated = new System.Windows.Forms.Label();
+            this.txtCreated = new System.Windows.Forms.TextBox();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -95,11 +97,13 @@
             // 
             this.panel1.Controls.Add(this.btnProfile);
             this.panel1.Controls.Add(this.txtCreator);
+            this.panel1.Controls.Add(this.txtCreated);
             this.panel1.Controls.Add(this.txtAssetID);
+            this.panel1.Controls.Add(this.lblCreated);
             this.panel1.Controls.Add(this.txtItemName);
-            this.panel1.Controls.Add(this.label3);
-            this.panel1.Controls.Add(this.label2);
-            this.panel1.Controls.Add(this.label1);
+            this.panel1.Controls.Add(this.lblAsset);
+            this.panel1.Controls.Add(this.lblCreator);
+            this.panel1.Controls.Add(this.lblItemName);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 336);
             this.panel1.Name = "panel1";
@@ -129,8 +133,9 @@
             // 
             // txtAssetID
             // 
-            this.txtAssetID.Location = new System.Drawing.Point(80, 62);
+            this.txtAssetID.Location = new System.Drawing.Point(80, 88);
             this.txtAssetID.Name = "txtAssetID";
+            this.txtAssetID.ReadOnly = true;
             this.txtAssetID.Size = new System.Drawing.Size(338, 20);
             this.txtAssetID.TabIndex = 1;
             // 
@@ -141,32 +146,32 @@
             this.txtItemName.Size = new System.Drawing.Size(338, 20);
             this.txtItemName.TabIndex = 1;
             // 
-            // label3
+            // lblAsset
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 62);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(47, 13);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "Asset ID";
+            this.lblAsset.AutoSize = true;
+            this.lblAsset.Location = new System.Drawing.Point(3, 88);
+            this.lblAsset.Name = "lblAsset";
+            this.lblAsset.Size = new System.Drawing.Size(47, 13);
+            this.lblAsset.TabIndex = 0;
+            this.lblAsset.Text = "Asset ID";
             // 
-            // label2
+            // lblCreator
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 36);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Creator";
+            this.lblCreator.AutoSize = true;
+            this.lblCreator.Location = new System.Drawing.Point(3, 36);
+            this.lblCreator.Name = "lblCreator";
+            this.lblCreator.Size = new System.Drawing.Size(41, 13);
+            this.lblCreator.TabIndex = 0;
+            this.lblCreator.Text = "Creator";
             // 
-            // label1
+            // lblItemName
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 10);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(27, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Item";
+            this.lblItemName.AutoSize = true;
+            this.lblItemName.Location = new System.Drawing.Point(3, 10);
+            this.lblItemName.Name = "lblItemName";
+            this.lblItemName.Size = new System.Drawing.Size(27, 13);
+            this.lblItemName.TabIndex = 0;
+            this.lblItemName.Text = "Item";
             // 
             // folderContext
             // 
@@ -206,6 +211,23 @@
             this.folderContextDelete.Size = new System.Drawing.Size(135, 22);
             this.folderContextDelete.Text = "Delete";
             // 
+            // lblCreated
+            // 
+            this.lblCreated.AutoSize = true;
+            this.lblCreated.Location = new System.Drawing.Point(3, 62);
+            this.lblCreated.Name = "lblCreated";
+            this.lblCreated.Size = new System.Drawing.Size(44, 13);
+            this.lblCreated.TabIndex = 0;
+            this.lblCreated.Text = "Created";
+            // 
+            // txtCreated
+            // 
+            this.txtCreated.Location = new System.Drawing.Point(80, 62);
+            this.txtCreated.Name = "txtCreated";
+            this.txtCreated.ReadOnly = true;
+            this.txtCreated.Size = new System.Drawing.Size(144, 20);
+            this.txtCreated.TabIndex = 1;
+            // 
             // InventoryConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -235,12 +257,14 @@
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox txtItemName;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblCreator;
+        private System.Windows.Forms.Label lblItemName;
         private System.Windows.Forms.TextBox txtCreator;
         private System.Windows.Forms.TextBox txtAssetID;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblAsset;
         private System.Windows.Forms.Panel pnlDetail;
         private System.Windows.Forms.Button btnProfile;
+        private System.Windows.Forms.TextBox txtCreated;
+        private System.Windows.Forms.Label lblCreated;
     }
 }

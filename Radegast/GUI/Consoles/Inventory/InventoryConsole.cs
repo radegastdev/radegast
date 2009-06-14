@@ -78,7 +78,9 @@ namespace Radegast
             txtItemName.Text = item.Name;
             txtCreator.Text = instance.getAvatarName(item.CreatorID);
             txtCreator.Tag = item.CreatorID;
-            if (item.AssetUUID != null)
+            txtCreated.Text = item.CreationDate.ToString();
+
+            if (item.AssetUUID != null && item.AssetUUID != UUID.Zero)
             {
                 txtAssetID.Text = item.AssetUUID.ToString();
             }
@@ -94,6 +96,12 @@ namespace Radegast
                     SLImageHandler image = new SLImageHandler(instance, item.AssetUUID, item.Name);
                     image.Dock = DockStyle.Fill;
                     pnlDetail.Controls.Add(image);
+                    break;
+                
+                case AssetType.Notecard:
+                    Notecard note = new Notecard(instance, (InventoryNotecard)item);
+                    note.Dock = DockStyle.Fill;
+                    pnlDetail.Controls.Add(note);
                     break;
             }
         }
@@ -328,7 +336,29 @@ namespace Radegast
             {
                 return CompareFolders(tx.Tag as InventoryFolder, ty.Tag as InventoryFolder);
             }
-            return string.Compare(tx.Text, ty.Text);
+            else if (tx.Tag is InventoryFolder && ty.Tag is InventoryItem)
+            {
+                return -1;
+            }
+            else if (tx.Tag is InventoryItem && ty.Tag is InventoryFolder)
+            {
+                return 1;
+            }
+
+            // Two items
+            InventoryItem item1 = (InventoryItem)tx.Tag;
+            InventoryItem item2 = (InventoryItem)ty.Tag;
+            System.Console.WriteLine("Item1: {0}, created {1}", item1.Name, item1.CreationDate.ToString());
+            System.Console.WriteLine("Item2: {0}, created {1}", item2.Name, item2.CreationDate.ToString());
+            if (item1.CreationDate < item2.CreationDate)
+            {
+                return 1;
+            }
+            else if (item1.CreationDate > item2.CreationDate)
+            {
+                return -1;
+            }
+            return string.Compare(item1.Name, item2.Name);
         }
     }
 
