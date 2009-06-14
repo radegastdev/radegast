@@ -398,9 +398,9 @@ namespace Radegast
             Regex r = new Regex(@"^(http://slurl.com/secondlife/|secondlife://)([^/]+)/(\d+)/(\d+)(/(\d+))?");
             Match m = r.Match(link);
 
-            if (m.Groups.Count > 3)
+            if (m.Success)
             {
-                string region = m.Groups[2].Value;
+                string region = Uri.UnescapeDataString(m.Groups[2].Value);
                 int x = int.Parse(m.Groups[3].Value);
                 int y = int.Parse(m.Groups[4].Value);
                 int z = 0;
