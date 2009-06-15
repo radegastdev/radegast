@@ -47,6 +47,7 @@ namespace Radegast
         GridClient client { get { return instance.Client; } }
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
 
+        private UUID ignoreRenameUpdate = UUID.Zero;
         private InventoryManager Manager;
         private OpenMetaverse.Inventory Inventory;
         private TreeNode invRootNode;
@@ -131,6 +132,12 @@ namespace Radegast
 
         void Store_OnInventoryObjectUpdated(InventoryBase oldObject, InventoryBase newObject)
         {
+            if (newObject.UUID == ignoreRenameUpdate)
+            {
+                ignoreRenameUpdate = UUID.Zero;
+                return;
+            }
+
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(delegate()
@@ -254,14 +261,16 @@ namespace Radegast
                     InventoryFolder folder = (InventoryFolder)node.Tag;
                     ctxInv.Items.Clear();
 
-                    ToolStripMenuItem ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
+                    ToolStripMenuItem ctxItem;
+
+                    ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
                     ctxItem.Name = "refresh";
                     ctxInv.Items.Add(ctxItem);
 
                     if (folder.PreferredType == AssetType.Unknown)
                     {
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
-                        ctxItem.Name = "delete";
+                        ctxItem.Name = "delete_folder";
                         ctxInv.Items.Add(ctxItem);
                     }
 
@@ -279,8 +288,32 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
+                    if (folder.PreferredType == AssetType.Unknown)
+                    {
+                        ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
+                        ctxItem.Name = "rename_folder";
+                        ctxInv.Items.Add(ctxItem);
+                    }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
+                }
+                else if (node.Tag is InventoryItem)
+                {
+                    InventoryItem item = (InventoryItem)node.Tag;
+                    ctxInv.Items.Clear();
+
+                    ToolStripMenuItem ctxItem;
+
+                    ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
+                    ctxItem.Name = "delete_item";
+                    ctxInv.Items.Add(ctxItem);
+
+                    ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
+                    ctxItem.Name = "rename_item";
+                    ctxInv.Items.Add(ctxItem);
+
+                    ctxInv.Show(invTree, new Point(e.X, e.Y));
+
                 }
                 Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, client);
             }
@@ -294,10 +327,11 @@ namespace Radegast
                 return;
             }
 
+            string cmd = ((ToolStripMenuItem)sender).Name;
+
             if (invTree.SelectedNode.Tag is InventoryFolder)
             {
                 InventoryFolder f = (InventoryFolder)invTree.SelectedNode.Tag;
-                string cmd = ((ToolStripMenuItem)sender).Name;
 
                 switch (cmd)
                 {
@@ -306,23 +340,52 @@ namespace Radegast
                         client.Inventory.RequestFolderContents(f.UUID, f.OwnerID, true, true, InventorySortOrder.ByDate);
                         break;
 
-                    case "delete":
+                    case "delete_folder":
                         client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
                         break;
 
                     case "empty_trash":
-                        client.Inventory.EmptyTrash();
+                        {
+                            DialogResult res = MessageBox.Show("Are you sure you want to empty your trash?", "Confirmation", MessageBoxButtons.OKCancel);
+                            if (res == DialogResult.OK)
+                            {
+                                client.Inventory.EmptyTrash();
+                            }
+                        }
                         break;
 
                     case "empty_lost_found":
-                        client.Inventory.EmptyLostAndFound();
+                        {
+                            DialogResult res = MessageBox.Show("Are you sure you want to empty your lost and found folder?", "Confirmation", MessageBoxButtons.OKCancel);
+                            if (res == DialogResult.OK)
+                            {
+                                client.Inventory.EmptyLostAndFound();
+                            }
+                        }
+                        break;
+
+                    case "rename_folder":
+                        invTree.SelectedNode.BeginEdit();
                         break;
 
                 }
             }
+            else if (invTree.SelectedNode.Tag is InventoryItem)
+            {
+                InventoryItem item = (InventoryItem)invTree.SelectedNode.Tag;
 
+                switch(cmd)
+                {
+                    case "delete_item":
+                        client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder));
+                        break;
+
+                    case "rename_item":
+                        invTree.SelectedNode.BeginEdit();
+                        break;
+                }
+            }
         }
-
         #endregion
 
 
@@ -365,13 +428,144 @@ namespace Radegast
             }
         }
 
+        private void invTree_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (e.Node != null &&
+                e.Node.Tag is InventoryFolder &&
+                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown)
+            {
+                e.CancelEdit = true;
+            }
+        }
+
+        private void invTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.Label))
+            {
+                e.CancelEdit = true;
+                return;
+            }
+
+            if (e.Node.Tag is InventoryFolder)
+            {
+                InventoryFolder f = (InventoryFolder)e.Node.Tag;
+                f.Name = e.Label;
+                ignoreRenameUpdate = f.UUID;
+                client.Inventory.MoveFolder(f.UUID, f.ParentUUID, f.Name);
+            }
+            else if (e.Node.Tag is InventoryItem)
+            {
+                InventoryItem item = (InventoryItem)e.Node.Tag;
+                item.Name = e.Label;
+                ignoreRenameUpdate = item.UUID;
+                client.Inventory.MoveItem(item.UUID, item.ParentUUID, item.Name);
+            }
+
+        }
+
+        private void invTree_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F2 && invTree.SelectedNode != null)
+            {
+                invTree.SelectedNode.BeginEdit();
+            }
+        }
+
+        #region Drag and Drop
         private void invTree_ItemDrag(object sender, ItemDragEventArgs e)
         {
             invTree.SelectedNode = e.Item as TreeNode;
-            invTree.DoDragDrop(e.Item, DragDropEffects.Copy);
+            if (invTree.SelectedNode.Tag is InventoryFolder && ((InventoryFolder)invTree.SelectedNode.Tag).PreferredType != AssetType.Unknown)
+            {
+                return;
+            }
+            invTree.DoDragDrop(e.Item, DragDropEffects.Move);
         }
 
-     }
+        private void invTree_DragDrop(object sender, DragEventArgs e)
+        {
+            TreeNode sourceNode = e.Data.GetData(typeof(TreeNode)) as TreeNode;
+            if (sourceNode == null) return;
+
+            Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+            TreeNode destinationNode = ((TreeView)sender).GetNodeAt(pt);
+
+            if (destinationNode == null) return;
+
+            if (sourceNode == destinationNode) return;
+
+            // If droping to item within folder drop to its folder
+            if (destinationNode.Tag is InventoryItem)
+            {
+                destinationNode = destinationNode.Parent;
+            }
+
+            InventoryFolder dest = destinationNode.Tag as InventoryFolder;
+
+            if (dest == null) return;
+
+            if (sourceNode.Tag is InventoryItem)
+            {
+                InventoryItem item = (InventoryItem)sourceNode.Tag;
+                client.Inventory.MoveItem(item.UUID, dest.UUID);
+            }
+            else if (sourceNode.Tag is InventoryFolder)
+            {
+                InventoryFolder f = (InventoryFolder)sourceNode.Tag;
+                client.Inventory.MoveFolder(f.UUID, dest.UUID);
+            }
+        }
+
+        private void invTree_DragEnter(object sender, DragEventArgs e)
+        {
+            TreeNode node = e.Data.GetData(typeof(TreeNode)) as TreeNode;
+            if (node == null)
+            {
+                e.Effect = DragDropEffects.None;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+        }
+
+        TreeNode highlightedNode = null;
+
+        private void invTree_DragOver(object sender, DragEventArgs e)
+        {
+            TreeNode node = e.Data.GetData(typeof(TreeNode)) as TreeNode;
+            if (node == null)
+            {
+                e.Effect = DragDropEffects.None;
+            }
+
+            Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
+            TreeNode destinationNode = ((TreeView)sender).GetNodeAt(pt);
+
+            if (highlightedNode != destinationNode)
+            {
+                if (highlightedNode != null)
+                {
+                    highlightedNode.BackColor = invTree.BackColor;
+                    highlightedNode = null;
+                }
+
+                highlightedNode = destinationNode;
+                highlightedNode.BackColor = Color.LightSlateGray;
+            }
+
+            if (destinationNode == null)
+            {
+                e.Effect = DragDropEffects.None;
+                return;
+            }
+
+            e.Effect = DragDropEffects.Move;
+
+        }
+        #endregion
+
+    }
 
     // Create a node sorter that implements the IComparer interface.
     public class InvNodeSorter : IComparer

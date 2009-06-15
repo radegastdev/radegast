@@ -85,12 +85,20 @@
             this.invTree.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(62)))));
             this.invTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.invTree.ForeColor = System.Drawing.Color.White;
+            this.invTree.LabelEdit = true;
             this.invTree.LineColor = System.Drawing.Color.White;
             this.invTree.Location = new System.Drawing.Point(0, 0);
             this.invTree.Name = "invTree";
+            this.invTree.ShowRootLines = false;
             this.invTree.Size = new System.Drawing.Size(331, 483);
             this.invTree.TabIndex = 0;
+            this.invTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_AfterLabelEdit);
+            this.invTree.DragDrop += new System.Windows.Forms.DragEventHandler(this.invTree_DragDrop);
+            this.invTree.DragEnter += new System.Windows.Forms.DragEventHandler(this.invTree_DragEnter);
+            this.invTree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.invTree_KeyUp);
+            this.invTree.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_BeforeLabelEdit);
             this.invTree.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.invTree_ItemDrag);
+            this.invTree.DragOver += new System.Windows.Forms.DragEventHandler(this.invTree_DragOver);
             // 
             // splitContainer1
             // 
@@ -219,7 +227,7 @@
             // 
             this.ctxInv.Name = "folderContext";
             this.ctxInv.ShowImageMargin = false;
-            this.ctxInv.Size = new System.Drawing.Size(128, 26);
+            this.ctxInv.Size = new System.Drawing.Size(36, 4);
             this.ctxInv.Text = "Inventory Folder";
             // 
             // InventoryConsole
