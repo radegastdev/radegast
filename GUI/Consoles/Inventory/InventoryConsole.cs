@@ -49,8 +49,9 @@ namespace Radegast
 
         private InventoryManager Manager;
         private OpenMetaverse.Inventory Inventory;
+        private TreeNode invRootNode;
 
-
+        #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
         {
             InitializeComponent();
@@ -65,18 +66,97 @@ namespace Radegast
             invTree.MouseClick += new MouseEventHandler(invTree_MouseClick);
             invTree.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(invTree_NodeMouseDoubleClick);
             invTree.TreeViewNodeSorter = new InvNodeSorter();
-            AddDir(null, Inventory.RootFolder);
+            invRootNode = AddDir(null, Inventory.RootFolder);
             invTree.Nodes[0].Expand();
 
             // Callbacks
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Inventory.Store.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
+            client.Inventory.Store.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
+            client.Inventory.Store.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
 
         }
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
         {
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Inventory.Store.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
+            client.Inventory.Store.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
+            client.Inventory.Store.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
         }
+        #endregion
+
+        #region Network callbacks
+        void Store_OnInventoryObjectAdded(InventoryBase obj)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        Store_OnInventoryObjectAdded(obj);
+                    }
+                ));
+                return;
+            }
+
+            Logger.DebugLog("Inv created:" + obj.Name);
+
+            TreeNode parent = findNodeForItem(invRootNode, obj.ParentUUID);
+
+            if (parent != null)
+            {
+                AddBase(parent, obj);
+            }
+        }
+
+        void Store_OnInventoryObjectRemoved(InventoryBase obj)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    Store_OnInventoryObjectRemoved(obj);
+                }
+                ));
+                return;
+            }
+
+            TreeNode currentNode = findNodeForItem(invRootNode, obj.UUID);
+            if (currentNode != null)
+            {
+                invTree.Nodes.Remove(currentNode);
+            }
+            Logger.DebugLog("Inv removed:" + obj.Name);
+        }
+
+        void Store_OnInventoryObjectUpdated(InventoryBase oldObject, InventoryBase newObject)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    Store_OnInventoryObjectUpdated(oldObject, newObject);
+                }
+                ));
+                return;
+            }
+
+            TreeNode currentNode = findNodeForItem(invRootNode, newObject.UUID);
+            if (currentNode != null)
+            {
+                invTree.Nodes.Remove(currentNode);
+            }
+
+            TreeNode parent = findNodeForItem(invRootNode, newObject.ParentUUID);
+
+            if (parent != null)
+            {
+                AddBase(parent, newObject);
+            }
+
+            Logger.DebugLog("Inv updated:" + newObject.Name);
+        }
+
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
         {
@@ -95,6 +175,7 @@ namespace Radegast
                 txtCreator.Text = names[(UUID)txtCreator.Tag];
             }
         }
+        #endregion
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
@@ -170,160 +251,118 @@ namespace Radegast
                 invTree.SelectedNode = node;
                 if (node.Tag is InventoryFolder)
                 {
-                    InventoryFolder f = node.Tag as InventoryFolder;
-                    folderContextTitle.Text = f.Name;
+                    InventoryFolder folder = (InventoryFolder)node.Tag;
+                    ctxInv.Items.Clear();
 
-                    if (f.PreferredType == AssetType.Unknown)
+                    ToolStripMenuItem ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
+                    ctxItem.Name = "refresh";
+                    ctxInv.Items.Add(ctxItem);
+
+                    if (folder.PreferredType == AssetType.Unknown)
                     {
-                        folderContextDelete.Enabled = true;
+                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
+                        ctxItem.Name = "delete";
+                        ctxInv.Items.Add(ctxItem);
                     }
-                    else
+
+                    if (folder.PreferredType == AssetType.TrashFolder)
                     {
-                        folderContextDelete.Enabled = false;
+                        ctxItem = new ToolStripMenuItem("Empty trash", null, OnInvContextClick);
+                        ctxItem.Name = "empty_trash";
+                        ctxInv.Items.Add(ctxItem);
                     }
-                    
-                    folderContext.Show(invTree, new Point(e.X, e.Y));
+
+                    if (folder.PreferredType == AssetType.LostAndFoundFolder)
+                    {
+                        ctxItem = new ToolStripMenuItem("Empty lost and found", null, OnInvContextClick);
+                        ctxItem.Name = "empty_lost_found";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+
+                    ctxInv.Show(invTree, new Point(e.X, e.Y));
                 }
                 Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, client);
             }
         }
 
         #region Context menu folder
-        private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnInvContextClick(object sender, EventArgs e)
         {
-            TreeNode node = invTree.SelectedNode;
-            if (node == null) return;
+            if (invTree.SelectedNode == null || !(invTree.SelectedNode.Tag is InventoryBase))
+            {
+                return;
+            }
 
-            node.Nodes.Clear();
-            TreeNode dummy = new TreeNode();
-            dummy.Name = "DummyTreeNode";
-            dummy.Text = "Loading...";
-            node.Nodes.Add(dummy);
+            if (invTree.SelectedNode.Tag is InventoryFolder)
+            {
+                InventoryFolder f = (InventoryFolder)invTree.SelectedNode.Tag;
+                string cmd = ((ToolStripMenuItem)sender).Name;
 
-            DisplayFolder(node, node.Tag as InventoryFolder);
+                switch (cmd)
+                {
+                    case "refresh":
+                        invTree.SelectedNode.Nodes.Clear();
+                        client.Inventory.RequestFolderContents(f.UUID, f.OwnerID, true, true, InventorySortOrder.ByDate);
+                        break;
+
+                    case "delete":
+                        client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
+                        break;
+
+                    case "empty_trash":
+                        client.Inventory.EmptyTrash();
+                        break;
+
+                    case "empty_lost_found":
+                        client.Inventory.EmptyLostAndFound();
+                        break;
+
+                }
+            }
 
         }
+
         #endregion
 
-        int GetDirImageIndex(string t)
-        {
-            int res = frmMain.ImageNames.IndexOf("inv_folder_" + t);
-            if (res == -1)
-            {
-                switch (t)
-                {
-                    case "trashfolder":
-                        return frmMain.ImageNames.IndexOf("inv_folder_trash");
-
-                    case "lostandfoundfolder":
-                        return frmMain.ImageNames.IndexOf("inv_folder_lostandfound");
-
-                    case "lsltext":
-                        return frmMain.ImageNames.IndexOf("inv_folder_script");
-                }
-                return frmMain.ImageNames.IndexOf("inv_folder_plain_closed");
-            }
-            return res;
-        }
-
-        TreeNode AddDir(TreeNode parentNode, InventoryFolder f)
-        {
-            TreeNode dirNode = new TreeNode();
-
-            TreeNode dummy = new TreeNode();
-            dummy.Name = "DummyTreeNode";
-            dummy.Text = "Loading...";
-            dirNode.ImageIndex = -1;
-            dirNode.SelectedImageIndex = -1;
-            dirNode.Nodes.Add(dummy);
-
-            dirNode.Name = f.Name;
-            dirNode.Text = f.Name;
-            dirNode.Tag = f;
-            dirNode.ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower());
-            dirNode.SelectedImageIndex = dirNode.ImageIndex;
-            if (parentNode == null)
-            {
-                invTree.Nodes.Add(dirNode);
-            }
-            else
-            {
-                parentNode.Nodes.Add(dirNode);
-            }
-            return dirNode;
-        }
-
-        int GetItemImageIndex(string t)
-        {
-            int res = frmMain.ImageNames.IndexOf("inv_item_" + t);
-            if (res == -1)
-            {
-                if (t == "lsltext")
-                {
-                    return frmMain.ImageNames.IndexOf("inv_item_script");
-                }
-                else if (t == "callingcard")
-                {
-                    return frmMain.ImageNames.IndexOf("inv_item_callingcard_offline");
-                }
-            }
-            return res;
-        }
-
-        TreeNode AddItem(TreeNode parent, InventoryItem item)
-        {
-            TreeNode itemNode = new TreeNode();
-            itemNode.Name = item.Name;
-            itemNode.Text = item.Name;
-            itemNode.Tag = item;
-            int img = -1;
-            if (item is InventoryWearable)
-            {
-                InventoryWearable w = item as InventoryWearable;
-                img = GetItemImageIndex(w.WearableType.ToString().ToLower());
-            }
-            else
-            {
-                img = GetItemImageIndex(item.AssetType.ToString().ToLower());
-            }
-            itemNode.ImageIndex = img;
-            itemNode.SelectedImageIndex = img;
-            parent.Nodes.Add(itemNode);
-            return itemNode;
-        }
 
         void TreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
             TreeNode node = e.Node;
-            DisplayFolder(node, node.Tag as InventoryFolder);
-        }
-
-        void DisplayFolder(TreeNode parent, InventoryFolder folder)
-        {
-            if (folder == null) return;
-
-            if (!FolderNodes.ContainsKey(folder.UUID))
+            InventoryFolder f = (InventoryFolder)node.Tag;
+            if (f == null)
             {
-                FolderNodes.Add(folder.UUID, parent);
+                return;
             }
 
-            List<InventoryBase> contents =
-                client.Inventory.FolderContents(folder.UUID, folder.OwnerID, true, true, InventorySortOrder.ByName, 3000);
-            parent.Nodes.Clear();
-            if (contents == null) return;
-
-            foreach (InventoryBase item in contents)
+            TreeNode dummy = null;
+            foreach (TreeNode n in node.Nodes)
             {
-                if (item is InventoryFolder)
+                if (n.Name == "DummyTreeNode")
                 {
-                    AddDir(parent, item as InventoryFolder);
-                }
-                else
-                {
-                    AddItem(parent, item as InventoryItem);
+                    dummy = n;
+                    break;
                 }
             }
 
+            if (dummy != null)
+            {
+                try
+                {
+                    List<InventoryBase> contents = client.Inventory.Store.GetContents(f);
+                    if (contents.Count == 0)
+                        throw new InventoryException("Refetch required");
+                    foreach (InventoryBase item in contents)
+                    {
+                        UpdateBase(node, item);
+                    }
+                }
+                catch (Exception)
+                {
+                    client.Inventory.RequestFolderContents(f.UUID, f.OwnerID, true, true, InventorySortOrder.ByDate);
+                }
+                node.Nodes.Remove(dummy);
+            }
         }
 
         private void invTree_ItemDrag(object sender, ItemDragEventArgs e)
@@ -376,10 +415,12 @@ namespace Radegast
             }
 
             // Two items
+            if (!(tx.Tag is InventoryItem) || !(ty.Tag is InventoryItem))
+            {
+                return 0;
+            }
             InventoryItem item1 = (InventoryItem)tx.Tag;
             InventoryItem item2 = (InventoryItem)ty.Tag;
-            System.Console.WriteLine("Item1: {0}, created {1}", item1.Name, item1.CreationDate.ToString());
-            System.Console.WriteLine("Item2: {0}, created {1}", item2.Name, item2.CreationDate.ToString());
             if (item1.CreationDate < item2.CreationDate)
             {
                 return 1;

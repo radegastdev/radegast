@@ -65,23 +65,18 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnProfile = new System.Windows.Forms.Button();
             this.txtCreator = new System.Windows.Forms.TextBox();
+            this.txtCreated = new System.Windows.Forms.TextBox();
             this.txtAssetID = new System.Windows.Forms.TextBox();
+            this.lblCreated = new System.Windows.Forms.Label();
             this.txtItemName = new System.Windows.Forms.TextBox();
             this.lblAsset = new System.Windows.Forms.Label();
             this.lblCreator = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
-            this.folderContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.folderContextTitle = new System.Windows.Forms.ToolStripTextBox();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.folderContextDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.lblCreated = new System.Windows.Forms.Label();
-            this.txtCreated = new System.Windows.Forms.TextBox();
+            this.ctxInv = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.folderContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // invTree
@@ -161,6 +156,14 @@
             this.txtCreator.Size = new System.Drawing.Size(338, 20);
             this.txtCreator.TabIndex = 1;
             // 
+            // txtCreated
+            // 
+            this.txtCreated.Location = new System.Drawing.Point(80, 62);
+            this.txtCreated.Name = "txtCreated";
+            this.txtCreated.ReadOnly = true;
+            this.txtCreated.Size = new System.Drawing.Size(144, 20);
+            this.txtCreated.TabIndex = 1;
+            // 
             // txtAssetID
             // 
             this.txtAssetID.Location = new System.Drawing.Point(80, 88);
@@ -168,6 +171,15 @@
             this.txtAssetID.ReadOnly = true;
             this.txtAssetID.Size = new System.Drawing.Size(338, 20);
             this.txtAssetID.TabIndex = 1;
+            // 
+            // lblCreated
+            // 
+            this.lblCreated.AutoSize = true;
+            this.lblCreated.Location = new System.Drawing.Point(3, 62);
+            this.lblCreated.Name = "lblCreated";
+            this.lblCreated.Size = new System.Drawing.Size(44, 13);
+            this.lblCreated.TabIndex = 0;
+            this.lblCreated.Text = "Created";
             // 
             // txtItemName
             // 
@@ -203,60 +215,12 @@
             this.lblItemName.TabIndex = 0;
             this.lblItemName.Text = "Item";
             // 
-            // folderContext
+            // ctxInv
             // 
-            this.folderContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.folderContextTitle,
-            this.toolStripSeparator1,
-            this.refreshToolStripMenuItem,
-            this.folderContextDelete});
-            this.folderContext.Name = "folderContext";
-            this.folderContext.ShowImageMargin = false;
-            this.folderContext.Size = new System.Drawing.Size(136, 72);
-            this.folderContext.Text = "Inventory Folder";
-            // 
-            // folderContextTitle
-            // 
-            this.folderContextTitle.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.folderContextTitle.Name = "folderContextTitle";
-            this.folderContextTitle.ReadOnly = true;
-            this.folderContextTitle.Size = new System.Drawing.Size(100, 16);
-            this.folderContextTitle.Text = "Title";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(132, 6);
-            // 
-            // refreshToolStripMenuItem
-            // 
-            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.refreshToolStripMenuItem.Text = "Refresh";
-            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
-            // 
-            // folderContextDelete
-            // 
-            this.folderContextDelete.Name = "folderContextDelete";
-            this.folderContextDelete.Size = new System.Drawing.Size(135, 22);
-            this.folderContextDelete.Text = "Delete";
-            // 
-            // lblCreated
-            // 
-            this.lblCreated.AutoSize = true;
-            this.lblCreated.Location = new System.Drawing.Point(3, 62);
-            this.lblCreated.Name = "lblCreated";
-            this.lblCreated.Size = new System.Drawing.Size(44, 13);
-            this.lblCreated.TabIndex = 0;
-            this.lblCreated.Text = "Created";
-            // 
-            // txtCreated
-            // 
-            this.txtCreated.Location = new System.Drawing.Point(80, 62);
-            this.txtCreated.Name = "txtCreated";
-            this.txtCreated.ReadOnly = true;
-            this.txtCreated.Size = new System.Drawing.Size(144, 20);
-            this.txtCreated.TabIndex = 1;
+            this.ctxInv.Name = "folderContext";
+            this.ctxInv.ShowImageMargin = false;
+            this.ctxInv.Size = new System.Drawing.Size(128, 26);
+            this.ctxInv.Text = "Inventory Folder";
             // 
             // InventoryConsole
             // 
@@ -270,8 +234,6 @@
             this.splitContainer1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.folderContext.ResumeLayout(false);
-            this.folderContext.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -280,11 +242,7 @@
 
         private System.Windows.Forms.TreeView invTree;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ContextMenuStrip folderContext;
-        private System.Windows.Forms.ToolStripMenuItem folderContextDelete;
-        private System.Windows.Forms.ToolStripTextBox folderContextTitle;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip ctxInv;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox txtItemName;
         private System.Windows.Forms.Label lblCreator;
