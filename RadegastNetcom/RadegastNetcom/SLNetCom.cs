@@ -84,7 +84,7 @@ namespace RadegastNc
 
         void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
         {
-            client.Appearance.SetPreviousAppearance(true);
+            // client.Appearance.SetPreviousAppearance(true);
         }
 
         private void Self_OnInstantMessage(InstantMessage im, Simulator simulator)

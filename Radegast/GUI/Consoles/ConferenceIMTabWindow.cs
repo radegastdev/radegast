@@ -51,7 +51,7 @@ namespace Radegast
         private List<UUID> participants = new List<UUID>();
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);
 
-        public ConferenceIMTabWindow(RadegastInstance instance, UUID session)
+        public ConferenceIMTabWindow(RadegastInstance instance, UUID session, string sessionName)
         {
             InitializeComponent();
             Disposed += new EventHandler(IMTabWindow_Disposed);
@@ -62,7 +62,7 @@ namespace Radegast
 
             this.session = session;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session);
+            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
             
             ApplyConfig(this.instance.Config.CurrentConfig);
 

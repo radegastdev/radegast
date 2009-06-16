@@ -44,15 +44,16 @@ namespace Radegast
         private RadegastNetcom netcom;
         private ITextPrinter textPrinter;
         private UUID sessionID;
+        private string sessionName;
 
         private ArrayList textBuffer;
 
         private bool showTimestamps;
 
-        public IMTextManager(RadegastInstance instance, ITextPrinter textPrinter, UUID sessionID)
+        public IMTextManager(RadegastInstance instance, ITextPrinter textPrinter, UUID sessionID, string sessionName)
         {
             this.sessionID = sessionID;
-
+            this.sessionName = sessionName;
             this.textPrinter = textPrinter;
             this.textBuffer = new ArrayList();
 
@@ -143,6 +144,7 @@ namespace Radegast
                 sb.Append(message);
             }
 
+            instance.LogClientMessage(sessionName + ".txt", message);
             textPrinter.PrintTextLine(sb.ToString());
             sb = null;
         }

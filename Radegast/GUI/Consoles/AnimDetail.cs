@@ -71,7 +71,7 @@ namespace Radegast
 
         private void AnimDetail_Load(object sender, EventArgs e)
         {
-            if (File.Exists(instance.animCacheDir + "/" + anim + ".fail")) {
+            if (File.Exists(instance.AnimCacheDir + "/" + anim + ".fail")) {
                 Visible = false;
                 return;
             }
@@ -88,7 +88,7 @@ namespace Radegast
                 cbFriends.Items.Add(f);
             }
 
-            if (File.Exists(instance.animCacheDir + "/" + anim + ".sla"))
+            if (File.Exists(instance.AnimCacheDir + "/" + anim + ".sla"))
             {
                 pnlSave.Visible = true;
                 return;
@@ -110,7 +110,7 @@ namespace Radegast
 
             if (res == DialogResult.OK) {
                 try {
-                    byte[] data = File.ReadAllBytes(instance.animCacheDir + "/" + anim + ".sla");
+                    byte[] data = File.ReadAllBytes(instance.AnimCacheDir + "/" + anim + ".sla");
                     File.WriteAllBytes(dlg.FileName, data);
                 } catch (Exception ex) {
                     Logger.Log("Saving animation failed: " + ex.Message, Helpers.LogLevel.Debug);
@@ -132,11 +132,11 @@ namespace Radegast
 
             if (transfer.Success) {
                 Logger.Log("Animation " + anim + " download success " + asset.AssetData.Length + " bytes.", Helpers.LogLevel.Debug);
-                File.WriteAllBytes(instance.animCacheDir + "/" + anim + ".sla", asset.AssetData);
+                File.WriteAllBytes(instance.AnimCacheDir + "/" + anim + ".sla", asset.AssetData);
                 pnlSave.Visible = true;
             } else {
                 Logger.Log("Animation " + anim + " download failed.", Helpers.LogLevel.Debug);
-                FileStream f = File.Create(instance.animCacheDir + "/" + anim + ".fail");
+                FileStream f = File.Create(instance.AnimCacheDir + "/" + anim + ".fail");
                 f.Close();
                 Visible = false;
             }
@@ -153,7 +153,7 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            byte[] data = File.ReadAllBytes(instance.animCacheDir + "/" + anim + ".sla");
+            byte[] data = File.ReadAllBytes(instance.AnimCacheDir + "/" + anim + ".sla");
             instance.Client.Inventory.RequestCreateItemFromAsset(data, boxAnimName.Text, "(No description)", AssetType.Animation, InventoryType.Animation, instance.Client.Inventory.FindFolderForType(AssetType.Animation), On_ItemCreated);
             lblStatus.Text = "Uploading...";
             cbFriends.Enabled = false;

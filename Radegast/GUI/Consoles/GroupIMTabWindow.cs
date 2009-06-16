@@ -51,7 +51,7 @@ namespace Radegast
 
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);
 
-        public GroupIMTabWindow(RadegastInstance instance, UUID session)
+        public GroupIMTabWindow(RadegastInstance instance, UUID session, string sessionName)
         {
             InitializeComponent();
             Disposed += new EventHandler(IMTabWindow_Disposed);
@@ -59,7 +59,7 @@ namespace Radegast
             this.instance = instance;
             this.session = session;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session);
+            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
             ApplyConfig(this.instance.Config.CurrentConfig);
             
             // Callbacks

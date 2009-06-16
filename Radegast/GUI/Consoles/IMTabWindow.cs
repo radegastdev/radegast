@@ -61,7 +61,7 @@ namespace Radegast
             this.session = session;
             this.toName = toName;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session);
+            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, toName);
             ApplyConfig(this.instance.Config.CurrentConfig);
             this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
         }

@@ -97,9 +97,9 @@ namespace Radegast
         {
             if (!checkedDir) {
                 checkedDir = true;
-                if (!Directory.Exists(instance.animCacheDir))
+                if (!Directory.Exists(instance.AnimCacheDir))
                 {
-                    Directory.CreateDirectory(instance.animCacheDir);
+                    Directory.CreateDirectory(instance.AnimCacheDir);
                 }
             }
         }

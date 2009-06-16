@@ -638,7 +638,7 @@ namespace Radegast
         private void cleanCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
             client.Assets.Cache.Clear();
-            DirectoryInfo di = new DirectoryInfo(instance.animCacheDir);
+            DirectoryInfo di = new DirectoryInfo(instance.AnimCacheDir);
             FileInfo[] files = di.GetFiles();
 
             int num = 0;

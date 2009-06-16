@@ -156,6 +156,7 @@ namespace Radegast
 
         public void ProcessBufferItem(ChatBufferItem item, bool addToBuffer)
         {
+            instance.LogClientMessage("chat.txt", item.Text);
             if (addToBuffer) textBuffer.Add(item);
 
             if (showTimestamps)
@@ -208,9 +209,7 @@ namespace Radegast
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("(channel ");
-            sb.Append(e.Channel);
-            sb.Append(") You");
+            sb.AppendFormat("(channel {0}) {1}", e.Channel, client.Self.Name);
 
             switch (e.Type)
             {
@@ -252,7 +251,7 @@ namespace Radegast
             }
             else if (e.FromName == netcom.LoginOptions.FullName && e.SourceType == ChatSourceType.Agent)
             {
-                sb.Append("You");
+                sb.Append(client.Self.Name);
 
                 switch (e.Type)
                 {
@@ -261,11 +260,11 @@ namespace Radegast
                         break;
 
                     case ChatType.Whisper:
-                        sb.Append(" whisper: ");
+                        sb.Append(" whispers: ");
                         break;
 
                     case ChatType.Shout:
-                        sb.Append(" shout: ");
+                        sb.Append(" shouts: ");
                         break;
                 }
 
