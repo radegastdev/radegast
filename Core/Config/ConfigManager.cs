@@ -42,7 +42,7 @@ namespace Radegast
 
         public ConfigManager(RadegastInstance instance)
         {
-            defaultConfigPath = Path.Combine(instance.userDir, Properties.Resources.ProgramName + @".ini");
+            defaultConfigPath = Path.Combine(instance.UserDir, Properties.Resources.ProgramName + @".ini");
         }
 
         public void ApplyCurrentConfig()

@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using System.IO;
 using System.Text.RegularExpressions;
 using log4net.Appender;
 using log4net.Core;
@@ -45,6 +46,14 @@ namespace Radegast
             try
             {
                 string loggingMessage = RenderLoggingEvent(le);
+
+                lock (this)
+                {
+                    StreamWriter logfile = File.AppendText(RadegastInstance.GlobalInstance.GlobalLogFile);
+                    logfile.WriteLine(loggingMessage);
+                    logfile.Close();
+                    logfile.Dispose();
+                }
 
                 string regex = @"^(?<Front>.*?)\[(?<Category>[^\]]+)\]:?(?<End>.*)";
 

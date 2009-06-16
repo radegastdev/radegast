@@ -578,7 +578,7 @@ namespace Radegast
 
         public ConferenceIMTabWindow AddConferenceIMTab(UUID session, string name)
         {
-            ConferenceIMTabWindow imTab = new ConferenceIMTabWindow(instance, session);
+            ConferenceIMTabWindow imTab = new ConferenceIMTabWindow(instance, session, name);
             imTab.Dock = DockStyle.Fill;
 
             toolStripContainer1.ContentPanel.Controls.Add(imTab);
@@ -598,7 +598,7 @@ namespace Radegast
 
         public GroupIMTabWindow AddGroupIMTab(UUID session, string name)
         {
-            GroupIMTabWindow imTab = new GroupIMTabWindow(instance, session);
+            GroupIMTabWindow imTab = new GroupIMTabWindow(instance, session, name);
             imTab.Dock = DockStyle.Fill;
 
             toolStripContainer1.ContentPanel.Controls.Add(imTab);

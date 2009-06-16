@@ -64,8 +64,26 @@ namespace Radegast
             }
         }
 
-        public readonly string userDir;
-        public readonly string animCacheDir;
+        private string userDir;
+        /// <summary>
+        /// System (not grid!) user's dir
+        /// </summary>
+        public string UserDir { get { return userDir; } }
+
+        private string clientDir;
+        /// <summary>
+        /// Grid client's user dir for settings and logs
+        /// </summary>
+        public string ClientDir { get { return clientDir; } }
+
+        private string animCacheDir;
+        public string AnimCacheDir { get { return animCacheDir; } }
+
+        private string globalLogFile;
+        public string GlobalLogFile { get { return globalLogFile; } }
+
+        private bool monoRuntime;
+        public bool MonoRuntime { get { return monoRuntime; } }
 
         public Dictionary<UUID, Group> groups;
         public Dictionary<UUID, string> nameCache = new Dictionary<UUID,string>();
@@ -74,33 +92,10 @@ namespace Radegast
         public event OnAvatarNameCallBack OnAvatarName;
 
         public readonly bool advancedDebugging = false;
-        public readonly bool MonoRuntime;
 
         private RadegastInstance()
         {
-            try
-            {
-                userDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), Properties.Resources.ProgramName);
-                if (!Directory.Exists(userDir))
-                {
-                    Directory.CreateDirectory(userDir);
-                }
-            }
-            catch (Exception) 
-            {
-                userDir = System.Environment.CurrentDirectory;
-            };
-            animCacheDir = Path.Combine(userDir, @"anim_cache");
-
-            // Are we running mono?
-            if (null == Type.GetType("Mono.Runtime"))
-            {
-                MonoRuntime = false;
-            }
-            else
-            {
-                MonoRuntime = true;
-            }
+            InitializeLoggingAndConfig();
 
             Settings.PIPELINE_REFRESH_INTERVAL = 2000.0f;
 
@@ -110,7 +105,7 @@ namespace Radegast
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ENABLE_SIMSTATS = true;
             client.Settings.FETCH_MISSING_INVENTORY = true;
-            client.Settings.MULTIPLE_SIMS = false;
+            client.Settings.MULTIPLE_SIMS = true;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
 
@@ -126,10 +121,10 @@ namespace Radegast
             client.Settings.USE_INTERPOLATION_TIMER = false;
 
             netcom = new RadegastNetcom(client);
-
             imageCache = new ImageCache();
             state = new StateManager(this);
-            InitializeConfig();
+
+            InitializeConfigLegacy();
 
             mainForm = new frmMain(this);
             mainForm.InitializeControls();
@@ -144,6 +139,8 @@ namespace Radegast
             client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
             client.Groups.OnGroupProfile += new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
+            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
         }
 
         public void CleanUp()
@@ -156,6 +153,8 @@ namespace Radegast
                 client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
                 client.Groups.OnGroupProfile -= new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+                client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
+                client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             }
 
             if (MonoRuntime)
@@ -228,6 +227,53 @@ namespace Radegast
             }
         }
 
+        void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
+        {
+            clientDir = null;
+        }
+
+        void Network_OnLogin(LoginStatus login, string message)
+        {
+            if (login != LoginStatus.Success)
+                return;
+
+            clientDir = Path.Combine(userDir, client.Self.Name);
+            try
+            {
+                if (!Directory.Exists(clientDir))
+                {
+                    Directory.CreateDirectory(clientDir);
+                }
+            }
+            catch (Exception)
+            {
+                clientDir = Directory.GetCurrentDirectory();
+            }
+
+        }
+
+        public void LogClientMessage(string fileName, string message)
+        {
+            if (clientDir == null) return;
+
+            lock (this)
+            {
+                try
+                {
+                    foreach (char lDisallowed in System.IO.Path.GetInvalidFileNameChars())
+                    {
+                        fileName = fileName.Replace(lDisallowed.ToString(), "_");
+                    }
+
+                    StreamWriter logfile = File.AppendText(Path.Combine(clientDir, fileName));
+                    logfile.WriteLine(DateTime.Now.ToString("yyyy-MM-dd [HH:mm:ss] ") + message);
+                    logfile.Close();
+                    logfile.Dispose();
+                }
+                catch (Exception) { }
+            }
+        }
+
         void Groups_OnCurrentGroups(Dictionary<UUID, Group> gr)
         {
             this.groups = gr;
@@ -238,7 +284,36 @@ namespace Radegast
             config.SaveCurrentConfig();
         }
 
-        private void InitializeConfig()
+        private void InitializeLoggingAndConfig()
+        {
+            // Are we running mono?
+            if (null == Type.GetType("Mono.Runtime"))
+            {
+                monoRuntime = false;
+            }
+            else
+            {
+                monoRuntime = true;
+            }
+
+            try
+            {
+                userDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), Properties.Resources.ProgramName);
+                if (!Directory.Exists(userDir))
+                {
+                    Directory.CreateDirectory(userDir);
+                }
+            }
+            catch (Exception)
+            {
+                userDir = System.Environment.CurrentDirectory;
+            };
+
+            animCacheDir = Path.Combine(userDir, @"anim_cache");
+            globalLogFile = Path.Combine(userDir, Properties.Resources.ProgramName + ".log");
+        }
+
+        private void InitializeConfigLegacy()
         {
             config = new ConfigManager(this);
             config.ApplyDefault();
