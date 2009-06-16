@@ -84,7 +84,7 @@ namespace RadegastNc
 
         void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
         {
-            // client.Appearance.SetPreviousAppearance(true);
+            client.Appearance.SetPreviousAppearance(true);
         }
 
         private void Self_OnInstantMessage(InstantMessage im, Simulator simulator)
@@ -277,8 +277,6 @@ namespace RadegastNc
         {
             if (!loggedIn) return;
             
-            //client.Self.InstantMessage(target, message, session);
-
             client.Self.InstantMessage(
                 loginOptions.FullName, target, message, session, InstantMessageDialog.MessageFromAgent,
                 InstantMessageOnline.Online, client.Self.SimPosition, client.Network.CurrentSim.ID, null);
