@@ -72,6 +72,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AIMLbot, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
     <Reference Include="Nini, Version=1.1.0.0, Culture=neutral, PublicKeyToken=691faec150a7fa7b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Nini\Bin\DotNet\2.0\Release\Nini.dll</HintPath>
@@ -103,6 +104,7 @@
     <Compile Include="Core\PrimDeserializer.cs" />
     <Compile Include="Core\PrimSerializer.cs" />
     <Compile Include="Core\RadegastInstance.cs" />
+    <Compile Include="Core\RadegastLogger.cs" />
     <Compile Include="Core\SleekMovement.cs" />
     <Compile Include="Core\StateManager.cs" />
     <Compile Include="Core\Tabs\ISleekTabControl.cs" />
@@ -893,6 +895,9 @@
     <None Include="openmetaverse_data\upperbody_shading_alpha.tga">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Radegast.exe.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="radegast.nsi">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -972,6 +977,7 @@
     <None Include="OpenMetaverse.Rendering.Meshmerizer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="assemblies\log4net.dll" />
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -986,6 +992,9 @@
     <None Include="Resources\status_buy_currency.png" />
     <None Include="Resources\status_health.png" />
     <None Include="Resources\status_no_build.png" />
+    <None Include="Tao.OpenGl.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
