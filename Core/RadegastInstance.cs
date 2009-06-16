@@ -49,6 +49,21 @@ namespace Radegast
 
         private frmMain mainForm;
         private TabsConsole tabsConsole;
+
+        // Singleton, there can be only one instance
+        private static RadegastInstance globalInstance = null;
+        public static RadegastInstance GlobalInstance
+        {
+            get
+            {
+                if (globalInstance == null)
+                {
+                    globalInstance = new RadegastInstance();
+                }
+                return globalInstance;
+            }
+        }
+
         public readonly string userDir;
         public readonly string animCacheDir;
 
@@ -61,7 +76,7 @@ namespace Radegast
         public readonly bool advancedDebugging = false;
         public readonly bool MonoRuntime;
 
-        public RadegastInstance()
+        private RadegastInstance()
         {
             try
             {
@@ -95,7 +110,7 @@ namespace Radegast
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ENABLE_SIMSTATS = true;
             client.Settings.FETCH_MISSING_INVENTORY = true;
-            client.Settings.MULTIPLE_SIMS = true;
+            client.Settings.MULTIPLE_SIMS = false;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
 
@@ -108,6 +123,7 @@ namespace Radegast
             client.Settings.THROTTLE_OUTGOING_PACKETS = true;
             client.Settings.LOGIN_TIMEOUT = 120 * 1000;
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
+            client.Settings.USE_INTERPOLATION_TIMER = false;
 
             netcom = new RadegastNetcom(client);
 

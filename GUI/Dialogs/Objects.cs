@@ -65,7 +65,7 @@ namespace Radegast
             propRequester = new PropertiesQueue(instance);
             propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
             lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
- 
+
             if (instance.MonoRuntime)
             {
                 btnView.Visible = false;

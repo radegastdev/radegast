@@ -45,7 +45,7 @@ namespace Radegast
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            RadegastInstance instance = new RadegastInstance();
+            RadegastInstance instance = RadegastInstance.GlobalInstance;
             Application.Run(instance.MainForm);
             instance = null;
         }
