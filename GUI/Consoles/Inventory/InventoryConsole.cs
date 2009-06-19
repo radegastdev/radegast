@@ -39,6 +39,26 @@ namespace Radegast
 {
     public partial class InventoryConsole : UserControl
     {
+        public class AttachmentInfo
+        {
+            public Primitive Prim;
+            public InventoryItem Item;
+            public AttachmentPoint Point
+            {
+                get
+                {
+                    if (Prim != null)
+                    {
+                        return Prim.PrimData.AttachmentPoint;
+                    }
+                    else
+                    {
+                        return AttachmentPoint.Default;
+                    }
+                }
+            }
+        }
+
         RadegastInstance instance;
         GridClient client { get { return instance.Client; } }
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
@@ -50,6 +70,7 @@ namespace Radegast
         private List<UUID> fetchedFolders = new List<UUID>();
         private System.Threading.Timer _EditTimer;
         private TreeNode _EditNode;
+        private Dictionary<UUID, AttachmentInfo> attachments = new Dictionary<UUID, AttachmentInfo>();
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -76,6 +97,7 @@ namespace Radegast
             client.Inventory.Store.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             client.Inventory.Store.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             client.Inventory.Store.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
+            client.Objects.OnNewAttachment += new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
 
         }
 
@@ -85,10 +107,70 @@ namespace Radegast
             client.Inventory.Store.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             client.Inventory.Store.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             client.Inventory.Store.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
+            client.Objects.OnNewAttachment -= new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
         }
         #endregion
 
         #region Network callbacks
+        void Objects_OnNewAttachment(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
+        {
+            if (prim.ParentID != client.Self.LocalID) return;
+
+            for (int i = 0; i < prim.NameValues.Length; i++)
+            {
+                if (prim.NameValues[i].Name == "AttachItemID")
+                {
+                    AttachmentInfo attachment = new AttachmentInfo();
+                    attachment.Prim = prim;
+                    UUID invID = new UUID(prim.NameValues[i].Value.ToString());
+
+                    lock (attachments)
+                    {
+                        // Do we have attachmetns already on this spot?
+                        AttachmentInfo oldAttachment = null;
+                        UUID oldAttachmentUUID = UUID.Zero;
+                        foreach (KeyValuePair<UUID, AttachmentInfo> att in attachments)
+                        {
+                            if (att.Value.Point == prim.PrimData.AttachmentPoint)
+                            {
+                                oldAttachment = att.Value;
+                                oldAttachmentUUID = att.Key;
+                                break;
+                            }
+                        }
+
+                        if (oldAttachment != null)
+                        {
+                            attachments.Remove(oldAttachmentUUID);
+                            if (oldAttachment.Item != null)
+                            {
+                                Store_OnInventoryObjectUpdated(oldAttachment.Item, oldAttachment.Item);
+                            }
+                        }
+
+                        // Add new attachment info
+                        if (!attachments.ContainsKey(invID))
+                        {
+                            attachments.Add(invID, attachment);
+                            
+                        }
+                        else
+                        {
+                            attachments[invID].Prim = prim;
+                        }
+
+                        if (client.Inventory.Store.Contains(invID))
+                        {
+                            InventoryItem item = (InventoryItem)client.Inventory.Store[invID];
+                            attachments[invID].Item = item;
+                            Store_OnInventoryObjectUpdated(attachments[invID].Item, attachments[invID].Item);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
         void Store_OnInventoryObjectAdded(InventoryBase obj)
         {
             if (InvokeRequired)
@@ -102,6 +184,14 @@ namespace Radegast
             }
 
             Logger.DebugLog("Inv created:" + obj.Name + ": " + obj.UUID);
+
+            lock (attachments)
+            {
+                if (attachments.ContainsKey(obj.UUID))
+                {
+                    attachments[obj.UUID].Item = (InventoryItem)obj;
+                }
+            }
 
             TreeNode parent = findNodeForItem(invRootNode, obj.ParentUUID);
 
@@ -137,6 +227,14 @@ namespace Radegast
 
             Logger.DebugLog("Inv removed:" + obj.Name);
 
+            lock (attachments)
+            {
+                if (attachments.ContainsKey(obj.UUID))
+                {
+                    attachments.Remove(obj.UUID);
+                }
+            }
+
             TreeNode currentNode = findNodeForItem(invRootNode, obj.UUID);
             if (currentNode != null)
             {
@@ -157,6 +255,14 @@ namespace Radegast
             }
 
             Logger.DebugLog("Inv updated:" + newObject.Name);
+
+            lock (attachments)
+            {
+                if (attachments.ContainsKey(newObject.UUID))
+                {
+                    attachments[newObject.UUID].Item = (InventoryItem)newObject;
+                }
+            }
 
             // Find our current node in the tree
             TreeNode currentNode = findNodeForItem(invRootNode, newObject.UUID);
@@ -276,6 +382,46 @@ namespace Radegast
             }
         }
 
+        public bool IsWorn(InventoryItem item)
+        {
+            bool worn = false;
+            client.Appearance.Wearables.ForEach(delegate(AppearanceManager.WearableData i)
+            {
+                if (i.Item.UUID == item.UUID)
+                {
+                    worn = true;
+                }
+            });
+            return worn;
+        }
+
+        public AttachmentPoint AttachedTo(InventoryItem item)
+        {
+            lock (attachments)
+            {
+                if (attachments.ContainsKey(item.UUID))
+                {
+                    return attachments[item.UUID].Point;
+                }
+            }
+
+            return AttachmentPoint.Default;
+        }
+
+        public bool IsAttached(InventoryItem item)
+        {
+            lock (attachments)
+            {
+                return attachments.ContainsKey(item.UUID);
+            }
+        }
+
+        /// <summary>
+        /// Returns text of the label
+        /// </summary>
+        /// <param name="invBase">Inventory item</param>
+        /// <param name="returnRaw">Should we return raw text, or if false decorated text with (worn) info, and (no copy) etc. permission info</param>
+        /// <returns></returns>
         public string ItemLabel(InventoryBase invBase, bool returnRaw)
         {
             if (returnRaw || (invBase is InventoryFolder))
@@ -293,6 +439,14 @@ namespace Radegast
 
             if ((item.Permissions.OwnerMask & PermissionMask.Transfer) == 0)
                 raw += " (no trasnfer)";
+
+            if (IsWorn(item))
+                raw += " (worn)";
+
+            if (IsAttached(item))
+            {
+                raw += " (worn on " + AttachedTo(item).ToString() + ")";
+            }
 
             return raw;
         }
@@ -382,15 +536,32 @@ namespace Radegast
 
                     ToolStripMenuItem ctxItem;
 
+                    if (IsAttached(item))
+                    {
+                        ctxItem = new ToolStripMenuItem("Detach", null, OnInvContextClick);
+                        ctxItem.Name = "detach";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+                    if (!IsAttached(item) && (item.InventoryType == InventoryType.Object || item.InventoryType == InventoryType.Attachment))
+                    {
+                        ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick);
+                        ctxItem.Name = "wear_attachment";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+
                     ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                     ctxItem.Name = "rename_item";
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxInv.Items.Add(new ToolStripSeparator());
-
-                    ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
-                    ctxItem.Name = "delete_item";
-                    ctxInv.Items.Add(ctxItem);
+                    if (!IsAttached(item))
+                    {
+                        ctxInv.Items.Add(new ToolStripSeparator());
+                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
+                        ctxItem.Name = "delete_item";
+                        ctxInv.Items.Add(ctxItem);
+                    }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
 
@@ -411,6 +582,7 @@ namespace Radegast
 
             if (invTree.SelectedNode.Tag is InventoryFolder)
             {
+                #region Folder actions
                 InventoryFolder f = (InventoryFolder)invTree.SelectedNode.Tag;
 
                 switch (cmd)
@@ -465,11 +637,12 @@ namespace Radegast
                     case "rename_folder":
                         invTree.SelectedNode.BeginEdit();
                         break;
-
                 }
+                #endregion
             }
             else if (invTree.SelectedNode.Tag is InventoryItem)
             {
+                #region Item actions
                 InventoryItem item = (InventoryItem)invTree.SelectedNode.Tag;
 
                 switch(cmd)
@@ -482,7 +655,18 @@ namespace Radegast
                     case "rename_item":
                         invTree.SelectedNode.BeginEdit();
                         break;
+
+                    case "detach":
+                        client.Appearance.Detach(item.UUID);
+                        attachments.Remove(item.UUID);
+                        invTree.SelectedNode.Text = ItemLabel(item, false);
+                        break;
+
+                    case "wear_attachment":
+                        client.Appearance.Attach(item, AttachmentPoint.Default);
+                        break;
                 }
+                #endregion
             }
         }
         #endregion
