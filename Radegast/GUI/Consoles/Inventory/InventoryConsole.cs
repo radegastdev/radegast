@@ -165,6 +165,10 @@ namespace Radegast
                             attachments[invID].Item = item;
                             Store_OnInventoryObjectUpdated(attachments[invID].Item, attachments[invID].Item);
                         }
+                        else
+                        {
+                            client.Inventory.RequestFetchInventory(invID, client.Self.AgentID);
+                        }
                     }
                     break;
                 }
@@ -314,6 +318,139 @@ namespace Radegast
         }
         #endregion
 
+        #region Node manipulation
+        int GetDirImageIndex(string t)
+        {
+            int res = frmMain.ImageNames.IndexOf("inv_folder_" + t);
+            if (res == -1)
+            {
+                switch (t)
+                {
+                    case "trashfolder":
+                        return frmMain.ImageNames.IndexOf("inv_folder_trash");
+
+                    case "lostandfoundfolder":
+                        return frmMain.ImageNames.IndexOf("inv_folder_lostandfound");
+
+                    case "lsltext":
+                        return frmMain.ImageNames.IndexOf("inv_folder_script");
+                }
+                return frmMain.ImageNames.IndexOf("inv_folder_plain_closed");
+            }
+            return res;
+        }
+
+        int GetItemImageIndex(string t)
+        {
+            int res = frmMain.ImageNames.IndexOf("inv_item_" + t);
+            if (res == -1)
+            {
+                if (t == "lsltext")
+                {
+                    return frmMain.ImageNames.IndexOf("inv_item_script");
+                }
+                else if (t == "callingcard")
+                {
+                    return frmMain.ImageNames.IndexOf("inv_item_callingcard_offline");
+                }
+            }
+            return res;
+        }
+
+        TreeNode AddBase(TreeNode parent, InventoryBase obj)
+        {
+            if (obj is InventoryItem)
+            {
+                return AddItem(parent, (InventoryItem)obj);
+            }
+            else
+            {
+                return AddDir(parent, (InventoryFolder)obj);
+            }
+        }
+
+        TreeNode AddDir(TreeNode parentNode, InventoryFolder f)
+        {
+            TreeNode dirNode = new TreeNode();
+
+            TreeNode dummy = new TreeNode();
+            dummy.Name = "DummyTreeNode";
+            dummy.Text = "Loading...";
+            dirNode.ImageIndex = -1;
+            dirNode.SelectedImageIndex = -1;
+            dirNode.Nodes.Add(dummy);
+
+            dirNode.Name = f.Name;
+            dirNode.Text = f.Name;
+            dirNode.Tag = f;
+            dirNode.ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower());
+            dirNode.SelectedImageIndex = dirNode.ImageIndex;
+            if (parentNode == null)
+            {
+                invTree.Nodes.Add(dirNode);
+            }
+            else
+            {
+                parentNode.Nodes.Add(dirNode);
+            }
+            return dirNode;
+        }
+
+
+        TreeNode AddItem(TreeNode parent, InventoryItem item)
+        {
+            TreeNode itemNode = new TreeNode();
+            itemNode.Name = item.Name;
+            itemNode.Text = ItemLabel(item, false);
+            itemNode.Tag = item;
+            int img = -1;
+            if (item is InventoryWearable)
+            {
+                InventoryWearable w = item as InventoryWearable;
+                img = GetItemImageIndex(w.WearableType.ToString().ToLower());
+            }
+            else
+            {
+                img = GetItemImageIndex(item.AssetType.ToString().ToLower());
+            }
+            itemNode.ImageIndex = img;
+            itemNode.SelectedImageIndex = img;
+            parent.Nodes.Add(itemNode);
+            return itemNode;
+        }
+
+        TreeNode findNodeForItem(TreeNode startNode, UUID itemID)
+        {
+            if (((InventoryBase)invRootNode.Tag).UUID == itemID)
+            {
+                return invRootNode;
+            }
+
+            foreach (TreeNode node in startNode.Nodes)
+            {
+                InventoryBase b = (InventoryBase)node.Tag;
+                if (b == null)
+                {
+                    continue;
+                }
+                if (b.UUID == itemID)
+                {
+                    return node;
+                }
+                else
+                {
+                    TreeNode subNode = findNodeForItem(node, itemID);
+                    if (subNode != null)
+                    {
+                        return subNode;
+                    }
+                }
+            }
+            return null;
+        }
+
+        #endregion
+
         private void btnProfile_Click(object sender, EventArgs e)
         {
             (new frmProfile(instance, txtCreator.Text, (UUID)txtCreator.Tag)).Show();
@@ -414,6 +551,21 @@ namespace Radegast
             {
                 return attachments.ContainsKey(item.UUID);
             }
+        }
+
+        public InventoryItem AttachmentAt(AttachmentPoint point)
+        {
+            lock (attachments)
+            {
+                foreach (KeyValuePair<UUID, AttachmentInfo> att in attachments)
+                {
+                    if (att.Value.Point == point)
+                    {
+                        return att.Value.Item;
+                    }
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -536,32 +688,75 @@ namespace Radegast
 
                     ToolStripMenuItem ctxItem;
 
+                    ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
+                    ctxItem.Name = "rename_item";
+                    ctxInv.Items.Add(ctxItem);
+
+                    ctxInv.Items.Add(new ToolStripSeparator());
+                    ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
+                    ctxItem.Name = "delete_item";
+                    if (IsAttached(item) || IsWorn(item))
+                    {
+                        ctxItem.Enabled = false;
+                    }
+                    ctxInv.Items.Add(ctxItem);
+
                     if (IsAttached(item))
                     {
-                        ctxItem = new ToolStripMenuItem("Detach", null, OnInvContextClick);
+                        ctxItem = new ToolStripMenuItem("Detach from yourself", null, OnInvContextClick);
                         ctxItem.Name = "detach";
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (!IsAttached(item) && (item.InventoryType == InventoryType.Object || item.InventoryType == InventoryType.Attachment))
                     {
+                        ToolStripMenuItem ctxItemAttach = new ToolStripMenuItem("Attach to");
+                        ctxInv.Items.Add(ctxItemAttach);
+
+                        ToolStripMenuItem ctxItemAttachHUD = new ToolStripMenuItem("Attach to HUD");
+                        ctxInv.Items.Add(ctxItemAttachHUD);
+
+                        foreach (AttachmentPoint pt in Enum.GetValues(typeof(AttachmentPoint)))
+                        {
+                            if (!pt.ToString().StartsWith("HUD"))
+                            {
+                                string name = pt.ToString();
+                                
+                                InventoryItem alreadyAttached = null;
+                                if ((alreadyAttached = AttachmentAt(pt)) != null)
+                                {
+                                    name += " (" + alreadyAttached.Name + ")";
+                                }
+
+                                ToolStripMenuItem ptItem = new ToolStripMenuItem(name, null, OnInvContextClick);
+                                ptItem.Name = pt.ToString();
+                                ptItem.Tag = pt;
+                                ptItem.Name = "attach_to";
+                                ctxItemAttach.DropDownItems.Add(ptItem);
+                            }
+                            else
+                            {
+                                string name = pt.ToString().Substring(3);
+
+                                InventoryItem alreadyAttached = null;
+                                if ((alreadyAttached = AttachmentAt(pt)) != null)
+                                {
+                                    name += " (" + alreadyAttached.Name + ")";
+                                }
+                                
+                                ToolStripMenuItem ptItem = new ToolStripMenuItem(name, null, OnInvContextClick);
+                                ptItem.Name = pt.ToString();
+                                ptItem.Tag = pt;
+                                ptItem.Name = "attach_to";
+                                ctxItemAttachHUD.DropDownItems.Add(ptItem);
+                            }
+                        }
+
                         ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick);
                         ctxItem.Name = "wear_attachment";
                         ctxInv.Items.Add(ctxItem);
                     }
 
-
-                    ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
-                    ctxItem.Name = "rename_item";
-                    ctxInv.Items.Add(ctxItem);
-
-                    if (!IsAttached(item))
-                    {
-                        ctxInv.Items.Add(new ToolStripSeparator());
-                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
-                        ctxItem.Name = "delete_item";
-                        ctxInv.Items.Add(ctxItem);
-                    }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
 
@@ -664,6 +859,11 @@ namespace Radegast
 
                     case "wear_attachment":
                         client.Appearance.Attach(item, AttachmentPoint.Default);
+                        break;
+
+                    case "attach_to":
+                        AttachmentPoint pt = (AttachmentPoint)((ToolStripMenuItem)sender).Tag;
+                        client.Appearance.Attach(item, pt);
                         break;
                 }
                 #endregion

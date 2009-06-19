@@ -163,9 +163,6 @@
     <Compile Include="GUI\Consoles\Inventory\InventoryConsole.Designer.cs">
       <DependentUpon>InventoryConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Consoles\Inventory\InventoryConsoleNodes.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="GUI\Consoles\MasterTab.cs">
       <SubType>UserControl</SubType>
     </Compile>
