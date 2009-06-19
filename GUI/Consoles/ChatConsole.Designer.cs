@@ -186,6 +186,7 @@ namespace Radegast
             this.lvwObjects.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvwObjects.FullRowSelect = true;
             this.lvwObjects.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lvwObjects.HideSelection = false;
             this.lvwObjects.LabelWrap = false;
             this.lvwObjects.Location = new System.Drawing.Point(0, 0);
             this.lvwObjects.MultiSelect = false;
@@ -212,7 +213,7 @@ namespace Radegast
             this.ctxPoint,
             this.ctxSource});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(157, 246);
+            this.avatarContext.Size = new System.Drawing.Size(157, 224);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile

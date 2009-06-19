@@ -190,15 +190,6 @@ namespace Radegast
             }
             #endregion
 
-            #region Update selected prim text box
-            p = txtCurrentPrim.Tag as Primitive;
-            if (p != null && p.ID == props.ObjectID)
-            {
-                p.Properties = props;
-                txtCurrentPrim.Text = GetObjectName(p);
-            }
-            #endregion
-
         }
 
         private void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
@@ -418,8 +409,6 @@ namespace Radegast
                 gbxInworld.Enabled = true;
                 currentPrim = lstPrims.SelectedItems[0].Tag as Primitive;
                 btnBuy.Tag = currentPrim;
-                txtCurrentPrim.Text = GetObjectName(currentPrim);
-                txtCurrentPrim.Tag = currentPrim;
 
                 if ((currentPrim.Flags & PrimFlags.Money) != 0)
                 {

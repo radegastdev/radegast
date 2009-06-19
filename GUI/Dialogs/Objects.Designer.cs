@@ -76,7 +76,6 @@ namespace Radegast
             this.btnRefresh = new System.Windows.Forms.Button();
             this.nudRadius = new System.Windows.Forms.NumericUpDown();
             this.lblDistance = new System.Windows.Forms.Label();
-            this.txtCurrentPrim = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rbName = new System.Windows.Forms.RadioButton();
             this.rbDistance = new System.Windows.Forms.RadioButton();
@@ -226,12 +225,13 @@ namespace Radegast
             this.columnHeader1});
             this.lstPrims.FullRowSelect = true;
             this.lstPrims.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstPrims.HideSelection = false;
             this.lstPrims.LabelWrap = false;
-            this.lstPrims.Location = new System.Drawing.Point(12, 66);
+            this.lstPrims.Location = new System.Drawing.Point(12, 39);
             this.lstPrims.MultiSelect = false;
             this.lstPrims.Name = "lstPrims";
             this.lstPrims.ShowGroups = false;
-            this.lstPrims.Size = new System.Drawing.Size(361, 348);
+            this.lstPrims.Size = new System.Drawing.Size(361, 375);
             this.lstPrims.TabIndex = 10;
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
@@ -283,14 +283,6 @@ namespace Radegast
             this.lblDistance.Size = new System.Drawing.Size(55, 13);
             this.lblDistance.TabIndex = 7;
             this.lblDistance.Text = "radius (m)";
-            // 
-            // txtCurrentPrim
-            // 
-            this.txtCurrentPrim.Location = new System.Drawing.Point(12, 39);
-            this.txtCurrentPrim.Name = "txtCurrentPrim";
-            this.txtCurrentPrim.ReadOnly = true;
-            this.txtCurrentPrim.Size = new System.Drawing.Size(361, 21);
-            this.txtCurrentPrim.TabIndex = 13;
             // 
             // groupBox1
             // 
@@ -352,7 +344,6 @@ namespace Radegast
             this.ClientSize = new System.Drawing.Size(492, 445);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.txtCurrentPrim);
             this.Controls.Add(this.nudRadius);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.lstPrims);
@@ -399,7 +390,6 @@ namespace Radegast
         private System.Windows.Forms.NumericUpDown nudRadius;
         private System.Windows.Forms.Label lblDistance;
         private System.Windows.Forms.Button btnBuy;
-        private System.Windows.Forms.TextBox txtCurrentPrim;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton rbName;
         private System.Windows.Forms.RadioButton rbDistance;
