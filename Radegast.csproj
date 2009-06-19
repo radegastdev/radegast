@@ -172,10 +172,10 @@
     <Compile Include="GUI\Consoles\MasterTab.Designer.cs">
       <DependentUpon>MasterTab.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Consoles\Notecard.cs">
+    <Compile Include="GUI\Consoles\Assets\Notecard.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Notecard.Designer.cs">
+    <Compile Include="GUI\Consoles\Assets\Notecard.Designer.cs">
       <DependentUpon>Notecard.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Consoles\OutfitTextures.cs">
@@ -196,10 +196,10 @@
     <Compile Include="GUI\Consoles\Preferences\PrefTextConsole.Designer.cs">
       <DependentUpon>PrefTextConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Consoles\SLImageHandler.cs">
+    <Compile Include="GUI\Consoles\Assets\SLImageHandler.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\SLImageHandler.Designer.cs">
+    <Compile Include="GUI\Consoles\Assets\SLImageHandler.Designer.cs">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\DebugLog.cs">
@@ -392,7 +392,7 @@
       <DependentUpon>MasterTab.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Consoles\Notecard.resx">
+    <EmbeddedResource Include="GUI\Consoles\Assets\Notecard.resx">
       <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -408,7 +408,7 @@
       <SubType>Designer</SubType>
       <DependentUpon>PrefTextConsole.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Consoles\SLImageHandler.resx">
+    <EmbeddedResource Include="GUI\Consoles\Assets\SLImageHandler.resx">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

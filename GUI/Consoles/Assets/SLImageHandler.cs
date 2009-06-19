@@ -85,7 +85,7 @@ namespace Radegast
                     }
                     else if (state == TextureRequestState.Progress)
                     {
-                        DisplayPartialImage(assetTexture);
+                        // DisplayPartialImage(assetTexture);
                     }
                 }, true);
             }

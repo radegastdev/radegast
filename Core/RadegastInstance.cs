@@ -97,7 +97,7 @@ namespace Radegast
         {
             InitializeLoggingAndConfig();
 
-            Settings.PIPELINE_REFRESH_INTERVAL = 2000.0f;
+            // Settings.PIPELINE_REFRESH_INTERVAL = 2000.0f;
 
             client = new GridClient();
             client.Settings.ALWAYS_REQUEST_OBJECTS = true;
@@ -105,7 +105,7 @@ namespace Radegast
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ENABLE_SIMSTATS = true;
             client.Settings.FETCH_MISSING_INVENTORY = true;
-            client.Settings.MULTIPLE_SIMS = true;
+            client.Settings.MULTIPLE_SIMS = false;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
 
@@ -119,6 +119,7 @@ namespace Radegast
             client.Settings.LOGIN_TIMEOUT = 120 * 1000;
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
             client.Settings.USE_INTERPOLATION_TIMER = false;
+            client.Settings.MAX_CONCURRENT_TEXTURE_DOWNLOADS = 20;
 
             netcom = new RadegastNetcom(client);
             imageCache = new ImageCache();

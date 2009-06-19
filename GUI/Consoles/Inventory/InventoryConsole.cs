@@ -31,11 +31,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using OpenMetaverse;
 
@@ -52,6 +48,8 @@ namespace Radegast
         private TreeNode invRootNode;
         private string newItemName = string.Empty;
         private List<UUID> fetchedFolders = new List<UUID>();
+        private System.Threading.Timer _EditTimer;
+        private TreeNode _EditNode;
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -70,6 +68,8 @@ namespace Radegast
             invTree.TreeViewNodeSorter = new InvNodeSorter();
             invRootNode = AddDir(null, Inventory.RootFolder);
             invTree.Nodes[0].Expand();
+
+            _EditTimer = new System.Threading.Timer(OnLabelEditTimer, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
             // Callbacks
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
@@ -177,7 +177,7 @@ namespace Radegast
                 else // Update
                 {
                     currentNode.Tag = newObject;
-                    currentNode.Text = newObject.Name;
+                    currentNode.Text = ItemLabel(newObject, false);
                     currentNode.Name = newObject.Name;
                 }
             }
@@ -276,6 +276,27 @@ namespace Radegast
             }
         }
 
+        public string ItemLabel(InventoryBase invBase, bool returnRaw)
+        {
+            if (returnRaw || (invBase is InventoryFolder))
+                return invBase.Name;
+
+            InventoryItem item = (InventoryItem)invBase;
+
+            string raw = item.Name;
+
+            if ((item.Permissions.OwnerMask & PermissionMask.Modify) == 0)
+                raw += " (no modify)";
+
+            if ((item.Permissions.OwnerMask & PermissionMask.Copy) == 0)
+                raw += " (no copy)";
+
+            if ((item.Permissions.OwnerMask & PermissionMask.Transfer) == 0)
+                raw += " (no trasnfer)";
+
+            return raw;
+        }
+
         void invTree_MouseClick(object sender, MouseEventArgs e)
         {
             TreeNode node = invTree.GetNodeAt(new Point(e.X, e.Y));
@@ -344,7 +365,7 @@ namespace Radegast
                     }
 
 
-                    if (folder.PreferredType == AssetType.Unknown)
+                    //if (folder.PreferredType == AssetType.Unknown)
                     {
                         ctxInv.Items.Add(new ToolStripSeparator());
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
@@ -483,7 +504,7 @@ namespace Radegast
                 List<InventoryBase> contents = client.Inventory.Store.GetContents(f);
                 foreach (InventoryBase item in contents)
                 {
-                    UpdateBase(node, item);
+                    Store_OnInventoryObjectUpdated(item, item);
                 }
             }
             catch (Exception)
@@ -521,20 +542,62 @@ namespace Radegast
             }
         }
 
+        private bool _EditingNode = false;
+
+        private void OnLabelEditTimer(object sender)
+        {
+            if (_EditNode == null || !(_EditNode.Tag is InventoryBase))
+                return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        OnLabelEditTimer(sender);
+                    }
+                ));
+                return;
+            }
+
+            Logger.DebugLog("In OnLabelEditTimer()");
+            _EditingNode = true;
+            _EditNode.Text = ItemLabel((InventoryBase)_EditNode.Tag, true);
+            _EditNode.BeginEdit();
+        }
+
         private void invTree_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
-            if (e.Node != null &&
-                e.Node.Tag is InventoryFolder &&
-                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown)
+            if (e.Node == null ||
+                !(e.Node.Tag is InventoryBase) ||
+                (e.Node.Tag is InventoryFolder && ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown)
+                )
             {
                 e.CancelEdit = true;
+                return;
+            }
+
+            if (_EditingNode)
+            {
+                _EditingNode = false;
+            }
+            else
+            {
+                e.CancelEdit = true;
+                _EditNode = e.Node;
+                _EditTimer.Change(20, System.Threading.Timeout.Infinite);
             }
         }
 
         private void invTree_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
+            Logger.DebugLog("In invTree_AfterLabelEdit()");
+
             if (string.IsNullOrEmpty(e.Label))
             {
+                if (e.Node.Tag is InventoryBase)
+                {
+                    e.Node.Text = ItemLabel((InventoryBase)e.Node.Tag, false);
+                }
                 e.CancelEdit = true;
                 return;
             }
@@ -549,6 +612,7 @@ namespace Radegast
             {
                 InventoryItem item = (InventoryItem)e.Node.Tag;
                 item.Name = e.Label;
+                e.Node.Text = ItemLabel((InventoryBase)item, false);
                 client.Inventory.MoveItem(item.UUID, item.ParentUUID, item.Name);
             }
 
