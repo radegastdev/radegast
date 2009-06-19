@@ -93,27 +93,6 @@ namespace Radegast
             }
         }
 
-        TreeNode UpdateBase(TreeNode parent, InventoryBase obj)
-        {
-            TreeNode existing = null;
-            foreach (TreeNode node in parent.Nodes)
-            {
-                if (node.Tag is InventoryBase && ((InventoryBase)node.Tag).UUID == obj.UUID)
-                {
-                    existing = node;
-                    break;
-                }
-            }
-
-            if (existing != null)
-            {
-                parent.Nodes.Remove(existing);
-            }
-
-            return AddBase(parent, obj);
-
-        }
-
         TreeNode AddDir(TreeNode parentNode, InventoryFolder f)
         {
             TreeNode dirNode = new TreeNode();
@@ -146,7 +125,7 @@ namespace Radegast
         {
             TreeNode itemNode = new TreeNode();
             itemNode.Name = item.Name;
-            itemNode.Text = item.Name;
+            itemNode.Text = ItemLabel(item, false);
             itemNode.Tag = item;
             int img = -1;
             if (item is InventoryWearable)
