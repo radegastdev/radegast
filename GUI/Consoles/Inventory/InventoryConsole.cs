@@ -883,6 +883,7 @@ namespace Radegast
 
             fetchFolder(f.UUID, f.OwnerID, false);
 
+            /*
             try
             {
                 List<InventoryBase> contents = client.Inventory.Store.GetContents(f);
@@ -895,6 +896,7 @@ namespace Radegast
             {
                 fetchFolder(f.UUID, f.OwnerID, true);
             }
+             */
 
             TreeNode dummy = null;
             foreach (TreeNode n in node.Nodes)
