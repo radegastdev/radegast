@@ -200,7 +200,7 @@ namespace Radegast
             {
                 case -1: //Custom
                     netcom.LoginOptions.StartLocation = StartLocationType.Custom;
-                    netcom.LoginOptions.StartLocationCustom = txtCustomLoginUri.Text;
+                    netcom.LoginOptions.StartLocationCustom = cbxLocation.Text;
                     break;
 
                 case 0: //Home
