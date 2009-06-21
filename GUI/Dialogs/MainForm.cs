@@ -40,6 +40,7 @@ using System.Timers;
 using System.Windows.Forms;
 using System.Resources;
 using System.IO;
+using System.Web;
 using RadegastNc;
 using OpenMetaverse;
 using OpenMetaverse.Imaging;
@@ -400,7 +401,7 @@ namespace Radegast
 
             if (m.Success)
             {
-                string region = Uri.UnescapeDataString(m.Groups[2].Value);
+                string region  = HttpUtility.UrlDecode(m.Groups[2].Value);
                 int x = int.Parse(m.Groups[3].Value);
                 int y = int.Parse(m.Groups[4].Value);
                 int z = 0;
