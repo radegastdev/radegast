@@ -391,7 +391,7 @@ namespace Radegast
         #region Public methods
         public void processLink(string link)
         {
-            if (!(link.StartsWith("http://") || link.StartsWith("ftp://")))
+            if (!link.Contains("://"))
             {
                 link = "http://" + link;
             }
