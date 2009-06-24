@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="item">
+<h1>Welcome to Grid URL Persister</h1>
+<p>&nbsp;</p>
+<p>Designed to make work with <a href="http://wiki.secondlife.com/wiki/LSL_http_server" title="LSL http-in functionality wiki">http-in</a> easier.</p>
+<code>Usage:
+	
+http://gridurl.appspot.com/reg?service=&lt;service uuid&gt;&amp;url=&lt;current url&gt
+
+service uuid: unique key for your service that you want persistant url for.
+You can use <a href="/random" title="Random UUID generator">this page</a> to generate a unique UUID for your service.
+Use only one key for a service!
+
+current url: url gotten from latest successful llRequestURL()
+  note, don't forget to llEscapeURL() it and append a / at the end of it
+
+This will return string OK as the body if successful.
+
+Now you can use redirect service:
+http://gridurl.appspot.com/go/&lt;service uuid&gt;
+
+and fetch the latest URL by getting:
+http://gridurl.appspot.com/get/&lt;service uuid&gt;
+
+</code>
+</div>
+{% endblock %}
