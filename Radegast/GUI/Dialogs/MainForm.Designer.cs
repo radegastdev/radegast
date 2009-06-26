@@ -431,7 +431,7 @@ namespace Radegast
             this.tlblLoginName.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.tlblLoginName.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.tlblLoginName.Name = "tlblLoginName";
-            this.tlblLoginName.Size = new System.Drawing.Size(47, 20);
+            this.tlblLoginName.Size = new System.Drawing.Size(47, 19);
             this.tlblLoginName.Text = "Offline";
             // 
             // tlblMoneyBalance
@@ -448,7 +448,7 @@ namespace Radegast
             this.tlblRegionInfo.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
             this.tlblRegionInfo.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.tlblRegionInfo.Name = "tlblRegionInfo";
-            this.tlblRegionInfo.Size = new System.Drawing.Size(67, 20);
+            this.tlblRegionInfo.Size = new System.Drawing.Size(67, 19);
             this.tlblRegionInfo.Text = "No Region";
             this.tlblRegionInfo.Click += new System.EventHandler(this.tlblRegionInfo_Click);
             // 
@@ -457,7 +457,7 @@ namespace Radegast
             this.icoHealth.Image = global::Radegast.Properties.Resources.status_health;
             this.icoHealth.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.icoHealth.Name = "icoHealth";
-            this.icoHealth.Size = new System.Drawing.Size(67, 20);
+            this.icoHealth.Size = new System.Drawing.Size(67, 16);
             this.icoHealth.Text = "100%";
             this.icoHealth.ToolTipText = "Damage enabled on the parcel";
             this.icoHealth.Visible = false;
@@ -468,7 +468,7 @@ namespace Radegast
             this.icoNoFly.Image = global::Radegast.Properties.Resources.status_no_fly;
             this.icoNoFly.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.icoNoFly.Name = "icoNoFly";
-            this.icoNoFly.Size = new System.Drawing.Size(32, 20);
+            this.icoNoFly.Size = new System.Drawing.Size(32, 16);
             this.icoNoFly.Text = "Fly";
             this.icoNoFly.ToolTipText = "Flying not allowed here";
             this.icoNoFly.Visible = false;
@@ -479,7 +479,7 @@ namespace Radegast
             this.icoNoBuild.Image = global::Radegast.Properties.Resources.status_no_build;
             this.icoNoBuild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.icoNoBuild.Name = "icoNoBuild";
-            this.icoNoBuild.Size = new System.Drawing.Size(32, 20);
+            this.icoNoBuild.Size = new System.Drawing.Size(32, 16);
             this.icoNoBuild.Text = "Build";
             this.icoNoBuild.ToolTipText = "No building or rezzing objects allowed on this parcel";
             this.icoNoBuild.Visible = false;
@@ -490,7 +490,7 @@ namespace Radegast
             this.icoNoScript.Image = global::Radegast.Properties.Resources.status_no_scripts;
             this.icoNoScript.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.icoNoScript.Name = "icoNoScript";
-            this.icoNoScript.Size = new System.Drawing.Size(32, 20);
+            this.icoNoScript.Size = new System.Drawing.Size(32, 16);
             this.icoNoScript.Text = "Script";
             this.icoNoScript.ToolTipText = "Scripts disallowd on the parcel";
             this.icoNoScript.Visible = false;
@@ -501,7 +501,7 @@ namespace Radegast
             this.icoNoPush.Image = global::Radegast.Properties.Resources.status_no_push;
             this.icoNoPush.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.icoNoPush.Name = "icoNoPush";
-            this.icoNoPush.Size = new System.Drawing.Size(32, 20);
+            this.icoNoPush.Size = new System.Drawing.Size(32, 16);
             this.icoNoPush.Text = "Push";
             this.icoNoPush.ToolTipText = "No pushing by scripts allowed";
             this.icoNoPush.Visible = false;
@@ -512,7 +512,7 @@ namespace Radegast
             this.icoNoVoice.Image = global::Radegast.Properties.Resources.status_no_voice;
             this.icoNoVoice.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.icoNoVoice.Name = "icoNoVoice";
-            this.icoNoVoice.Size = new System.Drawing.Size(32, 20);
+            this.icoNoVoice.Size = new System.Drawing.Size(32, 16);
             this.icoNoVoice.Text = "Push";
             this.icoNoVoice.ToolTipText = "Voice chat disabled";
             this.icoNoVoice.Visible = false;
@@ -522,9 +522,9 @@ namespace Radegast
             this.tlblParcel.AutoToolTip = true;
             this.tlblParcel.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
             this.tlblParcel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tlblParcel.Margin = new System.Windows.Forms.Padding(0, 3, -5, 2);
             this.tlblParcel.Name = "tlblParcel";
-            this.tlblParcel.Size = new System.Drawing.Size(58, 20);
+            this.tlblParcel.Padding = new System.Windows.Forms.Padding(0, 2, 0, 2);
+            this.tlblParcel.Size = new System.Drawing.Size(58, 19);
             this.tlblParcel.Text = "No Parcel";
             // 
             // toolStripContainer1
