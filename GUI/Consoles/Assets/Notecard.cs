@@ -67,11 +67,13 @@ namespace Radegast
 
         void Notecard_Disposed(object sender, EventArgs e)
         {
-            client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
+            client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
         }
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
+            if (transfer.AssetID != notecard.AssetUUID) return;
+
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(delegate()
