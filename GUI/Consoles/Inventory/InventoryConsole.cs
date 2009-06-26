@@ -488,6 +488,13 @@ namespace Radegast
                     note.Dock = DockStyle.Fill;
                     pnlDetail.Controls.Add(note);
                     break;
+
+                case AssetType.Landmark:
+                    Landmark landmark = new Landmark(instance, (InventoryLandmark)item);
+                    landmark.Dock = DockStyle.Fill;
+                    pnlDetail.Controls.Add(landmark);
+                    break;
+
             }
         }
 
