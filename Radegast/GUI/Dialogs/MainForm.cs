@@ -201,15 +201,19 @@ namespace Radegast
             if (debugLogForm != null) {
                 debugLogForm.Close();
                 debugLogForm = null;
-            };
+            }
 
             if (worldMap != null)
             {
                 worldMap.Close();
                 worldMap = null;
             }
-
-            if (netcom.IsLoggedIn) netcom.Logout();
+            
+            if (netcom.IsLoggedIn)
+            {
+                client.Inventory.Store.SaveToDisk(instance.InventoryCacheFileName);
+                netcom.Logout();
+            }
 
             instance.Config.CurrentConfig.MainWindowState = (int)this.WindowState;
         }
