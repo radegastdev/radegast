@@ -76,6 +76,8 @@ namespace Radegast
         /// </summary>
         public string ClientDir { get { return clientDir; } }
 
+        public string InventoryCacheFileName { get { return Path.Combine(ClientDir, "inventory.cache"); } }
+
         private string animCacheDir;
         public string AnimCacheDir { get { return animCacheDir; } }
 
