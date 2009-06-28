@@ -33,6 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast
@@ -43,6 +44,8 @@ namespace Radegast
         {
             public Primitive Prim;
             public InventoryItem Item;
+            public UUID InventoryID;
+            public UUID PrimID;
             public AttachmentPoint Point
             {
                 get
@@ -71,6 +74,10 @@ namespace Radegast
         private System.Threading.Timer _EditTimer;
         private TreeNode _EditNode;
         private Dictionary<UUID, AttachmentInfo> attachments = new Dictionary<UUID, AttachmentInfo>();
+        private System.Threading.Timer TreeUpdateTimer;
+        private Queue<InventoryBase> ItemsToAdd = new Queue<InventoryBase>();
+        private bool TreeUpdateInProgress = false;
+
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -83,20 +90,27 @@ namespace Radegast
             Inventory = Manager.Store;
             Inventory.RootFolder.OwnerID = client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
+            invRootNode = AddDir(null, Inventory.RootFolder);
+            Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
+            Thread InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
+            InventoryUpdate.Name = "InventoryUpdate";
+            InventoryUpdate.IsBackground = true;
+            InventoryUpdate.Start();
+            AddFolderFromStore(invRootNode, Inventory.RootFolder);
+            invRootNode.Expand();
+
+            invTree.TreeViewNodeSorter = new InvNodeSorter();
             invTree.AfterExpand += new TreeViewEventHandler(TreeView_AfterExpand);
             invTree.MouseClick += new MouseEventHandler(invTree_MouseClick);
             invTree.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(invTree_NodeMouseDoubleClick);
-            invTree.TreeViewNodeSorter = new InvNodeSorter();
-            invRootNode = AddDir(null, Inventory.RootFolder);
-            invTree.Nodes[0].Expand();
 
             _EditTimer = new System.Threading.Timer(OnLabelEditTimer, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
             // Callbacks
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-            client.Inventory.Store.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
-            client.Inventory.Store.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
-            client.Inventory.Store.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
+            Inventory.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
+            Inventory.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
+            Inventory.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
             client.Objects.OnNewAttachment += new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
 
         }
@@ -104,9 +118,9 @@ namespace Radegast
         void InventoryConsole_Disposed(object sender, EventArgs e)
         {
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-            client.Inventory.Store.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
-            client.Inventory.Store.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
-            client.Inventory.Store.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
+            Inventory.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
+            Inventory.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
+            Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
             client.Objects.OnNewAttachment -= new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
         }
         #endregion
@@ -122,7 +136,8 @@ namespace Radegast
                 {
                     AttachmentInfo attachment = new AttachmentInfo();
                     attachment.Prim = prim;
-                    UUID invID = new UUID(prim.NameValues[i].Value.ToString());
+                    attachment.InventoryID = new UUID(prim.NameValues[i].Value.ToString());
+                    attachment.PrimID = prim.ID;
 
                     lock (attachments)
                     {
@@ -139,7 +154,7 @@ namespace Radegast
                             }
                         }
 
-                        if (oldAttachment != null)
+                        if (oldAttachment != null && oldAttachment.InventoryID != attachment.InventoryID)
                         {
                             attachments.Remove(oldAttachmentUUID);
                             if (oldAttachment.Item != null)
@@ -149,25 +164,29 @@ namespace Radegast
                         }
 
                         // Add new attachment info
-                        if (!attachments.ContainsKey(invID))
+                        if (!attachments.ContainsKey(attachment.InventoryID))
                         {
-                            attachments.Add(invID, attachment);
+                            attachments.Add(attachment.InventoryID, attachment);
                             
                         }
                         else
                         {
-                            attachments[invID].Prim = prim;
+                            attachments[attachment.InventoryID].Prim = prim;
                         }
 
-                        if (client.Inventory.Store.Contains(invID))
+                        // Don't update the tree yet if we're still updating invetory tree from server
+                        if (!TreeUpdateInProgress)
                         {
-                            InventoryItem item = (InventoryItem)client.Inventory.Store[invID];
-                            attachments[invID].Item = item;
-                            Store_OnInventoryObjectUpdated(attachments[invID].Item, attachments[invID].Item);
-                        }
-                        else
-                        {
-                            client.Inventory.RequestFetchInventory(invID, client.Self.AgentID);
+                            if (Inventory.Contains(attachment.InventoryID))
+                            {
+                                InventoryItem item = (InventoryItem)Inventory[attachment.InventoryID];
+                                attachments[attachment.InventoryID].Item = item;
+                                Store_OnInventoryObjectUpdated(attachments[attachment.InventoryID].Item, attachments[attachment.InventoryID].Item);
+                            }
+                            else
+                            {
+                                client.Inventory.RequestFetchInventory(attachment.InventoryID, client.Self.AgentID);
+                            }
                         }
                     }
                     break;
@@ -177,9 +196,24 @@ namespace Radegast
 
         void Store_OnInventoryObjectAdded(InventoryBase obj)
         {
+            if (TreeUpdateTimer != null)
+            {
+                lock (ItemsToAdd)
+                {
+                    ItemsToAdd.Enqueue(obj);
+                }
+            }
+            else
+            {
+                Exec_OnInventoryObjectAdded(obj);
+            }
+        }
+
+        void Exec_OnInventoryObjectAdded(InventoryBase obj)
+        {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
+                Invoke(new MethodInvoker(delegate()
                     {
                         Store_OnInventoryObjectAdded(obj);
                     }
@@ -372,14 +406,6 @@ namespace Radegast
         TreeNode AddDir(TreeNode parentNode, InventoryFolder f)
         {
             TreeNode dirNode = new TreeNode();
-
-            TreeNode dummy = new TreeNode();
-            dummy.Name = "DummyTreeNode";
-            dummy.Text = "Loading...";
-            dirNode.ImageIndex = -1;
-            dirNode.SelectedImageIndex = -1;
-            dirNode.Nodes.Add(dummy);
-
             dirNode.Name = f.Name;
             dirNode.Text = f.Name;
             dirNode.Tag = f;
@@ -439,14 +465,136 @@ namespace Radegast
                 }
                 else
                 {
-                    TreeNode subNode = findNodeForItem(node, itemID);
-                    if (subNode != null)
+                    if (node.Nodes.Count > 0)
                     {
-                        return subNode;
+                        TreeNode subNode = findNodeForItem(node, itemID);
+                        if (subNode != null)
+                        {
+                            return subNode;
+                        }
                     }
                 }
             }
             return null;
+        }
+
+        #endregion
+
+        #region Private methods
+        private void AddFolderFromStore(TreeNode parent, InventoryFolder f)
+        {
+            List<InventoryBase> contents = Inventory.GetContents(f);
+            foreach (InventoryBase item in contents)
+            {
+                TreeNode node = AddBase(parent, item);
+                if (item is InventoryFolder)
+                {
+                    AddFolderFromStore(node, (InventoryFolder)item);
+                }
+            }
+        }
+
+        private void TraverseNodes(InventoryNode start)
+        {
+            List<InventoryNode> items = new List<InventoryNode>();
+            List<InventoryNode> folders = new List<InventoryNode>();
+            foreach (InventoryNode node in start.Nodes.Values)
+            {
+                if (node.Data is InventoryFolder)
+                {
+                    folders.Add(node);
+                }
+                else if (node.Data is InventoryItem)
+                {
+                    items.Add(node);
+                }
+            }
+
+            if (items.Count == 0 || start.NeedsUpdate)
+            {
+                InventoryFolder f = (InventoryFolder)start.Data;
+                AutoResetEvent gotFolderEvent = new AutoResetEvent(false);
+
+                InventoryManager.FolderUpdatedCallback callback = delegate(UUID folderID)
+                {
+                    if (f.UUID == folderID)
+                    {
+                        if (((InventoryFolder)Inventory.Items[folderID].Data).DescendentCount <= Inventory.Items[folderID].Nodes.Count)
+                        {
+                            gotFolderEvent.Set();
+                        }
+                    }
+                };
+
+                client.Inventory.OnFolderUpdated += callback;
+                Logger.Log("Updating folder: " + f.Name, Helpers.LogLevel.Debug, client);
+                fetchFolder(f.UUID, f.OwnerID, true);
+                gotFolderEvent.WaitOne(30 * 1000, false);
+                client.Inventory.OnFolderUpdated -= callback;
+            }
+
+            foreach (InventoryNode folder in folders)
+            {
+                TraverseNodes(folder);
+            }
+        }
+
+        private void StartTraverseNodes()
+        {
+            TreeUpdateInProgress = true;
+            TreeUpdateTimer = new System.Threading.Timer(TreeUpdateTimerTick, null, 10000, System.Threading.Timeout.Infinite);
+            TraverseNodes(Inventory.RootNode);
+            TreeUpdateTimer.Dispose();
+            TreeUpdateTimer = null;
+            TreeUpdateTimerTick(null);
+            TreeUpdateInProgress = false;
+
+            // Update attachments now that we are done
+            foreach (AttachmentInfo a in attachments.Values)
+            {
+                if (a.Item == null)
+                {
+                    if (Inventory.Contains(a.InventoryID))
+                    {
+                        a.Item = (InventoryItem)Inventory[a.InventoryID];
+                    }
+                    else
+                    {
+                        client.Inventory.RequestFetchInventory(a.InventoryID, client.Self.AgentID);
+                        return;
+                    }
+                }
+                Store_OnInventoryObjectUpdated(a.Item, a.Item);
+            }
+            Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
+            Inventory.SaveToDisk(instance.InventoryCacheFileName);
+        }
+
+        private void TreeUpdateTimerTick(Object sender)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(delegate()
+                {
+                    TreeUpdateTimerTick(sender);
+                }
+                ));
+                return;
+            }
+
+            lock (ItemsToAdd)
+            {
+                invTree.BeginUpdate();
+                while (ItemsToAdd.Count > 0)
+                {
+                    Exec_OnInventoryObjectAdded(ItemsToAdd.Dequeue());
+                }
+                invTree.EndUpdate();
+                if (TreeUpdateTimer != null)
+                {
+                    TreeUpdateTimer.Change(10000, System.Threading.Timeout.Infinite);
+                }
+            }
         }
 
         #endregion
@@ -790,7 +938,6 @@ namespace Radegast
                 switch (cmd)
                 {
                     case "refresh":
-                        invTree.SelectedNode.Nodes.Clear();
                         fetchFolder(f.UUID, f.OwnerID, true);
                         break;
 
@@ -881,49 +1028,10 @@ namespace Radegast
 
         void TreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            TreeNode node = e.Node;
-            InventoryFolder f = (InventoryFolder)node.Tag;
-            if (f == null)
-            {
-                return;
-            }
-
-            fetchFolder(f.UUID, f.OwnerID, false);
-
-            /*
-            try
-            {
-                List<InventoryBase> contents = client.Inventory.Store.GetContents(f);
-                foreach (InventoryBase item in contents)
-                {
-                    Store_OnInventoryObjectUpdated(item, item);
-                }
-            }
-            catch (Exception)
-            {
-                fetchFolder(f.UUID, f.OwnerID, true);
-            }
-             */
-
-            TreeNode dummy = null;
-            foreach (TreeNode n in node.Nodes)
-            {
-                if (n.Name == "DummyTreeNode")
-                {
-                    dummy = n;
-                    break;
-                }
-            }
-
-            if (dummy != null)
-            {
-                dummy.Remove();
-            }
-
             // Check if we need to go into edit mode for new items
             if (newItemName != string.Empty)
             {
-                foreach (TreeNode n in node.Nodes)
+                foreach (TreeNode n in e.Node.Nodes)
                 {
                     if (n.Name == newItemName)
                     {
@@ -1016,6 +1124,27 @@ namespace Radegast
             if (e.KeyCode == Keys.F2 && invTree.SelectedNode != null)
             {
                 invTree.SelectedNode.BeginEdit();
+            }
+            else if (e.KeyCode == Keys.F5 && invTree.SelectedNode != null)
+            {
+                if (invTree.SelectedNode.Tag is InventoryFolder)
+                {
+                    InventoryFolder f = (InventoryFolder)invTree.SelectedNode.Tag;
+                    fetchFolder(f.UUID, f.OwnerID, true);
+                }
+            }
+            else if (e.KeyCode == Keys.Delete && invTree.SelectedNode != null)
+            {
+                if (invTree.SelectedNode.Tag is InventoryItem)
+                {
+                    InventoryItem item = invTree.SelectedNode.Tag as InventoryItem;
+                    client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
+                }
+                else if (invTree.SelectedNode.Tag is InventoryFolder)
+                {
+                    InventoryFolder f = invTree.SelectedNode.Tag as InventoryFolder;
+                    client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
+                }
             }
         }
 
