@@ -277,8 +277,8 @@ namespace Radegast
                 BeginInvoke(new MethodInvoker(delegate()
                     {
                         DisplayNotificationInChat(msg);
-                        return;
                     }));
+                return;
             }
 
             ChatBufferItem line = new ChatBufferItem(
