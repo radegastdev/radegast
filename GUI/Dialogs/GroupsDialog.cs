@@ -66,21 +66,22 @@ namespace Radegast
 
         public void UpdateDisplay()
         {
-            grpsCombo.Items.Clear();
             Group none = new Group();
             none.Name = "(none)";
             none.ID = UUID.Zero;
-            grpsCombo.Items.Add(none);
+
+            listBox1.Items.Clear();
+            listBox1.Items.Add(none);
 
             foreach (Group g in groups.Values) {
-                grpsCombo.Items.Add(g);
+                listBox1.Items.Add(g);
             }
 
-            foreach (Group g in grpsCombo.Items)
+            foreach (Group g in listBox1.Items)
             {
                 if (g.ID == client.Self.ActiveGroup)
                 {
-                    grpsCombo.SelectedItem = g;
+                    listBox1.SelectedItem = g;
                     break;
                 }
             }
@@ -99,26 +100,26 @@ namespace Radegast
 
         private void activateBtn_Click(object sender, EventArgs e)
         {
-            if (grpsCombo.SelectedItem == null) return;
-            Group g = (Group)grpsCombo.SelectedItem;
+            if (listBox1.SelectedItem == null) return;
+            Group g = (Group)listBox1.SelectedItem;
             client.Groups.ActivateGroup(g.ID);
         }
 
         private void leaveBtn_Click(object sender, EventArgs e)
         {
-            if (grpsCombo.SelectedItem == null) return;
-            Group g = (Group)grpsCombo.SelectedItem;
+            if (listBox1.SelectedItem == null) return;
+            Group g = (Group)listBox1.SelectedItem;
             if (g.ID == UUID.Zero) return;
 
             client.Groups.LeaveGroup(g.ID);
             groups.Remove(g.ID);
-            grpsCombo.Items.Remove(g);
+            listBox1.Items.Remove(g);
         }
 
         private void imBtn_Click(object sender, EventArgs e)
         {
-            if (grpsCombo.SelectedItem == null) return;
-            Group g = (Group)grpsCombo.SelectedItem;
+            if (listBox1.SelectedItem == null) return;
+            Group g = (Group)listBox1.SelectedItem;
             if (g.ID == UUID.Zero) return;
 
             if (!instance.TabConsole.TabExists(g.ID.ToString()))
@@ -137,6 +138,15 @@ namespace Radegast
                 }
             }
             Close();
+        }
+
+        private void btnInfo_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem == null) return;
+            Group g = (Group)listBox1.SelectedItem;
+            if (g.ID == UUID.Zero) return;
+
+            (new frmGroupInfo(instance, g)).Show();
         }
     }
 }
