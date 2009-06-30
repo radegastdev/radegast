@@ -57,86 +57,107 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.grpsCombo = new System.Windows.Forms.ComboBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GroupsDialog));
             this.label1 = new System.Windows.Forms.Label();
-            this.activateBtn = new System.Windows.Forms.Button();
-            this.leaveBtn = new System.Windows.Forms.Button();
-            this.cancelBtn = new System.Windows.Forms.Button();
-            this.imBtn = new System.Windows.Forms.Button();
+            this.btnActivate = new System.Windows.Forms.Button();
+            this.btnLeave = new System.Windows.Forms.Button();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnIM = new System.Windows.Forms.Button();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.btnInfo = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
-            // grpsCombo
-            // 
-            this.grpsCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.grpsCombo.FormattingEnabled = true;
-            this.grpsCombo.Location = new System.Drawing.Point(12, 37);
-            this.grpsCombo.Name = "grpsCombo";
-            this.grpsCombo.Size = new System.Drawing.Size(266, 21);
-            this.grpsCombo.Sorted = true;
-            this.grpsCombo.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 21);
+            this.label1.Location = new System.Drawing.Point(9, 17);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(67, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Select group";
             // 
-            // activateBtn
+            // btnActivate
             // 
-            this.activateBtn.Location = new System.Drawing.Point(12, 76);
-            this.activateBtn.Name = "activateBtn";
-            this.activateBtn.Size = new System.Drawing.Size(67, 23);
-            this.activateBtn.TabIndex = 2;
-            this.activateBtn.Text = "&Activate";
-            this.activateBtn.UseVisualStyleBackColor = true;
-            this.activateBtn.Click += new System.EventHandler(this.activateBtn_Click);
+            this.btnActivate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnActivate.Location = new System.Drawing.Point(279, 62);
+            this.btnActivate.Name = "btnActivate";
+            this.btnActivate.Size = new System.Drawing.Size(79, 23);
+            this.btnActivate.TabIndex = 2;
+            this.btnActivate.Text = "&Activate";
+            this.btnActivate.UseVisualStyleBackColor = true;
+            this.btnActivate.Click += new System.EventHandler(this.activateBtn_Click);
             // 
-            // leaveBtn
+            // btnLeave
             // 
-            this.leaveBtn.Location = new System.Drawing.Point(85, 76);
-            this.leaveBtn.Name = "leaveBtn";
-            this.leaveBtn.Size = new System.Drawing.Size(75, 23);
-            this.leaveBtn.TabIndex = 2;
-            this.leaveBtn.Text = "&Leave";
-            this.leaveBtn.UseVisualStyleBackColor = true;
-            this.leaveBtn.Click += new System.EventHandler(this.leaveBtn_Click);
+            this.btnLeave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLeave.Location = new System.Drawing.Point(279, 120);
+            this.btnLeave.Name = "btnLeave";
+            this.btnLeave.Size = new System.Drawing.Size(79, 23);
+            this.btnLeave.TabIndex = 2;
+            this.btnLeave.Text = "&Leave";
+            this.btnLeave.UseVisualStyleBackColor = true;
+            this.btnLeave.Click += new System.EventHandler(this.leaveBtn_Click);
             // 
-            // cancelBtn
+            // btnClose
             // 
-            this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBtn.Location = new System.Drawing.Point(212, 76);
-            this.cancelBtn.Name = "cancelBtn";
-            this.cancelBtn.Size = new System.Drawing.Size(66, 23);
-            this.cancelBtn.TabIndex = 2;
-            this.cancelBtn.Text = "&Close";
-            this.cancelBtn.UseVisualStyleBackColor = true;
-            this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
+            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnClose.Location = new System.Drawing.Point(279, 289);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(79, 23);
+            this.btnClose.TabIndex = 2;
+            this.btnClose.Text = "&Close";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.cancelBtn_Click);
             // 
-            // imBtn
+            // btnIM
             // 
-            this.imBtn.Location = new System.Drawing.Point(170, 76);
-            this.imBtn.Name = "imBtn";
-            this.imBtn.Size = new System.Drawing.Size(36, 23);
-            this.imBtn.TabIndex = 2;
-            this.imBtn.Text = "&IM";
-            this.imBtn.UseVisualStyleBackColor = true;
-            this.imBtn.Click += new System.EventHandler(this.imBtn_Click);
+            this.btnIM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnIM.Location = new System.Drawing.Point(279, 91);
+            this.btnIM.Name = "btnIM";
+            this.btnIM.Size = new System.Drawing.Size(79, 23);
+            this.btnIM.TabIndex = 2;
+            this.btnIM.Text = "&IM";
+            this.btnIM.UseVisualStyleBackColor = true;
+            this.btnIM.Click += new System.EventHandler(this.imBtn_Click);
+            // 
+            // listBox1
+            // 
+            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(12, 33);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(261, 277);
+            this.listBox1.Sorted = true;
+            this.listBox1.TabIndex = 3;
+            // 
+            // btnInfo
+            // 
+            this.btnInfo.Location = new System.Drawing.Point(279, 33);
+            this.btnInfo.Name = "btnInfo";
+            this.btnInfo.Size = new System.Drawing.Size(79, 23);
+            this.btnInfo.TabIndex = 4;
+            this.btnInfo.Text = "In&fo";
+            this.btnInfo.UseVisualStyleBackColor = true;
+            this.btnInfo.Click += new System.EventHandler(this.btnInfo_Click);
             // 
             // GroupsDialog
             // 
+            this.AcceptButton = this.btnInfo;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.cancelBtn;
-            this.ClientSize = new System.Drawing.Size(300, 138);
-            this.Controls.Add(this.cancelBtn);
-            this.Controls.Add(this.imBtn);
-            this.Controls.Add(this.leaveBtn);
-            this.Controls.Add(this.activateBtn);
+            this.CancelButton = this.btnClose;
+            this.ClientSize = new System.Drawing.Size(370, 324);
+            this.Controls.Add(this.btnInfo);
+            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnIM);
+            this.Controls.Add(this.btnLeave);
+            this.Controls.Add(this.btnActivate);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.grpsCombo);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GroupsDialog";
             this.ShowIcon = false;
             this.Text = "Groups";
@@ -148,11 +169,12 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.ComboBox grpsCombo;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button activateBtn;
-        private System.Windows.Forms.Button leaveBtn;
-        private System.Windows.Forms.Button cancelBtn;
-        private System.Windows.Forms.Button imBtn;
+        private System.Windows.Forms.Button btnActivate;
+        private System.Windows.Forms.Button btnLeave;
+        private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Button btnIM;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button btnInfo;
     }
 }
