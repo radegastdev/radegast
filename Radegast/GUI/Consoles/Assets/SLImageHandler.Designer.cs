@@ -57,168 +57,129 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.bottomPanel = new System.Windows.Forms.Panel();
-            this.pnlProgress = new System.Windows.Forms.Panel();
+            this.components = new System.ComponentModel.Container();
             this.lblProgress = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.pnlSave = new System.Windows.Forms.Panel();
-            this.btnSave = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.topPanel = new System.Windows.Forms.Panel();
-            this.tboxImageId = new System.Windows.Forms.TextBox();
             this.lblDesc = new System.Windows.Forms.Label();
-            this.lblID = new System.Windows.Forms.Label();
-            this.bottomPanel.SuspendLayout();
-            this.pnlProgress.SuspendLayout();
-            this.pnlSave.SuspendLayout();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.cmsImage = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tbtnCopyUUID = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnViewFullSize = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnCopy = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.topPanel.SuspendLayout();
+            this.cmsImage.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // bottomPanel
-            // 
-            this.bottomPanel.Controls.Add(this.pnlProgress);
-            this.bottomPanel.Controls.Add(this.pnlSave);
-            this.bottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bottomPanel.Location = new System.Drawing.Point(0, 351);
-            this.bottomPanel.Name = "bottomPanel";
-            this.bottomPanel.Size = new System.Drawing.Size(400, 22);
-            this.bottomPanel.TabIndex = 4;
-            // 
-            // pnlProgress
-            // 
-            this.pnlProgress.Controls.Add(this.lblProgress);
-            this.pnlProgress.Controls.Add(this.progressBar1);
-            this.pnlProgress.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlProgress.Location = new System.Drawing.Point(83, 0);
-            this.pnlProgress.Name = "pnlProgress";
-            this.pnlProgress.Size = new System.Drawing.Size(317, 22);
-            this.pnlProgress.TabIndex = 1;
             // 
             // lblProgress
             // 
+            this.lblProgress.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblProgress.AutoSize = true;
-            this.lblProgress.Location = new System.Drawing.Point(114, 4);
+            this.lblProgress.BackColor = System.Drawing.Color.Transparent;
+            this.lblProgress.Location = new System.Drawing.Point(126, 269);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(51, 13);
             this.lblProgress.TabIndex = 2;
             this.lblProgress.Text = "0 of 0 KB";
             // 
-            // progressBar1
-            // 
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.progressBar1.Location = new System.Drawing.Point(0, 0);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(317, 22);
-            this.progressBar1.Step = 100;
-            this.progressBar1.TabIndex = 1;
-            // 
-            // pnlSave
-            // 
-            this.pnlSave.Controls.Add(this.btnSave);
-            this.pnlSave.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnlSave.Location = new System.Drawing.Point(0, 0);
-            this.pnlSave.Name = "pnlSave";
-            this.pnlSave.Size = new System.Drawing.Size(83, 22);
-            this.pnlSave.TabIndex = 1;
-            // 
-            // btnSave
-            // 
-            this.btnSave.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(2, 0);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 20);
-            this.btnSave.TabIndex = 0;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
             // pictureBox1
             // 
+            this.pictureBox1.ContextMenuStrip = this.cmsImage;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Enabled = false;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 32);
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(400, 319);
+            this.pictureBox1.Size = new System.Drawing.Size(304, 286);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
-            // topPanel
-            // 
-            this.topPanel.Controls.Add(this.tboxImageId);
-            this.topPanel.Controls.Add(this.lblDesc);
-            this.topPanel.Controls.Add(this.lblID);
-            this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.topPanel.Location = new System.Drawing.Point(0, 0);
-            this.topPanel.Name = "topPanel";
-            this.topPanel.Size = new System.Drawing.Size(400, 32);
-            this.topPanel.TabIndex = 6;
-            // 
-            // tboxImageId
-            // 
-            this.tboxImageId.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.tboxImageId.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tboxImageId.Location = new System.Drawing.Point(141, 11);
-            this.tboxImageId.Name = "tboxImageId";
-            this.tboxImageId.ReadOnly = true;
-            this.tboxImageId.Size = new System.Drawing.Size(237, 13);
-            this.tboxImageId.TabIndex = 1;
-            this.tboxImageId.Text = "uuid";
-            // 
             // lblDesc
             // 
             this.lblDesc.AutoSize = true;
-            this.lblDesc.Location = new System.Drawing.Point(3, 11);
+            this.lblDesc.BackColor = System.Drawing.Color.Transparent;
+            this.lblDesc.Location = new System.Drawing.Point(4, 4);
             this.lblDesc.Name = "lblDesc";
             this.lblDesc.Size = new System.Drawing.Size(32, 13);
             this.lblDesc.TabIndex = 0;
             this.lblDesc.Text = "Desc";
             // 
-            // lblID
+            // progressBar1
             // 
-            this.lblID.AutoSize = true;
-            this.lblID.Location = new System.Drawing.Point(119, 11);
-            this.lblID.Name = "lblID";
-            this.lblID.Size = new System.Drawing.Size(16, 13);
-            this.lblID.TabIndex = 0;
-            this.lblID.Text = "Id";
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.progressBar1.Location = new System.Drawing.Point(0, 264);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(304, 22);
+            this.progressBar1.Step = 100;
+            this.progressBar1.TabIndex = 6;
+            // 
+            // cmsImage
+            // 
+            this.cmsImage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbtnViewFullSize,
+            this.tbtnCopy,
+            this.tbtnCopyUUID,
+            this.tbtnSave});
+            this.cmsImage.Name = "cmsImage";
+            this.cmsImage.Size = new System.Drawing.Size(200, 114);
+            // 
+            // tbtnCopyUUID
+            // 
+            this.tbtnCopyUUID.Name = "tbtnCopyUUID";
+            this.tbtnCopyUUID.Size = new System.Drawing.Size(199, 22);
+            this.tbtnCopyUUID.Text = "Copy UUID to clipboard";
+            this.tbtnCopyUUID.Click += new System.EventHandler(this.copyUUIDToClipboardToolStripMenuItem_Click);
+            // 
+            // tbtnSave
+            // 
+            this.tbtnSave.Name = "tbtnSave";
+            this.tbtnSave.Size = new System.Drawing.Size(199, 22);
+            this.tbtnSave.Text = "Save";
+            this.tbtnSave.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // tbtnViewFullSize
+            // 
+            this.tbtnViewFullSize.Name = "tbtnViewFullSize";
+            this.tbtnViewFullSize.Size = new System.Drawing.Size(199, 22);
+            this.tbtnViewFullSize.Text = "View full size";
+            this.tbtnViewFullSize.Click += new System.EventHandler(this.tbtnViewFullSize_Click);
+            // 
+            // tbtnCopy
+            // 
+            this.tbtnCopy.Name = "tbtnCopy";
+            this.tbtnCopy.Size = new System.Drawing.Size(199, 22);
+            this.tbtnCopy.Text = "Copy";
+            this.tbtnCopy.Click += new System.EventHandler(this.tbtnCopy_Click);
             // 
             // SLImageHandler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lblProgress);
+            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.lblDesc);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.topPanel);
-            this.Controls.Add(this.bottomPanel);
             this.Name = "SLImageHandler";
-            this.Size = new System.Drawing.Size(400, 373);
-            this.bottomPanel.ResumeLayout(false);
-            this.pnlProgress.ResumeLayout(false);
-            this.pnlProgress.PerformLayout();
-            this.pnlSave.ResumeLayout(false);
+            this.Size = new System.Drawing.Size(304, 286);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.topPanel.ResumeLayout(false);
-            this.topPanel.PerformLayout();
+            this.cmsImage.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel bottomPanel;
-        private System.Windows.Forms.Panel pnlProgress;
         private System.Windows.Forms.Label lblProgress;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Panel pnlSave;
-        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Panel topPanel;
-        private System.Windows.Forms.TextBox tboxImageId;
-        private System.Windows.Forms.Label lblID;
         private System.Windows.Forms.Label lblDesc;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ContextMenuStrip cmsImage;
+        private System.Windows.Forms.ToolStripMenuItem tbtnViewFullSize;
+        private System.Windows.Forms.ToolStripMenuItem tbtnCopyUUID;
+        private System.Windows.Forms.ToolStripMenuItem tbtnSave;
+        private System.Windows.Forms.ToolStripMenuItem tbtnCopy;
 
     }
 }

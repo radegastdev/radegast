@@ -33,19 +33,85 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenMetaverse;
+using OpenMetaverse.Imaging;
 
 namespace Radegast
 {
     public partial class ImageFullSize : Form
     {
-        public ImageFullSize(System.Drawing.Image img)
+        private UUID imageID;
+        private Image image;
+        private ImageCache cache;
+
+        public ImageFullSize(RadegastInstance instance, UUID image, string label, Image img)
         {
             InitializeComponent();
-            this.Height = img.Height + 30;
-            this.Width = img.Width + 30;
-            this.pictureBox1.Image = img;
+
+            this.imageID = image;
+            this.image = img;
+            cache = instance.ImageCache;
+
+            if (instance.advancedDebugging)
+            {
+                ContextMenuStrip = cmsImage;
+            }
+
+            ClientSize = new Size(img.Height, img.Width);
+            BackgroundImage = img;
+            BackgroundImageLayout = ImageLayout.Stretch;
+        }
+
+        private void tbtnCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(image);
+        }
+
+        private void tbtnCopyUUID_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(imageID.ToString(), TextDataFormat.Text);
+        }
+
+        private void tbtnSave_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog dlg = new SaveFileDialog();
+            dlg.AddExtension = true;
+            dlg.RestoreDirectory = true;
+            dlg.Title = "Save image as...";
+            dlg.Filter = "Targa (*.tga)|*.tga|Jpeg2000 (*.j2c)|*.j2c|PNG (*.png)|*.png|Jpeg (*.jpg)|*.jpg|Bitmap (*.bmp)|*.bmp";
+
+
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                int type = dlg.FilterIndex;
+                if (type == 2)
+                { // jpeg200
+                    File.WriteAllBytes(dlg.FileName, cache.GetJ2Image(imageID));
+                }
+                else if (type == 1)
+                { // targa
+                    File.WriteAllBytes(dlg.FileName, new ManagedImage(new Bitmap(cache.GetImage(imageID))).ExportTGA());
+                }
+                else if (type == 3)
+                { // png
+                    cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                }
+                else if (type == 4)
+                { // jpg
+                    cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
+                else
+                { // BMP
+                    cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Bmp);
+                }
+            }
+
+            dlg.Dispose();
+            dlg = null;
         }
     }
 }
