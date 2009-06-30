@@ -152,6 +152,12 @@
     <Compile Include="GUI\Consoles\ConferenceIMTabWindow.Designer.cs">
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\GroupDetails.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\GroupDetails.Designer.cs">
+      <DependentUpon>GroupDetails.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\GroupIMTabWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -241,6 +247,12 @@
     </Compile>
     <Compile Include="GUI\Consoles\TabsConsole.Designer.cs">
       <DependentUpon>TabsConsole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupInfo.Designer.cs">
+      <DependentUpon>GroupInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\PrimWorkshop.cs">
       <SubType>Form</SubType>
@@ -384,6 +396,10 @@
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\GroupDetails.resx">
+      <DependentUpon>GroupDetails.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\GroupIMTabWindow.resx">
       <DependentUpon>GroupIMTabWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -443,6 +459,10 @@
     <EmbeddedResource Include="GUI\Consoles\MainConsole.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\GroupInfo.resx">
+      <DependentUpon>GroupInfo.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\PrimWorkshop.resx">
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
