@@ -57,16 +57,19 @@ namespace Radegast
   
             if (!instance.advancedDebugging)
             {
-                topPanel.Visible = false;
-                pnlSave.Visible = false;
-                btnSave.Visible = false;
+                tbtnCopy.Visible = false;
+                tbtnCopyUUID.Visible = false;
+                tbtnSave.Visible = false;
             }
 
             this.instance = instance;
             this.imageID = image;
             this.cache = this.instance.ImageCache;
             lblDesc.Text = label;
-            tboxImageId.Text = image.ToString();
+            if (lblDesc.Text == string.Empty)
+            {
+                lblDesc.Hide();
+            }
 
             // Callbacks
             client.Assets.OnImageRecieveProgress += new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
@@ -74,8 +77,8 @@ namespace Radegast
             if (cache.ContainsImage(image)) {
                 pictureBox1.Image = cache.GetImage(imageID);
                 pictureBox1.Enabled = true;
-                btnSave.Enabled = true;
-                pnlProgress.Hide();
+                progressBar1.Hide();
+                lblProgress.Hide();
             } else {
                 client.Assets.RequestImage(imageID, ImageType.Normal, delegate(TextureRequestState state, AssetTexture assetTexture)
                 {
@@ -160,8 +163,8 @@ namespace Radegast
             }
 
             try {
-                btnSave.Enabled = true;
-                pnlProgress.Hide();
+                progressBar1.Hide();
+                lblProgress.Hide();
                 ManagedImage tmp;
                 System.Drawing.Image img;
                 if (!OpenJPEG.DecodeToImage(assetTexture.AssetData, out tmp, out img))
@@ -178,7 +181,7 @@ namespace Radegast
             }
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Windows.Forms.SaveFileDialog dlg = new SaveFileDialog();
             dlg.AddExtension = true;
@@ -186,31 +189,57 @@ namespace Radegast
             dlg.Title = "Save image as...";
             dlg.Filter = "Targa (*.tga)|*.tga|Jpeg2000 (*.j2c)|*.j2c|PNG (*.png)|*.png|Jpeg (*.jpg)|*.jpg|Bitmap (*.bmp)|*.bmp";
 
-            
 
-            if (dlg.ShowDialog() == DialogResult.OK) {
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
                 int type = dlg.FilterIndex;
-                if (type == 2) { // jpeg200
+                if (type == 2)
+                { // jpeg200
                     File.WriteAllBytes(dlg.FileName, cache.GetJ2Image(imageID));
-                } else if (type == 1) { // targa
+                }
+                else if (type == 1)
+                { // targa
                     File.WriteAllBytes(dlg.FileName, new ManagedImage(new Bitmap(cache.GetImage(imageID))).ExportTGA());
-                } else if (type == 3) { // png
+                }
+                else if (type == 3)
+                { // png
                     cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Png);
-                } else if (type == 4) { // jpg
+                }
+                else if (type == 4)
+                { // jpg
                     cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-                } else { // BMP
+                }
+                else
+                { // BMP
                     cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Bmp);
                 }
             }
-            
+
             dlg.Dispose();
             dlg = null;
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            ImageFullSize img = new ImageFullSize(pictureBox1.Image);
+            ImageFullSize img = new ImageFullSize(instance, imageID, lblDesc.Text, pictureBox1.Image);
             img.Show();
+        }
+
+        private void copyUUIDToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(imageID.ToString(), TextDataFormat.Text);
+        }
+
+        private void tbtnViewFullSize_Click(object sender, EventArgs e)
+        {
+            ImageFullSize img = new ImageFullSize(instance, imageID, lblDesc.Text, pictureBox1.Image);
+            img.Show();
+        }
+
+        private void tbtnCopy_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(pictureBox1.Image);
         }
     }
 }

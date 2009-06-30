@@ -57,35 +57,63 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.components = new System.ComponentModel.Container();
+            this.cmsImage = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tbtnCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnCopyUUID = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmsImage.SuspendLayout();
             this.SuspendLayout();
             // 
-            // pictureBox1
+            // cmsImage
             // 
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(292, 273);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            this.cmsImage.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbtnCopy,
+            this.tbtnCopyUUID,
+            this.tbtnSave});
+            this.cmsImage.Name = "cmsImage";
+            this.cmsImage.Size = new System.Drawing.Size(200, 92);
+            // 
+            // tbtnCopy
+            // 
+            this.tbtnCopy.Name = "tbtnCopy";
+            this.tbtnCopy.Size = new System.Drawing.Size(199, 22);
+            this.tbtnCopy.Text = "Copy";
+            this.tbtnCopy.Click += new System.EventHandler(this.tbtnCopy_Click);
+            // 
+            // tbtnCopyUUID
+            // 
+            this.tbtnCopyUUID.Name = "tbtnCopyUUID";
+            this.tbtnCopyUUID.Size = new System.Drawing.Size(199, 22);
+            this.tbtnCopyUUID.Text = "Copy UUID to clipboard";
+            this.tbtnCopyUUID.Click += new System.EventHandler(this.tbtnCopyUUID_Click);
+            // 
+            // tbtnSave
+            // 
+            this.tbtnSave.Name = "tbtnSave";
+            this.tbtnSave.Size = new System.Drawing.Size(199, 22);
+            this.tbtnSave.Text = "Save";
+            this.tbtnSave.Click += new System.EventHandler(this.tbtnSave_Click);
             // 
             // ImageFullSize
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(292, 273);
-            this.Controls.Add(this.pictureBox1);
             this.Name = "ImageFullSize";
             this.ShowIcon = false;
             this.Text = "ImageFullSize";
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.cmsImage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.ContextMenuStrip cmsImage;
+        private System.Windows.Forms.ToolStripMenuItem tbtnCopy;
+        private System.Windows.Forms.ToolStripMenuItem tbtnCopyUUID;
+        private System.Windows.Forms.ToolStripMenuItem tbtnSave;
+
     }
 }
