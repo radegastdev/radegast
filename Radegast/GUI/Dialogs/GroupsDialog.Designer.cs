@@ -159,9 +159,7 @@ namespace Radegast
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GroupsDialog";
-            this.ShowIcon = false;
             this.Text = "Groups";
-            this.TopMost = true;
             this.ResumeLayout(false);
             this.PerformLayout();
 
