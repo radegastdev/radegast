@@ -43,25 +43,25 @@ namespace Radegast
     {
         GridClient client;
         RadegastInstance instance;
-        Dictionary<UUID, Group> groups = new Dictionary<UUID, Group>();
-
+ 
         public GroupsDialog(RadegastInstance instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(GroupsDialog_Disposed);
             this.client = instance.Client;
             this.instance = instance;
-
-            // Callbacks
             client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
-
-            client.Groups.RequestCurrentGroups();
-
+            UpdateDisplay();
         }
 
         void GroupsDialog_Disposed(object sender, EventArgs e)
         {
             client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
+        }
+
+        void Groups_OnCurrentGroups(Dictionary<UUID, Group> groups)
+        {
+            BeginInvoke(new MethodInvoker(UpdateDisplay));
         }
 
         public void UpdateDisplay()
@@ -73,7 +73,7 @@ namespace Radegast
             listBox1.Items.Clear();
             listBox1.Items.Add(none);
 
-            foreach (Group g in groups.Values) {
+            foreach (Group g in instance.Groups.Values) {
                 listBox1.Items.Add(g);
             }
 
@@ -85,12 +85,6 @@ namespace Radegast
                     break;
                 }
             }
-        }
-
-        void Groups_OnCurrentGroups(Dictionary<UUID, Group> groups)
-        {
-            this.groups = groups;
-            this.Invoke(new MethodInvoker(UpdateDisplay));
         }
 
         private void cancelBtn_Click(object sender, EventArgs e)
@@ -112,7 +106,6 @@ namespace Radegast
             if (g.ID == UUID.Zero) return;
 
             client.Groups.LeaveGroup(g.ID);
-            groups.Remove(g.ID);
             listBox1.Items.Remove(g);
         }
 

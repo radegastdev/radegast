@@ -72,7 +72,7 @@ namespace Radegast
             // Callbacks
             client.Objects.OnPayPriceReply += new ObjectManager.PayPriceReply(Objects_OnPayPriceReply);
             client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
-            instance.OnAvatarName += new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
+            instance.OnAvatarName += new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
 
             if (isObject)
             {
@@ -92,7 +92,7 @@ namespace Radegast
         {
             client.Objects.OnPayPriceReply -= new ObjectManager.PayPriceReply(Objects_OnPayPriceReply);
             client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
-            instance.OnAvatarName -= new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
+            instance.OnAvatarName -= new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
         }
 
         void frmPay_Click(object sender, EventArgs e)

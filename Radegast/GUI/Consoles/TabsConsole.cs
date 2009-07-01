@@ -197,7 +197,7 @@ namespace Radegast
             switch (e.IM.Dialog)
             {
                 case InstantMessageDialog.SessionSend:
-                    if (instance.groups.ContainsKey(e.IM.IMSessionID))
+                    if (instance.Groups.ContainsKey(e.IM.IMSessionID))
                     {
                         HandleGroupIM(e);
                     }
@@ -212,7 +212,7 @@ namespace Radegast
                     {
                         HandleIMFromObject(e);
                     }
-                    else if (e.IM.GroupIM || instance.groups.ContainsKey(e.IM.IMSessionID))
+                    else if (e.IM.GroupIM || instance.Groups.ContainsKey(e.IM.IMSessionID))
                     {
                         HandleGroupIM(e);
                     }

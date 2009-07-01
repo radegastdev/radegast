@@ -87,11 +87,13 @@ namespace Radegast
         private bool monoRuntime;
         public bool MonoRuntime { get { return monoRuntime; } }
 
-        public Dictionary<UUID, Group> groups;
-        public Dictionary<UUID, string> nameCache = new Dictionary<UUID,string>();
+        private Dictionary<UUID, Group> groups;
+        public Dictionary<UUID, Group> Groups { get { return groups; } }
 
-        public delegate void OnAvatarNameCallBack(UUID agentID, string agentName);
-        public event OnAvatarNameCallBack OnAvatarName;
+        public delegate void AvatarNameCallback(UUID agentID, string agentName);
+        public event AvatarNameCallback OnAvatarName;
+
+        public Dictionary<UUID, string> nameCache = new Dictionary<UUID,string>();
 
         public readonly bool advancedDebugging = false;
 
@@ -140,7 +142,6 @@ namespace Radegast
             client.Groups.OnGroupLeft += new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
             client.Groups.OnGroupDropped += new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
             client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
-            client.Groups.OnGroupProfile += new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
@@ -154,7 +155,6 @@ namespace Radegast
                 client.Groups.OnGroupLeft -= new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
                 client.Groups.OnGroupDropped -= new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
                 client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
-                client.Groups.OnGroupProfile -= new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
                 client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
                 client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
@@ -186,48 +186,63 @@ namespace Radegast
 
         public string getAvatarName(UUID key)
         {
-            if (nameCache.ContainsKey(key))
+            lock (nameCache)
             {
-                return nameCache[key];
-            }
-            else
-            {
-                client.Avatars.RequestAvatarName(key);
-                return "Loading...";
+                if (nameCache.ContainsKey(key))
+                {
+                    return nameCache[key];
+                }
+                else
+                {
+                    client.Avatars.RequestAvatarName(key);
+                    return "Loading...";
+                }
             }
         }
 
-        void Groups_OnGroupProfile(Group group)
+        public void getAvatarNames(List<UUID> keys)
         {
-            if (groups.ContainsKey(group.ID))
+            lock (nameCache)
             {
-                groups[group.ID] = group;
+                List<UUID> newNames = new List<UUID>();
+                foreach (UUID key in keys)
+                {
+                    if (!nameCache.ContainsKey(key))
+                    {
+                        newNames.Add(key);
+                    }
+                }
+                if (newNames.Count > 0)
+                {
+                    client.Avatars.RequestAvatarNames(newNames);
+                }
+            }
+        }
+
+        public bool haveAvatarName(UUID key)
+        {
+            lock (nameCache)
+            {
+                if (nameCache.ContainsKey(key))
+                    return true;
+                else
+                    return false;
             }
         }
 
         void Groups_OnGroupJoined(UUID groupID, bool success)
         {
-            if (success && !groups.ContainsKey(groupID))
-            {
-                groups.Add(groupID, new Group());
-                client.Groups.RequestGroupProfile(groupID);
-            }
+            client.Groups.RequestCurrentGroups();
         }
 
         void Groups_OnGroupLeft(UUID groupID, bool success)
         {
-            if (groups.ContainsKey(groupID))
-            {
-                groups.Remove(groupID);
-            }
+            client.Groups.RequestCurrentGroups();
         }
 
         void Groups_OnGroupDropped(UUID groupID)
         {
-            if (groups.ContainsKey(groupID))
-            {
-                groups.Remove(groupID);
-            }
+            client.Groups.RequestCurrentGroups();
         }
 
         void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)

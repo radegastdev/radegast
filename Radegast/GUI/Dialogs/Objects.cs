@@ -72,7 +72,7 @@ namespace Radegast
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
-            instance.OnAvatarName += new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
+            instance.OnAvatarName += new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
         }
 
         void frmObjects_Disposed(object sender, EventArgs e)
@@ -84,7 +84,7 @@ namespace Radegast
             client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
 
-            instance.OnAvatarName -= new RadegastInstance.OnAvatarNameCallBack(instance_OnAvatarName);
+            instance.OnAvatarName -= new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
         }
 
         void propRequester_OnTick(int remaining)

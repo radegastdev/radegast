@@ -169,14 +169,14 @@ namespace Radegast
         {
             if (e.Status != LoginStatus.Success) return;
 
-            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = true;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = true;
             statusTimer.Start();
             RefreshWindowTitle();
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = false;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = false;
 
             statusTimer.Stop();
 
@@ -706,6 +706,11 @@ namespace Radegast
             {
                 worldMap.Show();
             }
+        }
+
+        private void tbtnGroups_Click(object sender, EventArgs e)
+        {
+            (new GroupsDialog(instance)).Show();
         }
         #endregion
     }
