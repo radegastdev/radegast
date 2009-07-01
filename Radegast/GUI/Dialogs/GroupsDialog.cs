@@ -51,6 +51,7 @@ namespace Radegast
             this.client = instance.Client;
             this.instance = instance;
             client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
+            client.Groups.RequestCurrentGroups();
             UpdateDisplay();
         }
 
