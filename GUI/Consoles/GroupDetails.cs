@@ -43,9 +43,11 @@ namespace Radegast
 {
     public partial class GroupDetails : UserControl
     {
-        private Group group;
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
+        private Group group;
+        private Dictionary<UUID, GroupTitle> titles;
+        private Dictionary<UUID, Group> myGroups { get { return instance.Groups; } }
 
         private UUID groupTitlesRequest;
         private UUID groupMembersRequest;
@@ -72,8 +74,10 @@ namespace Radegast
             client.Groups.OnGroupTitles += new GroupManager.GroupTitlesCallback(Groups_OnGroupTitles);
             client.Groups.OnGroupMembers += new GroupManager.GroupMembersCallback(Groups_OnGroupMembers);
             client.Groups.OnGroupProfile += new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
+            client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
 
+            RefreshControlsAvailability();
             RefreshGroupInfo();
         }
 
@@ -82,21 +86,16 @@ namespace Radegast
             client.Groups.OnGroupTitles -= new GroupManager.GroupTitlesCallback(Groups_OnGroupTitles);
             client.Groups.OnGroupMembers -= new GroupManager.GroupMembersCallback(Groups_OnGroupMembers);
             client.Groups.OnGroupProfile -= new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
+            client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
         }
 
-        private void RefreshGroupInfo()
+        #region Network callbacks
+        void Groups_OnCurrentGroups(Dictionary<UUID, Group> groups)
         {
-            lvwGeneralMembers.Items.Clear();
-            cbxActiveTitle.Items.Clear();
-
-            // Request group info
-            client.Groups.RequestGroupProfile(group.ID);
-            groupTitlesRequest = client.Groups.RequestGroupTitles(group.ID);
-            groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
+            BeginInvoke(new MethodInvoker(RefreshControlsAvailability));
         }
 
-        #region Network callbacks
         void Groups_OnGroupProfile(Group group)
         {
             if (group.ID != this.group.ID) return;
@@ -115,6 +114,36 @@ namespace Radegast
 
             tbxCharter.Text = group.Charter;
             lblFounded.Text = "Founded by: " + instance.getAvatarName(group.FounderID);
+            cbxShowInSearch.Checked = group.ShowInList;
+            cbxOpenEnrollment.Checked = group.OpenEnrollment;
+
+            if (group.MembershipFee > 0)
+            {
+                cbxEnrollmentFee.Checked = true;
+                nudEnrollmentFee.Value = group.MembershipFee;
+            }
+            else
+            {
+                cbxEnrollmentFee.Checked = false;
+                nudEnrollmentFee.Value = 0;
+            }
+
+            if (group.MaturePublish)
+            {
+                cbxMaturity.SelectedIndex = 1;
+            }
+            else
+            {
+                cbxMaturity.SelectedIndex = 0;
+            }
+
+            if (myGroups.ContainsKey(group.ID))
+            {
+                cbxReceiveNotices.Checked = myGroups[group.ID].AcceptNotices;
+                cbxListInProfile.Checked = myGroups[group.ID].ListInProfile;
+                cbxReceiveNotices.CheckedChanged += new EventHandler(cbxListInProfile_CheckedChanged);
+                cbxListInProfile.CheckedChanged += new EventHandler(cbxListInProfile_CheckedChanged);
+            }
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
@@ -152,7 +181,29 @@ namespace Radegast
         void Groups_OnGroupTitles(UUID requestID, UUID groupID, Dictionary<UUID, GroupTitle> titles)
         {
             if (groupTitlesRequest != requestID) return;
-            Dictionary<UUID, GroupTitle> t = titles;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                    {
+                        Groups_OnGroupTitles(requestID, groupID, titles);
+                    }
+                ));
+                return;
+            }
+
+            this.titles = titles;
+
+            foreach (GroupTitle title in titles.Values)
+            {
+                cbxActiveTitle.Items.Add(title);
+                if (title.Selected)
+                {
+                    cbxActiveTitle.SelectedItem = title;
+                }
+            }
+
+            cbxActiveTitle.SelectedIndexChanged += cbxActiveTitle_SelectedIndexChanged;
         }
 
         void Groups_OnGroupMembers(UUID requestID, UUID groupID, Dictionary<UUID, GroupMember> members)
@@ -173,25 +224,26 @@ namespace Radegast
             List<ListViewItem> newItems = new List<ListViewItem>();
             List<UUID> unknownNames = new List<UUID>();
 
-            foreach (GroupMember member in members.Values)
+            foreach (GroupMember baseMember in members.Values)
             {
+                EnhancedGroupMember member = new EnhancedGroupMember(baseMember);
                 string name;
                 
-                if (instance.haveAvatarName(member.ID))
+                if (instance.haveAvatarName(member.Base.ID))
                 {
-                    name = instance.getAvatarName(member.ID);
+                    name = instance.getAvatarName(member.Base.ID);
                 }
                 else
                 {
                     name = "Loading...";
-                    unknownNames.Add(member.ID);
+                    unknownNames.Add(member.Base.ID);
                 }
 
                 ListViewItem item = new ListViewItem(name);
                 item.Tag = member;
-                item.Name = member.ID.ToString();
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Title));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.OnlineStatus));
+                item.Name = member.Base.ID.ToString();
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Title));
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
 
                 newItems.Add(item);
             }
@@ -207,10 +259,78 @@ namespace Radegast
         }
         #endregion
 
+        #region Privatate methods
+        private bool HasPower(GroupPowers power)
+        {
+            if (!instance.Groups.ContainsKey(group.ID))
+                return false;
+
+            return (instance.Groups[group.ID].Powers & power) != 0;
+        }
+
+        private void RefreshControlsAvailability()
+        {
+            if (!HasPower(GroupPowers.ChangeOptions))
+            {
+                nudEnrollmentFee.ReadOnly = true;
+                cbxEnrollmentFee.Enabled = false;
+                cbxOpenEnrollment.Enabled = false;
+            }
+
+            if (!HasPower(GroupPowers.ChangeIdentity))
+            {
+                tbxCharter.ReadOnly = true;
+                cbxShowInSearch.Enabled = false;
+                cbxMaturity.Enabled = false;
+            }
+
+            if (!myGroups.ContainsKey(group.ID))
+            {
+                cbxReceiveNotices.Enabled = false;
+                cbxListInProfile.Enabled = false;
+            }
+        }
+        
+        private void RefreshGroupInfo()
+        {
+            lvwGeneralMembers.Items.Clear();
+            cbxActiveTitle.SelectedIndexChanged -= cbxActiveTitle_SelectedIndexChanged;
+            cbxReceiveNotices.CheckedChanged -= new EventHandler(cbxListInProfile_CheckedChanged);
+            cbxListInProfile.CheckedChanged -= new EventHandler(cbxListInProfile_CheckedChanged);
+
+            cbxActiveTitle.Items.Clear();
+
+            // Request group info
+            client.Groups.RequestGroupProfile(group.ID);
+            groupTitlesRequest = client.Groups.RequestGroupTitles(group.ID);
+            groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
+        }
+        #endregion
+
+        #region Controls change handlers
+        void cbxListInProfile_CheckedChanged(object sender, EventArgs e)
+        {
+            if (myGroups.ContainsKey(group.ID))
+            {
+                Group g = myGroups[group.ID];
+                // g.AcceptNotices = cbxReceiveNotices.Checked;
+                // g.ListInProfile = cbxListInProfile.Checked;
+                client.Groups.SetGroupAcceptNotices(g.ID, cbxReceiveNotices.Checked, cbxListInProfile.Checked);
+                client.Groups.RequestCurrentGroups();
+            }
+        }
+
+        private void cbxActiveTitle_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            GroupTitle title = (GroupTitle)cbxActiveTitle.SelectedItem;
+            client.Groups.ActivateTitle(title.GroupID, title.RoleID);
+        }
+
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             RefreshGroupInfo();
         }
+        #endregion
 
         void lvwGeneralMembers_ColumnClick(object sender, ColumnClickEventArgs e)
         {
@@ -239,6 +359,26 @@ namespace Radegast
         }
     }
 
+    public class EnhancedGroupMember
+    {
+        public GroupMember Base;
+        public DateTime LastOnline;
+
+        public EnhancedGroupMember(GroupMember baseMember)
+        {
+            Base = baseMember;
+
+            if (baseMember.OnlineStatus == "Online")
+            {
+                LastOnline = DateTime.Now;
+            }
+            else
+            {
+                LastOnline = Convert.ToDateTime(baseMember.OnlineStatus, Utils.EnUsCulture);
+            }
+        }
+    }
+
     public class GroupMemberSorter : IComparer
     {
         public enum SortByColumn
@@ -257,16 +397,12 @@ namespace Radegast
         public SortOrder CurrentOrder = SortOrder.Ascending;
         public SortByColumn SortBy = SortByColumn.Name;
 
-        public GroupMemberSorter()
-        {
-        }
-
         public int Compare(object x, object y)
         {
             ListViewItem item1 = (ListViewItem)x;
             ListViewItem item2 = (ListViewItem)y;
-            GroupMember member1 = (GroupMember)item1.Tag;
-            GroupMember member2 = (GroupMember)item2.Tag;
+            EnhancedGroupMember member1 = (EnhancedGroupMember)item1.Tag;
+            EnhancedGroupMember member2 = (EnhancedGroupMember)item2.Tag;
 
             switch (SortBy)
             {
@@ -278,35 +414,15 @@ namespace Radegast
 
                 case SortByColumn.Title:
                     if (CurrentOrder == SortOrder.Ascending)
-                        return string.Compare(member1.Title, member2.Title);
+                        return string.Compare(member1.Base.Title, member2.Base.Title);
                     else
-                        return string.Compare(member2.Title, member1.Title);
+                        return string.Compare(member2.Base.Title, member1.Base.Title);
 
                 case SortByColumn.LastOnline:
-                    DateTime t1;
-                    if (member1.OnlineStatus == "Online")
-                    {
-                        t1 = DateTime.Now;
-                    }
-                    else
-                    {
-                        t1 = Convert.ToDateTime(member1.OnlineStatus, Utils.EnUsCulture);
-                    }
-
-                    DateTime t2;
-                    if (member2.OnlineStatus == "Online")
-                    {
-                        t2 = DateTime.Now;
-                    }
-                    else
-                    {
-                        t2 = Convert.ToDateTime(member2.OnlineStatus, Utils.EnUsCulture);
-                    }
-
                     if (CurrentOrder == SortOrder.Ascending)
-                        return DateTime.Compare(t1, t2);
+                        return DateTime.Compare(member1.LastOnline, member2.LastOnline);
                     else
-                        return DateTime.Compare(t2, t1);
+                        return DateTime.Compare(member2.LastOnline, member1.LastOnline);
             }
 
             return 0;

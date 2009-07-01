@@ -68,7 +68,7 @@ namespace Radegast
             this.tbxCharter = new System.Windows.Forms.TextBox();
             this.lblCharter = new System.Windows.Forms.Label();
             this.gbPreferences = new System.Windows.Forms.GroupBox();
-            this.cbxShowGroupInList = new System.Windows.Forms.CheckBox();
+            this.cbxListInProfile = new System.Windows.Forms.CheckBox();
             this.cbxReceiveNotices = new System.Windows.Forms.CheckBox();
             this.cbxActiveTitle = new System.Windows.Forms.ComboBox();
             this.lblActiveTitle = new System.Windows.Forms.Label();
@@ -193,7 +193,7 @@ namespace Radegast
             // 
             // gbPreferences
             // 
-            this.gbPreferences.Controls.Add(this.cbxShowGroupInList);
+            this.gbPreferences.Controls.Add(this.cbxListInProfile);
             this.gbPreferences.Controls.Add(this.cbxReceiveNotices);
             this.gbPreferences.Controls.Add(this.cbxActiveTitle);
             this.gbPreferences.Controls.Add(this.lblActiveTitle);
@@ -210,15 +210,15 @@ namespace Radegast
             this.gbPreferences.TabStop = false;
             this.gbPreferences.Text = "Group Preferences";
             // 
-            // cbxShowGroupInList
+            // cbxListInProfile
             // 
-            this.cbxShowGroupInList.AutoSize = true;
-            this.cbxShowGroupInList.Location = new System.Drawing.Point(211, 82);
-            this.cbxShowGroupInList.Name = "cbxShowGroupInList";
-            this.cbxShowGroupInList.Size = new System.Drawing.Size(130, 17);
-            this.cbxShowGroupInList.TabIndex = 8;
-            this.cbxShowGroupInList.Text = "List group in my profile";
-            this.cbxShowGroupInList.UseVisualStyleBackColor = true;
+            this.cbxListInProfile.AutoSize = true;
+            this.cbxListInProfile.Location = new System.Drawing.Point(211, 82);
+            this.cbxListInProfile.Name = "cbxListInProfile";
+            this.cbxListInProfile.Size = new System.Drawing.Size(130, 17);
+            this.cbxListInProfile.TabIndex = 8;
+            this.cbxListInProfile.Text = "List group in my profile";
+            this.cbxListInProfile.UseVisualStyleBackColor = true;
             // 
             // cbxReceiveNotices
             // 
@@ -445,7 +445,7 @@ namespace Radegast
         private System.Windows.Forms.ComboBox cbxActiveTitle;
         private System.Windows.Forms.Label lblActiveTitle;
         private System.Windows.Forms.NumericUpDown nudEnrollmentFee;
-        private System.Windows.Forms.CheckBox cbxShowGroupInList;
+        private System.Windows.Forms.CheckBox cbxListInProfile;
         private System.Windows.Forms.CheckBox cbxReceiveNotices;
         private System.Windows.Forms.Label lblCharter;
         private System.Windows.Forms.ListView lvwGeneralMembers;

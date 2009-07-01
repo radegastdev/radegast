@@ -110,6 +110,7 @@ namespace Radegast
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
+            this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -128,7 +129,8 @@ namespace Radegast
             this.tbtnControl,
             this.toolStripSeparator2,
             this.tbnTeleprotMulti,
-            this.tbnObjects});
+            this.tbnObjects,
+            this.tbtnGroups});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(738, 25);
@@ -567,6 +569,17 @@ namespace Radegast
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
             // 
+            // tbtnGroups
+            // 
+            this.tbtnGroups.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnGroups.Enabled = false;
+            this.tbtnGroups.Image = ((System.Drawing.Image)(resources.GetObject("tbtnGroups.Image")));
+            this.tbtnGroups.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnGroups.Name = "tbtnGroups";
+            this.tbtnGroups.Size = new System.Drawing.Size(49, 22);
+            this.tbtnGroups.Text = "Groups";
+            this.tbtnGroups.Click += new System.EventHandler(this.tbtnGroups_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -644,6 +657,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripStatusLabel icoNoScript;
         private System.Windows.Forms.ToolStripStatusLabel icoNoPush;
         private System.Windows.Forms.ToolStripStatusLabel icoNoVoice;
+        private System.Windows.Forms.ToolStripButton tbtnGroups;
     }
 }
 

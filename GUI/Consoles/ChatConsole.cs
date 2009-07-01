@@ -234,7 +234,7 @@ namespace Radegast
             if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent 
                 && Alice.isAcceptingUserInput
                 && instance.Config.CurrentConfig.UseAlice
-                && !instance.groups.ContainsKey(e.IM.IMSessionID)
+                && !instance.Groups.ContainsKey(e.IM.IMSessionID)
                 && e.IM.BinaryBucket.Length < 2
                 && e.IM.FromAgentName != "Second Life") 
             {
