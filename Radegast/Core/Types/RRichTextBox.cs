@@ -30,65 +30,50 @@
 //
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using OpenMetaverse;
-using OpenMetaverse.Assets;
 
 namespace Radegast
 {
 
-    public partial class ScriptEditor : UserControl
+    public class RRichTextBox : RichTextBox
     {
-        private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
-        private Dictionary<string, LSLKeyWord> keywords = LSLKeywordParser.KeyWords;
-        private InventoryLSL script;
-        private UUID requestID;
 
-        public ScriptEditor(RadegastInstance instance, InventoryLSL script)
+        private const short WM_PAINT = 0x00f;
+        private bool _Paint = true;
+
+        public RRichTextBox()
+            : base()
         {
-            InitializeComponent();
-            Disposed += new EventHandler(SscriptEditor_Disposed);
-
-            this.instance = instance;
-            this.script = script;
-
-            // Callbacks
-            client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
-
-            // Download script
-            requestID = client.Assets.RequestInventoryAsset(script, true);
-            rtbCode.Text = "Loading...";
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
         }
 
-        void SscriptEditor_Disposed(object sender, EventArgs e)
+        protected override void WndProc(ref System.Windows.Forms.Message m)
         {
-            client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
+            // sometimes we want to eat the paint message so we don't have to see all the 
+            //  flicker from when we select the text to change the color.
+            if (m.Msg == WM_PAINT)
+            {
+                if (_Paint)
+                    base.WndProc(ref m);
+                else
+                    m.Result = IntPtr.Zero;
+            }
+            else
+            {
+                base.WndProc(ref m);
+            }
         }
 
-        void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
+        public virtual void BeginUpdate()
         {
-            if (transfer.ID != requestID) return;
+            _Paint = false;
+        }
 
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate() { Assets_OnAssetReceived(transfer, asset); }));
-                return;
-            }
-
-            if (!transfer.Success || asset.AssetType != AssetType.LSLText)
-            {
-                rtbCode.Text = "Failed to download.";
-                return;
-            }
-
-            asset.Decode();
-            rtbCode.Text = ((AssetScriptText)asset).Source;
+        public virtual void EndUpdate()
+        {
+            _Paint = true;
         }
     }
 }

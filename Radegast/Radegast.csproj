@@ -102,6 +102,7 @@
     <Compile Include="Core\ImageCache.cs" />
     <Compile Include="Core\ImageHelper.cs" />
     <Compile Include="Core\ListItems\RegionSearchResultItem.cs" />
+    <Compile Include="Core\LSLKeywordParser.cs" />
     <Compile Include="Core\PrimDeserializer.cs" />
     <Compile Include="Core\PrimSerializer.cs" />
     <Compile Include="Core\RadegastInstance.cs" />
@@ -112,6 +113,9 @@
     <Compile Include="Core\Tabs\SleekTab.cs" />
     <Compile Include="Core\Tabs\SleekTabEvents.cs" />
     <Compile Include="Core\Types\CircularList.cs" />
+    <Compile Include="Core\Types\RRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Types\TransparentButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1033,6 +1037,7 @@
     <None Include="Tao.OpenGl.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\lsl_keywords.txt" />
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
