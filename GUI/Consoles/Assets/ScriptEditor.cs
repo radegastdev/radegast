@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009, Radegast Development Team
 // All rights reserved.
@@ -28,7 +28,7 @@
 //
 // $Id$
 //
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -41,86 +41,53 @@ using OpenMetaverse.Assets;
 
 namespace Radegast
 {
-    public partial class Notecard : UserControl
+
+    public partial class ScriptEditor : UserControl
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
-        private InventoryNotecard notecard;
+        private InventoryLSL script;
         private UUID requestID;
 
-        public Notecard(RadegastInstance instance, InventoryNotecard notecard)
+        public ScriptEditor(RadegastInstance instance, InventoryLSL script)
         {
             InitializeComponent();
-            Disposed += new EventHandler(Notecard_Disposed);
+            Disposed += new EventHandler(SscriptEditor_Disposed);
 
             this.instance = instance;
-            this.notecard = notecard;
-
-            txtName.Text = notecard.Name;
-            txtDesc.Text = notecard.Description;
-            rtbContent.Text = "Loading...";
+            this.script = script;
 
             // Callbacks
             client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
 
-            requestID = client.Assets.RequestInventoryAsset(notecard, true);
+            // Download script
+            requestID = client.Assets.RequestInventoryAsset(script, true);
+            rtbCode.Text = "Loading...";
         }
 
-        void Notecard_Disposed(object sender, EventArgs e)
+        void SscriptEditor_Disposed(object sender, EventArgs e)
         {
             client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
         }
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
-            if (requestID != transfer.ID) return;
+            if (transfer.ID != requestID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Assets_OnAssetReceived(transfer, asset);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(delegate() { Assets_OnAssetReceived(transfer, asset); }));
                 return;
             }
 
-            if (transfer.Success)
+            if (!transfer.Success || asset.AssetType != AssetType.LSLText)
             {
-                AssetNotecard n = (AssetNotecard)asset;
-                n.Decode();
-                string noteText = string.Empty;
-
-                for (int i = 0; i < n.BodyText.Length; i++)
-                {
-                    char c = n.BodyText[i];
-
-                    if ((int)c == 0xdbc0)
-                    {
-                        int index = (int)n.BodyText[++i] - 0xdc00;
-                        Logger.DebugLog(string.Format("Embedded item index {0}", index));
-                        rtbContent.AppendText(noteText);
-                        rtbContent.AppendText("http://" + n.EmbeddedItems[index].AssetType.ToString() + "/" + index + "/" + n.EmbeddedItems[index].Name.Replace(" ", "_"));
-                        noteText = string.Empty;
-                    }
-                    else
-                    {
-                        noteText += c;
-                    }
-                }
-
-                rtbContent.AppendText(noteText);
+                rtbCode.Text = "Failed to download.";
+                return;
             }
-            else
-            {
-                rtbContent.Text = "Failed to download notecard.";
-            }
-        }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
-        {
-            rtbContent.Text = "Loading...";
-            requestID = client.Assets.RequestInventoryAsset(notecard, true);
+            asset.Decode();
+            rtbCode.Text = ((AssetScriptText)asset).Source;
         }
     }
 }

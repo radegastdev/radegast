@@ -134,6 +134,12 @@
     <Compile Include="GUI\Consoles\Assets\Landmark.Designer.cs">
       <DependentUpon>Landmark.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\Assets\ScriptEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\Assets\ScriptEditor.Designer.cs">
+      <DependentUpon>ScriptEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\AttachmentDetail.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -378,6 +384,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\Assets\Landmark.resx">
       <DependentUpon>Landmark.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\Assets\ScriptEditor.resx">
+      <DependentUpon>ScriptEditor.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\AttachmentDetail.resx">
