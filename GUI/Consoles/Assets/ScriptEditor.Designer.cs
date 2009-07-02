@@ -58,9 +58,11 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.pnlControls = new System.Windows.Forms.Panel();
             this.btnSave = new System.Windows.Forms.Button();
             this.rtbCode = new System.Windows.Forms.RichTextBox();
+            this.ttKeyWords = new System.Windows.Forms.ToolTip(this.components);
             this.pnlControls.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -87,12 +89,18 @@ namespace Radegast
             // 
             this.rtbCode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbCode.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtbCode.HideSelection = false;
             this.rtbCode.Location = new System.Drawing.Point(0, 0);
             this.rtbCode.Name = "rtbCode";
             this.rtbCode.Size = new System.Drawing.Size(408, 383);
             this.rtbCode.TabIndex = 1;
             this.rtbCode.Text = "";
+            this.ttKeyWords.SetToolTip(this.rtbCode, "foo");
             this.rtbCode.WordWrap = false;
+            // 
+            // ttKeyWords
+            // 
+            this.ttKeyWords.ShowAlways = true;
             // 
             // ScriptEditor
             // 
@@ -112,5 +120,6 @@ namespace Radegast
         private System.Windows.Forms.Panel pnlControls;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.RichTextBox rtbCode;
+        private System.Windows.Forms.ToolTip ttKeyWords;
     }
 }

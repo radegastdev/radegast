@@ -561,7 +561,7 @@ return				Leave current function or event handler
 "					String literal
 
 # Functions
-[word .5, 0, 15]
+[word .5, 0, .15]
 llSin			float llSin(float theta)\ntheta in radians
 llCos			float llCos(float theta)\ntheta in radians
 llTan			float llTan(float theta)\ntheta radians
