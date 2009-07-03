@@ -69,7 +69,7 @@ namespace Radegast
         }
 
         private static Regex sectionRegex = new Regex(@"\[(\w+)\s+([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\]", RegexOptions.Compiled);
-        private static Regex keyWordRegex = new Regex(@"^([^\s]+)\s+(.*)", RegexOptions.Compiled);
+        private static Regex keyWordRegex = new Regex(@"^([^\s]+)(\s+(.*))?", RegexOptions.Compiled);
 
         public static Dictionary<string, LSLKeyWord> Parse()
         {
@@ -113,7 +113,7 @@ namespace Radegast
                 {
                     LSLKeyWord kw = new LSLKeyWord();
                     kw.KeyWord = m.Groups[1].Value;
-                    kw.ToolTip = m.Groups[2].Value.Replace(@"\n", "\n");
+                    kw.ToolTip = m.Groups[3].Value.Replace(@"\n", "\n");
                     kw.Color = currentColor;
 
                     if (valid)

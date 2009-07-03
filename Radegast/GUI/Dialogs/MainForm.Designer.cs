@@ -97,6 +97,7 @@ namespace Radegast
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbnObjects = new System.Windows.Forms.ToolStripButton();
+            this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tlblLoginName = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblMoneyBalance = new System.Windows.Forms.ToolStripStatusLabel();
@@ -110,7 +111,7 @@ namespace Radegast
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
-            this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
+            this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -145,6 +146,7 @@ namespace Radegast
             this.tbtnSLeek.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newWindowToolStripMenuItem,
             this.tmnuImport,
+            this.scriptEditorToolStripMenuItem,
             this.toolStripMenuItem3,
             this.tmnuPrefs,
             this.toolStripMenuItem2,
@@ -406,6 +408,17 @@ namespace Radegast
             this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on";
             this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
             // 
+            // tbtnGroups
+            // 
+            this.tbtnGroups.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnGroups.Enabled = false;
+            this.tbtnGroups.Image = ((System.Drawing.Image)(resources.GetObject("tbtnGroups.Image")));
+            this.tbtnGroups.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnGroups.Name = "tbtnGroups";
+            this.tbtnGroups.Size = new System.Drawing.Size(49, 22);
+            this.tbtnGroups.Text = "Groups";
+            this.tbtnGroups.Click += new System.EventHandler(this.tbtnGroups_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -569,16 +582,12 @@ namespace Radegast
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
             // 
-            // tbtnGroups
+            // scriptEditorToolStripMenuItem
             // 
-            this.tbtnGroups.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnGroups.Enabled = false;
-            this.tbtnGroups.Image = ((System.Drawing.Image)(resources.GetObject("tbtnGroups.Image")));
-            this.tbtnGroups.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnGroups.Name = "tbtnGroups";
-            this.tbtnGroups.Size = new System.Drawing.Size(49, 22);
-            this.tbtnGroups.Text = "Groups";
-            this.tbtnGroups.Click += new System.EventHandler(this.tbtnGroups_Click);
+            this.scriptEditorToolStripMenuItem.Name = "scriptEditorToolStripMenuItem";
+            this.scriptEditorToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.scriptEditorToolStripMenuItem.Text = "Script editor...";
+            this.scriptEditorToolStripMenuItem.Click += new System.EventHandler(this.scriptEditorToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -658,6 +667,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripStatusLabel icoNoPush;
         private System.Windows.Forms.ToolStripStatusLabel icoNoVoice;
         private System.Windows.Forms.ToolStripButton tbtnGroups;
+        private System.Windows.Forms.ToolStripMenuItem scriptEditorToolStripMenuItem;
     }
 }
 
