@@ -66,14 +66,90 @@ namespace Radegast
             }
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            if (_Paint)
+            {
+                base.OnPaint(e);
+            }
+        }
+
         public virtual void BeginUpdate()
         {
             _Paint = false;
+            SuspendLayout();
         }
 
         public virtual void EndUpdate()
         {
+            ResumeLayout();
             _Paint = true;
+        }
+
+        public struct CursorLocation
+        {
+            public CursorLocation(int Line, int Column)
+            {
+                this.Line = Line;
+                this.Column = Column;
+            }
+
+            public int Line;
+            public int Column;
+
+            public override string ToString()
+            {
+                return string.Format("Ln {0}  Col {1}", Line + 1, Column + 1);
+            }
+        }
+
+        public CursorLocation CursorPosition
+        {
+            get
+            {
+                int currentLine = GetLineFromCharIndex(SelectionStart);
+                int currentCol = 0;
+                int offset = 0;
+                int i = 0;
+
+                foreach (string line in Lines)
+                {
+                    if (i < currentLine)
+                    {
+                        offset += line.Length + 1;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    i++;
+                }
+
+                currentCol = SelectionStart - offset;
+                return new CursorLocation(currentLine, currentCol);
+            }
+
+            set
+            {
+                int Offset = 0;
+                int i = 0;
+
+                foreach (String L in Lines)
+                {
+                    if (i < value.Line)
+                    {
+                        Offset += L.Length + 1;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                    i++;
+                }
+
+                Select(Offset + value.Column, 0);
+            }
         }
     }
 }

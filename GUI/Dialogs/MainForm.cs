@@ -713,5 +713,12 @@ namespace Radegast
             (new GroupsDialog(instance)).Show();
         }
         #endregion
+
+        private void scriptEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ScriptEditor se = new ScriptEditor(instance);
+            se.Dock = DockStyle.Fill;
+            se.ShowDetached();
+        }
     }
 }

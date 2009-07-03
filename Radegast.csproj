@@ -107,6 +107,7 @@
     <Compile Include="Core\PrimSerializer.cs" />
     <Compile Include="Core\RadegastInstance.cs" />
     <Compile Include="Core\RadegastLogger.cs" />
+    <Compile Include="Core\RadegastMisc.cs" />
     <Compile Include="Core\SleekMovement.cs" />
     <Compile Include="Core\StateManager.cs" />
     <Compile Include="Core\Tabs\ISleekTabControl.cs" />
@@ -227,6 +228,12 @@
     </Compile>
     <Compile Include="GUI\Dialogs\DebugLog.Designer.cs">
       <DependentUpon>DebugLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\DetachedControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\DetachedControl.Designer.cs">
+      <DependentUpon>DetachedControl.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\DetachedTab.cs">
       <SubType>Form</SubType>
@@ -453,6 +460,10 @@
     <EmbeddedResource Include="GUI\Dialogs\DebugLog.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DebugLog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\DetachedControl.resx">
+      <DependentUpon>DetachedControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\DetachedTab.resx">
       <SubType>Designer</SubType>
