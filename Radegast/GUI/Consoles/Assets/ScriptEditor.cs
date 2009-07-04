@@ -283,6 +283,7 @@ namespace Radegast
                 fileName = dlg.FileName;
                 scriptName = Path.GetFileName(fileName);
                 SetTitle();
+                rtbCode.ClearUndoRedo();
                 rtbCode.Text = File.ReadAllText(fileName);
             }
         }
@@ -321,6 +322,10 @@ namespace Radegast
 
         private void rtbCode_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.F)
+            {
+                findToolStripMenuItem_Click(null, null);
+            }
             if (e.KeyCode == Keys.Tab)
             {
                 rtbCode.SelectedText = "    ";
@@ -378,5 +383,236 @@ namespace Radegast
                 }
             }
         }
+
+        #region Edit menu handlers
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rtbCode.Undo();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rtbCode.Redo();
+        }
+
+        private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (rtbCode.SelectionLength > 0)
+            {
+                Clipboard.SetText(rtbCode.SelectedText);
+                rtbCode.SelectedText = string.Empty;
+            }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (rtbCode.SelectionLength > 0)
+            {
+                Clipboard.SetText(rtbCode.SelectedText);
+            }
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string clip = Clipboard.GetText();
+
+            if (!string.IsNullOrEmpty(clip))
+            {
+                rtbCode.SelectedText = clip;
+            }
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rtbCode.SelectedText = string.Empty;
+        }
+
+        private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            rtbCode.SelectionStart = 0;
+            rtbCode.SelectionLength = rtbCode.Text.Length;
+        }
+
+        private void findToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tsFindReplace.Show();
+            tfindFindText.Focus();
+        }
+        #endregion
+
+        private void tfindClose_Click(object sender, EventArgs e)
+        {
+            tsFindReplace.Hide();
+        }
+
+        private class FindHistoryItem
+        {
+            public FindHistoryItem(string term, int ss, int sl)
+            {
+                Term = term;
+                SelStart = ss;
+                SelLength = sl;
+            }
+
+            public string Term;
+            public int SelStart;
+            public int SelLength;
+
+            public override string ToString()
+            {
+                return Term;
+            }
+        }
+
+        Dictionary<string, FindHistoryItem> FindHistory = new Dictionary<string, FindHistoryItem>();
+        FindHistoryItem startPos;
+
+        private void tfindFindText_TextChanged(object sender, EventArgs e)
+        {
+            string st = tfindFindText.Text;
+
+            if (startPos == null)
+            {
+                startPos = new FindHistoryItem(string.Empty, rtbCode.SelectionStart, rtbCode.SelectionLength);
+                FindHistory[startPos.Term] = startPos;
+            }
+
+            StringComparison type;
+
+            if (tfindMatchCase.Checked)
+            {
+                type = StringComparison.Ordinal;
+            }
+            else
+            {
+                type = StringComparison.OrdinalIgnoreCase;
+            }
+
+            if (FindHistory.ContainsKey(st))
+            {
+                tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
+                tfindDoFind.Enabled = true;
+                FindHistoryItem h = FindHistory[st];
+                rtbCode.BeginUpdate();
+                rtbCode.Select(h.SelStart, h.SelLength);
+                rtbCode.ScrollToCaret();
+                rtbCode.EndUpdate();
+            }
+
+            if (st == string.Empty)
+            {
+                FindHistory.Clear();
+                tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
+                tfindDoFind.Enabled = true;
+                startPos = null;
+                return;
+            }
+
+            int pos = rtbCode.Text.IndexOf(st, rtbCode.SelectionStart, type);
+
+            if (pos != -1)
+            {
+                tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
+                tfindDoFind.Enabled = true;
+                FindHistory[st] = new FindHistoryItem(st, pos, st.Length);
+                rtbCode.BeginUpdate();
+                rtbCode.Select(pos, st.Length);
+                rtbCode.ScrollToCaret();
+                rtbCode.EndUpdate();
+            }
+            else
+            {
+                tfindFindText.BackColor = Color.FromArgb(200, 0, 0);
+                tfindDoFind.Enabled = false;
+            }
+        }
+
+        private void tfindFindText_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void tfindFindText_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Enter:
+                    tfindDoFind_Click(null, null);
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    break;
+            }
+        }
+
+        private void tfindDoFind_Click(object sender, EventArgs e)
+        {
+            FindHistory.Clear();
+            startPos = null;
+            int len = rtbCode.SelectionLength;
+            rtbCode.SelectionLength = 0;
+            rtbCode.SelectionStart += len;
+            tfindFindText_TextChanged(sender, e);
+        }
+
+        private void tfindFindText_Leave(object sender, EventArgs e)
+        {
+            startPos = null;
+            FindHistory.Clear();
+        }
+
+        private void tfindFindNextReplace_Click(object sender, EventArgs e)
+        {
+            tfindDoFind_Click(null, null);
+        }
+
+        private void tfindReplace_Click(object sender, EventArgs e)
+        {
+            if (tfindFindText.Text.Length > 0 && rtbCode.SelectionLength > 0)
+            {
+                rtbCode.SelectedText = tfindReplaceText.Text;
+                tfindDoFind_Click(null, null);
+            }
+        }
+
+        private static string ReplaceEx(string original, string pattern, string replacement)
+        {
+            int count, position0, position1;
+            count = position0 = position1 = 0;
+            string upperString = original.ToUpper();
+            string upperPattern = pattern.ToUpper();
+            int inc = (original.Length / pattern.Length) * (replacement.Length - pattern.Length);
+            char[] chars = new char[original.Length + Math.Max(0, inc)];
+            while ((position1 = upperString.IndexOf(upperPattern, position0)) != -1)
+            {
+                for (int i = position0; i < position1; ++i)
+                    chars[count++] = original[i];
+                for (int i = 0; i < replacement.Length; ++i)
+                    chars[count++] = replacement[i];
+                position0 = position1 + pattern.Length;
+            }
+            if (position0 == 0) return original;
+            for (int i = position0; i < original.Length; ++i)
+                chars[count++] = original[i];
+            return new string(chars, 0, count);
+        }
+
+        private void tfindReplaceAll_Click(object sender, EventArgs e)
+        {
+            if (tfindFindText.Text.Length > 0)
+            {
+                if (tfindMatchCase.Checked)
+                {
+                    rtbCode.Text.Replace(tfindFindText.Text, tfindReplaceText.Text);
+                }
+                else
+                {
+                    rtbCode.Text = ReplaceEx(rtbCode.Text, tfindFindText.Text, tfindReplaceText.Text);
+                }
+            }
+        }
+
     }
 }

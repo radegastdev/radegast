@@ -61,7 +61,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScriptEditor));
             this.ttKeyWords = new System.Windows.Forms.ToolTip(this.components);
-            this.strpMenu = new System.Windows.Forms.ToolStrip();
+            this.tsMenu = new System.Windows.Forms.ToolStrip();
             this.tbtbFile = new System.Windows.Forms.ToolStripDropDownButton();
             this.tbtbLoadFromDisk = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtbSave = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,28 +69,52 @@ namespace Radegast
             this.tbtbSaveToDiskAs = new System.Windows.Forms.ToolStripMenuItem();
             this.tSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnEdit = new System.Windows.Forms.ToolStripDropDownButton();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
-            this.strpStatus = new System.Windows.Forms.ToolStrip();
+            this.tsStatus = new System.Windows.Forms.ToolStrip();
             this.lblScripStatus = new System.Windows.Forms.ToolStripLabel();
             this.lblCol = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.lblLine = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsFindReplace = new System.Windows.Forms.ToolStrip();
+            this.tfindClose = new System.Windows.Forms.ToolStripButton();
+            this.tfindFindText = new System.Windows.Forms.ToolStripTextBox();
+            this.tfindDoFind = new System.Windows.Forms.ToolStripButton();
+            this.tfindMatchCase = new Radegast.ToolStripCheckBox();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.tfindReplaceText = new System.Windows.Forms.ToolStripTextBox();
+            this.tfindFindNextReplace = new System.Windows.Forms.ToolStripButton();
+            this.tfindReplace = new System.Windows.Forms.ToolStripButton();
+            this.tfindReplaceAll = new System.Windows.Forms.ToolStripButton();
             this.rtbCode = new Radegast.RRichTextBox();
-            this.strpMenu.SuspendLayout();
-            this.strpStatus.SuspendLayout();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsMenu.SuspendLayout();
+            this.tsStatus.SuspendLayout();
+            this.tsFindReplace.SuspendLayout();
             this.SuspendLayout();
             // 
-            // strpMenu
+            // tsMenu
             // 
-            this.strpMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.strpMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtbFile,
+            this.tbtnEdit,
             this.tbtnAttach});
-            this.strpMenu.Location = new System.Drawing.Point(0, 0);
-            this.strpMenu.Name = "strpMenu";
-            this.strpMenu.Size = new System.Drawing.Size(661, 25);
-            this.strpMenu.TabIndex = 2;
+            this.tsMenu.Location = new System.Drawing.Point(0, 0);
+            this.tsMenu.Name = "tsMenu";
+            this.tsMenu.Size = new System.Drawing.Size(661, 25);
+            this.tsMenu.TabIndex = 2;
             // 
             // tbtbFile
             // 
@@ -150,6 +174,100 @@ namespace Radegast
             this.tbtnExit.Visible = false;
             this.tbtnExit.Click += new System.EventHandler(this.tbtnExit_Click);
             // 
+            // tbtnEdit
+            // 
+            this.tbtnEdit.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem,
+            this.redoToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.cutToolStripMenuItem,
+            this.copyToolStripMenuItem,
+            this.pasteToolStripMenuItem,
+            this.deleteToolStripMenuItem,
+            this.selectAllToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.findToolStripMenuItem});
+            this.tbtnEdit.Image = ((System.Drawing.Image)(resources.GetObject("tbtnEdit.Image")));
+            this.tbtnEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnEdit.Name = "tbtnEdit";
+            this.tbtnEdit.Size = new System.Drawing.Size(40, 22);
+            this.tbtnEdit.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
+            // redoToolStripMenuItem
+            // 
+            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(161, 6);
+            // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+X";
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.cutToolStripMenuItem.Text = "Cut";
+            this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+C";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.copyToolStripMenuItem.Text = "Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+V";
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.pasteToolStripMenuItem.Text = "Paste";
+            this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.ShortcutKeyDisplayString = "Del";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+A";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.selectAllToolStripMenuItem.Text = "Select All";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(161, 6);
+            // 
+            // findToolStripMenuItem
+            // 
+            this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+            this.findToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+F";
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.findToolStripMenuItem.Text = "Find";
+            this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
             // tbtnAttach
             // 
             this.tbtnAttach.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -160,20 +278,20 @@ namespace Radegast
             this.tbtnAttach.Text = "Detach";
             this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
             // 
-            // strpStatus
+            // tsStatus
             // 
-            this.strpStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.strpStatus.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.strpStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tsStatus.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblScripStatus,
             this.lblCol,
             this.toolStripSeparator1,
             this.lblLine,
             this.toolStripSeparator2});
-            this.strpStatus.Location = new System.Drawing.Point(0, 420);
-            this.strpStatus.Name = "strpStatus";
-            this.strpStatus.Size = new System.Drawing.Size(661, 25);
-            this.strpStatus.TabIndex = 3;
+            this.tsStatus.Location = new System.Drawing.Point(0, 420);
+            this.tsStatus.Name = "tsStatus";
+            this.tsStatus.Size = new System.Drawing.Size(661, 25);
+            this.tsStatus.TabIndex = 3;
             // 
             // lblScripStatus
             // 
@@ -213,6 +331,107 @@ namespace Radegast
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
+            // tsFindReplace
+            // 
+            this.tsFindReplace.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tsFindReplace.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.tsFindReplace.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tfindClose,
+            this.tfindFindText,
+            this.tfindDoFind,
+            this.tfindMatchCase,
+            this.toolStripButton1,
+            this.toolStripLabel1,
+            this.tfindReplaceText,
+            this.tfindFindNextReplace,
+            this.tfindReplace,
+            this.tfindReplaceAll});
+            this.tsFindReplace.Location = new System.Drawing.Point(0, 395);
+            this.tsFindReplace.Name = "tsFindReplace";
+            this.tsFindReplace.Size = new System.Drawing.Size(661, 25);
+            this.tsFindReplace.TabIndex = 4;
+            this.tsFindReplace.Text = "toolStrip1";
+            this.tsFindReplace.Visible = false;
+            // 
+            // tfindClose
+            // 
+            this.tfindClose.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tfindClose.Image = global::Radegast.Properties.Resources.del_trans;
+            this.tfindClose.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tfindClose.Name = "tfindClose";
+            this.tfindClose.Size = new System.Drawing.Size(23, 22);
+            this.tfindClose.Text = "Close";
+            this.tfindClose.Click += new System.EventHandler(this.tfindClose_Click);
+            // 
+            // tfindFindText
+            // 
+            this.tfindFindText.Name = "tfindFindText";
+            this.tfindFindText.Size = new System.Drawing.Size(120, 25);
+            this.tfindFindText.Leave += new System.EventHandler(this.tfindFindText_Leave);
+            this.tfindFindText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tfindFindText_KeyDown);
+            this.tfindFindText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tfindFindText_KeyUp);
+            this.tfindFindText.TextChanged += new System.EventHandler(this.tfindFindText_TextChanged);
+            // 
+            // tfindDoFind
+            // 
+            this.tfindDoFind.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tfindDoFind.Image = ((System.Drawing.Image)(resources.GetObject("tfindDoFind.Image")));
+            this.tfindDoFind.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tfindDoFind.Name = "tfindDoFind";
+            this.tfindDoFind.Size = new System.Drawing.Size(59, 22);
+            this.tfindDoFind.Text = "Find next";
+            this.tfindDoFind.Click += new System.EventHandler(this.tfindDoFind_Click);
+            // 
+            // tfindMatchCase
+            // 
+            this.tfindMatchCase.BackColor = System.Drawing.Color.Transparent;
+            this.tfindMatchCase.Checked = false;
+            this.tfindMatchCase.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            this.tfindMatchCase.Name = "tfindMatchCase";
+            this.tfindMatchCase.Size = new System.Drawing.Size(86, 22);
+            this.tfindMatchCase.Text = "Match case";
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(48, 22);
+            this.toolStripLabel1.Text = "Replace";
+            // 
+            // tfindReplaceText
+            // 
+            this.tfindReplaceText.Name = "tfindReplaceText";
+            this.tfindReplaceText.Size = new System.Drawing.Size(100, 25);
+            // 
+            // tfindFindNextReplace
+            // 
+            this.tfindFindNextReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tfindFindNextReplace.Image = ((System.Drawing.Image)(resources.GetObject("tfindFindNextReplace.Image")));
+            this.tfindFindNextReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tfindFindNextReplace.Name = "tfindFindNextReplace";
+            this.tfindFindNextReplace.Size = new System.Drawing.Size(59, 22);
+            this.tfindFindNextReplace.Text = "Find next";
+            this.tfindFindNextReplace.Click += new System.EventHandler(this.tfindFindNextReplace_Click);
+            // 
+            // tfindReplace
+            // 
+            this.tfindReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tfindReplace.Image = ((System.Drawing.Image)(resources.GetObject("tfindReplace.Image")));
+            this.tfindReplace.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tfindReplace.Name = "tfindReplace";
+            this.tfindReplace.Size = new System.Drawing.Size(52, 22);
+            this.tfindReplace.Text = "Replace";
+            this.tfindReplace.Click += new System.EventHandler(this.tfindReplace_Click);
+            // 
+            // tfindReplaceAll
+            // 
+            this.tfindReplaceAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tfindReplaceAll.Image = ((System.Drawing.Image)(resources.GetObject("tfindReplaceAll.Image")));
+            this.tfindReplaceAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tfindReplaceAll.Name = "tfindReplaceAll";
+            this.tfindReplaceAll.Size = new System.Drawing.Size(67, 22);
+            this.tfindReplaceAll.Text = "Replace all";
+            this.tfindReplaceAll.Click += new System.EventHandler(this.tfindReplaceAll_Click);
+            // 
             // rtbCode
             // 
             this.rtbCode.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -221,7 +440,7 @@ namespace Radegast
             this.rtbCode.HideSelection = false;
             this.rtbCode.Location = new System.Drawing.Point(0, 25);
             this.rtbCode.Name = "rtbCode";
-            this.rtbCode.Size = new System.Drawing.Size(661, 395);
+            this.rtbCode.Size = new System.Drawing.Size(661, 370);
             this.rtbCode.TabIndex = 1;
             this.rtbCode.Text = "";
             this.rtbCode.WordWrap = false;
@@ -229,19 +448,27 @@ namespace Radegast
             this.rtbCode.SelectionChanged += new System.EventHandler(this.rtbCode_SelectionChanged);
             this.rtbCode.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtbCode_KeyPress);
             // 
+            // toolStripButton1
+            // 
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(6, 25);
+            // 
             // ScriptEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.rtbCode);
-            this.Controls.Add(this.strpStatus);
-            this.Controls.Add(this.strpMenu);
+            this.Controls.Add(this.tsFindReplace);
+            this.Controls.Add(this.tsStatus);
+            this.Controls.Add(this.tsMenu);
             this.Name = "ScriptEditor";
             this.Size = new System.Drawing.Size(661, 445);
-            this.strpMenu.ResumeLayout(false);
-            this.strpMenu.PerformLayout();
-            this.strpStatus.ResumeLayout(false);
-            this.strpStatus.PerformLayout();
+            this.tsMenu.ResumeLayout(false);
+            this.tsMenu.PerformLayout();
+            this.tsStatus.ResumeLayout(false);
+            this.tsStatus.PerformLayout();
+            this.tsFindReplace.ResumeLayout(false);
+            this.tsFindReplace.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -251,7 +478,7 @@ namespace Radegast
 
         private System.Windows.Forms.ToolTip ttKeyWords;
         private RRichTextBox rtbCode;
-        private System.Windows.Forms.ToolStrip strpMenu;
+        private System.Windows.Forms.ToolStrip tsMenu;
         private System.Windows.Forms.ToolStripDropDownButton tbtbFile;
         private System.Windows.Forms.ToolStripMenuItem tbtbSave;
         private System.Windows.Forms.ToolStripMenuItem tbtbSaveToDiskAs;
@@ -259,12 +486,34 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tbtnAttach;
         private System.Windows.Forms.ToolStripSeparator tSeparator1;
         private System.Windows.Forms.ToolStripMenuItem tbtnExit;
-        private System.Windows.Forms.ToolStrip strpStatus;
+        private System.Windows.Forms.ToolStrip tsStatus;
         private System.Windows.Forms.ToolStripLabel lblScripStatus;
         private System.Windows.Forms.ToolStripLabel lblCol;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel lblLine;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem tbtbSaveToDisk;
+        private System.Windows.Forms.ToolStripDropDownButton tbtnEdit;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
+        private System.Windows.Forms.ToolStrip tsFindReplace;
+        private System.Windows.Forms.ToolStripButton tfindClose;
+        private System.Windows.Forms.ToolStripTextBox tfindFindText;
+        private ToolStripCheckBox tfindMatchCase;
+        private System.Windows.Forms.ToolStripButton tfindDoFind;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripTextBox tfindReplaceText;
+        private System.Windows.Forms.ToolStripButton tfindFindNextReplace;
+        private System.Windows.Forms.ToolStripButton tfindReplace;
+        private System.Windows.Forms.ToolStripButton tfindReplaceAll;
+        private System.Windows.Forms.ToolStripSeparator toolStripButton1;
     }
 }

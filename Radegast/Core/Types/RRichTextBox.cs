@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,17 +44,23 @@ namespace Radegast
     public class RRichTextBox : RichTextBox
     {
 
-        private const short WM_PAINT = 0x00f;
         private bool _Paint = true;
         private bool monoRuntime;
+
+        //  Tool tip related private members
         private System.Threading.Timer ttTimer;
         private ToolTip ttKeyWords = new ToolTip();
+
+        // Undo/Redo members
+        private ArrayList mUndoList = new ArrayList();
+        private Stack mRedoStack = new Stack();
+        private bool mIsUndo = false;
+        private UndoRedoInfo mLastInfo = new UndoRedoInfo("", new Win32.POINT(), 0);
+        private int mMaxUndoRedoSteps = 50;
 
         public RRichTextBox()
             : base()
         {
-            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            
             // Are we running mono?
             if (null == Type.GetType("Mono.Runtime"))
             {
@@ -69,26 +76,32 @@ namespace Radegast
 
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
-            // sometimes we want to eat the paint message so we don't have to see all the 
-            //  flicker from when we select the text to change the color.
-            if (m.Msg == WM_PAINT)
+            switch (m.Msg)
             {
-                if (_Paint)
-                    base.WndProc(ref m);
-                else
-                    m.Result = IntPtr.Zero;
-            }
-            else
-            {
-                base.WndProc(ref m);
-            }
-        }
+                case Win32.WM_PAINT:
+                    if (!_Paint)
+                    {
+                        m.Result = IntPtr.Zero;
+                        return;
+                    }
+                    goto default;
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            if (_Paint)
-            {
-                base.OnPaint(e);
+                case Win32.WM_KEYDOWN:
+                    switch ((Keys)(int)m.WParam)
+                    {
+                        case Keys.Z:
+                            Undo();
+                            return;
+
+                        case Keys.Y:
+                            Redo();
+                            return;
+                    }
+                    goto default;
+
+                default:
+                    base.WndProc(ref m);
+                    break;
             }
         }
 
@@ -96,7 +109,9 @@ namespace Radegast
         {
             _Paint = false;
             if (!monoRuntime)
+            {
                 Win32.LockWindowUpdate(Handle);
+            }
         }
 
         public virtual void EndUpdate()
@@ -140,18 +155,23 @@ namespace Radegast
 
         protected override void OnTextChanged(EventArgs e)
         {
-            if (monoRuntime)
-            {
-                // base.OnTextChanged(e);
-                // return;
-            }
-
             if (!_Paint) return;
             
             BeginUpdate();
+
             Win32.POINT scrollStatus = GetScrollPos();
             int selectionStart = SelectionStart;
             int selectionLength = SelectionLength;
+
+            if (!mIsUndo)
+            {
+                mRedoStack.Clear();
+                mUndoList.Insert(0, new UndoRedoInfo(mLastInfo.Text,scrollStatus, selectionStart));
+                this.LimitUndo();
+                mLastInfo = new UndoRedoInfo(Text, scrollStatus, selectionStart);
+            }
+
+            base.OnTextChanged(e);
 
             StringTokenizer tokenizer = new StringTokenizer(Text.Replace("\t", "    "));
             Token token;
@@ -208,8 +228,6 @@ namespace Radegast
             // Construct final rtf
             StringBuilder rtf = new StringBuilder();
             rtf.AppendLine(@"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Courier New;}}");
-            //rtf.Append(@"\viewkind4\uc1\pard\lang1033\f0\fs20 ");
-            //rtf.AppendLine(@"{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\f0\fnil\fcharset0 Courier New;}}");
             rtf.AppendLine(colorTable.ToString());
             rtf.Append(@"\pard\f0\fs18 ");
             rtf.Append(body);
@@ -420,5 +438,89 @@ namespace Radegast
             public static extern int LockWindowUpdate(HWND hwnd);
         }
         #endregion
+
+        #region Undo/Redo Code
+        public new bool CanUndo
+        {
+            get
+            {
+                return mUndoList.Count > 0;
+            }
+        }
+        public new bool CanRedo
+        {
+            get
+            {
+                return mRedoStack.Count > 0;
+            }
+        }
+
+        private void LimitUndo()
+        {
+            while (mUndoList.Count > mMaxUndoRedoSteps)
+            {
+                mUndoList.RemoveAt(mMaxUndoRedoSteps);
+            }
+        }
+
+        public void ClearUndoRedo()
+        {
+            ClearUndo();
+            mRedoStack.Clear();
+            mUndoList.Clear();
+            mIsUndo = false;
+            mLastInfo = new UndoRedoInfo("", new Win32.POINT(), 0);
+        }
+
+        public new void Undo()
+        {
+            if (!CanUndo)
+                return;
+            mIsUndo = true;
+            mRedoStack.Push(new UndoRedoInfo(Text, GetScrollPos(), SelectionStart));
+            UndoRedoInfo info = (UndoRedoInfo)mUndoList[0];
+            mUndoList.RemoveAt(0);
+            BeginUpdate();
+            Text = info.Text;
+            SelectionStart = info.CursorLocation;
+            SetScrollPos(info.ScrollPos);
+            EndUpdate();
+            OnTextChanged(new EventArgs());
+            mLastInfo = info;
+            mIsUndo = false;
+        }
+
+        public new void Redo()
+        {
+            if (!CanRedo)
+                return;
+            mIsUndo = true;
+            mUndoList.Insert(0, new UndoRedoInfo(Text, GetScrollPos(), SelectionStart));
+            LimitUndo();
+            UndoRedoInfo info = (UndoRedoInfo)mRedoStack.Pop();
+            BeginUpdate();
+            Text = info.Text;
+            SelectionStart = info.CursorLocation;
+            SetScrollPos(info.ScrollPos);
+            EndUpdate();
+            OnTextChanged(new EventArgs());
+            mIsUndo = false;
+            EndUpdate();
+        }
+
+        private class UndoRedoInfo
+        {
+            public UndoRedoInfo(string text, Win32.POINT scrollPos, int cursorLoc)
+            {
+                Text = text;
+                ScrollPos = scrollPos;
+                CursorLocation = cursorLoc;
+            }
+            public readonly Win32.POINT ScrollPos;
+            public readonly int CursorLocation;
+            public readonly string Text;
+        }
+        #endregion
+
     }
 }
