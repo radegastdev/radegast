@@ -38,7 +38,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    struct LSLKeyWord
+    public struct LSLKeyWord
     {
         public string KeyWord;
         public string ToolTip;
@@ -50,7 +50,7 @@ namespace Radegast
         }
     }
 
-    class LSLKeywordParser
+    public class LSLKeywordParser
     {
         private static Dictionary<string, LSLKeyWord> keyWords;
         

@@ -33,6 +33,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using HWND = System.IntPtr;
 
 namespace Radegast
 {
@@ -42,11 +45,26 @@ namespace Radegast
 
         private const short WM_PAINT = 0x00f;
         private bool _Paint = true;
+        private bool monoRuntime;
+        private System.Threading.Timer ttTimer;
+        private ToolTip ttKeyWords = new ToolTip();
 
         public RRichTextBox()
             : base()
         {
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            
+            // Are we running mono?
+            if (null == Type.GetType("Mono.Runtime"))
+            {
+                monoRuntime = false;
+            }
+            else
+            {
+                monoRuntime = true;
+            }
+            
+            ttTimer = new System.Threading.Timer(ttTimerElapsed, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
         }
 
         protected override void WndProc(ref System.Windows.Forms.Message m)
@@ -77,14 +95,136 @@ namespace Radegast
         public virtual void BeginUpdate()
         {
             _Paint = false;
-            SuspendLayout();
+            if (!monoRuntime)
+                Win32.LockWindowUpdate(Handle);
         }
 
         public virtual void EndUpdate()
         {
-            ResumeLayout();
+            if (!monoRuntime)
+            {
+                Win32.LockWindowUpdate((IntPtr)0);
+                Invalidate();
+            }
             _Paint = true;
         }
+
+        #region Syntax highligting
+        private string rtfEscaped(string s)
+        {
+            return s.Replace(@"\", @"\\").Replace("{", @"\{").Replace("}", @"\}").Replace("\n", "\\par\n");
+        }
+
+        private List<Color> usedColors = new List<Color>();
+
+        private string colorTag(Color c, string s)
+        {
+            int index;
+
+            if (usedColors.Contains(c))
+            {
+                index = usedColors.IndexOf(c) + 1;
+            }
+            else
+            {
+                usedColors.Add(c);
+                index = usedColors.Count;
+            }
+
+            return "\\cf" + index + " " + rtfEscaped(s) + "\\cf1 ";
+        }
+
+        public Color CommentColor = Color.FromArgb(204, 76, 38);
+        public Color StringColor = Color.FromArgb(0, 51, 0);
+        public Dictionary<string, LSLKeyWord> KeyWords = LSLKeywordParser.KeyWords;
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            if (monoRuntime)
+            {
+                // base.OnTextChanged(e);
+                // return;
+            }
+
+            if (!_Paint) return;
+            
+            BeginUpdate();
+            Win32.POINT scrollStatus = GetScrollPos();
+            int selectionStart = SelectionStart;
+            int selectionLength = SelectionLength;
+
+            StringTokenizer tokenizer = new StringTokenizer(Text.Replace("\t", "    "));
+            Token token;
+            StringBuilder body = new StringBuilder();
+            usedColors.Clear();
+            usedColors.Add(ForeColor);
+
+            do
+            {
+                token = tokenizer.Next();
+
+                switch (token.Kind)
+                {
+                    case TokenKind.Word:
+                        if (KeyWords.ContainsKey(token.Value))
+                        {
+                            body.Append(colorTag(KeyWords[token.Value].Color, token.Value));
+                        }
+                        else
+                        {
+                            goto default;
+                        }
+                        break;
+
+                    case TokenKind.QuotedString:
+                        body.Append(colorTag(StringColor, token.Value));
+                        break;
+
+                    case TokenKind.Comment:
+                        body.Append(colorTag(CommentColor, token.Value));
+                        break;
+
+                    case TokenKind.EOL:
+                        body.Append("\\par\n\\cf1 ");
+                        break;
+
+                    default:
+                        body.Append(rtfEscaped(token.Value));
+                        break;
+                }
+
+            } while (token.Kind != TokenKind.EOF);
+
+            StringBuilder colorTable = new StringBuilder();
+            colorTable.Append(@"{\colortbl;");
+
+            foreach (Color color in usedColors)
+            {
+                colorTable.AppendFormat("\\red{0}\\green{1}\\blue{2};", color.R, color.G, color.B);
+            }
+
+            colorTable.Append("}");
+
+            // Construct final rtf
+            StringBuilder rtf = new StringBuilder();
+            rtf.AppendLine(@"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Courier New;}}");
+            //rtf.Append(@"\viewkind4\uc1\pard\lang1033\f0\fs20 ");
+            //rtf.AppendLine(@"{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\f0\fnil\fcharset0 Courier New;}}");
+            rtf.AppendLine(colorTable.ToString());
+            rtf.Append(@"\pard\f0\fs18 ");
+            rtf.Append(body);
+            rtf.AppendLine(@"\par}");
+
+            // System.Console.WriteLine(rtf);
+
+            // Restore scrollbars and cursor position
+            Rtf = rtf.ToString();
+            SelectionStart = selectionStart;
+            SelectionLength = selectionLength;
+            SetScrollPos(scrollStatus);
+            EndUpdate();
+        }
+        #endregion
 
         public struct CursorLocation
         {
@@ -151,5 +291,134 @@ namespace Radegast
                 Select(Offset + value.Column, 0);
             }
         }
+
+        #region ToolTips
+        private bool validWordChar(char c)
+        {
+            return
+                (c >= 'a' && c <= 'z') ||
+                (c >= 'A' && c <= 'Z') ||
+                (c >= '0' && c <= '9') ||
+                c == '_';
+        }
+
+        private void ttTimerElapsed(Object sender)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate() { ttTimerElapsed(sender); }));
+                return;
+            }
+
+            char trackedChar = GetCharFromPosition(trackedMousePos);
+
+            if (!validWordChar(trackedChar))
+            {
+                return;
+            }
+
+            string trackedString = Text;
+            int trackedPos = GetCharIndexFromPosition(trackedMousePos);
+            int starPos;
+            int endPos;
+
+            for (starPos = trackedPos; starPos >= 0 && validWordChar(trackedString[starPos]); starPos--) ;
+            for (endPos = trackedPos; endPos < trackedString.Length && validWordChar(trackedString[endPos]); endPos++) ;
+            string word = trackedString.Substring(starPos + 1, endPos - starPos - 1);
+
+            if (!KeyWords.ContainsKey(word) || KeyWords[word].ToolTip == string.Empty)
+            {
+                return;
+            }
+
+            ttKeyWords.Show(KeyWords[word].ToolTip, this, new Point(trackedMousePos.X, trackedMousePos.Y + 15), 120 * 1000);
+        }
+
+        private Point trackedMousePos = new Point(0, 0);
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            Point currentMousePos = new Point(e.X, e.Y);
+
+            if (currentMousePos != trackedMousePos)
+            {
+                trackedMousePos = currentMousePos;
+                ttTimer.Change(500, System.Threading.Timeout.Infinite);
+                ttKeyWords.Hide(this);
+            }
+            base.OnMouseMove(e);
+        }
+        #endregion
+
+        #region Scrollbar positions functions
+        /// <summary>
+        /// Sends a win32 message to get the scrollbars' position.
+        /// </summary>
+        /// <returns>a POINT structre containing horizontal
+        ///       and vertical scrollbar position.</returns>
+        private unsafe Win32.POINT GetScrollPos()
+        {
+            Win32.POINT res = new Win32.POINT();
+            IntPtr ptr = new IntPtr(&res);
+            Win32.SendMessage(Handle, Win32.EM_GETSCROLLPOS, 0, ptr);
+            return res;
+
+        }
+
+        /// <summary>
+        /// Sends a win32 message to set scrollbars position.
+        /// </summary>
+        /// <param name="point">a POINT
+        ///        conatining H/Vscrollbar scrollpos.</param>
+        private unsafe void SetScrollPos(Win32.POINT point)
+        {
+            IntPtr ptr = new IntPtr(&point);
+            Win32.SendMessage(Handle, Win32.EM_SETSCROLLPOS, 0, ptr);
+
+        }
+
+        /// <summary>
+        /// Summary description for Win32.
+        /// </summary>
+        private class Win32
+        {
+            private Win32()
+            {
+            }
+
+            public const int WM_USER = 0x400;
+            public const int WM_PAINT = 0xF;
+            public const int WM_KEYDOWN = 0x100;
+            public const int WM_KEYUP = 0x101;
+            public const int WM_CHAR = 0x102;
+
+            public const int EM_GETSCROLLPOS = (WM_USER + 221);
+            public const int EM_SETSCROLLPOS = (WM_USER + 222);
+
+            public const int VK_CONTROL = 0x11;
+            public const int VK_UP = 0x26;
+            public const int VK_DOWN = 0x28;
+            public const int VK_NUMLOCK = 0x90;
+
+            public const short KS_ON = 0x01;
+            public const short KS_KEYDOWN = 0x80;
+
+            [StructLayout(LayoutKind.Sequential)]
+            public struct POINT
+            {
+                public int x;
+                public int y;
+            }
+
+            [DllImport("user32")]
+            public static extern int SendMessage(HWND hwnd, int wMsg, int wParam, IntPtr lParam);
+            [DllImport("user32")]
+            public static extern int PostMessage(HWND hwnd, int wMsg, int wParam, int lParam);
+            [DllImport("user32")]
+            public static extern short GetKeyState(int nVirtKey);
+            [DllImport("user32")]
+            public static extern int LockWindowUpdate(HWND hwnd);
+        }
+        #endregion
     }
 }

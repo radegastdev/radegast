@@ -45,14 +45,11 @@ namespace Radegast
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
-        private Dictionary<string, LSLKeyWord> keywords = LSLKeywordParser.KeyWords;
         private InventoryLSL script;
         private UUID requestID;
         private bool populating = true;
-        private List<WordAndPosition> lineBuffer = new List<WordAndPosition>();
-        private Color commentColor = Color.FromArgb(204, 76, 38);
         private string scriptName;
-        private System.Threading.Timer ttTimer;
+        private string fileName;
         
         public ScriptEditor(RadegastInstance instance)
             : this(instance, null)
@@ -68,8 +65,8 @@ namespace Radegast
             this.instance = instance;
             this.script = script;
             lblScripStatus.Text = string.Empty;
-            ttTimer = new System.Threading.Timer(ttTimerElapsed, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-
+            Dock = DockStyle.Fill;
+            this.TabStop = false;
             // Callbacks
             client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
 
@@ -104,197 +101,17 @@ namespace Radegast
             }
 
             asset.Decode();
-            rtbCode.BeginUpdate();
             rtbCode.Text = ((AssetScriptText)asset).Source;
-            MakeColorSyntaxForAllText();
-            rtbCode.EndUpdate();
-            lblScripStatus.Text = scriptName;
+            SetTitle();
         }
 
-        #region Syntax highlighting
-        struct WordAndPosition
+        private void SetTitle()
         {
-            public string Word;
-            public int Position;
-            public int Length;
-            public override string ToString()
+            if (detached)
             {
-                string s = "Word = " + Word + ", Position = " + Position + ", Length = " + Length + "\n";
-                return s;
-            }
-        };
-
-        private int ParseLine(string s)
-        {
-            lineBuffer.Clear();
-            Regex r = new Regex(@"\w+|[^A-Za-z0-9_ \f\t\v]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            Match m;
-
-            for (m = r.Match(s); m.Success; m = m.NextMatch())
-            {
-                WordAndPosition w = new WordAndPosition();
-                w.Word = m.Value;
-                w.Position = m.Index;
-                w.Length = m.Length;
-                lineBuffer.Add(w);
-            }
-
-            return lineBuffer.Count();
-        }
-
-        private Color Lookup(string s)
-        {
-            if (keywords.ContainsKey(s))
-            {
-                return keywords[s].Color;
-            }
-            else
-            {
-                return Color.Black;
+                FindForm().Text = scriptName + " - " + Properties.Resources.ProgramName + " script editor";
             }
         }
-
-        private bool TestComment(string s)
-        {
-            string testString = s.Trim();
-            if ((testString.Length >= 2) &&
-                 (testString[0] == '/') &&
-                 (testString[1] == '/')
-                )
-                return true;
-
-            return false;
-        }
-
-        private void MakeColorSyntaxForCurrentLine()
-        {
-            int CurrentSelectionStart = rtbCode.SelectionStart;
-            int CurrentSelectionLength = rtbCode.SelectionLength;
-
-            // find start of line
-            int pos = CurrentSelectionStart;
-            while ((pos > 0) && (rtbCode.Text[pos - 1] != '\n'))
-                pos--;
-
-            int pos2 = CurrentSelectionStart;
-            while ((pos2 < rtbCode.Text.Length) &&
-                    (rtbCode.Text[pos2] != '\n'))
-                pos2++;
-
-            string s = rtbCode.Text.Substring(pos, pos2 - pos);
-            if (TestComment(s) == true)
-            {
-                rtbCode.Select(pos, pos2 - pos);
-                rtbCode.SelectionColor = commentColor;
-            }
-            else
-            {
-                string previousWord = "";
-                int count = ParseLine(s);
-                for (int i = 0; i < count; i++)
-                {
-                    WordAndPosition wp = lineBuffer[i];
-
-                    // check for comment
-                    if (wp.Word == "/" && previousWord == "/")
-                    {
-                        // color until end of line
-                        int posCommentStart = wp.Position - 1;
-                        int posCommentEnd = pos2;
-                        while (wp.Word != "\n" && i < count)
-                        {
-                            wp = lineBuffer[i];
-                            i++;
-                        }
-
-                        i--;
-
-                        posCommentEnd = pos2;
-                        rtbCode.Select(posCommentStart + pos, posCommentEnd - (posCommentStart + pos));
-                        rtbCode.SelectionColor = this.commentColor;
-
-                    }
-                    else
-                    {
-
-                        Color c = Lookup(wp.Word);
-                        rtbCode.Select(wp.Position + pos, wp.Length);
-                        rtbCode.SelectionColor = c;
-                    }
-
-                    previousWord = wp.Word;
-
-                }
-            }
-
-            if (CurrentSelectionStart >= 0)
-                rtbCode.Select(CurrentSelectionStart, CurrentSelectionLength);
-        }
-
-        private void MakeColorSyntaxForAllText()
-        {
-            populating = true;
-
-            string s = rtbCode.Text;
-            int CurrentSelectionStart = rtbCode.SelectionStart;
-            int CurrentSelectionLength = rtbCode.SelectionLength;
-
-            int count = ParseLine(s);
-            string previousWord = "";
-            for (int i = 0; i < count; i++)
-            {
-                WordAndPosition wp = lineBuffer[i];
-
-                // check for comment
-                if (wp.Word == "/" && previousWord == "/")
-                {
-                    // color until end of line
-                    int posCommentStart = wp.Position - 1;
-                    int posCommentEnd = i;
-                    while (wp.Word != "\n" && i < count)
-                    {
-                        wp = lineBuffer[i];
-                        i++;
-                    }
-
-                    i--;
-
-                    posCommentEnd = wp.Position;
-                    rtbCode.Select(posCommentStart, posCommentEnd - posCommentStart);
-                    rtbCode.SelectionColor = this.commentColor;
-
-                }
-                else
-                {
-
-                    Color c = Lookup(wp.Word);
-                    rtbCode.Select(wp.Position, wp.Length);
-                    rtbCode.SelectionColor = c;
-                }
-
-                previousWord = wp.Word;
-
-                //				Console.WriteLine(wp.ToString());
-            }
-
-            if (CurrentSelectionStart >= 0)
-                rtbCode.Select(CurrentSelectionStart, CurrentSelectionLength);
-
-            populating = false;
-
-        }
-
-        private void rtbCode_TextChanged(object sender, EventArgs e)
-        {
-            if (populating)
-            {
-                return;
-            }
-            rtbCode.BeginUpdate();
-            MakeColorSyntaxForCurrentLine();
-            rtbCode.EndUpdate();
-        }
-        #endregion
 
         #region Detach/Attach
         private Control originalParent;
@@ -343,7 +160,8 @@ namespace Radegast
             originalParent = Parent;
             Parent = detachedForm;
             detachedForm.ClientSize = new Size(873, 580);
-            detachedForm.Text = scriptName + " - " + Properties.Resources.ProgramName + " script editor"; 
+            SetTitle();
+            detachedForm.ActiveControl = this;
             detachedForm.Show();
             detachedForm.FormClosing += new FormClosingEventHandler(detachedForm_FormClosing);
 
@@ -422,74 +240,32 @@ namespace Radegast
         }
         #endregion
 
-        #region ToolTips
-        private bool validWordChar(char c)
+ 
+        #region File I/O
+        private void tbtbSaveToDisk_Click_1(object sender, EventArgs e)
         {
-            return
-                (c >= 'a' && c <= 'z') ||
-                (c >= 'A' && c <= 'Z') ||
-                (c >= '0' && c <= '9') ||
-                c == '_';
-        }
-
-        private void ttTimerElapsed(Object sender)
-        {
-            if (InvokeRequired)
+            if (string.IsNullOrEmpty(fileName))
             {
-                BeginInvoke(new MethodInvoker(delegate() { ttTimerElapsed(sender); }));
+                tbtbSaveToDisk_Click(sender, e);
                 return;
             }
-
-            char trackedChar = rtbCode.GetCharFromPosition(trackedMousePos);
-            
-            if (!validWordChar(trackedChar))
-            {
-                return;
-            }
-
-            string trackedString = rtbCode.Text;
-            int trackedPos = rtbCode.GetCharIndexFromPosition(trackedMousePos);
-            int starPos;
-            int endPos;
-
-            for (starPos = trackedPos; starPos >= 0 && validWordChar(trackedString[starPos]); starPos--) ;
-            for (endPos = trackedPos; endPos < trackedString.Length && validWordChar(trackedString[endPos]); endPos++) ;
-            string word = trackedString.Substring(starPos + 1, endPos - starPos - 1);
-
-            if (!keywords.ContainsKey(word) || keywords[word].ToolTip == string.Empty)
-            {
-                return;
-            }
-
-            ttKeyWords.Show(keywords[word].ToolTip, rtbCode, new Point(trackedMousePos.X, trackedMousePos.Y + 15), 120 * 1000);
+            File.WriteAllText(fileName, rtbCode.Text);
         }
-
-        private Point trackedMousePos = new Point(0, 0);
-
-        private void rtbCode_MouseMove(object sender, MouseEventArgs e)
-        {
-            Point currentMousePos = new Point(e.X, e.Y);
-
-            if (currentMousePos != trackedMousePos)
-            {
-                trackedMousePos = currentMousePos;
-                ttTimer.Change(500, System.Threading.Timeout.Infinite);
-                ttKeyWords.Hide(rtbCode);
-            }
-        }
-        #endregion
 
         private void tbtbSaveToDisk_Click(object sender, EventArgs e)
         {
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Title = "Save script";
-            dlg.Filter = "LSL script file (*.lsl)|*.lsl";
+            dlg.Filter = "LSL script file (*.lsl)|*.lsl|Plain text file (*.txt)|*.txt";
             dlg.FileName = RadegastMisc.SafeFileName(scriptName);
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
             {
-                File.WriteAllText(dlg.FileName, rtbCode.Text);
+                fileName = dlg.FileName;
+                scriptName = Path.GetFileName(fileName);
+                SetTitle();
+                File.WriteAllText(fileName, rtbCode.Text);
             }
 
         }
@@ -498,19 +274,19 @@ namespace Radegast
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Title = "Open script";
-            dlg.Filter = "LSL script file (*.lsl)|*.lsl";
+            dlg.Filter = "LSL script files (*.lsl)|*.lsl|Plain text files (*.txt)|*.txt|All files (*.*)|*.*";
             dlg.Multiselect = false;
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
             {
-                scriptName = dlg.FileName;
-                rtbCode.Text = File.ReadAllText(dlg.FileName);
-                rtbCode.BeginUpdate();
-                MakeColorSyntaxForAllText();
-                rtbCode.EndUpdate();
+                fileName = dlg.FileName;
+                scriptName = Path.GetFileName(fileName);
+                SetTitle();
+                rtbCode.Text = File.ReadAllText(fileName);
             }
         }
+        #endregion
 
         private void tbtnExit_Click(object sender, EventArgs e)
         {
@@ -522,6 +298,85 @@ namespace Radegast
             RRichTextBox.CursorLocation c = rtbCode.CursorPosition;
             lblLine.Text = string.Format("Ln {0}", c.Line + 1);
             lblCol.Text = string.Format("Col {0}", c.Column + 1);
+        }
+
+        private bool spaceOrTab(char c)
+        {
+            return c == ' ' || c == '\t';
+        }
+
+        private int lastPos(string s, char c)
+        {
+            s = s.TrimEnd();
+            
+            if (s == string.Empty)
+                return -1;
+
+            if (s[s.Length - 1] == c)
+            {
+                return s.LastIndexOf(c);
+            }
+            return -1;
+        }
+
+        private void rtbCode_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Tab)
+            {
+                rtbCode.SelectedText = "    ";
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Enter)
+            {
+                if (rtbCode.Lines.Length > 0)
+                {
+                    RRichTextBox.CursorLocation cl = rtbCode.CursorPosition;
+                    string prevLine = rtbCode.Lines[cl.Line];
+                    string addIndent = "\n";
+                    int pos;
+
+                    for (int spaces = 0;
+                        spaces < prevLine.Length && spaceOrTab(prevLine[spaces]);
+                        addIndent += prevLine[spaces++]) ;
+
+                    if ((pos = lastPos(prevLine.Substring(0, cl.Column), '{')) != -1)
+                    {
+                        addIndent += "    ";
+                    }
+
+                    rtbCode.SelectedText = addIndent;
+                    int eat = 0;
+                    for (eat = 0; (eat + rtbCode.SelectionStart) < rtbCode.Text.Length && rtbCode.Text[rtbCode.SelectionStart + eat] == ' '; eat++) ;
+                    rtbCode.SelectionLength = eat;
+                    rtbCode.SelectedText = "";
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void rtbCode_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '}' && rtbCode.Lines.Length > 0)
+            {
+                string li = rtbCode.Lines[rtbCode.GetLineFromCharIndex(rtbCode.SelectionStart)];
+
+                if (li.Trim() == "")
+                {
+                    rtbCode.BeginUpdate();
+                    int toDelete = li.Length;
+
+                    if (toDelete > 4)
+                    {
+                        toDelete = 4;
+                    }
+
+                    rtbCode.SelectionStart -= toDelete;
+                    rtbCode.SelectionLength = toDelete;
+                    rtbCode.SelectedText = "}";
+                    rtbCode.EndUpdate();
+                    e.Handled = true;
+                }
+            }
         }
     }
 }
