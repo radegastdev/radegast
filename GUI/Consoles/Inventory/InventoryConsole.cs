@@ -842,7 +842,7 @@ namespace Radegast
                     }
 
 
-                    //if (folder.PreferredType == AssetType.Unknown)
+                    if (folder.PreferredType == AssetType.Unknown)
                     {
                         ctxInv.Items.Add(new ToolStripSeparator());
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
@@ -858,6 +858,13 @@ namespace Radegast
                     ctxInv.Items.Clear();
 
                     ToolStripMenuItem ctxItem;
+
+                    if (item.InventoryType == InventoryType.LSL)
+                    {
+                        ctxItem = new ToolStripMenuItem("Edit script", null, OnInvContextClick);
+                        ctxItem.Name = "edit_script";
+                        ctxInv.Items.Add(ctxItem);
+                    }
 
                     ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                     ctxItem.Name = "rename_item";
@@ -1033,6 +1040,11 @@ namespace Radegast
                         AttachmentPoint pt = (AttachmentPoint)((ToolStripMenuItem)sender).Tag;
                         client.Appearance.Attach(item, pt);
                         break;
+
+                    case "edit_script":
+                        ScriptEditor se = new ScriptEditor(instance, (InventoryLSL)item);
+                        se.Detached = true;
+                        return;
                 }
                 #endregion
             }
