@@ -122,6 +122,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Core\Types\StringTokenizer.cs" />
+    <Compile Include="Core\Types\ToolStripCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Types\TransparentButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1054,6 +1057,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\lsl_keywords.txt" />
+    <None Include="Resources\del_trans.png" />
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

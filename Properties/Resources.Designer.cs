@@ -47,7 +47,7 @@ namespace Radegast.Properties {
         }
         
         /// <summary>
-        ///   Overrides the currentColor thread's CurrentUICulture property for all
+        ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -112,6 +112,13 @@ namespace Radegast.Properties {
         public static System.Drawing.Bitmap cut_16 {
             get {
                 object obj = ResourceManager.GetObject("cut_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap del_trans {
+            get {
+                object obj = ResourceManager.GetObject("del_trans", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -481,8 +488,7 @@ namespace Radegast.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to llkeywords version 2
-        ///
+        ///   Looks up a localized string similar to # $Id$
         ///# sections
         ///[word .5, .1, .3]
         ///default 		Name of default state that all scripts must have
@@ -495,7 +501,7 @@ namespace Radegast.Properties {
         ///string			String type
         ///key				Key type.  Use NULL_KEY to test for empty keys.
         ///vector			Vector type of 3 floats.  Used to represent 3D motion, Euler angles, and color.:Access components by .x, .y. or .z
-        ///rotation		Rotation type of 4 floats.  Used t [rest of string was truncated]&quot;;.
+        ///rotation	 [rest of string was truncated]&quot;;.
         /// </summary>
         public static string lsl_keywords {
             get {
