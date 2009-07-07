@@ -37,65 +37,94 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using HWND = System.IntPtr;
+using System.ComponentModel;
 
 namespace Radegast
 {
 
     public class RRichTextBox : RichTextBox
     {
+        /// <summary> 
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
 
-        private bool _Paint = true;
-        private bool monoRuntime;
+        private bool supressOnTextChanged = false;
+        private bool paintEnabled = true;
+        private bool syntaxHighLightEnabled = false;
+        private bool monoRuntime = false;
 
         //  Tool tip related private members
         private System.Threading.Timer ttTimer;
-        private ToolTip ttKeyWords = new ToolTip();
+        private ToolTip ttKeyWords;
 
-        // Undo/Redo members
-        private ArrayList mUndoList = new ArrayList();
-        private Stack mRedoStack = new Stack();
-        private bool mIsUndo = false;
-        private UndoRedoInfo mLastInfo = new UndoRedoInfo("", new Win32.POINT(), 0);
-        private int mMaxUndoRedoSteps = 50;
+        #region Public properties
+        [Browsable(true), Category("Behavior"), DefaultValue(false)]
+        public bool SyntaxHighlightEnabled
+        {
+            get { return syntaxHighLightEnabled; }
+
+            set
+            {
+                if (value != syntaxHighLightEnabled)
+                {
+                    syntaxHighLightEnabled = value;
+                    BeginUpdate();
+                    SaveState(true);
+
+                    Text = Text;
+
+                    RestoreState(true);
+                    EndUpdate();
+                }
+            }
+        }
+        #endregion
 
         public RRichTextBox()
             : base()
         {
+            InitializeComponent();
+
             // Are we running mono?
-            if (null == Type.GetType("Mono.Runtime"))
-            {
-                monoRuntime = false;
-            }
-            else
+            if (Type.GetType("Mono.Runtime") != null)
             {
                 monoRuntime = true;
             }
-            
-            ttTimer = new System.Threading.Timer(ttTimerElapsed, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
         }
 
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.ttKeyWords = new ToolTip(this.components);
+            this.ttTimer = new System.Threading.Timer(ttTimerElapsed, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+        }
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                components.Dispose();
+                ttTimer.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+
+        #region Update supression
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
             switch (m.Msg)
             {
                 case Win32.WM_PAINT:
-                    if (!_Paint)
+                    if (!paintEnabled)
                     {
                         m.Result = IntPtr.Zero;
                         return;
-                    }
-                    goto default;
-
-                case Win32.WM_KEYDOWN:
-                    switch ((Keys)(int)m.WParam)
-                    {
-                        case Keys.Z:
-                            Undo();
-                            return;
-
-                        case Keys.Y:
-                            Redo();
-                            return;
                     }
                     goto default;
 
@@ -107,7 +136,7 @@ namespace Radegast
 
         public virtual void BeginUpdate()
         {
-            _Paint = false;
+            paintEnabled = false;
             if (!monoRuntime)
             {
                 Win32.LockWindowUpdate(Handle);
@@ -121,8 +150,67 @@ namespace Radegast
                 Win32.LockWindowUpdate((IntPtr)0);
                 Invalidate();
             }
-            _Paint = true;
+            paintEnabled = true;
         }
+
+        private int savedSelStart;
+        private int savedSelLen;
+        private Win32.POINT savedScrollPos;
+
+        public void SaveState(bool saveScrollBars)
+        {
+            savedSelStart = SelectionStart;
+            savedSelLen = SelectionLength;
+            if (saveScrollBars)
+                savedScrollPos = GetScrollPos();
+        }
+
+        public void RestoreState(bool saveScrollBars)
+        {
+            SelectionStart = savedSelStart;
+            SelectionLength = savedSelLen;
+            if (saveScrollBars)
+                SetScrollPos(savedScrollPos);
+        }
+
+        #endregion
+
+        #region Copy/Paste
+        public new void Paste(DataFormats.Format format)
+        {
+            Paste();
+        }
+
+        public new void Copy()
+        {
+            if (SelectionLength > 0)
+            {
+                Clipboard.SetText(SelectedText);
+            }
+        }
+
+        public new void Cut()
+        {
+            if (SelectionLength > 0)
+            {
+                Clipboard.SetText(SelectedText);
+                SelectedText = string.Empty;
+            }
+        }
+
+        public new void Paste()
+        {
+            string toPaste = Clipboard.GetText();
+            if (syntaxHighLightEnabled && toPaste.Contains('\n') && !monoRuntime)
+            {
+                SelectedRtf = ReHighlight(toPaste);
+            }
+            else
+            {
+                SelectedText = toPaste;
+            }
+        }
+        #endregion
 
         #region Syntax highligting
         private string rtfEscaped(string s)
@@ -130,54 +218,45 @@ namespace Radegast
             return s.Replace(@"\", @"\\").Replace("{", @"\{").Replace("}", @"\}").Replace("\n", "\\par\n");
         }
 
-        private List<Color> usedColors = new List<Color>();
+        public Color CommentColor = Color.FromArgb(204, 76, 38);
+        public Color StringColor = Color.FromArgb(0, 51, 0);
+
+        private List<Color> usedColors;
+        private List<Color> UsedColors
+        {
+            get
+            {
+                if (usedColors == null)
+                {
+                    usedColors = new List<Color>();
+                    usedColors.Add(ForeColor);
+                    usedColors.Add(CommentColor);
+                    usedColors.Add(StringColor);
+                    
+                    foreach (LSLKeyWord w in KeyWords.Values)
+                    {
+                        if (!usedColors.Contains(w.Color))
+                        {
+                            usedColors.Add(w.Color);
+                        }
+                    }
+                }
+                return usedColors;
+            }
+        }
 
         private string colorTag(Color c, string s)
         {
-            int index;
-
-            if (usedColors.Contains(c))
-            {
-                index = usedColors.IndexOf(c) + 1;
-            }
-            else
-            {
-                usedColors.Add(c);
-                index = usedColors.Count;
-            }
-
-            return "\\cf" + index + " " + rtfEscaped(s) + "\\cf1 ";
+            return "\\cf" + (UsedColors.IndexOf(c) +1) + " " + rtfEscaped(s) + "\\cf1 ";
         }
 
-        public Color CommentColor = Color.FromArgb(204, 76, 38);
-        public Color StringColor = Color.FromArgb(0, 51, 0);
         public Dictionary<string, LSLKeyWord> KeyWords = LSLKeywordParser.KeyWords;
 
-        protected override void OnTextChanged(EventArgs e)
+        private string ReHighlight(string text)
         {
-            if (!_Paint) return;
-            
-            BeginUpdate();
-
-            Win32.POINT scrollStatus = GetScrollPos();
-            int selectionStart = SelectionStart;
-            int selectionLength = SelectionLength;
-
-            if (!mIsUndo)
-            {
-                mRedoStack.Clear();
-                mUndoList.Insert(0, new UndoRedoInfo(mLastInfo.Text,scrollStatus, selectionStart));
-                this.LimitUndo();
-                mLastInfo = new UndoRedoInfo(Text, scrollStatus, selectionStart);
-            }
-
-            base.OnTextChanged(e);
-
-            StringTokenizer tokenizer = new StringTokenizer(Text.Replace("\t", "    "));
+            StringTokenizer tokenizer = new StringTokenizer(text);
             Token token;
             StringBuilder body = new StringBuilder();
-            usedColors.Clear();
-            usedColors.Add(ForeColor);
 
             do
             {
@@ -218,7 +297,7 @@ namespace Radegast
             StringBuilder colorTable = new StringBuilder();
             colorTable.Append(@"{\colortbl;");
 
-            foreach (Color color in usedColors)
+            foreach (Color color in UsedColors)
             {
                 colorTable.AppendFormat("\\red{0}\\green{1}\\blue{2};", color.R, color.G, color.B);
             }
@@ -227,21 +306,72 @@ namespace Radegast
 
             // Construct final rtf
             StringBuilder rtf = new StringBuilder();
-            rtf.AppendLine(@"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Courier New;}}");
+            rtf.AppendLine(@"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 " + rtfEscaped(Font.Name) + ";}}");
             rtf.AppendLine(colorTable.ToString());
-            rtf.Append(@"\pard\f0\fs18 ");
+            rtf.Append(@"\pard\f0\fs" + (int)(Font.SizeInPoints * 2)+ " ");
             rtf.Append(body);
-            rtf.AppendLine(@"\par}");
+            rtf.AppendLine(@"}");
 
-            // System.Console.WriteLine(rtf);
+            return rtf.ToString();
+        }
 
-            // Restore scrollbars and cursor position
-            Rtf = rtf.ToString();
+        public override string Text
+        {
+            get
+            {
+                return base.Text;
+            }
+            set
+            {
+                if (syntaxHighLightEnabled)
+                {
+                    BeginUpdate();
+                    base.Rtf = ReHighlight(value);
+                    EndUpdate();
+                }
+                else
+                {
+                    base.Text = value;
+                }
+            }
+        }
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            if (!paintEnabled || supressOnTextChanged) return;
+
+            if (!syntaxHighLightEnabled || monoRuntime || Lines.Length == 0)
+            {
+                base.OnTextChanged(e);
+                return;
+            }
+
+            supressOnTextChanged = true;
+            BeginUpdate();
+
+            // Save selection
+            int selectionStart = SelectionStart;
+            int selectionLength = SelectionLength;
+
+            // Rehighlught line
+            int currentLineNr = GetLineFromCharIndex(selectionStart);
+            string currentLine = Lines[currentLineNr];
+            int firstCharIndex = GetFirstCharIndexOfCurrentLine();
+
+            SelectionStart = firstCharIndex;
+            SelectionLength = currentLine.Length;
+            SelectedRtf = ReHighlight(currentLine);
+
+            // Restore selection
             SelectionStart = selectionStart;
             SelectionLength = selectionLength;
-            SetScrollPos(scrollStatus);
+
+            base.OnTextChanged(e);
+
             EndUpdate();
+            supressOnTextChanged = false;
         }
+
         #endregion
 
         public struct CursorLocation
@@ -261,6 +391,7 @@ namespace Radegast
             }
         }
 
+        [Browsable(false)]
         public CursorLocation CursorPosition
         {
             get
@@ -284,6 +415,7 @@ namespace Radegast
                 }
 
                 currentCol = SelectionStart - offset;
+                if (currentCol < 0) currentCol = 0;
                 return new CursorLocation(currentLine, currentCol);
             }
 
@@ -438,89 +570,5 @@ namespace Radegast
             public static extern int LockWindowUpdate(HWND hwnd);
         }
         #endregion
-
-        #region Undo/Redo Code
-        public new bool CanUndo
-        {
-            get
-            {
-                return mUndoList.Count > 0;
-            }
-        }
-        public new bool CanRedo
-        {
-            get
-            {
-                return mRedoStack.Count > 0;
-            }
-        }
-
-        private void LimitUndo()
-        {
-            while (mUndoList.Count > mMaxUndoRedoSteps)
-            {
-                mUndoList.RemoveAt(mMaxUndoRedoSteps);
-            }
-        }
-
-        public void ClearUndoRedo()
-        {
-            ClearUndo();
-            mRedoStack.Clear();
-            mUndoList.Clear();
-            mIsUndo = false;
-            mLastInfo = new UndoRedoInfo("", new Win32.POINT(), 0);
-        }
-
-        public new void Undo()
-        {
-            if (!CanUndo)
-                return;
-            mIsUndo = true;
-            mRedoStack.Push(new UndoRedoInfo(Text, GetScrollPos(), SelectionStart));
-            UndoRedoInfo info = (UndoRedoInfo)mUndoList[0];
-            mUndoList.RemoveAt(0);
-            BeginUpdate();
-            Text = info.Text;
-            SelectionStart = info.CursorLocation;
-            SetScrollPos(info.ScrollPos);
-            EndUpdate();
-            OnTextChanged(new EventArgs());
-            mLastInfo = info;
-            mIsUndo = false;
-        }
-
-        public new void Redo()
-        {
-            if (!CanRedo)
-                return;
-            mIsUndo = true;
-            mUndoList.Insert(0, new UndoRedoInfo(Text, GetScrollPos(), SelectionStart));
-            LimitUndo();
-            UndoRedoInfo info = (UndoRedoInfo)mRedoStack.Pop();
-            BeginUpdate();
-            Text = info.Text;
-            SelectionStart = info.CursorLocation;
-            SetScrollPos(info.ScrollPos);
-            EndUpdate();
-            OnTextChanged(new EventArgs());
-            mIsUndo = false;
-            EndUpdate();
-        }
-
-        private class UndoRedoInfo
-        {
-            public UndoRedoInfo(string text, Win32.POINT scrollPos, int cursorLoc)
-            {
-                Text = text;
-                ScrollPos = scrollPos;
-                CursorLocation = cursorLoc;
-            }
-            public readonly Win32.POINT ScrollPos;
-            public readonly int CursorLocation;
-            public readonly string Text;
-        }
-        #endregion
-
     }
 }

@@ -81,6 +81,7 @@ namespace Radegast
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tsStatus = new System.Windows.Forms.ToolStrip();
             this.lblScripStatus = new System.Windows.Forms.ToolStripLabel();
             this.lblCol = new System.Windows.Forms.ToolStripLabel();
@@ -91,14 +92,15 @@ namespace Radegast
             this.tfindClose = new System.Windows.Forms.ToolStripButton();
             this.tfindFindText = new System.Windows.Forms.ToolStripTextBox();
             this.tfindDoFind = new System.Windows.Forms.ToolStripButton();
-            this.tfindMatchCase = new Radegast.ToolStripCheckBox();
+            this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.tfindReplaceText = new System.Windows.Forms.ToolStripTextBox();
             this.tfindFindNextReplace = new System.Windows.Forms.ToolStripButton();
             this.tfindReplace = new System.Windows.Forms.ToolStripButton();
             this.tfindReplaceAll = new System.Windows.Forms.ToolStripButton();
-            this.rtbCode = new Radegast.RRichTextBox();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
+            this.rtb = new Radegast.RRichTextBox();
+            this.lineNubersForRtb = new Radegast.LineNumberPanel();
+            this.tfindMatchCase = new Radegast.ToolStripCheckBox();
             this.tsMenu.SuspendLayout();
             this.tsStatus.SuspendLayout();
             this.tsFindReplace.SuspendLayout();
@@ -110,7 +112,8 @@ namespace Radegast
             this.tsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtbFile,
             this.tbtnEdit,
-            this.tbtnAttach});
+            this.tbtnAttach,
+            this.toolStripButton2});
             this.tsMenu.Location = new System.Drawing.Point(0, 0);
             this.tsMenu.Name = "tsMenu";
             this.tsMenu.Size = new System.Drawing.Size(661, 25);
@@ -278,6 +281,16 @@ namespace Radegast
             this.tbtnAttach.Text = "Detach";
             this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
             // 
+            // toolStripButton2
+            // 
+            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
+            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton2.Name = "toolStripButton2";
+            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButton2.Text = "toolStripButton2";
+            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
+            // 
             // tsStatus
             // 
             this.tsStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -382,14 +395,10 @@ namespace Radegast
             this.tfindDoFind.Text = "Find next";
             this.tfindDoFind.Click += new System.EventHandler(this.tfindDoFind_Click);
             // 
-            // tfindMatchCase
+            // toolStripButton1
             // 
-            this.tfindMatchCase.BackColor = System.Drawing.Color.Transparent;
-            this.tfindMatchCase.Checked = false;
-            this.tfindMatchCase.CheckState = System.Windows.Forms.CheckState.Unchecked;
-            this.tfindMatchCase.Name = "tfindMatchCase";
-            this.tfindMatchCase.Size = new System.Drawing.Size(86, 22);
-            this.tfindMatchCase.Text = "Match case";
+            this.toolStripButton1.Name = "toolStripButton1";
+            this.toolStripButton1.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripLabel1
             // 
@@ -432,32 +441,53 @@ namespace Radegast
             this.tfindReplaceAll.Text = "Replace all";
             this.tfindReplaceAll.Click += new System.EventHandler(this.tfindReplaceAll_Click);
             // 
-            // rtbCode
+            // rtb
             // 
-            this.rtbCode.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.rtbCode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbCode.Font = new System.Drawing.Font("Courier New", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbCode.HideSelection = false;
-            this.rtbCode.Location = new System.Drawing.Point(0, 25);
-            this.rtbCode.Name = "rtbCode";
-            this.rtbCode.Size = new System.Drawing.Size(661, 370);
-            this.rtbCode.TabIndex = 1;
-            this.rtbCode.Text = "";
-            this.rtbCode.WordWrap = false;
-            this.rtbCode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtbCode_KeyDown);
-            this.rtbCode.SelectionChanged += new System.EventHandler(this.rtbCode_SelectionChanged);
-            this.rtbCode.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtbCode_KeyPress);
+            this.rtb.AcceptsTab = true;
+            this.rtb.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.rtb.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtb.DetectUrls = false;
+            this.rtb.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtb.Font = new System.Drawing.Font("Courier New", 9.5F);
+            this.rtb.HideSelection = false;
+            this.rtb.Location = new System.Drawing.Point(33, 25);
+            this.rtb.Name = "rtb";
+            this.rtb.Size = new System.Drawing.Size(628, 395);
+            this.rtb.SyntaxHighlightEnabled = true;
+            this.rtb.TabIndex = 1;
+            this.rtb.Text = "";
+            this.rtb.WordWrap = false;
+            this.rtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtb_KeyUp);
+            this.rtb.SelectionChanged += new System.EventHandler(this.rtb_SelectionChanged);
+            this.rtb.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtb_KeyPress);
+            this.rtb.KeyUp += new System.Windows.Forms.KeyEventHandler(this.rtb_KeyUp);
             // 
-            // toolStripButton1
+            // lineNubersForRtb
             // 
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(6, 25);
+            this.lineNubersForRtb.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lineNubersForRtb.Dock = System.Windows.Forms.DockStyle.Left;
+            this.lineNubersForRtb.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lineNubersForRtb.Location = new System.Drawing.Point(0, 25);
+            this.lineNubersForRtb.Name = "lineNubersForRtb";
+            this.lineNubersForRtb.RTB = this.rtb;
+            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 395);
+            this.lineNubersForRtb.TabIndex = 6;
+            // 
+            // tfindMatchCase
+            // 
+            this.tfindMatchCase.BackColor = System.Drawing.Color.Transparent;
+            this.tfindMatchCase.Checked = false;
+            this.tfindMatchCase.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            this.tfindMatchCase.Name = "tfindMatchCase";
+            this.tfindMatchCase.Size = new System.Drawing.Size(82, 22);
+            this.tfindMatchCase.Text = "Match case";
             // 
             // ScriptEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.rtbCode);
+            this.Controls.Add(this.rtb);
+            this.Controls.Add(this.lineNubersForRtb);
             this.Controls.Add(this.tsFindReplace);
             this.Controls.Add(this.tsStatus);
             this.Controls.Add(this.tsMenu);
@@ -477,7 +507,6 @@ namespace Radegast
         #endregion
 
         private System.Windows.Forms.ToolTip ttKeyWords;
-        private RRichTextBox rtbCode;
         private System.Windows.Forms.ToolStrip tsMenu;
         private System.Windows.Forms.ToolStripDropDownButton tbtbFile;
         private System.Windows.Forms.ToolStripMenuItem tbtbSave;
@@ -515,5 +544,8 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tfindReplace;
         private System.Windows.Forms.ToolStripButton tfindReplaceAll;
         private System.Windows.Forms.ToolStripSeparator toolStripButton1;
+        private System.Windows.Forms.ToolStripButton toolStripButton2;
+        private RRichTextBox rtb;
+        private LineNumberPanel lineNubersForRtb;
     }
 }

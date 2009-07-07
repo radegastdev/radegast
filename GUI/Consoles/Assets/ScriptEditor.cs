@@ -47,10 +47,9 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private InventoryLSL script;
         private UUID requestID;
-        private bool populating = true;
         private string scriptName;
         private string fileName;
-        
+
         public ScriptEditor(RadegastInstance instance)
             : this(instance, null)
         {
@@ -67,6 +66,7 @@ namespace Radegast
             lblScripStatus.Text = string.Empty;
             Dock = DockStyle.Fill;
             this.TabStop = false;
+            
             // Callbacks
             client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
 
@@ -75,7 +75,12 @@ namespace Radegast
             {
                 scriptName = script.Name;
                 requestID = client.Assets.RequestInventoryAsset(script, true);
-                rtbCode.Text = lblScripStatus.Text = "Loading...";
+                rtb.Text = lblScripStatus.Text = "Loading...";
+            }
+            else
+            {
+                rtb.Text = " "; //bugs in control grrrr
+                rtb.SelectionStart = 0;
             }
         }
 
@@ -96,17 +101,19 @@ namespace Radegast
 
             if (!transfer.Success || asset.AssetType != AssetType.LSLText)
             {
-                lblScripStatus.Text = rtbCode.Text = "Failed to download.";
+                lblScripStatus.Text = rtb.Text = "Failed to download.";
                 return;
             }
 
             asset.Decode();
-            rtbCode.Text = ((AssetScriptText)asset).Source;
+            rtb.Text = ((AssetScriptText)asset).Source;
             SetTitle();
         }
 
         private void SetTitle()
         {
+            lblScripStatus.Text = scriptName;
+
             if (detached)
             {
                 FindForm().Text = scriptName + " - " + Properties.Resources.ProgramName + " script editor";
@@ -249,7 +256,7 @@ namespace Radegast
                 tbtbSaveToDisk_Click(sender, e);
                 return;
             }
-            File.WriteAllText(fileName, rtbCode.Text);
+            File.WriteAllText(fileName, rtb.Text);
         }
 
         private void tbtbSaveToDisk_Click(object sender, EventArgs e)
@@ -265,7 +272,7 @@ namespace Radegast
                 fileName = dlg.FileName;
                 scriptName = Path.GetFileName(fileName);
                 SetTitle();
-                File.WriteAllText(fileName, rtbCode.Text);
+                File.WriteAllText(fileName, rtb.Text);
             }
 
         }
@@ -283,8 +290,7 @@ namespace Radegast
                 fileName = dlg.FileName;
                 scriptName = Path.GetFileName(fileName);
                 SetTitle();
-                rtbCode.ClearUndoRedo();
-                rtbCode.Text = File.ReadAllText(fileName);
+                rtb.Text = File.ReadAllText(fileName);
             }
         }
         #endregion
@@ -294,9 +300,9 @@ namespace Radegast
             FindForm().Close();
         }
 
-        private void rtbCode_SelectionChanged(object sender, EventArgs e)
+        private void rtb_SelectionChanged(object sender, EventArgs e)
         {
-            RRichTextBox.CursorLocation c = rtbCode.CursorPosition;
+            RRichTextBox.CursorLocation c = rtb.CursorPosition;
             lblLine.Text = string.Format("Ln {0}", c.Line + 1);
             lblCol.Text = string.Format("Col {0}", c.Column + 1);
         }
@@ -320,7 +326,9 @@ namespace Radegast
             return -1;
         }
 
-        private void rtbCode_KeyDown(object sender, KeyEventArgs e)
+        private RRichTextBox.CursorLocation prevCursor;
+
+        private void rtb_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.F)
             {
@@ -328,109 +336,105 @@ namespace Radegast
             }
             if (e.KeyCode == Keys.Tab)
             {
-                rtbCode.SelectedText = "    ";
+                rtb.SelectedText = "    ";
                 e.Handled = true;
             }
+            /*
             else if (e.KeyCode == Keys.Enter)
             {
-                if (rtbCode.Lines.Length > 0)
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+
+                // RRichTextBox.CursorLocation cl = prevCursor;
+                RRichTextBox.CursorLocation cl = rtb.CursorPosition;
+                string prevLine = rtb.Lines[cl.Line];
+                string addIndent = "\n";
+                int pos;
+
+                for (int spaces = 0;
+                    spaces < prevLine.Length && spaceOrTab(prevLine[spaces]);
+                    addIndent += prevLine[spaces++]) ;
+
+                System.Console.WriteLine("In identer");
+                if ((pos = lastPos(prevLine.Substring(0, cl.Column), '{')) != -1)
                 {
-                    RRichTextBox.CursorLocation cl = rtbCode.CursorPosition;
-                    string prevLine = rtbCode.Lines[cl.Line];
-                    string addIndent = "\n";
-                    int pos;
-
-                    for (int spaces = 0;
-                        spaces < prevLine.Length && spaceOrTab(prevLine[spaces]);
-                        addIndent += prevLine[spaces++]) ;
-
-                    if ((pos = lastPos(prevLine.Substring(0, cl.Column), '{')) != -1)
-                    {
-                        addIndent += "    ";
-                    }
-
-                    rtbCode.SelectedText = addIndent;
-                    int eat = 0;
-                    for (eat = 0; (eat + rtbCode.SelectionStart) < rtbCode.Text.Length && rtbCode.Text[rtbCode.SelectionStart + eat] == ' '; eat++) ;
-                    rtbCode.SelectionLength = eat;
-                    rtbCode.SelectedText = "";
-                    e.Handled = true;
+                    addIndent += "    ";
                 }
+
+                rtb.SelectedText = addIndent;
+                int eat = 0;
+                for (eat = 0; (eat + rtb.SelectionStart) < rtb.Text.Length && rtb.Text[rtb.SelectionStart + eat] == ' '; eat++) ;
+                rtb.SelectionLength = eat;
+                rtb.SelectedText = "";
             }
+            */
+
         }
 
-        private void rtbCode_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == '}' && rtbCode.Lines.Length > 0)
+
+        private void rtb_KeyPress(object sender, KeyPressEventArgs e)
+        {/*
+            if (rtb.Lines.Length > 0)
             {
-                string li = rtbCode.Lines[rtbCode.GetLineFromCharIndex(rtbCode.SelectionStart)];
-
-                if (li.Trim() == "")
+                if (e.KeyChar == '}')
                 {
-                    rtbCode.BeginUpdate();
-                    int toDelete = li.Length;
+                    string li = rtb.Lines[rtb.GetLineFromCharIndex(rtb.SelectionStart)];
 
-                    if (toDelete > 4)
+                    if (li.Trim() == "")
                     {
-                        toDelete = 4;
-                    }
+                        rtb.BeginUpdate();
+                        int toDelete = li.Length;
 
-                    rtbCode.SelectionStart -= toDelete;
-                    rtbCode.SelectionLength = toDelete;
-                    rtbCode.SelectedText = "}";
-                    rtbCode.EndUpdate();
-                    e.Handled = true;
+                        if (toDelete > 4)
+                        {
+                            toDelete = 4;
+                        }
+
+                        rtb.SelectionStart -= toDelete;
+                        rtb.SelectionLength = toDelete;
+                        rtb.SelectedText = "";
+                        rtb.EndUpdate();
+                    }
                 }
             }
+          */
         }
 
         #region Edit menu handlers
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rtbCode.Undo();
+            rtb.Undo();
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rtbCode.Redo();
+            rtb.Redo();
         }
 
         private void cutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rtbCode.SelectionLength > 0)
-            {
-                Clipboard.SetText(rtbCode.SelectedText);
-                rtbCode.SelectedText = string.Empty;
-            }
+            rtb.Cut();
         }
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rtbCode.SelectionLength > 0)
-            {
-                Clipboard.SetText(rtbCode.SelectedText);
-            }
+            rtb.Copy();
         }
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string clip = Clipboard.GetText();
-
-            if (!string.IsNullOrEmpty(clip))
-            {
-                rtbCode.SelectedText = clip;
-            }
+            rtb.Paste();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rtbCode.SelectedText = string.Empty;
+            rtb.SelectedText = string.Empty;
         }
 
         private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            rtbCode.SelectionStart = 0;
-            rtbCode.SelectionLength = rtbCode.Text.Length;
+            rtb.SelectionStart = 0;
+            rtb.SelectionLength = rtb.Text.Length;
         }
 
         private void findToolStripMenuItem_Click(object sender, EventArgs e)
@@ -473,7 +477,7 @@ namespace Radegast
 
             if (startPos == null)
             {
-                startPos = new FindHistoryItem(string.Empty, rtbCode.SelectionStart, rtbCode.SelectionLength);
+                startPos = new FindHistoryItem(string.Empty, rtb.SelectionStart, rtb.SelectionLength);
                 FindHistory[startPos.Term] = startPos;
             }
 
@@ -493,10 +497,10 @@ namespace Radegast
                 tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
                 tfindDoFind.Enabled = true;
                 FindHistoryItem h = FindHistory[st];
-                rtbCode.BeginUpdate();
-                rtbCode.Select(h.SelStart, h.SelLength);
-                rtbCode.ScrollToCaret();
-                rtbCode.EndUpdate();
+                rtb.BeginUpdate();
+                rtb.Select(h.SelStart, h.SelLength);
+                rtb.ScrollToCaret();
+                rtb.EndUpdate();
             }
 
             if (st == string.Empty)
@@ -508,17 +512,17 @@ namespace Radegast
                 return;
             }
 
-            int pos = rtbCode.Text.IndexOf(st, rtbCode.SelectionStart, type);
+            int pos = rtb.Text.IndexOf(st, rtb.SelectionStart, type);
 
             if (pos != -1)
             {
                 tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
                 tfindDoFind.Enabled = true;
                 FindHistory[st] = new FindHistoryItem(st, pos, st.Length);
-                rtbCode.BeginUpdate();
-                rtbCode.Select(pos, st.Length);
-                rtbCode.ScrollToCaret();
-                rtbCode.EndUpdate();
+                rtb.BeginUpdate();
+                rtb.Select(pos, st.Length);
+                rtb.ScrollToCaret();
+                rtb.EndUpdate();
             }
             else
             {
@@ -551,9 +555,9 @@ namespace Radegast
         {
             FindHistory.Clear();
             startPos = null;
-            int len = rtbCode.SelectionLength;
-            rtbCode.SelectionLength = 0;
-            rtbCode.SelectionStart += len;
+            int len = rtb.SelectionLength;
+            rtb.SelectionLength = 0;
+            rtb.SelectionStart += len;
             tfindFindText_TextChanged(sender, e);
         }
 
@@ -570,9 +574,9 @@ namespace Radegast
 
         private void tfindReplace_Click(object sender, EventArgs e)
         {
-            if (tfindFindText.Text.Length > 0 && rtbCode.SelectionLength > 0)
+            if (tfindFindText.Text.Length > 0 && rtb.SelectionLength > 0)
             {
-                rtbCode.SelectedText = tfindReplaceText.Text;
+                rtb.SelectedText = tfindReplaceText.Text;
                 tfindDoFind_Click(null, null);
             }
         }
@@ -605,14 +609,27 @@ namespace Radegast
             {
                 if (tfindMatchCase.Checked)
                 {
-                    rtbCode.Text.Replace(tfindFindText.Text, tfindReplaceText.Text);
+                    rtb.Text.Replace(tfindFindText.Text, tfindReplaceText.Text);
                 }
                 else
                 {
-                    rtbCode.Text = ReplaceEx(rtbCode.Text, tfindFindText.Text, tfindReplaceText.Text);
+                    rtb.Text = ReplaceEx(rtb.Text, tfindFindText.Text, tfindReplaceText.Text);
                 }
             }
         }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            if (rtb.SyntaxHighlightEnabled == true)
+            {
+                rtb.SyntaxHighlightEnabled = false;
+            }
+            else
+            {
+                rtb.SyntaxHighlightEnabled = true;
+            }
+        }
+
 
     }
 }

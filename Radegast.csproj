@@ -118,6 +118,9 @@
     <Compile Include="Core\Tabs\SleekTab.cs" />
     <Compile Include="Core\Tabs\SleekTabEvents.cs" />
     <Compile Include="Core\Types\CircularList.cs" />
+    <Compile Include="Core\Types\LineNumberPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Types\RRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
