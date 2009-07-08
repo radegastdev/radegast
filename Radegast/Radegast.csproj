@@ -92,6 +92,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Tao.OpenGl, Version=2.1.0.12, Culture=neutral, PublicKeyToken=1ca010269a4501ef, processorArchitecture=MSIL" />
     <Reference Include="Tao.Platform.Windows, Version=1.0.0.5, Culture=neutral, PublicKeyToken=701104b2da67a104, processorArchitecture=MSIL" />
+    <Reference Include="Tools, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\AutoPilot.cs" />
@@ -107,6 +108,8 @@
     <Compile Include="Core\ImageHelper.cs" />
     <Compile Include="Core\ListItems\RegionSearchResultItem.cs" />
     <Compile Include="Core\LSLKeywordParser.cs" />
+    <Compile Include="Core\LSL\lsl.lexer.cs" />
+    <Compile Include="Core\LSL\lsl.parser.cs" />
     <Compile Include="Core\PrimDeserializer.cs" />
     <Compile Include="Core\PrimSerializer.cs" />
     <Compile Include="Core\RadegastInstance.cs" />
@@ -118,6 +121,9 @@
     <Compile Include="Core\Tabs\SleekTab.cs" />
     <Compile Include="Core\Tabs\SleekTabEvents.cs" />
     <Compile Include="Core\Types\CircularList.cs" />
+    <Compile Include="Core\Types\ExtendedRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Types\LineNumberPanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1042,6 +1048,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="assemblies\log4net.dll" />
+    <Content Include="assemblies\Tools.dll" />
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
