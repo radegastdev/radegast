@@ -38,11 +38,13 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using HWND = System.IntPtr;
 using System.ComponentModel;
+using Radegast.LSL;
+using Tools;
 
 namespace Radegast
 {
 
-    public class RRichTextBox : RichTextBox
+    public class RRichTextBox : ExtendedRichTextBox
     {
         /// <summary> 
         /// Required designer variable.
@@ -50,7 +52,6 @@ namespace Radegast
         private System.ComponentModel.IContainer components = null;
 
         private bool supressOnTextChanged = false;
-        private bool paintEnabled = true;
         private bool syntaxHighLightEnabled = false;
         private bool monoRuntime = false;
 
@@ -71,8 +72,9 @@ namespace Radegast
                     syntaxHighLightEnabled = value;
                     BeginUpdate();
                     SaveState(true);
-
-                    Text = Text;
+                    string oldText = Text;
+                    Clear();
+                    Text = oldText;
 
                     RestoreState(true);
                     EndUpdate();
@@ -91,6 +93,7 @@ namespace Radegast
             {
                 monoRuntime = true;
             }
+
         }
 
         private void InitializeComponent()
@@ -116,43 +119,6 @@ namespace Radegast
 
 
         #region Update supression
-        protected override void WndProc(ref System.Windows.Forms.Message m)
-        {
-            switch (m.Msg)
-            {
-                case Win32.WM_PAINT:
-                    if (!paintEnabled)
-                    {
-                        m.Result = IntPtr.Zero;
-                        return;
-                    }
-                    goto default;
-
-                default:
-                    base.WndProc(ref m);
-                    break;
-            }
-        }
-
-        public virtual void BeginUpdate()
-        {
-            paintEnabled = false;
-            if (!monoRuntime)
-            {
-                Win32.LockWindowUpdate(Handle);
-            }
-        }
-
-        public virtual void EndUpdate()
-        {
-            if (!monoRuntime)
-            {
-                Win32.LockWindowUpdate((IntPtr)0);
-                Invalidate();
-            }
-            paintEnabled = true;
-        }
-
         private int savedSelStart;
         private int savedSelLen;
         private Win32.POINT savedScrollPos;
@@ -323,7 +289,7 @@ namespace Radegast
             }
             set
             {
-                if (syntaxHighLightEnabled)
+                if (syntaxHighLightEnabled && value != null)
                 {
                     BeginUpdate();
                     base.Rtf = ReHighlight(value);
@@ -338,7 +304,7 @@ namespace Radegast
 
         protected override void OnTextChanged(EventArgs e)
         {
-            if (!paintEnabled || supressOnTextChanged) return;
+            if (supressOnTextChanged || Updating) return;
 
             if (!syntaxHighLightEnabled || monoRuntime || Lines.Length == 0)
             {
@@ -440,6 +406,14 @@ namespace Radegast
 
                 Select(Offset + value.Column, 0);
             }
+        }
+
+        public override void InsertImage(Image _image)
+        {
+            supressOnTextChanged = true;
+            if (!monoRuntime)
+                base.InsertImage(_image);
+            supressOnTextChanged = false;
         }
 
         #region ToolTips
@@ -570,5 +544,17 @@ namespace Radegast
             public static extern int LockWindowUpdate(HWND hwnd);
         }
         #endregion
+    }
+
+    class LSLErrorHandler : ErrorHandler
+    {
+        public LSLErrorHandler()
+            : base(false)
+        {
+        }
+        public override void Error(CSToolsException e)
+        {
+            Report(e);
+        }
     }
 }

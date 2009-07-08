@@ -80,8 +80,8 @@ namespace Radegast
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.syntaxHiglightingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.tsStatus = new System.Windows.Forms.ToolStrip();
             this.lblScripStatus = new System.Windows.Forms.ToolStripLabel();
             this.lblCol = new System.Windows.Forms.ToolStripLabel();
@@ -92,6 +92,7 @@ namespace Radegast
             this.tfindClose = new System.Windows.Forms.ToolStripButton();
             this.tfindFindText = new System.Windows.Forms.ToolStripTextBox();
             this.tfindDoFind = new System.Windows.Forms.ToolStripButton();
+            this.tfindMatchCase = new Radegast.ToolStripCheckBox();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.tfindReplaceText = new System.Windows.Forms.ToolStripTextBox();
@@ -100,7 +101,6 @@ namespace Radegast
             this.tfindReplaceAll = new System.Windows.Forms.ToolStripButton();
             this.rtb = new Radegast.RRichTextBox();
             this.lineNubersForRtb = new Radegast.LineNumberPanel();
-            this.tfindMatchCase = new Radegast.ToolStripCheckBox();
             this.tsMenu.SuspendLayout();
             this.tsStatus.SuspendLayout();
             this.tsFindReplace.SuspendLayout();
@@ -112,8 +112,7 @@ namespace Radegast
             this.tsMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtbFile,
             this.tbtnEdit,
-            this.tbtnAttach,
-            this.toolStripButton2});
+            this.tbtnAttach});
             this.tsMenu.Location = new System.Drawing.Point(0, 0);
             this.tsMenu.Name = "tsMenu";
             this.tsMenu.Size = new System.Drawing.Size(661, 25);
@@ -190,7 +189,8 @@ namespace Radegast
             this.deleteToolStripMenuItem,
             this.selectAllToolStripMenuItem,
             this.toolStripMenuItem2,
-            this.findToolStripMenuItem});
+            this.findToolStripMenuItem,
+            this.syntaxHiglightingToolStripMenuItem});
             this.tbtnEdit.Image = ((System.Drawing.Image)(resources.GetObject("tbtnEdit.Image")));
             this.tbtnEdit.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnEdit.Name = "tbtnEdit";
@@ -201,7 +201,7 @@ namespace Radegast
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Z";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
@@ -209,20 +209,20 @@ namespace Radegast
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Y";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(161, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(180, 6);
             // 
             // cutToolStripMenuItem
             // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+X";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
             // 
@@ -230,7 +230,7 @@ namespace Radegast
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+C";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
@@ -238,7 +238,7 @@ namespace Radegast
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+V";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
@@ -246,7 +246,7 @@ namespace Radegast
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.ShortcutKeyDisplayString = "Del";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -254,22 +254,31 @@ namespace Radegast
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
             this.selectAllToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+A";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.selectAllToolStripMenuItem.Text = "Select All";
             this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(161, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(180, 6);
             // 
             // findToolStripMenuItem
             // 
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+F";
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.findToolStripMenuItem.Text = "Find";
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.findToolStripMenuItem.Text = "Find/Replace";
             this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+            // 
+            // syntaxHiglightingToolStripMenuItem
+            // 
+            this.syntaxHiglightingToolStripMenuItem.Checked = true;
+            this.syntaxHiglightingToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.syntaxHiglightingToolStripMenuItem.Name = "syntaxHiglightingToolStripMenuItem";
+            this.syntaxHiglightingToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.syntaxHiglightingToolStripMenuItem.Text = "Syntax Higlighting";
+            this.syntaxHiglightingToolStripMenuItem.Click += new System.EventHandler(this.syntaxHiglightingToolStripMenuItem_Click);
             // 
             // tbtnAttach
             // 
@@ -280,16 +289,6 @@ namespace Radegast
             this.tbtnAttach.Size = new System.Drawing.Size(48, 22);
             this.tbtnAttach.Text = "Detach";
             this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton2.Text = "toolStripButton2";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // tsStatus
             // 
@@ -378,10 +377,13 @@ namespace Radegast
             // 
             // tfindFindText
             // 
+            this.tfindFindText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tfindFindText.Name = "tfindFindText";
             this.tfindFindText.Size = new System.Drawing.Size(120, 25);
+            this.tfindFindText.ToolTipText = "Search string";
             this.tfindFindText.Leave += new System.EventHandler(this.tfindFindText_Leave);
             this.tfindFindText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tfindFindText_KeyDown);
+            this.tfindFindText.Enter += new System.EventHandler(this.tfindFindText_Enter);
             this.tfindFindText.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tfindFindText_KeyUp);
             this.tfindFindText.TextChanged += new System.EventHandler(this.tfindFindText_TextChanged);
             // 
@@ -391,9 +393,18 @@ namespace Radegast
             this.tfindDoFind.Image = ((System.Drawing.Image)(resources.GetObject("tfindDoFind.Image")));
             this.tfindDoFind.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tfindDoFind.Name = "tfindDoFind";
-            this.tfindDoFind.Size = new System.Drawing.Size(59, 22);
-            this.tfindDoFind.Text = "Find next";
+            this.tfindDoFind.Size = new System.Drawing.Size(34, 22);
+            this.tfindDoFind.Text = "Find";
             this.tfindDoFind.Click += new System.EventHandler(this.tfindDoFind_Click);
+            // 
+            // tfindMatchCase
+            // 
+            this.tfindMatchCase.BackColor = System.Drawing.Color.Transparent;
+            this.tfindMatchCase.Checked = false;
+            this.tfindMatchCase.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            this.tfindMatchCase.Name = "tfindMatchCase";
+            this.tfindMatchCase.Size = new System.Drawing.Size(86, 22);
+            this.tfindMatchCase.Text = "Match case";
             // 
             // toolStripButton1
             // 
@@ -408,8 +419,10 @@ namespace Radegast
             // 
             // tfindReplaceText
             // 
+            this.tfindReplaceText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tfindReplaceText.Name = "tfindReplaceText";
             this.tfindReplaceText.Size = new System.Drawing.Size(100, 25);
+            this.tfindReplaceText.ToolTipText = "Replacement text";
             // 
             // tfindFindNextReplace
             // 
@@ -419,6 +432,7 @@ namespace Radegast
             this.tfindFindNextReplace.Name = "tfindFindNextReplace";
             this.tfindFindNextReplace.Size = new System.Drawing.Size(59, 22);
             this.tfindFindNextReplace.Text = "Find next";
+            this.tfindFindNextReplace.ToolTipText = "Find the next occurance of search string";
             this.tfindFindNextReplace.Click += new System.EventHandler(this.tfindFindNextReplace_Click);
             // 
             // tfindReplace
@@ -429,6 +443,7 @@ namespace Radegast
             this.tfindReplace.Name = "tfindReplace";
             this.tfindReplace.Size = new System.Drawing.Size(52, 22);
             this.tfindReplace.Text = "Replace";
+            this.tfindReplace.ToolTipText = "Replace currently highlighted text with the replacement string";
             this.tfindReplace.Click += new System.EventHandler(this.tfindReplace_Click);
             // 
             // tfindReplaceAll
@@ -439,6 +454,7 @@ namespace Radegast
             this.tfindReplaceAll.Name = "tfindReplaceAll";
             this.tfindReplaceAll.Size = new System.Drawing.Size(67, 22);
             this.tfindReplaceAll.Text = "Replace all";
+            this.tfindReplaceAll.ToolTipText = "Replace all occurances of search string with the replacement string";
             this.tfindReplaceAll.Click += new System.EventHandler(this.tfindReplaceAll_Click);
             // 
             // rtb
@@ -449,10 +465,11 @@ namespace Radegast
             this.rtb.DetectUrls = false;
             this.rtb.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtb.Font = new System.Drawing.Font("Courier New", 9.5F);
+            this.rtb.ForeColor = System.Drawing.SystemColors.WindowText;
             this.rtb.HideSelection = false;
             this.rtb.Location = new System.Drawing.Point(33, 25);
             this.rtb.Name = "rtb";
-            this.rtb.Size = new System.Drawing.Size(628, 395);
+            this.rtb.Size = new System.Drawing.Size(628, 370);
             this.rtb.SyntaxHighlightEnabled = true;
             this.rtb.TabIndex = 1;
             this.rtb.Text = "";
@@ -470,17 +487,8 @@ namespace Radegast
             this.lineNubersForRtb.Location = new System.Drawing.Point(0, 25);
             this.lineNubersForRtb.Name = "lineNubersForRtb";
             this.lineNubersForRtb.RTB = this.rtb;
-            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 395);
+            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 370);
             this.lineNubersForRtb.TabIndex = 6;
-            // 
-            // tfindMatchCase
-            // 
-            this.tfindMatchCase.BackColor = System.Drawing.Color.Transparent;
-            this.tfindMatchCase.Checked = false;
-            this.tfindMatchCase.CheckState = System.Windows.Forms.CheckState.Unchecked;
-            this.tfindMatchCase.Name = "tfindMatchCase";
-            this.tfindMatchCase.Size = new System.Drawing.Size(82, 22);
-            this.tfindMatchCase.Text = "Match case";
             // 
             // ScriptEditor
             // 
@@ -544,8 +552,8 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tfindReplace;
         private System.Windows.Forms.ToolStripButton tfindReplaceAll;
         private System.Windows.Forms.ToolStripSeparator toolStripButton1;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
         private RRichTextBox rtb;
         private LineNumberPanel lineNubersForRtb;
+        private System.Windows.Forms.ToolStripMenuItem syntaxHiglightingToolStripMenuItem;
     }
 }

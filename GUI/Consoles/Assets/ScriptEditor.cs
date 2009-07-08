@@ -470,6 +470,7 @@ namespace Radegast
 
         Dictionary<string, FindHistoryItem> FindHistory = new Dictionary<string, FindHistoryItem>();
         FindHistoryItem startPos;
+        int searchFrom = 0;
 
         private void tfindFindText_TextChanged(object sender, EventArgs e)
         {
@@ -495,39 +496,45 @@ namespace Radegast
             if (FindHistory.ContainsKey(st))
             {
                 tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
-                tfindDoFind.Enabled = true;
                 FindHistoryItem h = FindHistory[st];
                 rtb.BeginUpdate();
                 rtb.Select(h.SelStart, h.SelLength);
                 rtb.ScrollToCaret();
                 rtb.EndUpdate();
+                searchFrom = h.SelStart;
+
+                if (st == string.Empty)
+                {
+                    FindHistory.Clear();
+                    tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
+                }
+
+                return;
             }
 
             if (st == string.Empty)
             {
                 FindHistory.Clear();
                 tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
-                tfindDoFind.Enabled = true;
-                startPos = null;
                 return;
             }
 
-            int pos = rtb.Text.IndexOf(st, rtb.SelectionStart, type);
+            int pos = rtb.Text.IndexOf(st, searchFrom, type);
 
             if (pos != -1)
             {
                 tfindFindText.BackColor = Color.FromKnownColor(KnownColor.Window);
-                tfindDoFind.Enabled = true;
                 FindHistory[st] = new FindHistoryItem(st, pos, st.Length);
                 rtb.BeginUpdate();
                 rtb.Select(pos, st.Length);
                 rtb.ScrollToCaret();
                 rtb.EndUpdate();
+                searchFrom = pos;
             }
             else
             {
+                searchFrom = 0;
                 tfindFindText.BackColor = Color.FromArgb(200, 0, 0);
-                tfindDoFind.Enabled = false;
             }
         }
 
@@ -554,10 +561,7 @@ namespace Radegast
         private void tfindDoFind_Click(object sender, EventArgs e)
         {
             FindHistory.Clear();
-            startPos = null;
-            int len = rtb.SelectionLength;
-            rtb.SelectionLength = 0;
-            rtb.SelectionStart += len;
+            searchFrom += rtb.SelectionLength;
             tfindFindText_TextChanged(sender, e);
         }
 
@@ -566,6 +570,12 @@ namespace Radegast
             startPos = null;
             FindHistory.Clear();
         }
+
+        private void tfindFindText_Enter(object sender, EventArgs e)
+        {
+            searchFrom = rtb.SelectionStart;
+        }
+
 
         private void tfindFindNextReplace_Click(object sender, EventArgs e)
         {
@@ -618,7 +628,7 @@ namespace Radegast
             }
         }
 
-        private void toolStripButton2_Click(object sender, EventArgs e)
+        private void syntaxHiglightingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (rtb.SyntaxHighlightEnabled == true)
             {
@@ -628,8 +638,8 @@ namespace Radegast
             {
                 rtb.SyntaxHighlightEnabled = true;
             }
+            syntaxHiglightingToolStripMenuItem.Checked = rtb.SyntaxHighlightEnabled;
         }
-
 
     }
 }
