@@ -2,8 +2,6 @@ $Id$
 
 TODO
 ====
-1. On object list, allow specifing search radius
-2. Object list needs a "Buy" button
-3. Allow sorting nearby object by their name in addition to distance
-4. Allow teleport from parsed SLURLs in chat and IM
-5. Allow activating group "(none)" to remove any name tag
+1. Implement more inventory actions for different asset types
+2. Allow backup of all text from the inventory
+
