@@ -122,7 +122,7 @@ namespace Radegast
 
         #region Detach/Attach
         private Control originalParent;
-        private frmDetachedControl detachedForm;
+        private Form detachedForm;
         private bool detached = false;
 
         public bool Detached
@@ -163,7 +163,7 @@ namespace Radegast
                 detachedForm.Dispose();
             }
 
-            detachedForm = new frmDetachedControl();
+            detachedForm = new Form();
             originalParent = Parent;
             Parent = detachedForm;
             detachedForm.ClientSize = new Size(873, 580);
@@ -326,7 +326,7 @@ namespace Radegast
             return -1;
         }
 
-        private RRichTextBox.CursorLocation prevCursor;
+        //private RRichTextBox.CursorLocation prevCursor;
 
         private void rtb_KeyUp(object sender, KeyEventArgs e)
         {

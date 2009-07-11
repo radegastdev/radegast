@@ -469,7 +469,7 @@ namespace Radegast
             this.rtb.HideSelection = false;
             this.rtb.Location = new System.Drawing.Point(33, 25);
             this.rtb.Name = "rtb";
-            this.rtb.Size = new System.Drawing.Size(628, 370);
+            this.rtb.Size = new System.Drawing.Size(628, 395);
             this.rtb.SyntaxHighlightEnabled = true;
             this.rtb.TabIndex = 1;
             this.rtb.Text = "";
@@ -487,7 +487,7 @@ namespace Radegast
             this.lineNubersForRtb.Location = new System.Drawing.Point(0, 25);
             this.lineNubersForRtb.Name = "lineNubersForRtb";
             this.lineNubersForRtb.RTB = this.rtb;
-            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 370);
+            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 395);
             this.lineNubersForRtb.TabIndex = 6;
             // 
             // ScriptEditor

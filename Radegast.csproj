@@ -121,6 +121,9 @@
     <Compile Include="Core\Tabs\SleekTab.cs" />
     <Compile Include="Core\Tabs\SleekTabEvents.cs" />
     <Compile Include="Core\Types\CircularList.cs" />
+    <Compile Include="Core\Types\DettachableControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Core\Types\ExtendedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -135,6 +138,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Core\Types\TransparentButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Core\Types\TransparentLabel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="FormFlash.cs" />
@@ -245,12 +251,6 @@
     </Compile>
     <Compile Include="GUI\Dialogs\DebugLog.Designer.cs">
       <DependentUpon>DebugLog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Dialogs\DetachedControl.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\DetachedControl.Designer.cs">
-      <DependentUpon>DetachedControl.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\DetachedTab.cs">
       <SubType>Form</SubType>
@@ -477,10 +477,6 @@
     <EmbeddedResource Include="GUI\Dialogs\DebugLog.resx">
       <SubType>Designer</SubType>
       <DependentUpon>DebugLog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\DetachedControl.resx">
-      <DependentUpon>DetachedControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\DetachedTab.resx">
       <SubType>Designer</SubType>
@@ -1048,7 +1044,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="assemblies\log4net.dll" />
-    <Content Include="assemblies\Tools.dll" />
+    <None Include="assemblies\Tools.dll" />
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1068,12 +1064,10 @@
     </None>
     <None Include="Resources\lsl_keywords.txt" />
     <None Include="Resources\del_trans.png" />
+    <None Include="Resources\radegast_icon.ico" />
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\Inventory\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

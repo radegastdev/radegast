@@ -284,34 +284,33 @@ namespace Radegast
 
         private void Objects_OnObjectKilled(Simulator simulator, uint objectID)
         {
-            return;
-            if (simulator.Handle != client.Network.CurrentSim.Handle) return;
+            //if (simulator.Handle != client.Network.CurrentSim.Handle) return;
 
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Objects_OnObjectKilled(simulator, objectID);
-                }
-                ));
-                return;
-            }
+            //if (InvokeRequired)
+            //{
+            //    BeginInvoke(new MethodInvoker(delegate()
+            //    {
+            //        Objects_OnObjectKilled(simulator, objectID);
+            //    }
+            //    ));
+            //    return;
+            //}
 
-            ListViewItem item = null;
+            //ListViewItem item = null;
 
-            foreach (ListViewItem sitem in lstPrims.Items)
-            {
-                if (((Primitive)sitem.Tag).LocalID == objectID)
-                {
-                    item = sitem;
-                    break;
-                }
-            }
+            //foreach (ListViewItem sitem in lstPrims.Items)
+            //{
+            //    if (((Primitive)sitem.Tag).LocalID == objectID)
+            //    {
+            //        item = sitem;
+            //        break;
+            //    }
+            //}
 
-            if (item != null)
-            {
-                lstPrims.Items.Remove(item);
-            }
+            //if (item != null)
+            //{
+            //    lstPrims.Items.Remove(item);
+            //}
         }
 
         private void AddAllObjects()

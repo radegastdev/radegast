@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
@@ -43,18 +44,41 @@ using System.IO;
 
 namespace Radegast
 {
-    public partial class SLImageHandler : UserControl
+    public partial class SLImageHandler : DettachableControl
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private UUID imageID;
-        private ImageCache cache;
+
+        TransparentLabel lblDesc;
+        byte[] jpegdata;
+        ManagedImage imgManaged;
+        Image image;
+
+        public override string Text
+        {
+            get
+            {
+                return base.Text;
+            }
+            set
+            {
+                base.Text = value;
+
+                if (image != null)
+                {
+                    base.Text += string.Format(" ({0}x{1})", image.Width, image.Height);
+                }
+
+                SetTitle();
+            }
+        }
 
         public SLImageHandler(RadegastInstance instance, UUID image, string label)
         {
             InitializeComponent();
             Disposed += new EventHandler(SLImageHandler_Disposed);
-  
+
             if (!instance.advancedDebugging)
             {
                 tbtnCopy.Visible = false;
@@ -64,8 +88,15 @@ namespace Radegast
 
             this.instance = instance;
             this.imageID = image;
-            this.cache = this.instance.ImageCache;
+
+            lblDesc =  new TransparentLabel();
+            lblDesc.Top = 5;
+            lblDesc.Left = 5;
             lblDesc.Text = label;
+            pictureBox1.Controls.Add(lblDesc);
+
+            Text = string.IsNullOrEmpty(label) ? "Image" : label;
+
             if (lblDesc.Text == string.Empty)
             {
                 lblDesc.Hide();
@@ -74,24 +105,17 @@ namespace Radegast
             // Callbacks
             client.Assets.OnImageRecieveProgress += new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
 
-            if (cache.ContainsImage(image)) {
-                pictureBox1.Image = cache.GetImage(imageID);
-                pictureBox1.Enabled = true;
-                progressBar1.Hide();
-                lblProgress.Hide();
-            } else {
-                client.Assets.RequestImage(imageID, ImageType.Normal, delegate(TextureRequestState state, AssetTexture assetTexture)
+            client.Assets.RequestImage(imageID, ImageType.Normal, delegate(TextureRequestState state, AssetTexture assetTexture)
+            {
+                if (state == TextureRequestState.Finished || state == TextureRequestState.Timeout)
                 {
-                    if (state == TextureRequestState.Finished || state == TextureRequestState.Timeout)
-                    {
-                        Assets_OnImageReceived(assetTexture);
-                    }
-                    else if (state == TextureRequestState.Progress)
-                    {
-                        // DisplayPartialImage(assetTexture);
-                    }
-                }, true);
-            }
+                    Assets_OnImageReceived(assetTexture);
+                }
+                else if (state == TextureRequestState.Progress)
+                {
+                    // DisplayPartialImage(assetTexture);
+                }
+            }, true);
         }
 
         void SLImageHandler_Disposed(object sender, EventArgs e)
@@ -165,24 +189,40 @@ namespace Radegast
             try {
                 progressBar1.Hide();
                 lblProgress.Hide();
-                ManagedImage tmp;
-                System.Drawing.Image img;
-                if (!OpenJPEG.DecodeToImage(assetTexture.AssetData, out tmp, out img))
+
+                if (!OpenJPEG.DecodeToImage(assetTexture.AssetData, out imgManaged, out image))
                 {
                     throw new Exception("decoding failure");
                 }
-                pictureBox1.Image = img;
+
+                Text = Text; // yeah, really ;)
+
+                pictureBox1.Image = image;
                 pictureBox1.Enabled = true;
-                cache.AddImage(assetTexture.AssetID, img);
-                cache.AddJ2Image(assetTexture.AssetID, assetTexture.AssetData);
+                jpegdata = assetTexture.AssetData;
+                if (Detached)
+                {
+                    ClientSize = pictureBox1.Size = new Size(image.Width, image.Height);
+                }
             } catch (Exception excp) {
                 this.Hide();
                 System.Console.WriteLine("Error decoding image: " + excp.Message);
             }
         }
 
+        protected override void Detach()
+        {
+            base.Detach();
+            ClientSize = pictureBox1.Size = new Size(image.Width, image.Height);
+        }
+
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (imgManaged == null)
+            {
+                return;
+            }
+
             System.Windows.Forms.SaveFileDialog dlg = new SaveFileDialog();
             dlg.AddExtension = true;
             dlg.RestoreDirectory = true;
@@ -196,23 +236,23 @@ namespace Radegast
                 int type = dlg.FilterIndex;
                 if (type == 2)
                 { // jpeg200
-                    File.WriteAllBytes(dlg.FileName, cache.GetJ2Image(imageID));
+                    File.WriteAllBytes(dlg.FileName, jpegdata);
                 }
                 else if (type == 1)
                 { // targa
-                    File.WriteAllBytes(dlg.FileName, new ManagedImage(new Bitmap(cache.GetImage(imageID))).ExportTGA());
+                    File.WriteAllBytes(dlg.FileName, imgManaged.ExportTGA());
                 }
                 else if (type == 3)
                 { // png
-                    cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                    image.Save(dlg.FileName, ImageFormat.Png);
                 }
                 else if (type == 4)
                 { // jpg
-                    cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    image.Save(dlg.FileName, ImageFormat.Jpeg);
                 }
                 else
                 { // BMP
-                    cache.GetImage(imageID).Save(dlg.FileName, System.Drawing.Imaging.ImageFormat.Bmp);
+                    image.Save(dlg.FileName, ImageFormat.Bmp);
                 }
             }
 
@@ -222,19 +262,15 @@ namespace Radegast
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            ImageFullSize img = new ImageFullSize(instance, imageID, lblDesc.Text, pictureBox1.Image);
-            img.Show();
+            if (!Detached)
+            {
+                Detached = true;
+            }
         }
 
         private void copyUUIDToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(imageID.ToString(), TextDataFormat.Text);
-        }
-
-        private void tbtnViewFullSize_Click(object sender, EventArgs e)
-        {
-            ImageFullSize img = new ImageFullSize(instance, imageID, lblDesc.Text, pictureBox1.Image);
-            img.Show();
         }
 
         private void tbtnCopy_Click(object sender, EventArgs e)

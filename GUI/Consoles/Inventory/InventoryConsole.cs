@@ -35,6 +35,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
 using OpenMetaverse;
+using OpenMetaverse.Assets;
 
 namespace Radegast
 {
@@ -289,12 +290,9 @@ namespace Radegast
                 return;
             }
 
-            lock (attachments)
+            if (attachments.ContainsKey(newObject.UUID))
             {
-                if (attachments.ContainsKey(newObject.UUID))
-                {
-                    attachments[newObject.UUID].Item = (InventoryItem)newObject;
-                }
+                attachments[newObject.UUID].Item = (InventoryItem)newObject;
             }
 
             // Find our current node in the tree
@@ -324,9 +322,7 @@ namespace Radegast
             {
                 AddBase(parent, newObject);
             }
-
         }
-
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
         {
@@ -348,7 +344,7 @@ namespace Radegast
         #endregion
 
         #region Node manipulation
-        int GetDirImageIndex(string t)
+        public static int GetDirImageIndex(string t)
         {
             int res = frmMain.ImageNames.IndexOf("inv_folder_" + t);
             if (res == -1)
@@ -369,7 +365,7 @@ namespace Radegast
             return res;
         }
 
-        int GetItemImageIndex(string t)
+        public static int GetItemImageIndex(string t)
         {
             int res = frmMain.ImageNames.IndexOf("inv_item_" + t);
             if (res == -1)
@@ -554,22 +550,26 @@ namespace Radegast
             TreeUpdateInProgress = false;
 
             // Update attachments now that we are done
-            foreach (AttachmentInfo a in attachments.Values)
+            lock (attachments)
             {
-                if (a.Item == null)
+                foreach (AttachmentInfo a in attachments.Values)
                 {
-                    if (Inventory.Contains(a.InventoryID))
+                    if (a.Item == null)
                     {
-                        a.Item = (InventoryItem)Inventory[a.InventoryID];
+                        if (Inventory.Contains(a.InventoryID))
+                        {
+                            a.Item = (InventoryItem)Inventory[a.InventoryID];
+                        }
+                        else
+                        {
+                            client.Inventory.RequestFetchInventory(a.InventoryID, client.Self.AgentID);
+                            return;
+                        }
                     }
-                    else
-                    {
-                        client.Inventory.RequestFetchInventory(a.InventoryID, client.Self.AgentID);
-                        return;
-                    }
+                    Store_OnInventoryObjectUpdated(a.Item, a.Item);
                 }
-                Store_OnInventoryObjectUpdated(a.Item, a.Item);
             }
+
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
             Inventory.SaveToDisk(instance.InventoryCacheFileName);
             UpdateStatus(string.Empty);

@@ -41,7 +41,7 @@ using OpenMetaverse.Assets;
 
 namespace Radegast
 {
-    public partial class Landmark : UserControl
+    public partial class Landmark : DettachableControl
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
@@ -62,7 +62,7 @@ namespace Radegast
             client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
             client.Grid.OnRegionHandleReply += new GridManager.RegionHandleReplyCallback(Grid_OnRegionHandleReply);
             client.Parcels.OnParcelInfo += new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
-            client.Assets.RequestInventoryAsset(landmark, true);
+            client.Assets.RequestAsset(landmark.AssetUUID, landmark.AssetType, true);
         }
 
         void Landmark_Disposed(object sender, EventArgs e)

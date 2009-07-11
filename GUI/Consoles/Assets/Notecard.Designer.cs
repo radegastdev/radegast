@@ -58,83 +58,116 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.txtName = new System.Windows.Forms.TextBox();
-            this.txtDesc = new System.Windows.Forms.TextBox();
-            this.pnlControls = new System.Windows.Forms.Panel();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnRefresh = new System.Windows.Forms.Button();
-            this.rtbContent = new System.Windows.Forms.RichTextBox();
-            this.pnlControls.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Notecard));
+            this.rtbContent = new Radegast.RRichTextBox();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.tbtnFile = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tbtnSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnSaveToDisk = new System.Windows.Forms.ToolStripMenuItem();
+            this.sprtExit = new System.Windows.Forms.ToolStripSeparator();
+            this.tbtnExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnAttachments = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // txtName
-            // 
-            this.txtName.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtName.Location = new System.Drawing.Point(0, 0);
-            this.txtName.Name = "txtName";
-            this.txtName.ReadOnly = true;
-            this.txtName.Size = new System.Drawing.Size(382, 20);
-            this.txtName.TabIndex = 0;
-            // 
-            // txtDesc
-            // 
-            this.txtDesc.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtDesc.Location = new System.Drawing.Point(0, 20);
-            this.txtDesc.Name = "txtDesc";
-            this.txtDesc.ReadOnly = true;
-            this.txtDesc.Size = new System.Drawing.Size(382, 20);
-            this.txtDesc.TabIndex = 1;
-            // 
-            // pnlControls
-            // 
-            this.pnlControls.Controls.Add(this.btnSave);
-            this.pnlControls.Controls.Add(this.btnRefresh);
-            this.pnlControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlControls.Location = new System.Drawing.Point(0, 330);
-            this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(382, 34);
-            this.pnlControls.TabIndex = 2;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(84, 5);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 1;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Location = new System.Drawing.Point(3, 5);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 1;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // rtbContent
             // 
+            this.rtbContent.AcceptsTab = true;
+            this.rtbContent.DetectUrls = false;
             this.rtbContent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbContent.Location = new System.Drawing.Point(0, 40);
+            this.rtbContent.HideSelection = false;
+            this.rtbContent.Location = new System.Drawing.Point(0, 25);
             this.rtbContent.Name = "rtbContent";
-            this.rtbContent.Size = new System.Drawing.Size(382, 290);
+            this.rtbContent.Size = new System.Drawing.Size(382, 339);
             this.rtbContent.TabIndex = 3;
             this.rtbContent.Text = "";
+            this.rtbContent.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbContent_LinkClicked);
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbtnFile,
+            this.tbtnAttachments,
+            this.tbtnAttach});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(382, 25);
+            this.toolStrip1.TabIndex = 4;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // tbtnFile
+            // 
+            this.tbtnFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbtnSave,
+            this.tbtnSaveToDisk,
+            this.sprtExit,
+            this.tbtnExit});
+            this.tbtnFile.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFile.Image")));
+            this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnFile.Name = "tbtnFile";
+            this.tbtnFile.Size = new System.Drawing.Size(38, 22);
+            this.tbtnFile.Text = "File";
+            // 
+            // tbtnSave
+            // 
+            this.tbtnSave.Name = "tbtnSave";
+            this.tbtnSave.Size = new System.Drawing.Size(152, 22);
+            this.tbtnSave.Text = "Save";
+            this.tbtnSave.Click += new System.EventHandler(this.tbtnSave_Click);
+            // 
+            // tbtnSaveToDisk
+            // 
+            this.tbtnSaveToDisk.Name = "tbtnSaveToDisk";
+            this.tbtnSaveToDisk.Size = new System.Drawing.Size(152, 22);
+            this.tbtnSaveToDisk.Text = "Save to Disk...";
+            // 
+            // sprtExit
+            // 
+            this.sprtExit.Name = "sprtExit";
+            this.sprtExit.Size = new System.Drawing.Size(149, 6);
+            // 
+            // tbtnExit
+            // 
+            this.tbtnExit.Enabled = false;
+            this.tbtnExit.Name = "tbtnExit";
+            this.tbtnExit.Size = new System.Drawing.Size(152, 22);
+            this.tbtnExit.Text = "Exit";
+            this.tbtnExit.Click += new System.EventHandler(this.tbtnExit_Click);
+            // 
+            // tbtnAttachments
+            // 
+            this.tbtnAttachments.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnAttachments.Enabled = false;
+            this.tbtnAttachments.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAttachments.Image")));
+            this.tbtnAttachments.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnAttachments.Name = "tbtnAttachments";
+            this.tbtnAttachments.Size = new System.Drawing.Size(88, 22);
+            this.tbtnAttachments.Text = "Attachments";
+            this.tbtnAttachments.Visible = false;
+            // 
+            // tbtnAttach
+            // 
+            this.tbtnAttach.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnAttach.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAttach.Image")));
+            this.tbtnAttach.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnAttach.Name = "tbtnAttach";
+            this.tbtnAttach.Size = new System.Drawing.Size(48, 22);
+            this.tbtnAttach.Text = "Detach";
+            this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
             // 
             // Notecard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.rtbContent);
-            this.Controls.Add(this.pnlControls);
-            this.Controls.Add(this.txtDesc);
-            this.Controls.Add(this.txtName);
+            this.Controls.Add(this.toolStrip1);
             this.Name = "Notecard";
             this.Size = new System.Drawing.Size(382, 364);
-            this.pnlControls.ResumeLayout(false);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,11 +175,14 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtName;
-        private System.Windows.Forms.TextBox txtDesc;
-        private System.Windows.Forms.Panel pnlControls;
-        private System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.RichTextBox rtbContent;
+        private RRichTextBox rtbContent;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripDropDownButton tbtnFile;
+        private System.Windows.Forms.ToolStripMenuItem tbtnSave;
+        private System.Windows.Forms.ToolStripMenuItem tbtnSaveToDisk;
+        private System.Windows.Forms.ToolStripSeparator sprtExit;
+        private System.Windows.Forms.ToolStripMenuItem tbtnExit;
+        private System.Windows.Forms.ToolStripDropDownButton tbtnAttachments;
+        private System.Windows.Forms.ToolStripButton tbtnAttach;
     }
 }

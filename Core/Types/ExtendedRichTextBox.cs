@@ -176,7 +176,6 @@ namespace Radegast
 
             this.myToolTip = new ToolTip();
             this.ContextMenu = new ContextMenu();
-            this.LinkClicked += new LinkClickedEventHandler(MudRichTextBox_LinkClicked);
 
             // Initialize default text and background colors
             textColor = RtfColor.Black;
@@ -1446,14 +1445,6 @@ namespace Radegast
 
             //Return last + 1 character printer
             return res.ToInt32();
-        }
-        #endregion
-        #region Link Clicked
-        void MudRichTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
-        {
-            // Call Process.Start method to open a browser
-            // with link text as URL.
-            System.Diagnostics.Process.Start(e.LinkText);
         }
         #endregion
         #region WndProc

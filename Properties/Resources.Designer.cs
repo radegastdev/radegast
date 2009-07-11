@@ -532,6 +532,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Icon radegast_icon {
+            get {
+                object obj = ResourceManager.GetObject("radegast_icon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap radegast_main_screen2 {
             get {
                 object obj = ResourceManager.GetObject("radegast_main_screen2", resourceCulture);
