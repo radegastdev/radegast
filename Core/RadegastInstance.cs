@@ -70,11 +70,23 @@ namespace Radegast
         /// </summary>
         public string UserDir { get { return userDir; } }
 
-        private string clientDir;
         /// <summary>
         /// Grid client's user dir for settings and logs
         /// </summary>
-        public string ClientDir { get { return clientDir; } }
+        public string ClientDir
+        {
+            get
+            {
+                if (client != null && client.Self != null && !string.IsNullOrEmpty(client.Self.Name))
+                {
+                    return Path.Combine(userDir, client.Self.Name);
+                }
+                else
+                {
+                    return Environment.CurrentDirectory;
+                }
+            }
+        }
 
         public string InventoryCacheFileName { get { return Path.Combine(ClientDir, "inventory.cache"); } }
 
@@ -143,8 +155,6 @@ namespace Radegast
             client.Groups.OnGroupDropped += new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
             client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-            client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
-            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
         }
 
         public void CleanUp()
@@ -156,8 +166,6 @@ namespace Radegast
                 client.Groups.OnGroupDropped -= new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
                 client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-                client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
-                client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             }
 
             if (MonoRuntime)
@@ -245,35 +253,8 @@ namespace Radegast
             client.Groups.RequestCurrentGroups();
         }
 
-        void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
-        {
-            clientDir = null;
-        }
-
-        void Network_OnLogin(LoginStatus login, string message)
-        {
-            if (login != LoginStatus.Success)
-                return;
-
-            clientDir = Path.Combine(userDir, client.Self.Name);
-            try
-            {
-                if (!Directory.Exists(clientDir))
-                {
-                    Directory.CreateDirectory(clientDir);
-                }
-            }
-            catch (Exception)
-            {
-                clientDir = Directory.GetCurrentDirectory();
-            }
-
-        }
-
         public void LogClientMessage(string fileName, string message)
         {
-            if (clientDir == null) return;
-
             lock (this)
             {
                 try
@@ -283,7 +264,7 @@ namespace Radegast
                         fileName = fileName.Replace(lDisallowed.ToString(), "_");
                     }
 
-                    StreamWriter logfile = File.AppendText(Path.Combine(clientDir, fileName));
+                    StreamWriter logfile = File.AppendText(Path.Combine(ClientDir, fileName));
                     logfile.WriteLine(DateTime.Now.ToString("yyyy-MM-dd [HH:mm:ss] ") + message);
                     logfile.Close();
                     logfile.Dispose();
