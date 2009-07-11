@@ -19071,7 +19071,6 @@ namespace Radegast.LSL
                 case 946: { ((LSLTokens)yym).str += yytext; }
                     break;
                 case 1010: { yym.yy_begin("YYINITIAL"); ((LSLTokens)yym).yytext = ((LSLTokens)yym).str; ((LSLTokens)yym).str = String.Empty; return new STRING_CONSTANT(yym); }
-                    break;
                 case 1015: { yym.yy_begin("COMMENT"); }
                     break;
                 case 1027: { yym.yy_begin("YYINITIAL"); }

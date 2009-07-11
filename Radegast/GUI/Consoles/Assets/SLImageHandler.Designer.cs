@@ -60,23 +60,23 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             this.lblProgress = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblDesc = new System.Windows.Forms.Label();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.cmsImage = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tbtnCopyUUID = new System.Windows.Forms.ToolStripMenuItem();
-            this.tbtnSave = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnViewFullSize = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnCopyUUID = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.cmsImage.SuspendLayout();
+            this.progressBar1.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblProgress
             // 
             this.lblProgress.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblProgress.AutoSize = true;
-            this.lblProgress.BackColor = System.Drawing.Color.Transparent;
-            this.lblProgress.Location = new System.Drawing.Point(126, 269);
+            this.lblProgress.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblProgress.Location = new System.Drawing.Point(130, 6);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(51, 13);
             this.lblProgress.TabIndex = 2;
@@ -89,30 +89,11 @@ namespace Radegast
             this.pictureBox1.Enabled = false;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(304, 286);
+            this.pictureBox1.Size = new System.Drawing.Size(301, 286);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // lblDesc
-            // 
-            this.lblDesc.AutoSize = true;
-            this.lblDesc.BackColor = System.Drawing.Color.Transparent;
-            this.lblDesc.Location = new System.Drawing.Point(4, 4);
-            this.lblDesc.Name = "lblDesc";
-            this.lblDesc.Size = new System.Drawing.Size(32, 13);
-            this.lblDesc.TabIndex = 0;
-            this.lblDesc.Text = "Desc";
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar1.Location = new System.Drawing.Point(0, 264);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(304, 22);
-            this.progressBar1.Step = 100;
-            this.progressBar1.TabIndex = 6;
             // 
             // cmsImage
             // 
@@ -122,7 +103,21 @@ namespace Radegast
             this.tbtnCopyUUID,
             this.tbtnSave});
             this.cmsImage.Name = "cmsImage";
-            this.cmsImage.Size = new System.Drawing.Size(200, 114);
+            this.cmsImage.Size = new System.Drawing.Size(200, 92);
+            // 
+            // tbtnViewFullSize
+            // 
+            this.tbtnViewFullSize.Name = "tbtnViewFullSize";
+            this.tbtnViewFullSize.Size = new System.Drawing.Size(199, 22);
+            this.tbtnViewFullSize.Text = "View full size";
+            this.tbtnViewFullSize.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
+            // tbtnCopy
+            // 
+            this.tbtnCopy.Name = "tbtnCopy";
+            this.tbtnCopy.Size = new System.Drawing.Size(199, 22);
+            this.tbtnCopy.Text = "Copy";
+            this.tbtnCopy.Click += new System.EventHandler(this.tbtnCopy_Click);
             // 
             // tbtnCopyUUID
             // 
@@ -138,34 +133,29 @@ namespace Radegast
             this.tbtnSave.Text = "Save";
             this.tbtnSave.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // tbtnViewFullSize
+            // progressBar1
             // 
-            this.tbtnViewFullSize.Name = "tbtnViewFullSize";
-            this.tbtnViewFullSize.Size = new System.Drawing.Size(199, 22);
-            this.tbtnViewFullSize.Text = "View full size";
-            this.tbtnViewFullSize.Click += new System.EventHandler(this.tbtnViewFullSize_Click);
-            // 
-            // tbtnCopy
-            // 
-            this.tbtnCopy.Name = "tbtnCopy";
-            this.tbtnCopy.Size = new System.Drawing.Size(199, 22);
-            this.tbtnCopy.Text = "Copy";
-            this.tbtnCopy.Click += new System.EventHandler(this.tbtnCopy_Click);
+            this.progressBar1.Controls.Add(this.lblProgress);
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.progressBar1.Location = new System.Drawing.Point(0, 264);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(301, 22);
+            this.progressBar1.Step = 100;
+            this.progressBar1.TabIndex = 6;
             // 
             // SLImageHandler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.lblProgress);
             this.Controls.Add(this.progressBar1);
-            this.Controls.Add(this.lblDesc);
             this.Controls.Add(this.pictureBox1);
             this.Name = "SLImageHandler";
             this.Size = new System.Drawing.Size(304, 286);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.cmsImage.ResumeLayout(false);
+            this.progressBar1.ResumeLayout(false);
+            this.progressBar1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -173,7 +163,6 @@ namespace Radegast
 
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label lblDesc;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.ContextMenuStrip cmsImage;
         private System.Windows.Forms.ToolStripMenuItem tbtnViewFullSize;

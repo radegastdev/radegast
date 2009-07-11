@@ -63,18 +63,18 @@ namespace Radegast
                 Primitive.TextureEntryFace face = avatar.Textures.FaceTextures[j];
 
                 if (face != null) {
-                    ImageType type = ImageType.Normal;
+                    //ImageType type = ImageType.Normal;
 
-                    switch ((AppearanceManager.TextureIndex)j) {
-                        case AppearanceManager.TextureIndex.HeadBaked:
-                        case AppearanceManager.TextureIndex.EyesBaked:
-                        case AppearanceManager.TextureIndex.UpperBaked:
-                        case AppearanceManager.TextureIndex.LowerBaked:
-                        case AppearanceManager.TextureIndex.SkirtBaked:
-                        case AppearanceManager.TextureIndex.HairBaked:
-                            type = ImageType.Baked;
-                            break;
-                    }
+                    //switch ((AppearanceManager.TextureIndex)j) {
+                    //    case AppearanceManager.TextureIndex.HeadBaked:
+                    //    case AppearanceManager.TextureIndex.EyesBaked:
+                    //    case AppearanceManager.TextureIndex.UpperBaked:
+                    //    case AppearanceManager.TextureIndex.LowerBaked:
+                    //    case AppearanceManager.TextureIndex.SkirtBaked:
+                    //    case AppearanceManager.TextureIndex.HairBaked:
+                    //        type = ImageType.Baked;
+                    //        break;
+                    //}
 
                     if (face.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE) {
                         SLImageHandler img = new SLImageHandler(instance, face.TextureID, ((AppearanceManager.TextureIndex)j).ToString());

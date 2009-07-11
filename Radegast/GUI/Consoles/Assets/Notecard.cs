@@ -41,11 +41,13 @@ using OpenMetaverse.Assets;
 
 namespace Radegast
 {
-    public partial class Notecard : UserControl
+    public partial class Notecard : DettachableControl
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private InventoryNotecard notecard;
+        private AssetNotecard recievedNotecard;
+
         private UUID requestID;
 
         public Notecard(RadegastInstance instance, InventoryNotecard notecard)
@@ -55,9 +57,9 @@ namespace Radegast
 
             this.instance = instance;
             this.notecard = notecard;
+            Text = notecard.Name;
 
-            txtName.Text = notecard.Name;
-            txtDesc.Text = notecard.Description;
+            rtbContent.DetectUrls = false;
             rtbContent.Text = "Loading...";
 
             // Callbacks
@@ -89,7 +91,10 @@ namespace Radegast
             {
                 AssetNotecard n = (AssetNotecard)asset;
                 n.Decode();
+                recievedNotecard = n;
+
                 string noteText = string.Empty;
+                rtbContent.Clear();
 
                 for (int i = 0; i < n.BodyText.Length; i++)
                 {
@@ -98,9 +103,9 @@ namespace Radegast
                     if ((int)c == 0xdbc0)
                     {
                         int index = (int)n.BodyText[++i] - 0xdc00;
-                        Logger.DebugLog(string.Format("Embedded item index {0}", index));
+                        InventoryItem e = n.EmbeddedItems[index];
                         rtbContent.AppendText(noteText);
-                        rtbContent.AppendText("http://" + n.EmbeddedItems[index].AssetType.ToString() + "/" + index + "/" + n.EmbeddedItems[index].Name.Replace(" ", "_"));
+                        rtbContent.InsertLink(e.Name, string.Format("radegast://embeddedasset/{0}", index));
                         noteText = string.Empty;
                     }
                     else
@@ -109,11 +114,60 @@ namespace Radegast
                     }
                 }
 
-                rtbContent.AppendText(noteText);
+                rtbContent.Text += noteText;
+
+                if (n.EmbeddedItems != null && n.EmbeddedItems.Count > 0)
+                {
+                    tbtnAttachments.Enabled = true;
+                    tbtnAttachments.Visible = true;
+                    foreach (InventoryItem item in n.EmbeddedItems)
+                    {
+                        int ix = InventoryConsole.GetItemImageIndex(item.AssetType.ToString().ToLower());
+                        ToolStripMenuItem titem = new ToolStripMenuItem(item.Name);
+
+                        if (ix != -1)
+                        {
+                            titem.Image = frmMain.ResourceImages.Images[ix];
+                            titem.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+                        }
+                        else
+                        {
+                            titem.DisplayStyle = ToolStripItemDisplayStyle.Text;
+                        }
+
+                        titem.Name = item.UUID.ToString(); ;
+                        titem.Tag = item;
+                        titem.Click += new EventHandler(attachmentMenuItem_Click);
+                        tbtnAttachments.DropDownItems.Add(titem);
+                    }
+                }
             }
             else
             {
                 rtbContent.Text = "Failed to download notecard.";
+            }
+        }
+
+        void attachmentMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sender is ToolStripMenuItem)
+            {
+                ToolStripMenuItem titem = (ToolStripMenuItem)sender;
+                InventoryItem item = (InventoryItem)titem.Tag;
+
+                switch (item.AssetType)
+                {
+                    case AssetType.Texture:
+                        SLImageHandler ih = new SLImageHandler(instance, item.AssetUUID, string.Empty);
+                        ih.Text = item.Name;
+                        ih.ShowDetached();
+                        break;
+
+                    case AssetType.Landmark:
+                        Landmark ln = new Landmark(instance, (InventoryLandmark)item);
+                        ln.ShowDetached();
+                        break;
+                }
             }
         }
 
@@ -122,5 +176,80 @@ namespace Radegast
             rtbContent.Text = "Loading...";
             requestID = client.Assets.RequestInventoryAsset(notecard, true);
         }
+
+        private void rtbContent_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            //instance.MainForm.processLink(e.LinkText);
+        }
+
+
+        #region Detach/Attach
+        protected override void ControlIsNotRetachable()
+        {
+            tbtnAttach.Visible = false;
+        }
+
+        protected override void Detach()
+        {
+            base.Detach();
+            tbtnAttach.Text = "Attach";
+            tbtnExit.Enabled = true;
+        }
+
+        protected override void Retach()
+        {
+            base.Retach();
+            tbtnAttach.Text = "Detach";
+            tbtnExit.Enabled = false;
+        }
+
+        private void tbtnAttach_Click(object sender, EventArgs e)
+        {
+            if (Detached)
+            {
+                Retach();
+            }
+            else
+            {
+                Detach();
+            }
+        }
+        #endregion
+
+        private void tbtnExit_Click(object sender, EventArgs e)
+        {
+            if (Detached)
+            {
+                FindForm().Close();
+            }
+        }
+
+        private void tbtnSave_Click(object sender, EventArgs e)
+        {
+            bool success = false;
+            string message = "";
+            AssetNotecard n = new AssetNotecard();
+            n.BodyText = rtbContent.Text;
+            n.EmbeddedItems = new List<InventoryItem>();
+
+            for (int i = 0; i < recievedNotecard.EmbeddedItems.Count; i++)
+            {
+                n.EmbeddedItems.Add(recievedNotecard.EmbeddedItems[i]);
+                int indexChar = 0xdc00 + i;
+                n.BodyText += (char)0xdbc0;
+                n.BodyText += (char)indexChar;
+            }
+
+            n.Encode();
+
+            client.Inventory.RequestUploadNotecardAsset(n.AssetData, notecard.UUID,
+                delegate(bool uploadSuccess, string status, UUID itemID, UUID assetID)
+                {
+                    success = uploadSuccess;
+                    message = status ?? "Unknown error uploading notecard asset";
+                }
+            );
+        }
+
     }
 }

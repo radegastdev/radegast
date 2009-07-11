@@ -338,45 +338,45 @@ namespace Radegast
         private bool LoadTexture(UUID textureID, ref System.Drawing.Image texture)
         {
             return false;
-            AutoResetEvent gotImage = new AutoResetEvent(false);
-            System.Drawing.Image img = null;
+            //AutoResetEvent gotImage = new AutoResetEvent(false);
+            //System.Drawing.Image img = null;
 
-            if (Textures.ContainsKey(textureID))
-            {
-                texture = Textures[textureID];
-                return true;
-            }
+            //if (Textures.ContainsKey(textureID))
+            //{
+            //    texture = Textures[textureID];
+            //    return true;
+            //}
 
-            try
-            {
-                instance.Client.Assets.RequestImage(textureID, delegate(TextureRequestState state, AssetTexture assetTexture)
-                {
-                    if (state == TextureRequestState.Finished)
-                    {
-                        ManagedImage mi;
-                        OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
-                        gotImage.Set();
-                    }
-                    else
-                    {
-                        throw new Exception("Download failed");
-                    }
-                });
-                gotImage.WaitOne(10 * 1000);
-                if (img != null)
-                {
-                    Textures.Add(textureID, img);
-                    texture = img;
-                    Wireframe = false;
-                    return true;
-                }
-                return false;
-            }
-            catch (Exception e)
-            {
-                Logger.Log(e.Message, Helpers.LogLevel.Error, instance.Client, e);
-                return false;
-            }
+            //try
+            //{
+            //    instance.Client.Assets.RequestImage(textureID, delegate(TextureRequestState state, AssetTexture assetTexture)
+            //    {
+            //        if (state == TextureRequestState.Finished)
+            //        {
+            //            ManagedImage mi;
+            //            OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
+            //            gotImage.Set();
+            //        }
+            //        else
+            //        {
+            //            throw new Exception("Download failed");
+            //        }
+            //    });
+            //    gotImage.WaitOne(10 * 1000);
+            //    if (img != null)
+            //    {
+            //        Textures.Add(textureID, img);
+            //        texture = img;
+            //        Wireframe = false;
+            //        return true;
+            //    }
+            //    return false;
+            //}
+            //catch (Exception e)
+            //{
+            //    Logger.Log(e.Message, Helpers.LogLevel.Error, instance.Client, e);
+            //    return false;
+            //}
         }
 
         private void oBJToolStripMenuItem_Click(object sender, EventArgs e)
