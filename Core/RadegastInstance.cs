@@ -113,8 +113,8 @@ namespace Radegast
         {
             InitializeLoggingAndConfig();
 
-            // Settings.PIPELINE_REFRESH_INTERVAL = 2000.0f;
-
+            Settings.USE_INTERPOLATION_TIMER = false;
+            
             client = new GridClient();
             client.Settings.ALWAYS_REQUEST_OBJECTS = true;
             client.Settings.ALWAYS_DECODE_OBJECTS = true;
@@ -134,7 +134,6 @@ namespace Radegast
             client.Settings.THROTTLE_OUTGOING_PACKETS = true;
             client.Settings.LOGIN_TIMEOUT = 120 * 1000;
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
-            client.Settings.USE_INTERPOLATION_TIMER = false;
             client.Settings.MAX_CONCURRENT_TEXTURE_DOWNLOADS = 20;
 
             netcom = new RadegastNetcom(client);
