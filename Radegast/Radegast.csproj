@@ -156,6 +156,12 @@
     <Compile Include="GUI\Consoles\AnimTab.Designer.cs">
       <DependentUpon>AnimTab.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\Assets\Guesture.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\Assets\Guesture.Designer.cs">
+      <DependentUpon>Guesture.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\Assets\Landmark.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -409,6 +415,10 @@
     <EmbeddedResource Include="GUI\Consoles\AnimTab.resx">
       <SubType>Designer</SubType>
       <DependentUpon>AnimTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\Assets\Guesture.resx">
+      <DependentUpon>Guesture.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\Assets\Landmark.resx">
       <DependentUpon>Landmark.cs</DependentUpon>

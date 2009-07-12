@@ -48,8 +48,6 @@ namespace Radegast
         private InventoryNotecard notecard;
         private AssetNotecard recievedNotecard;
 
-        private UUID requestID;
-
         public Notecard(RadegastInstance instance, InventoryNotecard notecard)
         {
             InitializeComponent();
@@ -65,7 +63,7 @@ namespace Radegast
             // Callbacks
             client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
 
-            requestID = client.Assets.RequestInventoryAsset(notecard, true);
+            client.Assets.RequestInventoryAsset(notecard, true);
         }
 
         void Notecard_Disposed(object sender, EventArgs e)
@@ -75,7 +73,7 @@ namespace Radegast
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
-            if (requestID != transfer.ID) return;
+            if (transfer.AssetID != notecard.AssetUUID) return;
 
             if (InvokeRequired)
             {
@@ -174,7 +172,7 @@ namespace Radegast
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             rtbContent.Text = "Loading...";
-            requestID = client.Assets.RequestInventoryAsset(notecard, true);
+            client.Assets.RequestInventoryAsset(notecard, true);
         }
 
         private void rtbContent_LinkClicked(object sender, LinkClickedEventArgs e)
