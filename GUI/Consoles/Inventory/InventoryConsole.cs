@@ -632,6 +632,10 @@ namespace Radegast
             {
                 txtAssetID.Text = String.Empty;
             }
+            foreach (Control c in pnlDetail.Controls)
+            {
+                c.Dispose();
+            }
             pnlDetail.Controls.Clear();
 
             switch (item.AssetType)
@@ -658,6 +662,12 @@ namespace Radegast
                     ScriptEditor script = new ScriptEditor(instance, (InventoryLSL)item);
                     script.Dock = DockStyle.Fill;
                     pnlDetail.Controls.Add(script);
+                    break;
+
+                case AssetType.Gesture:
+                    Guesture gesture = new Guesture(instance, (InventoryGesture)item);
+                    gesture.Dock = DockStyle.Fill;
+                    pnlDetail.Controls.Add(gesture);
                     break;
 
             }
