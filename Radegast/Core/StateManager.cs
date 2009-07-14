@@ -32,7 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 using OpenMetaverse;
-using RadegastNc;
+using Radegast.Netcom;
 
 namespace Radegast
 {

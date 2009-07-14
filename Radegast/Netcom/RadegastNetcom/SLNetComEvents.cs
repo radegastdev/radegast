@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.Text;
 using OpenMetaverse;
 
-namespace RadegastNc
+namespace Radegast.Netcom
 {
     public partial class RadegastNetcom
     {

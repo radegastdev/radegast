@@ -32,7 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RadegastNc
+namespace Radegast.Netcom
 {
     public class AlertMessageEventArgs : EventArgs
     {

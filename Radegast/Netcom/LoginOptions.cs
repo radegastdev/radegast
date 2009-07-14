@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace RadegastNc
+namespace Radegast.Netcom
 {
     public class LoginOptions
     {

@@ -40,7 +40,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
-using RadegastNc;
+using Radegast.Netcom;
 using System.Diagnostics;
 using OpenMetaverse.Packets;
 
