@@ -685,6 +685,22 @@ namespace Radegast
                         instance.TabConsole.DisplayNotificationInChat("Teleporting to " + item.Name);
                         client.Self.RequestTeleport(item.AssetUUID);
                         break;
+
+                    case AssetType.Gesture:
+                        client.Self.PlayGesture(item.AssetUUID);
+                        break;
+
+                    case AssetType.Notecard:
+                        Notecard note = new Notecard(instance, (InventoryNotecard)item);
+                        note.Dock = DockStyle.Fill;
+                        note.ShowDetached();
+                        break;
+
+                    case AssetType.LSLText:
+                        ScriptEditor script = new ScriptEditor(instance, (InventoryLSL)item);
+                        script.Dock = DockStyle.Fill;
+                        script.ShowDetached();
+                        break;
                 }
             }
         }
