@@ -406,6 +406,22 @@
     <Compile Include="GUI\Notifications\TeleportNotification.Designer.cs">
       <DependentUpon>TeleportNotification.cs</DependentUpon>
     </Compile>
+    <Compile Include="Netcom\Enums.cs" />
+    <Compile Include="Netcom\EventArgs\AlertMessageEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\ChatEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\ChatSentEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\ClientDisconnectEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\ClientLoginEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\InstantMessageEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\InstantMessageSentEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\MoneyBalanceEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\OverrideEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\TeleportingEventArgs.cs" />
+    <Compile Include="Netcom\EventArgs\TeleportStatusEventArgs.cs" />
+    <Compile Include="Netcom\LoginOptions.cs" />
+    <Compile Include="Netcom\RadegastNetcom\SLNetCom.cs" />
+    <Compile Include="Netcom\RadegastNetcom\SLNetComEvents.cs" />
+    <Compile Include="Netcom\StartLocationParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="GUI\Consoles\AnimDetail.resx">
@@ -620,10 +636,6 @@
     <ProjectReference Include="..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
       <Project>{1133A791-5AB5-4F2B-80A2-7496237BB61F}</Project>
       <Name>OpenMetaverse</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RadegastNetcom\RadegastNetcom.csproj">
-      <Project>{8EE25E10-46BC-486E-87B5-5E49B879E0D1}</Project>
-      <Name>RadegastNetcom</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
