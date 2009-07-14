@@ -37,7 +37,7 @@ using System.Timers;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
 
-namespace RadegastNc
+namespace Radegast.Netcom
 {
 	/// <summary>
 	/// RadegastNetcom is a class built on top of libsecondlife that provides a way to

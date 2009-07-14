@@ -33,7 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
-using RadegastNc;
+using Radegast.Netcom;
 using OpenMetaverse;
 
 namespace Radegast

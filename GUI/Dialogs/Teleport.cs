@@ -37,7 +37,7 @@ using System.Text;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
-using RadegastNc;
+using Radegast.Netcom;
 
 namespace Radegast
 {

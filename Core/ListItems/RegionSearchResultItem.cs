@@ -34,7 +34,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
-using RadegastNc;
+using Radegast.Netcom;
 
 namespace Radegast
 {

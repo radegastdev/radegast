@@ -41,7 +41,7 @@ using System.Windows.Forms;
 using System.Resources;
 using System.IO;
 using System.Web;
-using RadegastNc;
+using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.Imaging;
 

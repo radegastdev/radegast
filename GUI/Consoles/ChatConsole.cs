@@ -37,7 +37,7 @@ using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using RadegastNc;
+using Radegast.Netcom;
 using OpenMetaverse;
 using AIMLbot;
 
