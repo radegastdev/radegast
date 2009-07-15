@@ -110,7 +110,6 @@ namespace Radegast
             _EditTimer = new System.Threading.Timer(OnLabelEditTimer, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
             // Callbacks
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             Inventory.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             Inventory.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
@@ -120,7 +119,6 @@ namespace Radegast
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             Inventory.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             Inventory.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
@@ -322,24 +320,6 @@ namespace Radegast
             else // We are not in the tree already, add
             {
                 AddBase(parent, newObject);
-            }
-        }
-
-        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
-        {
-            if (txtCreator.Tag == null) return;
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Avatars_OnAvatarNames(names);
-                }));
-                return;
-            }
-
-            if (names.ContainsKey((UUID)txtCreator.Tag))
-            {
-                txtCreator.Text = names[(UUID)txtCreator.Tag];
             }
         }
         #endregion
@@ -646,7 +626,7 @@ namespace Radegast
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
-            (new frmProfile(instance, txtCreator.Text, (UUID)txtCreator.Tag)).Show();
+            (new frmProfile(instance, txtCreator.Text, txtCreator.AgentID)).Show();
             
         }
 
@@ -654,7 +634,7 @@ namespace Radegast
         {
             btnProfile.Enabled = true;
             txtItemName.Text = item.Name;
-            txtCreator.Text = instance.getAvatarName(item.CreatorID);
+            txtCreator.AgentID = item.CreatorID;
             txtCreator.Tag = item.CreatorID;
             txtCreated.Text = item.CreationDate.ToString();
 

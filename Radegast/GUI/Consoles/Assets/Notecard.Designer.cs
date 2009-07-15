@@ -68,6 +68,7 @@
             this.tbtnExit = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnAttachments = new System.Windows.Forms.ToolStripDropDownButton();
             this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
+            this.tlblStatus = new System.Windows.Forms.ToolStripLabel();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,7 +91,8 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtnFile,
             this.tbtnAttachments,
-            this.tbtnAttach});
+            this.tbtnAttach,
+            this.tlblStatus});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(382, 25);
@@ -114,26 +116,26 @@
             // tbtnSave
             // 
             this.tbtnSave.Name = "tbtnSave";
-            this.tbtnSave.Size = new System.Drawing.Size(152, 22);
+            this.tbtnSave.Size = new System.Drawing.Size(146, 22);
             this.tbtnSave.Text = "Save";
             this.tbtnSave.Click += new System.EventHandler(this.tbtnSave_Click);
             // 
             // tbtnSaveToDisk
             // 
             this.tbtnSaveToDisk.Name = "tbtnSaveToDisk";
-            this.tbtnSaveToDisk.Size = new System.Drawing.Size(152, 22);
+            this.tbtnSaveToDisk.Size = new System.Drawing.Size(146, 22);
             this.tbtnSaveToDisk.Text = "Save to Disk...";
             // 
             // sprtExit
             // 
             this.sprtExit.Name = "sprtExit";
-            this.sprtExit.Size = new System.Drawing.Size(149, 6);
+            this.sprtExit.Size = new System.Drawing.Size(143, 6);
             // 
             // tbtnExit
             // 
             this.tbtnExit.Enabled = false;
             this.tbtnExit.Name = "tbtnExit";
-            this.tbtnExit.Size = new System.Drawing.Size(152, 22);
+            this.tbtnExit.Size = new System.Drawing.Size(146, 22);
             this.tbtnExit.Text = "Exit";
             this.tbtnExit.Click += new System.EventHandler(this.tbtnExit_Click);
             // 
@@ -157,6 +159,13 @@
             this.tbtnAttach.Size = new System.Drawing.Size(48, 22);
             this.tbtnAttach.Text = "Detach";
             this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
+            // 
+            // tlblStatus
+            // 
+            this.tlblStatus.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.tlblStatus.Name = "tlblStatus";
+            this.tlblStatus.Size = new System.Drawing.Size(38, 22);
+            this.tlblStatus.Text = "status";
             // 
             // Notecard
             // 
@@ -184,5 +193,6 @@
         private System.Windows.Forms.ToolStripMenuItem tbtnExit;
         private System.Windows.Forms.ToolStripDropDownButton tbtnAttachments;
         private System.Windows.Forms.ToolStripButton tbtnAttach;
+        private System.Windows.Forms.ToolStripLabel tlblStatus;
     }
 }

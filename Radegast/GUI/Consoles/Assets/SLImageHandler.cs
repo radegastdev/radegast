@@ -110,7 +110,7 @@ namespace Radegast
                 {
                     // DisplayPartialImage(assetTexture);
                 }
-            }, true);
+            });
         }
 
         void SLImageHandler_Disposed(object sender, EventArgs e)
@@ -208,7 +208,10 @@ namespace Radegast
         protected override void Detach()
         {
             base.Detach();
-            ClientSize = pictureBox1.Size = new Size(image.Width, image.Height);
+            if (image != null)
+            {
+                ClientSize = pictureBox1.Size = new Size(image.Width, image.Height);
+            }
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
