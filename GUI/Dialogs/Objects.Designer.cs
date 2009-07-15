@@ -90,11 +90,13 @@ namespace Radegast
             this.cbNextOwnModify = new System.Windows.Forms.CheckBox();
             this.cbOwnerCopy = new System.Windows.Forms.CheckBox();
             this.cbOwnerModify = new System.Windows.Forms.CheckBox();
+            this.txtPrims = new System.Windows.Forms.TextBox();
             this.txtCreator = new Radegast.AgentNameTextBox();
             this.txtOwner = new Radegast.AgentNameTextBox();
             this.txtHover = new System.Windows.Forms.TextBox();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.txtObjectName = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -102,8 +104,6 @@ namespace Radegast
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.txtPrims = new System.Windows.Forms.TextBox();
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -319,7 +319,6 @@ namespace Radegast
             0,
             0,
             0});
-            this.nudRadius.ValueChanged += new System.EventHandler(this.nudRadius_ValueChanged);
             // 
             // lblDistance
             // 
@@ -472,8 +471,18 @@ namespace Radegast
             this.cbOwnerModify.Text = "Mod";
             this.cbOwnerModify.UseVisualStyleBackColor = true;
             // 
+            // txtPrims
+            // 
+            this.txtPrims.BackColor = System.Drawing.SystemColors.Window;
+            this.txtPrims.Location = new System.Drawing.Point(195, 116);
+            this.txtPrims.Name = "txtPrims";
+            this.txtPrims.ReadOnly = true;
+            this.txtPrims.Size = new System.Drawing.Size(54, 21);
+            this.txtPrims.TabIndex = 5;
+            // 
             // txtCreator
             // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
             this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
             this.txtCreator.Location = new System.Drawing.Point(61, 116);
             this.txtCreator.Name = "txtCreator";
@@ -483,6 +492,7 @@ namespace Radegast
             // 
             // txtOwner
             // 
+            this.txtOwner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtOwner.AgentID")));
             this.txtOwner.BackColor = System.Drawing.SystemColors.Window;
             this.txtOwner.Location = new System.Drawing.Point(61, 91);
             this.txtOwner.Name = "txtOwner";
@@ -510,6 +520,15 @@ namespace Radegast
             this.txtObjectName.Name = "txtObjectName";
             this.txtObjectName.Size = new System.Drawing.Size(188, 21);
             this.txtObjectName.TabIndex = 1;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 144);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(70, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Owner perm.";
             // 
             // label7
             // 
@@ -573,24 +592,6 @@ namespace Radegast
             this.lblName.Size = new System.Drawing.Size(34, 13);
             this.lblName.TabIndex = 0;
             this.lblName.Text = "Name";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 144);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(70, 13);
-            this.label8.TabIndex = 0;
-            this.label8.Text = "Owner perm.";
-            // 
-            // txtPrims
-            // 
-            this.txtPrims.BackColor = System.Drawing.SystemColors.Window;
-            this.txtPrims.Location = new System.Drawing.Point(195, 116);
-            this.txtPrims.Name = "txtPrims";
-            this.txtPrims.ReadOnly = true;
-            this.txtPrims.Size = new System.Drawing.Size(54, 21);
-            this.txtPrims.TabIndex = 5;
             // 
             // frmObjects
             // 
