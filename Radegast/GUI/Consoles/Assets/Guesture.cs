@@ -46,11 +46,17 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private InventoryGesture gesture;
+        private AssetGesture gestureAsset;
 
         public Guesture(RadegastInstance instance, InventoryGesture gesture)
         {
             InitializeComponent();
             Disposed += new EventHandler(Guesture_Disposed);
+
+            if (!instance.advancedDebugging)
+            {
+                tbtnReupload.Visible = false;
+            }
 
             this.instance = instance;
             this.gesture = gesture;
@@ -89,12 +95,12 @@ namespace Radegast
             tlblStatus.Text = "OK";
             tbtnPlay.Enabled = true;
 
-            AssetGesture g = (AssetGesture)asset;
-            if (g.Decode())
+            gestureAsset = (AssetGesture)asset;
+            if (gestureAsset.Decode())
             {
-                for (int i=0; i<g.Sequence.Count; i++)
+                for (int i = 0; i < gestureAsset.Sequence.Count; i++)
                 {
-                    rtbInfo.AppendText(g.Sequence[i].ToString().Trim() + Environment.NewLine);
+                    rtbInfo.AppendText(gestureAsset.Sequence[i].ToString().Trim() + Environment.NewLine);
                 }
             }
         }
@@ -135,5 +141,49 @@ namespace Radegast
             client.Self.PlayGesture(gesture.AssetUUID);
         }
 
+        private void UpdateStatus(string msg)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate() { UpdateStatus(msg); }));
+                return;
+            }
+
+            tlblStatus.Text = msg;
+        }
+
+        private void tbtnReupload_Click(object sender, EventArgs e)
+        {
+            UpdateStatus("Creating new item...");
+
+            client.Inventory.RequestCreateItem(gesture.ParentUUID, "Copy of " + gesture.Name, gesture.Description, AssetType.Gesture, UUID.Random(), InventoryType.Gesture, PermissionMask.All,
+                delegate(bool success, InventoryItem item)
+                {
+                    if (success)
+                    {
+                        UpdateStatus("Uploading data...");
+
+                        client.Inventory.RequestUploadGestureAsset(gestureAsset.AssetData, item.UUID,
+                            delegate(bool assetSuccess, string status, UUID itemID, UUID assetID)
+                            {
+                                if (assetSuccess)
+                                {
+                                    gesture.AssetUUID = assetID;
+                                    UpdateStatus("OK");
+                                }
+                                else
+                                {
+                                    UpdateStatus("Asset failed");
+                                }
+                            }
+                        );
+                    }
+                    else
+                    {
+                        UpdateStatus("Inv. failed");
+                    }
+                }
+            );
+        }
     }
 }

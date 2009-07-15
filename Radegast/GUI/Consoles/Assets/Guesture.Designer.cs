@@ -65,6 +65,7 @@ namespace Radegast
             this.tbtnPlay = new System.Windows.Forms.ToolStripButton();
             this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
             this.tlblStatus = new System.Windows.Forms.ToolStripLabel();
+            this.tbtnReupload = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,6 +94,7 @@ namespace Radegast
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtnPlay,
+            this.tbtnReupload,
             this.tbtnAttach,
             this.tlblStatus});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -132,6 +134,16 @@ namespace Radegast
             this.tlblStatus.Text = "Status";
             this.tlblStatus.ToolTipText = "Status";
             // 
+            // tbtnReupload
+            // 
+            this.tbtnReupload.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnReupload.Image = ((System.Drawing.Image)(resources.GetObject("tbtnReupload.Image")));
+            this.tbtnReupload.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnReupload.Name = "tbtnReupload";
+            this.tbtnReupload.Size = new System.Drawing.Size(61, 22);
+            this.tbtnReupload.Text = "Reupload";
+            this.tbtnReupload.Click += new System.EventHandler(this.tbtnReupload_Click);
+            // 
             // Guesture
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -156,5 +168,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tbtnPlay;
         private System.Windows.Forms.ToolStripButton tbtnAttach;
         private System.Windows.Forms.ToolStripLabel tlblStatus;
+        private System.Windows.Forms.ToolStripButton tbtnReupload;
     }
 }
