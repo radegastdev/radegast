@@ -48,13 +48,20 @@ namespace Radegast
             set
             {
                 agentID = value;
-                string name = instance.getAvatarName(agentID);
-                SetName(name);
-
-                // We got cached response, unhook event handlers
-                if (name != RadegastInstance.INCOMPLETE_NAME)
+                if (agentID == UUID.Zero)
                 {
-                    CleanupHandlers(null, null);
+                    SetName(string.Empty);
+                }
+                else
+                {
+                    string name = instance.getAvatarName(agentID);
+                    SetName(name);
+
+                    // We got cached response, unhook event handlers
+                    if (name != RadegastInstance.INCOMPLETE_NAME)
+                    {
+                        CleanupHandlers(null, null);
+                    }
                 }
             }
         }
@@ -65,8 +72,6 @@ namespace Radegast
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 
             Disposed += new EventHandler(CleanupHandlers);
-
-            Text = RadegastInstance.INCOMPLETE_NAME;
 
             if (client != null)
             {

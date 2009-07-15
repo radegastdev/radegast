@@ -550,6 +550,8 @@ namespace Radegast
 
         private void StartTraverseNodes()
         {
+            UpdateStatus("Loading...");
+            saveAllTToolStripMenuItem.Enabled = false;
             TreeUpdateInProgress = true;
             TreeUpdateTimer = new System.Threading.Timer(TreeUpdateTimerTick, null, updateInterval, System.Threading.Timeout.Infinite);
             TraverseNodes(Inventory.RootNode);
@@ -557,8 +559,9 @@ namespace Radegast
             TreeUpdateTimer = null;
             TreeUpdateTimerTick(null);
             TreeUpdateInProgress = false;
+            saveAllTToolStripMenuItem.Enabled = true;
+            UpdateStatus("OK");
 
-            UpdateStatus("Loading...");
 
             // Update attachments now that we are done
             lock (attachments)
@@ -583,7 +586,6 @@ namespace Radegast
 
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
             Inventory.SaveToDisk(instance.InventoryCacheFileName);
-            UpdateStatus("OK");
         }
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
