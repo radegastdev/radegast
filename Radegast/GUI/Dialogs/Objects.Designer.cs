@@ -83,10 +83,32 @@ namespace Radegast
             this.rbDistance = new System.Windows.Forms.RadioButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.gbxObjectDetails = new System.Windows.Forms.GroupBox();
+            this.cbNextOwnTransfer = new System.Windows.Forms.CheckBox();
+            this.cbNextOwnCopy = new System.Windows.Forms.CheckBox();
+            this.cbOwnerTransfer = new System.Windows.Forms.CheckBox();
+            this.cbNextOwnModify = new System.Windows.Forms.CheckBox();
+            this.cbOwnerCopy = new System.Windows.Forms.CheckBox();
+            this.cbOwnerModify = new System.Windows.Forms.CheckBox();
+            this.txtCreator = new Radegast.AgentNameTextBox();
+            this.txtOwner = new Radegast.AgentNameTextBox();
+            this.txtHover = new System.Windows.Forms.TextBox();
+            this.txtDescription = new System.Windows.Forms.TextBox();
+            this.txtObjectName = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lblName = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtPrims = new System.Windows.Forms.TextBox();
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.gbxObjectDetails.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbxInworld
@@ -102,7 +124,7 @@ namespace Radegast
             this.gbxInworld.Controls.Add(this.btnSitOn);
             this.gbxInworld.Controls.Add(this.btnPointAt);
             this.gbxInworld.Enabled = false;
-            this.gbxInworld.Location = new System.Drawing.Point(380, 15);
+            this.gbxInworld.Location = new System.Drawing.Point(384, 15);
             this.gbxInworld.Name = "gbxInworld";
             this.gbxInworld.Size = new System.Drawing.Size(255, 149);
             this.gbxInworld.TabIndex = 2;
@@ -121,9 +143,9 @@ namespace Radegast
             // 
             // btnTurnTo
             // 
-            this.btnTurnTo.Location = new System.Drawing.Point(8, 78);
+            this.btnTurnTo.Location = new System.Drawing.Point(5, 78);
             this.btnTurnTo.Name = "btnTurnTo";
-            this.btnTurnTo.Size = new System.Drawing.Size(75, 23);
+            this.btnTurnTo.Size = new System.Drawing.Size(78, 23);
             this.btnTurnTo.TabIndex = 10;
             this.btnTurnTo.Text = "Turn to";
             this.btnTurnTo.UseVisualStyleBackColor = true;
@@ -231,7 +253,7 @@ namespace Radegast
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(535, 391);
+            this.btnClose.Location = new System.Drawing.Point(539, 393);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(100, 23);
             this.btnClose.TabIndex = 9;
@@ -255,7 +277,7 @@ namespace Radegast
             this.lstPrims.MultiSelect = false;
             this.lstPrims.Name = "lstPrims";
             this.lstPrims.ShowGroups = false;
-            this.lstPrims.Size = new System.Drawing.Size(361, 375);
+            this.lstPrims.Size = new System.Drawing.Size(365, 377);
             this.lstPrims.TabIndex = 10;
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
@@ -268,7 +290,7 @@ namespace Radegast
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.Location = new System.Drawing.Point(535, 361);
+            this.btnRefresh.Location = new System.Drawing.Point(539, 363);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 23);
             this.btnRefresh.TabIndex = 11;
@@ -313,7 +335,7 @@ namespace Radegast
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.rbName);
             this.groupBox1.Controls.Add(this.rbDistance);
-            this.groupBox1.Location = new System.Drawing.Point(379, 377);
+            this.groupBox1.Location = new System.Drawing.Point(383, 379);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(149, 37);
             this.groupBox1.TabIndex = 14;
@@ -348,9 +370,9 @@ namespace Radegast
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 423);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 425);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(647, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(651, 22);
             this.statusStrip1.TabIndex = 15;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -360,12 +382,223 @@ namespace Radegast
             this.lblStatus.Size = new System.Drawing.Size(62, 17);
             this.lblStatus.Text = "Tracking...";
             // 
+            // gbxObjectDetails
+            // 
+            this.gbxObjectDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxObjectDetails.Controls.Add(this.cbNextOwnTransfer);
+            this.gbxObjectDetails.Controls.Add(this.cbNextOwnCopy);
+            this.gbxObjectDetails.Controls.Add(this.cbOwnerTransfer);
+            this.gbxObjectDetails.Controls.Add(this.cbNextOwnModify);
+            this.gbxObjectDetails.Controls.Add(this.cbOwnerCopy);
+            this.gbxObjectDetails.Controls.Add(this.cbOwnerModify);
+            this.gbxObjectDetails.Controls.Add(this.txtPrims);
+            this.gbxObjectDetails.Controls.Add(this.txtCreator);
+            this.gbxObjectDetails.Controls.Add(this.txtOwner);
+            this.gbxObjectDetails.Controls.Add(this.txtHover);
+            this.gbxObjectDetails.Controls.Add(this.txtDescription);
+            this.gbxObjectDetails.Controls.Add(this.txtObjectName);
+            this.gbxObjectDetails.Controls.Add(this.label8);
+            this.gbxObjectDetails.Controls.Add(this.label7);
+            this.gbxObjectDetails.Controls.Add(this.label6);
+            this.gbxObjectDetails.Controls.Add(this.label5);
+            this.gbxObjectDetails.Controls.Add(this.label4);
+            this.gbxObjectDetails.Controls.Add(this.label3);
+            this.gbxObjectDetails.Controls.Add(this.label2);
+            this.gbxObjectDetails.Controls.Add(this.lblName);
+            this.gbxObjectDetails.Location = new System.Drawing.Point(384, 170);
+            this.gbxObjectDetails.Name = "gbxObjectDetails";
+            this.gbxObjectDetails.Size = new System.Drawing.Size(255, 187);
+            this.gbxObjectDetails.TabIndex = 16;
+            this.gbxObjectDetails.TabStop = false;
+            this.gbxObjectDetails.Text = "Object details";
+            // 
+            // cbNextOwnTransfer
+            // 
+            this.cbNextOwnTransfer.AutoSize = true;
+            this.cbNextOwnTransfer.Location = new System.Drawing.Point(195, 164);
+            this.cbNextOwnTransfer.Name = "cbNextOwnTransfer";
+            this.cbNextOwnTransfer.Size = new System.Drawing.Size(54, 17);
+            this.cbNextOwnTransfer.TabIndex = 6;
+            this.cbNextOwnTransfer.Text = "Resell";
+            this.cbNextOwnTransfer.UseVisualStyleBackColor = true;
+            // 
+            // cbNextOwnCopy
+            // 
+            this.cbNextOwnCopy.AutoSize = true;
+            this.cbNextOwnCopy.Location = new System.Drawing.Point(140, 164);
+            this.cbNextOwnCopy.Name = "cbNextOwnCopy";
+            this.cbNextOwnCopy.Size = new System.Drawing.Size(51, 17);
+            this.cbNextOwnCopy.TabIndex = 6;
+            this.cbNextOwnCopy.Text = "Copy";
+            this.cbNextOwnCopy.UseVisualStyleBackColor = true;
+            // 
+            // cbOwnerTransfer
+            // 
+            this.cbOwnerTransfer.AutoSize = true;
+            this.cbOwnerTransfer.Location = new System.Drawing.Point(195, 143);
+            this.cbOwnerTransfer.Name = "cbOwnerTransfer";
+            this.cbOwnerTransfer.Size = new System.Drawing.Size(54, 17);
+            this.cbOwnerTransfer.TabIndex = 6;
+            this.cbOwnerTransfer.Text = "Resell";
+            this.cbOwnerTransfer.UseVisualStyleBackColor = true;
+            // 
+            // cbNextOwnModify
+            // 
+            this.cbNextOwnModify.AutoSize = true;
+            this.cbNextOwnModify.Location = new System.Drawing.Point(90, 164);
+            this.cbNextOwnModify.Name = "cbNextOwnModify";
+            this.cbNextOwnModify.Size = new System.Drawing.Size(46, 17);
+            this.cbNextOwnModify.TabIndex = 6;
+            this.cbNextOwnModify.Text = "Mod";
+            this.cbNextOwnModify.UseVisualStyleBackColor = true;
+            // 
+            // cbOwnerCopy
+            // 
+            this.cbOwnerCopy.AutoSize = true;
+            this.cbOwnerCopy.Location = new System.Drawing.Point(140, 143);
+            this.cbOwnerCopy.Name = "cbOwnerCopy";
+            this.cbOwnerCopy.Size = new System.Drawing.Size(51, 17);
+            this.cbOwnerCopy.TabIndex = 6;
+            this.cbOwnerCopy.Text = "Copy";
+            this.cbOwnerCopy.UseVisualStyleBackColor = true;
+            // 
+            // cbOwnerModify
+            // 
+            this.cbOwnerModify.AutoSize = true;
+            this.cbOwnerModify.Location = new System.Drawing.Point(90, 143);
+            this.cbOwnerModify.Name = "cbOwnerModify";
+            this.cbOwnerModify.Size = new System.Drawing.Size(46, 17);
+            this.cbOwnerModify.TabIndex = 6;
+            this.cbOwnerModify.Text = "Mod";
+            this.cbOwnerModify.UseVisualStyleBackColor = true;
+            // 
+            // txtCreator
+            // 
+            this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCreator.Location = new System.Drawing.Point(61, 116);
+            this.txtCreator.Name = "txtCreator";
+            this.txtCreator.ReadOnly = true;
+            this.txtCreator.Size = new System.Drawing.Size(130, 21);
+            this.txtCreator.TabIndex = 5;
+            // 
+            // txtOwner
+            // 
+            this.txtOwner.BackColor = System.Drawing.SystemColors.Window;
+            this.txtOwner.Location = new System.Drawing.Point(61, 91);
+            this.txtOwner.Name = "txtOwner";
+            this.txtOwner.ReadOnly = true;
+            this.txtOwner.Size = new System.Drawing.Size(130, 21);
+            this.txtOwner.TabIndex = 4;
+            // 
+            // txtHover
+            // 
+            this.txtHover.Location = new System.Drawing.Point(61, 66);
+            this.txtHover.Name = "txtHover";
+            this.txtHover.Size = new System.Drawing.Size(188, 21);
+            this.txtHover.TabIndex = 3;
+            // 
+            // txtDescription
+            // 
+            this.txtDescription.Location = new System.Drawing.Point(61, 41);
+            this.txtDescription.Name = "txtDescription";
+            this.txtDescription.Size = new System.Drawing.Size(188, 21);
+            this.txtDescription.TabIndex = 2;
+            // 
+            // txtObjectName
+            // 
+            this.txtObjectName.Location = new System.Drawing.Point(61, 16);
+            this.txtObjectName.Name = "txtObjectName";
+            this.txtObjectName.Size = new System.Drawing.Size(188, 21);
+            this.txtObjectName.TabIndex = 1;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 165);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(84, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Next own perm.";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(217, 94);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(32, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Prims";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 119);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(44, 13);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Creator";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 94);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(39, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Owner";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 69);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(56, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Hovertext";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 44);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(34, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Desc.";
+            // 
+            // lblName
+            // 
+            this.lblName.AutoSize = true;
+            this.lblName.Location = new System.Drawing.Point(6, 18);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(34, 13);
+            this.lblName.TabIndex = 0;
+            this.lblName.Text = "Name";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 144);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(70, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Owner perm.";
+            // 
+            // txtPrims
+            // 
+            this.txtPrims.BackColor = System.Drawing.SystemColors.Window;
+            this.txtPrims.Location = new System.Drawing.Point(195, 116);
+            this.txtPrims.Name = "txtPrims";
+            this.txtPrims.ReadOnly = true;
+            this.txtPrims.Size = new System.Drawing.Size(54, 21);
+            this.txtPrims.TabIndex = 5;
+            // 
             // frmObjects
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(647, 445);
+            this.ClientSize = new System.Drawing.Size(651, 447);
+            this.Controls.Add(this.gbxObjectDetails);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.nudRadius);
@@ -390,6 +623,8 @@ namespace Radegast
             this.groupBox1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.gbxObjectDetails.ResumeLayout(false);
+            this.gbxObjectDetails.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -421,5 +656,26 @@ namespace Radegast
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
         private System.Windows.Forms.Button btnWalkTo;
         private System.Windows.Forms.Button btnTurnTo;
+        private System.Windows.Forms.GroupBox gbxObjectDetails;
+        private System.Windows.Forms.Label lblName;
+        private System.Windows.Forms.TextBox txtDescription;
+        private System.Windows.Forms.TextBox txtObjectName;
+        private System.Windows.Forms.TextBox txtHover;
+        private System.Windows.Forms.Label label2;
+        private Radegast.AgentNameTextBox txtCreator;
+        private Radegast.AgentNameTextBox txtOwner;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox cbOwnerTransfer;
+        private System.Windows.Forms.CheckBox cbOwnerCopy;
+        private System.Windows.Forms.CheckBox cbOwnerModify;
+        private System.Windows.Forms.CheckBox cbNextOwnTransfer;
+        private System.Windows.Forms.CheckBox cbNextOwnCopy;
+        private System.Windows.Forms.CheckBox cbNextOwnModify;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox txtPrims;
     }
 }
