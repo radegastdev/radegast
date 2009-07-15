@@ -41,6 +41,7 @@ namespace Radegast
         private GridClient client { get { return RadegastInstance.GlobalInstance.Client; } }
         private RadegastInstance instance { get { return RadegastInstance.GlobalInstance; } }
 
+        [System.ComponentModel.Browsable(false)]
         public UUID AgentID
         {
             get { return agentID; }

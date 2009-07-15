@@ -53,13 +53,16 @@ namespace Radegast
             Disposed += new EventHandler(frmObjects_Disposed);
 
             this.instance = instance;
-            
-            btnPointAt.Text = (this.instance.State.IsPointing ? "Unpoint" : "Point At");
-            btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
-            nudRadius.Value = (decimal)searchRadius;
 
             propRequester = new PropertiesQueue(instance);
             propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
+
+            btnPointAt.Text = (this.instance.State.IsPointing ? "Unpoint" : "Point At");
+            btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
+            
+            nudRadius.Value = (decimal)searchRadius;
+            nudRadius.ValueChanged += nudRadius_ValueChanged;
+
             lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
 
             if (instance.MonoRuntime)
@@ -170,15 +173,11 @@ namespace Radegast
 
             lock (lstPrims.Items)
             {
-                foreach (ListViewItem item in lstPrims.Items)
+                if (lstPrims.Items.ContainsKey(props.ObjectID.ToString()))
                 {
-                    Primitive prim = item.Tag as Primitive;
-                    if (prim.ID == props.ObjectID)
-                    {
-                        prim.Properties = props;
-                        item.Text = GetObjectName(prim);
-                        break;
-                    }
+                    Primitive prim = lstPrims.Items[props.ObjectID.ToString()].Tag as Primitive;
+                    prim.Properties = props;
+                    lstPrims.Items[props.ObjectID.ToString()].Text = GetObjectName(prim);
                 }
             }
 
@@ -307,21 +306,19 @@ namespace Radegast
 
             lock (lstPrims.Items)
             {
-                foreach (ListViewItem sitem in lstPrims.Items)
+                if (lstPrims.Items.ContainsKey(prim.ID.ToString()))
                 {
-                    if (((Primitive)sitem.Tag).LocalID == prim.LocalID)
-                    {
-                        item = sitem;
-                        break;
-                    }
+                    item = lstPrims.Items[prim.ID.ToString()];
                 }
             }
 
             if (item == null)
             {
-                item = new ListViewItem(prim.LocalID.ToString());
+                item = new ListViewItem();
                 item.Text = GetObjectName(prim);
                 item.Tag = prim;
+                item.Name = prim.ID.ToString();
+
                 if (txtSearch.Text.Length == 0 || item.Text.ToLower().Contains(txtSearch.Text.ToLower()))
                 {
                     lock (lstPrims.Items)
@@ -373,22 +370,16 @@ namespace Radegast
                 return;
             }
 
-            ListViewItem item = null;
+            Primitive prim;
 
-            lock (lstPrims.Items)
+            if (client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(objectID, out prim))
             {
-                foreach (ListViewItem sitem in lstPrims.Items)
+                lock (lstPrims.Items)
                 {
-                    if (((Primitive)sitem.Tag).LocalID == objectID)
+                    if (lstPrims.Items.ContainsKey(prim.ID.ToString()))
                     {
-                        item = sitem;
-                        break;
+                        lstPrims.Items[prim.ID.ToString()].Remove();
                     }
-                }
-
-                if (item != null)
-                {
-                    lstPrims.Items.Remove(item);
                 }
             }
         }
@@ -405,9 +396,10 @@ namespace Radegast
                     int distance = (int)Vector3.Distance(prim.Position, location);
                     if (prim.ParentID == 0 && (prim.Position != Vector3.Zero) && (distance < searchRadius) && (txtSearch.Text.Length == 0 || (prim.Properties != null && prim.Properties.Name.ToLower().Contains(txtSearch.Text.ToLower())))) //root prims only
                     {
-                        ListViewItem item = new ListViewItem(prim.LocalID.ToString());
+                        ListViewItem item = new ListViewItem();
                         item.Text = GetObjectName(prim);
                         item.Tag = prim;
+                        item.Name = prim.ID.ToString();
                         items.Add(item);
                     }
                 }
