@@ -72,7 +72,7 @@ namespace Radegast
             // Callbacks
             client.Objects.OnPayPriceReply += new ObjectManager.PayPriceReply(Objects_OnPayPriceReply);
             client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
-            instance.OnAvatarName += new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
+            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
 
             if (isObject)
             {
@@ -92,7 +92,7 @@ namespace Radegast
         {
             client.Objects.OnPayPriceReply -= new ObjectManager.PayPriceReply(Objects_OnPayPriceReply);
             client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
-            instance.OnAvatarName -= new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
+            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
         }
 
         void frmPay_Click(object sender, EventArgs e)
@@ -125,13 +125,15 @@ namespace Radegast
             lblResident.Text = string.Format("Pay resident: {0}", instance.getAvatarName(owner));
         }
 
-        void instance_OnAvatarName(UUID agentID, string agentName)
+        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
         {
-            if (agentID == owner)
+            if (names.ContainsKey(owner))
             {
+                client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
                 UpdateResident();
             }
         }
+
 
         void Objects_OnObjectPropertiesFamily(Simulator simulator, Primitive.ObjectProperties props, ReportType type)
         {

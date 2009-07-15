@@ -31,12 +31,13 @@
 using System;
 using System.Collections.Generic;
 using System.Timers;
+using System.Threading;
 using OpenMetaverse;
 using Radegast.Netcom;
 
 namespace Radegast
 {
-    public class StateManager
+    public class StateManager : IDisposable
     {
         private RadegastInstance instance;
         private GridClient client;
@@ -53,11 +54,20 @@ namespace Radegast
         private string followName = string.Empty;
         private float followDistance = 3.0f;
 
-        // private Timer agentUpdateTicker;
-
         private UUID awayAnimationID = new UUID("fd037134-85d4-f241-72c6-4f42164fedee");
         private UUID busyAnimationID = new UUID("efcf670c2d188128973a034ebc806b67");
         private UUID typingAnimationID = new UUID("c541c47f-e0c0-058b-ad1a-d6ae3a4584d9");
+
+        /// <summary>
+        /// Passes walk state
+        /// </summary>
+        /// <param name="walking">True if we are walking towards a targer</param>
+        public delegate void WalkStateCanged(bool walking);
+
+        /// <summary>
+        /// Fires when we start or stop walking towards a target
+        /// </summary>
+        public event WalkStateCanged OnWalkStateCanged;
 
 
         public StateManager(RadegastInstance instance)
@@ -66,22 +76,37 @@ namespace Radegast
             netcom = this.instance.Netcom;
             client = this.instance.Client;
 
-            beamTimer = new Timer();
+            beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
             beamTimer.Elapsed += new ElapsedEventHandler(beamTimer_Elapsed);
-            AddNetcomEvents();
-            AddClientEvents();
-        }
 
-        private void AddNetcomEvents()
-        {
+            // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            client.Objects.OnObjectUpdated += new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
+            client.Self.OnAlertMessage += new AgentManager.AlertMessageCallback(Self_OnAlertMessage);
+
+        }
+
+        public void Dispose()
+        {
+            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            client.Objects.OnObjectUpdated -= new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
+            client.Self.OnAlertMessage -= new AgentManager.AlertMessageCallback(Self_OnAlertMessage);
+            beamTimer.Dispose();
+            beamTimer = null;
+
+            if (walkTimer != null)
+            {
+                walkTimer.Dispose();
+                walkTimer = null;
+            }
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            typing = away = busy = false;
+            typing = away = busy = walking = false;
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
@@ -90,11 +115,6 @@ namespace Radegast
                 client.Self.Movement.Camera.Far = 256f;
                 effectSource = client.Self.AgentID;
             }
-        }
-
-        private void AddClientEvents()
-        {
-            client.Objects.OnObjectUpdated += new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
         }
 
         private void Objects_OnObjectUpdated(Simulator simulator, ObjectUpdate update, ulong regionHandle, ushort timeDilation)
@@ -142,7 +162,108 @@ namespace Radegast
         {
             followName = name;
             following = !string.IsNullOrEmpty(followName);
+
+            if (following)
+            {
+                walking = false;
+            }
         }
+
+        #region Walking (move to)
+        private bool walking = false;
+        private System.Threading.Timer walkTimer;
+        private int walkChekInterval = 500;
+        private Vector3d walkToTarget;
+        int lastDistance = 0;
+        int lastDistanceChanged = 0;
+
+        public void WalkTo(Primitive prim)
+        {
+            WalkTo(GlobalPosition(prim));
+        }
+
+        public void WalkTo(Vector3d globalPos)
+        {
+            walkToTarget = globalPos;
+
+            if (following)
+            {
+                following = false;
+                followName = string.Empty;
+            }
+
+            if (walkTimer == null)
+            {
+                walkTimer = new System.Threading.Timer(new TimerCallback(walkTimerElapsed), null, walkChekInterval, Timeout.Infinite);
+            }
+
+            lastDistanceChanged = System.Environment.TickCount;
+            client.Self.AutoPilotCancel();
+            walking = true;
+            client.Self.AutoPilot(walkToTarget.X, walkToTarget.Y, walkToTarget.Z);
+            FireWalkStateCanged();
+        }
+
+        void walkTimerElapsed(object sender)
+        {
+
+            double distance = Vector3d.Distance(client.Self.GlobalPosition, walkToTarget);
+
+            if (distance < 2d)
+            {
+                // We're there
+                EndWalking();
+            }
+            else
+            {
+                if (lastDistance != (int)distance)
+                {
+                    lastDistanceChanged = System.Environment.TickCount;
+                    lastDistance = (int)distance;
+                }
+                else if ((System.Environment.TickCount - lastDistanceChanged) > 10000)
+                {
+                    // Our distance to the target has not changed in 10s, give up
+                    EndWalking();
+                    return;
+                }
+                walkTimer.Change(walkChekInterval, Timeout.Infinite);
+            }
+        }
+
+        void Self_OnAlertMessage(string message)
+        {
+            if (message.Contains("Autopilot cancel"))
+            {
+                if (walking)
+                {
+                    EndWalking();
+                }
+            }
+        }
+
+        void FireWalkStateCanged()
+        {
+            if (OnWalkStateCanged != null)
+            {
+                try { OnWalkStateCanged(walking); }
+                catch (Exception) { }
+            }
+        }
+
+        public void EndWalking()
+        {
+            if (walking)
+            {
+                walking = false;
+                Logger.Log("Finished walking.", Helpers.LogLevel.Debug, client);
+                walkTimer.Dispose();
+                walkTimer = null;
+                client.Self.AutoPilotCancel();
+                FireWalkStateCanged();
+            }
+        }
+        #endregion
 
         public void SetTyping(bool typing)
         {
@@ -214,7 +335,7 @@ namespace Radegast
                 (double)pos.Z);
         }
 
-        private Timer beamTimer;
+        private System.Timers.Timer beamTimer;
         private List<Vector3d> beamTarget;
         private Random beamRandom = new Random();
         private UUID pointID;
@@ -393,6 +514,11 @@ namespace Radegast
         {
             get { return followDistance; }
             set { followDistance = value; }
+        }
+
+        public bool IsWalking
+        {
+            get { return walking; }
         }
     }
 }
