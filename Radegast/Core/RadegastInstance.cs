@@ -102,10 +102,12 @@ namespace Radegast
         private Dictionary<UUID, Group> groups;
         public Dictionary<UUID, Group> Groups { get { return groups; } }
 
-        public delegate void AvatarNameCallback(UUID agentID, string agentName);
-        public event AvatarNameCallback OnAvatarName;
+        //public delegate void AvatarNameCallback(UUID agentID, string agentName);
+        //public event AvatarNameCallback OnAvatarName;
 
         public Dictionary<UUID, string> nameCache = new Dictionary<UUID,string>();
+
+        public const string INCOMPLETE_NAME = "Loading...";
 
         public readonly bool advancedDebugging = false;
 
@@ -172,6 +174,7 @@ namespace Radegast
                 Environment.Exit(0);
             }
 
+            state.Dispose();
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
@@ -180,8 +183,8 @@ namespace Radegast
             {
                 foreach (KeyValuePair<UUID, string> av in names)
                 {
-                    if (OnAvatarName != null) try { OnAvatarName(av.Key, av.Value); }
-                        catch (Exception) { };
+                    //if (OnAvatarName != null) try { OnAvatarName(av.Key, av.Value); }
+                    //    catch (Exception) { };
 
                     if (!nameCache.ContainsKey(av.Key))
                     {

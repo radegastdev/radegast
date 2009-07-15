@@ -72,7 +72,8 @@ namespace Radegast
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
-            instance.OnAvatarName += new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
+            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
         void frmObjects_Disposed(object sender, EventArgs e)
@@ -83,8 +84,8 @@ namespace Radegast
             client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
-
-            instance.OnAvatarName -= new RadegastInstance.AvatarNameCallback(instance_OnAvatarName);
+            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
         void propRequester_OnTick(int remaining)
@@ -129,26 +130,27 @@ namespace Radegast
             btnRefresh_Click(null, null);
         }
 
-        void instance_OnAvatarName(UUID agentID, string agentName)
+        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    instance_OnAvatarName(agentID, agentName);
-                }));
+                BeginInvoke(new MethodInvoker(delegate() { Avatars_OnAvatarNames(names); }));
                 return;
             }
 
-            foreach (ListViewItem item in lstPrims.Items)
+            lstPrims.BeginUpdate();
+            lock (lstPrims.Items)
             {
-                Primitive prim = item.Tag as Primitive;
-                if (prim.Properties != null && prim.Properties.OwnerID == agentID)
+                foreach (ListViewItem item in lstPrims.Items)
                 {
-                    item.Text = GetObjectName(prim);
+                    Primitive prim = item.Tag as Primitive;
+                    if (prim.Properties != null && names.ContainsKey(prim.Properties.OwnerID))
+                    {
+                        item.Text = names[prim.Properties.OwnerID];
+                    }
                 }
             }
-  
+            lstPrims.EndUpdate();
         }
 
         void Objects_OnObjectPropertiesFamily(Simulator simulator, Primitive.ObjectProperties props, ReportType type)
@@ -162,17 +164,20 @@ namespace Radegast
                 }));
                 return;
             }
-            foreach (ListViewItem item in lstPrims.Items)
+
+            lock (lstPrims.Items)
             {
-                Primitive prim = item.Tag as Primitive;
-                if (prim.ID == props.ObjectID)
+                foreach (ListViewItem item in lstPrims.Items)
                 {
-                    prim.Properties = props;
-                    item.Text = GetObjectName(prim);
-                    break;
+                    Primitive prim = item.Tag as Primitive;
+                    if (prim.ID == props.ObjectID)
+                    {
+                        prim.Properties = props;
+                        item.Text = GetObjectName(prim);
+                        break;
+                    }
                 }
             }
-
             #region Update buy button
             Primitive p = btnBuy.Tag as Primitive;
             if (p != null && p.ID == props.ObjectID)
@@ -245,12 +250,15 @@ namespace Radegast
 
             ListViewItem item = null;
 
-            foreach (ListViewItem sitem in lstPrims.Items)
+            lock (lstPrims.Items)
             {
-                if (((Primitive)sitem.Tag).LocalID == prim.LocalID)
+                foreach (ListViewItem sitem in lstPrims.Items)
                 {
-                    item = sitem;
-                    break;
+                    if (((Primitive)sitem.Tag).LocalID == prim.LocalID)
+                    {
+                        item = sitem;
+                        break;
+                    }
                 }
             }
 
@@ -261,7 +269,10 @@ namespace Radegast
                 item.Tag = prim;
                 if (txtSearch.Text.Length == 0 || item.Text.ToLower().Contains(txtSearch.Text.ToLower()))
                 {
-                    lstPrims.Items.Add(item);
+                    lock (lstPrims.Items)
+                    {
+                        lstPrims.Items.Add(item);
+                    }
                 }
             }
             else
@@ -284,33 +295,32 @@ namespace Radegast
 
         private void Objects_OnObjectKilled(Simulator simulator, uint objectID)
         {
-            //if (simulator.Handle != client.Network.CurrentSim.Handle) return;
+            if (simulator.Handle != client.Network.CurrentSim.Handle) return;
 
-            //if (InvokeRequired)
-            //{
-            //    BeginInvoke(new MethodInvoker(delegate()
-            //    {
-            //        Objects_OnObjectKilled(simulator, objectID);
-            //    }
-            //    ));
-            //    return;
-            //}
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate() { Objects_OnObjectKilled(simulator, objectID); }));
+                return;
+            }
 
-            //ListViewItem item = null;
+            ListViewItem item = null;
 
-            //foreach (ListViewItem sitem in lstPrims.Items)
-            //{
-            //    if (((Primitive)sitem.Tag).LocalID == objectID)
-            //    {
-            //        item = sitem;
-            //        break;
-            //    }
-            //}
+            lock (lstPrims.Items)
+            {
+                foreach (ListViewItem sitem in lstPrims.Items)
+                {
+                    if (((Primitive)sitem.Tag).LocalID == objectID)
+                    {
+                        item = sitem;
+                        break;
+                    }
+                }
 
-            //if (item != null)
-            //{
-            //    lstPrims.Items.Remove(item);
-            //}
+                if (item != null)
+                {
+                    lstPrims.Items.Remove(item);
+                }
+            }
         }
 
         private void AddAllObjects()
@@ -332,7 +342,11 @@ namespace Radegast
                     }
                 }
                 ));
-            lstPrims.Items.AddRange(items.ToArray());
+
+            lock (lstPrims.Items)
+            {
+                lstPrims.Items.AddRange(items.ToArray());
+            }
         }
 
         private void btnPointAt_Click(object sender, EventArgs e)
@@ -395,7 +409,10 @@ namespace Radegast
         {
             lstPrims.BeginUpdate();
             Cursor.Current = Cursors.WaitCursor;
-            lstPrims.Items.Clear();
+            lock (lstPrims.Items)
+            {
+                lstPrims.Items.Clear();
+            }
             AddAllObjects();
             Cursor.Current = Cursors.Default;
             lstPrims.EndUpdate();
@@ -504,6 +521,45 @@ namespace Radegast
         private void frmObjects_Shown(object sender, EventArgs e)
         {
             btnRefresh_Click(null, null);
+        }
+
+        private void btnTurnTo_Click(object sender, EventArgs e)
+        {
+            if (lstPrims.SelectedItems.Count != 1) return;
+            client.Self.Movement.TurnToward(currentPrim.Position);
+        }
+
+        private void btnWalkTo_Click(object sender, EventArgs e)
+        {
+            if (lstPrims.SelectedItems.Count != 1) return;
+
+            if (instance.State.IsWalking)
+            {
+                instance.State.EndWalking();
+            }
+            else
+            {
+                instance.State.WalkTo(currentPrim);
+            }
+        }
+
+        void State_OnWalkStateCanged(bool walking)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate() { State_OnWalkStateCanged(walking); }));
+                return;
+            }
+
+            if (walking)
+            {
+                btnWalkTo.Text = "Stop";
+            }
+            else
+            {
+                btnWalkTo.Text = "Walk to";
+                btnRefresh_Click(null, null);
+            }
         }
     }
 
