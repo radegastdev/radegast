@@ -198,6 +198,10 @@ namespace Radegast
         {
             lock (nameCache)
             {
+                if (key == UUID.Zero)
+                {
+                    return "(???) (???)";
+                }
                 if (nameCache.ContainsKey(key))
                 {
                     return nameCache[key];
@@ -205,7 +209,7 @@ namespace Radegast
                 else
                 {
                     client.Avatars.RequestAvatarName(key);
-                    return "Loading...";
+                    return INCOMPLETE_NAME;
                 }
             }
         }
