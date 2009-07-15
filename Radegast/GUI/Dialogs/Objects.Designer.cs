@@ -319,6 +319,8 @@ namespace Radegast
             0,
             0,
             0});
+            this.nudRadius.KeyUp += new System.Windows.Forms.KeyEventHandler(this.nudRadius_KeyUp);
+            this.nudRadius.KeyDown += new System.Windows.Forms.KeyEventHandler(this.nudRadius_KeyDown);
             // 
             // lblDistance
             // 

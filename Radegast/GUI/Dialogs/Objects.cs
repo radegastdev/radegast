@@ -75,7 +75,6 @@ namespace Radegast
             client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
-            client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
@@ -88,7 +87,6 @@ namespace Radegast
             client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
-            client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
@@ -159,15 +157,16 @@ namespace Radegast
             lstPrims.EndUpdate();
         }
 
-        void Objects_OnObjectPropertiesFamily(Simulator simulator, Primitive.ObjectProperties props, ReportType type)
+        void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties props)
         {
-            if (simulator.Handle != client.Network.CurrentSim.Handle) return;
+            if (simulator.Handle != client.Network.CurrentSim.Handle)
+            {
+                return;
+            }
+
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Objects_OnObjectPropertiesFamily(simulator, props, type);
-                }));
+                BeginInvoke(new MethodInvoker(delegate() { Objects_OnObjectProperties(simulator, props); }));
                 return;
             }
 
@@ -185,18 +184,8 @@ namespace Radegast
             {
                 UpdateCurrentObject();
             }
-
         }
-
-        void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties props)
-        {
-            if (simulator.Handle != client.Network.CurrentSim.Handle || props.ObjectID != currentPrim.ID)
-            {
-                return;
-            }
-            currentPrim.Properties = props;
-            UpdateCurrentObject();
-        }
+        
 
         void UpdateCurrentObject()
         {
@@ -273,7 +262,7 @@ namespace Radegast
             if (prim.Properties == null)
             {
                 if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
-                propRequester.RequestProps(prim.ID);
+                propRequester.RequestProps(prim.LocalID);
             }
             else
             {
@@ -344,7 +333,7 @@ namespace Radegast
                 {
                     if (prim.Properties == null)
                     {
-                        propRequester.RequestProps(prim.ID);
+                        propRequester.RequestProps(prim.LocalID);
                     }
                     AddPrim(prim);
                 }
@@ -356,7 +345,7 @@ namespace Radegast
                 {
                     UpdateCurrentObject();
                 }
-                client.Objects.SelectObject(client.Network.CurrentSim, prim.LocalID);
+                propRequester.RequestProps(prim.LocalID);
             }
         }
 
@@ -489,7 +478,7 @@ namespace Radegast
                 currentPrim = currentItem.Tag as Primitive;
                 btnBuy.Tag = currentPrim;
 
-                if (currentPrim.Properties == null || currentPrim.Properties.CreatorID == UUID.Zero)
+                if (currentPrim.Properties == null)
                 {
                     client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
                 }
@@ -611,6 +600,22 @@ namespace Radegast
                 btnRefresh_Click(null, null);
             }
         }
+
+        private void nudRadius_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void nudRadius_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+            }
+        }
     }
 
     public class ObjectSorter : IComparer
@@ -661,7 +666,8 @@ namespace Radegast
         Object sync = new Object();
         RadegastInstance instance;
         System.Timers.Timer qTimer;
-        Queue<UUID> props = new Queue<UUID>();
+        Queue<uint> props = new Queue<uint>();
+        List<uint> prims = new List<uint>();
 
         public delegate void TickCallback(int remaining);
         public event TickCallback OnTick;
@@ -674,13 +680,13 @@ namespace Radegast
             qTimer.Elapsed += new ElapsedEventHandler(qTimer_Elapsed);
         }
 
-        public void RequestProps(UUID objectID)
+        public void RequestProps(uint localID)
         {
             lock (sync)
             {
-                if (!props.Contains(objectID))
+                if (!props.Contains(localID))
                 {
-                    props.Enqueue(objectID);
+                    props.Enqueue(localID);
                 }
             }
         }
@@ -689,9 +695,21 @@ namespace Radegast
         {
             lock (sync)
             {
+                if (prims.Count > 0)
+                {
+                    instance.Client.Objects.DeselectObjects(instance.Client.Network.CurrentSim, prims.ToArray());
+                    prims.Clear();
+                }
+
                 for (int i = 0; i < 50 && props.Count > 0; i++)
                 {
-                    instance.Client.Objects.RequestObjectPropertiesFamily(instance.Client.Network.CurrentSim, props.Dequeue());
+                    prims.Add(props.Dequeue());
+                }
+
+                if (prims.Count > 0)
+                {
+                    instance.Client.Objects.SelectObjects(instance.Client.Network.CurrentSim, prims.ToArray(), false);
+                    prims.Clear();
                 }
 
                 if (OnTick != null)
