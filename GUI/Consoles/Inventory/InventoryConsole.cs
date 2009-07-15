@@ -551,7 +551,6 @@ namespace Radegast
         private void StartTraverseNodes()
         {
             UpdateStatus("Loading...");
-            saveAllTToolStripMenuItem.Enabled = false;
             TreeUpdateInProgress = true;
             TreeUpdateTimer = new System.Threading.Timer(TreeUpdateTimerTick, null, updateInterval, System.Threading.Timeout.Infinite);
             TraverseNodes(Inventory.RootNode);
@@ -559,7 +558,6 @@ namespace Radegast
             TreeUpdateTimer = null;
             TreeUpdateTimerTick(null);
             TreeUpdateInProgress = false;
-            saveAllTToolStripMenuItem.Enabled = true;
             UpdateStatus("OK");
 
 

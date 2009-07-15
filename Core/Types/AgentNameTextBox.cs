@@ -48,13 +48,17 @@ namespace Radegast
 
             set
             {
+                if (agentID == value) return;
+
                 agentID = value;
+
                 if (agentID == UUID.Zero)
                 {
                     SetName(string.Empty);
                 }
                 else
                 {
+                    SetupHandlers();
                     string name = instance.getAvatarName(agentID);
                     SetName(name);
 
@@ -71,9 +75,11 @@ namespace Radegast
             : base()
         {
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-
             Disposed += new EventHandler(CleanupHandlers);
+        }
 
+        void SetupHandlers()
+        {
             if (client != null)
             {
                 client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
