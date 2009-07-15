@@ -64,6 +64,15 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tstripInventory = new System.Windows.Forms.ToolStrip();
             this.tlabelStatus = new System.Windows.Forms.ToolStripLabel();
+            this.tbtnFile = new System.Windows.Forms.ToolStripDropDownButton();
+            this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAllTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtbSort = new System.Windows.Forms.ToolStripDropDownButton();
+            this.tbtbSortByName = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnSortByDate = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbtbFoldersByName = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnSystemFoldersFirst = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlDetail = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnProfile = new System.Windows.Forms.Button();
@@ -76,14 +85,6 @@
             this.lblCreator = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
             this.ctxInv = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tbtnFile = new System.Windows.Forms.ToolStripDropDownButton();
-            this.saveAllTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tbtbSort = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tbtbSortByName = new System.Windows.Forms.ToolStripMenuItem();
-            this.tbtnSortByDate = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbtbFoldersByName = new System.Windows.Forms.ToolStripMenuItem();
-            this.tbtnSystemFoldersFirst = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -101,7 +102,6 @@
             this.invTree.LineColor = System.Drawing.Color.White;
             this.invTree.Location = new System.Drawing.Point(0, 25);
             this.invTree.Name = "invTree";
-            this.invTree.ShowRootLines = false;
             this.invTree.Size = new System.Drawing.Size(331, 458);
             this.invTree.TabIndex = 0;
             this.invTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_AfterLabelEdit);
@@ -149,9 +149,80 @@
             // 
             this.tlabelStatus.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.tlabelStatus.Name = "tlabelStatus";
-            this.tlabelStatus.Size = new System.Drawing.Size(87, 22);
-            this.tlabelStatus.Text = "Downloading...";
+            this.tlabelStatus.Size = new System.Drawing.Size(59, 22);
+            this.tlabelStatus.Text = "Loading...";
             this.tlabelStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // tbtnFile
+            // 
+            this.tbtnFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reloadInventoryToolStripMenuItem,
+            this.saveAllTToolStripMenuItem});
+            this.tbtnFile.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFile.Image")));
+            this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnFile.Name = "tbtnFile";
+            this.tbtnFile.Size = new System.Drawing.Size(70, 22);
+            this.tbtnFile.Text = "Inventory";
+            // 
+            // reloadInventoryToolStripMenuItem
+            // 
+            this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
+            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.reloadInventoryToolStripMenuItem.Text = "Reload Inventory";
+            this.reloadInventoryToolStripMenuItem.ToolTipText = "Clears inventory cache, and downloads whole inventory from server again";
+            this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
+            // 
+            // saveAllTToolStripMenuItem
+            // 
+            this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
+            this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.saveAllTToolStripMenuItem.Text = "Save all text";
+            this.saveAllTToolStripMenuItem.ToolTipText = "Saves all notecards and scripts to folder on local disk";
+            // 
+            // tbtbSort
+            // 
+            this.tbtbSort.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtbSort.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbtbSortByName,
+            this.tbtnSortByDate,
+            this.toolStripMenuItem1,
+            this.tbtbFoldersByName,
+            this.tbtnSystemFoldersFirst});
+            this.tbtbSort.Image = ((System.Drawing.Image)(resources.GetObject("tbtbSort.Image")));
+            this.tbtbSort.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtbSort.Name = "tbtbSort";
+            this.tbtbSort.Size = new System.Drawing.Size(41, 22);
+            this.tbtbSort.Text = "Sort";
+            // 
+            // tbtbSortByName
+            // 
+            this.tbtbSortByName.Name = "tbtbSortByName";
+            this.tbtbSortByName.Size = new System.Drawing.Size(199, 22);
+            this.tbtbSortByName.Text = "By name";
+            // 
+            // tbtnSortByDate
+            // 
+            this.tbtnSortByDate.Name = "tbtnSortByDate";
+            this.tbtnSortByDate.Size = new System.Drawing.Size(199, 22);
+            this.tbtnSortByDate.Text = "By date";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(196, 6);
+            // 
+            // tbtbFoldersByName
+            // 
+            this.tbtbFoldersByName.Name = "tbtbFoldersByName";
+            this.tbtbFoldersByName.Size = new System.Drawing.Size(199, 22);
+            this.tbtbFoldersByName.Text = "Folders always by name";
+            // 
+            // tbtnSystemFoldersFirst
+            // 
+            this.tbtnSystemFoldersFirst.Name = "tbtnSystemFoldersFirst";
+            this.tbtnSystemFoldersFirst.Size = new System.Drawing.Size(199, 22);
+            this.tbtnSystemFoldersFirst.Text = "System folders on top";
             // 
             // pnlDetail
             // 
@@ -265,68 +336,6 @@
             this.ctxInv.Size = new System.Drawing.Size(36, 4);
             this.ctxInv.Text = "Inventory Folder";
             // 
-            // tbtnFile
-            // 
-            this.tbtnFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveAllTToolStripMenuItem});
-            this.tbtnFile.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFile.Image")));
-            this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnFile.Name = "tbtnFile";
-            this.tbtnFile.Size = new System.Drawing.Size(38, 22);
-            this.tbtnFile.Text = "File";
-            // 
-            // saveAllTToolStripMenuItem
-            // 
-            this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
-            this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveAllTToolStripMenuItem.Text = "Save all text";
-            this.saveAllTToolStripMenuItem.ToolTipText = "Saves all notecards and scripts to folder on local disk";
-            // 
-            // tbtbSort
-            // 
-            this.tbtbSort.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtbSort.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tbtbSortByName,
-            this.tbtnSortByDate,
-            this.toolStripMenuItem1,
-            this.tbtbFoldersByName,
-            this.tbtnSystemFoldersFirst});
-            this.tbtbSort.Image = ((System.Drawing.Image)(resources.GetObject("tbtbSort.Image")));
-            this.tbtbSort.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtbSort.Name = "tbtbSort";
-            this.tbtbSort.Size = new System.Drawing.Size(41, 22);
-            this.tbtbSort.Text = "Sort";
-            // 
-            // tbtbSortByName
-            // 
-            this.tbtbSortByName.Name = "tbtbSortByName";
-            this.tbtbSortByName.Size = new System.Drawing.Size(199, 22);
-            this.tbtbSortByName.Text = "By name";
-            // 
-            // tbtnSortByDate
-            // 
-            this.tbtnSortByDate.Name = "tbtnSortByDate";
-            this.tbtnSortByDate.Size = new System.Drawing.Size(199, 22);
-            this.tbtnSortByDate.Text = "By date";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(196, 6);
-            // 
-            // tbtbFoldersByName
-            // 
-            this.tbtbFoldersByName.Name = "tbtbFoldersByName";
-            this.tbtbFoldersByName.Size = new System.Drawing.Size(199, 22);
-            this.tbtbFoldersByName.Text = "Folders always by name";
-            // 
-            // tbtnSystemFoldersFirst
-            // 
-            this.tbtnSystemFoldersFirst.Name = "tbtnSystemFoldersFirst";
-            this.tbtnSystemFoldersFirst.Size = new System.Drawing.Size(199, 22);
-            this.tbtnSystemFoldersFirst.Text = "System folders on top";
-            // 
             // InventoryConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -372,5 +381,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem tbtbFoldersByName;
         private System.Windows.Forms.ToolStripMenuItem tbtnSystemFoldersFirst;
+        private System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
     }
 }

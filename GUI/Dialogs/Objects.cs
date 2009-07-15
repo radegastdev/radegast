@@ -42,7 +42,8 @@ namespace Radegast
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client;} }
-        private Primitive currentPrim;
+        private Primitive currentPrim = new Primitive();
+        private ListViewItem currentItem = new ListViewItem();
         private float searchRadius = 40.0f;
         PropertiesQueue propRequester;
 
@@ -70,6 +71,7 @@ namespace Radegast
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
             client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
@@ -82,6 +84,7 @@ namespace Radegast
             client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
             client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
             client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
@@ -146,7 +149,7 @@ namespace Radegast
                     Primitive prim = item.Tag as Primitive;
                     if (prim.Properties != null && names.ContainsKey(prim.Properties.OwnerID))
                     {
-                        item.Text = names[prim.Properties.OwnerID];
+                        item.Text = GetObjectName(prim);
                     }
                 }
             }
@@ -178,23 +181,75 @@ namespace Radegast
                     }
                 }
             }
-            #region Update buy button
-            Primitive p = btnBuy.Tag as Primitive;
-            if (p != null && p.ID == props.ObjectID)
-            {
-                if (props.SaleType != SaleType.Not)
-                {
-                    btnBuy.Text = string.Format("Buy $L{0}", props.SalePrice);
-                    btnBuy.Enabled = true;
-                }
-                else
-                {
-                    btnBuy.Text = "Buy";
-                    btnBuy.Enabled = false;
-                }
-            }
-            #endregion
 
+            if (props.ObjectID == currentPrim.ID)
+            {
+                UpdateCurrentObject();
+            }
+
+        }
+
+        void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties props)
+        {
+            if (simulator.Handle != client.Network.CurrentSim.Handle || props.ObjectID != currentPrim.ID)
+            {
+                return;
+            }
+            currentPrim.Properties = props;
+            UpdateCurrentObject();
+        }
+
+        void UpdateCurrentObject()
+        {
+            if (currentPrim.Properties == null) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate() { UpdateCurrentObject(); }));
+                return;
+            }
+
+            currentItem.Text = GetObjectName(currentPrim);
+
+            txtObjectName.Text = currentPrim.Properties.Name;
+            txtDescription.Text = currentPrim.Properties.Description;
+            txtHover.Text = currentPrim.Text;
+            txtOwner.AgentID = currentPrim.Properties.OwnerID;
+            txtCreator.AgentID = currentPrim.Properties.CreatorID;
+
+            Permissions p = currentPrim.Properties.Permissions;
+            cbOwnerModify.Checked = (p.OwnerMask & PermissionMask.Modify) != 0;
+            cbOwnerCopy.Checked = (p.OwnerMask & PermissionMask.Copy) != 0;
+            cbOwnerTransfer.Checked = (p.OwnerMask & PermissionMask.Transfer) != 0;
+            cbNextOwnModify.Checked = (p.NextOwnerMask & PermissionMask.Modify) != 0;
+            cbNextOwnCopy.Checked = (p.NextOwnerMask & PermissionMask.Copy) != 0;
+            cbNextOwnTransfer.Checked = (p.NextOwnerMask & PermissionMask.Transfer) != 0;
+
+            txtPrims.Text = (client.Network.CurrentSim.ObjectsPrimitives.FindAll(
+                delegate(Primitive prim)
+                {
+                    return prim.ParentID == currentPrim.LocalID || prim.LocalID == currentPrim.LocalID;
+                })).Count.ToString();
+
+            if ((currentPrim.Flags & PrimFlags.Money) != 0)
+            {
+                btnPay.Enabled = true;
+            }
+            else
+            {
+                btnPay.Enabled = false;
+            }
+
+            if (currentPrim.Properties.SaleType != SaleType.Not)
+            {
+                btnBuy.Text = string.Format("Buy $L{0}", currentPrim.Properties.SalePrice);
+                btnBuy.Enabled = true;
+            }
+            else
+            {
+                btnBuy.Text = "Buy";
+                btnBuy.Enabled = false;
+            }
         }
 
         private void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
@@ -283,13 +338,28 @@ namespace Radegast
 
         private void Objects_OnNewPrim(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
         {
-            if (regionHandle != client.Network.CurrentSim.Handle || prim.Position == Vector3.Zero || prim.ParentID != 0 || prim is Avatar) return;
-            int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
-            if (distance < searchRadius)
+            if (regionHandle != client.Network.CurrentSim.Handle || prim.Position == Vector3.Zero || prim is Avatar) return;
+
+            if (prim.ParentID == 0)
             {
-                if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
-                propRequester.RequestProps(prim.ID);
-                AddPrim(prim);
+                int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
+                if (distance < searchRadius)
+                {
+                    if (prim.Properties == null)
+                    {
+                        propRequester.RequestProps(prim.ID);
+                    }
+                    AddPrim(prim);
+                }
+            }
+
+            if (prim.ID == currentPrim.ID)
+            {
+                if (currentPrim.Properties != null)
+                {
+                    UpdateCurrentObject();
+                }
+                client.Objects.SelectObject(client.Network.CurrentSim, prim.LocalID);
             }
         }
 
@@ -423,28 +493,16 @@ namespace Radegast
             if (lstPrims.SelectedItems.Count == 1)
             {
                 gbxInworld.Enabled = true;
-                currentPrim = lstPrims.SelectedItems[0].Tag as Primitive;
+                currentItem = lstPrims.SelectedItems[0];
+                currentPrim = currentItem.Tag as Primitive;
                 btnBuy.Tag = currentPrim;
 
-                if ((currentPrim.Flags & PrimFlags.Money) != 0)
+                if (currentPrim.Properties == null || currentPrim.Properties.CreatorID == UUID.Zero)
                 {
-                    btnPay.Enabled = true;
-                }
-                else
-                {
-                    btnPay.Enabled = false;
+                    client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
                 }
 
-                if (currentPrim.Properties != null && currentPrim.Properties.SaleType != SaleType.Not)
-                {
-                    btnBuy.Text = string.Format("Buy $L{0}", currentPrim.Properties.SalePrice);
-                    btnBuy.Enabled = true;
-                }
-                else
-                {
-                    btnBuy.Text = "Buy";
-                    btnBuy.Enabled = false;
-                }
+                UpdateCurrentObject();
             }
             else
             {

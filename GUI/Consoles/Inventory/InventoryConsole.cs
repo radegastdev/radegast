@@ -79,7 +79,8 @@ namespace Radegast
         private Queue<InventoryBase> ItemsToAdd = new Queue<InventoryBase>();
         private bool TreeUpdateInProgress = false;
         private Dictionary<UUID, TreeNode> UUID2NodeCache = new Dictionary<UUID, TreeNode>();
-        private int updateInterval = 2000;
+        private int updateInterval = 500;
+        private Thread InventoryUpdate;
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -95,7 +96,7 @@ namespace Radegast
             invRootNode = AddDir(null, Inventory.RootFolder);
             Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
             AddFolderFromStore(invRootNode, Inventory.RootFolder);
-            Thread InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
+            InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
             InventoryUpdate.Name = "InventoryUpdate";
             InventoryUpdate.IsBackground = true;
             InventoryUpdate.Start();
@@ -412,7 +413,10 @@ namespace Radegast
             }
             lock (UUID2NodeCache)
             {
-                UUID2NodeCache.Add(f.UUID, dirNode);
+                if (!UUID2NodeCache.ContainsKey(f.UUID))
+                {
+                    UUID2NodeCache.Add(f.UUID, dirNode);
+                }
             }
             return dirNode;
         }
@@ -498,14 +502,9 @@ namespace Radegast
         private void TraverseNodes(InventoryNode start)
         {
             List<InventoryNode> items = new List<InventoryNode>();
-            List<InventoryNode> folders = new List<InventoryNode>();
             foreach (InventoryNode node in start.Nodes.Values)
             {
-                if (node.Data is InventoryFolder)
-                {
-                    folders.Add(node);
-                }
-                else if (node.Data is InventoryItem)
+                if (node.Data is InventoryItem)
                 {
                     items.Add(node);
                 }
@@ -515,6 +514,7 @@ namespace Radegast
             {
                 InventoryFolder f = (InventoryFolder)start.Data;
                 AutoResetEvent gotFolderEvent = new AutoResetEvent(false);
+                bool success = false;
 
                 InventoryManager.FolderUpdatedCallback callback = delegate(UUID folderID)
                 {
@@ -522,6 +522,7 @@ namespace Radegast
                     {
                         if (((InventoryFolder)Inventory.Items[folderID].Data).DescendentCount <= Inventory.Items[folderID].Nodes.Count)
                         {
+                            success = true;
                             gotFolderEvent.Set();
                         }
                     }
@@ -531,11 +532,19 @@ namespace Radegast
                 fetchFolder(f.UUID, f.OwnerID, true);
                 gotFolderEvent.WaitOne(30 * 1000, false);
                 client.Inventory.OnFolderUpdated -= callback;
+
+                if (!success)
+                {
+                    Logger.Log(string.Format("Failed fetching folder {0}, got {1} items out of {2}", f.Name, Inventory.Items[f.UUID].Nodes.Count, ((InventoryFolder)Inventory.Items[f.UUID].Data).DescendentCount), Helpers.LogLevel.Error, client);
+                }
             }
 
-            foreach (InventoryNode folder in folders)
+            foreach (InventoryBase item in Inventory.GetContents((InventoryFolder)start.Data))
             {
-                TraverseNodes(folder);
+                if (item is InventoryFolder)
+                {
+                    TraverseNodes(Inventory.GetNodeFor(item.UUID));
+                }
             }
         }
 
@@ -548,6 +557,8 @@ namespace Radegast
             TreeUpdateTimer = null;
             TreeUpdateTimerTick(null);
             TreeUpdateInProgress = false;
+
+            UpdateStatus("Loading...");
 
             // Update attachments now that we are done
             lock (attachments)
@@ -572,8 +583,31 @@ namespace Radegast
 
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
             Inventory.SaveToDisk(instance.InventoryCacheFileName);
-            UpdateStatus(string.Empty);
+            UpdateStatus("OK");
         }
+
+        private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (TreeUpdateInProgress)
+            {
+                InventoryUpdate.Abort();
+                InventoryUpdate = null;
+            }
+
+            Inventory.Items = new Dictionary<UUID, InventoryNode>();
+            Inventory.RootNode.Nodes = new InventoryNodeDictionary(null);
+            invTree.Nodes.Clear();
+            UUID2NodeCache.Clear();
+            invRootNode = AddDir(null, Inventory.RootFolder);
+            Inventory.UpdateNodeFor(Inventory.RootFolder);
+
+            InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
+            InventoryUpdate.Name = "InventoryUpdate";
+            InventoryUpdate.IsBackground = true;
+            InventoryUpdate.Start();
+            invRootNode.Expand();
+        }
+
 
         private void TreeUpdateTimerTick(Object sender)
         {
@@ -600,7 +634,7 @@ namespace Radegast
                     }
                 }
                 invTree.EndUpdate();
-                UpdateStatus(UUID2NodeCache.Count.ToString() + " items");
+                UpdateStatus("Loading... " + UUID2NodeCache.Count.ToString() + " items");
                 if (TreeUpdateTimer != null)
                 {
                     TreeUpdateTimer.Change(updateInterval, System.Threading.Timeout.Infinite);
@@ -1296,6 +1330,7 @@ namespace Radegast
 
         }
         #endregion
+
 
     }
 
