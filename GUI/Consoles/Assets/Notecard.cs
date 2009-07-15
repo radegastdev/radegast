@@ -58,11 +58,12 @@ namespace Radegast
             Text = notecard.Name;
 
             rtbContent.DetectUrls = false;
-            rtbContent.Text = "Loading...";
 
             // Callbacks
             client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
 
+            rtbContent.Text = " ";
+            UpdateStatus("Loading...");
             client.Assets.RequestInventoryAsset(notecard, true);
         }
 
@@ -139,9 +140,11 @@ namespace Radegast
                         tbtnAttachments.DropDownItems.Add(titem);
                     }
                 }
+                UpdateStatus("OK");
             }
             else
             {
+                UpdateStatus("Failed");
                 rtbContent.Text = "Failed to download notecard.";
             }
         }
@@ -240,13 +243,40 @@ namespace Radegast
 
             n.Encode();
 
+            UpdateStatus("Saving...");
+
+
             client.Inventory.RequestUploadNotecardAsset(n.AssetData, notecard.UUID,
                 delegate(bool uploadSuccess, string status, UUID itemID, UUID assetID)
                 {
                     success = uploadSuccess;
+                    if (itemID == notecard.UUID)
+                    {
+                        if (success)
+                        {
+                            UpdateStatus("OK");
+                            notecard.AssetUUID = assetID;
+                        }
+                        else
+                        {
+                            UpdateStatus("Failed");
+                        }
+
+                    }
                     message = status ?? "Unknown error uploading notecard asset";
                 }
             );
+        }
+
+        void UpdateStatus(string status)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate() { UpdateStatus(status); }));
+                return;
+            }
+
+            tlblStatus.Text = status;
         }
 
     }

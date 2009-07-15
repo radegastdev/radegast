@@ -76,7 +76,7 @@
             this.pnlDetail = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnProfile = new System.Windows.Forms.Button();
-            this.txtCreator = new System.Windows.Forms.TextBox();
+            this.txtCreator = new Radegast.AgentNameTextBox();
             this.txtCreated = new System.Windows.Forms.TextBox();
             this.txtAssetID = new System.Windows.Forms.TextBox();
             this.lblCreated = new System.Windows.Forms.Label();
@@ -364,7 +364,7 @@
         private System.Windows.Forms.TextBox txtItemName;
         private System.Windows.Forms.Label lblCreator;
         private System.Windows.Forms.Label lblItemName;
-        private System.Windows.Forms.TextBox txtCreator;
+        private Radegast.AgentNameTextBox txtCreator;
         private System.Windows.Forms.TextBox txtAssetID;
         private System.Windows.Forms.Label lblAsset;
         private System.Windows.Forms.Panel pnlDetail;
