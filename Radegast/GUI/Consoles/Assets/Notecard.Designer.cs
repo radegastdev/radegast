@@ -110,32 +110,32 @@
             this.tbtnFile.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFile.Image")));
             this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnFile.Name = "tbtnFile";
-            this.tbtnFile.Size = new System.Drawing.Size(38, 22);
-            this.tbtnFile.Text = "File";
+            this.tbtnFile.Size = new System.Drawing.Size(69, 22);
+            this.tbtnFile.Text = "Notecard";
             // 
             // tbtnSave
             // 
             this.tbtnSave.Name = "tbtnSave";
-            this.tbtnSave.Size = new System.Drawing.Size(146, 22);
+            this.tbtnSave.Size = new System.Drawing.Size(152, 22);
             this.tbtnSave.Text = "Save";
             this.tbtnSave.Click += new System.EventHandler(this.tbtnSave_Click);
             // 
             // tbtnSaveToDisk
             // 
             this.tbtnSaveToDisk.Name = "tbtnSaveToDisk";
-            this.tbtnSaveToDisk.Size = new System.Drawing.Size(146, 22);
+            this.tbtnSaveToDisk.Size = new System.Drawing.Size(152, 22);
             this.tbtnSaveToDisk.Text = "Save to Disk...";
             // 
             // sprtExit
             // 
             this.sprtExit.Name = "sprtExit";
-            this.sprtExit.Size = new System.Drawing.Size(143, 6);
+            this.sprtExit.Size = new System.Drawing.Size(149, 6);
             // 
             // tbtnExit
             // 
             this.tbtnExit.Enabled = false;
             this.tbtnExit.Name = "tbtnExit";
-            this.tbtnExit.Size = new System.Drawing.Size(146, 22);
+            this.tbtnExit.Size = new System.Drawing.Size(152, 22);
             this.tbtnExit.Text = "Exit";
             this.tbtnExit.Click += new System.EventHandler(this.tbtnExit_Click);
             // 
