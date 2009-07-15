@@ -104,7 +104,7 @@ namespace Radegast
 
             invTree.TreeViewNodeSorter = new InvNodeSorter();
             invTree.AfterExpand += new TreeViewEventHandler(TreeView_AfterExpand);
-            invTree.MouseClick += new MouseEventHandler(invTree_MouseClick);
+            invTree.NodeMouseClick += new TreeNodeMouseClickEventHandler(invTree_MouseClick);
             invTree.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(invTree_NodeMouseDoubleClick);
 
             _EditTimer = new System.Threading.Timer(OnLabelEditTimer, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
@@ -815,10 +815,9 @@ namespace Radegast
             return raw;
         }
 
-        void invTree_MouseClick(object sender, MouseEventArgs e)
+        void invTree_MouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            TreeNode node = invTree.GetNodeAt(new Point(e.X, e.Y));
-            if (node == null) return;
+            TreeNode node = e.Node;
 
             if (e.Button == MouseButtons.Left)
             {
