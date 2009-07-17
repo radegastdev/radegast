@@ -45,6 +45,24 @@
         {
             if (disposing && (components != null))
             {
+                if (InventoryUpdate != null)
+                {
+                    InventoryUpdate.Abort();
+                    InventoryUpdate = null;
+                }
+
+                if (_EditTimer != null)
+                {
+                    _EditTimer.Dispose();
+                    _EditTimer = null;
+                }
+
+                if (TreeUpdateTimer != null)
+                {
+                    TreeUpdateTimer.Dispose();
+                    TreeUpdateTimer = null;
+                }
+
                 components.Dispose();
             }
             base.Dispose(disposing);

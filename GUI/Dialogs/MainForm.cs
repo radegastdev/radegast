@@ -30,20 +30,17 @@
 //
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Configuration;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
+using System.Threading;
 using System.Windows.Forms;
 using System.Resources;
 using System.IO;
 using System.Web;
 using Radegast.Netcom;
 using OpenMetaverse;
-using OpenMetaverse.Imaging;
 
 namespace Radegast
 {
@@ -198,7 +195,8 @@ namespace Radegast
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (debugLogForm != null) {
+            if (debugLogForm != null)
+            {
                 debugLogForm.Close();
                 debugLogForm = null;
             }
@@ -208,13 +206,19 @@ namespace Radegast
                 worldMap.Close();
                 worldMap = null;
             }
-            
+
             if (netcom.IsLoggedIn)
             {
-                client.Inventory.Store.SaveToDisk(instance.InventoryCacheFileName);
+                Thread saveInvToDisk = new Thread(new ThreadStart(
+                    delegate()
+                        {
+                            client.Inventory.Store.SaveToDisk(instance.InventoryCacheFileName);
+                        }));
+                saveInvToDisk.Name = "Save inventory to disk";
+                saveInvToDisk.Start();
+
                 netcom.Logout();
             }
-
             instance.Config.CurrentConfig.MainWindowState = (int)this.WindowState;
         }
         #endregion
@@ -393,6 +397,15 @@ namespace Radegast
         #endregion
 
         #region Public methods
+
+        public void AddLogMessage(string msg, log4net.Core.Level level)
+        {
+            if (debugLogForm != null)
+            {
+                BeginInvoke(new MethodInvoker(delegate() { debugLogForm.AddLogMessage(msg, level); }));
+            }
+        }
+
         public void processLink(string link)
         {
             if (!link.Contains("://"))
