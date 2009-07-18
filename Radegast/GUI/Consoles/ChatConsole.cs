@@ -147,7 +147,7 @@ namespace Radegast
 
         void Grid_OnCoarseLocationUpdate(Simulator sim, List<UUID> newEntries, List<UUID> removedEntries)
         {
-            if (client.Network.CurrentSim.ID != sim.ID || !sim.AvatarPositions.ContainsKey(client.Self.AgentID))
+            if (client.Network.CurrentSim.ID != sim.ID)
             {
                 return;
             }
@@ -165,7 +165,10 @@ namespace Radegast
             lvwObjects.BeginUpdate();
             try
             {
-                Vector3 mypos = sim.AvatarPositions[client.Self.AgentID];
+                Vector3 mypos = sim.AvatarPositions.ContainsKey(client.Self.AgentID)
+                                    ? sim.AvatarPositions[client.Self.AgentID]
+                                    : client.Self.SimPosition;
+
                 List<UUID> existing = new List<UUID>();
                 List<UUID> removed = new List<UUID>();
 
