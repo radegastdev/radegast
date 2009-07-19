@@ -231,7 +231,7 @@ namespace Radegast
             {
                 Invoke(new MethodInvoker(delegate()
                     {
-                        Store_OnInventoryObjectAdded(obj);
+                        Exec_OnInventoryObjectAdded(obj);
                     }
                 ));
                 return;

@@ -123,12 +123,12 @@ namespace Radegast
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ENABLE_SIMSTATS = true;
             client.Settings.FETCH_MISSING_INVENTORY = true;
-            client.Settings.MULTIPLE_SIMS = false;
+            client.Settings.MULTIPLE_SIMS = true;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
 
-            client.Settings.USE_TEXTURE_CACHE = true;
-            client.Settings.TEXTURE_CACHE_DIR = Path.Combine(userDir,  "cache");
+            client.Settings.USE_ASSET_CACHE = true;
+            client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir,  "cache");
             client.Assets.Cache.AutoPruneEnabled = false;
     
             client.Throttle.Texture = 2446000.0f;

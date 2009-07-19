@@ -46,7 +46,6 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private InventoryLSL script;
-        private UUID requestID;
         private string scriptName;
         private string fileName;
 
@@ -67,14 +66,11 @@ namespace Radegast
             Dock = DockStyle.Fill;
             this.TabStop = false;
             
-            // Callbacks
-            client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
-
             // Download script
             if (script != null)
             {
                 scriptName = script.Name;
-                requestID = client.Assets.RequestInventoryAsset(script, true);
+                client.Assets.RequestInventoryAsset(script, true, Assets_OnAssetReceived);
                 rtb.Text = lblScripStatus.Text = "Loading...";
             }
             else
@@ -86,13 +82,10 @@ namespace Radegast
 
         void SscriptEditor_Disposed(object sender, EventArgs e)
         {
-            client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
         }
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
-            if (transfer.ID != requestID) return;
-
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(delegate() { Assets_OnAssetReceived(transfer, asset); }));

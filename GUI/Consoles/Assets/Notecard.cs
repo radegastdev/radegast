@@ -59,23 +59,17 @@ namespace Radegast
 
             rtbContent.DetectUrls = false;
 
-            // Callbacks
-            client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
-
             rtbContent.Text = " ";
             UpdateStatus("Loading...");
-            client.Assets.RequestInventoryAsset(notecard, true);
+            client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
         }
 
         void Notecard_Disposed(object sender, EventArgs e)
         {
-            client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
         }
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
-            if (transfer.AssetID != notecard.AssetUUID) return;
-
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(delegate()
@@ -175,7 +169,7 @@ namespace Radegast
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             rtbContent.Text = "Loading...";
-            client.Assets.RequestInventoryAsset(notecard, true);
+            client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
         }
 
         private void rtbContent_LinkClicked(object sender, LinkClickedEventArgs e)
