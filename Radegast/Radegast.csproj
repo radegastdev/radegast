@@ -628,20 +628,6 @@
     <None Include="Resources\delete_16.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Project>{5D27958B-E8F7-4FD3-9CBB-B7A5148F983E}</Project>
-      <Name>OpenMetaverse.StructuredData</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
-      <Project>{6E88BCFB-E68B-4B6D-BC57-888CB7640217}</Project>
-      <Name>OpenMetaverseTypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Project>{1133A791-5AB5-4F2B-80A2-7496237BB61F}</Project>
-      <Name>OpenMetaverse</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\folder-closed_16.png" />
   </ItemGroup>
   <ItemGroup>
@@ -1093,6 +1079,20 @@
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
+      <Project>{69DF1ED4-0654-4B85-BF50-667343FB2794}</Project>
+      <Name>OpenMetaverse.StructuredData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
+      <Project>{A6E2F270-7C3E-484E-BA03-2EFE8FD0EBEC}</Project>
+      <Name>OpenMetaverseTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
+      <Project>{F03B0397-6B98-4F8A-BCE9-68635A2DBDAC}</Project>
+      <Name>OpenMetaverse</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

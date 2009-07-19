@@ -59,15 +59,13 @@ namespace Radegast
             this.landmark = landmark;
 
             // Callbacks
-            client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
             client.Grid.OnRegionHandleReply += new GridManager.RegionHandleReplyCallback(Grid_OnRegionHandleReply);
             client.Parcels.OnParcelInfo += new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
-            client.Assets.RequestAsset(landmark.AssetUUID, landmark.AssetType, true);
+            client.Assets.RequestAsset(landmark.AssetUUID, landmark.AssetType, true, Assets_OnAssetReceived);
         }
 
         void Landmark_Disposed(object sender, EventArgs e)
         {
-            client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
             client.Grid.OnRegionHandleReply -= new GridManager.RegionHandleReplyCallback(Grid_OnRegionHandleReply);
             client.Parcels.OnParcelInfo -= new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
         }
@@ -115,8 +113,6 @@ namespace Radegast
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
-            if (transfer.AssetID != landmark.AssetUUID) return;
-
             if (transfer.Success && asset.AssetType == AssetType.Landmark)
             {
                 decodedLandmark = (AssetLandmark)asset;

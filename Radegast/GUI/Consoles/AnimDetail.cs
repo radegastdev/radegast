@@ -58,20 +58,16 @@ namespace Radegast
             this.av = av;
             this.anim = anim;
             this.n = n;
-
-            // Callbacks
-            instance.Client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
-
         }
 
         void AnimDetail_Disposed(object sender, EventArgs e)
         {
-            instance.Client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
         }
 
         private void AnimDetail_Load(object sender, EventArgs e)
         {
-            if (File.Exists(instance.AnimCacheDir + "/" + anim + ".fail")) {
+            if (File.Exists(instance.AnimCacheDir + "/" + anim + ".fail"))
+            {
                 Visible = false;
                 return;
             }
@@ -84,7 +80,8 @@ namespace Radegast
             boxAnimName.Text = "Animation " + n;
             cbFriends.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            foreach (FriendInfo f in friends) {
+            foreach (FriendInfo f in friends)
+            {
                 cbFriends.Items.Add(f);
             }
 
@@ -95,7 +92,7 @@ namespace Radegast
             }
 
 
-            instance.Client.Assets.RequestAsset(anim, AssetType.Animation, true);
+            instance.Client.Assets.RequestAsset(anim, AssetType.Animation, true, Assets_OnAssetReceived);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -108,11 +105,15 @@ namespace Radegast
             dlg.Filter = "Second Life Animation (*.sla)|*.sla";
             DialogResult res = dlg.ShowDialog();
 
-            if (res == DialogResult.OK) {
-                try {
+            if (res == DialogResult.OK)
+            {
+                try
+                {
                     byte[] data = File.ReadAllBytes(instance.AnimCacheDir + "/" + anim + ".sla");
                     File.WriteAllBytes(dlg.FileName, data);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Logger.Log("Saving animation failed: " + ex.Message, Helpers.LogLevel.Debug);
                 }
             }
@@ -120,9 +121,8 @@ namespace Radegast
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
-            if (transfer.AssetID != anim) return;
-
-            if (InvokeRequired) {
+            if (InvokeRequired)
+            {
                 Invoke(new MethodInvoker(delegate()
                 {
                     Assets_OnAssetReceived(transfer, asset);
@@ -130,11 +130,14 @@ namespace Radegast
                 return;
             }
 
-            if (transfer.Success) {
+            if (transfer.Success)
+            {
                 Logger.Log("Animation " + anim + " download success " + asset.AssetData.Length + " bytes.", Helpers.LogLevel.Debug);
                 File.WriteAllBytes(instance.AnimCacheDir + "/" + anim + ".sla", asset.AssetData);
                 pnlSave.Visible = true;
-            } else {
+            }
+            else
+            {
                 Logger.Log("Animation " + anim + " download failed.", Helpers.LogLevel.Debug);
                 FileStream f = File.Create(instance.AnimCacheDir + "/" + anim + ".fail");
                 f.Close();
@@ -144,9 +147,12 @@ namespace Radegast
 
         private void playBox_CheckStateChanged(object sender, EventArgs e)
         {
-            if (playBox.CheckState == CheckState.Checked) {
+            if (playBox.CheckState == CheckState.Checked)
+            {
                 instance.Client.Self.AnimationStart(anim, true);
-            } else {
+            }
+            else
+            {
                 instance.Client.Self.AnimationStop(anim, true);
             }
         }
@@ -161,7 +167,8 @@ namespace Radegast
 
         void On_ItemCreated(bool success, string status, UUID itemID, UUID assetID)
         {
-            if (InvokeRequired) {
+            if (InvokeRequired)
+            {
                 Invoke(new MethodInvoker(delegate()
                 {
                     On_ItemCreated(success, status, itemID, assetID);
@@ -170,34 +177,22 @@ namespace Radegast
                 return;
             }
 
-            if (!success) {
+            if (!success)
+            {
                 lblStatus.Text = "Failed.";
                 Logger.Log("Failed creating asset", Helpers.LogLevel.Debug);
                 return;
-            } else {
+            }
+            else
+            {
                 Logger.Log("Created inventory item " + itemID.ToString(), Helpers.LogLevel.Info);
 
                 lblStatus.Text = "Sending to " + friend.Name;
-                Refresh();
+                Logger.Log("Sending item to " + friend.Name, Helpers.LogLevel.Info);
 
-                // Fix the permissions on the new upload since they are fscked by default
-                InventoryItem item = instance.Client.Inventory.FetchItem(itemID, instance.Client.Self.AgentID, 1000);
-
-                if (item != null) {
-                    // item.Permissions.EveryoneMask = PermissionMask.All;
-                    item.Permissions.NextOwnerMask = PermissionMask.All;
-                    instance.Client.Inventory.RequestUpdateItem(item);
-
-
-                    // FIXME: We should be watching the callback for RequestUpdateItem instead of a dumb sleep
-                    System.Threading.Thread.Sleep(2000);
-
-                    
-
-                    Logger.Log("Sending item to " + friend.Name, Helpers.LogLevel.Info);
-                    instance.Client.Inventory.GiveItem(itemID, item.Name, AssetType.Animation, friend.UUID, true);
-                    lblStatus.Text = "Sent";
-                }
+                InventoryItem item = (InventoryItem)instance.Client.Inventory.Store[itemID];
+                instance.Client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, friend.UUID, false);
+                lblStatus.Text = "Sent";
             }
 
             cbFriends.Enabled = true;
@@ -206,10 +201,13 @@ namespace Radegast
 
         private void cbFriends_SelectedValueChanged(object sender, EventArgs e)
         {
-            if (cbFriends.SelectedIndex >= 0) {
+            if (cbFriends.SelectedIndex >= 0)
+            {
                 btnSend.Enabled = true;
                 friend = friends[cbFriends.SelectedIndex];
-            } else {
+            }
+            else
+            {
                 btnSend.Enabled = false;
             }
         }

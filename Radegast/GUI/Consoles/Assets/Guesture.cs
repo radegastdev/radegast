@@ -61,30 +61,22 @@ namespace Radegast
             this.instance = instance;
             this.gesture = gesture;
 
-            // Callbacks
-            client.Assets.OnAssetReceived += new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
-
             // Start download
             tlblStatus.Text = "Downloading...";
-            client.Assets.RequestInventoryAsset(gesture, true);
+            client.Assets.RequestInventoryAsset(gesture, true, Assets_OnAssetReceived);
         }
 
         void Guesture_Disposed(object sender, EventArgs e)
         {
-            client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
         }
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
         {
-            if (transfer.AssetID != gesture.AssetUUID) return;
-
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(delegate() { Assets_OnAssetReceived(transfer, asset); }));
                 return;
             }
-
-            client.Assets.OnAssetReceived -= new AssetManager.AssetReceivedCallback(Assets_OnAssetReceived);
 
             if (!transfer.Success)
             {
