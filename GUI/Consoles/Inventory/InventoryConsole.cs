@@ -808,13 +808,16 @@ namespace Radegast
         public bool IsWorn(InventoryItem item)
         {
             bool worn = false;
-            client.Appearance.Wearables.ForEach(delegate(AppearanceManager.WearableData i)
+            if (client.Appearance.Wearables != null)
             {
-                if (i.Item.UUID == item.UUID)
+                client.Appearance.Wearables.ForEach(delegate(AppearanceManager.WearableData i)
                 {
-                    worn = true;
-                }
-            });
+                    if (i.Item.UUID == item.UUID)
+                    {
+                        worn = true;
+                    }
+                });
+            }
             return worn;
         }
 

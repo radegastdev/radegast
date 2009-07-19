@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using Radegast.Netcom;
@@ -102,14 +103,13 @@ namespace Radegast
         private Dictionary<UUID, Group> groups;
         public Dictionary<UUID, Group> Groups { get { return groups; } }
 
-        //public delegate void AvatarNameCallback(UUID agentID, string agentName);
-        //public event AvatarNameCallback OnAvatarName;
-
         public Dictionary<UUID, string> nameCache = new Dictionary<UUID,string>();
 
         public const string INCOMPLETE_NAME = "Loading...";
 
         public readonly bool advancedDebugging = false;
+
+        public readonly List<IRadegastPlugin> PluginsLoaded = new List<IRadegastPlugin>();
 
         private RadegastInstance()
         {
@@ -156,6 +156,50 @@ namespace Radegast
             client.Groups.OnGroupDropped += new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
             client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            ScanAndLoadPlugins();
+        }
+
+        private void ScanAndLoadPlugins()
+        {
+            string dirName = Path.Combine(Application.StartupPath, "plugins");
+
+            if (!Directory.Exists(dirName)) return;
+
+            foreach (string loadfilename in Directory.GetFiles(dirName))
+            {
+                if (loadfilename.ToLower().EndsWith(".dll"))
+                {
+                    try
+                    {
+                        Assembly assembly = Assembly.LoadFile(loadfilename);
+                        foreach (Type type in assembly.GetTypes())
+                        {
+                            if (typeof(IRadegastPlugin).IsAssignableFrom(type))
+                            {
+                                foreach (var ci in type.GetConstructors())
+                                {
+                                    if (ci.GetParameters().Length > 0) continue;
+                                    try
+                                    {
+                                        IRadegastPlugin plug = (IRadegastPlugin) ci.Invoke(new object[0]);
+                                        plug.StartPlugin(this);
+                                        lock (PluginsLoaded) PluginsLoaded.Add(plug);
+                                        break;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Logger.Log("ERROR in Radegast Plugin: " + ex.Message, Helpers.LogLevel.Debug);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (BadImageFormatException) {
+                        // non .NET .dlls
+                    } catch (ReflectionTypeLoadException) {
+                        // Out of date or dlls missing sub dependencies
+                    }
+                }
+            }
         }
 
         public void CleanUp()
@@ -168,7 +212,17 @@ namespace Radegast
                 client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             }
-
+            lock (PluginsLoaded)
+            {
+                PluginsLoaded.ForEach(plug =>
+                                          {
+                                              try
+                                              {
+                                                  plug.StopPlugin(this);
+                                              }
+                                              catch (Exception){}
+                                          });
+            }
             if (MonoRuntime)
             {
                 Environment.Exit(0);

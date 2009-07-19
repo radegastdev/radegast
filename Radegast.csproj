@@ -100,6 +100,7 @@
     <Compile Include="Core\Config\Config.cs" />
     <Compile Include="Core\Config\ConfigManager.cs" />
     <Compile Include="Core\Config\IPreferencePane.cs" />
+    <Compile Include="Core\IRadegastPlugin.cs" />
     <Compile Include="Core\ListItems\PreferencePaneListItem.cs" />
     <Compile Include="Core\DebugLogMessage.cs" />
     <Compile Include="Core\Config\ConfigAppliedEventArgs.cs" />
