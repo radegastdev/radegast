@@ -30,19 +30,9 @@
 //
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Net;
-using System.IO;
-using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
-using Radegast.Netcom;
 using System.Diagnostics;
-using OpenMetaverse.Packets;
 
 namespace Radegast
 {

@@ -35,12 +35,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Text;
-using System.Threading;
 using Tao.OpenGl;
 using OpenMetaverse;
-using OpenMetaverse.Imaging;
 using OpenMetaverse.Rendering;
-using OpenMetaverse.Assets;
 
 // NOTE: Batches are divided by texture, fullbright, shiny, transparent, and glow
 

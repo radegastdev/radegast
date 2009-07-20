@@ -31,9 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.IO;
 using System.Windows.Forms;
-using System.Text;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 

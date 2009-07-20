@@ -1,4 +1,3 @@
-﻿using System;
 using Tools;
 namespace Radegast.LSL
 {
