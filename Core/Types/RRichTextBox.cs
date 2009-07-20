@@ -29,15 +29,12 @@
 // $Id$
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
-using Radegast.LSL;
 using Tools;
 
 namespace Radegast
@@ -166,7 +163,7 @@ namespace Radegast
         public new void Paste()
         {
             string toPaste = Clipboard.GetText();
-            if (syntaxHighLightEnabled && toPaste.Contains('\n') && !monoRuntime)
+            if (syntaxHighLightEnabled && toPaste.Contains("\n") && !monoRuntime)
             {
                 SelectedRtf = ReHighlight(toPaste);
             }

@@ -30,11 +30,8 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
-using System.Text;
 using System.Text.RegularExpressions;
-using OpenMetaverse;
 
 namespace Radegast
 {

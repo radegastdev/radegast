@@ -31,9 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
