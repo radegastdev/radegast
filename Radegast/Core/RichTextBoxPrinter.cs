@@ -47,12 +47,17 @@ namespace Radegast
 
         public void PrintText(string text)
         {
+            if (rtb.InvokeRequired)
+            {
+                rtb.Invoke(new MethodInvoker(() => rtb.AppendText(text)));
+                return;
+            } 
             rtb.AppendText(text);
         }
 
         public void PrintTextLine(string text)
         {
-            rtb.AppendText(text + Environment.NewLine);
+            PrintText(text + Environment.NewLine);
         }
 
         public void PrintTextLine(string text, Color color)
