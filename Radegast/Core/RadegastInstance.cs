@@ -114,9 +114,8 @@ namespace Radegast
         {
             InitializeLoggingAndConfig();
 
-            Settings.USE_INTERPOLATION_TIMER = false;
-            
             client = new GridClient();
+            client.Settings.USE_INTERPOLATION_TIMER = false;
             client.Settings.ALWAYS_REQUEST_OBJECTS = true;
             client.Settings.ALWAYS_DECODE_OBJECTS = true;
             client.Settings.OBJECT_TRACKING = true;
@@ -160,13 +159,13 @@ namespace Radegast
 
         private void ScanAndLoadPlugins()
         {
-            string dirName = Path.Combine(Application.StartupPath, "plugins");
+            string dirName = Application.StartupPath;
 
             if (!Directory.Exists(dirName)) return;
 
             foreach (string loadfilename in Directory.GetFiles(dirName))
             {
-                if (loadfilename.ToLower().EndsWith(".dll"))
+                if (loadfilename.ToLower().EndsWith(".dll") || loadfilename.ToLower().EndsWith(".exe"))
                 {
                     try
                     {
