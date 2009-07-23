@@ -102,7 +102,7 @@ namespace Radegast
         private Dictionary<UUID, Group> groups;
         public Dictionary<UUID, Group> Groups { get { return groups; } }
 
-        public Dictionary<UUID, string> nameCache = new Dictionary<UUID,string>();
+        public Dictionary<UUID, string> nameCache = new Dictionary<UUID, string>();
 
         public const string INCOMPLETE_NAME = "Loading...";
 
@@ -126,9 +126,9 @@ namespace Radegast
             client.Settings.SEND_AGENT_UPDATES = true;
 
             client.Settings.USE_ASSET_CACHE = true;
-            client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir,  "cache");
+            client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir, "cache");
             client.Assets.Cache.AutoPruneEnabled = false;
-    
+
             client.Throttle.Texture = 2446000.0f;
             client.Throttle.Asset = 2446000.0f;
             client.Settings.THROTTLE_OUTGOING_PACKETS = true;
@@ -148,7 +148,7 @@ namespace Radegast
 
             Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
             groups = new Dictionary<UUID, Group>();
-         
+
             client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Groups.OnGroupLeft += new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
             client.Groups.OnGroupDropped += new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
@@ -179,7 +179,7 @@ namespace Radegast
                                     if (ci.GetParameters().Length > 0) continue;
                                     try
                                     {
-                                        IRadegastPlugin plug = (IRadegastPlugin) ci.Invoke(new object[0]);
+                                        IRadegastPlugin plug = (IRadegastPlugin)ci.Invoke(new object[0]);
                                         plug.StartPlugin(this);
                                         lock (PluginsLoaded) PluginsLoaded.Add(plug);
                                         break;
@@ -191,9 +191,13 @@ namespace Radegast
                                 }
                             }
                         }
-                    } catch (BadImageFormatException) {
+                    }
+                    catch (BadImageFormatException)
+                    {
                         // non .NET .dlls
-                    } catch (ReflectionTypeLoadException) {
+                    }
+                    catch (ReflectionTypeLoadException)
+                    {
                         // Out of date or dlls missing sub dependencies
                     }
                 }
@@ -218,7 +222,7 @@ namespace Radegast
                                               {
                                                   plug.StopPlugin(this);
                                               }
-                                              catch (Exception){}
+                                              catch (Exception) { }
                                           });
             }
             if (MonoRuntime)
