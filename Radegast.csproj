@@ -619,6 +619,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="RadegastBuild.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\arrow-forward_16.png" />
@@ -1103,4 +1104,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>$(ProjectDir)\updatebuildnr.bat</PreBuildEvent>
+  </PropertyGroup>
 </Project>
