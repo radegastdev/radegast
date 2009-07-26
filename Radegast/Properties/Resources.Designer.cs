@@ -547,7 +547,7 @@ namespace Radegast.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Radegast 1.6.
+        ///   Looks up a localized string similar to Radegast 1.7.
         /// </summary>
         public static string RadegastTitle {
             get {
