@@ -272,12 +272,15 @@ function XYPoint(x,y)
 		this.y = y;
 }
 
-XYPoint.prototype.GetGLatLng = function()
+XYPoint.prototype.GetGLatLng = function(simX, simY)
 {
+    if (simX == undefined) simX = 128;
+    if (simY == undefined) simY = 128;
+    
     // Invert Y axis
 	var corrected_y = slGridEdgeSizeInRegions - this.y;
-    var lat = -corrected_y * slMapFactor;
-    var lng = this.x * slMapFactor;
+    var lat = -corrected_y * slMapFactor + 0.0000003333 * simY;
+    var lng = this.x * slMapFactor + 0.0000003333 * simX;
 	return new GLatLng(lat, lng);
 }
  
@@ -797,8 +800,11 @@ SLMap.prototype.CreateMapDiv = function(mainDiv)
 	return mapDiv;
 }
 
-SLMap.prototype.gotoRegion = function(regionName)
+SLMap.prototype.gotoRegion = function(regionName, simX, simY)
 {
+    if (simX == undefined) simX = 128;
+    if (simY == undefined) simY = 128;
+    
 	var SLMap = this;
 	
 	// Add a dynamic script to get this region position, and then trigger a map center
@@ -827,10 +833,10 @@ SLMap.prototype.gotoRegion = function(regionName)
 				    clickable: true,
                     title: regionName
                 };
-		        var marker = new GMarker(pos.GetGLatLng(), opt);
+		        var marker = new GMarker(pos.GetGLatLng(simX, simY), opt);
 
 		        GEvent.addListener(marker, "click", function() {
-		            SLMap.centerAndZoomAtSLCoord(pos, 1);
+		            SLMap.centerAndZoomAtSLCoord(pos, 1, simX, simY);
 		        });
 		        
 		        GEvent.addListener(marker, "mouseover", function() {
@@ -851,14 +857,17 @@ SLMap.prototype.gotoRegion = function(regionName)
 		slAddDynamicScript(scriptURL, onLoadHandler);
 }
 
-SLMap.prototype.centerAndZoomAtSLCoord = function(pos, zoom)
+SLMap.prototype.centerAndZoomAtSLCoord = function(pos, zoom, simX, simY)
 {
+    if (simX == undefined) simX = 128;
+    if (simY == undefined) simY = 128;
+
     if (this.GMap != null)
     {
         // Enforce zoom limits specified by client
         zoom = this._forceZoomToLimits(zoom);
 
-        this.GMap.setCenter(pos.GetGLatLng(), slConvertSLZoomToGMapZoom(zoom));
+        this.GMap.setCenter(pos.GetGLatLng(simX, simY), slConvertSLZoomToGMapZoom(zoom));
     }
 }
 
@@ -990,8 +999,11 @@ SLMap.prototype.clickMarker = function(marker)
 		slMapClickHandler(this, marker.gmarker, marker.gmarker.getPoint());
 }
 
-SLMap.prototype.addMarker = function(marker, mapWindow)
+SLMap.prototype.addMarker = function(marker, mapWindow, simX, simY)
 {
+        if (simX == undefined) simX = 0;
+        if (simY == undefined) simY = 0;
+        
 		if (this.GMap != null)
 		{
 				// Create the GMarker
@@ -1033,7 +1045,7 @@ SLMap.prototype.addMarker = function(marker, mapWindow)
 				gicon.infoWindowAnchor = gicon.iconAnchor;
 
 				// Add the GMarker to the map
-				var point = marker.slCoord.GetGLatLng();
+				var point = marker.slCoord.GetGLatLng(simX, simY);
 				
 				// The SL marker 'owns' the GMarker, and we insert a link from GMarker
 				// back to SL marker to assist callback/event processing
@@ -1122,7 +1134,7 @@ SLMap.prototype.addMapWindow = function(mapWindow, pos)
 {
 		if (this.GMap != null)
 		{                           
-				this.GMap.openInfoWindowHtml(pos.GetGLatLng(), mapWindow.text, mapWindow.getGMapOptions());
+				this.GMap.openInfoWindowHtml(pos.GetGLatLng(0, 0), mapWindow.text, mapWindow.getGMapOptions());
 				this.currentMapWindow = mapWindow;
 		}
 }
@@ -1333,7 +1345,7 @@ function focus(x, y, zoom)
 
 function gotoRegion(sim_name)
 {
-    mapInstance.gotoRegion(sim_name);
+    mapInstance.gotoRegion(sim_name, simX, simY);
 }
 
 function maxZoom()
@@ -1347,8 +1359,11 @@ function loadmap() {
 }
 
 var gReg = "Chub";
+var gSimX = 128;
+var gSimY = 128;
+
 function monosucks() {
-    gotoRegion(gReg);
+    gotoRegion(gReg, gSimX, gSimY);
 }
 
 </script>

@@ -115,7 +115,7 @@ namespace Radegast
             nudX.Value = x;
             nudY.Value = y;
             nudZ.Value = z;
-            gotoRegion(txtRegion.Text);
+            gotoRegion(txtRegion.Text,x ,y);
             btnTeleport.Enabled = true;
             AcceptButton = btnTeleport;
             btnTeleport.Focus();
@@ -144,7 +144,7 @@ namespace Radegast
                 return;
             }
 
-            gotoRegion(client.Network.CurrentSim.Name);
+            gotoRegion(client.Network.CurrentSim.Name, (int)client.Self.SimPosition.X, (int)client.Self.SimPosition.Y);
             lblStatus.Text = "Now in " + client.Network.CurrentSim.Name;
         }
 
@@ -296,16 +296,16 @@ namespace Radegast
         }
 
         #region JavascriptHooks
-        void gotoRegion(string regionName)
+        void gotoRegion(string regionName, int simX, int simY)
         {
             if (!Visible || map == null) return;
             if (instance.MonoRuntime)
             {
-                map.Document.InvokeScript(string.Format("gReg = \"{0}\"; monosucks", regionName));
+                map.Document.InvokeScript(string.Format("gReg = \"{0}\"; gSimX = {1}; gSimY = {2}; monosucks", regionName, simX, simY));
             }
             else
             {
-                map.Document.InvokeScript("gotoRegion", new object[] { regionName });
+                map.Document.InvokeScript("gotoRegion", new object[] { regionName, simX, simY });
             }
         }
 
@@ -332,7 +332,7 @@ namespace Radegast
 
             if (Visible && Active)
             {
-                gotoRegion(client.Network.CurrentSim.Name);
+                gotoRegion(client.Network.CurrentSim.Name, (int)client.Self.SimPosition.X, (int)client.Self.SimPosition.Y);
             }
         }
 
@@ -356,7 +356,9 @@ namespace Radegast
             btnTeleport.Enabled = true;
             txtRegion.Text = lstRegions.SelectedItems[0].Text;
             lblStatus.Text = "Ready for " + txtRegion.Text;
-            gotoRegion(txtRegion.Text);
+            nudX.Value = 128;
+            nudY.Value = 128;
+            gotoRegion(txtRegion.Text, (int)nudX.Value, (int)nudY.Value);
         }
 
         private void lstRegions_Enter(object sender, EventArgs e)
@@ -397,14 +399,14 @@ namespace Radegast
 
         private void btnMyPos_Click(object sender, EventArgs e)
         {
-            gotoRegion(client.Network.CurrentSim.Name);
+            gotoRegion(client.Network.CurrentSim.Name, (int)client.Self.SimPosition.X, (int)client.Self.SimPosition.Y);
         }
 
         private void btnDestination_Click(object sender, EventArgs e)
         {
             if (txtRegion.Text != string.Empty)
             {
-                gotoRegion(txtRegion.Text);
+                gotoRegion(txtRegion.Text, (int)nudX.Value, (int)nudY.Value);
             }
         }
 

@@ -230,13 +230,6 @@ namespace Radegast
             netcom.Dispose();
             netcom = null;
             Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
-
-            if (monoRuntime)
-            {
-                // Force process exit if we're under mono
-                Logger.Log("Exiting...", Helpers.LogLevel.Debug);
-                Environment.Exit(0);
-            }
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
