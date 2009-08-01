@@ -65,7 +65,7 @@ namespace Radegast
             this.btnSay = new System.Windows.Forms.Button();
             this.btnShout = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.lvwObjects = new System.Windows.Forms.ListView();
+            this.lvwObjects = new Radegast.ListViewNoFlicker();
             this.avatarContext = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
@@ -528,7 +528,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tbtnStartIM;
         private System.Windows.Forms.ToolStripButton tbtnFollow;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ListView lvwObjects;
+        private Radegast.ListViewNoFlicker lvwObjects;
         private System.Windows.Forms.ToolStripButton tbtnProfile;
         private System.Windows.Forms.ToolStripButton tbtnTextures;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;

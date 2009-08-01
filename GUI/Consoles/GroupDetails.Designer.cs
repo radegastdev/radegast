@@ -60,7 +60,7 @@ namespace Radegast
         {
             this.tcGroupDetails = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
-            this.lvwGeneralMembers = new System.Windows.Forms.ListView();
+            this.lvwGeneralMembers = new Radegast.ListViewNoFlicker();
             this.chGenMemberName = new System.Windows.Forms.ColumnHeader();
             this.chGenTitle = new System.Windows.Forms.ColumnHeader();
             this.chGenLastOn = new System.Windows.Forms.ColumnHeader();
@@ -448,7 +448,7 @@ namespace Radegast
         private System.Windows.Forms.CheckBox cbxListInProfile;
         private System.Windows.Forms.CheckBox cbxReceiveNotices;
         private System.Windows.Forms.Label lblCharter;
-        private System.Windows.Forms.ListView lvwGeneralMembers;
+        private Radegast.ListViewNoFlicker lvwGeneralMembers;
         private System.Windows.Forms.Label lblOwners;
         private System.Windows.Forms.TextBox tbxCharter;
         private System.Windows.Forms.ColumnHeader chGenMemberName;

@@ -43,7 +43,6 @@ namespace Radegast
         private GridClient client;
         private RadegastNetcom netcom;
 
-        private ImageCache imageCache;
         private StateManager state;
         private ConfigManager config;
 
@@ -137,7 +136,6 @@ namespace Radegast
             client.Settings.MAX_CONCURRENT_TEXTURE_DOWNLOADS = 20;
 
             netcom = new RadegastNetcom(client);
-            imageCache = new ImageCache();
             state = new StateManager(this);
 
             InitializeConfigLegacy();
@@ -214,7 +212,7 @@ namespace Radegast
                 client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             }
-            
+
             lock (PluginsLoaded)
             {
                 PluginsLoaded.ForEach(plug =>
@@ -353,14 +351,7 @@ namespace Radegast
         private void InitializeLoggingAndConfig()
         {
             // Are we running mono?
-            if (null == Type.GetType("Mono.Runtime"))
-            {
-                monoRuntime = false;
-            }
-            else
-            {
-                monoRuntime = true;
-            }
+            monoRuntime == Type.GetType("Mono.Runtime") != null;
 
             try
             {
@@ -398,11 +389,6 @@ namespace Radegast
         public RadegastNetcom Netcom
         {
             get { return netcom; }
-        }
-
-        public ImageCache ImageCache
-        {
-            get { return imageCache; }
         }
 
         public StateManager State
