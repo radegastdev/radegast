@@ -101,7 +101,7 @@ namespace Radegast
         #region PublicMethods
         public void GoHome()
         {
-            btnGoHome_Click(this, new EventArgs());
+            btnGoHome_Click(this, EventArgs.Empty);
         }
 
         public void doNavigate(string region, string x, string y)
@@ -179,6 +179,7 @@ namespace Radegast
                     break;
                 
                 case TeleportStatus.Finished:
+                    lblStatus.Text = "Teleport complete";
                     InTeleport = false;
                     break;
 
@@ -271,7 +272,7 @@ namespace Radegast
 
         void DoTeleport()
         {
-            if (InTeleport || !Active) return;
+            if (!Active) return;
 
             if (instance.MonoRuntime)
             {
@@ -288,6 +289,7 @@ namespace Radegast
                 }
             ));
             t.IsBackground = true;
+            t.Name = "Teleport thread";
             lblStatus.Text = "Teleporting to " + txtRegion.Text;
             prgTeleport.Style = ProgressBarStyle.Marquee;
             t.Start();
@@ -379,20 +381,13 @@ namespace Radegast
 
         private void btnGoHome_Click(object sender, EventArgs e)
         {
-            if (!Active || InTeleport) return;
+            if (!Active) return;
             InTeleport = true;
 
             prgTeleport.Style = ProgressBarStyle.Marquee;
             lblStatus.Text = "Teleporting home...";
 
-            Thread t = new Thread(new ThreadStart(delegate()
-                {
-                    client.Self.GoHome();
-                    InTeleport = false;
-                }
-            ));
-            t.IsBackground = true;
-            t.Start();
+            client.Self.RequestTeleport(UUID.Zero);
         }
 
         private void txtRegion_Enter(object sender, EventArgs e)
