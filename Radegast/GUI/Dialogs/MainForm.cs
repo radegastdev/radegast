@@ -586,7 +586,7 @@ namespace Radegast
 
         private void tbtnAppearance_Click(object sender, EventArgs e)
         {
-            client.Appearance.SetPreviousAppearance(true);
+            client.Appearance.RequestSetAppearance(false);
         }
 
         private void groupsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -672,7 +672,7 @@ namespace Radegast
 
         private void rebakeTexturesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            client.Appearance.ForceRebakeAvatarTextures();
+            client.Appearance.RequestSetAppearance(true);
         }
 
         private void mapToolStripMenuItem_Click(object sender, EventArgs e)

@@ -71,7 +71,7 @@ namespace Radegast
                     //}
 
                     if (face.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE) {
-                        SLImageHandler img = new SLImageHandler(instance, face.TextureID, ((AppearanceManager.TextureIndex)j).ToString());
+                        SLImageHandler img = new SLImageHandler(instance, face.TextureID, ((AvatarTextureIndex)j).ToString());
                         img.Location = new Point(0, nTextures++ * img.Height);
                         img.Dock = DockStyle.Top;
                         img.Height = 450;

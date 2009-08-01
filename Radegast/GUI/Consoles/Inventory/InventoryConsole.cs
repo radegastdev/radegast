@@ -96,6 +96,7 @@ namespace Radegast
             Inventory.RootFolder.OwnerID = client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
             invRootNode = AddDir(null, Inventory.RootFolder);
+            Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
             Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
             AddFolderFromStore(invRootNode, Inventory.RootFolder);
             InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
@@ -806,18 +807,7 @@ namespace Radegast
 
         public bool IsWorn(InventoryItem item)
         {
-            bool worn = false;
-            if (client.Appearance.Wearables != null)
-            {
-                client.Appearance.Wearables.ForEach(delegate(AppearanceManager.WearableData i)
-                {
-                    if (i.Item.UUID == item.UUID)
-                    {
-                        worn = true;
-                    }
-                });
-            }
-            return worn;
+            return client.Appearance.IsItemWorn(item) != WearableType.Invalid;
         }
 
         public AttachmentPoint AttachedTo(InventoryItem item)

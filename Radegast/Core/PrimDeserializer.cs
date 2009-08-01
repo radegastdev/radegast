@@ -120,7 +120,7 @@ namespace Radegast
 
         public bool CreateObjectFromXml(string xml)
         {
-            List<Primitive> prims = Helpers.OSDToPrimList(OSDParser.DeserializeLLSDXml(xml));
+            List<Primitive> prims = ClientHelpers.OSDToPrimList(OSDParser.DeserializeLLSDXml(xml));
             return CreateObject(prims);
         }
 
