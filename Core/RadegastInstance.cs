@@ -351,7 +351,7 @@ namespace Radegast
         private void InitializeLoggingAndConfig()
         {
             // Are we running mono?
-            monoRuntime == Type.GetType("Mono.Runtime") != null;
+            monoRuntime = Type.GetType("Mono.Runtime") != null;
 
             try
             {
