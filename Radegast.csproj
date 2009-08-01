@@ -1084,7 +1084,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Project>{69DF1ED4-0654-4B85-BF50-667343FB2794}</Project>
+      <Project>{3E948A9E-C0F3-4768-80C2-FCA79D9C68C6}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseCore\OpenMetaverseCore.csproj">
@@ -1092,11 +1092,11 @@
       <Name>OpenMetaverseCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
-      <Project>{A6E2F270-7C3E-484E-BA03-2EFE8FD0EBEC}</Project>
+      <Project>{C0216AC2-A09E-40D3-B79E-75B984C65F74}</Project>
       <Name>OpenMetaverseTypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Project>{F03B0397-6B98-4F8A-BCE9-68635A2DBDAC}</Project>
+      <Project>{70D7D5EC-FD0A-4237-AEB2-CD0F71FFBF8E}</Project>
       <Name>OpenMetaverse</Name>
     </ProjectReference>
   </ItemGroup>
