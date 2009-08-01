@@ -40,7 +40,7 @@ namespace Radegast.Netcom
 	/// RadegastNetcom is a class built on top of libsecondlife that provides a way to
     /// raise events on the proper thread (for GUI apps especially).
 	/// </summary>
-	public partial class RadegastNetcom
+	public partial class RadegastNetcom : IDisposable
 	{
 		private GridClient client;
         private LoginOptions loginOptions;
@@ -76,12 +76,21 @@ namespace Radegast.Netcom
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
             client.Network.OnLogoutReply += new NetworkManager.LogoutCallback(Network_OnLogoutReply);
-            client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
         }
 
-        void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
+        public void Dispose()
         {
-            client.Appearance.SetPreviousAppearance(true);
+            if (client != null)
+            {
+                client.Self.OnChat -= new AgentManager.ChatCallback(Self_OnChat);
+                client.Self.OnInstantMessage -= new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+                client.Self.OnBalanceUpdated -= new AgentManager.BalanceCallback(Avatar_OnBalanceUpdated);
+                client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
+                client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+                client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+                client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
+                client.Network.OnLogoutReply -= new NetworkManager.LogoutCallback(Network_OnLogoutReply);
+            }
         }
 
         private void Self_OnInstantMessage(InstantMessage im, Simulator simulator)

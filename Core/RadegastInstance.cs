@@ -214,6 +214,7 @@ namespace Radegast
                 client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             }
+            
             lock (PluginsLoaded)
             {
                 PluginsLoaded.ForEach(plug =>
@@ -225,12 +226,19 @@ namespace Radegast
                                               catch (Exception) { }
                                           });
             }
-            if (MonoRuntime)
-            {
-                Environment.Exit(0);
-            }
 
             state.Dispose();
+            state = null;
+            netcom.Dispose();
+            netcom = null;
+            Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
+
+            if (monoRuntime)
+            {
+                // Force process exit if we're under mono
+                Logger.Log("Exiting...", Helpers.LogLevel.Debug);
+                Environment.Exit(0);
+            }
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
@@ -239,9 +247,6 @@ namespace Radegast
             {
                 foreach (KeyValuePair<UUID, string> av in names)
                 {
-                    //if (OnAvatarName != null) try { OnAvatarName(av.Key, av.Value); }
-                    //    catch (Exception) { };
-
                     if (!nameCache.ContainsKey(av.Key))
                     {
                         nameCache.Add(av.Key, av.Value);

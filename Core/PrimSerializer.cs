@@ -78,7 +78,7 @@ namespace Radegast
                 prims[i].ParentID = 0;
             }
 
-            return OSDParser.SerializeLLSDXmlString(Helpers.PrimListToOSD(prims));
+            return OSDParser.SerializeLLSDXmlString(ClientHelpers.PrimListToOSD(prims));
         }
 
         public string GetSerializedPrims(Simulator sim, uint localID)
@@ -101,7 +101,7 @@ namespace Radegast
 
             RequestObjectProperties(prims, 500);
 
-            return OSDParser.SerializeLLSDXmlString(Helpers.PrimListToOSD(prims));
+            return OSDParser.SerializeLLSDXmlString(ClientHelpers.PrimListToOSD(prims));
         }
 
         private bool RequestObjectProperties(List<Primitive> objects, int msPerRequest)
