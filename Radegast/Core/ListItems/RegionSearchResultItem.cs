@@ -105,10 +105,12 @@ namespace Radegast
             if (texture.AssetID != region.MapImageID) return;
             if (texture.AssetData == null) return;
 
-            mapImage = ImageHelper.Decode(texture.AssetData);
-            if (mapImage == null) return;
+            OpenMetaverse.Imaging.ManagedImage tmp;
 
-            instance.ImageCache.AddImage(texture.AssetID, mapImage);
+            if (!OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(texture.AssetData, out tmp, out mapImage))
+            {
+                return;
+            }
 
             imageDownloading = false;
             imageDownloaded = true;
@@ -131,24 +133,14 @@ namespace Radegast
                 return;
             }
 
-            if (instance.ImageCache.ContainsImage(region.MapImageID))
+            client.Assets.RequestImage(region.MapImageID, delegate(TextureRequestState state, AssetTexture assetTexture)
             {
-                mapImage = instance.ImageCache.GetImage(region.MapImageID);
-                imageDownloaded = true;
-                OnMapImageDownloaded(EventArgs.Empty);
-                RefreshListBox();
-            }
-            else
-            {
-                client.Assets.RequestImage(region.MapImageID, delegate(TextureRequestState state, AssetTexture assetTexture) 
+                if (state == TextureRequestState.Finished)
                 {
-                    if (state == TextureRequestState.Finished)
-                    {
-                        Assets_OnImageReceived(assetTexture);
-                    }
-                });
-                imageDownloading = true;
-            }
+                    Assets_OnImageReceived(assetTexture);
+                }
+            });
+            imageDownloading = true;
         }
 
         public void RequestAgentLocations()

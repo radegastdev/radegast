@@ -73,7 +73,7 @@ namespace Radegast
             this.label1 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.lstPrims = new System.Windows.Forms.ListView();
+            this.lstPrims = new Radegast.ListViewNoFlicker();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.nudRadius = new System.Windows.Forms.NumericUpDown();
@@ -643,7 +643,7 @@ namespace Radegast
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.ListView lstPrims;
+        private Radegast.ListViewNoFlicker lstPrims;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnSource;

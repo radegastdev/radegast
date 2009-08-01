@@ -58,7 +58,7 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.lvwFindPeople = new System.Windows.Forms.ListView();
+            this.lvwFindPeople = new Radegast.ListViewNoFlicker();
             this.chdName = new System.Windows.Forms.ColumnHeader();
             this.chdOnline = new System.Windows.Forms.ColumnHeader();
             this.SuspendLayout();
@@ -102,7 +102,7 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.ListView lvwFindPeople;
+        private Radegast.ListViewNoFlicker lvwFindPeople;
         private System.Windows.Forms.ColumnHeader chdName;
         private System.Windows.Forms.ColumnHeader chdOnline;
     }

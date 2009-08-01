@@ -72,7 +72,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.nudZ = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.lstRegions = new System.Windows.Forms.ListView();
+            this.lstRegions = new Radegast.ListViewNoFlicker();
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.pnlMap = new System.Windows.Forms.Panel();
@@ -330,7 +330,7 @@
         private System.Windows.Forms.Panel pnlSearch;
         private System.Windows.Forms.Panel pnlMap;
         private System.Windows.Forms.TextBox txtRegion;
-        private System.Windows.Forms.ListView lstRegions;
+        private Radegast.ListViewNoFlicker lstRegions;
         private System.Windows.Forms.Button btnSearch;
         private System.Windows.Forms.NumericUpDown nudX;
         private System.Windows.Forms.Label label3;
