@@ -152,7 +152,39 @@ namespace Radegast
             client.Groups.OnGroupDropped += new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
             client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
             ScanAndLoadPlugins();
+        }
+
+        public void CleanUp()
+        {
+            if (client != null)
+            {
+                client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
+                client.Groups.OnGroupLeft -= new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
+                client.Groups.OnGroupDropped -= new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
+                client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
+                client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+                client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+            }
+
+            lock (PluginsLoaded)
+            {
+                PluginsLoaded.ForEach(plug =>
+                {
+                    try
+                    {
+                        plug.StopPlugin(this);
+                    }
+                    catch (Exception) { }
+                });
+            }
+
+            state.Dispose();
+            state = null;
+            netcom.Dispose();
+            netcom = null;
+            Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
         }
 
         private void ScanAndLoadPlugins()
@@ -202,34 +234,17 @@ namespace Radegast
             }
         }
 
-        public void CleanUp()
+        void Network_OnConnected(object sender)
         {
-            if (client != null)
+            try
             {
-                client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
-                client.Groups.OnGroupLeft -= new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
-                client.Groups.OnGroupDropped -= new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
-                client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
-                client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+                if (!Directory.Exists(ClientDir))
+                    Directory.CreateDirectory(ClientDir);
             }
-
-            lock (PluginsLoaded)
+            catch (Exception ex)
             {
-                PluginsLoaded.ForEach(plug =>
-                                          {
-                                              try
-                                              {
-                                                  plug.StopPlugin(this);
-                                              }
-                                              catch (Exception) { }
-                                          });
+                Logger.Log("Failed to create client directory", Helpers.LogLevel.Warning, ex);
             }
-
-            state.Dispose();
-            state = null;
-            netcom.Dispose();
-            netcom = null;
-            Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
