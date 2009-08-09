@@ -1069,6 +1069,7 @@
     <None Include="Resources\lsl_keywords.txt" />
     <None Include="Resources\del_trans.png" />
     <None Include="Resources\radegast_icon.ico" />
+    <None Include="Resources\checkerboard.png" />
     <Content Include="slmap.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
