@@ -76,7 +76,7 @@ namespace Radegast
             this.lblProgress.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.lblProgress.AutoSize = true;
             this.lblProgress.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblProgress.Location = new System.Drawing.Point(130, 6);
+            this.lblProgress.Location = new System.Drawing.Point(132, 6);
             this.lblProgress.Name = "lblProgress";
             this.lblProgress.Size = new System.Drawing.Size(51, 13);
             this.lblProgress.TabIndex = 2;
@@ -89,7 +89,7 @@ namespace Radegast
             this.pictureBox1.Enabled = false;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(301, 286);
+            this.pictureBox1.Size = new System.Drawing.Size(304, 286);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
@@ -139,7 +139,7 @@ namespace Radegast
             this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.progressBar1.Location = new System.Drawing.Point(0, 264);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(301, 22);
+            this.progressBar1.Size = new System.Drawing.Size(304, 22);
             this.progressBar1.Step = 100;
             this.progressBar1.TabIndex = 6;
             // 

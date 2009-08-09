@@ -95,6 +95,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap checkerboard {
+            get {
+                object obj = ResourceManager.GetObject("checkerboard", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap computer_16 {
             get {
                 object obj = ResourceManager.GetObject("computer_16", resourceCulture);
