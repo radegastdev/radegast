@@ -380,7 +380,7 @@ namespace Radegast
         private void frmMain_Load(object sender, EventArgs e)
         {
             worldMap = new frmMap(instance);
-            tabsConsole.SelectTab("Main");
+            tabsConsole.SelectTab("login");
             ResourceManager rm = Properties.Resources.ResourceManager;
             ResourceSet set = rm.GetResourceSet(System.Globalization.CultureInfo.CurrentCulture, true, true);
             System.Collections.IDictionaryEnumerator de = set.GetEnumerator();

@@ -45,14 +45,20 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                Invoke(new System.Windows.Forms.MethodInvoker(delegate() { Dispose(disposing);} ));
+                Invoke(new System.Windows.Forms.MethodInvoker(() => { Dispose(disposing); }));
                 return;
             }
 
-            if (disposing && (components != null))
+            if (disposing)
             {
-                components.Dispose();
+                if (components != null)
+                    components.Dispose();
+
+                if (statusTimer != null)
+                    statusTimer.Dispose();
             }
+
+
             base.Dispose(disposing);
         }
 

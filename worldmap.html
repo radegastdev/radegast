@@ -1342,9 +1342,9 @@ function focus(x, y, zoom)
     mapInstance.centerAndZoomAtSLCoord(new XYPoint(x, y), zoom);
 }
 
-function gotoRegion(sim_name)
+function gotoRegion(sim_name, simX, simY)
 {
-    mapInstance.gotoRegion(sim_name, 128, 128);
+    mapInstance.gotoRegion(sim_name, simX, simY);
 }
 
 function maxZoom()

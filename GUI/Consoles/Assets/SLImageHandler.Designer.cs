@@ -142,6 +142,7 @@ namespace Radegast
             this.progressBar1.Size = new System.Drawing.Size(304, 22);
             this.progressBar1.Step = 100;
             this.progressBar1.TabIndex = 6;
+            this.progressBar1.Visible = false;
             // 
             // SLImageHandler
             // 

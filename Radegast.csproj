@@ -387,6 +387,12 @@
     <Compile Include="GUI\Notifications\GroupInvitationNotification.Designer.cs">
       <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Notifications\GroupNoticeNotification.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Notifications\GroupNoticeNotification.Designer.cs">
+      <DependentUpon>GroupNoticeNotification.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Notifications\PermissionsNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -577,6 +583,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Notifications\GroupInvitationNotification.resx">
       <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Notifications\GroupNoticeNotification.resx">
+      <DependentUpon>GroupNoticeNotification.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Notifications\PermissionsNotification.resx">
