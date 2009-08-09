@@ -1070,8 +1070,8 @@
     <None Include="Resources\del_trans.png" />
     <None Include="Resources\radegast_icon.ico" />
     <None Include="Resources\checkerboard.png" />
-    <Content Include="slmap.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="worldmap.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
