@@ -69,9 +69,19 @@ namespace Radegast
             }
         }
 
+        public SLImageHandler()
+        {
+            InitializeComponent();
+        }
+
         public SLImageHandler(RadegastInstance instance, UUID image, string label)
         {
             InitializeComponent();
+            Init(instance, image, label);
+        }
+
+        public void Init(RadegastInstance instance, UUID image, string label)
+        {
             Disposed += new EventHandler(SLImageHandler_Disposed);
 
             if (!instance.advancedDebugging)
@@ -84,7 +94,7 @@ namespace Radegast
             this.instance = instance;
             this.imageID = image;
 
-            lblDesc =  new TransparentLabel();
+            lblDesc = new TransparentLabel();
             lblDesc.Top = 5;
             lblDesc.Left = 5;
             lblDesc.Text = label;
@@ -99,7 +109,7 @@ namespace Radegast
 
             // Callbacks
             client.Assets.OnImageRecieveProgress += new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
-
+            progressBar1.Visible = true;
             client.Assets.RequestImage(imageID, ImageType.Normal, delegate(TextureRequestState state, AssetTexture assetTexture)
             {
                 if (state == TextureRequestState.Finished || state == TextureRequestState.Timeout)

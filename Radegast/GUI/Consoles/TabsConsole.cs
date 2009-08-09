@@ -140,11 +140,11 @@ namespace Radegast
             InitializeInventoryTab();
             InitializeSearchTab();
 
-            if (selectedTab.Name == "main")
+            if (selectedTab.Name == "login")
                 tabs["chat"].Select();
 
-            tabs["main"].AllowClose = true;
-            tabs["main"].Close();
+            tabs["login"].AllowClose = true;
+            tabs["login"].Close();
 
             client.Self.RetrieveInstantMessages();
         }
@@ -264,6 +264,10 @@ namespace Radegast
                 case InstantMessageDialog.InventoryAccepted:
                     DisplayNotificationInChat(e.IM.FromAgentName + " accepted your inventory offer.");
                     break;
+
+                case InstantMessageDialog.GroupNotice:
+                    instance.MainForm.AddNotification(new ntfGroupNotice(instance, e.IM));
+                    break;
             }
         }
 
@@ -342,7 +346,7 @@ namespace Radegast
 
             toolStripContainer1.ContentPanel.Controls.Add(mainConsole);
 
-            SleekTab tab = AddTab("main", "Main", mainConsole);
+            SleekTab tab = AddTab("login", "Login", mainConsole);
             tab.AllowClose = false;
             tab.AllowDetach = false;
             tab.AllowMerge = false;
