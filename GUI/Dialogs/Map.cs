@@ -61,7 +61,7 @@ namespace Radegast
                 map = new WebBrowser();
                 map.Dock = DockStyle.Fill;
                 map.AllowWebBrowserDrop = false;
-                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/slmap.html");
+                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
                 map.WebBrowserShortcutsEnabled = false;
                 // map.ScriptErrorsSuppressed = true;
                 map.ObjectForScripting = this;

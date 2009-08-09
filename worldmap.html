@@ -1,21 +1,24 @@
 <html>
 <head>
-<title>Map</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAotdfagKqScUN4mmvw5zJBBSnio4LbYHBEHmBeyEckP4l-IaYXBQJtBVW3yaf2mAdfXj7DqXjleVJMg" type="text/javascript"></script>
-<!--script src="http://slurl.com/_scripts/slmapapi.js" type="text/javascript"></script-->
+    <title>Map</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 
-<link rel="stylesheet" type="text/css" href="http://slurl.com/_styles/MAIN.css" />
-<style type="text/css">
-div#map-container {
-      width: 100%;
-      height: 100%;
-}
-</style>
+    <script src="http://maps.google.com/maps?file=api&v=2&key=ABQIAAAAotdfagKqScUN4mmvw5zJBBSnio4LbYHBEHmBeyEckP4l-IaYXBQJtBVW3yaf2mAdfXj7DqXjleVJMg"
+        type="text/javascript"></script>
+
+    <link rel="stylesheet" type="text/css" href="http://slurl.com/_styles/MAIN.css" />
+    <style type="text/css">
+        div#map-container
+        {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body onload="loadmap()" onunload="GUnload()">
 
-<script type="text/javascript">
+    <script language='javascript" ' type="text/javascript">
+// <![CDATA[
 //
 //  Map of how SL map relates to the Google map:
 //
@@ -228,11 +231,11 @@ function landCustomGetTileUrl(pos, zoom)
     y -= y % regions_per_tile_edge; 
 
     //  Pick a server
-    
+    var host_name;
     if (((x / regions_per_tile_edge) % 2) == 1)
-       var host_name = slTileHost1;
+       host_name = slTileHost1;
     else
-       var host_name = slTileHost2; 
+       host_name = slTileHost2; 
 
     //  Get image tiles from Amazon S3
     f = host_name + "/map-" + sl_zoom + "-" + x + "-" + y + "-objects.jpg";
@@ -1334,10 +1337,6 @@ function gotoSLURL(x,y,slMap)
 		slAddDynamicScript(scriptURL, onLoadHandler);
 }
 
-
-</script>
-
-<script type="text/javascript">
 function focus(x, y, zoom)
 {
     mapInstance.centerAndZoomAtSLCoord(new XYPoint(x, y), zoom);
@@ -1345,7 +1344,7 @@ function focus(x, y, zoom)
 
 function gotoRegion(sim_name)
 {
-    mapInstance.gotoRegion(sim_name, simX, simY);
+    mapInstance.gotoRegion(sim_name, 128, 128);
 }
 
 function maxZoom()
@@ -1355,7 +1354,7 @@ function maxZoom()
 
 function loadmap() {
     mapInstance = new SLMap(document.getElementById('map-container'));
-  // gotoRegion("Chub");
+//    gotoRegion("Chub");
 }
 
 var gReg = "Chub";
@@ -1365,9 +1364,10 @@ var gSimY = 128;
 function monosucks() {
     gotoRegion(gReg, gSimX, gSimY);
 }
+// ]]>
+    </script>
 
-</script>
-
-<div id="map-container"></div>
+    <div id="map-container">
+    </div>
 </body>
 </html>
