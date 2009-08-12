@@ -130,15 +130,17 @@ namespace Radegast
 
         private void Assets_OnImageProgress(UUID imageID, int recieved, int total)
         {
-            if (this.imageID != imageID) {
+            if (this.imageID != imageID)
+            {
                 return;
             }
-            if (InvokeRequired) {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    Assets_OnImageProgress(imageID, recieved, total);
-                }));
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Assets_OnImageProgress(imageID, recieved, total)));
+                return;
             }
+
             int pct = 0;
             if (total > 0)
             {
@@ -156,10 +158,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    DisplayPartialImage(assetTexture);
-                }));
+                BeginInvoke(new MethodInvoker(() => DisplayPartialImage(assetTexture)));
                 return;
             }
 
@@ -183,15 +182,14 @@ namespace Radegast
                 return;
             }
 
-            if (InvokeRequired) {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    Assets_OnImageReceived(assetTexture);
-                }));
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Assets_OnImageReceived(assetTexture)));
                 return;
             }
 
-            try {
+            try
+            {
                 progressBar1.Hide();
                 lblProgress.Hide();
 
@@ -209,7 +207,9 @@ namespace Radegast
                 {
                     ClientSize = pictureBox1.Size = new Size(image.Width, image.Height);
                 }
-            } catch (Exception excp) {
+            }
+            catch (Exception excp)
+            {
                 this.Hide();
                 System.Console.WriteLine("Error decoding image: " + excp.Message);
             }
