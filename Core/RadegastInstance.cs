@@ -105,7 +105,7 @@ namespace Radegast
 
         public const string INCOMPLETE_NAME = "Loading...";
 
-        public readonly bool advancedDebugging = true;
+        public readonly bool advancedDebugging = false;
 
         public readonly List<IRadegastPlugin> PluginsLoaded = new List<IRadegastPlugin>();
 
