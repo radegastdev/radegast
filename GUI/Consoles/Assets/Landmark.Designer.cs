@@ -89,6 +89,7 @@ namespace Radegast
             this.btnShowOnMap.TabIndex = 2;
             this.btnShowOnMap.Text = "Show on map";
             this.btnShowOnMap.UseVisualStyleBackColor = true;
+            this.btnShowOnMap.Click += new System.EventHandler(this.btnShowOnMap_Click);
             // 
             // btnTeleport
             // 

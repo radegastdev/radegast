@@ -49,7 +49,8 @@ namespace Radegast
         #region Public members
         public static ImageList ResourceImages = new ImageList();
         public static List<string> ImageNames = new List<string>();
-        public frmMap worldMap;
+        public frmMap WorldMap { get { return worldMap; } }
+        private frmMap worldMap;
         public TabsConsole TabConsole
         {
             get { return tabsConsole; }
@@ -430,7 +431,7 @@ namespace Radegast
             
                 worldMap.Show();
                 worldMap.Focus();
-                worldMap.displayLocation(region, x, y, z);
+                worldMap.DisplayLocation(region, x, y, z);
             }
             else
             {
