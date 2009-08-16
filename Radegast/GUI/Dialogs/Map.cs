@@ -104,12 +104,12 @@ namespace Radegast
             btnGoHome_Click(this, EventArgs.Empty);
         }
 
-        public void doNavigate(string region, string x, string y)
+        public void DoNavigate(string region, string x, string y)
         {
-            displayLocation(region, int.Parse(x), int.Parse(y), 0);
+            DisplayLocation(region, int.Parse(x), int.Parse(y), 0);
         }
 
-        public void displayLocation(string region, int x, int y, int z)
+        public void DisplayLocation(string region, int x, int y, int z)
         {
             txtRegion.Text = region;
             nudX.Value = x;
@@ -122,7 +122,7 @@ namespace Radegast
             lblStatus.Text = "Ready for " + region;
         }
 
-        public void setStatus(string msg)
+        public void SetStatus(string msg)
         {
             lblStatus.Text = msg;
             btnTeleport.Enabled = false;

@@ -86,6 +86,10 @@ namespace Radegast
                 SLImageHandler img = new SLImageHandler(instance, parcel.SnapshotID, "");
                 img.Dock = DockStyle.Fill;
                 pnlDetail.Controls.Add(img);
+                pnlDetail.Disposed += (object sender, EventArgs e) =>
+                {
+                    img.Dispose();
+                };
                 img.BringToFront();
             }
             btnTeleport.Enabled = true;
@@ -117,7 +121,17 @@ namespace Radegast
 
         private void btnTeleport_Click(object sender, EventArgs e)
         {
+            RadegastInstance.GlobalInstance.MainForm.WorldMap.Show();
             client.Self.RequestTeleport(landmark.AssetUUID);
+        }
+
+        private void btnShowOnMap_Click(object sender, EventArgs e)
+        {
+            RadegastInstance.GlobalInstance.MainForm.WorldMap.Show();
+            RadegastInstance.GlobalInstance.MainForm.WorldMap.DisplayLocation(parcel.SimName, 
+                (int)decodedLandmark.Position.X,
+                (int)decodedLandmark.Position.Y,
+                (int)decodedLandmark.Position.Z);
         }
     }
 }
