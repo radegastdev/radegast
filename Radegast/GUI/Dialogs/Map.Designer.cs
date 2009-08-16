@@ -313,7 +313,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMap";
             this.Text = "Map";
-            this.VisibleChanged += new System.EventHandler(this.frmMap_VisibleChanged);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMap_FormClosing);
             this.pnlSearch.ResumeLayout(false);
             this.pnlSearch.PerformLayout();

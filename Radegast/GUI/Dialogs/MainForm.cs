@@ -110,7 +110,7 @@ namespace Radegast
             netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
             client.Parcels.OnParcelProperties += new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
             client.Self.OnMoneyBalanceReplyReceived += new AgentManager.MoneyBalanceReplyCallback(Self_OnMoneyBalanceReplyReceived);
-            
+
             InitializeStatusTimer();
             RefreshWindowTitle();
 
@@ -212,9 +212,9 @@ namespace Radegast
             {
                 Thread saveInvToDisk = new Thread(new ThreadStart(
                     delegate()
-                        {
-                            client.Inventory.Store.SaveToDisk(instance.InventoryCacheFileName);
-                        }));
+                    {
+                        client.Inventory.Store.SaveToDisk(instance.InventoryCacheFileName);
+                    }));
                 saveInvToDisk.Name = "Save inventory to disk";
                 saveInvToDisk.Start();
 
@@ -371,9 +371,24 @@ namespace Radegast
             if (e.Control && e.Alt && e.KeyCode == Keys.D)
                 tbtnDebug.Visible = !tbtnDebug.Visible;
 
+            // ctrl-o, open objects finder
             if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
             {
                 (new frmObjects(instance)).Show();
+            }
+
+            // ctrl-g, goto slurl
+            if (e.Control && e.KeyCode == Keys.G && Clipboard.ContainsText() && client.Network.Connected)
+            {
+                if (!ProcessLink(Clipboard.GetText(), true))
+                    MapToCurrentLocation();
+            }
+
+
+            // ctrl-m, open map
+            if (e.Control && e.KeyCode == Keys.M && Clipboard.ContainsText() && client.Network.Connected)
+            {
+                MapToCurrentLocation();
             }
         }
 
@@ -407,7 +422,12 @@ namespace Radegast
             }
         }
 
-        public void processLink(string link)
+        public void ProcessLink(string link)
+        {
+            ProcessLink(link, false);
+        }
+
+        public bool ProcessLink(string link, bool onlyMap)
         {
             if (!link.Contains("://"))
             {
@@ -419,7 +439,7 @@ namespace Radegast
 
             if (m.Success)
             {
-                string region  = HttpUtility.UrlDecode(m.Groups[2].Value);
+                string region = HttpUtility.UrlDecode(m.Groups[2].Value);
                 int x = int.Parse(m.Groups[3].Value);
                 int y = int.Parse(m.Groups[4].Value);
                 int z = 0;
@@ -428,16 +448,17 @@ namespace Radegast
                 {
                     z = int.Parse(m.Groups[6].Value);
                 }
-            
+
                 worldMap.Show();
                 worldMap.Focus();
                 worldMap.DisplayLocation(region, x, y, z);
+                return true;
             }
-            else
+            else if (!onlyMap)
             {
                 System.Diagnostics.Process.Start(link);
             }
-
+            return false;
         }
         #endregion
 
@@ -607,7 +628,8 @@ namespace Radegast
 
         private void autopilotToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (ap == null) {
+            if (ap == null)
+            {
                 ap = new AutoPilot(client);
                 /*
                 ap.InsertWaypoint(new Vector3(66, 163, 21));
@@ -632,10 +654,13 @@ namespace Radegast
 
 
             }
-            if (AutoPilotActive) {
+            if (AutoPilotActive)
+            {
                 AutoPilotActive = false;
                 ap.Stop();
-            } else {
+            }
+            else
+            {
                 AutoPilotActive = true;
                 ap.Start();
             }
@@ -644,10 +669,13 @@ namespace Radegast
 
         private void aLICEToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (instance.Config.CurrentConfig.UseAlice == false) {
+            if (instance.Config.CurrentConfig.UseAlice == false)
+            {
                 instance.Config.CurrentConfig.UseAlice = true;
                 aLICEToolStripMenuItem.Checked = true;
-            } else {
+            }
+            else
+            {
                 instance.Config.CurrentConfig.UseAlice = false;
                 aLICEToolStripMenuItem.Checked = false;
             }
@@ -676,16 +704,22 @@ namespace Radegast
             client.Appearance.RequestSetAppearance(true);
         }
 
-        private void mapToolStripMenuItem_Click(object sender, EventArgs e)
+        public void MapToCurrentLocation()
         {
-            if (!worldMap.Visible)
+            if (worldMap != null && client.Network.Connected)
             {
                 worldMap.Show();
-            }
-            else
-            {
                 worldMap.Focus();
+                worldMap.DisplayLocation(client.Network.CurrentSim.Name,
+                    (int)client.Self.SimPosition.X,
+                    (int)client.Self.SimPosition.Y,
+                    (int)client.Self.SimPosition.Z);
             }
+        }
+
+        private void mapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MapToCurrentLocation();
         }
 
         private void standToolStripMenuItem_Click(object sender, EventArgs e)
