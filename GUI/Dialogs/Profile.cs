@@ -243,7 +243,7 @@ namespace Radegast
             }
             else
             {
-                e.Effect = DragDropEffects.Copy;
+                e.Effect = DragDropEffects.Copy | DragDropEffects.Move;
             }
         }
 
