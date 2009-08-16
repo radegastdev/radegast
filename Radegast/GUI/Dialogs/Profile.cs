@@ -60,8 +60,8 @@ namespace Radegast
             client = this.instance.Client;
             this.fullName = fullName;
             this.agentID = agentID;
-            
-            this.Text = fullName + " (profile) - TheLBot";
+
+            this.Text = fullName + " (profile) - " + Properties.Resources.ProgramName;
 
             // Callbacks
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
