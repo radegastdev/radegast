@@ -63,7 +63,7 @@ namespace Radegast
                 map.AllowWebBrowserDrop = false;
                 map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
                 map.WebBrowserShortcutsEnabled = false;
-                // map.ScriptErrorsSuppressed = true;
+                map.ScriptErrorsSuppressed = true;
                 map.ObjectForScripting = this;
                 map.AllowNavigation = false;
                 if (instance.MonoRuntime)
@@ -96,6 +96,12 @@ namespace Radegast
             client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
             client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
+
+            if (map != null)
+            {
+                map.Dispose();
+                map = null;
+            }
         }
 
         #region PublicMethods
@@ -276,7 +282,7 @@ namespace Radegast
 
             if (instance.MonoRuntime)
             {
-                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/slmap.html");
+                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
             }
 
             Thread t = new Thread(new ThreadStart(delegate()
@@ -298,7 +304,7 @@ namespace Radegast
         #region JavascriptHooks
         void gotoRegion(string regionName, int simX, int simY)
         {
-            if (!Visible || map == null) return;
+            if (!Visible || map == null || map.Document == null) return;
             if (instance.MonoRuntime)
             {
                 map.Document.InvokeScript(string.Format("gReg = \"{0}\"; gSimX = {1}; gSimY = {2}; monosucks", regionName, simX, simY));
@@ -317,23 +323,6 @@ namespace Radegast
         {
             e.Cancel = true;
             Hide();
-        }
-
-        private void frmMap_VisibleChanged(object sender, EventArgs e)
-        {
-            if (Active)
-            {
-                pnlSearch.Visible = true;
-            }
-            else
-            {
-                pnlSearch.Visible = false;
-            }
-
-            if (Visible && Active)
-            {
-                gotoRegion(client.Network.CurrentSim.Name, (int)client.Self.SimPosition.X, (int)client.Self.SimPosition.Y);
-            }
         }
 
         private void txtRegion_KeyDown(object sender, KeyEventArgs e)

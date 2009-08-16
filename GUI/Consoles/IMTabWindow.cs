@@ -172,7 +172,7 @@ namespace Radegast
 
         private void rtbIMText_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            instance.MainForm.processLink(e.LinkText);
+            instance.MainForm.ProcessLink(e.LinkText);
         }
 
         private void tbtnProfile_Click(object sender, EventArgs e)
