@@ -164,7 +164,7 @@ namespace Radegast
                     Client.Objects.AddPrim(Client.Network.CurrentSim, linkset.RootPrim.PrimData, Client.Self.ActiveGroup,
                         linkset.RootPrim.Position, linkset.RootPrim.Scale, linkset.RootPrim.Rotation);
 
-                    if (!primDone.WaitOne(5000, false)) {
+                    if (!primDone.WaitOne(25000, false)) {
                         throw new Exception("Rez failed, timed out while creating the root prim.");
                     }
                     Client.Objects.SetPosition(Client.Network.CurrentSim, primsCreated[primsCreated.Count - 1].LocalID, currentPosition);
@@ -179,7 +179,7 @@ namespace Radegast
                         Client.Objects.AddPrim(Client.Network.CurrentSim, prim.PrimData, UUID.Zero, currentPosition,
                             prim.Scale, prim.Rotation);
 
-                        if (!primDone.WaitOne(5000, false)) {
+                        if (!primDone.WaitOne(25000, false)) {
                             throw new Exception("Rez failed, timed out while creating child prim.");
                         }
                         Client.Objects.SetPosition(Client.Network.CurrentSim, primsCreated[primsCreated.Count - 1].LocalID, currentPosition);
@@ -202,7 +202,7 @@ namespace Radegast
                         Client.Objects.LinkPrims(Client.Network.CurrentSim, linkQueue);
                         Client.Objects.SetRotation(Client.Network.CurrentSim, rootLocalID, rootRotation);
 
-                        if (!primDone.WaitOne(1000, false)) {
+                        if (!primDone.WaitOne(5000, false)) {
                             Logger.Log(String.Format("Warning: Failed to link {0} prims", linkQueue.Count), Helpers.LogLevel.Warning);
                         }
 
