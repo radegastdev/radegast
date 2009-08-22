@@ -1051,14 +1051,17 @@
     <None Include="assemblies\AIMLbot.dll" />
     <None Include="assemblies\Tao.OpenGl.dll" />
     <None Include="assemblies\Tao.Platform.Windows.dll" />
-    <None Include="openjpeg-dotnet.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="OpenMetaverse.Rendering.Meshmerizer.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="assemblies\log4net.dll" />
     <None Include="assemblies\Tools.dll" />
+    <None Include="openjpeg-dotnet-x86_64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="openjpeg-dotnet.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1086,19 +1089,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Project>{3E948A9E-C0F3-4768-80C2-FCA79D9C68C6}</Project>
+      <Project>{00DACF2E-3C2B-48D2-BA0E-F781098D444E}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseCore\OpenMetaverseCore.csproj">
-      <Project>{E5A79192-2F14-43FE-BF6E-89951B1800D5}</Project>
+      <Project>{67075314-81D9-48E0-A164-6AF9EDF2508F}</Project>
       <Name>OpenMetaverseCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
-      <Project>{C0216AC2-A09E-40D3-B79E-75B984C65F74}</Project>
+      <Project>{6B0F663B-C5FB-4DE5-AD48-46E51F33D070}</Project>
       <Name>OpenMetaverseTypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Project>{70D7D5EC-FD0A-4237-AEB2-CD0F71FFBF8E}</Project>
+      <Project>{96E47C9F-D84F-4F5A-89D6-0F8E2F86C76F}</Project>
       <Name>OpenMetaverse</Name>
     </ProjectReference>
   </ItemGroup>

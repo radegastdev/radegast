@@ -659,7 +659,7 @@ namespace Radegast
 namespace System.Windows.Forms
 {
 
-    public class SorterClass : IComparer
+    public class SorterClass : System.Collections.IComparer
     {
 
         public SorterClass()

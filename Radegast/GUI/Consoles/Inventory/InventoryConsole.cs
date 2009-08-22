@@ -1381,7 +1381,7 @@ namespace Radegast
 
     #region Sorter class
     // Create a node sorter that implements the IComparer interface.
-    public class InvNodeSorter : IComparer
+    public class InvNodeSorter : System.Collections.IComparer
     {
         bool _sysfirst = true;
 
