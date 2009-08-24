@@ -145,7 +145,7 @@ namespace Radegast
 
         void Grid_OnCoarseLocationUpdate(Simulator sim, List<UUID> newEntries, List<UUID> removedEntries)
         {
-            if (client.Network.CurrentSim.Handle != sim.Handle)
+            if (client.Network.CurrentSim == null /*|| client.Network.CurrentSim.Handle != sim.Handle*/)
             {
                 return;
             }
@@ -163,12 +163,12 @@ namespace Radegast
             lvwObjects.BeginUpdate();
             try
             {
-                Vector3 mypos = sim.AvatarPositions.ContainsKey(client.Self.AgentID)
-                                    ? sim.AvatarPositions[client.Self.AgentID]
-                                    : client.Self.SimPosition;
+                Vector3d mypos = sim.AvatarPositions.ContainsKey(client.Self.AgentID)
+                                    ? ToVector3D(sim,sim.AvatarPositions[client.Self.AgentID])
+                                    : client.Self.GlobalPosition;
 
                 List<UUID> existing = new List<UUID>();
-                List<UUID> removed = new List<UUID>();
+                List<UUID> removedSim = new List<UUID>();
 
                 sim.AvatarPositions.ForEach(delegate(KeyValuePair<UUID, Vector3> avi)
                 {
@@ -184,10 +184,11 @@ namespace Radegast
 
                 foreach (ListViewItem item in lvwObjects.Items)
                 {
+                    if (item==null) continue;
                     UUID key = (UUID)item.Tag;
                     if (!existing.Contains(key))
                     {
-                        removed.Add(key);
+                       // removed.Add(key);
                         continue;
                     }
                     item.Text = instance.getAvatarName(key);
@@ -195,11 +196,11 @@ namespace Radegast
                     {
                         continue;
                     }
-                    int d = (int)Vector3.Distance(sim.AvatarPositions[key], mypos);
+                    int d = (int)Vector3d.Distance(ToVector3D(sim,sim.AvatarPositions[key]), mypos);
                     item.Text = instance.getAvatarName(key) + " (" + d + "m)";
                 }
 
-                foreach (UUID key in removed)
+                foreach (UUID key in removedEntries)
                 {
                     lvwObjects.Items.RemoveByKey(key.ToString());
                 }
@@ -210,6 +211,22 @@ namespace Radegast
             {
             }
             lvwObjects.EndUpdate();
+        }
+
+        static Vector3d ToVector3D(Simulator simulator, Vector3 pos)
+        {
+            if (simulator != null)
+            {
+                uint globalX, globalY;
+                Utils.LongToUInts(simulator.Handle, out globalX, out globalY);
+
+                return new Vector3d(
+                    (double)globalX + (double)pos.X,
+                    (double)globalY + (double)pos.Y,
+                    (double)pos.Z);
+            }
+            else
+                return Vector3d.Zero;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
