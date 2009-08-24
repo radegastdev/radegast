@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
@@ -57,16 +58,18 @@ namespace Radegast
 
             // Callbacks
             client.Directory.OnDirPeopleReply += new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
-
+            client.Directory.OnDirPlacesReply += new DirectoryManager.DirPlacesReplyCallback(Directory_OnDirPlacesReply);
             console = new FindPeopleConsole(instance, UUID.Random());
             console.Dock = DockStyle.Fill;
             console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
             pnlFindPeople.Controls.Add(console);
+            lvwPlaces.ListViewItemSorter = new PlaceSorter();
         }
 
         void SearchConsole_Disposed(object sender, EventArgs e)
         {
             client.Directory.OnDirPeopleReply -= new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
+            client.Directory.OnDirPlacesReply -= new DirectoryManager.DirPlacesReplyCallback(Directory_OnDirPlacesReply);
         }
 
         private void console_SelectedIndexChanged(object sender, EventArgs e)
@@ -178,5 +181,194 @@ namespace Radegast
             Process.Start(sInfo);
         }
 
+        #region Places search
+        private UUID placeSearch;
+        private int placeMatches = 0;
+        private int placeStart = 0;
+
+        void Directory_OnDirPlacesReply(UUID queryID, List<DirectoryManager.DirectoryParcel> matchedParcels)
+        {
+            if (queryID != placeSearch) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Directory_OnDirPlacesReply(queryID, matchedParcels)));
+                return;
+            }
+
+            lvwPlaces.BeginUpdate();
+
+            if (placeMatches == 0)
+                lvwPlaces.Items.Clear();
+
+            foreach (DirectoryManager.DirectoryParcel parcel in matchedParcels)
+            {
+                if (parcel.ID == UUID.Zero) continue;
+
+                ListViewItem item = new ListViewItem();
+                item.Name = parcel.ID.ToString();
+                item.Text = parcel.Name;
+                item.Tag = parcel;
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, parcel.Dwell.ToString()));
+                lvwPlaces.Items.Add(item);
+            }
+            lvwPlaces.Sort();
+            lvwPlaces.EndUpdate();
+
+            placeMatches += matchedParcels.Count;
+
+            btnNextPlace.Enabled = placeMatches > 100;
+            btnPrevPlace.Enabled = placeStart != 0;
+
+            if (matchedParcels.Count > 0 && matchedParcels[matchedParcels.Count - 1].ID == UUID.Zero)
+                placeMatches -= 1;
+
+            lblNrPlaces.Visible = true;
+            lblNrPlaces.Text = string.Format("{0} places found", placeMatches > 100 ? "More than " + (placeStart + 100).ToString() : (placeStart + placeMatches).ToString());
+
+
+        }
+
+        private void txtSearchPlace_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                e.SuppressKeyPress = true;
+        }
+
+        private void txtSearchPlace_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                if (btnSearchPlace.Enabled)
+                {
+                    btnSearchPlace_Click(null, EventArgs.Empty);
+                }
+            }
+        }
+
+        private void txtSearchPlace_TextChanged(object sender, EventArgs e)
+        {
+            if (txtSearchPlace.Text.Length > 0)
+                btnSearchPlace.Enabled = true;
+            else
+                btnSearchPlace.Enabled = false;
+        }
+
+        // StartPlacesSearch(DirFindFlags findFlags, ParcelCategory searchCategory, string searchText, string simulatorName, UUID groupID, UUID transactionID)
+        private void btnSearchPlace_Click(object sender, EventArgs e)
+        {
+            placeMatches = 0;
+            placeStart = 0;
+            placeSearch = client.Directory.StartDirPlacesSearch(txtSearchPlace.Text.Trim(), 0);
+        }
+
+        private void btnNextPlace_Click(object sender, EventArgs e)
+        {
+            placeMatches = 0;
+            placeStart += 100;
+            placeSearch = client.Directory.StartDirPlacesSearch(txtSearchPlace.Text.Trim(), placeStart);
+        }
+
+        private void btnPrevPlace_Click(object sender, EventArgs e)
+        {
+            placeMatches = 0;
+            placeStart -= 100;
+            placeSearch = client.Directory.StartDirPlacesSearch(txtSearchPlace.Text.Trim(), placeStart);
+        }
+
+        public class PlaceSorter : System.Collections.IComparer
+        {
+            public enum SortByColumn
+            {
+                Name,
+                Traffic
+            }
+
+            public enum SortOrder
+            {
+                Ascending,
+                Descending
+            }
+
+            public SortOrder CurrentOrder = SortOrder.Descending;
+            public SortByColumn SortBy = SortByColumn.Traffic;
+
+            public int Compare(object x, object y)
+            {
+                ListViewItem item1 = (ListViewItem)x;
+                ListViewItem item2 = (ListViewItem)y;
+                DirectoryManager.DirectoryParcel member1 = (DirectoryManager.DirectoryParcel)item1.Tag;
+                DirectoryManager.DirectoryParcel member2 = (DirectoryManager.DirectoryParcel)item2.Tag;
+
+                switch (SortBy)
+                {
+                    case SortByColumn.Name:
+                        if (CurrentOrder == SortOrder.Ascending)
+                            return string.Compare(item1.Text, item2.Text);
+                        else
+                            return string.Compare(item2.Text, item1.Text);
+
+                    case SortByColumn.Traffic:
+                        if (CurrentOrder == SortOrder.Ascending)
+                        {
+                            if (member1.Dwell > member2.Dwell)
+                                return 1;
+                            else if (member1.Dwell < member2.Dwell)
+                                return -1;
+                        }
+                        else
+                        {
+                            if (member1.Dwell > member2.Dwell)
+                                return -1;
+                            else if (member1.Dwell < member2.Dwell)
+                                return 1;
+                        }
+                        break;
+                }
+
+                return 0;
+            }
+        }
+
+        private void lvwPlaces_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            PlaceSorter sorter = (PlaceSorter)lvwPlaces.ListViewItemSorter;
+            switch (e.Column)
+            {
+                case 0:
+                    sorter.SortBy = PlaceSorter.SortByColumn.Name;
+                    break;
+
+                case 1:
+                    sorter.SortBy = PlaceSorter.SortByColumn.Traffic;
+                    break;
+            }
+
+            if (sorter.CurrentOrder == PlaceSorter.SortOrder.Ascending)
+                sorter.CurrentOrder = PlaceSorter.SortOrder.Descending;
+            else
+                sorter.CurrentOrder = PlaceSorter.SortOrder.Ascending;
+
+            lvwPlaces.Sort();
+
+        }
+
+        private void lvwPlaces_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            for (int i = 0; i < pnlPlaceDetail.Controls.Count; i++)
+            {
+                pnlPlaceDetail.Controls[i].Dispose();
+            }
+            pnlPlaceDetail.Controls.Clear();
+
+            if (lvwPlaces.SelectedItems.Count == 1)
+            {
+                Landmark l = new Landmark(instance, ((DirectoryManager.DirectoryParcel)lvwPlaces.SelectedItems[0].Tag).ID);
+                l.Dock = DockStyle.Fill;
+                pnlPlaceDetail.Controls.Add(l);
+            }
+        }
+        #endregion Places search
     }
 }

@@ -57,7 +57,7 @@ namespace Radegast
 
             // Start download
             tlblStatus.Text = "Downloading...";
-            client.Assets.RequestInventoryAsset(gesture, true, Assets_OnAssetReceived);
+            client.Assets.RequestAsset(gesture.AssetUUID, AssetType.Gesture, true, Assets_OnAssetReceived);
         }
 
         void Guesture_Disposed(object sender, EventArgs e)

@@ -70,8 +70,20 @@ namespace Radegast
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tpgPeople = new System.Windows.Forms.TabPage();
             this.btnLink = new System.Windows.Forms.Button();
+            this.tpgPlaces = new System.Windows.Forms.TabPage();
+            this.btnSearchPlace = new System.Windows.Forms.Button();
+            this.txtSearchPlace = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.btnNextPlace = new System.Windows.Forms.Button();
+            this.btnPrevPlace = new System.Windows.Forms.Button();
+            this.lblNrPlaces = new System.Windows.Forms.Label();
+            this.lvwPlaces = new Radegast.ListViewNoFlicker();
+            this.Place = new System.Windows.Forms.ColumnHeader();
+            this.Traffic = new System.Windows.Forms.ColumnHeader();
+            this.pnlPlaceDetail = new System.Windows.Forms.Panel();
             this.tabControl1.SuspendLayout();
             this.tpgPeople.SuspendLayout();
+            this.tpgPlaces.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlFindPeople
@@ -176,11 +188,12 @@ namespace Radegast
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tpgPeople);
+            this.tabControl1.Controls.Add(this.tpgPlaces);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(548, 400);
+            this.tabControl1.Size = new System.Drawing.Size(680, 400);
             this.tabControl1.TabIndex = 9;
             // 
             // tpgPeople
@@ -198,7 +211,7 @@ namespace Radegast
             this.tpgPeople.Location = new System.Drawing.Point(4, 22);
             this.tpgPeople.Name = "tpgPeople";
             this.tpgPeople.Padding = new System.Windows.Forms.Padding(3);
-            this.tpgPeople.Size = new System.Drawing.Size(540, 374);
+            this.tpgPeople.Size = new System.Drawing.Size(672, 374);
             this.tpgPeople.TabIndex = 0;
             this.tpgPeople.Text = "People";
             this.tpgPeople.UseVisualStyleBackColor = true;
@@ -213,17 +226,145 @@ namespace Radegast
             this.btnLink.Visible = false;
             this.btnLink.Click += new System.EventHandler(this.btnLink_Click);
             // 
+            // tpgPlaces
+            // 
+            this.tpgPlaces.Controls.Add(this.pnlPlaceDetail);
+            this.tpgPlaces.Controls.Add(this.lvwPlaces);
+            this.tpgPlaces.Controls.Add(this.btnSearchPlace);
+            this.tpgPlaces.Controls.Add(this.txtSearchPlace);
+            this.tpgPlaces.Controls.Add(this.label2);
+            this.tpgPlaces.Controls.Add(this.btnNextPlace);
+            this.tpgPlaces.Controls.Add(this.btnPrevPlace);
+            this.tpgPlaces.Controls.Add(this.lblNrPlaces);
+            this.tpgPlaces.Location = new System.Drawing.Point(4, 22);
+            this.tpgPlaces.Name = "tpgPlaces";
+            this.tpgPlaces.Size = new System.Drawing.Size(672, 374);
+            this.tpgPlaces.TabIndex = 1;
+            this.tpgPlaces.Text = "Places";
+            this.tpgPlaces.UseVisualStyleBackColor = true;
+            // 
+            // btnSearchPlace
+            // 
+            this.btnSearchPlace.Enabled = false;
+            this.btnSearchPlace.Location = new System.Drawing.Point(231, 6);
+            this.btnSearchPlace.Name = "btnSearchPlace";
+            this.btnSearchPlace.Size = new System.Drawing.Size(75, 23);
+            this.btnSearchPlace.TabIndex = 13;
+            this.btnSearchPlace.Text = "Search";
+            this.btnSearchPlace.UseVisualStyleBackColor = true;
+            this.btnSearchPlace.Click += new System.EventHandler(this.btnSearchPlace_Click);
+            // 
+            // txtSearchPlace
+            // 
+            this.txtSearchPlace.Location = new System.Drawing.Point(47, 8);
+            this.txtSearchPlace.Name = "txtSearchPlace";
+            this.txtSearchPlace.Size = new System.Drawing.Size(178, 21);
+            this.txtSearchPlace.TabIndex = 12;
+            this.txtSearchPlace.TextChanged += new System.EventHandler(this.txtSearchPlace_TextChanged);
+            this.txtSearchPlace.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearchPlace_KeyDown);
+            this.txtSearchPlace.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtSearchPlace_KeyUp);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(9, 11);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(32, 13);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Place";
+            // 
+            // btnNextPlace
+            // 
+            this.btnNextPlace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNextPlace.Enabled = false;
+            this.btnNextPlace.Location = new System.Drawing.Point(594, 348);
+            this.btnNextPlace.Name = "btnNextPlace";
+            this.btnNextPlace.Size = new System.Drawing.Size(75, 23);
+            this.btnNextPlace.TabIndex = 10;
+            this.btnNextPlace.Text = "Next >";
+            this.btnNextPlace.UseVisualStyleBackColor = true;
+            this.btnNextPlace.Click += new System.EventHandler(this.btnNextPlace_Click);
+            // 
+            // btnPrevPlace
+            // 
+            this.btnPrevPlace.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrevPlace.Enabled = false;
+            this.btnPrevPlace.Location = new System.Drawing.Point(513, 348);
+            this.btnPrevPlace.Name = "btnPrevPlace";
+            this.btnPrevPlace.Size = new System.Drawing.Size(75, 23);
+            this.btnPrevPlace.TabIndex = 9;
+            this.btnPrevPlace.Text = "< Previous";
+            this.btnPrevPlace.UseVisualStyleBackColor = true;
+            this.btnPrevPlace.Click += new System.EventHandler(this.btnPrevPlace_Click);
+            // 
+            // lblNrPlaces
+            // 
+            this.lblNrPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblNrPlaces.AutoSize = true;
+            this.lblNrPlaces.Location = new System.Drawing.Point(9, 353);
+            this.lblNrPlaces.Name = "lblNrPlaces";
+            this.lblNrPlaces.Size = new System.Drawing.Size(77, 13);
+            this.lblNrPlaces.TabIndex = 8;
+            this.lblNrPlaces.Text = "0 places found";
+            // 
+            // lvwPlaces
+            // 
+            this.lvwPlaces.AllowColumnReorder = true;
+            this.lvwPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lvwPlaces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Place,
+            this.Traffic});
+            this.lvwPlaces.FullRowSelect = true;
+            this.lvwPlaces.GridLines = true;
+            this.lvwPlaces.HideSelection = false;
+            this.lvwPlaces.Location = new System.Drawing.Point(12, 35);
+            this.lvwPlaces.MultiSelect = false;
+            this.lvwPlaces.Name = "lvwPlaces";
+            this.lvwPlaces.ShowGroups = false;
+            this.lvwPlaces.ShowItemToolTips = true;
+            this.lvwPlaces.Size = new System.Drawing.Size(294, 315);
+            this.lvwPlaces.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lvwPlaces.TabIndex = 14;
+            this.lvwPlaces.UseCompatibleStateImageBehavior = false;
+            this.lvwPlaces.View = System.Windows.Forms.View.Details;
+            this.lvwPlaces.SelectedIndexChanged += new System.EventHandler(this.lvwPlaces_SelectedIndexChanged);
+            this.lvwPlaces.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwPlaces_ColumnClick);
+            // 
+            // Place
+            // 
+            this.Place.Text = "Place";
+            this.Place.Width = 200;
+            // 
+            // Traffic
+            // 
+            this.Traffic.Text = "Traffic";
+            this.Traffic.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.Traffic.Width = 50;
+            // 
+            // pnlPlaceDetail
+            // 
+            this.pnlPlaceDetail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlPlaceDetail.Location = new System.Drawing.Point(315, 10);
+            this.pnlPlaceDetail.Name = "pnlPlaceDetail";
+            this.pnlPlaceDetail.Size = new System.Drawing.Size(353, 338);
+            this.pnlPlaceDetail.TabIndex = 15;
+            // 
             // SearchConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tabControl1);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MinimumSize = new System.Drawing.Size(680, 0);
             this.Name = "SearchConsole";
-            this.Size = new System.Drawing.Size(548, 400);
+            this.Size = new System.Drawing.Size(680, 400);
             this.tabControl1.ResumeLayout(false);
             this.tpgPeople.ResumeLayout(false);
             this.tpgPeople.PerformLayout();
+            this.tpgPlaces.ResumeLayout(false);
+            this.tpgPlaces.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -242,5 +383,16 @@ namespace Radegast
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tpgPeople;
         private System.Windows.Forms.Button btnLink;
+        private System.Windows.Forms.TabPage tpgPlaces;
+        private System.Windows.Forms.Button btnSearchPlace;
+        private System.Windows.Forms.TextBox txtSearchPlace;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnNextPlace;
+        private System.Windows.Forms.Button btnPrevPlace;
+        private System.Windows.Forms.Label lblNrPlaces;
+        private ListViewNoFlicker lvwPlaces;
+        private System.Windows.Forms.ColumnHeader Place;
+        private System.Windows.Forms.ColumnHeader Traffic;
+        private System.Windows.Forms.Panel pnlPlaceDetail;
     }
 }
