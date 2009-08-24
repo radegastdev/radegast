@@ -194,7 +194,7 @@ namespace Radegast
                         continue;
                     }
                     int d = (int) Vector3d.Distance(ToVector3D(sim, sim.AvatarPositions[key]), mypos);
-                    if (d > MAX_DISTANCE)
+                    if (sim != client.Network.CurrentSim && d > MAX_DISTANCE)
                     {
                         removed.Add(key);
                         continue;
