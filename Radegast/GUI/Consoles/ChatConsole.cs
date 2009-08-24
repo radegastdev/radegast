@@ -160,6 +160,8 @@ namespace Radegast
                 return;
             }
 
+            // later on we can set this with something from the GUI
+            const double MAX_DISTANCE = 362.0; // one sim a corner to corner distance
             lvwObjects.BeginUpdate();
             try
             {
@@ -168,7 +170,7 @@ namespace Radegast
                                     : client.Self.GlobalPosition;
 
                 List<UUID> existing = new List<UUID>();
-                List<UUID> removedSim = new List<UUID>();
+                List<UUID> removed = new List<UUID>(removedEntries);
 
                 sim.AvatarPositions.ForEach(delegate(KeyValuePair<UUID, Vector3> avi)
                 {
@@ -184,23 +186,23 @@ namespace Radegast
 
                 foreach (ListViewItem item in lvwObjects.Items)
                 {
-                    if (item==null) continue;
-                    UUID key = (UUID)item.Tag;
-                    if (!existing.Contains(key))
-                    {
-                       // removed.Add(key);
-                        continue;
-                    }
+                    if (item == null) continue;
+                    UUID key = (UUID) item.Tag;
                     item.Text = instance.getAvatarName(key);
                     if (key == client.Self.AgentID)
                     {
                         continue;
                     }
-                    int d = (int)Vector3d.Distance(ToVector3D(sim,sim.AvatarPositions[key]), mypos);
+                    int d = (int) Vector3d.Distance(ToVector3D(sim, sim.AvatarPositions[key]), mypos);
+                    if (d > MAX_DISTANCE)
+                    {
+                        removed.Add(key);
+                        continue;
+                    }
                     item.Text = instance.getAvatarName(key) + " (" + d + "m)";
                 }
 
-                foreach (UUID key in removedEntries)
+                foreach (UUID key in removed)
                 {
                     lvwObjects.Items.RemoveByKey(key.ToString());
                 }
