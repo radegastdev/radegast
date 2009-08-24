@@ -193,10 +193,12 @@
             // 
             // saveAllTToolStripMenuItem
             // 
+            this.saveAllTToolStripMenuItem.Enabled = false;
             this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
             this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.saveAllTToolStripMenuItem.Text = "Save all text";
             this.saveAllTToolStripMenuItem.ToolTipText = "Saves all notecards and scripts to folder on local disk";
+            this.saveAllTToolStripMenuItem.Click += new System.EventHandler(this.saveAllTToolStripMenuItem_Click);
             // 
             // tbtbSort
             // 
