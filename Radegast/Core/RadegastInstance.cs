@@ -114,13 +114,15 @@ namespace Radegast
             InitializeLoggingAndConfig();
 
             client = new GridClient();
+
+            client.Settings.MULTIPLE_SIMS = true;
+
             client.Settings.USE_INTERPOLATION_TIMER = false;
             client.Settings.ALWAYS_REQUEST_OBJECTS = true;
             client.Settings.ALWAYS_DECODE_OBJECTS = true;
             client.Settings.OBJECT_TRACKING = true;
             client.Settings.ENABLE_SIMSTATS = true;
             client.Settings.FETCH_MISSING_INVENTORY = true;
-            client.Settings.MULTIPLE_SIMS = true;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
 
@@ -324,6 +326,16 @@ namespace Radegast
         void Groups_OnGroupDropped(UUID groupID)
         {
             client.Groups.RequestCurrentGroups();
+        }
+
+        public static string SafeFileName(string fileName)
+        {
+            foreach (char lDisallowed in Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(lDisallowed.ToString(), "_");
+            }
+
+            return fileName;
         }
 
         public void LogClientMessage(string fileName, string message)

@@ -99,10 +99,12 @@ namespace Radegast
             Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
             Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
             AddFolderFromStore(invRootNode, Inventory.RootFolder);
+            saveAllTToolStripMenuItem.Enabled = false;
             InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
             InventoryUpdate.Name = "InventoryUpdate";
             InventoryUpdate.IsBackground = true;
             InventoryUpdate.Start();
+
             invRootNode.Expand();
 
             invTree.TreeViewNodeSorter = new InvNodeSorter();
@@ -502,6 +504,12 @@ namespace Radegast
                 Invoke(new MethodInvoker(delegate() { UpdateStatus(text); }));
                 return;
             }
+
+            if (text == "OK")
+            {
+                saveAllTToolStripMenuItem.Enabled = true;
+            }
+
             tlabelStatus.Text = text;
         }
 
@@ -622,12 +630,14 @@ namespace Radegast
                 InventoryUpdate = null;
             }
 
+            saveAllTToolStripMenuItem.Enabled = false;
+
             Inventory.Items = new Dictionary<UUID, InventoryNode>();
-            Inventory.RootNode.Nodes = new InventoryNodeDictionary(null);
+            Inventory.RootFolder = Inventory.RootFolder;
+
             invTree.Nodes.Clear();
             UUID2NodeCache.Clear();
             invRootNode = AddDir(null, Inventory.RootFolder);
-            Inventory.UpdateNodeFor(Inventory.RootFolder);
 
             InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
             InventoryUpdate.Name = "InventoryUpdate";
@@ -1375,6 +1385,11 @@ namespace Radegast
 
         }
         #endregion
+
+        private void saveAllTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            (new InventoryBackup(instance)).Show();
+        }
 
 
     }
