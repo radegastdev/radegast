@@ -71,6 +71,7 @@ namespace Radegast
             this.tpgPeople = new System.Windows.Forms.TabPage();
             this.btnLink = new System.Windows.Forms.Button();
             this.tpgPlaces = new System.Windows.Forms.TabPage();
+            this.pnlPlaceDetail = new System.Windows.Forms.Panel();
             this.btnSearchPlace = new System.Windows.Forms.Button();
             this.txtSearchPlace = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -80,7 +81,6 @@ namespace Radegast
             this.lvwPlaces = new Radegast.ListViewNoFlicker();
             this.Place = new System.Windows.Forms.ColumnHeader();
             this.Traffic = new System.Windows.Forms.ColumnHeader();
-            this.pnlPlaceDetail = new System.Windows.Forms.Panel();
             this.tabControl1.SuspendLayout();
             this.tpgPeople.SuspendLayout();
             this.tpgPlaces.SuspendLayout();
@@ -243,6 +243,16 @@ namespace Radegast
             this.tpgPlaces.Text = "Places";
             this.tpgPlaces.UseVisualStyleBackColor = true;
             // 
+            // pnlPlaceDetail
+            // 
+            this.pnlPlaceDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlPlaceDetail.Location = new System.Drawing.Point(315, 10);
+            this.pnlPlaceDetail.Name = "pnlPlaceDetail";
+            this.pnlPlaceDetail.Size = new System.Drawing.Size(353, 338);
+            this.pnlPlaceDetail.TabIndex = 15;
+            // 
             // btnSearchPlace
             // 
             this.btnSearchPlace.Enabled = false;
@@ -341,15 +351,6 @@ namespace Radegast
             this.Traffic.Text = "Traffic";
             this.Traffic.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.Traffic.Width = 50;
-            // 
-            // pnlPlaceDetail
-            // 
-            this.pnlPlaceDetail.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlPlaceDetail.Location = new System.Drawing.Point(315, 10);
-            this.pnlPlaceDetail.Name = "pnlPlaceDetail";
-            this.pnlPlaceDetail.Size = new System.Drawing.Size(353, 338);
-            this.pnlPlaceDetail.TabIndex = 15;
             // 
             // SearchConsole
             // 
