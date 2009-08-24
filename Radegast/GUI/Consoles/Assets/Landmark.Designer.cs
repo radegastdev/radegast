@@ -62,28 +62,27 @@ namespace Radegast
             this.btnShowOnMap = new System.Windows.Forms.Button();
             this.btnTeleport = new System.Windows.Forms.Button();
             this.pnlDetail = new System.Windows.Forms.Panel();
-            this.pnlDetailInfo = new System.Windows.Forms.Panel();
             this.txtParcelDescription = new System.Windows.Forms.TextBox();
             this.txtParcelName = new System.Windows.Forms.TextBox();
             this.pnlControls.SuspendLayout();
-            this.pnlDetail.SuspendLayout();
-            this.pnlDetailInfo.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlControls
             // 
+            this.pnlControls.Controls.Add(this.txtParcelDescription);
             this.pnlControls.Controls.Add(this.btnShowOnMap);
+            this.pnlControls.Controls.Add(this.txtParcelName);
             this.pnlControls.Controls.Add(this.btnTeleport);
             this.pnlControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlControls.Location = new System.Drawing.Point(0, 281);
+            this.pnlControls.Location = new System.Drawing.Point(0, 216);
             this.pnlControls.Name = "pnlControls";
-            this.pnlControls.Size = new System.Drawing.Size(320, 38);
+            this.pnlControls.Size = new System.Drawing.Size(320, 103);
             this.pnlControls.TabIndex = 0;
             // 
             // btnShowOnMap
             // 
             this.btnShowOnMap.Enabled = false;
-            this.btnShowOnMap.Location = new System.Drawing.Point(84, 8);
+            this.btnShowOnMap.Location = new System.Drawing.Point(84, 77);
             this.btnShowOnMap.Name = "btnShowOnMap";
             this.btnShowOnMap.Size = new System.Drawing.Size(97, 23);
             this.btnShowOnMap.TabIndex = 2;
@@ -94,7 +93,7 @@ namespace Radegast
             // btnTeleport
             // 
             this.btnTeleport.Enabled = false;
-            this.btnTeleport.Location = new System.Drawing.Point(3, 8);
+            this.btnTeleport.Location = new System.Drawing.Point(3, 77);
             this.btnTeleport.Name = "btnTeleport";
             this.btnTeleport.Size = new System.Drawing.Size(75, 23);
             this.btnTeleport.TabIndex = 1;
@@ -104,37 +103,29 @@ namespace Radegast
             // 
             // pnlDetail
             // 
-            this.pnlDetail.Controls.Add(this.pnlDetailInfo);
             this.pnlDetail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDetail.Location = new System.Drawing.Point(0, 0);
             this.pnlDetail.Name = "pnlDetail";
-            this.pnlDetail.Size = new System.Drawing.Size(320, 281);
+            this.pnlDetail.Size = new System.Drawing.Size(320, 216);
             this.pnlDetail.TabIndex = 1;
             this.pnlDetail.Visible = false;
             // 
-            // pnlDetailInfo
-            // 
-            this.pnlDetailInfo.Controls.Add(this.txtParcelDescription);
-            this.pnlDetailInfo.Controls.Add(this.txtParcelName);
-            this.pnlDetailInfo.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlDetailInfo.Location = new System.Drawing.Point(0, 223);
-            this.pnlDetailInfo.Name = "pnlDetailInfo";
-            this.pnlDetailInfo.Size = new System.Drawing.Size(320, 58);
-            this.pnlDetailInfo.TabIndex = 0;
-            // 
             // txtParcelDescription
             // 
+            this.txtParcelDescription.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.txtParcelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtParcelDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtParcelDescription.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtParcelDescription.Location = new System.Drawing.Point(0, 13);
             this.txtParcelDescription.Multiline = true;
             this.txtParcelDescription.Name = "txtParcelDescription";
             this.txtParcelDescription.ReadOnly = true;
-            this.txtParcelDescription.Size = new System.Drawing.Size(320, 45);
+            this.txtParcelDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtParcelDescription.Size = new System.Drawing.Size(320, 58);
             this.txtParcelDescription.TabIndex = 1;
             // 
             // txtParcelName
             // 
+            this.txtParcelName.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.txtParcelName.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtParcelName.Dock = System.Windows.Forms.DockStyle.Top;
             this.txtParcelName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -153,9 +144,7 @@ namespace Radegast
             this.Name = "Landmark";
             this.Size = new System.Drawing.Size(320, 319);
             this.pnlControls.ResumeLayout(false);
-            this.pnlDetail.ResumeLayout(false);
-            this.pnlDetailInfo.ResumeLayout(false);
-            this.pnlDetailInfo.PerformLayout();
+            this.pnlControls.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -166,7 +155,6 @@ namespace Radegast
         private System.Windows.Forms.Button btnShowOnMap;
         private System.Windows.Forms.Button btnTeleport;
         private System.Windows.Forms.Panel pnlDetail;
-        private System.Windows.Forms.Panel pnlDetailInfo;
         private System.Windows.Forms.TextBox txtParcelName;
         private System.Windows.Forms.TextBox txtParcelDescription;
     }

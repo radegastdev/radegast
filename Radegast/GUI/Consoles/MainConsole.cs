@@ -190,6 +190,7 @@ namespace Radegast
             netcom.LoginOptions.LastName = txtLastName.Text;
             netcom.LoginOptions.Password = txtPassword.Text;
             netcom.LoginOptions.UserAgent = Properties.Resources.RadegastTitle;
+            netcom.LoginOptions.UserAgent = "Second Life 1.23.4.123649";
             netcom.LoginOptions.Author = Properties.Resources.SleekAuthor;
 
             switch (cbxLocation.SelectedIndex)

@@ -43,19 +43,34 @@ namespace Radegast
         private AssetLandmark decodedLandmark;
         private UUID parcelID;
         private ParcelInfo parcel;
+        private Vector3 localPosition;
+        private bool parcelLocation = false;
 
         public Landmark(RadegastInstance instance, InventoryLandmark landmark)
+        {
+            this.landmark = landmark;
+            Init(instance);
+            client.Assets.RequestAsset(landmark.AssetUUID, landmark.AssetType, true, Assets_OnAssetReceived);
+        }
+
+        public Landmark(RadegastInstance instance, UUID parcelID)
+        {
+            this.parcelID = parcelID;
+            Init(instance);
+            parcelLocation = true;
+            client.Parcels.InfoRequest(parcelID);
+        }
+
+        void Init(RadegastInstance instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(Landmark_Disposed);
 
             this.instance = instance;
-            this.landmark = landmark;
 
             // Callbacks
             client.Grid.OnRegionHandleReply += new GridManager.RegionHandleReplyCallback(Grid_OnRegionHandleReply);
             client.Parcels.OnParcelInfo += new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
-            client.Assets.RequestAsset(landmark.AssetUUID, landmark.AssetType, true, Assets_OnAssetReceived);
         }
 
         void Landmark_Disposed(object sender, EventArgs e)
@@ -92,9 +107,27 @@ namespace Radegast
                 };
                 img.BringToFront();
             }
+
             btnTeleport.Enabled = true;
             btnShowOnMap.Enabled = true;
-            txtParcelName.Text = string.Format("{0} - {1} ({2}, {3}, {4}) ", parcel.Name, parcel.SimName, (int)decodedLandmark.Position.X, (int)decodedLandmark.Position.Y, (int)decodedLandmark.Position.Z);
+
+            if (parcelLocation)
+            {
+                localPosition = new Vector3();
+                localPosition.X = parcel.GlobalX % 256;
+                localPosition.Y = parcel.GlobalY % 256;
+                localPosition.Z = parcel.GlobalZ;
+            }
+
+            if (decodedLandmark == null)
+            {
+                txtParcelName.Text = string.Format("{0} - {1} ", parcel.Name, parcel.SimName);
+            }
+            else
+            {
+                txtParcelName.Text = string.Format("{0} - {1} ({2}, {3}, {4}) ", parcel.Name, parcel.SimName, (int)decodedLandmark.Position.X, (int)decodedLandmark.Position.Y, (int)decodedLandmark.Position.Z);
+            }
+
             txtParcelDescription.Text = parcel.Description;
         }
 
@@ -115,23 +148,27 @@ namespace Radegast
             {
                 decodedLandmark = (AssetLandmark)asset;
                 decodedLandmark.Decode();
+                localPosition = decodedLandmark.Position;
                 client.Grid.RequestRegionHandle(decodedLandmark.RegionID);
             }
         }
 
         private void btnTeleport_Click(object sender, EventArgs e)
         {
-            RadegastInstance.GlobalInstance.MainForm.WorldMap.Show();
-            client.Self.RequestTeleport(landmark.AssetUUID);
+            RadegastInstance.GlobalInstance.MainForm.WorldMap.DisplayLocation(parcel.SimName,
+                (int)localPosition.X,
+                (int)localPosition.Y,
+                (int)localPosition.Z);
+            RadegastInstance.GlobalInstance.MainForm.WorldMap.DoTeleport();
         }
 
         private void btnShowOnMap_Click(object sender, EventArgs e)
         {
             RadegastInstance.GlobalInstance.MainForm.WorldMap.Show();
             RadegastInstance.GlobalInstance.MainForm.WorldMap.DisplayLocation(parcel.SimName, 
-                (int)decodedLandmark.Position.X,
-                (int)decodedLandmark.Position.Y,
-                (int)decodedLandmark.Position.Z);
+                (int)localPosition.X,
+                (int)localPosition.Y,
+                (int)localPosition.Z);
         }
     }
 }

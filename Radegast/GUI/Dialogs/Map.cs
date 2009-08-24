@@ -276,7 +276,7 @@ namespace Radegast
 
         }
 
-        void DoTeleport()
+        public void DoTeleport()
         {
             if (!Active) return;
 
