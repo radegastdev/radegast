@@ -118,6 +118,10 @@ namespace Radegast
                 {
                     InventoryItem item = (InventoryItem)n.Data;
 
+                    PermissionMask fullPerm = PermissionMask.Modify | PermissionMask.Copy | PermissionMask.Transfer;
+                    if ((item.Permissions.OwnerMask & fullPerm) != fullPerm)
+                        continue;
+
                     if (item.AssetType == AssetType.LSLText || item.AssetType == AssetType.Notecard)
                     {
                         ListViewItem lvi = new ListViewItem();
@@ -184,11 +188,14 @@ namespace Radegast
                                         {
                                             File.WriteAllText(fullName, note.BodyText, System.Text.Encoding.UTF8);
                                         }
+                                        else
+                                        {
+                                            Logger.Log(string.Format("Falied to decode asset for '{0}' - {1}", item.Name, receivedAsset.AssetID), Helpers.LogLevel.Warning, client);
+                                        }
+
                                         break;
 
                                     case AssetType.LSLText:
-                                        if ((item.Permissions.OwnerMask & (PermissionMask.Modify | PermissionMask.Copy | PermissionMask.Transfer)) == 0)
-                                            break;
                                         fullName = folderName + filePartial + ".lsl";
                                         dirName = Path.GetDirectoryName(fullName);
 
@@ -202,6 +209,11 @@ namespace Radegast
                                         {
                                             File.WriteAllText(fullName, script.Source, System.Text.Encoding.UTF8);
                                         }
+                                        else
+                                        {
+                                            Logger.Log(string.Format("Falied to decode asset for '{0}' - {1}", item.Name, receivedAsset.AssetID), Helpers.LogLevel.Warning, client);
+                                        }
+
                                         break;
 
                                 }
