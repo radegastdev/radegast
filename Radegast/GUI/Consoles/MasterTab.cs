@@ -93,6 +93,7 @@ namespace Radegast
                 return;
             }
             lastPrimName.Text = selectedPrim.Properties.Name;
+            lastPrimLocalID.Text = selectedPrim.LocalID.ToString();
         }
 
         void UpdateLLUUID()
@@ -105,6 +106,7 @@ namespace Radegast
                 return;
             }
             lastPrimLLUUID.Text = selectedID.ToString();
+            lastPrimLocalID.Text = selectedPrim.LocalID.ToString();
             sitBitn.Enabled = true;
             if (selectedPrim.ParentID != 0) {
                 objInfoBtn.Enabled = true;
