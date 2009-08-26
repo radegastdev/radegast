@@ -56,6 +56,7 @@ namespace Radegast
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
         private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();
+        private readonly Dictionary<UUID, ulong> agentSimHandle = new Dictionary<UUID, ulong>();
 
         public ChatConsole(RadegastInstance instance)
         {
@@ -162,57 +163,81 @@ namespace Radegast
 
             // later on we can set this with something from the GUI
             const double MAX_DISTANCE = 362.0; // one sim a corner to corner distance
-            lvwObjects.BeginUpdate();
-            try
-            {
-                Vector3d mypos = sim.AvatarPositions.ContainsKey(client.Self.AgentID)
-                                    ? ToVector3D(sim,sim.AvatarPositions[client.Self.AgentID])
-                                    : client.Self.GlobalPosition;
-
-                List<UUID> existing = new List<UUID>();
-                List<UUID> removed = new List<UUID>(removedEntries);
-
-                sim.AvatarPositions.ForEach(delegate(KeyValuePair<UUID, Vector3> avi)
+            lock (agentSimHandle)
+                try
                 {
-                    existing.Add(avi.Key);
-                    if (!lvwObjects.Items.ContainsKey(avi.Key.ToString()))
-                    {
-                        string name = instance.getAvatarName(avi.Key);
-                        ListViewItem item = lvwObjects.Items.Add(avi.Key.ToString(), name, string.Empty);
-                        if (avi.Key == client.Self.AgentID) item.Font = new Font(item.Font, FontStyle.Bold);
-                        item.Tag = avi.Key;
-                    }
-                });
+                    lvwObjects.BeginUpdate();
+                    Vector3d mypos = sim.AvatarPositions.ContainsKey(client.Self.AgentID)
+                                        ? ToVector3D(sim, sim.AvatarPositions[client.Self.AgentID])
+                                        : client.Self.GlobalPosition;
 
-                foreach (ListViewItem item in lvwObjects.Items)
-                {
-                    if (item == null) continue;
-                    UUID key = (UUID) item.Tag;
-                    item.Text = instance.getAvatarName(key);
-                    if (key == client.Self.AgentID)
+                    List<UUID> existing = new List<UUID>();
+                    List<UUID> removed = new List<UUID>(removedEntries);
+
+                    sim.AvatarPositions.ForEach(delegate(KeyValuePair<UUID, Vector3> avi)
                     {
-                        continue;
-                    }
-                    int d = (int) Vector3d.Distance(ToVector3D(sim, sim.AvatarPositions[key]), mypos);
-                    if (sim != client.Network.CurrentSim && d > MAX_DISTANCE)
+                        existing.Add(avi.Key);
+                        if (!lvwObjects.Items.ContainsKey(avi.Key.ToString()))
+                        {
+                            string name = instance.getAvatarName(avi.Key);
+                            ListViewItem item = lvwObjects.Items.Add(avi.Key.ToString(), name, string.Empty);
+                            if (avi.Key == client.Self.AgentID)
+                            {
+                                // Stops our name saying "Loading..."
+                                item.Text = client.Self.Name;
+                                item.Font = new Font(item.Font, FontStyle.Bold);
+                            }
+                            item.Tag = avi.Key;
+                            agentSimHandle[avi.Key] = sim.Handle;
+                        }
+                    });
+
+                    foreach (ListViewItem item in lvwObjects.Items)
                     {
-                        removed.Add(key);
-                        continue;
+                        if (item == null) continue;
+                        UUID key = (UUID)item.Tag;
+                        if (agentSimHandle[key] != sim.Handle)
+                        {
+                            // not for this sim
+                            continue;
+                        }
+                        if (key == client.Self.AgentID)
+                        {
+                            continue;
+                        }
+                        //the AvatarPostions is checked once more because it changes wildly on its own
+                        //even though the !existing should have been adequate
+                        Vector3 pos;
+                        if (!existing.Contains(key) || !sim.AvatarPositions.TryGetValue(key,out pos))
+                        {
+                            // not not here anymore
+                            removed.Add(key);
+                            continue;
+                        }
+                        int d = (int)Vector3d.Distance(ToVector3D(sim, pos), mypos);
+                        if (sim != client.Network.CurrentSim && d > MAX_DISTANCE)
+                        {
+                            removed.Add(key);
+                            continue;
+                        }
+                        item.Text = instance.getAvatarName(key) + " (" + d + "m)";
                     }
-                    item.Text = instance.getAvatarName(key) + " (" + d + "m)";
+
+                    foreach (UUID key in removed)
+                    {
+                        lvwObjects.Items.RemoveByKey(key.ToString());
+                    }
+
+                    lvwObjects.Sort();
                 }
-
-                foreach (UUID key in removed)
+                catch (Exception e)
                 {
-                    lvwObjects.Items.RemoveByKey(key.ToString());
+                    Logger.Log("Grid_OnCoarseLocationUpdate: " + e, OpenMetaverse.Helpers.LogLevel.Error, client);
                 }
-
-                lvwObjects.Sort();
-            }
-            catch (Exception)
-            {
-            }
-            lvwObjects.EndUpdate();
+                finally
+                {
+                    lvwObjects.EndUpdate();
+                }
         }
 
         static Vector3d ToVector3D(Simulator simulator, Vector3 pos)
