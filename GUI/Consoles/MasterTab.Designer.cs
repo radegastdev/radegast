@@ -75,6 +75,7 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlImages = new System.Windows.Forms.Panel();
+            this.lastPrimLocalID = new System.Windows.Forms.TextBox();
             this.primInfoPanel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -100,6 +101,7 @@ namespace Radegast
             this.groupBox1.Controls.Add(this.saveBtn);
             this.groupBox1.Controls.Add(this.payBtn);
             this.groupBox1.Controls.Add(this.objInfoBtn);
+            this.groupBox1.Controls.Add(this.lastPrimLocalID);
             this.groupBox1.Controls.Add(this.lastPrimLLUUID);
             this.groupBox1.Controls.Add(this.lastPrimName);
             this.groupBox1.Controls.Add(this.label3);
@@ -215,7 +217,7 @@ namespace Radegast
             this.lastPrimLLUUID.Location = new System.Drawing.Point(46, 45);
             this.lastPrimLLUUID.Name = "lastPrimLLUUID";
             this.lastPrimLLUUID.ReadOnly = true;
-            this.lastPrimLLUUID.Size = new System.Drawing.Size(280, 20);
+            this.lastPrimLLUUID.Size = new System.Drawing.Size(221, 20);
             this.lastPrimLLUUID.TabIndex = 2;
             // 
             // lastPrimName
@@ -264,6 +266,15 @@ namespace Radegast
             this.pnlImages.Size = new System.Drawing.Size(529, 195);
             this.pnlImages.TabIndex = 4;
             // 
+            // lastPrimLocalID
+            // 
+            this.lastPrimLocalID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lastPrimLocalID.Location = new System.Drawing.Point(264, 45);
+            this.lastPrimLocalID.Name = "lastPrimLocalID";
+            this.lastPrimLocalID.ReadOnly = true;
+            this.lastPrimLocalID.Size = new System.Drawing.Size(62, 20);
+            this.lastPrimLocalID.TabIndex = 2;
+            // 
             // MasterTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -299,5 +310,6 @@ namespace Radegast
         private System.Windows.Forms.Panel pnlImages;
         private System.Windows.Forms.Button loadBtn;
         private System.Windows.Forms.Button btnPoint;
+        private System.Windows.Forms.TextBox lastPrimLocalID;
     }
 }
