@@ -210,10 +210,18 @@ namespace Radegast
                         Vector3 pos;
                         if (!existing.Contains(key) || !sim.AvatarPositions.TryGetValue(key,out pos))
                         {
-                            // not not here anymore
+                            // not here anymore
                             removed.Add(key);
                             continue;
                         }
+
+                        // CoarseLocationUpdate gives us hight of 0 when actual height is
+                        // between 1024-4096m. Hard code somewhere in the middle (2000m)
+                        if (pos.Z < 0.1)
+                        {
+                            pos.Z = 2000f;
+                        }
+
                         int d = (int)Vector3d.Distance(ToVector3D(sim, pos), mypos);
                         if (sim != client.Network.CurrentSim && d > MAX_DISTANCE)
                         {
