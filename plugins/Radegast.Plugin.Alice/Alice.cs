@@ -96,6 +96,9 @@ namespace Radegast.Plugin.Alice
 
         public void StopPlugin(RadegastInstance Instance)
         {
+            // Remove the menu button
+            Instance.MainForm.ToolsMenu.DropDownItems.Remove(MenuButton);
+
             // Unregister events
             Client.Self.OnChat -= new AgentManager.ChatCallback(Self_OnChat);
             Client.Self.OnInstantMessage -= new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
