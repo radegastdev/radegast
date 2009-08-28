@@ -57,7 +57,7 @@ namespace Radegast
             {
                 if (globalInstance == null)
                 {
-                    globalInstance = new RadegastInstance();
+                    globalInstance = new RadegastInstance(new GridClient());
                 }
                 return globalInstance;
             }
@@ -121,11 +121,13 @@ namespace Radegast
 
         public readonly List<IRadegastPlugin> PluginsLoaded = new List<IRadegastPlugin>();
 
-        private RadegastInstance()
+        public RadegastInstance(GridClient client0)
         {
+            // incase something else calls GlobalInstance while we are loading
+            globalInstance = this; 
             InitializeLoggingAndConfig();
 
-            client = new GridClient();
+            client = client0;
 
             client.Settings.MULTIPLE_SIMS = true;
 
