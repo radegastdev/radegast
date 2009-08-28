@@ -155,17 +155,17 @@ namespace Radegast
 
         private void btnTeleport_Click(object sender, EventArgs e)
         {
-            RadegastInstance.GlobalInstance.MainForm.WorldMap.DisplayLocation(parcel.SimName,
+            instance.MainForm.WorldMap.DisplayLocation(parcel.SimName,
                 (int)localPosition.X,
                 (int)localPosition.Y,
                 (int)localPosition.Z);
-            RadegastInstance.GlobalInstance.MainForm.WorldMap.DoTeleport();
+            instance.MainForm.WorldMap.DoTeleport();
         }
 
         private void btnShowOnMap_Click(object sender, EventArgs e)
         {
-            RadegastInstance.GlobalInstance.MainForm.WorldMap.Show();
-            RadegastInstance.GlobalInstance.MainForm.WorldMap.DisplayLocation(parcel.SimName, 
+            instance.MainForm.WorldMap.Show();
+            instance.MainForm.WorldMap.DisplayLocation(parcel.SimName, 
                 (int)localPosition.X,
                 (int)localPosition.Y,
                 (int)localPosition.Z);
