@@ -101,6 +101,18 @@ namespace Radegast
         private Dictionary<UUID, Group> groups;
         public Dictionary<UUID, Group> Groups { get { return groups; } }
 
+        private Settings globalSettings;
+        /// <summary>
+        /// Global settings for the entire application
+        /// </summary>
+        public Settings GlobalSettings { get { return globalSettings; } }
+
+        private Settings clientSettings;
+        /// <summary>
+        /// Per client settings
+        /// </summary>
+        public Settings ClientSettings { get { return clientSettings; } }
+
         public Dictionary<UUID, string> nameCache = new Dictionary<UUID, string>();
 
         public const string INCOMPLETE_NAME = "Loading...";
@@ -247,6 +259,8 @@ namespace Radegast
             {
                 Logger.Log("Failed to create client directory", Helpers.LogLevel.Warning, ex);
             }
+
+            clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
         }
 
         void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
@@ -388,6 +402,7 @@ namespace Radegast
 
             animCacheDir = Path.Combine(userDir, @"anim_cache");
             globalLogFile = Path.Combine(userDir, Properties.Resources.ProgramName + ".log");
+            globalSettings = new Settings(Path.Combine(userDir, "settings.xml"));
         }
 
         private void InitializeConfigLegacy()

@@ -37,7 +37,6 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Radegast.Netcom;
 using OpenMetaverse;
-using AIMLbot;
 
 namespace Radegast
 {
@@ -50,9 +49,6 @@ namespace Radegast
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
         private SleekMovement movement;
-        private AIMLbot.Bot Alice;
-        private Hashtable AliceUsers = new Hashtable();
-        private Avatar.AvatarProperties myProfile;
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
         private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();
@@ -79,11 +75,8 @@ namespace Radegast
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
-            netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
             this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Grid.OnCoarseLocationUpdate += new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
-            client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
 
             movement = new SleekMovement(client);
 
@@ -95,19 +88,6 @@ namespace Radegast
             SorterClass sc = new SorterClass();
             lvwObjects.ListViewItemSorter = sc;
 
-            Alice = new AIMLbot.Bot();
-            Alice.isAcceptingUserInput = false;
-
-            try {
-                Alice.loadSettings();
-                AIMLbot.Utils.AIMLLoader loader = new AIMLbot.Utils.AIMLLoader(Alice);
-                Alice.isAcceptingUserInput = false;
-                loader.loadAIML(Alice.PathToAIML);
-                Alice.isAcceptingUserInput = true;
-            } catch (Exception ex) {
-                System.Console.WriteLine("Failed loading ALICE: " + ex.Message);
-            }
-
             ApplyConfig(this.instance.Config.CurrentConfig);
         }
 
@@ -115,33 +95,8 @@ namespace Radegast
         {
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
-            netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
             this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Grid.OnCoarseLocationUpdate -= new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
-            client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
-        }
-
-        void Avatars_OnAvatarProperties(UUID avatarID, Avatar.AvatarProperties properties)
-        {
-            if (avatarID == client.Self.AgentID)
-            {
-                myProfile = properties;
-                Alice.GlobalSettings.updateSetting("birthday", myProfile.BornOn);
-                DateTime bd;
-                if (DateTime.TryParse(myProfile.BornOn, Utils.EnUsCulture, System.Globalization.DateTimeStyles.None, out bd))
-                {
-                    DateTime now = DateTime.Today;
-                    int age = now.Year - bd.Year;
-                    if (now.Month < bd.Month || (now.Month == bd.Month && now.Day < bd.Day))
-                    {
-                        --age;
-                    }
-                    Alice.GlobalSettings.updateSetting("age", age.ToString());
-                    Alice.GlobalSettings.updateSetting("birthday", bd.ToLongDateString());
-
-                }
-            }
         }
 
         void Grid_OnCoarseLocationUpdate(Simulator sim, List<UUID> newEntries, List<UUID> removedEntries)
@@ -282,35 +237,6 @@ namespace Radegast
                 toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
         }
 
-        void netcom_InstantMessageReceived(object sender, InstantMessageEventArgs e)
-        {
-            if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent 
-                && Alice.isAcceptingUserInput
-                && instance.Config.CurrentConfig.UseAlice
-                && !instance.Groups.ContainsKey(e.IM.IMSessionID)
-                && e.IM.BinaryBucket.Length < 2
-                && e.IM.FromAgentName != "Second Life") 
-            {
-                Alice.GlobalSettings.updateSetting("location", "region " + client.Network.CurrentSim.Name);
-                AIMLbot.User user;
-                if (AliceUsers.ContainsKey(e.IM.FromAgentName)) {
-                    user = (AIMLbot.User)AliceUsers[e.IM.FromAgentName];
-                } else {
-                    user = new User(e.IM.FromAgentName, Alice);
-                    user.Predicates.removeSetting("name");
-                    user.Predicates.addSetting("name", firstName(e.IM.FromAgentName));
-                    AliceUsers[e.IM.FromAgentName] = user;
-                }
-                AIMLbot.Request req = new Request(e.IM.Message, user, Alice);
-                AIMLbot.Result res = Alice.Chat(req);
-                string msg = res.Output;
-                if (msg.Length > 1000) {
-                    msg = msg.Substring(0, 1000);
-                }
-                netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID);
-            }
-        }
-
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
         {
             if (e.Status != LoginStatus.Success) return;
@@ -319,7 +245,6 @@ namespace Radegast
             btnSay.Enabled = true;
             btnShout.Enabled = true;
             client.Avatars.RequestAvatarProperties(client.Self.AgentID);
-            Alice.GlobalSettings.updateSetting("name", firstName(client.Self.Name));
          }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
@@ -329,51 +254,6 @@ namespace Radegast
             btnShout.Enabled = false;
 
             lvwObjects.Items.Clear();
-        }
-
-        private string firstName(string name)
-        {
-            return name.Split(' ')[0];
-        }
-
-        private void netcom_ChatReceived(object sender, ChatEventArgs e)
-        {
-            if (e.SourceType != ChatSourceType.Agent) return;
-            if (e.FromName == netcom.LoginOptions.FullName) return;
-
-            if (Alice.isAcceptingUserInput && e.Message.ToLower().Contains(firstName(client.Self.Name).ToLower()) && instance.Config.CurrentConfig.UseAlice)
-            {
-                Alice.GlobalSettings.updateSetting("location", "region " + client.Network.CurrentSim.Name);
-                string msg = e.Message.ToLower();
-                msg = msg.Replace(firstName(client.Self.Name).ToLower(), "");
-                AIMLbot.User user;
-                if (AliceUsers.ContainsKey(e.FromName))
-                {
-                    user = (AIMLbot.User)AliceUsers[e.FromName];
-                }
-                else
-                {
-                    user = new User(e.FromName, Alice);
-                    user.Predicates.removeSetting("name");
-                    user.Predicates.addSetting("name", firstName(e.FromName));
-                    AliceUsers[e.FromName] = user;
-                }
-                client.Self.Movement.TurnToward(e.Position);
-                if (!instance.State.IsTyping)
-                {
-                    instance.State.SetTyping(true);
-                }
-                System.Threading.Thread.Sleep(1000);
-                instance.State.SetTyping(false);
-                AIMLbot.Request req = new Request(msg, user, Alice);
-                AIMLbot.Result res = Alice.Chat(req);
-                string outp = res.Output;
-                if (outp.Length > 1000)
-                {
-                    outp = outp.Substring(0, 1000);
-                }
-                ProcessChatInput(outp, ChatType.Normal);
-            }
         }
 
         private void cbxInput_KeyUp(object sender, KeyEventArgs e)

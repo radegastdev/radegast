@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMetaverse", "..\libopen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMetaverseCore", "..\libopenmetaverse\OpenMetaverseCore\OpenMetaverseCore.csproj", "{67075314-81D9-48E0-A164-6AF9EDF2508F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.Alice", "plugins\Radegast.Plugin.Alice\Radegast.Plugin.Alice.csproj", "{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.Demo", "plugins\Radegast.Plugin.Demo\Radegast.Plugin.Demo.csproj", "{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +83,21 @@ Global
 		{67075314-81D9-48E0-A164-6AF9EDF2508F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67075314-81D9-48E0-A164-6AF9EDF2508F}.Release|x86.ActiveCfg = Release|x86
 		{67075314-81D9-48E0-A164-6AF9EDF2508F}.Release|x86.Build.0 = Release|x86
+		{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}.Debug|x86.ActiveCfg = Debug|x86
+		{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}.Debug|x86.Build.0 = Debug|x86
+		{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}.Release|x86.ActiveCfg = Release|Any CPU
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Debug|x86.ActiveCfg = Debug|x86
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Debug|x86.Build.0 = Debug|x86
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Release|x86.ActiveCfg = Release|x86
+		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

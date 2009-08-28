@@ -554,20 +554,20 @@ namespace Radegast.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Radegast Development Team.
+        /// </summary>
+        public static string RadegastAuthor {
+            get {
+                return ResourceManager.GetString("RadegastAuthor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Radegast 1.8.
         /// </summary>
         public static string RadegastTitle {
             get {
                 return ResourceManager.GetString("RadegastTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Delta Czukor.
-        /// </summary>
-        public static string SleekAuthor {
-            get {
-                return ResourceManager.GetString("SleekAuthor", resourceCulture);
             }
         }
         

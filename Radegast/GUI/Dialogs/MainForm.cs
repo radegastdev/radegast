@@ -55,6 +55,24 @@ namespace Radegast
         {
             get { return tabsConsole; }
         }
+
+        /// <summary>
+        /// Drop down that contants the tools menu
+        /// </summary>
+        public ToolStripDropDownButton ToolsMenu
+        {
+            get { return tbnTools; }
+        }
+
+        /// <summary>
+        /// Drop down that contants the plugins menu. Make sure to set it Visible if
+        /// you add items to this menu, it's hidden by default
+        /// </summary>
+        public ToolStripDropDownButton PluginsMenu
+        {
+            get { return tbnPlugins; }
+        }
+
         #endregion
 
         #region Private members
@@ -154,7 +172,6 @@ namespace Radegast
                 toolStrip1.RenderMode = ToolStripRenderMode.System;
             else if (config.InterfaceStyle == 1) //Office 2003
                 toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
-            aLICEToolStripMenuItem.Checked = config.UseAlice;
         }
 
         public void InitializeControls()
@@ -167,14 +184,14 @@ namespace Radegast
         {
             if (e.Status != LoginStatus.Success) return;
 
-            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = true;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTools.Enabled = tmnuImport.Enabled = true;
             statusTimer.Start();
             RefreshWindowTitle();
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = tmnuImport.Enabled = false;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTools.Enabled = tmnuImport.Enabled = false;
 
             statusTimer.Stop();
 
@@ -186,7 +203,7 @@ namespace Radegast
         {
             if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
 
-            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTeleprotMulti.Enabled = false;
+            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTools.Enabled = false;
 
             statusTimer.Stop();
 
@@ -665,21 +682,6 @@ namespace Radegast
                 ap.Start();
             }
 
-        }
-
-        private void aLICEToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (instance.Config.CurrentConfig.UseAlice == false)
-            {
-                instance.Config.CurrentConfig.UseAlice = true;
-                aLICEToolStripMenuItem.Checked = true;
-            }
-            else
-            {
-                instance.Config.CurrentConfig.UseAlice = false;
-                aLICEToolStripMenuItem.Checked = false;
-            }
-            instance.Config.SaveCurrentConfig();
         }
 
         private void cleanCacheToolStripMenuItem_Click(object sender, EventArgs e)
