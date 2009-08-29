@@ -64,13 +64,14 @@ namespace Radegast
             this.btnIM = new System.Windows.Forms.Button();
             this.btnProfile = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnPay = new System.Windows.Forms.Button();
             this.btnOfferTeleport = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.chkSeeMeOnline = new System.Windows.Forms.CheckBox();
             this.chkSeeMeOnMap = new System.Windows.Forms.CheckBox();
             this.chkModifyMyObjects = new System.Windows.Forms.CheckBox();
             this.timInitDelay = new System.Windows.Forms.Timer(this.components);
-            this.btnPay = new System.Windows.Forms.Button();
+            this.btnRemove = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -125,6 +126,7 @@ namespace Radegast
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.btnRemove);
             this.groupBox1.Controls.Add(this.btnPay);
             this.groupBox1.Controls.Add(this.btnOfferTeleport);
             this.groupBox1.Controls.Add(this.lblFriendName);
@@ -135,6 +137,17 @@ namespace Radegast
             this.groupBox1.Size = new System.Drawing.Size(470, 76);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
+            // 
+            // btnPay
+            // 
+            this.btnPay.Enabled = false;
+            this.btnPay.Location = new System.Drawing.Point(286, 46);
+            this.btnPay.Name = "btnPay";
+            this.btnPay.Size = new System.Drawing.Size(75, 23);
+            this.btnPay.TabIndex = 5;
+            this.btnPay.Text = "Pay...";
+            this.btnPay.UseVisualStyleBackColor = true;
+            this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
             // 
             // btnOfferTeleport
             // 
@@ -198,16 +211,16 @@ namespace Radegast
             this.timInitDelay.Interval = 3000;
             this.timInitDelay.Tick += new System.EventHandler(this.timInitDelay_Tick);
             // 
-            // btnPay
+            // btnRemove
             // 
-            this.btnPay.Enabled = false;
-            this.btnPay.Location = new System.Drawing.Point(286, 46);
-            this.btnPay.Name = "btnPay";
-            this.btnPay.Size = new System.Drawing.Size(75, 23);
-            this.btnPay.TabIndex = 5;
-            this.btnPay.Text = "Pay...";
-            this.btnPay.UseVisualStyleBackColor = true;
-            this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
+            this.btnRemove.Enabled = false;
+            this.btnRemove.Location = new System.Drawing.Point(367, 46);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnRemove.TabIndex = 6;
+            this.btnRemove.Text = "Remove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // FriendsConsole
             // 
@@ -241,5 +254,6 @@ namespace Radegast
         private System.Windows.Forms.Button btnOfferTeleport;
         private System.Windows.Forms.Timer timInitDelay;
         private System.Windows.Forms.Button btnPay;
+        private System.Windows.Forms.Button btnRemove;
     }
 }

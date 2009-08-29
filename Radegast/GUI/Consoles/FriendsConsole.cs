@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast
@@ -54,6 +55,7 @@ namespace Radegast
             // Callbacks
             client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
             client.Friends.OnFriendOnline += new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
+            client.Friends.OnFriendshipTerminated += new FriendsManager.FriendshipTerminatedEvent(Friends_OnFriendshipTerminated);
 
         }
 
@@ -61,6 +63,7 @@ namespace Radegast
         {
             client.Friends.OnFriendOffline -= new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
             client.Friends.OnFriendOnline -= new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
+            client.Friends.OnFriendshipTerminated -= new FriendsManager.FriendshipTerminatedEvent(Friends_OnFriendshipTerminated);
         }
 
         private void InitializeFriendsList()
@@ -68,7 +71,7 @@ namespace Radegast
             List<FriendInfo> friends = client.Friends.FriendList.FindAll(delegate(FriendInfo f) { return true; });
 
             lbxFriends.BeginUpdate();
-
+            lbxFriends.Items.Clear();
             foreach (FriendInfo friend in friends)
                 lbxFriends.Items.Add(new FriendsListItem(friend));
 
@@ -77,20 +80,68 @@ namespace Radegast
 
         private void RefreshFriendsList()
         {
-            lbxFriends.Refresh();
+            InitializeFriendsList();
             SetFriend(selectedFriend);
         }
 
-        //Separate thread
         private void Friends_OnFriendOffline(FriendInfo friend)
         {
-            BeginInvoke(new MethodInvoker(RefreshFriendsList));
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Friends_OnFriendOffline(friend)));
+                return;
+            }
+
+            instance.MainForm.TabConsole.DisplayNotificationInChat(friend.Name + " is offline");
+            RefreshFriendsList();
         }
 
-        //Separate thread
         private void Friends_OnFriendOnline(FriendInfo friend)
         {
-            BeginInvoke(new MethodInvoker(RefreshFriendsList));
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Friends_OnFriendOnline(friend)));
+                return;
+            }
+
+            instance.MainForm.TabConsole.DisplayNotificationInChat(friend.Name + " is online");
+            RefreshFriendsList();
+        }
+
+        void Friends_OnFriendshipTerminated(UUID agentID, string agentName)
+        {
+            if (agentName == string.Empty)
+            {
+                using (ManualResetEvent done = new ManualResetEvent(false))
+                {
+
+                    AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
+                    {
+                        if (names.ContainsKey(agentID))
+                        {
+                            agentName = names[agentID];
+                            done.Set();
+                        }
+                    };
+
+                    client.Avatars.OnAvatarNames += callback;
+                    agentName = instance.getAvatarName(agentID);
+                    if (agentName == RadegastInstance.INCOMPLETE_NAME)
+                    {
+                        done.WaitOne(3000, false);
+                    }
+                    client.Avatars.OnAvatarNames -= callback;
+                }
+            }
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Friends_OnFriendshipTerminated(agentID, agentName)));
+                return;
+            }
+
+            instance.MainForm.TabConsole.DisplayNotificationInChat(agentName + " is no longer on your friend list");
+            RefreshFriendsList();
         }
 
         private void SetFriend(FriendInfo friend)
@@ -100,7 +151,7 @@ namespace Radegast
 
             lblFriendName.Text = friend.Name + (friend.IsOnline ? " (online)" : " (offline)");
 
-            btnIM.Enabled = btnProfile.Enabled = btnOfferTeleport.Enabled = btnPay.Enabled = true;
+            btnIM.Enabled = btnProfile.Enabled = btnOfferTeleport.Enabled = btnPay.Enabled = btnRemove.Enabled = true;
             chkSeeMeOnline.Enabled = chkSeeMeOnMap.Enabled = chkModifyMyObjects.Enabled = true;
             chkSeeMeOnMap.Enabled = friend.CanSeeMeOnline;
 
@@ -120,7 +171,7 @@ namespace Radegast
             FriendsListItem itemToDraw = (FriendsListItem)lbxFriends.Items[e.Index];
             Brush textBrush = null;
             Font textFont = null;
-            
+
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
             {
                 textBrush = new SolidBrush(Color.FromKnownColor(KnownColor.HighlightText));
@@ -140,7 +191,7 @@ namespace Radegast
                 e.Graphics.DrawImage(Properties.Resources.GreenOrb_16, e.Bounds.Left + 2, e.Bounds.Top + 2);
             else
                 e.Graphics.DrawImage(Properties.Resources.GreenOrbFaded_16, e.Bounds.Left + 2, e.Bounds.Top + 2);
-            
+
             e.Graphics.DrawString(itemToDraw.Friend.Name, textFont, textBrush, stringX, stringY);
 
             e.DrawFocusRectangle();
@@ -180,9 +231,7 @@ namespace Radegast
             if (settingFriend) return;
 
             selectedFriend.CanSeeMeOnline = chkSeeMeOnline.Checked;
-            client.Friends.GrantRights(selectedFriend.UUID, FriendRights.CanSeeOnline);
-
-            chkSeeMeOnMap.Enabled = chkSeeMeOnline.Checked;
+            client.Friends.GrantRights(selectedFriend.UUID, selectedFriend.TheirFriendRights);
         }
 
         private void chkSeeMeOnMap_CheckedChanged(object sender, EventArgs e)
@@ -190,7 +239,7 @@ namespace Radegast
             if (settingFriend) return;
 
             selectedFriend.CanSeeMeOnMap = chkSeeMeOnMap.Checked;
-            // client.Friends.GrantRights(selectedFriend.UUID);
+            client.Friends.GrantRights(selectedFriend.UUID, selectedFriend.TheirFriendRights);
         }
 
         private void chkModifyMyObjects_CheckedChanged(object sender, EventArgs e)
@@ -198,7 +247,7 @@ namespace Radegast
             if (settingFriend) return;
 
             selectedFriend.CanModifyMyObjects = chkModifyMyObjects.Checked;
-            // client.Friends.GrantRights(selectedFriend.UUID);
+            client.Friends.GrantRights(selectedFriend.UUID, selectedFriend.TheirFriendRights);
         }
 
         private void btnOfferTeleport_Click(object sender, EventArgs e)
@@ -217,6 +266,15 @@ namespace Radegast
         private void btnPay_Click(object sender, EventArgs e)
         {
             (new frmPay(instance, selectedFriend.UUID, selectedFriend.Name, false)).ShowDialog();
+        }
+
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            client.Friends.TerminateFriendship(selectedFriend.UUID);
+            if (lbxFriends.Items.Count > 0)
+            {
+                lbxFriends.SelectedIndex = 0;
+            }
         }
     }
 }
