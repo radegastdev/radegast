@@ -56,6 +56,9 @@ namespace Radegast.Plugin.Demo
 
             // Ok, we want to answer to IMs as well
             Client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+
+            // Automatically handle notifications (blue dialogs)
+            Notification.OnNotificationDisplayed += new Notification.NotificationCallback(Notification_OnNotificationDisplayed);
         }
 
         public void StopPlugin(RadegastInstance instance)
@@ -63,6 +66,22 @@ namespace Radegast.Plugin.Demo
             // Unregister events
             Client.Self.OnChat -= new AgentManager.ChatCallback(Self_OnChat);
             Client.Self.OnInstantMessage -= new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+            Notification.OnNotificationDisplayed -= new Notification.NotificationCallback(Notification_OnNotificationDisplayed);
+        }
+
+        void Notification_OnNotificationDisplayed(object sender, NotificationEventArgs e)
+        {
+            // Example: auto accept friendship offers after 2 seconds of "thinking" ;)
+            if (e.Type == NotificationType.FriendshipOffer)
+            {
+                Thread.Sleep(2000);
+                // Execute on GUI thread
+                Instance.MainForm.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        e.Buttons[0].PerformClick();
+                    }
+                    ));
+            }
         }
 
         void Self_OnChat(string message, ChatAudibleLevel audible, ChatType type, ChatSourceType sourceType, string fromName, UUID id, UUID ownerid, Vector3 position)

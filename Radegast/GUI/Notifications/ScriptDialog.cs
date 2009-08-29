@@ -36,13 +36,14 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class ntfScriptDialog : UserControl
+    public partial class ntfScriptDialog : Notification
     {
         RadegastInstance instance;
         UUID objectID;
         int chatChannel;
 
         public ntfScriptDialog(RadegastInstance instance, string message, string objectName, UUID imageID, UUID objectID, string firstName, string lastName, int chatChannel, List<string> buttons)
+            : base(NotificationType.ScriptDialog)
         {
             InitializeComponent();
 
@@ -52,7 +53,10 @@ namespace Radegast
 
             descBox.BackColor = instance.MainForm.NotificationBackground;
             descBox.Text = firstName + " " + lastName + "'s " + objectName + "\r\n\r\n" + message.Replace("\n", "\r\n") + "\r\n";
- 
+
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = descBox.Text;
+
             int btnWidth = 90;
             int btnHeight = 23;
 
@@ -69,8 +73,13 @@ namespace Radegast
                 b.Margin = new Padding(0, 3, 0, 3);
                 b.Padding = new Padding(0);
                 btnsPanel.Controls.Add(b);
+                args.Buttons.Add(b);
                 i++;
             }
+            
+            // Fire off event
+            args.Buttons.Add(ignoreBtn);
+            FireNotificationCallback(args);
         }
 
         void b_Click(object sender, EventArgs e)

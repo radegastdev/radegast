@@ -29,17 +29,19 @@
 // $Id$
 //
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class ntfFriendshipOffer : UserControl
+    public partial class ntfFriendshipOffer : Notification
     {
         private RadegastInstance instance;
         private InstantMessage msg;
 
         public ntfFriendshipOffer(RadegastInstance instance, InstantMessage msg)
+            : base(NotificationType.FriendshipOffer)
         {
             InitializeComponent();
             this.instance = instance;
@@ -50,6 +52,14 @@ namespace Radegast
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
             txtMessage.Text = msg.Message;
             btnYes.Focus();
+
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = txtHead.Text;
+            args.Buttons.Add(btnYes);
+            args.Buttons.Add(btnNo);
+            args.Buttons.Add(btnIgnore);
+            FireNotificationCallback(args);
         }
 
         private void btnYes_Click(object sender, EventArgs e)

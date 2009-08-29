@@ -34,12 +34,13 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class ntfTeleport : UserControl
+    public partial class ntfTeleport : Notification
     {
         private RadegastInstance instance;
         private InstantMessage msg;
 
         public ntfTeleport(RadegastInstance instance, InstantMessage msg)
+            : base(NotificationType.Teleport)
         {
             InitializeComponent();
             this.instance = instance;
@@ -50,6 +51,13 @@ namespace Radegast
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
             txtMessage.Text = msg.Message;
             btnTeleport.Focus();
+
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = txtHead.Text + Environment.NewLine + txtMessage.Text;
+            args.Buttons.Add(btnTeleport);
+            args.Buttons.Add(btnCancel);
+            FireNotificationCallback(args);
         }
 
         private void btnTeleport_Click(object sender, EventArgs e)

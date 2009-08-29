@@ -399,6 +399,9 @@
     <Compile Include="GUI\Notifications\GroupNoticeNotification.Designer.cs">
       <DependentUpon>GroupNoticeNotification.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Notifications\Notification.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="GUI\Notifications\PermissionsNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>

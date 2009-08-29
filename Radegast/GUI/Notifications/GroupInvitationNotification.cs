@@ -5,12 +5,13 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class ntfGroupInvitation : UserControl
+    public partial class ntfGroupInvitation : Notification
     {
         private RadegastInstance instance;
         private InstantMessage msg;
 
         public ntfGroupInvitation(RadegastInstance instance, InstantMessage msg)
+            : base(NotificationType.GroupInvitation)
         {
             InitializeComponent();
 
@@ -20,6 +21,12 @@ namespace Radegast
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
             txtMessage.Text = msg.Message.Replace("\n", "\r\n");
             btnYes.Focus();
+
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = txtMessage.Text;
+            args.Buttons.Add(btnYes);
+            FireNotificationCallback(args);
         }
 
         private void btnYes_Click(object sender, EventArgs e)

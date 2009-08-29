@@ -33,11 +33,12 @@ using System.Windows.Forms;
 
 namespace Radegast
 {
-    public partial class ntfGeneric : UserControl
+    public partial class ntfGeneric : Notification
     {
         private RadegastInstance instance;
 
         public ntfGeneric(RadegastInstance instance, string msg)
+            : base(NotificationType.Generic)
         {
             InitializeComponent();
 
@@ -45,6 +46,12 @@ namespace Radegast
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
             txtMessage.Text = msg.Replace("\n", "\r\n");
             btnOk.Focus();
+
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = txtMessage.Text;
+            args.Buttons.Add(btnOk);
+            FireNotificationCallback(args);
         }
 
         private void btnOk_Click(object sender, EventArgs e)

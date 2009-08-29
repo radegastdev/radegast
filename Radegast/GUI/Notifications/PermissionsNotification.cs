@@ -34,7 +34,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class ntfPermissions : UserControl
+    public partial class ntfPermissions : Notification
     {
         private UUID taskID;
         private UUID itemID;
@@ -46,6 +46,7 @@ namespace Radegast
 
 
         public ntfPermissions(RadegastInstance instance, Simulator simulator, UUID taskID, UUID itemID, string objectName, string objectOwner, ScriptPermission questions)
+            : base(NotificationType.PermissionsRequest)
         {
             InitializeComponent();
 
@@ -60,6 +61,13 @@ namespace Radegast
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
             txtMessage.Text = "Object " + objectName + " ownded by " + objectOwner + " is asking permission to " + questions.ToString() + ". Do you accept?";
 
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = txtMessage.Text;
+            args.Buttons.Add(btnYes);
+            args.Buttons.Add(btnNo);
+            args.Buttons.Add(btnIgnore);
+            FireNotificationCallback(args);
         }
 
         private void btnYes_Click(object sender, EventArgs e)

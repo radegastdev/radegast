@@ -33,12 +33,13 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class ntfGroupNotice : UserControl
+    public partial class ntfGroupNotice : Notification
     {
         private RadegastInstance instance;
         private InstantMessage msg;
 
         public ntfGroupNotice(RadegastInstance instance, InstantMessage msg)
+            : base(NotificationType.GroupNotice)
         {
             InitializeComponent();
 
@@ -64,6 +65,15 @@ namespace Radegast
             lblSentBy.Text = string.Format("Sent by {0}, {1}", msg.FromAgentName, group);
             txtNotice.Text = text;
 
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = string.Format("{0}{1}{2}{3}{4}",
+                lblTitle.Text, System.Environment.NewLine,
+                lblSentBy.Text, System.Environment.NewLine,
+                txtNotice.Text
+                );
+            args.Buttons.Add(btnOK);
+            FireNotificationCallback(args);
         }
 
         private void btnOK_Click(object sender, System.EventArgs e)
