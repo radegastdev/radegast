@@ -184,14 +184,14 @@ namespace Radegast
         {
             if (e.Status != LoginStatus.Success) return;
 
-            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTools.Enabled = tmnuImport.Enabled = true;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled = true;
             statusTimer.Start();
             RefreshWindowTitle();
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTools.Enabled = tmnuImport.Enabled = false;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled = false;
 
             statusTimer.Stop();
 
@@ -203,7 +203,7 @@ namespace Radegast
         {
             if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
 
-            tbnObjects.Enabled = tbtnStatus.Enabled = tbtnControl.Enabled = tbnTools.Enabled = false;
+            tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = false;
 
             statusTimer.Stop();
 
@@ -633,11 +633,6 @@ namespace Radegast
             (new GroupsDialog(instance)).Show();
         }
 
-        private void homeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            worldMap.GoHome();
-        }
-
         private void importObjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PrimDeserializer.ImportFromFile(client);
@@ -762,7 +757,6 @@ namespace Radegast
         {
             (new GroupsDialog(instance)).Show();
         }
-        #endregion
 
         private void scriptEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -770,5 +764,56 @@ namespace Radegast
             se.Dock = DockStyle.Fill;
             se.ShowDetached();
         }
+
+        private void tmnuSetHome_Click(object sender, EventArgs e)
+        {
+            client.Self.SetHome();
+        }
+
+        private void tmnuCreateLandmark_Click(object sender, EventArgs e)
+        {
+            string location = string.Format(", {0} ({1}, {2}, {2})",
+                client.Network.CurrentSim.Name,
+                (int)client.Self.SimPosition.X,
+                (int)client.Self.SimPosition.Y,
+                (int)client.Self.SimPosition.Z
+                );
+
+            string name = tlblParcel.Text;
+            int maxLen = 63 - location.Length;
+
+            if (name.Length > maxLen)
+                name = name.Substring(0, maxLen);
+
+            name += location;
+
+            client.Inventory.RequestCreateItem(
+                client.Inventory.FindFolderForType(AssetType.Landmark),
+                name,
+                tlblParcel.ToolTipText,
+                AssetType.Landmark,
+                UUID.Random(),
+                InventoryType.Landmark,
+                PermissionMask.All,
+                (bool success, InventoryItem item) =>
+                {
+                    if (success)
+                    {
+                        BeginInvoke(new MethodInvoker(() =>
+                            {
+                                Landmark ln = new Landmark(instance, (InventoryLandmark)item);
+                                ln.Dock = DockStyle.Fill;
+                                ln.Detached = true;
+                            }));
+                    }
+                }
+            );
+        }
+
+        private void tmnuTeleportHome_Click(object sender, EventArgs e)
+        {
+            worldMap.GoHome();
+        }
+        #endregion
     }
 }
