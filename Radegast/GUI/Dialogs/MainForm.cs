@@ -772,7 +772,7 @@ namespace Radegast
 
         private void tmnuCreateLandmark_Click(object sender, EventArgs e)
         {
-            string location = string.Format(", {0} ({1}, {2}, {2})",
+            string location = string.Format(", {0} ({1}, {2}, {3})",
                 client.Network.CurrentSim.Name,
                 (int)client.Self.SimPosition.X,
                 (int)client.Self.SimPosition.Y,
