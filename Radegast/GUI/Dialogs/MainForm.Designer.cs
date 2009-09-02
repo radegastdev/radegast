@@ -88,6 +88,13 @@ namespace Radegast
             this.tmnuControlAlwaysRun = new System.Windows.Forms.ToolStripMenuItem();
             this.groundSitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+            this.tmnuCreateLandmark = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmnuSetHome = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmnuTeleportHome = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
+            this.tmnuStatusAway = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmnuStatusBusy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbnTools = new System.Windows.Forms.ToolStripDropDownButton();
             this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,13 +123,6 @@ namespace Radegast
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
-            this.tmnuCreateLandmark = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmnuSetHome = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
-            this.tmnuStatusAway = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmnuStatusBusy = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmnuTeleportHome = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -197,7 +197,6 @@ namespace Radegast
             // 
             // tmnuPrefs
             // 
-            this.tmnuPrefs.Image = global::Radegast.Properties.Resources.applications_16;
             this.tmnuPrefs.Name = "tmnuPrefs";
             this.tmnuPrefs.Size = new System.Drawing.Size(155, 22);
             this.tmnuPrefs.Text = "Preferences...";
@@ -293,6 +292,53 @@ namespace Radegast
             this.standToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.standToolStripMenuItem.Text = "Stand";
             this.standToolStripMenuItem.Click += new System.EventHandler(this.standToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(189, 6);
+            // 
+            // tmnuCreateLandmark
+            // 
+            this.tmnuCreateLandmark.Name = "tmnuCreateLandmark";
+            this.tmnuCreateLandmark.Size = new System.Drawing.Size(192, 22);
+            this.tmnuCreateLandmark.Text = "Create Landmark Here";
+            this.tmnuCreateLandmark.Click += new System.EventHandler(this.tmnuCreateLandmark_Click);
+            // 
+            // tmnuSetHome
+            // 
+            this.tmnuSetHome.Name = "tmnuSetHome";
+            this.tmnuSetHome.Size = new System.Drawing.Size(192, 22);
+            this.tmnuSetHome.Text = "Set Home To Here";
+            this.tmnuSetHome.Click += new System.EventHandler(this.tmnuSetHome_Click);
+            // 
+            // tmnuTeleportHome
+            // 
+            this.tmnuTeleportHome.Name = "tmnuTeleportHome";
+            this.tmnuTeleportHome.Size = new System.Drawing.Size(192, 22);
+            this.tmnuTeleportHome.Text = "Teleport Home";
+            this.tmnuTeleportHome.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(189, 6);
+            // 
+            // tmnuStatusAway
+            // 
+            this.tmnuStatusAway.CheckOnClick = true;
+            this.tmnuStatusAway.Name = "tmnuStatusAway";
+            this.tmnuStatusAway.Size = new System.Drawing.Size(192, 22);
+            this.tmnuStatusAway.Text = "Away";
+            this.tmnuStatusAway.Click += new System.EventHandler(this.tmnuStatusAway_Click);
+            // 
+            // tmnuStatusBusy
+            // 
+            this.tmnuStatusBusy.CheckOnClick = true;
+            this.tmnuStatusBusy.Name = "tmnuStatusBusy";
+            this.tmnuStatusBusy.Size = new System.Drawing.Size(192, 22);
+            this.tmnuStatusBusy.Text = "Busy";
+            this.tmnuStatusBusy.Click += new System.EventHandler(this.tmnuStatusBusy_Click);
             // 
             // toolStripSeparator2
             // 
@@ -548,24 +594,12 @@ namespace Radegast
             // toolStripContainer1
             // 
             // 
-            // toolStripContainer1.BottomToolStripPanel
-            // 
-            this.toolStripContainer1.BottomToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            // 
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(738, 455);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            // 
-            // toolStripContainer1.LeftToolStripPanel
-            // 
-            this.toolStripContainer1.LeftToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            // 
-            // toolStripContainer1.RightToolStripPanel
-            // 
-            this.toolStripContainer1.RightToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.toolStripContainer1.Size = new System.Drawing.Size(738, 480);
             this.toolStripContainer1.TabIndex = 10;
             this.toolStripContainer1.Text = "toolStripContainer1";
@@ -573,7 +607,6 @@ namespace Radegast
             // toolStripContainer1.TopToolStripPanel
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
-            this.toolStripContainer1.TopToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             // 
             // pnlDialog
             // 
@@ -584,53 +617,6 @@ namespace Radegast
             this.pnlDialog.Name = "pnlDialog";
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(189, 6);
-            // 
-            // tmnuCreateLandmark
-            // 
-            this.tmnuCreateLandmark.Name = "tmnuCreateLandmark";
-            this.tmnuCreateLandmark.Size = new System.Drawing.Size(192, 22);
-            this.tmnuCreateLandmark.Text = "Create Landmark Here";
-            this.tmnuCreateLandmark.Click += new System.EventHandler(this.tmnuCreateLandmark_Click);
-            // 
-            // tmnuSetHome
-            // 
-            this.tmnuSetHome.Name = "tmnuSetHome";
-            this.tmnuSetHome.Size = new System.Drawing.Size(192, 22);
-            this.tmnuSetHome.Text = "Set Home To Here";
-            this.tmnuSetHome.Click += new System.EventHandler(this.tmnuSetHome_Click);
-            // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(189, 6);
-            // 
-            // tmnuStatusAway
-            // 
-            this.tmnuStatusAway.CheckOnClick = true;
-            this.tmnuStatusAway.Name = "tmnuStatusAway";
-            this.tmnuStatusAway.Size = new System.Drawing.Size(192, 22);
-            this.tmnuStatusAway.Text = "Away";
-            this.tmnuStatusAway.Click += new System.EventHandler(this.tmnuStatusAway_Click);
-            // 
-            // tmnuStatusBusy
-            // 
-            this.tmnuStatusBusy.CheckOnClick = true;
-            this.tmnuStatusBusy.Name = "tmnuStatusBusy";
-            this.tmnuStatusBusy.Size = new System.Drawing.Size(192, 22);
-            this.tmnuStatusBusy.Text = "Busy";
-            this.tmnuStatusBusy.Click += new System.EventHandler(this.tmnuStatusBusy_Click);
-            // 
-            // tmnuTeleportHome
-            // 
-            this.tmnuTeleportHome.Name = "tmnuTeleportHome";
-            this.tmnuTeleportHome.Size = new System.Drawing.Size(192, 22);
-            this.tmnuTeleportHome.Text = "Teleport Home";
-            this.tmnuTeleportHome.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
             // 
             // frmMain
             // 

@@ -81,7 +81,6 @@ namespace Radegast
             // 
             // toolStripContainer1.BottomToolStripPanel
             // 
-            this.toolStripContainer1.BottomToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             // 
             // toolStripContainer1.ContentPanel
             // 
@@ -90,13 +89,11 @@ namespace Radegast
             // 
             // toolStripContainer1.LeftToolStripPanel
             // 
-            this.toolStripContainer1.LeftToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
             // 
             // toolStripContainer1.RightToolStripPanel
             // 
-            this.toolStripContainer1.RightToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.toolStripContainer1.Size = new System.Drawing.Size(623, 461);
             this.toolStripContainer1.TabIndex = 9;
             this.toolStripContainer1.Text = "toolStripContainer1";
@@ -104,7 +101,6 @@ namespace Radegast
             // toolStripContainer1.TopToolStripPanel
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.tstTabs);
-            this.toolStripContainer1.TopToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             // 
             // tstTabs
             // 

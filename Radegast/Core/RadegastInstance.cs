@@ -44,7 +44,6 @@ namespace Radegast
         private RadegastNetcom netcom;
 
         private StateManager state;
-        private ConfigManager config;
 
         private frmMain mainForm;
         private TabsConsole tabsConsole;
@@ -125,9 +124,12 @@ namespace Radegast
         {
             // incase something else calls GlobalInstance while we are loading
             globalInstance = this; 
-            InitializeLoggingAndConfig();
 
             client = client0;
+
+            netcom = new RadegastNetcom(client);
+            state = new StateManager(this);
+            InitializeLoggingAndConfig();
 
             client.Settings.MULTIPLE_SIMS = true;
 
@@ -151,16 +153,10 @@ namespace Radegast
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
             client.Settings.MAX_CONCURRENT_TEXTURE_DOWNLOADS = 20;
 
-            netcom = new RadegastNetcom(client);
-            state = new StateManager(this);
-
-            InitializeConfigLegacy();
-
             mainForm = new frmMain(this);
             mainForm.InitializeControls();
             tabsConsole = mainForm.TabConsole;
 
-            Application.ApplicationExit += new EventHandler(Application_ApplicationExit);
             groups = new Dictionary<UUID, Group>();
 
             client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
@@ -379,11 +375,6 @@ namespace Radegast
             this.groups = gr;
         }
 
-        private void Application_ApplicationExit(object sender, EventArgs e)
-        {
-            config.SaveCurrentConfig();
-        }
-
         private void InitializeLoggingAndConfig()
         {
             // Are we running mono?
@@ -407,17 +398,6 @@ namespace Radegast
             globalSettings = new Settings(Path.Combine(userDir, "settings.xml"));
         }
 
-        private void InitializeConfigLegacy()
-        {
-            config = new ConfigManager(this);
-            config.ApplyDefault();
-
-            netcom.LoginOptions.FirstName = config.CurrentConfig.FirstName;
-            netcom.LoginOptions.LastName = config.CurrentConfig.LastName;
-            netcom.LoginOptions.Password = config.CurrentConfig.PasswordMD5;
-            netcom.LoginOptions.IsPasswordMD5 = true;
-        }
-
         public GridClient Client
         {
             get { return client; }
@@ -431,11 +411,6 @@ namespace Radegast
         public StateManager State
         {
             get { return state; }
-        }
-
-        public ConfigManager Config
-        {
-            get { return config; }
         }
 
         public frmMain MainForm

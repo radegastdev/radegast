@@ -63,10 +63,7 @@ namespace Radegast
             InitializeMainTab();
             InitializeChatTab();
 
-            ApplyConfig(this.instance.Config.CurrentConfig);
-
             // Callbacks
-            instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Self.OnScriptQuestion += new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
             client.Self.OnScriptDialog += new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
             client.Inventory.OnObjectOffered += new InventoryManager.ObjectOfferedCallback(Inventory_OnObjectOffered);
@@ -75,7 +72,6 @@ namespace Radegast
         void TabsConsole_Disposed(object sender, EventArgs e)
         {
             RemoveNetcomEvents();
-            instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Self.OnScriptQuestion -= new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
             client.Self.OnScriptDialog -= new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
             client.Inventory.OnObjectOffered -= new InventoryManager.ObjectOfferedCallback(Inventory_OnObjectOffered);
@@ -117,19 +113,6 @@ namespace Radegast
         void Self_OnScriptQuestion(Simulator simulator, UUID taskID, UUID itemID, string objectName, string objectOwner, ScriptPermission questions)
         {
             instance.MainForm.AddNotification(new ntfPermissions(instance, simulator, taskID, itemID, objectName, objectOwner, questions));
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            ApplyConfig(e.AppliedConfig);
-        }
-
-        private void ApplyConfig(Config config)
-        {
-            if (config.InterfaceStyle == 0) //System
-                tstTabs.RenderMode = ToolStripRenderMode.System;
-            else if (config.InterfaceStyle == 1) //Office 2003
-                tstTabs.RenderMode = ToolStripRenderMode.ManagerRenderMode;
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)

@@ -138,7 +138,7 @@ namespace Radegast.Plugin.Alice
             // We ignore everything except normal chat from other avatars
             if (sourceType != ChatSourceType.Agent || fromName == Client.Self.Name) return;
 
-            if (Alice.isAcceptingUserInput && message.ToLower().Contains(FirstName(Client.Self.Name).ToLower()) && Instance.Config.CurrentConfig.UseAlice)
+            if (Alice.isAcceptingUserInput && message.ToLower().Contains(FirstName(Client.Self.Name).ToLower()) && Enabled)
             {
                 Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
                 string msg = message.ToLower();

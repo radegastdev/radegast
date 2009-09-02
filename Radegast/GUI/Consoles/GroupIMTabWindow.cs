@@ -56,10 +56,8 @@ namespace Radegast
             this.session = session;
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
-            ApplyConfig(this.instance.Config.CurrentConfig);
             
             // Callbacks
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Self.OnGroupChatJoin += new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
 
             client.Self.RequestJoinGroupChat(session);
@@ -67,7 +65,6 @@ namespace Radegast
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
-            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Self.OnGroupChatJoin -= new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
             CleanUp();
         }
@@ -95,21 +92,6 @@ namespace Radegast
             } else {
                 textManager.TextPrinter.PrintTextLine("Join Group Chat failed.", Color.Red);
             }
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            ApplyConfig(e.AppliedConfig);
-        }
-
-        private void ApplyConfig(Config config)
-        {
-            /*
-            if (config.InterfaceStyle == 0) //System
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            else if (config.InterfaceStyle == 1) //Office 2003
-                toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
-             */
         }
 
         private void AddNetcomEvents()

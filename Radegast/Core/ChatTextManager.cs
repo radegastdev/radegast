@@ -34,10 +34,11 @@ using System.Drawing;
 using System.Text;
 using Radegast.Netcom;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
-    public class ChatTextManager
+    public class ChatTextManager : IDisposable
     {
         private RadegastInstance instance;
         private RadegastNetcom netcom;
@@ -56,26 +57,46 @@ namespace Radegast
             this.instance = instance;
             netcom = this.instance.Netcom;
             client = this.instance.Client;
-            AddNetcomEvents();
+            InitializeConfig();
 
-            showTimestamps = this.instance.Config.CurrentConfig.ChatTimestamps;
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            showTimestamps = e.AppliedConfig.ChatTimestamps;
-            ReprintAllText();
-        }
-
-        private void AddNetcomEvents()
-        {
+            // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
             netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
+        }
+
+        public void Dispose()
+        {
+            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
+            netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
+            netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
+        }
+
+        private void InitializeConfig()
+        {
+            Settings s = instance.GlobalSettings;
+
+            if (s["chat_timestamps"].Type == OSDType.Unknown)
+                s["chat_timestamps"] = OSD.FromBoolean(true);
+
+            showTimestamps = s["chat_timestamps"].AsBoolean();
+
+            s.OnSettingChanged += new Settings.SettingChangedCallback(s_OnSettingChanged);
+        }
+
+        void s_OnSettingChanged(object sender, SettingsEventArgs e)
+        {
+            if (e.Key == "chat_timestamps" && e.Value != null)
+            {
+                showTimestamps = e.Value.AsBoolean();
+                ReprintAllText();
+            }
         }
 
         private void netcom_ChatSent(object sender, ChatSentEventArgs e)

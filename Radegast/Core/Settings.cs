@@ -26,7 +26,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id: IPreferencePane.cs 118 2009-07-20 00:39:00Z latifer $
+// $Id$
 //
 using System;
 using System.Collections.Generic;
@@ -42,6 +42,9 @@ namespace Radegast
     {
         private string SettingsFile;
         private OSDMap SettingsData;
+
+        public delegate void SettingChangedCallback(object sender, SettingsEventArgs e);
+        public event SettingChangedCallback OnSettingChanged;
 
         public Settings(string fileName)
         {
@@ -89,6 +92,15 @@ namespace Radegast
             return sw.ToString();
         }
 
+        private void FireEvent(string key, OSD val)
+        {
+            if (OnSettingChanged != null)
+            {
+                try { OnSettingChanged(this, new SettingsEventArgs(key, val)); }
+                catch (Exception) {}
+            }
+        }
+
         #region IDictionary Implementation
 
         public int Count { get { return SettingsData.Count; } }
@@ -104,6 +116,7 @@ namespace Radegast
             set 
             {
                 SettingsData[key] = value;
+                FireEvent(key, value);
                 Save();
             }
         }
@@ -116,18 +129,21 @@ namespace Radegast
         public void Add(string key, OSD llsd)
         {
             SettingsData.Add(key, llsd);
+            FireEvent(key, llsd);
             Save();
         }
 
         public void Add(KeyValuePair<string, OSD> kvp)
         {
             SettingsData.Add(kvp.Key, kvp.Value);
+            FireEvent(kvp.Key, kvp.Value);
             Save();
         }
 
         public bool Remove(string key)
         {
             bool ret = SettingsData.Remove(key);
+            FireEvent(key, null);
             Save();
             return ret;
         }
@@ -158,6 +174,7 @@ namespace Radegast
         public bool Remove(KeyValuePair<string, OSD> kvp)
         {
             bool ret = SettingsData.Remove(kvp.Key);
+            FireEvent(kvp.Key, null);
             Save();
             return ret;
         }
@@ -179,5 +196,17 @@ namespace Radegast
 
         #endregion IDictionary Implementation
 
+    }
+
+    public class SettingsEventArgs : EventArgs
+    {
+        public string Key = string.Empty;
+        public OSD Value = new OSD();
+
+        public SettingsEventArgs(string key, OSD val)
+        {
+            Key = key;
+            Value = val;
+        }
     }
 }

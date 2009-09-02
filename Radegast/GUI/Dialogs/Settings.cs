@@ -1,3 +1,4 @@
+﻿
 // 
 // Radegast Metaverse Client
 // Copyright (c) 2009, Radegast Development Team
@@ -28,14 +29,46 @@
 //
 // $Id$
 //
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
-    public interface IPreferencePane
+    public partial class frmSettings : Form
     {
-        string Name { get; }
-        Image Icon { get; }
-        void SetPreferences();
+        private Settings s;
+
+        public frmSettings(RadegastInstance instance)
+        {
+            InitializeComponent();
+            s = instance.GlobalSettings;
+
+            cbChatTimestamps.Checked = s["chat_timestamps"].AsBoolean();
+
+            if (s["im_timestamps"].Type == OSDType.Unknown)
+                s["im_timestamps"] = OSD.FromBoolean(true);
+
+            cbIMTimeStamps.Checked = s["im_timestamps"].AsBoolean();
+
+            cbChatTimestamps.CheckedChanged += new EventHandler(cbChatTimestamps_CheckedChanged);
+            cbIMTimeStamps.CheckedChanged += new EventHandler(cbIMTimeStamps_CheckedChanged);
+        }
+
+        void cbChatTimestamps_CheckedChanged(object sender, EventArgs e)
+        {
+            s["chat_timestamps"] = OSD.FromBoolean(cbChatTimestamps.Checked);
+        }
+
+        void cbIMTimeStamps_CheckedChanged(object sender, EventArgs e)
+        {
+            s["im_timestamps"] = OSD.FromBoolean(cbIMTimeStamps.Checked);
+        }
     }
 }

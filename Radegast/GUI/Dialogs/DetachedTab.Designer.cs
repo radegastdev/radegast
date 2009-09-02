@@ -74,7 +74,6 @@ namespace Radegast
             this.tlblTyping});
             this.tstMain.Location = new System.Drawing.Point(0, 0);
             this.tstMain.Name = "tstMain";
-            this.tstMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.tstMain.Size = new System.Drawing.Size(508, 25);
             this.tstMain.TabIndex = 0;
             this.tstMain.Text = "toolStrip1";

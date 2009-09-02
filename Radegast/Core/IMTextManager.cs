@@ -34,6 +34,7 @@ using System.Drawing;
 using System.Text;
 using Radegast.Netcom;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
@@ -59,15 +60,28 @@ namespace Radegast
             this.instance = instance;
             netcom = this.instance.Netcom;
             AddNetcomEvents();
-
-            showTimestamps = this.instance.Config.CurrentConfig.IMTimestamps;
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            InitializeConfig();
         }
 
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
+        private void InitializeConfig()
         {
-            showTimestamps = e.AppliedConfig.IMTimestamps;
-            ReprintAllText();
+            Settings s = instance.GlobalSettings;
+
+            if (s["im_timestamps"].Type == OSDType.Unknown)
+                s["im_timestamps"] = OSD.FromBoolean(true);
+
+            showTimestamps = s["im_timestamps"].AsBoolean();
+
+            s.OnSettingChanged += new Settings.SettingChangedCallback(s_OnSettingChanged);
+        }
+
+        void s_OnSettingChanged(object sender, SettingsEventArgs e)
+        {
+            if (e.Key == "im_timestamps" && e.Value != null)
+            {
+                showTimestamps = e.Value.AsBoolean();
+                ReprintAllText();
+            }
         }
 
         private void AddNetcomEvents()
@@ -164,7 +178,6 @@ namespace Radegast
         public void CleanUp()
         {
             RemoveNetcomEvents();
-            instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
 
             textBuffer.Clear();
             textBuffer = null;

@@ -57,27 +57,11 @@ namespace Radegast
             this.toName = toName;
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, toName);
-            ApplyConfig(this.instance.Config.CurrentConfig);
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
-            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             CleanUp();
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            ApplyConfig(e.AppliedConfig);
-        }
-
-        private void ApplyConfig(Config config)
-        {
-            if (config.InterfaceStyle == 0) //System
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            else if (config.InterfaceStyle == 1) //Office 2003
-                toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
         }
 
         private void AddNetcomEvents()

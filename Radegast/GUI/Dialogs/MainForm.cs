@@ -131,9 +131,6 @@ namespace Radegast
 
             InitializeStatusTimer();
             RefreshWindowTitle();
-
-            ApplyConfig(this.instance.Config.CurrentConfig, true);
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
         }
 
         void frmMain_Disposed(object sender, EventArgs e)
@@ -143,8 +140,6 @@ namespace Radegast
             netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
             client.Parcels.OnParcelProperties -= new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
             client.Self.OnMoneyBalanceReplyReceived -= new AgentManager.MoneyBalanceReplyCallback(Self_OnMoneyBalanceReplyReceived);
-
-            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             this.instance.CleanUp();
         }
         #endregion
@@ -156,22 +151,6 @@ namespace Radegast
             {
                 AddNotification(new ntfGeneric(instance, description));
             }
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            ApplyConfig(e.AppliedConfig, false);
-        }
-
-        private void ApplyConfig(Config config, bool doingInit)
-        {
-            if (doingInit)
-                this.WindowState = (FormWindowState)config.MainWindowState;
-
-            if (config.InterfaceStyle == 0) //System
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            else if (config.InterfaceStyle == 1) //Office 2003
-                toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
         }
 
         public void InitializeControls()
@@ -237,7 +216,6 @@ namespace Radegast
 
                 netcom.Logout();
             }
-            instance.Config.CurrentConfig.MainWindowState = (int)this.WindowState;
         }
         #endregion
 
@@ -615,7 +593,7 @@ namespace Radegast
 
         private void tmnuPrefs_Click(object sender, EventArgs e)
         {
-            (new frmPreferences(instance)).ShowDialog();
+            (new frmSettings(instance)).ShowDialog();
         }
 
         private void tbtnObjects_Click(object sender, EventArgs e)

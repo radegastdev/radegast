@@ -60,12 +60,9 @@ namespace Radegast
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
             
-            ApplyConfig(this.instance.Config.CurrentConfig);
-
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
 
             this.client.Self.ChatterBoxAcceptInvite(session);
         }
@@ -74,23 +71,7 @@ namespace Radegast
         {
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             CleanUp();
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            ApplyConfig(e.AppliedConfig);
-        }
-
-        private void ApplyConfig(Config config)
-        {
-            /*
-            if (config.InterfaceStyle == 0) //System
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            else if (config.InterfaceStyle == 1) //Office 2003
-                toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
-             */
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)

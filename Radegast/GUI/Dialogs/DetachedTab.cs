@@ -53,29 +53,12 @@ namespace Radegast
             tab.Control.BringToFront();
 
             AddTabEvents();
-            this.Text = tab.Label + " (tab) - SLeek";
-
-            ApplyConfig(this.instance.Config.CurrentConfig);
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
+            this.Text = tab.Label + " (tab) - " + Properties.Resources.ProgramName;
         }
 
         void frmDetachedTab_Disposed(object sender, EventArgs e)
         {
-            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             RemoveTabEvents();
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            ApplyConfig(e.AppliedConfig);
-        }
-
-        private void ApplyConfig(Config config)
-        {
-            if (config.InterfaceStyle == 0) //System
-                tstMain.RenderMode = ToolStripRenderMode.System;
-            else if (config.InterfaceStyle == 1) //Office 2003
-                tstMain.RenderMode = ToolStripRenderMode.ManagerRenderMode;
         }
 
         private void AddTabEvents()

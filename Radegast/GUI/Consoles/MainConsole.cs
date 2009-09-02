@@ -32,6 +32,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 using Radegast.Netcom;
 
 namespace Radegast
@@ -77,34 +78,37 @@ namespace Radegast
 
         private void SaveConfig()
         {
-            instance.Config.CurrentConfig.FirstName = txtFirstName.Text;
-            instance.Config.CurrentConfig.LastName = txtLastName.Text;
+            Settings s = instance.GlobalSettings;
+
+            s["first_name"] = OSD.FromString(txtFirstName.Text);
+            s["last_name"] = OSD.FromString(txtLastName.Text);
 
             if (netcom.LoginOptions.IsPasswordMD5)
-                instance.Config.CurrentConfig.PasswordMD5 = txtPassword.Text;
+                s["password"] = OSD.FromString(txtPassword.Text);
             else
-                instance.Config.CurrentConfig.PasswordMD5 = Utils.MD5(txtPassword.Text);
+                s["password"] = OSD.FromString(Utils.MD5(txtPassword.Text));
 
-            instance.Config.CurrentConfig.LoginLocationType = cbxLocation.SelectedIndex;
-            instance.Config.CurrentConfig.LoginLocation = cbxLocation.Text;
+            s["login_location_type"] = OSD.FromInteger(cbxLocation.SelectedIndex);
+            s["login_location"] = OSD.FromString(cbxLocation.Text);
 
-            instance.Config.CurrentConfig.LoginGrid = cbxGrid.SelectedIndex;
-            instance.Config.CurrentConfig.LoginUri = txtCustomLoginUri.Text;
-            instance.Config.SaveCurrentConfig();
+            s["login_grid"] = OSD.FromInteger(cbxGrid.SelectedIndex);
+            s["login_uri"] = OSD.FromString(txtCustomLoginUri.Text);
         }
 
         private void InitializeConfig()
         {
-            txtFirstName.Text = instance.Config.CurrentConfig.FirstName;
-            txtLastName.Text = instance.Config.CurrentConfig.LastName;
-            txtPassword.Text = instance.Config.CurrentConfig.PasswordMD5;
+            Settings s = instance.GlobalSettings;
+
+            txtFirstName.Text = s["first_name"].AsString();
+            txtLastName.Text = s["last_name"].AsString();
+            txtPassword.Text = s["password"].AsString();
             netcom.LoginOptions.IsPasswordMD5 = true;
 
-            cbxLocation.SelectedIndex = instance.Config.CurrentConfig.LoginLocationType;
-            cbxLocation.Text = instance.Config.CurrentConfig.LoginLocation;
+            cbxLocation.SelectedIndex = s["login_location_type"].AsInteger();
+            cbxLocation.Text = s["login_location"].AsString();
 
-            cbxGrid.SelectedIndex = instance.Config.CurrentConfig.LoginGrid;
-            txtCustomLoginUri.Text = instance.Config.CurrentConfig.LoginUri;
+            cbxGrid.SelectedIndex = s["login_grid"].AsInteger();
+            txtCustomLoginUri.Text = s["login_uri"].AsString();
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)

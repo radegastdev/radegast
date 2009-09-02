@@ -75,7 +75,6 @@ namespace Radegast
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            this.instance.Config.ConfigApplied += new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Grid.OnCoarseLocationUpdate += new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
 
             movement = new SleekMovement(client);
@@ -87,16 +86,15 @@ namespace Radegast
 
             SorterClass sc = new SorterClass();
             lvwObjects.ListViewItemSorter = sc;
-
-            ApplyConfig(this.instance.Config.CurrentConfig);
         }
 
         void ChatConsole_Disposed(object sender, EventArgs e)
         {
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            this.instance.Config.ConfigApplied -= new EventHandler<ConfigAppliedEventArgs>(Config_ConfigApplied);
             client.Grid.OnCoarseLocationUpdate -= new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
+            chatManager.Dispose();
+            chatManager = null;
         }
 
         void Grid_OnCoarseLocationUpdate(Simulator sim, List<UUID> newEntries, List<UUID> removedEntries)
@@ -222,19 +220,6 @@ namespace Radegast
         private void MainForm_Load(object sender, EventArgs e)
         {
             tabConsole = instance.TabConsole;
-        }
-
-        private void Config_ConfigApplied(object sender, ConfigAppliedEventArgs e)
-        {
-            ApplyConfig(e.AppliedConfig);
-        }
-
-        private void ApplyConfig(Config config)
-        {
-            if (config.InterfaceStyle == 0) //System
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            else if (config.InterfaceStyle == 1) //Office 2003
-                toolStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)

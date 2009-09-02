@@ -76,10 +76,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
-    <Reference Include="Nini, Version=1.1.0.0, Culture=neutral, PublicKeyToken=691faec150a7fa7b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Nini\Bin\DotNet\2.0\Release\Nini.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -96,14 +92,10 @@
   <ItemGroup>
     <Compile Include="Core\AutoPilot.cs" />
     <Compile Include="Core\ChatBufferItem.cs" />
-    <Compile Include="Core\Config\Config.cs" />
-    <Compile Include="Core\Config\ConfigManager.cs" />
-    <Compile Include="Core\Config\IPreferencePane.cs" />
-    <Compile Include="Core\Config\Settings.cs" />
+    <Compile Include="Core\Settings.cs" />
     <Compile Include="Core\IRadegastPlugin.cs" />
     <Compile Include="Core\ListItems\PreferencePaneListItem.cs" />
     <Compile Include="Core\DebugLogMessage.cs" />
-    <Compile Include="Core\Config\ConfigAppliedEventArgs.cs" />
     <Compile Include="Core\ListItems\FriendsListItem.cs" />
     <Compile Include="Core\ListItems\RegionSearchResultItem.cs" />
     <Compile Include="Core\LSLKeywordParser.cs" />
@@ -245,18 +237,6 @@
     <Compile Include="GUI\Consoles\OutfitTextures.Designer.cs">
       <DependentUpon>OutfitTextures.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Consoles\Preferences\PrefGeneralConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Consoles\Preferences\PrefGeneralConsole.Designer.cs">
-      <DependentUpon>PrefGeneralConsole.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Consoles\Preferences\PrefTextConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GUI\Consoles\Preferences\PrefTextConsole.Designer.cs">
-      <DependentUpon>PrefTextConsole.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Consoles\Assets\SLImageHandler.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -335,17 +315,17 @@
     <Compile Include="GUI\Dialogs\Pay.Designer.cs">
       <DependentUpon>Pay.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Dialogs\Preferences.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\Preferences.Designer.cs">
-      <DependentUpon>Preferences.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Dialogs\Profile.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Dialogs\Profile.Designer.cs">
       <DependentUpon>Profile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Settings.Designer.cs">
+      <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\Teleport.cs">
       <SubType>Form</SubType>
@@ -506,14 +486,6 @@
       <DependentUpon>OutfitTextures.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Consoles\Preferences\PrefGeneralConsole.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PrefGeneralConsole.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Consoles\Preferences\PrefTextConsole.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>PrefTextConsole.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\Assets\SLImageHandler.resx">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -574,13 +546,13 @@
       <SubType>Designer</SubType>
       <DependentUpon>Pay.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\Preferences.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Preferences.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\Profile.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Profile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Settings.resx">
+      <DependentUpon>Settings.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\Teleport.resx">
       <SubType>Designer</SubType>
@@ -946,7 +918,6 @@
     <None Include="Resources\inv_folder_landmark.png" />
     <None Include="Resources\inv_folder_lostandfound.png" />
     <None Include="Resources\inv_folder_notecard.png" />
-    <None Include="assemblies\Nini.dll" />
     <None Include="assemblies\Tao.OpenGl.dll" />
     <None Include="assemblies\Tao.Platform.Windows.dll" />
     <None Include="OpenMetaverse.Rendering.Meshmerizer.dll">
