@@ -115,13 +115,13 @@ namespace Radegast
             if (!instance.TabConsole.TabExists(g.ID.ToString()))
             {
                 instance.TabConsole.AddGroupIMTab(g.ID, g.Name);
-                instance.TabConsole.tabs[g.ID.ToString()].Highlight();
-                instance.TabConsole.tabs[g.ID.ToString()].Select();
+                instance.TabConsole.Tabs[g.ID.ToString()].Highlight();
+                instance.TabConsole.Tabs[g.ID.ToString()].Select();
 
             }
             else
             {
-                SleekTab t = instance.TabConsole.tabs[g.ID.ToString()];
+                SleekTab t = instance.TabConsole.Tabs[g.ID.ToString()];
                 if (!t.Selected)
                 {
                     t.Highlight();

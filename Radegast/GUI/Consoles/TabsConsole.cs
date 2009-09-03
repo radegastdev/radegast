@@ -45,7 +45,9 @@ namespace Radegast
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private ChatTextManager mainChatManger;
 
-        public Dictionary<string, SleekTab> tabs = new Dictionary<string, SleekTab>();
+        private Dictionary<string, SleekTab> tabs = new Dictionary<string, SleekTab>();
+        public Dictionary<string, SleekTab> Tabs { get { return tabs; } }
+
         private ChatConsole chatConsole;
 
         private SleekTab selectedTab;
