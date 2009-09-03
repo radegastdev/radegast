@@ -70,6 +70,7 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnSLeek = new System.Windows.Forms.ToolStripDropDownButton();
@@ -123,6 +124,8 @@ namespace Radegast
             this.tlblParcel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
+            this.lblTime = new System.Windows.Forms.ToolStripLabel();
+            this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -142,7 +145,8 @@ namespace Radegast
             this.tbnTools,
             this.tbnPlugins,
             this.tbnObjects,
-            this.tbtnGroups});
+            this.tbtnGroups,
+            this.lblTime});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(738, 25);
@@ -613,10 +617,23 @@ namespace Radegast
             this.pnlDialog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlDialog.AutoSize = true;
             this.pnlDialog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(170)))), ((int)(((byte)(255)))));
-            this.pnlDialog.Location = new System.Drawing.Point(540, 0);
+            this.pnlDialog.Location = new System.Drawing.Point(540, 50);
             this.pnlDialog.Name = "pnlDialog";
             this.pnlDialog.Size = new System.Drawing.Size(198, 151);
             this.pnlDialog.TabIndex = 11;
+            // 
+            // lblTime
+            // 
+            this.lblTime.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.lblTime.Name = "lblTime";
+            this.lblTime.Size = new System.Drawing.Size(30, 22);
+            this.lblTime.Text = "--:--";
+            // 
+            // timerWorldClock
+            // 
+            this.timerWorldClock.Enabled = true;
+            this.timerWorldClock.Interval = 1000;
+            this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
             // frmMain
             // 
@@ -703,6 +720,8 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem tmnuStatusAway;
         private System.Windows.Forms.ToolStripMenuItem tmnuStatusBusy;
         private System.Windows.Forms.ToolStripMenuItem tmnuTeleportHome;
+        private System.Windows.Forms.ToolStripLabel lblTime;
+        private System.Windows.Forms.Timer timerWorldClock;
     }
 }
 

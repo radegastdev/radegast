@@ -102,6 +102,7 @@ namespace Radegast
             pnlDialog.Visible = false;
             btnDialogNextControl = new TransparentButton();
             pnlDialog.Controls.Add(btnDialogNextControl);
+            pnlDialog.Top = 0;
 
             btnDialogNextControl.Size = new Size(35, 20);
             btnDialogNextControl.BackColor = Color.Transparent;
@@ -857,7 +858,14 @@ namespace Radegast
         {
             worldMap.GoHome();
         }
-        #endregion
 
+        private void timerWorldClock_Tick(object sender, EventArgs e)
+        {
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+            DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+            lblTime.Text = now.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        #endregion
     }
 }
