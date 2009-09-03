@@ -57,19 +57,47 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.pnlControls = new System.Windows.Forms.Panel();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.pnlControls.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // pnlControls
+            // 
+            this.pnlControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlControls.Controls.Add(this.btnRefresh);
+            this.pnlControls.Location = new System.Drawing.Point(0, 0);
+            this.pnlControls.Name = "pnlControls";
+            this.pnlControls.Size = new System.Drawing.Size(150, 30);
+            this.pnlControls.TabIndex = 0;
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(3, 3);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 0;
+            this.btnRefresh.Text = "&Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // AttachmentTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
+            this.Controls.Add(this.pnlControls);
             this.Name = "AttachmentTab";
             this.Load += new System.EventHandler(this.AttachmentTab_Load);
+            this.pnlControls.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Panel pnlControls;
+        private System.Windows.Forms.Button btnRefresh;
     }
 }

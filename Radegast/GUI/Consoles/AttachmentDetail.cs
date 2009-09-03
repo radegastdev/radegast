@@ -71,18 +71,24 @@ namespace Radegast
         private void AttachmentDetail_Load(object sender, EventArgs e)
         {
             boxID.Text = attachment.ID.ToString();
-            client.Objects.SelectObject(client.Network.CurrentSim, attachment.LocalID);
+
+            if (attachment.Properties == null)
+            {
+                client.Objects.SelectObject(client.Network.CurrentSim, attachment.LocalID);
+            }
+            else
+            {
+                UpdateControls();
+            }
         }
 
         private void UpdateControls()
         {
             if (InvokeRequired) {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    UpdateControls();
-                }));
+                Invoke(new MethodInvoker(UpdateControls));
                 return;
             }
+
             lblAttachmentPoint.Text = attachment.PrimData.AttachmentPoint.ToString();
             boxName.Text = attachment.Properties.Name;
 

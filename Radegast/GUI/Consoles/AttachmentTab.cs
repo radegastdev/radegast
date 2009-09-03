@@ -54,6 +54,11 @@ namespace Radegast
 
         private void AttachmentTab_Load(object sender, EventArgs e)
         {
+            RefreshList();
+        }
+
+        private void RefreshList()
+        {
             List<Primitive> attachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(
                 delegate(Primitive prim)
                 {
@@ -61,21 +66,45 @@ namespace Radegast
                 }
             );
 
-            Controls.Clear();
+            List<Control> toRemove = new List<Control>();
+
+            foreach (Control c in Controls)
+            {
+                if (c is AttachmentDetail)
+                {
+                    toRemove.Add(c);
+                }
+            }
+
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                Controls.Remove(toRemove[i]);
+                toRemove[i].Dispose();
+            }
+
             List<UUID> added = new List<UUID>();
 
             int n = 0;
-            foreach (Primitive prim in attachments) {
-                if (!added.Contains(prim.ID)) {
+            foreach (Primitive prim in attachments)
+            {
+                if (!added.Contains(prim.ID))
+                {
                     AttachmentDetail ad = new AttachmentDetail(instance, av, prim);
-                    ad.Location = new Point(0, n++ * ad.Height);
-                    ad.Dock = DockStyle.Top;
+                    ad.Location = new Point(0, pnlControls.Height + n * ad.Height);
+                    ad.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    ad.Width = ClientSize.Width;
                     Controls.Add(ad);
                     added.Add(prim.ID);
+                    n++;
                 }
             }
 
             AutoScrollPosition = new Point(0, 0);
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            RefreshList();
         }
     }
 }
