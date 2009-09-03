@@ -372,15 +372,54 @@ namespace Radegast
             debugLogForm = new frmDebugLog(instance);
         }
 
-        private void frmMain_KeyUp(object sender, KeyEventArgs e)
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.Alt && e.KeyCode == Keys.D)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+            }
+
+            if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+            }
+
+            if (e.Control && e.KeyCode == Keys.G)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+            }
+
+            if (e.Control && e.KeyCode == Keys.M && Clipboard.ContainsText() && client.Network.Connected)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+            }
+
+            if (e.Control && e.KeyCode == Keys.Right)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+            }
+
+            if (e.Control && e.KeyCode == Keys.Left)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+            }
+        }
+
+
+        private void frmMain_KeyUp(object sender, KeyEventArgs e)
+        {
+            // alt-ctrl-d activate debug menu
+            if (e.Control && e.Alt && e.KeyCode == Keys.D)
+            {
                 tbtnDebug.Visible = !tbtnDebug.Visible;
+                e.Handled = e.SuppressKeyPress = true;
+            }
 
             // ctrl-o, open objects finder
             if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
             {
                 (new frmObjects(instance)).Show();
+                e.Handled = e.SuppressKeyPress = true;
             }
 
             // ctrl-g, goto slurl
@@ -388,13 +427,28 @@ namespace Radegast
             {
                 if (!ProcessLink(Clipboard.GetText(), true))
                     MapToCurrentLocation();
+                e.Handled = e.SuppressKeyPress = true;
             }
-
 
             // ctrl-m, open map
             if (e.Control && e.KeyCode == Keys.M && Clipboard.ContainsText() && client.Network.Connected)
             {
                 MapToCurrentLocation();
+                e.Handled = e.SuppressKeyPress = true;
+            }
+
+            // ctrl-right_arrow, select next tab
+            if (e.Control && e.KeyCode == Keys.Right)
+            {
+                TabConsole.SelectNextTab();
+                e.Handled = e.SuppressKeyPress = true;
+            }
+
+            // ctrl-right_arrow, select previous tab
+            if (e.Control && e.KeyCode == Keys.Left)
+            {
+                TabConsole.SelectPreviousTab();
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
 
@@ -804,5 +858,6 @@ namespace Radegast
             worldMap.GoHome();
         }
         #endregion
+
     }
 }

@@ -49,7 +49,7 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new EventHandler(IMTabWindow_Disposed);
-
+            
             this.instance = instance;
 
             this.target = target;
@@ -57,6 +57,8 @@ namespace Radegast
             this.toName = toName;
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, toName);
+
+            AddNetcomEvents();
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
@@ -93,6 +95,7 @@ namespace Radegast
             instance.TabConsole.RemoveTab(SessionId.ToString());
             textManager.CleanUp();
             textManager = null;
+            RemoveNetcomEvents();
         }
 
         private void btnSend_Click(object sender, EventArgs e)

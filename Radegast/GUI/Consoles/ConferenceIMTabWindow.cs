@@ -94,7 +94,9 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            SendMessage(cbgInput.Text);
+            if (cbxInput.Text.Length == 0) return;
+
+            SendMessage(cbxInput.Text);
             this.ClearIMInput();
         }
 
@@ -107,20 +109,28 @@ namespace Radegast
         {
             if (!netcom.IsLoggedIn)
             {
-                cbgInput.Enabled = false;
+                cbxInput.Enabled = false;
                 btnSend.Enabled = false;
                 return;
             }
 
+            if (cbxInput.Text.Length > 0)
+            {
+                btnSend.Enabled = true;
+            }
+            else
+            {
+                btnSend.Enabled = false;
+            }
         }
 
         private void cbxInput_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
             e.SuppressKeyPress = true;
-            if (cbgInput.Text.Length == 0) return;
+            if (cbxInput.Text.Length == 0) return;
 
-            string message = cbgInput.Text;
+            string message = cbxInput.Text;
 
             SendMessage(message);
 
@@ -142,13 +152,13 @@ namespace Radegast
 
         private void ClearIMInput()
         {
-            cbgInput.Items.Add(cbgInput.Text);
-            cbgInput.Text = string.Empty;
+            cbxInput.Items.Add(cbxInput.Text);
+            cbxInput.Text = string.Empty;
         }
 
         public void SelectIMInput()
         {
-            cbgInput.Select();
+            cbxInput.Select();
         }
 
         private void rtbIMText_LinkClicked(object sender, LinkClickedEventArgs e)

@@ -49,6 +49,14 @@ namespace Radegast
         private ChatConsole chatConsole;
 
         private SleekTab selectedTab;
+        public SleekTab SelectedTab
+        {
+            get
+            {
+                return selectedTab;
+            }
+        }
+
         private Form owner;
 
         public TabsConsole(RadegastInstance instance)
@@ -535,7 +543,7 @@ namespace Radegast
             foreach (ToolStripItem item in tstTabs.Items)
             {
                 if (item.Tag == null) continue;
-                if ((ToolStripButton)item == selectedTab.Button) continue;
+                if ((ToolStripItem)item == selectedTab.Button) continue;
 
                 SleekTab tab = tabs[item.Tag.ToString()];
                 if (!tab.AllowMerge) continue;
@@ -546,6 +554,73 @@ namespace Radegast
 
             return otherTabs;
         }
+
+        /// <summary>
+        /// Activates the next tab
+        /// </summary>
+        public void SelectNextTab()
+        {
+            List<ToolStripItem> buttons = new List<ToolStripItem>();
+
+            foreach (ToolStripItem item in tstTabs.Items)
+            {
+                if (item.Tag == null) continue;
+
+                buttons.Add(item);
+            }
+
+            int current = 0;
+
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                if (buttons[i] == selectedTab.Button)
+                {
+                    current = i;
+                    break;
+                }
+            }
+
+            current++;
+
+            if (current == buttons.Count)
+                current = 0;
+
+            SelectTab(tabs[buttons[current].Tag.ToString()].Name);
+        }
+
+        /// <summary>
+        /// Activates the previous tab
+        /// </summary>
+        public void SelectPreviousTab()
+        {
+            List<ToolStripItem> buttons = new List<ToolStripItem>();
+
+            foreach (ToolStripItem item in tstTabs.Items)
+            {
+                if (item.Tag == null) continue;
+
+                buttons.Add(item);
+            }
+
+            int current = 0;
+
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                if (buttons[i] == selectedTab.Button)
+                {
+                    current = i;
+                    break;
+                }
+            }
+
+            current--;
+
+            if (current == -1)
+                current = buttons.Count - 1;
+
+            SelectTab(tabs[buttons[current].Tag.ToString()].Name);
+        }
+
 
         public IMTabWindow AddIMTab(UUID target, UUID session, string targetName)
         {

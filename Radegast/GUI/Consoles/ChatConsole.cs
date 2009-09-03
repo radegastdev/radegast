@@ -230,6 +230,7 @@ namespace Radegast
             btnSay.Enabled = true;
             btnShout.Enabled = true;
             client.Avatars.RequestAvatarProperties(client.Self.AgentID);
+            cbxInput.Focus();
          }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
@@ -568,6 +569,12 @@ namespace Radegast
         {
             if (lvwObjects.SelectedItems.Count != 1) return;
             (new frmPay(instance, (UUID)lvwObjects.SelectedItems[0].Tag, instance.getAvatarName((UUID)lvwObjects.SelectedItems[0].Tag), false)).ShowDialog();
+        }
+
+        private void ChatConsole_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible)
+                cbxInput.Focus();
         }
 
     }

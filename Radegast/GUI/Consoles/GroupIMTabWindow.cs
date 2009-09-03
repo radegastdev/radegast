@@ -120,7 +120,7 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            //netcom.SendInstantMessage(cbgInput.Text, target, session);
+            SendMsg();
             this.ClearIMInput();
         }
 
@@ -133,32 +133,52 @@ namespace Radegast
         {
             if (!netcom.IsLoggedIn)
             {
-                cbgInput.Enabled = false;
+                cbxInput.Enabled = false;
                 btnSend.Enabled = false;
                 return;
             }
 
+            if (cbxInput.Text.Length > 0)
+            {
+                btnSend.Enabled = true;
+            }
+            else
+            {
+                btnSend.Enabled = false;
+            }
         }
 
         private void cbxInput_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
             e.SuppressKeyPress = true;
-            if (cbgInput.Text.Length == 0) return;
 
-            string message = cbgInput.Text;
+            SendMsg();
+        }
+
+        private void SendMsg()
+        {
+            if (cbxInput.Text.Length == 0) return;
+
+            string message = cbxInput.Text;
             if (message.Length > 1023) message = message.Remove(1023);
 
-            if (!client.Self.GroupChatSessions.ContainsKey(session)) {
+            if (!client.Self.GroupChatSessions.ContainsKey(session))
+            {
                 WaitForSessionStart.Reset();
                 client.Self.RequestJoinGroupChat(session);
-            } else {
+            }
+            else
+            {
                 WaitForSessionStart.Set();
             }
 
-            if (WaitForSessionStart.WaitOne(10000, false)) {
+            if (WaitForSessionStart.WaitOne(10000, false))
+            {
                 client.Self.InstantMessageGroup(session, message);
-            } else {
+            }
+            else
+            {
                 textManager.TextPrinter.PrintTextLine("Cannot send group IM.", Color.Red);
             }
             this.ClearIMInput();
@@ -166,13 +186,13 @@ namespace Radegast
 
         private void ClearIMInput()
         {
-            cbgInput.Items.Add(cbgInput.Text);
-            cbgInput.Text = string.Empty;
+            cbxInput.Items.Add(cbxInput.Text);
+            cbxInput.Text = string.Empty;
         }
 
         public void SelectIMInput()
         {
-            cbgInput.Select();
+            cbxInput.Select();
         }
 
         private void rtbIMText_LinkClicked(object sender, LinkClickedEventArgs e)

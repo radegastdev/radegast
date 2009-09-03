@@ -118,7 +118,7 @@ namespace Radegast
             this.rtbChat.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
             this.rtbChat.ShowSelectionMargin = true;
             this.rtbChat.Size = new System.Drawing.Size(400, 310);
-            this.rtbChat.TabIndex = 5;
+            this.rtbChat.TabIndex = 7;
             this.rtbChat.Text = "";
             this.rtbChat.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbChat_LinkClicked);
             // 
@@ -131,7 +131,7 @@ namespace Radegast
             this.cbxInput.Location = new System.Drawing.Point(0, 0);
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(352, 21);
-            this.cbxInput.TabIndex = 3;
+            this.cbxInput.TabIndex = 0;
             this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
@@ -143,7 +143,7 @@ namespace Radegast
             this.btnSay.Location = new System.Drawing.Point(358, 0);
             this.btnSay.Name = "btnSay";
             this.btnSay.Size = new System.Drawing.Size(76, 24);
-            this.btnSay.TabIndex = 5;
+            this.btnSay.TabIndex = 1;
             this.btnSay.Text = "Say";
             this.btnSay.UseVisualStyleBackColor = true;
             this.btnSay.Click += new System.EventHandler(this.btnSay_Click);
@@ -155,7 +155,7 @@ namespace Radegast
             this.btnShout.Location = new System.Drawing.Point(440, 0);
             this.btnShout.Name = "btnShout";
             this.btnShout.Size = new System.Drawing.Size(76, 24);
-            this.btnShout.TabIndex = 4;
+            this.btnShout.TabIndex = 2;
             this.btnShout.Text = "Shout";
             this.btnShout.UseVisualStyleBackColor = true;
             this.btnShout.Click += new System.EventHandler(this.btnShout_Click);
@@ -178,6 +178,7 @@ namespace Radegast
             this.splitContainer1.Size = new System.Drawing.Size(516, 310);
             this.splitContainer1.SplitterDistance = 400;
             this.splitContainer1.TabIndex = 7;
+            this.splitContainer1.TabStop = false;
             // 
             // lvwObjects
             // 
@@ -192,7 +193,7 @@ namespace Radegast
             this.lvwObjects.MultiSelect = false;
             this.lvwObjects.Name = "lvwObjects";
             this.lvwObjects.Size = new System.Drawing.Size(71, 273);
-            this.lvwObjects.TabIndex = 10;
+            this.lvwObjects.TabIndex = 8;
             this.lvwObjects.UseCompatibleStateImageBehavior = false;
             this.lvwObjects.View = System.Windows.Forms.View.List;
             this.lvwObjects.SelectedIndexChanged += new System.EventHandler(this.lvwObjects_SelectedIndexChanged);
@@ -308,6 +309,7 @@ namespace Radegast
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(41, 273);
             this.toolStrip1.TabIndex = 9;
+            this.toolStrip1.TabStop = true;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // tbtnStartIM
@@ -437,7 +439,7 @@ namespace Radegast
             this.btnMoveBack.Margin = new System.Windows.Forms.Padding(0);
             this.btnMoveBack.Name = "btnMoveBack";
             this.btnMoveBack.Size = new System.Drawing.Size(31, 19);
-            this.btnMoveBack.TabIndex = 0;
+            this.btnMoveBack.TabIndex = 4;
             this.btnMoveBack.Text = "R";
             this.btnMoveBack.UseVisualStyleBackColor = true;
             this.btnMoveBack.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseDown);
@@ -450,7 +452,7 @@ namespace Radegast
             this.btnFwd.Margin = new System.Windows.Forms.Padding(0);
             this.btnFwd.Name = "btnFwd";
             this.btnFwd.Size = new System.Drawing.Size(31, 19);
-            this.btnFwd.TabIndex = 0;
+            this.btnFwd.TabIndex = 6;
             this.btnFwd.Text = "^";
             this.btnFwd.UseVisualStyleBackColor = true;
             this.btnFwd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseDown);
@@ -463,7 +465,7 @@ namespace Radegast
             this.btnTurnRight.Margin = new System.Windows.Forms.Padding(0);
             this.btnTurnRight.Name = "btnTurnRight";
             this.btnTurnRight.Size = new System.Drawing.Size(31, 19);
-            this.btnTurnRight.TabIndex = 0;
+            this.btnTurnRight.TabIndex = 5;
             this.btnTurnRight.Text = ">>";
             this.btnTurnRight.UseVisualStyleBackColor = true;
             this.btnTurnRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseDown);
@@ -476,7 +478,7 @@ namespace Radegast
             this.btnTurnLeft.Margin = new System.Windows.Forms.Padding(0);
             this.btnTurnLeft.Name = "btnTurnLeft";
             this.btnTurnLeft.Size = new System.Drawing.Size(31, 19);
-            this.btnTurnLeft.TabIndex = 0;
+            this.btnTurnLeft.TabIndex = 3;
             this.btnTurnLeft.Text = "<<";
             this.btnTurnLeft.UseVisualStyleBackColor = true;
             this.btnTurnLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseDown);
@@ -491,7 +493,7 @@ namespace Radegast
             this.panel1.Location = new System.Drawing.Point(0, 310);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(516, 24);
-            this.panel1.TabIndex = 8;
+            this.panel1.TabIndex = 0;
             // 
             // ChatConsole
             // 
@@ -502,6 +504,7 @@ namespace Radegast
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ChatConsole";
             this.Size = new System.Drawing.Size(516, 334);
+            this.VisibleChanged += new System.EventHandler(this.ChatConsole_VisibleChanged);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();

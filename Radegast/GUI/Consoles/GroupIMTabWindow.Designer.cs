@@ -59,7 +59,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.rtbIMText = new System.Windows.Forms.RichTextBox();
-            this.cbgInput = new System.Windows.Forms.ComboBox();
+            this.cbxInput = new System.Windows.Forms.ComboBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -74,22 +74,22 @@ namespace Radegast
             this.rtbIMText.Name = "rtbIMText";
             this.rtbIMText.ReadOnly = true;
             this.rtbIMText.Size = new System.Drawing.Size(494, 295);
-            this.rtbIMText.TabIndex = 3;
+            this.rtbIMText.TabIndex = 2;
             this.rtbIMText.Text = "";
             this.rtbIMText.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbIMText_LinkClicked);
             // 
-            // cbgInput
+            // cbxInput
             // 
-            this.cbgInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbgInput.FormattingEnabled = true;
-            this.cbgInput.Location = new System.Drawing.Point(3, 306);
-            this.cbgInput.Name = "cbgInput";
-            this.cbgInput.Size = new System.Drawing.Size(413, 21);
-            this.cbgInput.TabIndex = 0;
-            this.cbgInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
-            this.cbgInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
-            this.cbgInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
+            this.cbxInput.FormattingEnabled = true;
+            this.cbxInput.Location = new System.Drawing.Point(3, 306);
+            this.cbxInput.Name = "cbxInput";
+            this.cbxInput.Size = new System.Drawing.Size(413, 21);
+            this.cbxInput.TabIndex = 0;
+            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
+            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
+            this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             // 
             // btnSend
             // 
@@ -107,7 +107,7 @@ namespace Radegast
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.cbgInput);
+            this.Controls.Add(this.cbxInput);
             this.Controls.Add(this.rtbIMText);
             this.Controls.Add(this.btnSend);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -120,7 +120,7 @@ namespace Radegast
         #endregion
 
         private System.Windows.Forms.RichTextBox rtbIMText;
-        private System.Windows.Forms.ComboBox cbgInput;
+        private System.Windows.Forms.ComboBox cbxInput;
         private System.Windows.Forms.Button btnSend;
     }
 }

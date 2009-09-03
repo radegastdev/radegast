@@ -91,8 +91,8 @@ namespace Radegast
             this.cbxInput.Size = new System.Drawing.Size(413, 21);
             this.cbxInput.TabIndex = 0;
             this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
-            this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
+            this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             // 
             // btnSend
             // 
@@ -122,7 +122,7 @@ namespace Radegast
             this.tbtnProfile.Image = global::Radegast.Properties.Resources.applications_16;
             this.tbtnProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnProfile.Name = "tbtnProfile";
-            this.tbtnProfile.Size = new System.Drawing.Size(57, 22);
+            this.tbtnProfile.Size = new System.Drawing.Size(61, 22);
             this.tbtnProfile.Text = "Profile";
             this.tbtnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 

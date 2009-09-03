@@ -39,13 +39,14 @@ namespace Radegast
         private RadegastInstance instance;
         private ToolStripButton button;
         private Control control;
+
         private Button defaultControlButton;
         private string name;
         private string label;
         private SleekTab mergedTab;
         private Form owner;
         private string originalLabel;
-
+        
         private bool allowMerge = true;
         private bool allowDetach = true;
         private bool allowClose = true;
@@ -113,6 +114,7 @@ namespace Radegast
 
             if (control != null) control.Visible = false;
             if (button != null) button.Checked = false;
+
             selected = false;
 
             OnTabDeselected(EventArgs.Empty);
