@@ -41,6 +41,7 @@ using System.IO;
 using System.Web;
 using Radegast.Netcom;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
@@ -122,6 +123,13 @@ namespace Radegast
                 statusStrip1.LayoutStyle = ToolStripLayoutStyle.Table;
             }
 
+            // Config options
+            if (instance.GlobalSettings["transaction_notification_chat"].Type == OSDType.Unknown)
+                instance.GlobalSettings["transaction_notification_chat"] = OSD.FromBoolean(true);
+
+            if (instance.GlobalSettings["transaction_notification_dialog"].Type == OSDType.Unknown)
+                instance.GlobalSettings["transaction_notification_dialog"] = OSD.FromBoolean(true);
+
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
@@ -149,7 +157,10 @@ namespace Radegast
         {
             if (!String.IsNullOrEmpty(description))
             {
-                AddNotification(new ntfGeneric(instance, description));
+                if (instance.GlobalSettings["transaction_notification_dialog"].AsBoolean())
+                    AddNotification(new ntfGeneric(instance, description));
+                if (instance.GlobalSettings["transaction_notification_chat"].AsBoolean())
+                    TabConsole.DisplayNotificationInChat(description);
             }
         }
 

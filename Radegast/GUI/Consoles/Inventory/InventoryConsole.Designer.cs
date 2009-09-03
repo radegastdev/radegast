@@ -283,6 +283,7 @@
             // 
             // txtCreator
             // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
             this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
             this.txtCreator.Location = new System.Drawing.Point(80, 36);
             this.txtCreator.Name = "txtCreator";
@@ -377,7 +378,6 @@
 
         #endregion
 
-        private System.Windows.Forms.TreeView invTree;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ContextMenuStrip ctxInv;
         private System.Windows.Forms.Panel panel1;
@@ -402,5 +402,6 @@
         private System.Windows.Forms.ToolStripMenuItem tbtbFoldersByName;
         private System.Windows.Forms.ToolStripMenuItem tbtnSystemFoldersFirst;
         private System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
+        public System.Windows.Forms.TreeView invTree;
     }
 }

@@ -59,6 +59,10 @@ namespace Radegast
 
             cbChatTimestamps.CheckedChanged += new EventHandler(cbChatTimestamps_CheckedChanged);
             cbIMTimeStamps.CheckedChanged += new EventHandler(cbIMTimeStamps_CheckedChanged);
+
+            cbTrasactDialog.Checked = s["transaction_notification_dialog"].AsBoolean();
+            cbTrasactChat.Checked = s["transaction_notification_chat"].AsBoolean();
+
         }
 
         void cbChatTimestamps_CheckedChanged(object sender, EventArgs e)
@@ -69,6 +73,16 @@ namespace Radegast
         void cbIMTimeStamps_CheckedChanged(object sender, EventArgs e)
         {
             s["im_timestamps"] = OSD.FromBoolean(cbIMTimeStamps.Checked);
+        }
+
+        private void cbTrasactDialog_CheckedChanged(object sender, EventArgs e)
+        {
+            s["transaction_notification_dialog"] = OSD.FromBoolean(cbTrasactDialog.Checked);
+        }
+
+        private void cbTrasactChat_CheckedChanged(object sender, EventArgs e)
+        {
+            s["transaction_notification_chat"] = OSD.FromBoolean(cbTrasactChat.Checked);
         }
     }
 }

@@ -61,8 +61,10 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
-            this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
+            this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
+            this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
+            this.cbTrasactChat = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -80,6 +82,8 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.cbTrasactChat);
+            this.tbpGeneral.Controls.Add(this.cbTrasactDialog);
             this.tbpGeneral.Controls.Add(this.cbIMTimeStamps);
             this.tbpGeneral.Controls.Add(this.cbChatTimestamps);
             this.tbpGeneral.Location = new System.Drawing.Point(4, 22);
@@ -89,6 +93,16 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // cbIMTimeStamps
+            // 
+            this.cbIMTimeStamps.AutoSize = true;
+            this.cbIMTimeStamps.Location = new System.Drawing.Point(8, 29);
+            this.cbIMTimeStamps.Name = "cbIMTimeStamps";
+            this.cbIMTimeStamps.Size = new System.Drawing.Size(137, 17);
+            this.cbIMTimeStamps.TabIndex = 1;
+            this.cbIMTimeStamps.Text = "Show timestamps in  IM";
+            this.cbIMTimeStamps.UseVisualStyleBackColor = true;
             // 
             // cbChatTimestamps
             // 
@@ -100,15 +114,27 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbIMTimeStamps
+            // cbTrasactDialog
             // 
-            this.cbIMTimeStamps.AutoSize = true;
-            this.cbIMTimeStamps.Location = new System.Drawing.Point(8, 29);
-            this.cbIMTimeStamps.Name = "cbIMTimeStamps";
-            this.cbIMTimeStamps.Size = new System.Drawing.Size(137, 17);
-            this.cbIMTimeStamps.TabIndex = 1;
-            this.cbIMTimeStamps.Text = "Show timestamps in  IM";
-            this.cbIMTimeStamps.UseVisualStyleBackColor = true;
+            this.cbTrasactDialog.AutoSize = true;
+            this.cbTrasactDialog.Location = new System.Drawing.Point(8, 52);
+            this.cbTrasactDialog.Name = "cbTrasactDialog";
+            this.cbTrasactDialog.Size = new System.Drawing.Size(176, 17);
+            this.cbTrasactDialog.TabIndex = 1;
+            this.cbTrasactDialog.Text = "Display dialog on L$ transaction";
+            this.cbTrasactDialog.UseVisualStyleBackColor = true;
+            this.cbTrasactDialog.CheckedChanged += new System.EventHandler(this.cbTrasactDialog_CheckedChanged);
+            // 
+            // cbTrasactChat
+            // 
+            this.cbTrasactChat.AutoSize = true;
+            this.cbTrasactChat.Location = new System.Drawing.Point(8, 75);
+            this.cbTrasactChat.Name = "cbTrasactChat";
+            this.cbTrasactChat.Size = new System.Drawing.Size(170, 17);
+            this.cbTrasactChat.TabIndex = 1;
+            this.cbTrasactChat.Text = "Display L$ transactions in chat";
+            this.cbTrasactChat.UseVisualStyleBackColor = true;
+            this.cbTrasactChat.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -132,5 +158,7 @@ namespace Radegast
         private System.Windows.Forms.TabPage tbpGeneral;
         private System.Windows.Forms.CheckBox cbIMTimeStamps;
         private System.Windows.Forms.CheckBox cbChatTimestamps;
+        private System.Windows.Forms.CheckBox cbTrasactChat;
+        private System.Windows.Forms.CheckBox cbTrasactDialog;
     }
 }
