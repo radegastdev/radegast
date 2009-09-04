@@ -62,6 +62,12 @@ namespace Radegast
             this.agentID = agentID;
 
             this.Text = fullName + " (profile) - " + Properties.Resources.ProgramName;
+            txtUUID.Text = agentID.ToString();
+            
+            if (client.Friends.FriendList.ContainsKey(agentID))
+            {
+                btnFriend.Enabled = false;
+            }
 
             // Callbacks
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
@@ -264,6 +270,11 @@ namespace Radegast
                 client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, agentID, true);
                 instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + fullName + ".");
             }
+        }
+
+        private void btnFriend_Click(object sender, EventArgs e)
+        {
+            client.Friends.OfferFriendship(agentID);
         }
     }
 }

@@ -93,6 +93,9 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtUUID = new System.Windows.Forms.TextBox();
+            this.btnFriend = new System.Windows.Forms.Button();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
@@ -118,11 +121,14 @@ namespace Radegast
             // 
             // tpgProfile
             // 
+            this.tpgProfile.Controls.Add(this.btnFriend);
             this.tpgProfile.Controls.Add(this.slPicPanel);
             this.tpgProfile.Controls.Add(this.btnOfferTeleport);
             this.tpgProfile.Controls.Add(this.btnPay);
             this.tpgProfile.Controls.Add(this.rtbAccountInfo);
             this.tpgProfile.Controls.Add(this.rtbAbout);
+            this.tpgProfile.Controls.Add(this.txtUUID);
+            this.tpgProfile.Controls.Add(this.label9);
             this.tpgProfile.Controls.Add(this.txtPartner);
             this.tpgProfile.Controls.Add(this.label5);
             this.tpgProfile.Controls.Add(this.label4);
@@ -223,7 +229,7 @@ namespace Radegast
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(252, 63);
+            this.label3.Location = new System.Drawing.Point(251, 63);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(31, 13);
             this.label3.TabIndex = 7;
@@ -477,6 +483,35 @@ namespace Radegast
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
             // 
+            // label9
+            // 
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 433);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(29, 13);
+            this.label9.TabIndex = 9;
+            this.label9.Text = "Key:";
+            // 
+            // txtUUID
+            // 
+            this.txtUUID.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtUUID.Location = new System.Drawing.Point(41, 430);
+            this.txtUUID.Name = "txtUUID";
+            this.txtUUID.ReadOnly = true;
+            this.txtUUID.Size = new System.Drawing.Size(259, 21);
+            this.txtUUID.TabIndex = 10;
+            // 
+            // btnFriend
+            // 
+            this.btnFriend.Location = new System.Drawing.Point(207, 368);
+            this.btnFriend.Name = "btnFriend";
+            this.btnFriend.Size = new System.Drawing.Size(75, 23);
+            this.btnFriend.TabIndex = 18;
+            this.btnFriend.Text = "Add Friend";
+            this.btnFriend.UseVisualStyleBackColor = true;
+            this.btnFriend.Click += new System.EventHandler(this.btnFriend_Click);
+            // 
             // frmProfile
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -541,5 +576,8 @@ namespace Radegast
         private System.Windows.Forms.Panel pickPicturePanel;
         private System.Windows.Forms.Panel pickListPanel;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtUUID;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button btnFriend;
     }
 }
