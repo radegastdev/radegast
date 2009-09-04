@@ -488,7 +488,7 @@ namespace Radegast
 
             if (OnTabAdded != null)
             {
-                try { OnTabAdded(this, new TabEventArgs(selectedTab)); }
+                try { OnTabAdded(this, new TabEventArgs(tab)); }
                 catch (Exception) { }
             }
         }
@@ -511,7 +511,7 @@ namespace Radegast
 
             if (OnTabAdded != null)
             {
-                try { OnTabAdded(this, new TabEventArgs(selectedTab)); }
+                try { OnTabAdded(this, new TabEventArgs(tab)); }
                 catch (Exception) { }
             }
 
