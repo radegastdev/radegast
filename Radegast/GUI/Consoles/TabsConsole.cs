@@ -38,8 +38,52 @@ using OpenMetaverse;
 
 namespace Radegast
 {
+    /// <summary>
+    /// Arguments for tab events
+    /// </summary>
+    public class TabEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Tab that was manipulated in the event
+        /// </summary>
+        public SleekTab Tab;
+
+        public TabEventArgs()
+            : base()
+        {
+        }
+        
+        public TabEventArgs(SleekTab tab)
+            :base()
+        {
+            Tab = tab;
+        }
+    }
+
     public partial class TabsConsole : UserControl
     {
+        /// <summary>
+        /// Delegate inviked on tab operations
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Event arguments</param>
+        public delegate void TabCallback(object sender, TabEventArgs e);
+
+        /// <summary>
+        /// Fired when a tab is selected
+        /// </summary>
+        public event TabCallback OnTabSelected;
+
+        /// <summary>
+        /// Fired when a new tab is added
+        /// </summary>
+        public event TabCallback OnTabAdded;
+
+        /// <summary>
+        /// Fired when a tab is removed
+        /// </summary>
+        public event TabCallback OnTabRemoved;
+
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private RadegastNetcom netcom { get { return instance.Netcom; } }
@@ -51,6 +95,10 @@ namespace Radegast
         private ChatConsole chatConsole;
 
         private SleekTab selectedTab;
+
+        /// <summary>
+        /// Currently selected tab
+        /// </summary>
         public SleekTab SelectedTab
         {
             get
@@ -437,6 +485,12 @@ namespace Radegast
             button.Click += new EventHandler(TabButtonClick);
             tab.Button = button;
             tabs.Add(tab.Name, tab);
+
+            if (OnTabAdded != null)
+            {
+                try { OnTabAdded(this, new TabEventArgs(selectedTab)); }
+                catch (Exception) { }
+            }
         }
 
         public SleekTab AddTab(string name, string label, Control control)
@@ -454,6 +508,12 @@ namespace Radegast
             tab.TabSelected += new EventHandler(tab_TabSelected);
             tab.TabClosed += new EventHandler(tab_TabClosed);
             tabs.Add(name.ToLower(), tab);
+
+            if (OnTabAdded != null)
+            {
+                try { OnTabAdded(this, new TabEventArgs(selectedTab)); }
+                catch (Exception) { }
+            }
 
             return tab;
         }
@@ -485,6 +545,12 @@ namespace Radegast
 
             tbtnCloseTab.Enabled = tab.AllowClose;
             owner.AcceptButton = tab.DefaultControlButton;
+
+            if (OnTabSelected != null)
+            {
+                try { OnTabSelected(this, new TabEventArgs(selectedTab)); }
+                catch (Exception) { }
+            }
         }
 
         private void tab_TabClosed(object sender, EventArgs e)
@@ -492,6 +558,13 @@ namespace Radegast
             SleekTab tab = (SleekTab)sender;
             
             tabs.Remove(tab.Name);
+
+            if (OnTabRemoved != null)
+            {
+                try { OnTabRemoved(this, new TabEventArgs(tab)); }
+                catch (Exception) { }
+            }
+
             tab = null;
         }
 
