@@ -91,6 +91,7 @@ namespace Radegast
         #region Constructor and disposal
         public frmMain(RadegastInstance instance)
         {
+            GetSLTimeZone();
             InitializeComponent();
             Disposed += new EventHandler(frmMain_Disposed);
 
@@ -859,13 +860,33 @@ namespace Radegast
             worldMap.GoHome();
         }
 
+        private TimeZoneInfo SLTime;
+
+        private void GetSLTimeZone()
+        {
+            try
+            {
+                foreach (TimeZoneInfo tz in TimeZoneInfo.GetSystemTimeZones())
+                {
+                    if (tz.Id == "Pacific Standard Time" || tz.Id == "America/Los_Angeles")
+                    {
+                        SLTime = tz;
+                        break;
+                    }
+                }
+            }
+            catch (Exception) { }
+        }
+
         private void timerWorldClock_Tick(object sender, EventArgs e)
         {
             DateTime now;
             try
             {
-                TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-                now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+                if (SLTime != null)
+                    now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, SLTime);
+                else
+                    now = DateTime.UtcNow.AddHours(-7);
             }
             catch (Exception)
             {

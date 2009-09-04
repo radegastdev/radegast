@@ -47,7 +47,8 @@ namespace Radegast
             {
                 string loggingMessage = RenderLoggingEvent(le);
 
-                RadegastInstance.GlobalInstance.MainForm.AddLogMessage(loggingMessage, le.Level);
+                if (RadegastInstance.GlobalInstance.MainForm != null)
+                    RadegastInstance.GlobalInstance.MainForm.AddLogMessage(loggingMessage, le.Level);
 
                 lock (this)
                 {
