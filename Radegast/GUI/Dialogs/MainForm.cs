@@ -208,12 +208,14 @@ namespace Radegast
             if (debugLogForm != null)
             {
                 debugLogForm.Close();
+                debugLogForm.Dispose();
                 debugLogForm = null;
             }
 
             if (worldMap != null)
             {
                 worldMap.Close();
+                worldMap.Dispose();
                 worldMap = null;
             }
 
