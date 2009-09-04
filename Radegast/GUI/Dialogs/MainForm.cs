@@ -861,8 +861,16 @@ namespace Radegast
 
         private void timerWorldClock_Tick(object sender, EventArgs e)
         {
-            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
-            DateTime now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+            DateTime now;
+            try
+            {
+                TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+                now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+            }
+            catch (Exception)
+            {
+                now = DateTime.UtcNow.AddHours(-7);
+            }
             lblTime.Text = now.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
         }
 
