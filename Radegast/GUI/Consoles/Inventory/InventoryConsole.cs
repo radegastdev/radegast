@@ -84,6 +84,7 @@ namespace Radegast
         private int updateInterval = 1000;
         private Thread InventoryUpdate;
         private List<UUID> WornItems = new List<UUID>();
+        private bool appearnceWasBusy;
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -139,6 +140,11 @@ namespace Radegast
         void Appearance_OnAppearanceSet(bool success)
         {
             UpdateWornLabels();
+            if (appearnceWasBusy)
+            {
+                appearnceWasBusy = false;
+                client.Appearance.RequestSetAppearance(true);
+            }
         }
 
         void Objects_OnObjectKilled(Simulator simulator, uint objectID)
@@ -1003,25 +1009,17 @@ namespace Radegast
 
                         ctxInv.Items.Add(new ToolStripSeparator());
 
-                        if (!client.Appearance.ManagerBusy)
-                        {
-                            ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
-                            ctxItem.Name = "outfit_take_off";
-                            ctxInv.Items.Add(ctxItem);
+                        ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
+                        ctxItem.Name = "outfit_take_off";
+                        ctxInv.Items.Add(ctxItem);
 
-                            ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick);
-                            ctxItem.Name = "outfit_add";
-                            ctxInv.Items.Add(ctxItem);
+                        ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick);
+                        ctxItem.Name = "outfit_add";
+                        ctxInv.Items.Add(ctxItem);
 
-                            ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick);
-                            ctxItem.Name = "outfit_replace";
-                            ctxInv.Items.Add(ctxItem);
-                        }
-                        else
-                        {
-                            ctxItem = new ToolStripMenuItem("Appearance in progress...");
-                            ctxInv.Items.Add(ctxItem);
-                        }
+                        ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick);
+                        ctxItem.Name = "outfit_replace";
+                        ctxInv.Items.Add(ctxItem);
                     }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
@@ -1109,7 +1107,7 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    if (item is InventoryWearable && !client.Appearance.ManagerBusy)
+                    if (item is InventoryWearable)
                     {
                         ctxInv.Items.Add(new ToolStripSeparator());
 
@@ -1125,12 +1123,6 @@ namespace Radegast
                             ctxItem.Name = "item_wear";
                             ctxInv.Items.Add(ctxItem);
                         }
-                    }
-                    else if (item is InventoryWearable)
-                    {
-                        ctxInv.Items.Add(new ToolStripSeparator());
-                        ctxItem = new ToolStripMenuItem("Appearance in progress...");
-                        ctxInv.Items.Add(ctxItem);
                     }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
@@ -1213,6 +1205,7 @@ namespace Radegast
                             if (item is InventoryItem)
                                 newOutfit.Add((InventoryItem)item);
                         }
+                        appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.ReplaceOutfit(newOutfit);
                         UpdateWornLabels();
                         break;
@@ -1224,6 +1217,7 @@ namespace Radegast
                             if (item is InventoryItem)
                                 addToOutfit.Add((InventoryItem)item);
                         }
+                        appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.AddToOutfit(addToOutfit);
                         UpdateWornLabels();
                         break;
@@ -1235,6 +1229,7 @@ namespace Radegast
                             if (item is InventoryItem)
                                 removeFromOutfit.Add((InventoryItem)item);
                         }
+                        appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.RemoveFromOutfit(removeFromOutfit);
                         UpdateWornLabels();
                         break;
@@ -1277,6 +1272,7 @@ namespace Radegast
                         return;
 
                     case "item_take_off":
+                        appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.RemoveFromOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         lock (WornItems)
@@ -1289,6 +1285,7 @@ namespace Radegast
                         break;
 
                     case "item_wear":
+                        appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.AddToOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
