@@ -104,7 +104,33 @@ namespace Radegast
                 return;
             }
 
-            instance.MainForm.TabConsole.DisplayNotificationInChat(friend.Name + " is online");
+            string name = friend.Name;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                using (ManualResetEvent done = new ManualResetEvent(false))
+                {
+
+                    AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
+                    {
+                        if (names.ContainsKey(friend.UUID))
+                        {
+                            name = names[friend.UUID];
+                            done.Set();
+                        }
+                    };
+
+                    client.Avatars.OnAvatarNames += callback;
+                    name = instance.getAvatarName(friend.UUID);
+                    if (name == RadegastInstance.INCOMPLETE_NAME)
+                    {
+                        done.WaitOne(3000, false);
+                    }
+                    client.Avatars.OnAvatarNames -= callback;
+                }
+            }
+
+            instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online");
             RefreshFriendsList();
         }
 

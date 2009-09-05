@@ -124,7 +124,6 @@ namespace Radegast
             // Callbacks
             client.Self.OnScriptQuestion += new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
             client.Self.OnScriptDialog += new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
-            client.Inventory.OnObjectOffered += new InventoryManager.ObjectOfferedCallback(Inventory_OnObjectOffered);
         }
 
         void TabsConsole_Disposed(object sender, EventArgs e)
@@ -132,7 +131,6 @@ namespace Radegast
             RemoveNetcomEvents();
             client.Self.OnScriptQuestion -= new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
             client.Self.OnScriptDialog -= new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
-            client.Inventory.OnObjectOffered -= new InventoryManager.ObjectOfferedCallback(Inventory_OnObjectOffered);
         }
 
         private void AddNetcomEvents()
@@ -155,12 +153,6 @@ namespace Radegast
             netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
             netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
-        }
-
-        bool Inventory_OnObjectOffered(InstantMessage offerDetails, AssetType type, UUID objectID, bool fromTask)
-        {
-            DisplayNotificationInChat(offerDetails.FromAgentName + " gave you " + offerDetails.Message);
-            return true;
         }
 
         void Self_OnScriptDialog(string message, string objectName, UUID imageID, UUID objectID, string firstName, string lastName, int chatChannel, List<string> buttons)
@@ -308,6 +300,11 @@ namespace Radegast
 
                 case InstantMessageDialog.GroupNotice:
                     instance.MainForm.AddNotification(new ntfGroupNotice(instance, e.IM));
+                    break;
+
+                case InstantMessageDialog.InventoryOffered:
+                case InstantMessageDialog.TaskInventoryOffered:
+                    instance.MainForm.AddNotification(new ntfInventoryOffer(instance, e.IM));
                     break;
             }
         }

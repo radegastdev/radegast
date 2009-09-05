@@ -46,7 +46,8 @@ namespace Radegast
         GroupNotice,
         PermissionsRequest,
         ScriptDialog,
-        Teleport
+        Teleport,
+        InventoryOffer
     }
 
     /// <summary>
@@ -87,7 +88,7 @@ namespace Radegast
     /// <summary>
     /// Base class for all notificatiosn (blue dialogs)
     /// </summary>
-    public abstract class Notification : UserControl
+    public class Notification : UserControl
     {
         /// <summary>
         /// Notification type
@@ -105,6 +106,11 @@ namespace Radegast
         /// Fired when a notification is displayed
         /// </summary>
         public static event NotificationCallback OnNotificationDisplayed;
+
+        public Notification()
+        {
+            Type = NotificationType.Generic;
+        }
 
         public Notification(NotificationType type)
         {
