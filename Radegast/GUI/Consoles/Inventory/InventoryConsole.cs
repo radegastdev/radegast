@@ -83,6 +83,7 @@ namespace Radegast
         private Dictionary<UUID, TreeNode> UUID2NodeCache = new Dictionary<UUID, TreeNode>();
         private int updateInterval = 1000;
         private Thread InventoryUpdate;
+        private List<UUID> WornItems = new List<UUID>();
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -120,6 +121,7 @@ namespace Radegast
             Inventory.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
             client.Objects.OnNewAttachment += new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Appearance.OnAppearanceSet += new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
         }
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
@@ -129,10 +131,16 @@ namespace Radegast
             Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
             client.Objects.OnNewAttachment -= new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
             client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Appearance.OnAppearanceSet -= new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
         }
         #endregion
 
         #region Network callbacks
+        void Appearance_OnAppearanceSet(bool success)
+        {
+            UpdateWornLabels();
+        }
+
         void Objects_OnObjectKilled(Simulator simulator, uint objectID)
         {
             AttachmentInfo attachment = null;
@@ -197,7 +205,7 @@ namespace Radegast
                         if (!attachments.ContainsKey(attachment.InventoryID))
                         {
                             attachments.Add(attachment.InventoryID, attachment);
-                            
+
                         }
                         else
                         {
@@ -612,6 +620,8 @@ namespace Radegast
             TreeUpdateInProgress = false;
             UpdateStatus("OK");
 
+            // Updated labels on clothes that we are wearing
+            UpdateWornLabels();
 
             // Update attachments now that we are done
             lock (attachments)
@@ -676,11 +686,11 @@ namespace Radegast
             {
                 try
                 {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    TreeUpdateTimerTick(sender);
-                }
-                ));
+                    Invoke(new MethodInvoker(delegate()
+                    {
+                        TreeUpdateTimerTick(sender);
+                    }
+                    ));
                 }
                 catch (Exception) { }
                 return;
@@ -734,7 +744,7 @@ namespace Radegast
         private void btnProfile_Click(object sender, EventArgs e)
         {
             (new frmProfile(instance, txtCreator.Text, txtCreator.AgentID)).Show();
-            
+
         }
 
         void UpdateItemInfo(InventoryItem item)
@@ -766,7 +776,7 @@ namespace Radegast
                     image.Dock = DockStyle.Fill;
                     pnlDetail.Controls.Add(image);
                     break;
-                
+
                 case AssetType.Notecard:
                     Notecard note = new Notecard(instance, (InventoryNotecard)item);
                     note.Dock = DockStyle.Fill;
@@ -801,7 +811,7 @@ namespace Radegast
                 InventoryItem item = e.Node.Tag as InventoryItem;
                 switch (item.AssetType)
                 {
-                        
+
                     case AssetType.Landmark:
                         instance.TabConsole.DisplayNotificationInChat("Teleporting to " + item.Name);
                         client.Self.RequestTeleport(item.AssetUUID);
@@ -840,7 +850,14 @@ namespace Radegast
 
         public bool IsWorn(InventoryItem item)
         {
-            return client.Appearance.IsItemWorn(item) != WearableType.Invalid;
+            bool worn = client.Appearance.IsItemWorn(item) != WearableType.Invalid;
+
+            lock (WornItems)
+            {
+                if (worn && !WornItems.Contains(item.UUID))
+                    WornItems.Add(item.UUID);
+            }
+            return worn;
         }
 
         public AttachmentPoint AttachedTo(InventoryItem item)
@@ -986,24 +1003,25 @@ namespace Radegast
 
                         ctxInv.Items.Add(new ToolStripSeparator());
 
-                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
-                        ctxItem.Name = "delete_folder";
-                        ctxInv.Items.Add(ctxItem);
+                        if (!client.Appearance.ManagerBusy)
+                        {
+                            ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
+                            ctxItem.Name = "outfit_take_off";
+                            ctxInv.Items.Add(ctxItem);
 
-                        ctxInv.Items.Add(new ToolStripSeparator());
+                            ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick);
+                            ctxItem.Name = "outfit_add";
+                            ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_take_off";
-                        ctxInv.Items.Add(ctxItem);
-
-                        ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_add";
-                        ctxInv.Items.Add(ctxItem);
-
-                        ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_replace";
-                        ctxInv.Items.Add(ctxItem);
-
+                            ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick);
+                            ctxItem.Name = "outfit_replace";
+                            ctxInv.Items.Add(ctxItem);
+                        }
+                        else
+                        {
+                            ctxItem = new ToolStripMenuItem("Appearance in progress...");
+                            ctxInv.Items.Add(ctxItem);
+                        }
                     }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
@@ -1055,7 +1073,7 @@ namespace Radegast
                             if (!pt.ToString().StartsWith("HUD"))
                             {
                                 string name = pt.ToString();
-                                
+
                                 InventoryItem alreadyAttached = null;
                                 if ((alreadyAttached = AttachmentAt(pt)) != null)
                                 {
@@ -1077,7 +1095,7 @@ namespace Radegast
                                 {
                                     name += " (" + alreadyAttached.Name + ")";
                                 }
-                                
+
                                 ToolStripMenuItem ptItem = new ToolStripMenuItem(name, null, OnInvContextClick);
                                 ptItem.Name = pt.ToString();
                                 ptItem.Tag = pt;
@@ -1091,7 +1109,7 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    if (item is InventoryWearable)
+                    if (item is InventoryWearable && !client.Appearance.ManagerBusy)
                     {
                         ctxInv.Items.Add(new ToolStripSeparator());
 
@@ -1107,6 +1125,12 @@ namespace Radegast
                             ctxItem.Name = "item_wear";
                             ctxInv.Items.Add(ctxItem);
                         }
+                    }
+                    else if (item is InventoryWearable)
+                    {
+                        ctxInv.Items.Add(new ToolStripSeparator());
+                        ctxItem = new ToolStripMenuItem("Appearance in progress...");
+                        ctxInv.Items.Add(ctxItem);
                     }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
@@ -1190,6 +1214,7 @@ namespace Radegast
                                 newOutfit.Add((InventoryItem)item);
                         }
                         client.Appearance.ReplaceOutfit(newOutfit);
+                        UpdateWornLabels();
                         break;
 
                     case "outfit_add":
@@ -1200,6 +1225,7 @@ namespace Radegast
                                 addToOutfit.Add((InventoryItem)item);
                         }
                         client.Appearance.AddToOutfit(addToOutfit);
+                        UpdateWornLabels();
                         break;
 
                     case "outfit_take_off":
@@ -1210,6 +1236,7 @@ namespace Radegast
                                 removeFromOutfit.Add((InventoryItem)item);
                         }
                         client.Appearance.RemoveFromOutfit(removeFromOutfit);
+                        UpdateWornLabels();
                         break;
                 }
                 #endregion
@@ -1219,7 +1246,7 @@ namespace Radegast
                 #region Item actions
                 InventoryItem item = (InventoryItem)invTree.SelectedNode.Tag;
 
-                switch(cmd)
+                switch (cmd)
                 {
                     case "delete_item":
                         client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
@@ -1251,10 +1278,19 @@ namespace Radegast
 
                     case "item_take_off":
                         client.Appearance.RemoveFromOutfit(item);
+                        invTree.SelectedNode.Text = ItemLabel(item, false);
+                        lock (WornItems)
+                        {
+                            if (WornItems.Contains(item.UUID))
+                            {
+                                WornItems.Remove(item.UUID);
+                            }
+                        }
                         break;
 
                     case "item_wear":
                         client.Appearance.AddToOutfit(item);
+                        invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
                 }
                 #endregion
@@ -1262,6 +1298,34 @@ namespace Radegast
         }
         #endregion
 
+        private void UpdateWornLabels()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(UpdateWornLabels));
+                return;
+            }
+
+            invTree.BeginUpdate();
+            foreach (UUID itemID in WornItems)
+            {
+                TreeNode node = findNodeForItem(itemID);
+                if (node != null)
+                {
+                    node.Text = ItemLabel((InventoryBase)node.Tag, false);
+                }
+            }
+            WornItems.Clear();
+            foreach (AppearanceManager.WearableData wearable in client.Appearance.GetWearables().Values)
+            {
+                TreeNode node = findNodeForItem(wearable.ItemID);
+                if (node != null)
+                {
+                    node.Text = ItemLabel((InventoryBase)node.Tag, false);
+                }
+            }
+            invTree.EndUpdate();
+        }
 
         void TreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
