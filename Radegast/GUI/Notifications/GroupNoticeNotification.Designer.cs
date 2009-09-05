@@ -64,6 +64,10 @@ namespace Radegast
             this.imgGroup = new Radegast.SLImageHandler();
             this.btnOK = new System.Windows.Forms.Button();
             this.lblTitle = new System.Windows.Forms.Label();
+            this.btnSave = new System.Windows.Forms.Button();
+            this.icnItem = new System.Windows.Forms.PictureBox();
+            this.txtItemName = new System.Windows.Forms.TextBox();
+            ((System.ComponentModel.ISupportInitialize)(this.icnItem)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -74,7 +78,7 @@ namespace Radegast
             this.label1.Location = new System.Drawing.Point(219, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(122, 24);
-            this.label1.TabIndex = 0;
+            this.label1.TabIndex = 5;
             this.label1.Text = "Group Notice";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -84,7 +88,7 @@ namespace Radegast
             this.lblSentBy.Location = new System.Drawing.Point(98, 24);
             this.lblSentBy.Name = "lblSentBy";
             this.lblSentBy.Size = new System.Drawing.Size(240, 18);
-            this.lblSentBy.TabIndex = 1;
+            this.lblSentBy.TabIndex = 4;
             this.lblSentBy.Text = "Sent by SENDER, GROUP";
             this.lblSentBy.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -98,12 +102,12 @@ namespace Radegast
             this.txtNotice.Name = "txtNotice";
             this.txtNotice.ReadOnly = true;
             this.txtNotice.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNotice.Size = new System.Drawing.Size(249, 118);
+            this.txtNotice.Size = new System.Drawing.Size(249, 88);
             this.txtNotice.TabIndex = 2;
             // 
             // imgGroup
             // 
-            this.imgGroup.BackColor = System.Drawing.SystemColors.Control;
+            this.imgGroup.BackColor = System.Drawing.Color.Transparent;
             this.imgGroup.Detached = false;
             this.imgGroup.Location = new System.Drawing.Point(5, 42);
             this.imgGroup.Name = "imgGroup";
@@ -113,10 +117,10 @@ namespace Radegast
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(3, 162);
+            this.btnOK.Location = new System.Drawing.Point(286, 165);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 4;
+            this.btnOK.Size = new System.Drawing.Size(49, 23);
+            this.btnOK.TabIndex = 0;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -130,14 +134,45 @@ namespace Radegast
             this.lblTitle.Location = new System.Drawing.Point(87, 42);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(248, 18);
-            this.lblTitle.TabIndex = 1;
+            this.lblTitle.TabIndex = 3;
             this.lblTitle.Text = "Title";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnSave
+            // 
+            this.btnSave.Enabled = false;
+            this.btnSave.Location = new System.Drawing.Point(231, 165);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(49, 23);
+            this.btnSave.TabIndex = 1;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // icnItem
+            // 
+            this.icnItem.Location = new System.Drawing.Point(6, 170);
+            this.icnItem.Name = "icnItem";
+            this.icnItem.Size = new System.Drawing.Size(16, 16);
+            this.icnItem.TabIndex = 6;
+            this.icnItem.TabStop = false;
+            this.icnItem.Visible = false;
+            // 
+            // txtItemName
+            // 
+            this.txtItemName.Location = new System.Drawing.Point(27, 167);
+            this.txtItemName.Name = "txtItemName";
+            this.txtItemName.ReadOnly = true;
+            this.txtItemName.Size = new System.Drawing.Size(198, 20);
+            this.txtItemName.TabIndex = 7;
             // 
             // ntfGroupNotice
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.txtItemName);
+            this.Controls.Add(this.icnItem);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.imgGroup);
             this.Controls.Add(this.txtNotice);
@@ -146,6 +181,7 @@ namespace Radegast
             this.Controls.Add(this.label1);
             this.Name = "ntfGroupNotice";
             this.Size = new System.Drawing.Size(341, 191);
+            ((System.ComponentModel.ISupportInitialize)(this.icnItem)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -159,5 +195,8 @@ namespace Radegast
         private Radegast.SLImageHandler imgGroup;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.PictureBox icnItem;
+        private System.Windows.Forms.TextBox txtItemName;
     }
 }

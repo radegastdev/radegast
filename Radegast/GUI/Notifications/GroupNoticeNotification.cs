@@ -36,7 +36,11 @@ namespace Radegast
     public partial class ntfGroupNotice : Notification
     {
         private RadegastInstance instance;
+        private GridClient client { get { return instance.Client; } }
         private InstantMessage msg;
+        private AssetType type = AssetType.Unknown;
+        private UUID destinationFolderID;
+
 
         public ntfGroupNotice(RadegastInstance instance, InstantMessage msg)
             : base(NotificationType.GroupNotice)
@@ -45,6 +49,23 @@ namespace Radegast
 
             this.instance = instance;
             this.msg = msg;
+
+            if (msg.BinaryBucket.Length > 1)
+            {
+                type = (AssetType)msg.BinaryBucket[1];
+                destinationFolderID = client.Inventory.FindFolderForType(type);
+                int icoIndx = InventoryConsole.GetItemImageIndex(type.ToString().ToLower());
+                if (icoIndx >= 0)
+                {
+                    icnItem.Image = frmMain.ResourceImages.Images[icoIndx];
+                    icnItem.Visible = true;
+                }
+                if (msg.BinaryBucket.Length > 18)
+                {
+                    txtItemName.Text = Utils.BytesToString(msg.BinaryBucket, 18, msg.BinaryBucket.Length - 19);
+                    btnSave.Enabled = true;
+                }
+            }
 
             string group = string.Empty;
             string text = msg.Message.Replace("\n", System.Environment.NewLine);
@@ -76,9 +97,20 @@ namespace Radegast
             FireNotificationCallback(args);
         }
 
+        private void SendReply(InstantMessageDialog dialog, byte[] bucket)
+        {
+            client.Self.InstantMessage(client.Self.Name, msg.FromAgentID, string.Empty, msg.IMSessionID, dialog, InstantMessageOnline.Offline, client.Self.SimPosition, client.Network.CurrentSim.RegionID, bucket);
+        }
+
         private void btnOK_Click(object sender, System.EventArgs e)
         {
             instance.MainForm.RemoveNotification(this);
+        }
+
+        private void btnSave_Click(object sender, System.EventArgs e)
+        {
+            SendReply(InstantMessageDialog.GroupNoticeInventoryAccepted, destinationFolderID.GetBytes());
+            btnSave.Enabled = false;
         }
     }
 }
