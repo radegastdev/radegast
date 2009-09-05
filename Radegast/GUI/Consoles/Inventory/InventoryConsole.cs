@@ -559,7 +559,7 @@ namespace Radegast
 
                 client.Inventory.OnFolderUpdated += callback;
                 fetchFolder(f.UUID, f.OwnerID, true);
-                gotFolderEvent.WaitOne(5 * 1000, false);
+                gotFolderEvent.WaitOne(30 * 1000, false);
                 client.Inventory.OnFolderUpdated -= callback;
 
                 if (!success)
