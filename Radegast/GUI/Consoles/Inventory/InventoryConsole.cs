@@ -119,7 +119,7 @@ namespace Radegast
             Inventory.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
             client.Objects.OnNewAttachment += new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
-
+            client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
         }
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
@@ -128,10 +128,33 @@ namespace Radegast
             Inventory.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
             client.Objects.OnNewAttachment -= new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
+            client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
         }
         #endregion
 
         #region Network callbacks
+        void Objects_OnObjectKilled(Simulator simulator, uint objectID)
+        {
+            AttachmentInfo attachment = null;
+            lock (attachments)
+            {
+                foreach (AttachmentInfo att in attachments.Values)
+                {
+                    if (att.Prim != null && att.Prim.LocalID == objectID)
+                    {
+                        attachment = att;
+                        break;
+                    }
+                }
+
+                if (attachment != null)
+                {
+                    attachments.Remove(attachment.InventoryID);
+                    Store_OnInventoryObjectUpdated(attachment.Item, attachment.Item);
+                }
+            }
+        }
+
         void Objects_OnNewAttachment(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
         {
             if (prim.ParentID != client.Self.LocalID) return;
@@ -954,15 +977,33 @@ namespace Radegast
                         ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                         ctxItem.Name = "rename_folder";
                         ctxInv.Items.Add(ctxItem);
-                    }
 
-
-                    if (folder.PreferredType == AssetType.Unknown)
-                    {
                         ctxInv.Items.Add(new ToolStripSeparator());
+
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
                         ctxItem.Name = "delete_folder";
                         ctxInv.Items.Add(ctxItem);
+
+                        ctxInv.Items.Add(new ToolStripSeparator());
+
+                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
+                        ctxItem.Name = "delete_folder";
+                        ctxInv.Items.Add(ctxItem);
+
+                        ctxInv.Items.Add(new ToolStripSeparator());
+
+                        ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
+                        ctxItem.Name = "outfit_take_off";
+                        ctxInv.Items.Add(ctxItem);
+
+                        ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick);
+                        ctxItem.Name = "outfit_add";
+                        ctxInv.Items.Add(ctxItem);
+
+                        ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick);
+                        ctxItem.Name = "outfit_replace";
+                        ctxInv.Items.Add(ctxItem);
+
                     }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
@@ -1050,6 +1091,23 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
+                    if (item is InventoryWearable)
+                    {
+                        ctxInv.Items.Add(new ToolStripSeparator());
+
+                        if (IsWorn(item))
+                        {
+                            ctxItem = new ToolStripMenuItem("Take off", null, OnInvContextClick);
+                            ctxItem.Name = "item_take_off";
+                            ctxInv.Items.Add(ctxItem);
+                        }
+                        else
+                        {
+                            ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick);
+                            ctxItem.Name = "item_wear";
+                            ctxInv.Items.Add(ctxItem);
+                        }
+                    }
 
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
 
@@ -1123,6 +1181,36 @@ namespace Radegast
                     case "rename_folder":
                         invTree.SelectedNode.BeginEdit();
                         break;
+
+                    case "outfit_replace":
+                        List<InventoryItem> newOutfit = new List<InventoryItem>();
+                        foreach (InventoryBase item in Inventory.GetContents(f))
+                        {
+                            if (item is InventoryItem)
+                                newOutfit.Add((InventoryItem)item);
+                        }
+                        client.Appearance.ReplaceOutfit(newOutfit);
+                        break;
+
+                    case "outfit_add":
+                        List<InventoryItem> addToOutfit = new List<InventoryItem>();
+                        foreach (InventoryBase item in Inventory.GetContents(f))
+                        {
+                            if (item is InventoryItem)
+                                addToOutfit.Add((InventoryItem)item);
+                        }
+                        client.Appearance.AddToOutfit(addToOutfit);
+                        break;
+
+                    case "outfit_take_off":
+                        List<InventoryItem> removeFromOutfit = new List<InventoryItem>();
+                        foreach (InventoryBase item in Inventory.GetContents(f))
+                        {
+                            if (item is InventoryItem)
+                                removeFromOutfit.Add((InventoryItem)item);
+                        }
+                        client.Appearance.RemoveFromOutfit(removeFromOutfit);
+                        break;
                 }
                 #endregion
             }
@@ -1160,6 +1248,14 @@ namespace Radegast
                         ScriptEditor se = new ScriptEditor(instance, (InventoryLSL)item);
                         se.Detached = true;
                         return;
+
+                    case "item_take_off":
+                        client.Appearance.RemoveFromOutfit(item);
+                        break;
+
+                    case "item_wear":
+                        client.Appearance.AddToOutfit(item);
+                        break;
                 }
                 #endregion
             }
