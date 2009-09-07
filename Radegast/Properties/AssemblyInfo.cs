@@ -36,11 +36,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Radegast")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Radegast - http://radegastclient.org/")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("The L People")]
-[assembly: AssemblyProduct("Radegast")]
-[assembly: AssemblyCopyright("Copyright ©  2009 The L People")]
+[assembly: AssemblyCompany("Radegast Development Team")]
+[assembly: AssemblyProduct("Radegast Metaverse Client")]
+[assembly: AssemblyCopyright("Copyright ©  2009 Radegast Development Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -59,5 +59,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.8.0.0")]
-[assembly: AssemblyFileVersion("1.8.0.0")]
+[assembly: AssemblyVersion("1.9.0.0")]
+[assembly: AssemblyFileVersion("1.9.0.0")]
