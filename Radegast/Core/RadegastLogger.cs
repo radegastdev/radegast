@@ -50,13 +50,6 @@ namespace Radegast
                 if (RadegastInstance.GlobalInstance.MainForm != null)
                     RadegastInstance.GlobalInstance.MainForm.AddLogMessage(loggingMessage, le.Level);
 
-                lock (this)
-                {
-                    StreamWriter logfile = File.AppendText(RadegastInstance.GlobalInstance.GlobalLogFile);
-                    logfile.WriteLine(loggingMessage);
-                    logfile.Close();
-                    logfile.Dispose();
-                }
                 string regex = @"^(?<Front>.*?)\[(?<Category>[^\]]+)\]:?(?<End>.*)";
 
                 Regex RE = new Regex(regex, RegexOptions.Multiline);
@@ -89,11 +82,16 @@ namespace Radegast
                 {
                     System.Console.WriteLine(loggingMessage);
                 }
+
+                lock (this)
+                {
+                    StreamWriter logfile = File.AppendText(RadegastInstance.GlobalInstance.GlobalLogFile);
+                    logfile.WriteLine(loggingMessage);
+                    logfile.Close();
+                    logfile.Dispose();
+                }
             }
-            catch (Exception e)
-            {
-                System.Console.WriteLine("Couldn't write out log message", e.ToString());
-            }
+            catch (Exception) { }
         }
 
         private void WriteColorText(ConsoleColor color, string sender)

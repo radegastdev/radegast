@@ -75,6 +75,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="fmodex-dotnet, Version=4.26.7.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -92,6 +93,9 @@
   <ItemGroup>
     <Compile Include="Core\AutoPilot.cs" />
     <Compile Include="Core\ChatBufferItem.cs" />
+    <Compile Include="Core\Media\MediaManager.cs" />
+    <Compile Include="Core\Media\MediaObject.cs" />
+    <Compile Include="Core\Media\Sound.cs" />
     <Compile Include="Core\Settings.cs" />
     <Compile Include="Core\IRadegastPlugin.cs" />
     <Compile Include="Core\ListItems\PreferencePaneListItem.cs" />
@@ -688,6 +692,18 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="fmodex-dotnet.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="libfmodex-4.26.07.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="libfmodex-4.26.07.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="libfmodex64-4.26.07.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="libopenjpeg-dotnet-2.1.3.0-dotnet-1-i686.so">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -939,6 +955,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="openjpeg-dotnet.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assemblies\fmodex-dotnet.dll" />
+    <None Include="fmodex.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="openmetaverse_data\avatar_lad.xml">

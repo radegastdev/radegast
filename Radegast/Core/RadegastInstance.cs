@@ -34,6 +34,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using Radegast.Netcom;
+using Radegast.Media;
 using OpenMetaverse;
 
 namespace Radegast
@@ -120,6 +121,12 @@ namespace Radegast
 
         public readonly List<IRadegastPlugin> PluginsLoaded = new List<IRadegastPlugin>();
 
+        private MediaManager mediaManager;
+        /// <summary>
+        /// Radegast media manager for playing streams and in world sounds
+        /// </summary>
+        public MediaManager MediaManager { get { return mediaManager; } }
+
         public RadegastInstance(GridClient client0)
         {
             // incase something else calls GlobalInstance while we are loading
@@ -129,6 +136,8 @@ namespace Radegast
 
             netcom = new RadegastNetcom(client);
             state = new StateManager(this);
+            mediaManager = new MediaManager();
+
             InitializeLoggingAndConfig();
 
             client.Settings.MULTIPLE_SIMS = true;
@@ -192,6 +201,8 @@ namespace Radegast
                 });
             }
 
+            mediaManager.Dispose();
+            mediaManager = null;
             state.Dispose();
             state = null;
             netcom.Dispose();
