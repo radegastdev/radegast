@@ -19,7 +19,7 @@ namespace Radegast.Commands
 
         public string Usage
         {
-            get { return "loadplugin c:\\myplugindir\\plugin.dll"; }
+            get { return "loadplugin c:\\\\myplugindir\\\\plugin.dll"; }
         }
 
         public void StartCommand(RadegastInstance inst)

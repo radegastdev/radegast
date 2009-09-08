@@ -33,18 +33,10 @@ namespace Radegast.Commands
             return cmd;
         }
 
-        public void AddExtraManager(ICommandInterpreter manager)
-        {
-            lock (InterpretersLoaded)
-            {
-                InterpretersLoaded.Add(manager);
-            }
-        }
-
         public void Help(string args, ConsoleWriteLine WriteLine)
         {
             int found = 0;
-            WriteLine("Result of Help : (0)", args);
+            WriteLine("Result of Help : {0}", args);
             foreach (var cmd in instance.CommandsManager.GetCommands())
             {
                 if (args != "" && !args.Contains(cmd.Name) && !cmd.Name.Contains(args)) continue;
@@ -116,7 +108,9 @@ namespace Radegast.Commands
 
         private void WriteLine(string fmt, object[] args)
         {
-            instance.TabConsole.DisplayNotificationInChat(String.Format(fmt, args));
+            String str = String.Format(fmt, args);
+            str = str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").TrimEnd();
+            instance.TabConsole.DisplayNotificationInChat(str);
         }
 
         public void ExecuteCommand(string cmd)
@@ -155,7 +149,15 @@ namespace Radegast.Commands
             IRadegastCommand cmdimpl;
             if (CommandsByName.TryGetValue(cmd.ToLower(), out cmdimpl))
             {
-                cmdimpl.Execute(cmd, parms, WriteLine);
+                try
+                {
+                    cmdimpl.Execute(cmd, parms, WriteLine);
+                }
+                catch (Exception ex)
+                {
+                    WriteLine("Execute command error: {0} {1}\n{2} {3}", 
+                        cmd, string.Join(" ", parms), ex.Message, ex.StackTrace);
+                }
                 return;
             }
             WriteLine("Command no found {0}", cmd);
@@ -273,8 +275,8 @@ namespace Radegast.Commands
                 }
                 else
                 {
-                    if (escaped)
-                        throw new FormatException(c.ToString() + " is not an escapable character.");
+                    if (escaped) escaped = false;
+                        //throw new FormatException(c.ToString() + " is not an escapable character.");
                     current += c;
                 }
             }
