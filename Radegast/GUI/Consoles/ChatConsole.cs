@@ -278,7 +278,9 @@ namespace Radegast
                 ch = int.Parse(m.Groups[1].Value);
                 msg = m.Groups[2].Value;
             }
-
+            if (instance.CommandsManager.IsValidCommand(msg))
+              instance.CommandsManager.ExecuteCommand(msg);
+             else 
             netcom.ChatOut(msg, type, ch);
             ClearChatInput();
         }

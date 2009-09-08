@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using Radegast.Commands;
 using Radegast.Netcom;
 using Radegast.Media;
 using OpenMetaverse;
@@ -127,6 +128,13 @@ namespace Radegast
         /// </summary>
         public MediaManager MediaManager { get { return mediaManager; } }
 
+
+        private CommandsManager commandsManager;
+        /// <summary>
+        /// Radegast command manager for executing textual console commands
+        /// </summary>
+        public CommandsManager CommandsManager { get { return commandsManager; } }
+
         public RadegastInstance(GridClient client0)
         {
             // incase something else calls GlobalInstance while we are loading
@@ -137,6 +145,7 @@ namespace Radegast
             netcom = new RadegastNetcom(client);
             state = new StateManager(this);
             mediaManager = new MediaManager();
+            commandsManager = new CommandsManager(this);
 
             InitializeLoggingAndConfig();
 
@@ -199,8 +208,9 @@ namespace Radegast
                     }
                     catch (Exception) { }
                 });
-            }
-
+            }                        
+            commandsManager.Dispose();
+            commandsManager = null;
             mediaManager.Dispose();
             mediaManager = null;
             state.Dispose();
@@ -223,27 +233,7 @@ namespace Radegast
                     try
                     {
                         Assembly assembly = Assembly.LoadFile(loadfilename);
-                        foreach (Type type in assembly.GetTypes())
-                        {
-                            if (typeof(IRadegastPlugin).IsAssignableFrom(type))
-                            {
-                                foreach (var ci in type.GetConstructors())
-                                {
-                                    if (ci.GetParameters().Length > 0) continue;
-                                    try
-                                    {
-                                        IRadegastPlugin plug = (IRadegastPlugin)ci.Invoke(new object[0]);
-                                        plug.StartPlugin(this);
-                                        lock (PluginsLoaded) PluginsLoaded.Add(plug);
-                                        break;
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logger.Log("ERROR in Radegast Plugin: " + ex.Message, Helpers.LogLevel.Debug);
-                                    }
-                                }
-                            }
-                        }
+                        LoadAssembly(loadfilename, assembly);
                     }
                     catch (BadImageFormatException)
                     {
@@ -252,6 +242,48 @@ namespace Radegast
                     catch (ReflectionTypeLoadException)
                     {
                         // Out of date or dlls missing sub dependencies
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " because " + ex.Message + " " + ex.StackTrace, Helpers.LogLevel.Debug);
+                    }
+                }
+            }
+        }
+
+        public void LoadAssembly(string loadfilename, Assembly assembly)
+        {
+            foreach (Type type in assembly.GetTypes())
+            {
+                if (typeof(IRadegastPlugin).IsAssignableFrom(type))
+                {
+                    foreach (var ci in type.GetConstructors())
+                    {
+                        if (ci.GetParameters().Length > 0) continue;
+                        try
+                        {
+                            IRadegastPlugin plug = (IRadegastPlugin)ci.Invoke(new object[0]);
+                            plug.StartPlugin(this);
+                            lock (PluginsLoaded) PluginsLoaded.Add(plug);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because " + ex.Message, Helpers.LogLevel.Debug);
+                            throw ex;
+                        }
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        commandsManager.LoadType(type);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " Command: " + type +
+                                   " because " + ex.Message + " " + ex.StackTrace, Helpers.LogLevel.Debug);
                     }
                 }
             }
