@@ -57,6 +57,8 @@ namespace Radegast
             get { return tabsConsole; }
         }
 
+        public MediaConsole MediaConsole { get { return mediaConsole; } }
+
         /// <summary>
         /// Drop down that contants the tools menu
         /// </summary>
@@ -86,6 +88,7 @@ namespace Radegast
         private AutoPilot ap;
         private bool AutoPilotActive = false;
         private TransparentButton btnDialogNextControl;
+        private MediaConsole mediaConsole;
         #endregion
 
         #region Constructor and disposal
@@ -170,6 +173,7 @@ namespace Radegast
         {
             InitializeTabsConsole();
             InitializeDebugLogForm();
+            mediaConsole = new MediaConsole(instance);
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
@@ -205,6 +209,12 @@ namespace Radegast
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (mediaConsole != null)
+            {
+                mediaConsole.Dispose();
+                mediaConsole = null;
+            }
+
             if (debugLogForm != null)
             {
                 debugLogForm.Close();
@@ -898,5 +908,10 @@ namespace Radegast
         }
 
         #endregion
+
+        private void mediaConsoleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.MediaConsole.Detached = true;
+        }
     }
 }

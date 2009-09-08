@@ -42,7 +42,7 @@ namespace Radegast.Media
         public bool Disposed { get { return disposed; } }
         private bool disposed = false;
 
-        public FMOD.System System { get { return System; } }
+        public FMOD.System FMODSystem { get { return system; } }
         /// <summary>
         /// Base FMOD system object
         /// </summary>

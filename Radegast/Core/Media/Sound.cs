@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Text;
 using FMOD;
 using OpenMetaverse;
+using System.Runtime.InteropServices;
 
 namespace Radegast.Media
 {
@@ -80,7 +81,7 @@ namespace Radegast.Media
             :base(system)
         {
             timer = new System.Timers.Timer();
-            timer.Interval = 10d;
+            timer.Interval = 100d;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
             timer.Enabled = false;
         }
@@ -114,7 +115,7 @@ namespace Radegast.Media
         {
             if (!soundcreated)
             {
-                system.createSound(url, (FMOD.MODE.SOFTWARE | FMOD.MODE._2D | FMOD.MODE.CREATESTREAM | FMOD.MODE.NONBLOCKING), ref sound);
+                system.createSound(url, (FMOD.MODE.HARDWARE | FMOD.MODE._2D | FMOD.MODE.CREATESTREAM | FMOD.MODE.NONBLOCKING), ref sound);
                 soundcreated = true;
                 timer.Enabled = true;
             }
@@ -162,6 +163,10 @@ namespace Radegast.Media
                         if (tag.datatype != FMOD.TAGDATATYPE.STRING)
                         {
                             break;
+                        }
+                        else
+                        {
+                           Logger.DebugLog("n" + tag.name + " = " + Marshal.PtrToStringAnsi(tag.data));
                         }
                     }
 

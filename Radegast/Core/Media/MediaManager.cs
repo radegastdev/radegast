@@ -44,7 +44,6 @@ namespace Radegast.Media
         public bool SoundSystemAvailable { get { return soundSystemAvailable; } }
         private bool soundSystemAvailable = false;
 
-        private FMOD.Sound stream = null;
         private List<MediaObject> sounds = new List<MediaObject>();
 
         /// <summary>
@@ -53,9 +52,11 @@ namespace Radegast.Media
         public Sound ParcelMusic { get { return parcelMusic; } }
         private Sound parcelMusic;
 
-        public MediaManager()
+        public MediaManager(RadegastInstance instance)
             : base(null)
         {
+            if (instance.MonoRuntime) return;
+
             try
             {
                 FMODExec(FMOD.Factory.System_Create(ref system));
@@ -68,11 +69,9 @@ namespace Radegast.Media
                 FMODExec(system.init(100, FMOD.INITFLAG.NORMAL, (IntPtr)null));
                 FMODExec(system.setStreamBufferSize(64 * 1024, FMOD.TIMEUNIT.RAWBYTES));
 
+                parcelMusic = new Sound(system);
+
                 soundSystemAvailable = true;
-
-                //parcelMusic = new Sound(system);
-                //parcelMusic.PlayStream("http://scfire-ntc-aa06.stream.aol.com:80/stream/1065");
-
                 Logger.Log("Initialized FMOD Ex", Helpers.LogLevel.Debug);
             }
             catch (Exception ex)

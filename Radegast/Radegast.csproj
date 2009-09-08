@@ -93,6 +93,12 @@
   <ItemGroup>
     <Compile Include="Core\AutoPilot.cs" />
     <Compile Include="Core\ChatBufferItem.cs" />
+    <Compile Include="Core\Commands\CommandsManager.cs" />
+    <Compile Include="Core\Commands\ICommandInterpreter.cs" />
+    <Compile Include="Core\Commands\IRadegastCommand.cs" />
+    <Compile Include="Core\Commands\LoadPluginCommand.cs" />
+    <Compile Include="Core\Commands\RadegastCommand.cs" />
+    <Compile Include="Core\Commands\ThreadCommand.cs" />
     <Compile Include="Core\Media\MediaManager.cs" />
     <Compile Include="Core\Media\MediaObject.cs" />
     <Compile Include="Core\Media\Sound.cs" />
@@ -359,6 +365,12 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Core\RichTextBoxPrinter.cs" />
+    <Compile Include="GUI\Consoles\MediaConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\MediaConsole.Designer.cs">
+      <DependentUpon>MediaConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Notifications\FriendshipOfferNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -567,6 +579,9 @@
     <EmbeddedResource Include="GUI\Dialogs\Teleport.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Teleport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\MediaConsole.resx">
+      <DependentUpon>MediaConsole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Notifications\FriendshipOfferNotification.resx">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
@@ -982,6 +997,8 @@
     <None Include="Resources\del_trans.png" />
     <None Include="Resources\radegast_icon.ico" />
     <None Include="Resources\checkerboard.png" />
+    <Content Include="Resources\btn_play.png" />
+    <Content Include="Resources\btn_stop.png" />
     <Content Include="worldmap.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

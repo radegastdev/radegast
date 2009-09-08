@@ -142,9 +142,12 @@ namespace Radegast
 
             client = client0;
 
+            // Are we running mono?
+            monoRuntime = Type.GetType("Mono.Runtime") != null;
+
             netcom = new RadegastNetcom(client);
             state = new StateManager(this);
-            mediaManager = new MediaManager();
+            mediaManager = new MediaManager(this);
             commandsManager = new CommandsManager(this);
 
             InitializeLoggingAndConfig();
@@ -420,9 +423,6 @@ namespace Radegast
 
         private void InitializeLoggingAndConfig()
         {
-            // Are we running mono?
-            monoRuntime = Type.GetType("Mono.Runtime") != null;
-
             try
             {
                 userDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), Properties.Resources.ProgramName);

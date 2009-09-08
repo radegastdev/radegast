@@ -95,6 +95,20 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap btn_play {
+            get {
+                object obj = ResourceManager.GetObject("btn_play", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap btn_stop {
+            get {
+                object obj = ResourceManager.GetObject("btn_stop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap checkerboard {
             get {
                 object obj = ResourceManager.GetObject("checkerboard", resourceCulture);
