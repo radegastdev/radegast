@@ -108,7 +108,7 @@ namespace Radegast
 
             if (string.IsNullOrEmpty(name))
             {
-                using (ManualResetEvent done = new ManualResetEvent(false))
+                ManualResetEvent done = new ManualResetEvent(false);               
                 {
 
                     AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
