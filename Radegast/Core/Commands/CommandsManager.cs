@@ -93,13 +93,13 @@ namespace Radegast.Commands
 
         }
 
-        private void LoadInterpreter(ICommandInterpreter interpreter)
+        public void LoadInterpreter(ICommandInterpreter interpreter)
         {
             interpreter.StartInterpreter(instance);
             lock (InterpretersLoaded) InterpretersLoaded.Add(interpreter);
         }
 
-        private void LoadCommand(IRadegastCommand command)
+        public void LoadCommand(IRadegastCommand command)
         {
             command.StartCommand(instance);
             CommandsByName[command.Name.ToLower()] = command;
