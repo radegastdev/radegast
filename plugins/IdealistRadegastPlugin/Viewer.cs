@@ -19,7 +19,7 @@ using IConfigSource = Nini.Config.IConfigSource;
 using IniConfigSource = Nini.Config.IniConfigSource;
 using Console = IdealistViewer.Console;
 using MainConsole=IdealistViewer.MainConsole;
-//using Renderer = IdealistRadegastPlugin.Renderer;
+using Renderer = IdealistRadegastPlugin.RaegastRenderer;
 
 namespace IdealistRadegastPlugin
 {

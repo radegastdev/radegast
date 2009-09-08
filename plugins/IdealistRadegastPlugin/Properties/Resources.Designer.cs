@@ -59,12 +59,5 @@ namespace IdealistRadegastPlugin.Properties {
                 resourceCulture = value;
             }
         }
-        
-        internal static System.Drawing.Bitmap radegast {
-            get {
-                object obj = ResourceManager.GetObject("radegast", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

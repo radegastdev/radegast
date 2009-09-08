@@ -25,6 +25,7 @@ namespace IdealistRadegastPlugin
         }
         public void StartPlugin(RadegastInstance inst)
         {
+            return;
             Instance = inst;
             XmlConfigurator.Configure();
 
