@@ -49,13 +49,13 @@ namespace Radegast.Media
         /// <summary>
         /// Parcel music stream player
         /// </summary>
-        public Sound ParcelMusic { get { return parcelMusic; } }
+        public Sound ParcelMusic { get { return parcelMusic; } set { parcelMusic = value; } }
         private Sound parcelMusic;
 
         public MediaManager(RadegastInstance instance)
             : base(null)
         {
-            if (instance.MonoRuntime) return;
+            if (Environment.OSVersion.Platform == PlatformID.Unix) return;
 
             try
             {
@@ -66,10 +66,10 @@ namespace Radegast.Media
                 if (version < FMOD.VERSION.number)
                     throw new MediaException("You are using an old version of FMOD " + version.ToString("X") + ".  This program requires " + FMOD.VERSION.number.ToString("X") + ".");
 
+                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                    FMODExec(system.setOutput(FMOD.OUTPUTTYPE.ESD));
                 FMODExec(system.init(100, FMOD.INITFLAG.NORMAL, (IntPtr)null));
                 FMODExec(system.setStreamBufferSize(64 * 1024, FMOD.TIMEUNIT.RAWBYTES));
-
-                parcelMusic = new Sound(system);
 
                 soundSystemAvailable = true;
                 Logger.Log("Initialized FMOD Ex", Helpers.LogLevel.Debug);

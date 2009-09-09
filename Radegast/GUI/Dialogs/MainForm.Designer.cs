@@ -81,7 +81,6 @@ namespace Radegast
             this.tmnuPrefs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.mediaConsoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnDebug = new System.Windows.Forms.ToolStripDropDownButton();
             this.tmnuDebugLog = new System.Windows.Forms.ToolStripMenuItem();
@@ -127,6 +126,7 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
+            this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -147,7 +147,8 @@ namespace Radegast
             this.tbnPlugins,
             this.tbnObjects,
             this.tbtnGroups,
-            this.lblTime});
+            this.lblTime,
+            this.tbtnMedia});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(738, 25);
@@ -166,8 +167,7 @@ namespace Radegast
             this.toolStripMenuItem3,
             this.tmnuPrefs,
             this.toolStripMenuItem2,
-            this.tmnuExit,
-            this.mediaConsoleToolStripMenuItem});
+            this.tmnuExit});
             this.tbtnSLeek.Image = global::Radegast.Properties.Resources.computer_16;
             this.tbtnSLeek.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnSLeek.Name = "tbtnSLeek";
@@ -219,14 +219,6 @@ namespace Radegast
             this.tmnuExit.Size = new System.Drawing.Size(162, 22);
             this.tmnuExit.Text = "E&xit";
             this.tmnuExit.Click += new System.EventHandler(this.tmnuExit_Click);
-            // 
-            // mediaConsoleToolStripMenuItem
-            // 
-            this.mediaConsoleToolStripMenuItem.Name = "mediaConsoleToolStripMenuItem";
-            this.mediaConsoleToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.mediaConsoleToolStripMenuItem.Text = "Media Console...";
-            this.mediaConsoleToolStripMenuItem.Visible = false;
-            this.mediaConsoleToolStripMenuItem.Click += new System.EventHandler(this.mediaConsoleToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -645,6 +637,17 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
+            // tbtnMedia
+            // 
+            this.tbtnMedia.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnMedia.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMedia.Image")));
+            this.tbtnMedia.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnMedia.Name = "tbtnMedia";
+            this.tbtnMedia.Size = new System.Drawing.Size(44, 22);
+            this.tbtnMedia.Text = "Media";
+            this.tbtnMedia.Visible = false;
+            this.tbtnMedia.Click += new System.EventHandler(this.tbtnMedia_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -732,7 +735,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem tmnuTeleportHome;
         private System.Windows.Forms.ToolStripLabel lblTime;
         private System.Windows.Forms.Timer timerWorldClock;
-        private System.Windows.Forms.ToolStripMenuItem mediaConsoleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton tbtnMedia;
     }
 }
 

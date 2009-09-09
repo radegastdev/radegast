@@ -37,6 +37,17 @@ using System.Runtime.InteropServices;
 
 namespace Radegast.Media
 {
+    public class StreamInfoArgs : EventArgs
+    {
+        public string Key;
+        public string Value;
+
+        public StreamInfoArgs(string key, string value)
+        {
+            Key = key;
+            Value = value;
+        }
+    }
 
     public class Sound : MediaObject
     {
@@ -70,6 +81,18 @@ namespace Radegast.Media
         public bool Paused { get { return paused; } }
         private bool paused = false;
 
+        /// <summary>
+        /// Fired when a stream meta data is received
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Key, value are sent in e</param>
+        public delegate void StreamInfoCallback(object sender, StreamInfoArgs e);
+
+        /// <summary>
+        /// Fired when a stream meta data is received
+        /// </summary>
+        public event StreamInfoCallback OnStreamInfo;
+
         private bool soundcreated = false;
         private System.Timers.Timer timer;
 
@@ -81,7 +104,7 @@ namespace Radegast.Media
             :base(system)
         {
             timer = new System.Timers.Timer();
-            timer.Interval = 100d;
+            timer.Interval = 500d;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
             timer.Enabled = false;
         }
@@ -115,9 +138,10 @@ namespace Radegast.Media
         {
             if (!soundcreated)
             {
-                system.createSound(url, (FMOD.MODE.HARDWARE | FMOD.MODE._2D | FMOD.MODE.CREATESTREAM | FMOD.MODE.NONBLOCKING), ref sound);
+                MediaManager.FMODExec(system.createSound(url, (FMOD.MODE.HARDWARE | FMOD.MODE._2D | FMOD.MODE.CREATESTREAM | FMOD.MODE.NONBLOCKING), ref sound));
                 soundcreated = true;
                 timer.Enabled = true;
+                timer_Elapsed(null, null);
             }
         }
 
@@ -132,6 +156,17 @@ namespace Radegast.Media
                 channel.setPaused(!paused);
             }
         }
+
+        /// <summary>
+        /// Set or get current volume for this sound in range 0.0 - 1.0
+        /// </summary>
+        public float Volume
+        {
+            set { volume = value; }
+            get { return volume; }
+        }
+        private float volume = 0.5f;
+        private float currentVolume;
 
         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -148,11 +183,19 @@ namespace Radegast.Media
                     if (openstate == FMOD.OPENSTATE.READY && channel == null)
                     {
                         MediaManager.FMODExec(system.playSound(FMOD.CHANNELINDEX.FREE, sound, false, ref channel));
+                        MediaManager.FMODExec(channel.setVolume(volume));
+                        currentVolume = volume;
                     }
                 }
 
                 if (channel != null)
                 {
+                    if (currentVolume != volume)
+                    {
+                        currentVolume = volume;
+                        MediaManager.FMODExec(channel.setVolume(volume));
+                    }
+
                     for (; ; )
                     {
                         FMOD.TAG tag = new FMOD.TAG();
@@ -166,7 +209,9 @@ namespace Radegast.Media
                         }
                         else
                         {
-                           Logger.DebugLog("n" + tag.name + " = " + Marshal.PtrToStringAnsi(tag.data));
+                            if (OnStreamInfo != null)
+                                try { OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data))); }
+                                catch (Exception) { }
                         }
                     }
 

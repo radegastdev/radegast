@@ -173,7 +173,11 @@ namespace Radegast
         {
             InitializeTabsConsole();
             InitializeDebugLogForm();
-            mediaConsole = new MediaConsole(instance);
+            if (instance.MediaManager.SoundSystemAvailable)
+            {
+                mediaConsole = new MediaConsole(instance);
+                tbtnMedia.Visible = true;
+            }
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
@@ -907,11 +911,14 @@ namespace Radegast
             lblTime.Text = now.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
         }
 
-        #endregion
-
-        private void mediaConsoleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tbtnMedia_Click(object sender, EventArgs e)
         {
-            this.MediaConsole.Detached = true;
+            if (!mediaConsole.Detached)
+                mediaConsole.Detached = true;
+            else
+                mediaConsole.Focus();
         }
+
+        #endregion
     }
 }

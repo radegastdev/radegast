@@ -47,6 +47,11 @@ namespace Radegast
         protected Control OriginalParent;
         protected Size AttachedSize;
 
+        /// <summary>
+        /// If in detached state and detached form is closing and we have no parent
+        /// do we dispose ourselves</summary>
+        public bool DisposeOnDetachedClose = true;
+
         public DettachableControl()
             : base()
         {
@@ -145,8 +150,9 @@ namespace Radegast
             {
                 OriginalParent.ControlAdded -= new ControlEventHandler(originalParent_ControlAdded);
                 Size = AttachedSize;
-                Parent = OriginalParent;
             }
+
+            Parent = OriginalParent;
 
             if (detachedForm != null)
             {
@@ -154,7 +160,7 @@ namespace Radegast
                 detachedForm = null;
             }
 
-            if (OriginalParent == null)
+            if (OriginalParent == null && DisposeOnDetachedClose)
             {
                 Dispose();
             }

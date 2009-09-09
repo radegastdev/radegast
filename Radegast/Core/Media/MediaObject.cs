@@ -55,11 +55,6 @@ namespace Radegast.Media
 
         public virtual void Dispose()
         {
-            if (system != null)
-            {
-                system.release();
-                system = null;
-            }
             disposed = true;
         }
     }
