@@ -66,17 +66,77 @@ namespace Radegast.Media
                 if (version < FMOD.VERSION.number)
                     throw new MediaException("You are using an old version of FMOD " + version.ToString("X") + ".  This program requires " + FMOD.VERSION.number.ToString("X") + ".");
 
-                if (Environment.OSVersion.Platform == PlatformID.Unix)
+                // Assume no special hardware capabilities except 5.1 surround sound.
+                FMOD.CAPS caps = FMOD.CAPS.NONE;
+                FMOD.SPEAKERMODE speakermode = FMOD.SPEAKERMODE._5POINT1;
+
+                // Get the capabilities of the driver.
+                int minfrequency = 0, maxfrequency = 0;
+                StringBuilder name = new StringBuilder(128);
+                FMODExec(system.getDriverCaps(0, ref caps,
+                    ref minfrequency, ref maxfrequency,
+                    ref speakermode)
+                );
+
+                // Set FMOD speaker mode to what the driver supports.
+                FMODExec(system.setSpeakerMode(speakermode));
+
+                // Forcing the ESD sound system on Linux seems to avoid a CPU loop
+                if (System.Environment.OSVersion.Platform == PlatformID.Unix)
                     FMODExec(system.setOutput(FMOD.OUTPUTTYPE.ESD));
-                FMODExec(system.init(100, FMOD.INITFLAG.NORMAL, (IntPtr)null));
-                FMODExec(system.setStreamBufferSize(64 * 1024, FMOD.TIMEUNIT.RAWBYTES));
+
+                // The user has the 'Acceleration' slider set to off, which
+                // is really bad for latency.  At 48khz, the latency between
+                // issuing an fmod command and hearing it will now be about 213ms.
+                if ((caps & FMOD.CAPS.HARDWARE_EMULATED) == FMOD.CAPS.HARDWARE_EMULATED)
+                {
+                    FMODExec(system.setDSPBufferSize(1024, 10));
+                }
+
+                // Get driver information so we can check for a wierd one.
+                FMOD.GUID guid = new FMOD.GUID();
+                FMODExec(system.getDriverInfo(0, name, 128, ref guid));
+
+                // Sigmatel sound devices crackle for some reason if the format is pcm 16bit.
+                // pcm floating point output seems to solve it.
+                if (name.ToString().IndexOf("SigmaTel") != -1)
+                {
+                    FMODExec(system.setSoftwareFormat(
+                        48000,
+                        FMOD.SOUND_FORMAT.PCMFLOAT,
+                        0, 0,
+                        FMOD.DSP_RESAMPLER.LINEAR)
+                    );
+                }
+
+                // Try to initialize with all those settings, and Max 32 channels.
+                FMOD.RESULT result = system.init(32, FMOD.INITFLAG.NORMAL, (IntPtr)null);
+                if (result == FMOD.RESULT.ERR_OUTPUT_CREATEBUFFER)
+                {
+                    // Can not handle surround sound - back to Stereo.
+                    FMODExec(system.setSpeakerMode(FMOD.SPEAKERMODE.STEREO));
+
+                    // And init again.
+                    FMODExec(system.init(
+                        32,
+                        FMOD.INITFLAG.NORMAL,
+                        (IntPtr)null)
+                    );
+                }
+
+                // Set real-world effect scales.
+                FMODExec(system.set3DSettings(
+                    1.0f,   // Doppler scale
+                    1.0f,   // Distance scale is meters
+                    1.0f)   // Rolloff factor
+                );
 
                 soundSystemAvailable = true;
                 Logger.Log("Initialized FMOD Ex", Helpers.LogLevel.Debug);
             }
             catch (Exception ex)
             {
-                Logger.Log("Failed to initialize the sound system", Helpers.LogLevel.Warning, ex);
+                Logger.Log("Failed to initialize the sound system: ", Helpers.LogLevel.Warning, ex);
             }
         }
 
