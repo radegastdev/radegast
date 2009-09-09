@@ -71,6 +71,7 @@ namespace Radegast
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
+            client.Self.RequestLeaveGroupChat(session);
             client.Self.OnGroupChatJoin -= new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
             client.Self.OnChatSessionMemberAdded -= new AgentManager.ChatSessionMemberAddedCallback(Self_OnChatSessionMemberAdded);
             client.Self.OnChatSessionMemberLeft -= new AgentManager.ChatSessionMemberLeftCallback(Self_OnChatSessionMemberLeft);
