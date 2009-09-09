@@ -701,8 +701,8 @@ namespace Radegast
 
             toolStripContainer1.ContentPanel.Controls.Add(imTab);
             SleekTab tab = AddTab(session.ToString(), "IM: " + targetName, imTab);
-            SelectTab(session.ToString());
             imTab.SelectIMInput();
+            tab.Highlight();
 
             return imTab;
         }
