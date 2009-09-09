@@ -135,6 +135,12 @@ namespace Radegast
         /// </summary>
         public CommandsManager CommandsManager { get { return commandsManager; } }
 
+        private SleekMovement movement;
+        /// <summary>
+        /// Allows key emulation for moving avatar around
+        /// </summary>
+        public SleekMovement Movement { get { return movement; } }
+
         public RadegastInstance(GridClient client0)
         {
             // incase something else calls GlobalInstance while we are loading
@@ -149,6 +155,7 @@ namespace Radegast
             state = new StateManager(this);
             mediaManager = new MediaManager(this);
             commandsManager = new CommandsManager(this);
+            movement = new SleekMovement(client);
 
             InitializeLoggingAndConfig();
 
@@ -211,7 +218,10 @@ namespace Radegast
                     }
                     catch (Exception) { }
                 });
-            }                        
+            }
+
+            movement.Dispose();
+            movement = null;
             commandsManager.Dispose();
             commandsManager = null;
             mediaManager.Dispose();

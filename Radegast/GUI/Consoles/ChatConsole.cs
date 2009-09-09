@@ -48,7 +48,7 @@ namespace Radegast
         private ChatTextManager chatManager;
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
-        private SleekMovement movement;
+        private SleekMovement movement { get { return instance.Movement; } }
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
         private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();
@@ -76,8 +76,6 @@ namespace Radegast
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             client.Grid.OnCoarseLocationUpdate += new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
-
-            movement = new SleekMovement(client);
 
             chatManager = new ChatTextManager(instance, new RichTextBoxPrinter(rtbChat));
             chatManager.PrintStartupMessage();

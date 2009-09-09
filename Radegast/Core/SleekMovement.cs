@@ -28,12 +28,13 @@
 //
 // $Id$
 //
+using System;
 using System.Timers;
 using OpenMetaverse;
 
 namespace Radegast
 {
-    public class SleekMovement
+    public class SleekMovement : IDisposable
     {
         private GridClient client;
         private Timer timer;
@@ -135,6 +136,13 @@ namespace Radegast
             timer = new System.Timers.Timer(250);
             timer.Elapsed +=new ElapsedEventHandler(timer_Elapsed);
             timer.Enabled = false;
+        }
+
+        public void Dispose()
+        {
+            timer.Enabled = false;
+            timer.Dispose();
+            timer = null;
         }
 
         void timer_Elapsed(object sender, ElapsedEventArgs e)
