@@ -85,6 +85,8 @@ namespace Radegast
 
                 lock (this)
                 {
+                    // No need to have ArgumemntNullException in File.AppendText
+                    if (RadegastInstance.GlobalInstance.GlobalLogFile==null) return;
                     StreamWriter logfile = File.AppendText(RadegastInstance.GlobalInstance.GlobalLogFile);
                     logfile.WriteLine(loggingMessage);
                     logfile.Close();

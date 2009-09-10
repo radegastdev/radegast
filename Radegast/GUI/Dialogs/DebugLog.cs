@@ -37,6 +37,15 @@ namespace Radegast
     {
         private RadegastInstance instance;
 
+        new public void Close()
+        {
+            if (rtbLog.InvokeRequired)
+            {
+                rtbLog.BeginInvoke(new MethodInvoker(Close));
+            } else
+            base.Close(); 
+        }
+
         public frmDebugLog(RadegastInstance instance)
         {
             InitializeComponent();
@@ -50,9 +59,9 @@ namespace Radegast
 
         public void AddLogMessage(string msg, log4net.Core.Level level)
         {
-            if (InvokeRequired)
+            if (rtbLog.InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate() { AddLogMessage(msg, level); }));
+                rtbLog.BeginInvoke(new MethodInvoker(delegate() { AddLogMessage(msg, level); }));
                 return;
             }
 

@@ -28,6 +28,8 @@
 //
 // $Id$
 //
+using System.Windows.Forms;
+
 namespace Radegast
 {
     partial class frmDebugLog
@@ -36,7 +38,7 @@ namespace Radegast
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
+        
         /// <summary>
         /// Clean up any resources being used.
         /// </summary>
@@ -47,6 +49,11 @@ namespace Radegast
             {
                 components.Dispose();
             }
+            if (rtbLog.InvokeRequired)
+            {
+                rtbLog.BeginInvoke(new MethodInvoker(() => base.Dispose(disposing)));
+            }
+            else
             base.Dispose(disposing);
         }
 

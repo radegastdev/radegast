@@ -494,9 +494,10 @@ namespace Radegast
 
         public void AddLogMessage(string msg, log4net.Core.Level level)
         {
-            if (debugLogForm != null)
-            {
-                BeginInvoke(new MethodInvoker(delegate() { debugLogForm.AddLogMessage(msg, level); }));
+            if (debugLogForm != null && !debugLogForm.IsDisposed)
+            {            
+                // Log form handlles the InvokeNeeded                                      
+                debugLogForm.AddLogMessage(msg, level);
             }
         }
 
