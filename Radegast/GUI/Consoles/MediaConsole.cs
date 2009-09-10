@@ -35,6 +35,8 @@ namespace Radegast
         private bool playing;
         private string currentURL;
         private MediaManager mngr;
+        private readonly object parcelMusicLock = new object();
+
 
         public MediaConsole(RadegastInstance instance)
         {
@@ -102,41 +104,49 @@ namespace Radegast
                 BeginInvoke(new MethodInvoker(() => Parcels_OnParcelProperties(simulator, parcel, result, selectedPrims, sequenceID, snapSelection)));
                 return;
             }
-
-            txtAudioURL.Text = parcel.MusicURL;
-            if (playing)
+            lock (parcelMusicLock)
             {
-                if (currentURL != txtAudioURL.Text)
+                txtAudioURL.Text = parcel.MusicURL;
+                if (playing)
+                {
+                    if (currentURL != txtAudioURL.Text)
+                    {
+                        currentURL = txtAudioURL.Text;
+                        Play();
+                    }
+                }
+                else if (cbPlayAudioStream.Checked)
                 {
                     currentURL = txtAudioURL.Text;
                     Play();
                 }
             }
-            else if (cbPlayAudioStream.Checked)
-            {
-                currentURL = txtAudioURL.Text;
-                Play();
-            }
         }
 
         private void Stop()
         {
-            playing = false;
-            if (mngr.ParcelMusic != null)
-                mngr.ParcelMusic.Dispose();
-            mngr.ParcelMusic = null;
-            lblStation.Tag = lblStation.Text = string.Empty;
-            txtSongTitle.Text = string.Empty;
+            lock (parcelMusicLock)
+            {
+                playing = false;
+                if (mngr.ParcelMusic != null)
+                    mngr.ParcelMusic.Dispose();
+                mngr.ParcelMusic = null;
+                lblStation.Tag = lblStation.Text = string.Empty;
+                txtSongTitle.Text = string.Empty;
+            }
         }
 
         private void Play()
         {
-            Stop();
-            playing = true;
-            mngr.ParcelMusic = new Sound(mngr.FMODSystem);
-            mngr.ParcelMusic.Volume = audioVolume;
-            mngr.ParcelMusic.PlayStream(currentURL);
-            mngr.ParcelMusic.OnStreamInfo += new Sound.StreamInfoCallback(ParcelMusic_OnStreamInfo);
+            lock (parcelMusicLock)
+            {
+                Stop();
+                playing = true;
+                mngr.ParcelMusic = new Sound(mngr.FMODSystem);
+                mngr.ParcelMusic.Volume = audioVolume;
+                mngr.ParcelMusic.PlayStream(currentURL);
+                mngr.ParcelMusic.OnStreamInfo += new Sound.StreamInfoCallback(ParcelMusic_OnStreamInfo);
+            }
         }
 
         void ParcelMusic_OnStreamInfo(object sender, StreamInfoArgs e)
@@ -193,8 +203,9 @@ namespace Radegast
         private void volAudioStream_Scroll(object sender, EventArgs e)
         {
             configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
-            if (mngr.ParcelMusic != null)
-                mngr.ParcelMusic.Volume = volAudioStream.Value / 50f;
+            lock (parcelMusicLock)
+                if (mngr.ParcelMusic != null)
+                    mngr.ParcelMusic.Volume = volAudioStream.Value/50f;
         }
 
         private void txtAudioURL_TextChanged(object sender, EventArgs e)
@@ -214,7 +225,7 @@ namespace Radegast
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            if (!playing)
+            lock (parcelMusicLock) if (!playing)
             {
                 currentURL = txtAudioURL.Text;
                 Play();
@@ -223,7 +234,7 @@ namespace Radegast
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            if (playing)
+            lock (parcelMusicLock) if (playing)
             {
                 currentURL = string.Empty;
                 Stop();
