@@ -442,6 +442,8 @@ namespace Radegast
             int starPos;
             int endPos;
 
+			// Yes we want empty statement here
+			#pragma warning disable 642
             for (starPos = trackedPos; starPos >= 0 && validWordChar(trackedString[starPos]); starPos--) ;
             for (endPos = trackedPos; endPos < trackedString.Length && validWordChar(trackedString[endPos]); endPos++) ;
             string word = trackedString.Substring(starPos + 1, endPos - starPos - 1);

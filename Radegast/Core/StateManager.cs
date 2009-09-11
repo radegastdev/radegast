@@ -364,7 +364,7 @@ namespace Radegast
                 beamID = null;
             }
 
-            if (sphereID != null)
+            if (sphereID != UUID.Zero)
             {
                 client.Self.SphereEffect(Vector3d.Zero, Color4.White, 0, sphereID);
                 sphereID = UUID.Zero;

@@ -761,7 +761,7 @@ namespace Radegast
             txtCreator.Tag = item.CreatorID;
             txtCreated.Text = item.CreationDate.ToString();
 
-            if (item.AssetUUID != null && item.AssetUUID != UUID.Zero)
+            if (item.AssetUUID != UUID.Zero)
             {
                 txtAssetID.Text = item.AssetUUID.ToString();
             }

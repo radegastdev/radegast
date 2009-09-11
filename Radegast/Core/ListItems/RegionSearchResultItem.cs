@@ -126,7 +126,7 @@ namespace Radegast
 
         public void RequestMapImage(float priority)
         {
-            if (region.MapImageID == UUID.Zero || region.MapImageID == null)
+            if (region.MapImageID == UUID.Zero)
             {
                 imageDownloaded = true;
                 OnMapImageDownloaded(EventArgs.Empty);
