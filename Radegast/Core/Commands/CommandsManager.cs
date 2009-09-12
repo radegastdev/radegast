@@ -30,6 +30,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast.Commands
@@ -41,6 +42,11 @@ namespace Radegast.Commands
         public readonly Dictionary<string, IRadegastCommand> CommandsByName = new Dictionary<string, IRadegastCommand>();
         public readonly List<ICommandInterpreter> InterpretersLoaded = new List<ICommandInterpreter>();
         RadegastInstance instance;
+        public Queue<KeyValuePair<string, ThreadStart>> CommandQueue = new Queue<KeyValuePair<string, ThreadStart>>();
+        public AutoResetEvent CommandQueued = new AutoResetEvent(false);
+
+        private Thread _commandWorker;
+
         public CommandsManager(RadegastInstance inst)
         {
             instance = inst;
@@ -54,6 +60,64 @@ namespace Radegast.Commands
                                manager.Help(args, writeline);
                            }
                    });
+            _commandWorker = new Thread(CommandsManager_CommandWorker)
+                                {
+                                    Name = "CommandsManager Worker"
+                                };
+            _commandWorker.Start();
+        }
+
+        void CommandsManager_CommandWorker()
+        {
+            try
+            {
+                while (true)
+                {
+                    if (CommandQueue.Count == 0)
+                        CommandQueued.WaitOne();
+                    KeyValuePair<string, ThreadStart> todo;
+                    lock (CommandQueue)
+                    {
+                        if (CommandQueue.Count == 0)
+                        {
+                            continue;
+                        }
+                        todo = CommandQueue.Dequeue();
+                    }
+                    try
+                    {
+
+                        todo.Value();
+                    }
+                    catch (ThreadAbortException ex)
+                    {
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        instance.TabConsole.DisplayNotificationInChat(
+                            string.Format("Command error: {0} \n{1} {2} ", todo.Key, ex.Message, ex.StackTrace));
+                    }
+                }
+            }
+            finally
+            {
+                CommandQueue.Clear();
+                try
+                {
+                    CommandQueued.Close();
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        public void EnqueueCommand(string name, ThreadStart ts)
+        {
+            lock (CommandQueue)
+                CommandQueue.Enqueue(new KeyValuePair<string, ThreadStart>(name, ts));
+            CommandQueued.Set();
         }
 
         public IRadegastCommand AddCmd(string name, string desc, string usage, CommandExecuteDelegate executeDelegate)
@@ -158,27 +222,39 @@ namespace Radegast.Commands
             instance.TabConsole.DisplayNotificationInChat(str);
         }
 
-        public void ExecuteCommand(string cmd)
+        /// <summary>
+        /// Queues command for execution
+        /// </summary>
+        /// <param name="cmdline"></param>
+        public void ExecuteCommand(string cmdline)
         {
-            ExecuteCommand(WriteLine, cmd);
+            ExecuteCommand(this.WriteLine, cmdline);
         }
 
+        /// <summary>
+        /// Queues command for execution
+        /// </summary>
+        /// <param name="WriteLine"></param>
+        /// <param name="cmdline"></param>
         public void ExecuteCommand(ConsoleWriteLine WriteLine, string cmdline)
+        {
+            EnqueueCommand(cmdline, () => ExecuteCommandForeground(WriteLine, cmdline));
+        }
+
+        public void ExecuteCommandForeground(ConsoleWriteLine WriteLine, string cmdline)
         {
             if (cmdline == null) return;
             cmdline = cmdline.Trim();
+            List<ICommandInterpreter> interpretersLoadedLocal = new List<ICommandInterpreter>();
             lock (InterpretersLoaded)
-                foreach (ICommandInterpreter manager in InterpretersLoaded)
-                {
-                    if (manager.IsValidCommand(cmdline))
-                    {
-                        System.Threading.ThreadPool.QueueUserWorkItem((object state) =>
-                            {
-                                manager.ExecuteCommand(WriteLine, cmdline);
-                            });
-                        return;
-                    }
-                }
+                interpretersLoadedLocal.AddRange(InterpretersLoaded);
+            foreach (ICommandInterpreter manager in interpretersLoadedLocal)
+            {
+                if (!manager.IsValidCommand(cmdline)) continue;
+                // the command is queued from outside
+                manager.ExecuteCommand(WriteLine, cmdline);
+                return;
+            }
 
             // our local impl
             while (cmdline.StartsWith(CmdPrefix))
@@ -189,29 +265,20 @@ namespace Radegast.Commands
             if (cmdline == "") return;
             string[] parsd = ParseArguments(cmdline);
             string cmd = parsd[0];
-            ExecuteCommand(WriteLine, cmd, SplitOff(parsd, 1));
-        }
-
-        private void ExecuteCommand(ConsoleWriteLine WriteLine, string cmd, string[] parms)
-        {
             IRadegastCommand cmdimpl;
             if (CommandsByName.TryGetValue(cmd.ToLower(), out cmdimpl))
             {
                 try
                 {
-                    System.Threading.ThreadPool.QueueUserWorkItem((object state) =>
-                        {
-                            cmdimpl.Execute(cmd, parms, WriteLine);
-                        });
+                    cmdimpl.Execute(cmd, SplitOff(parsd, 1), WriteLine);
                 }
                 catch (Exception ex)
                 {
-                    WriteLine("Execute command error: {0} {1}\n{2} {3}",
-                        cmd, string.Join(" ", parms), ex.Message, ex.StackTrace);
-                }
+                    WriteLine("Command error: {0} \n{1} {2} ", cmdline, ex.Message, ex.StackTrace);
+                } 
                 return;
             }
-            WriteLine("Command no found {0}", cmd);
+            WriteLine("Command not found {0}", cmd);
         }
 
         public void Dispose()
@@ -241,6 +308,9 @@ namespace Radegast.Commands
                 InterpretersLoaded.Clear();
             }
             CommandsByName.Clear();
+            _commandWorker.Abort();
+            _commandWorker = null;
+            CommandQueued = null;
         }
 
         public void StartInterpreter(RadegastInstance inst)
@@ -353,7 +423,7 @@ namespace Radegast.Commands
                     if (manager.IsValidCommand(msg)) return true;
             msg = msg.Trim();
             if (!msg.StartsWith(CmdPrefix)) return false;
-            msg = msg.Substring(2);
+            msg = msg.Substring(CmdPrefix.Length);
             return CommandExists(ParseArguments(msg)[0]);
         }
 

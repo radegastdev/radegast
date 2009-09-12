@@ -36,7 +36,9 @@ namespace Radegast.Commands
 {
     public class ThreadCommand : IRadegastCommand
     {
-        readonly List<Thread> _commandThreads = new List<Thread>();
+        private List<Thread> _listed = null;
+        List<Thread> _commandThreads = new List<Thread>();
+        Queue<KeyValuePair<string, ThreadStart>> _commandQueue { get { return instance.CommandsManager.CommandQueue; } }
         private RadegastInstance instance;
         public string Name
         {
@@ -56,6 +58,8 @@ namespace Radegast.Commands
         public void StartCommand(RadegastInstance inst)
         {
             instance = inst;
+            instance.CommandsManager.CommandsByName.Add("kill", this);
+            instance.CommandsManager.CommandsByName.Add("threads", this);
         }
 
         public void Dispose()
@@ -76,42 +80,136 @@ namespace Radegast.Commands
         public void Execute(string threadCmd, string[] cmdArgs, ConsoleWriteLine WriteLine)
         {
             string args = String.Join(" ", cmdArgs);
-            if (args == string.Empty)
+            if (threadCmd == "kill")
             {
-                lock (_commandThreads)
+                if (_listed == null)
                 {
-                    if (_commandThreads.Count == 0)
+                    WriteLine("Must load the threadlist Using: thread");
+                    return;
+                }
+                lock (_listed)
+                {
+                    if (_listed.Count == 0)
                     {
-                        WriteLine("No threaded commands.");
+                        WriteLine("No threaded commands to kill.");
                     }
                     else
                     {
-                        WriteLine("Threaded command list");
-                        foreach (Thread thr in _commandThreads)
+                        WriteLine("Killing all threaded commands");
+                        int found = 0;
+                        foreach (var cmd in _listed)
                         {
-                            WriteLine(" * {0}", thr.Name);
+                            try
+                            {
+                                if (cmd.IsAlive)
+                                {
+                                    found++;
+                                    cmd.Abort();
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
                         }
-                        int found = _commandThreads.Count;
-                        WriteLine("Listed {0} threads{1}.", found, found == 1 ? "" : "s");
+                        WriteLine("Killed {0} thread{1}.", found, found == 1 ? "" : "s");
+                        _listed = null;
+
+                    }
+                }
+                lock (_commandQueue)
+                {
+                    int commandQueueCount = _commandQueue.Count;
+                    if (commandQueueCount == 0)
+                    {
+                        WriteLine("No queued commands.");
+                    }
+                    else
+                    {
+                        _commandQueue.Clear();
+                        WriteLine("Clear queued commands: " + commandQueueCount);
                     }
                 }
                 return;
             }
+
+            //cleared each time becasue the list will change 
+            _listed = null;
+            if (args == string.Empty)
+            {
+                lock (_commandThreads) _listed = new List<Thread>(_commandThreads);
+                if (_listed.Count == 0)
+                {
+                    WriteLine("No threaded commands.");
+                }
+                else
+                {
+                    int found = _listed.Count;
+                    WriteLine("Listing {0} thread{1}.", found, found == 1 ? "" : "s");
+                    for (int i = 0; i < _listed.Count; i++)
+                    {
+                        WriteLine(" * {0}: {1}", i, _listed[i].Name);
+                    }
+                }
+                lock (_commandQueue)
+                {
+                    if (_commandQueue.Count == 0)
+                    {
+                        WriteLine("No queued commands.");
+                    }
+                    else
+                    {
+                        WriteLine("Queued commands: {0}", _commandQueue.Count);
+                        foreach (var c in _commandQueue)
+                        {
+                            WriteLine(" Q: {0}", c.Key);
+                        }
+                    }
+                }
+                return;
+            }
+            string name = string.Format("ThreadCommand {0}: {1}", DateTime.Now, args);
             Thread thread = new Thread(() =>
                                            {
                                                try
                                                {
                                                    WriteLine("Started command: {0}", args);
-                                                   instance.CommandsManager.ExecuteCommand(WriteLine, args);
+                                                   instance.CommandsManager.ExecuteCommandForeground(WriteLine, args);
+                                               }
+                                               catch (Exception e)
+                                               {
+                                                   WriteLine("Exception: " + name + "\n" + e);
                                                }
                                                finally
                                                {
                                                    WriteLine("Done with {0}", args);
                                                    _commandThreads.Remove(Thread.CurrentThread);
                                                }
-                                           }) { Name = "ThreadCommand for " + args };
+                                           }) {Name = name};
             lock (_commandThreads) _commandThreads.Add(thread);
             thread.Start();
+        }
+    }
+
+    public class PauseCommand : RadegastCommand
+    {
+        public PauseCommand(RadegastInstance inst)
+            : base(inst)
+        {
+            Name = "pause";
+            Description = "pauses command script execution";
+            Usage = "pause [seconds]";
+        }
+        public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
+        {
+            float time;
+            if (cmdArgs.Length == 0 || !float.TryParse(cmdArgs[0], out time))
+                WriteLine(Usage);
+            else
+            {
+                WriteLine("pausing for " + time);
+                Thread.Sleep((int)(time * 1000));
+                WriteLine("paused for " + time);
+            }
         }
     }
 }
