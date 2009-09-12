@@ -379,10 +379,6 @@ namespace Radegast
         private void InitializeMainTab()
         {
             MainConsole mainConsole = new MainConsole(instance);
-            mainConsole.Dock = DockStyle.Fill;
-            mainConsole.Visible = false;
-
-            toolStripContainer1.ContentPanel.Controls.Add(mainConsole);
 
             SleekTab tab = AddTab("login", "Login", mainConsole);
             tab.AllowClose = false;
@@ -396,10 +392,6 @@ namespace Radegast
         {
             chatConsole = new ChatConsole(instance);
             mainChatManger = chatConsole.ChatManager;
-            chatConsole.Dock = DockStyle.Fill;
-            chatConsole.Visible = false;
-
-            toolStripContainer1.ContentPanel.Controls.Add(chatConsole);
 
             SleekTab tab = AddTab("chat", "Chat", chatConsole);
             tab.AllowClose = false;
@@ -409,10 +401,6 @@ namespace Radegast
         private void InitializeFriendsTab()
         {
             FriendsConsole friendsConsole = new FriendsConsole(instance);
-            friendsConsole.Dock = DockStyle.Fill;
-            friendsConsole.Visible = false;
-
-            toolStripContainer1.ContentPanel.Controls.Add(friendsConsole);
 
             SleekTab tab = AddTab("friends", "Friends", friendsConsole);
             tab.AllowClose = false;
@@ -422,10 +410,6 @@ namespace Radegast
         private void InitializeSearchTab()
         {
             SearchConsole searchConsole = new SearchConsole(instance);
-            searchConsole.Dock = DockStyle.Fill;
-            searchConsole.Visible = false;
-
-            toolStripContainer1.ContentPanel.Controls.Add(searchConsole);
 
             SleekTab tab = AddTab("search", "Search", searchConsole);
             tab.AllowClose = false;
@@ -435,10 +419,6 @@ namespace Radegast
         private void InitializeInventoryTab()
         {
             InventoryConsole invConsole = new InventoryConsole(instance);
-            invConsole.Dock = DockStyle.Fill;
-            invConsole.Visible = true;
-
-            toolStripContainer1.ContentPanel.Controls.Add(invConsole);
 
             SleekTab tab = AddTab("inventory", "Inventory", invConsole);
             tab.AllowClose = false;
@@ -492,6 +472,10 @@ namespace Radegast
 
         public SleekTab AddTab(string name, string label, Control control)
         {
+            toolStripContainer1.ContentPanel.Controls.Add(control);
+            control.Visible = false;
+            control.Dock = DockStyle.Fill;
+
             ToolStripButton button = (ToolStripButton)tstTabs.Items.Add(label);
             button.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
             button.Image = null;
@@ -697,9 +681,7 @@ namespace Radegast
         public IMTabWindow AddIMTab(UUID target, UUID session, string targetName)
         {
             IMTabWindow imTab = new IMTabWindow(instance, target, session, targetName);
-            imTab.Dock = DockStyle.Fill;
 
-            toolStripContainer1.ContentPanel.Controls.Add(imTab);
             SleekTab tab = AddTab(session.ToString(), "IM: " + targetName, imTab);
             imTab.SelectIMInput();
             tab.Highlight();
@@ -710,9 +692,7 @@ namespace Radegast
         public ConferenceIMTabWindow AddConferenceIMTab(UUID session, string name)
         {
             ConferenceIMTabWindow imTab = new ConferenceIMTabWindow(instance, session, name);
-            imTab.Dock = DockStyle.Fill;
 
-            toolStripContainer1.ContentPanel.Controls.Add(imTab);
             SleekTab tab = AddTab(session.ToString(), name, imTab);
             imTab.SelectIMInput();
 
@@ -730,9 +710,7 @@ namespace Radegast
         public GroupIMTabWindow AddGroupIMTab(UUID session, string name)
         {
             GroupIMTabWindow imTab = new GroupIMTabWindow(instance, session, name);
-            imTab.Dock = DockStyle.Fill;
 
-            toolStripContainer1.ContentPanel.Controls.Add(imTab);
             SleekTab tab = AddTab(session.ToString(), name, imTab);
             imTab.SelectIMInput();
 
@@ -756,8 +734,7 @@ namespace Radegast
         public OutfitTextures AddOTTab(Avatar avatar)
         {
             OutfitTextures otTab = new OutfitTextures(instance, avatar);
-            otTab.Dock = DockStyle.Fill;
-            toolStripContainer1.ContentPanel.Controls.Add(otTab);
+
             SleekTab tab = AddTab("OT: " + avatar.Name, "OT: " + avatar.Name, otTab);
             otTab.GetTextures();
             return otTab;
@@ -766,18 +743,15 @@ namespace Radegast
         public MasterTab AddMSTab(Avatar avatar)
         {
             MasterTab msTab = new MasterTab(instance, avatar);
-            msTab.Dock = DockStyle.Fill;
-            toolStripContainer1.ContentPanel.Controls.Add(msTab);
+
             SleekTab tab = AddTab("MS: " + avatar.Name, "MS: " + avatar.Name, msTab);
-            // msTab.GetTextures();
             return msTab;
         }
 
         public AttachmentTab AddATTab(Avatar avatar)
         {
             AttachmentTab atTab = new AttachmentTab(instance, avatar);
-            atTab.Dock = DockStyle.Fill;
-            toolStripContainer1.ContentPanel.Controls.Add(atTab);
+
             SleekTab tab = AddTab("AT: " + avatar.Name, "AT: " + avatar.Name, atTab);
             return atTab;
         }
@@ -785,8 +759,7 @@ namespace Radegast
         public AnimTab AddAnimTab(Avatar avatar)
         {
             AnimTab animTab = new AnimTab(instance, avatar);
-            animTab.Dock = DockStyle.Fill;
-            toolStripContainer1.ContentPanel.Controls.Add(animTab);
+
             SleekTab tab = AddTab("Anim: " + avatar.Name, "Anim: " + avatar.Name, animTab);
             return animTab;
         }
