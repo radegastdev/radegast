@@ -87,7 +87,7 @@ namespace Radegast.Commands
 
         public void LoadType(Type type)
         {
-            if (typeof(IRadegastCommand).IsAssignableFrom(type))
+            if (typeof(IRadegastCommand).IsAssignableFrom(type) && type!=typeof(RadegastCommand))
             {
                 try
                 {
