@@ -84,7 +84,7 @@ namespace Radegast.Commands
         }
 
         // maybe we shoould make this class abstract to force people to implement
-        public void Dispose()
+        virtual public void Dispose()
         {
         }
 
