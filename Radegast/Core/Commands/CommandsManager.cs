@@ -172,7 +172,10 @@ namespace Radegast.Commands
                 {
                     if (manager.IsValidCommand(cmdline))
                     {
-                        manager.ExecuteCommand(WriteLine, cmdline);
+                        System.Threading.ThreadPool.QueueUserWorkItem((object state) =>
+                            {
+                                manager.ExecuteCommand(WriteLine, cmdline);
+                            });
                         return;
                     }
                 }
@@ -196,7 +199,10 @@ namespace Radegast.Commands
             {
                 try
                 {
-                    cmdimpl.Execute(cmd, parms, WriteLine);
+                    System.Threading.ThreadPool.QueueUserWorkItem((object state) =>
+                        {
+                            cmdimpl.Execute(cmd, parms, WriteLine);
+                        });
                 }
                 catch (Exception ex)
                 {
