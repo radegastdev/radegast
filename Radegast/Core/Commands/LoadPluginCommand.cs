@@ -57,7 +57,7 @@ namespace Radegast.Commands
             instance = inst;
         }
 
-        public void StopCommand(RadegastInstance inst)
+        public void Dispose()
         {
             instance = null;
         }

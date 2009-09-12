@@ -58,7 +58,13 @@ namespace Radegast.Commands
 
         public IRadegastCommand AddCmd(string name, string desc, string usage, CommandExecuteDelegate executeDelegate)
         {
-            IRadegastCommand cmd = new RadegastCommand(name, desc, usage, executeDelegate);
+            IRadegastCommand cmd = new RadegastCommand(instance, executeDelegate)
+                                       {
+                                           Name = name,
+                                           Description = name,
+                                           Usage = usage
+                                       };
+            
             LoadCommand(cmd);
             return cmd;
         }
@@ -83,23 +89,32 @@ namespace Radegast.Commands
         {
             if (typeof(IRadegastCommand).IsAssignableFrom(type))
             {
-                foreach (var ci in type.GetConstructors())
+                try
                 {
-                    if (ci.GetParameters().Length > 0) continue;
-                    try
+                    var c = type.GetConstructor(new Type[] {typeof (RadegastInstance)});
+                    if (c != null)
                     {
-                        IRadegastCommand plug = (IRadegastCommand)ci.Invoke(new object[0]);
+                        IRadegastCommand plug = (IRadegastCommand) c.Invoke(new object[] {instance});
                         LoadCommand(plug);
-                        break;
+                        return;
                     }
-                    catch (Exception ex)
+                    c = type.GetConstructor(Type.EmptyTypes);
+                    if (c != null)
                     {
-                        Logger.Log("ERROR in Radegast Command: " + type + " because " + ex.Message + " " + ex.StackTrace, Helpers.LogLevel.Debug);
-                        throw ex;
+                        IRadegastCommand plug = (IRadegastCommand) c.Invoke(new object[0]);
+                        LoadCommand(plug);
+                        return;
                     }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("ERROR in Radegast Command: " + type + " because " + ex.Message + " " + ex.StackTrace,
+                               Helpers.LogLevel.Debug);
+                    throw ex;
                 }
                 return;
             }
+
             if (typeof(ICommandInterpreter).IsAssignableFrom(type))
             {
                 if (GetType() == type) return;
@@ -201,7 +216,7 @@ namespace Radegast.Commands
                 {
                     try
                     {
-                        plug.StopCommand(instance);
+                        plug.Dispose();
                     }
                     catch (Exception) { }
                 });
@@ -213,7 +228,6 @@ namespace Radegast.Commands
                 {
                     try
                     {
-                        plug.StopInterpreter(instance);
                         plug.Dispose();
                     }
                     catch (Exception) { }
