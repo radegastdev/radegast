@@ -38,7 +38,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class frmObjects : Form
+    public partial class frmObjects : RadegastForm
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client;} }
@@ -48,6 +48,7 @@ namespace Radegast
         PropertiesQueue propRequester;
 
         public frmObjects(RadegastInstance instance)
+            : base(instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmObjects_Disposed);

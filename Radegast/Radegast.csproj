@@ -131,6 +131,9 @@
     <Compile Include="Core\Types\ExtendedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Core\Types\RadegastForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Core\Types\LineNumberPanel.cs">
       <SubType>Component</SubType>
     </Compile>

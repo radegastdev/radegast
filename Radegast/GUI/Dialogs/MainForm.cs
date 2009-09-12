@@ -45,7 +45,7 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
-    public partial class frmMain : Form
+    public partial class frmMain : RadegastForm
     {
         #region Public members
         public static ImageList ResourceImages = new ImageList();
@@ -93,6 +93,7 @@ namespace Radegast
 
         #region Constructor and disposal
         public frmMain(RadegastInstance instance)
+            : base(instance)
         {
             GetSLTimeZone();
             InitializeComponent();
@@ -791,9 +792,22 @@ namespace Radegast
             client.Self.SitOnGround();
         }
 
+        private frmObjects objectWindow;
+
         private void tbnObjects_Click(object sender, EventArgs e)
         {
-            (new frmObjects(instance)).Show();
+            if (objectWindow == null)
+            {
+                objectWindow = new frmObjects(instance);
+                objectWindow.Disposed += new EventHandler(objectWindow_Disposed);
+                objectWindow.Show();
+            }
+            objectWindow.Focus();
+        }
+
+        void objectWindow_Disposed(object sender, EventArgs e)
+        {
+            objectWindow = null;
         }
 
         private void newWindowToolStripMenuItem_Click(object sender, EventArgs e)
