@@ -550,12 +550,15 @@ namespace Radegast
             if (lvwObjects.SelectedItems.Count == 0 && !instance.State.IsPointing)
             {
                 e.Cancel = true;
+                return;
             }
             else if (instance.State.IsPointing)
             {
                 ctxPoint.Enabled = true;
                 ctxPoint.Text = "Unpoint";
             }
+            instance.ContextActionManager.AddContributions(
+                avatarContext, typeof(Avatar), lvwObjects.SelectedItems[0]);
         }
 
         private void ctxSource_Click(object sender, EventArgs e)
