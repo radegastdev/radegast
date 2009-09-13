@@ -302,5 +302,22 @@ namespace Radegast
                 lbxFriends.SelectedIndex = 0;
             }
         }
+
+        private void lbxFriends_MouseUp(object sender, MouseEventArgs e)
+        {
+            ContextMenuStrip  friendsContextMenuStrip = new ContextMenuStrip {Size = new System.Drawing.Size(61, 4)};
+
+            if (e.Button == MouseButtons.Right)
+            {
+                ListBox box = (ListBox) sender;
+                if (box.SelectedIndex >= 0)
+                {
+                    FriendInfo item = ((FriendsListItem)box.Items[box.SelectedIndex]).Friend;
+                    instance.ContextActionManager.AddContributions(
+                        friendsContextMenuStrip, typeof (Avatar), item, btnPay.Parent);
+                    friendsContextMenuStrip.Show(lbxFriends, new System.Drawing.Point(e.X, e.Y));
+                }
+            }
+        }
     }
 }
