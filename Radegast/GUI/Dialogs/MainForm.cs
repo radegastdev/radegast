@@ -60,11 +60,19 @@ namespace Radegast
         public MediaConsole MediaConsole { get { return mediaConsole; } }
 
         /// <summary>
-        /// Drop down that contants the tools menu
+        /// Drop down that contains the tools menu
         /// </summary>
         public ToolStripDropDownButton ToolsMenu
         {
             get { return tbnTools; }
+        }
+
+        /// <summary>
+        /// Dropdown that contains the heelp menu
+        /// </summary>
+        public ToolStripDropDownButton HelpMenu
+        {
+            get { return tbtnHelp; }
         }
 
         /// <summary>
@@ -932,6 +940,16 @@ namespace Radegast
                 mediaConsole.Detached = true;
             else
                 mediaConsole.Focus();
+        }
+
+        private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessLink("http://jira.openmetaverse.org/browse/RAD");
+        }
+
+        private void aboutRadegastToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            (new frmAbout(instance)).ShowDialog();
         }
 
         #endregion

@@ -26,3 +26,34 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Based on SLeek (BSD License)
+Copyright © 2006-2008, Paul Clement (a.k.a. Delta)
+All rights reserved.
+
+Uses AIMLBot (LGPL License)
+The AIMLBot library (Program#) is a .NET implementation of the AIML standard.
+© 2006 Nicholas H.Tollervey (http://ntoll.org)
+http://aimlbot.sourceforge.net/
+
+Uses FMOD Library (FMOD Non-commercial License)
+FMOD Ex SoundSystem Copyright © 2005-2009 Firelight Technologies Pty, Ltd.
+Redistributions in binary form must follow the following rules:
+* The FMOD library cannot be used for resale or other commercial distribution
+* This license cannot be used for products which do not make profit but are still commercially released
+* This license cannot be used for commercial services, where the executable containing fmod is not sold, but the data is
+(If you want to redistribute Radegast commercially, remove fmodex.dll, fmodex*.so and fmodex*.dylib)
+
+Uses Ogg Vorbis codec (BSD License)
+Copyright © 2002, Xiph.org Foundation
+
+Uses log4net (Apache 2.0 License)
+Copyright © Apache Software Foundation
+
+Uses LSL parser from OpenSimulator project (BDS License)
+Copyright © Contributors, http://opensimulator.org/
+
+Uses TAO OpenGL framework (MIT License)
+Copyright © 2003-2007 Tao Framework Team
+http://www.taoframework.com
+All rights reserved.

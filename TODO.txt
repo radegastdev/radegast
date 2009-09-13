@@ -1,7 +1,0 @@
-$Id$
-
-TODO
-====
-1. Implement more inventory actions for different asset types
-2. Allow backup of all text from the inventory
-

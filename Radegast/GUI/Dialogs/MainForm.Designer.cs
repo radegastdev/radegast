@@ -113,6 +113,9 @@ namespace Radegast
             this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
+            this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
+            this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutRadegastToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tlblLoginName = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblMoneyBalance = new System.Windows.Forms.ToolStripStatusLabel();
@@ -148,7 +151,8 @@ namespace Radegast
             this.tbnObjects,
             this.tbtnGroups,
             this.lblTime,
-            this.tbtnMedia});
+            this.tbtnMedia,
+            this.tbtnHelp});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(738, 25);
@@ -492,6 +496,32 @@ namespace Radegast
             this.tbtnMedia.Visible = false;
             this.tbtnMedia.Click += new System.EventHandler(this.tbtnMedia_Click);
             // 
+            // tbtnHelp
+            // 
+            this.tbtnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reportBugsToolStripMenuItem,
+            this.aboutRadegastToolStripMenuItem});
+            this.tbtnHelp.Image = ((System.Drawing.Image)(resources.GetObject("tbtnHelp.Image")));
+            this.tbtnHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnHelp.Name = "tbtnHelp";
+            this.tbtnHelp.Size = new System.Drawing.Size(45, 22);
+            this.tbtnHelp.Text = "Help";
+            // 
+            // reportBugsToolStripMenuItem
+            // 
+            this.reportBugsToolStripMenuItem.Name = "reportBugsToolStripMenuItem";
+            this.reportBugsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.reportBugsToolStripMenuItem.Text = "Bugs/Feature Requests...";
+            this.reportBugsToolStripMenuItem.Click += new System.EventHandler(this.reportBugsToolStripMenuItem_Click);
+            // 
+            // aboutRadegastToolStripMenuItem
+            // 
+            this.aboutRadegastToolStripMenuItem.Name = "aboutRadegastToolStripMenuItem";
+            this.aboutRadegastToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.aboutRadegastToolStripMenuItem.Text = "About Radegast...";
+            this.aboutRadegastToolStripMenuItem.Click += new System.EventHandler(this.aboutRadegastToolStripMenuItem_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -737,6 +767,9 @@ namespace Radegast
         private System.Windows.Forms.ToolStripLabel lblTime;
         private System.Windows.Forms.Timer timerWorldClock;
         private System.Windows.Forms.ToolStripButton tbtnMedia;
+        private System.Windows.Forms.ToolStripDropDownButton tbtnHelp;
+        private System.Windows.Forms.ToolStripMenuItem reportBugsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutRadegastToolStripMenuItem;
     }
 }
 

@@ -560,6 +560,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap radegast_large {
+            get {
+                object obj = ResourceManager.GetObject("radegast_large", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap radegast_main_screen2 {
             get {
                 object obj = ResourceManager.GetObject("radegast_main_screen2", resourceCulture);
