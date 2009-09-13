@@ -282,6 +282,7 @@ namespace Radegast
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
             this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
+            this.lstPrims.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstPrims_MouseUp);
             // 
             // columnHeader1
             // 

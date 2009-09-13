@@ -617,6 +617,19 @@ namespace Radegast
                 e.SuppressKeyPress = true;
             }
         }
+        private void lstPrims_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                ListView box = (ListView)sender;
+                if (box.SelectedItems.Count > 0)
+                {
+                    System.Windows.Forms.ContextMenuStrip ctxMenuStripPrimitive = new ContextMenuStrip();
+                    instance.ContextActionManager.AddContributions(ctxMenuStripPrimitive, typeof(Primitive), box.SelectedItems[0].Tag, btnWalkTo.Parent);
+                    ctxMenuStripPrimitive.Show(lstPrims, new System.Drawing.Point(e.X, e.Y));
+                }
+            }
+        }
     }
 
     public class ObjectSorter : IComparer
