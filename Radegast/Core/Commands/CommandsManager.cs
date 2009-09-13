@@ -105,7 +105,7 @@ namespace Radegast.Commands
                 CommandQueue.Clear();
                 try
                 {
-                    CommandQueued.Close();
+                    if (CommandQueued!=null) CommandQueued.Close();
                 }
                 catch (Exception)
                 {
