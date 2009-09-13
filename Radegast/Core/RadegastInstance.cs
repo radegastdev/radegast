@@ -135,6 +135,11 @@ namespace Radegast
         /// </summary>
         public CommandsManager CommandsManager { get { return commandsManager; } }
 
+        /// <summary>
+        /// Radegast ContextAction manager for context sensitive actions
+        /// </summary>
+        public ContextActionsManager ContextActionManager { get; private set; }
+
         private SleekMovement movement;
         /// <summary>
         /// Allows key emulation for moving avatar around
@@ -155,6 +160,7 @@ namespace Radegast
             state = new StateManager(this);
             mediaManager = new MediaManager(this);
             commandsManager = new CommandsManager(this);
+            ContextActionManager = new ContextActionsManager(this);
             movement = new SleekMovement(client);
 
             InitializeLoggingAndConfig();
@@ -224,6 +230,8 @@ namespace Radegast
             movement = null;
             commandsManager.Dispose();
             commandsManager = null;
+            ContextActionManager.Dispose();
+            ContextActionManager = null;
             mediaManager.Dispose();
             mediaManager = null;
             state.Dispose();
@@ -292,6 +300,7 @@ namespace Radegast
                     try
                     {
                         commandsManager.LoadType(type);
+                        ContextActionManager.LoadType(type);
                     }
                     catch (Exception ex)
                     {

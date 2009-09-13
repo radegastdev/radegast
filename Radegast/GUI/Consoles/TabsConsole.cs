@@ -452,6 +452,16 @@ namespace Radegast
             tab = null;
         }
 
+
+        public void AddContextMenu(Type libomvType, String label, EventHandler handler)
+        {
+            instance.ContextActionManager.AddContextMenu(libomvType, label, handler);
+        }
+        public void AddContextMenu(ContextAction handler)
+        {
+            instance.ContextActionManager.AddContextMenu(handler);
+        }
+
         public void AddTab(SleekTab tab)
         {
             ToolStripButton button = (ToolStripButton)tstTabs.Items.Add(tab.Label);
