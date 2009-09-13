@@ -97,6 +97,7 @@
     <Compile Include="Core\Commands\ICommandInterpreter.cs" />
     <Compile Include="Core\Commands\IRadegastCommand.cs" />
     <Compile Include="Core\Commands\LoadPluginCommand.cs" />
+    <Compile Include="Core\Commands\ParcelInfoCommand.cs" />
     <Compile Include="Core\Commands\RadegastCommand.cs" />
     <Compile Include="Core\Commands\ThreadCommand.cs" />
     <Compile Include="Core\Media\MediaManager.cs" />
