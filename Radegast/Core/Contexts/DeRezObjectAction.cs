@@ -12,6 +12,11 @@ namespace Radegast
             ContextType = typeof(Primitive);
         }
 
+        public override bool TypeContributes(Type type)
+        {
+            return type == ContextType;
+        }
+
         public override void OnInvoke(object sender, EventArgs e, object target)
         {
             Primitive thePrim = ToPrimitive(target) ?? ToPrimitive(sender);
