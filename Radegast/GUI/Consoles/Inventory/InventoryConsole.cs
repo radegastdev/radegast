@@ -1022,6 +1022,7 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
+                    instance.ContextActionManager.AddContributions(ctxInv, folder);
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
                 }
                 else if (node.Tag is InventoryItem)
@@ -1125,6 +1126,7 @@ namespace Radegast
                         }
                     }
 
+                    instance.ContextActionManager.AddContributions(ctxInv, item);
                     ctxInv.Show(invTree, new Point(e.X, e.Y));
 
                 }
