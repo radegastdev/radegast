@@ -89,7 +89,7 @@ namespace Radegast.Commands
 
                         todo.Value();
                     }
-                    catch (ThreadAbortException ex)
+                    catch (ThreadAbortException)
                     {
                         break;
                     }
