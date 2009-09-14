@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using OpenMetaverse;
@@ -64,17 +65,17 @@ namespace Radegast
 
         public virtual bool IsEnabled(object target)
         {
-            return Enabled && Contributes(target);
+            return Enabled && Contributes(target,target!=null?target.GetType():null);
         }
 
-        public virtual ToolStripItem GetToolItem(object target)
+        public virtual IEnumerable<ToolStripMenuItem> GetToolItems(object target, Type type)
         {
-            return new ToolStripMenuItem(
+            return new List<ToolStripMenuItem>(){new ToolStripMenuItem(
                 LabelFor(target), (Image) null,
                 (sender, e) => TryCatch(() => OnInvoke(sender, e, target)))
                        {
                            Enabled = IsEnabled(target),
-                       };
+                       }};
         }
 
         protected void TryCatch(MethodInvoker func)
@@ -95,11 +96,11 @@ namespace Radegast
             return Label;
         }
 
-        public virtual Button GetButton(object target)
+        public virtual IEnumerable<Control> GetControls(object target, Type type)
         {
             Button button = new Button { Text = LabelFor(target), Enabled = IsEnabled(target) };
             button.Click += (sender, e) => TryCatch(() => OnInvoke(sender, e, target));
-            return button;
+            return new List<Control>() { button };
         }
 
         public virtual bool TypeContributes(Type o)
@@ -107,11 +108,11 @@ namespace Radegast
             return ContextType.IsAssignableFrom(o);
         }
 
-        public virtual bool Contributes(Object o)
+        public virtual bool Contributes(Object o, Type type)
         {
             if (o==null) return false;
             object oo = DeRef(o);
-            return (oo != o && Contributes(oo)) || TypeContributes(o.GetType());
+            return (oo != o && Contributes(oo,type)) || TypeContributes(type);
         }
 
         public virtual void OnInvoke(object sender, EventArgs e, object target)

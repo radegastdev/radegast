@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
 using OpenMetaverse;
 
@@ -47,43 +46,54 @@ namespace Radegast
             AddContributions(strip, o.GetType(), o);
         }
 
-        public void AddContributions(ToolStripDropDown strip, List<ToolStripItem> items)
+        public void AddContributions(ToolStripDropDown strip, List<ToolStripMenuItem> itemsIn)
         {
-            if (items==null || items.Count == 0) return; 
-            foreach(var i in strip.Items)
-            {
-               if (i is ToolStripItem)
-               {
-                   ToolStripItem item = (ToolStripItem) i;
-                   if (string.IsNullOrEmpty(item.Text)) continue;
-                   ToolStripItem dup = items.Find((o)=> !string.IsNullOrEmpty(o.Text) && o.Text.ToLower() == item.Text.ToLower());
-                   if (dup!=null)
-                       items.Remove(dup);
-               }
-            }
-            if (items.Count == 0) return; 
+            if (itemsIn == null || itemsIn.Count == 0) return;
+            List<ToolStripItem> items = new List<ToolStripItem>();
+            itemsIn.ForEach(o =>
+                                {
+                                    string txt = (o.Text ?? "").ToLower().Trim();
+                                    foreach (var i in strip.Items)
+                                    {
+                                        ToolStripItem item = (ToolStripItem) i;
+                                        if (txt != (item.Text ?? "").ToLower().Trim()) continue;
+                                        txt = null;
+                                        break;
+                                    }
+                                    foreach (var item in items)
+                                    {
+                                        if (txt != (item.Text ?? "").ToLower().Trim()) continue;
+                                        txt = null;
+                                        break;
+                                    }
+                                    if (txt != null) items.Add(o);
+                                });
+            if (items.Count == 0) return;
+            if (strip.Items.Count > 0)
+                items.Insert(0, new ToolStripSeparator());
             strip.Items.AddRange(items.ToArray());
             strip.Closing += ((sender, args) => items.ForEach((o) => strip.Items.Remove(o)));
         }
 
         internal void AddContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
-            List<ToolStripItem> items = new List<ToolStripItem>();
+            List<ToolStripMenuItem> items = new List<ToolStripMenuItem>();
             GleanContributions(strip, type, obj, controls);
             if (strip.Parent != null) GleanContributions(strip, type, obj, strip.Parent);
             foreach (IContextAction i in contextEventHandlers)
             {
-                if (!i.TypeContributes(type) && !i.Contributes(obj)) continue;
-                items.Add(i.GetToolItem(obj));
+                if (!i.Contributes(obj, type)) continue;
+                var v = i.GetToolItems(obj, type);
+                if (v != null) items.AddRange(v);
             }
             items.Sort(CompareItems);
-            if (strip.Items.Count > 0) items.Insert(0, new ToolStripSeparator());
-            //if (!instance.advancedDebugging) return;
-            if (items.Count > 1) items.Add(new ToolStripSeparator());
+            AddContributions(strip, items);
+            if (!instance.advancedDebugging) return;
+            List<ToolStripMenuItem> item1 = new List<ToolStripMenuItem>();
             string newVariable = obj.GetType() == type
                                      ? type.Name
                                      : string.Format("{0} -> {1}", obj.GetType().Name, type.Name);
-            items.Add(new ToolStripMenuItem(newVariable, null,
+            item1.Add(new ToolStripMenuItem(newVariable, null,
                                             (sender, e) =>
                                             instance.TabConsole.DisplayNotificationInChat(
                                                 string.Format(" sender={0}\ntarget={1}", ToString(sender), ToString(obj)))
@@ -94,7 +104,7 @@ namespace Radegast
                 ToolTipText = "" + obj
             });
 
-            AddContributions(strip, items);
+            AddContributions(strip, item1);
         }
 
         private string ToString(object sender)
@@ -115,7 +125,7 @@ namespace Radegast
 
         public void GleanContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
-            List<ToolStripItem> items = new List<ToolStripItem>();
+            List<ToolStripMenuItem> items = new List<ToolStripMenuItem>();
             foreach (Control control in controls) GleanContributions(items, type, control, obj);                
             if (obj is Control)
             {
@@ -124,11 +134,10 @@ namespace Radegast
             }
             if (items.Count == 0) return;
             items.Sort(CompareItems);
-            if (strip.Items.Count > 0) items.Insert(0, new ToolStripSeparator());
             AddContributions(strip, items);
         }
 
-        public void GleanContributions(List<ToolStripItem> items, Type type, Control control, Object obj)
+        public void GleanContributions(List<ToolStripMenuItem> items, Type type, Control control, Object obj)
         {
             if (control == null) return;
             if (control is Button)

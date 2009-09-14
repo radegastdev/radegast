@@ -17,6 +17,13 @@ namespace Radegast
             return type == ContextType;
         }
 
+        public override bool IsEnabled(object target)
+        {
+            Primitive prim = ToPrimitive(target);
+            if (prim != null && prim.OwnerID == Client.Self.AgentID) return true;
+            return false;
+        }
+
         public override void OnInvoke(object sender, EventArgs e, object target)
         {
             Primitive thePrim = ToPrimitive(target) ?? ToPrimitive(sender);

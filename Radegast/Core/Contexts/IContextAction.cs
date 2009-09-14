@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Radegast
@@ -6,12 +7,11 @@ namespace Radegast
     public interface IContextAction : IDisposable
     {
         void IContextAction(RadegastInstance instance);
-        ToolStripItem GetToolItem(object target);
-        Button GetButton(object target);
+        IEnumerable<ToolStripMenuItem> GetToolItems(object target, Type type);
+        IEnumerable<Control> GetControls(object target, Type type);
         bool IsEnabled(object target);
         string LabelFor(object target);
-        bool TypeContributes(Type o);
-        bool Contributes(Object o);
+        bool Contributes(Object o, Type type);
         void OnInvoke(object sender, EventArgs e, object target);
     }
 }
