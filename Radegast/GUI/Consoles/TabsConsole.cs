@@ -38,28 +38,6 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    /// <summary>
-    /// Arguments for tab events
-    /// </summary>
-    public class TabEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Tab that was manipulated in the event
-        /// </summary>
-        public SleekTab Tab;
-
-        public TabEventArgs()
-            : base()
-        {
-        }
-        
-        public TabEventArgs(SleekTab tab)
-            :base()
-        {
-            Tab = tab;
-        }
-    }
-
     public partial class TabsConsole : UserControl
     {
         /// <summary>
@@ -913,6 +891,28 @@ namespace Radegast
                 }
 
             }
+        }
+    }
+
+    /// <summary>
+    /// Arguments for tab events
+    /// </summary>
+    public class TabEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Tab that was manipulated in the event
+        /// </summary>
+        public SleekTab Tab;
+
+        public TabEventArgs()
+            : base()
+        {
+        }
+
+        public TabEventArgs(SleekTab tab)
+            : base()
+        {
+            Tab = tab;
         }
     }
 }
