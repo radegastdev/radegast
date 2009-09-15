@@ -580,6 +580,14 @@ namespace Radegast
                 cbxInput.Focus();
         }
 
+        private void rtbChat_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button!=MouseButtons.Right) return;
+            System.Windows.Forms.ContextMenuStrip cms = new ContextMenuStrip();
+            instance.ContextActionManager.AddContributions(cms,instance.Client);
+            cms.Show((Control)sender,new Point(e.X,e.Y));
+        }
+
     }
 }
 

@@ -28,6 +28,8 @@
 //
 // $Id$
 //
+using System.Windows.Forms;
+
 namespace Radegast
 {
     partial class ChatConsole
@@ -121,6 +123,7 @@ namespace Radegast
             this.rtbChat.TabIndex = 7;
             this.rtbChat.Text = "";
             this.rtbChat.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbChat_LinkClicked);
+            this.rtbChat.MouseUp += new MouseEventHandler(rtbChat_MouseUp);
             // 
             // cbxInput
             // 
