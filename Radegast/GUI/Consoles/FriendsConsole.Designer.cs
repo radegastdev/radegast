@@ -91,7 +91,9 @@ namespace Radegast
             this.lbxFriends.TabIndex = 0;
             this.lbxFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lbxFriends_DrawItem);
             this.lbxFriends.SelectedIndexChanged += new System.EventHandler(this.lbxFriends_SelectedIndexChanged);
-            this.lbxFriends.MouseUp += new MouseEventHandler(this.lbxFriends_MouseUp);
+            this.lbxFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseDown);
+            this.lbxFriends.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseUp);
+            this.lbxFriends.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lbxFriends_KeyUp);
             // 
             // lblFriendName
             // 

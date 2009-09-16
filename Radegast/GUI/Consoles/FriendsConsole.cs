@@ -37,7 +37,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class FriendsConsole : UserControl
+    public partial class FriendsConsole : UserControl, IContextMenuProvider
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
@@ -305,19 +305,47 @@ namespace Radegast
 
         private void lbxFriends_MouseUp(object sender, MouseEventArgs e)
         {
-            ContextMenuStrip  friendsContextMenuStrip = new ContextMenuStrip {Size = new System.Drawing.Size(61, 4)};
+            if (e.Button == MouseButtons.Right) ShowContextMenu();
+        }                
 
-            if (e.Button == MouseButtons.Right)
+        private void lbxFriends_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Apps) ShowContextMenu();
+            if (e.Control && e.KeyCode == RadegastContextMenuStrip.ContexMenuKeyCode) ShowContextMenu();
+        }
+
+        // OnClick and MouseClick etc down not capture a right click event
+        private void lbxFriends_MouseDown(object sender, MouseEventArgs e)
+        {
+            int idx = lbxFriends.IndexFromPoint(lbxFriends.PointToClient(MousePosition));
+            if (idx > 0 && idx < lbxFriends.Items.Count)
             {
-                ListBox box = (ListBox) sender;
-                if (box.SelectedIndex >= 0)
-                {
-                    FriendInfo item = ((FriendsListItem)box.Items[box.SelectedIndex]).Friend;
-                    instance.ContextActionManager.AddContributions(
-                        friendsContextMenuStrip, typeof (Avatar), item, btnPay.Parent);
-                    friendsContextMenuStrip.Show(lbxFriends, new System.Drawing.Point(e.X, e.Y));
-                }
+                lbxFriends.SetSelected(idx, true);
             }
+        }
+
+        public void ShowContextMenu()
+        {
+            RadegastContextMenuStrip menu = GetContextMenu();
+            if (menu.HasSelection) menu.Show(lbxFriends, lbxFriends.PointToClient(System.Windows.Forms.Control.MousePosition));
+        }
+
+        public RadegastContextMenuStrip GetContextMenu()
+        {
+            RadegastContextMenuStrip friendsContextMenuStrip = new RadegastContextMenuStrip();
+            if (lbxFriends.SelectedIndex >= 0)
+            {
+                FriendInfo item = ((FriendsListItem)lbxFriends.Items[lbxFriends.SelectedIndex]).Friend;
+                instance.ContextActionManager.AddContributions(friendsContextMenuStrip, typeof(Avatar), item, btnPay.Parent);
+                friendsContextMenuStrip.Selection = item;
+                friendsContextMenuStrip.HasSelection = true;
+            }
+            else
+            {
+                friendsContextMenuStrip.Selection = null;
+                friendsContextMenuStrip.HasSelection = false;
+            }
+            return friendsContextMenuStrip;
         }
     }
 }
