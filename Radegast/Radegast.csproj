@@ -138,6 +138,9 @@
     <Compile Include="Core\Types\ExtendedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Core\Types\RadegastContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Types\RadegastForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -602,6 +605,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\MediaConsole.resx">
       <DependentUpon>MediaConsole.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Notifications\FriendshipOfferNotification.resx">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
