@@ -66,6 +66,7 @@ namespace Radegast
             this.btnIM = new System.Windows.Forms.Button();
             this.btnProfile = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnRemove = new System.Windows.Forms.Button();
             this.btnPay = new System.Windows.Forms.Button();
             this.btnOfferTeleport = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -73,7 +74,6 @@ namespace Radegast
             this.chkSeeMeOnMap = new System.Windows.Forms.CheckBox();
             this.chkModifyMyObjects = new System.Windows.Forms.CheckBox();
             this.timInitDelay = new System.Windows.Forms.Timer(this.components);
-            this.btnRemove = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -89,10 +89,10 @@ namespace Radegast
             this.lbxFriends.Size = new System.Drawing.Size(200, 460);
             this.lbxFriends.Sorted = true;
             this.lbxFriends.TabIndex = 0;
+            this.lbxFriends.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseUp);
             this.lbxFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lbxFriends_DrawItem);
             this.lbxFriends.SelectedIndexChanged += new System.EventHandler(this.lbxFriends_SelectedIndexChanged);
             this.lbxFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseDown);
-            this.lbxFriends.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseUp);
             this.lbxFriends.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lbxFriends_KeyUp);
             // 
             // lblFriendName
@@ -142,6 +142,17 @@ namespace Radegast
             this.groupBox1.Size = new System.Drawing.Size(470, 76);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
+            // 
+            // btnRemove
+            // 
+            this.btnRemove.Enabled = false;
+            this.btnRemove.Location = new System.Drawing.Point(367, 46);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(75, 23);
+            this.btnRemove.TabIndex = 6;
+            this.btnRemove.Text = "Remove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // btnPay
             // 
@@ -216,17 +227,6 @@ namespace Radegast
             this.timInitDelay.Interval = 3000;
             this.timInitDelay.Tick += new System.EventHandler(this.timInitDelay_Tick);
             // 
-            // btnRemove
-            // 
-            this.btnRemove.Enabled = false;
-            this.btnRemove.Location = new System.Drawing.Point(367, 46);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(75, 23);
-            this.btnRemove.TabIndex = 6;
-            this.btnRemove.Text = "Remove";
-            this.btnRemove.UseVisualStyleBackColor = true;
-            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
-            // 
             // FriendsConsole
             // 
             this.Controls.Add(this.chkModifyMyObjects);
@@ -247,7 +247,6 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.ListBox lbxFriends;
         private System.Windows.Forms.Label lblFriendName;
         private System.Windows.Forms.Button btnIM;
         private System.Windows.Forms.Button btnProfile;
@@ -260,5 +259,6 @@ namespace Radegast
         private System.Windows.Forms.Timer timInitDelay;
         private System.Windows.Forms.Button btnPay;
         private System.Windows.Forms.Button btnRemove;
+        public ListBox lbxFriends;
     }
 }

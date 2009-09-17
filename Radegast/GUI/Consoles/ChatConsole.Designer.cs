@@ -68,7 +68,7 @@ namespace Radegast
             this.btnShout = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lvwObjects = new Radegast.ListViewNoFlicker();
-            this.avatarContext = new RadegastContextMenuStrip(this.components);
+            this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
             this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxStartIM = new System.Windows.Forms.ToolStripMenuItem();
@@ -122,8 +122,8 @@ namespace Radegast
             this.rtbChat.Size = new System.Drawing.Size(400, 310);
             this.rtbChat.TabIndex = 7;
             this.rtbChat.Text = "";
+            this.rtbChat.MouseUp += new System.Windows.Forms.MouseEventHandler(this.rtbChat_MouseUp);
             this.rtbChat.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbChat_LinkClicked);
-            this.rtbChat.MouseUp += new MouseEventHandler(rtbChat_MouseUp);
             // 
             // cbxInput
             // 
@@ -533,7 +533,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tbtnStartIM;
         private System.Windows.Forms.ToolStripButton tbtnFollow;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private Radegast.ListViewNoFlicker lvwObjects;
         private System.Windows.Forms.ToolStripButton tbtnProfile;
         private System.Windows.Forms.ToolStripButton tbtnTextures;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -559,5 +558,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem ctxPoint;
         private System.Windows.Forms.ToolStripMenuItem ctxSource;
         private System.Windows.Forms.ToolStripMenuItem ctxPay;
+        public ListViewNoFlicker lvwObjects;
     }
 }

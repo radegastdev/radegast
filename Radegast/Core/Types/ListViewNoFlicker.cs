@@ -33,7 +33,7 @@ using System.Windows.Forms;
 
 namespace Radegast
 {
-    class ListViewNoFlicker : ListView
+    public class ListViewNoFlicker : ListView
     {
         public ListViewNoFlicker()
         {
