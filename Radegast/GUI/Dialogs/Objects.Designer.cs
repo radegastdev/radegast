@@ -58,6 +58,7 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmObjects));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
             this.btnWalkTo = new System.Windows.Forms.Button();
@@ -104,11 +105,13 @@ namespace Radegast
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
+            this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.gbxObjectDetails.SuspendLayout();
+            this.ctxMenuObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbxInworld
@@ -283,6 +286,7 @@ namespace Radegast
             this.lstPrims.View = System.Windows.Forms.View.Details;
             this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
             this.lstPrims.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstPrims_MouseUp);
+            this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
             // 
             // columnHeader1
             // 
@@ -372,7 +376,7 @@ namespace Radegast
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 425);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 432);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(651, 22);
             this.statusStrip1.TabIndex = 15;
@@ -596,6 +600,11 @@ namespace Radegast
             this.lblName.TabIndex = 0;
             this.lblName.Text = "Name";
             // 
+            // ctxMenuObjects
+            // 
+            this.ctxMenuObjects.Name = "ctxMenuObjects";
+            this.ctxMenuObjects.Size = new System.Drawing.Size(124, 26);
+            this.ctxMenuObjects.Opening += new System.ComponentModel.CancelEventHandler(ctxMenuObjects_Opening);
             // frmObjects
             // 
             this.AutoSavePosition = true;
@@ -630,6 +639,7 @@ namespace Radegast
             this.statusStrip1.PerformLayout();
             this.gbxObjectDetails.ResumeLayout(false);
             this.gbxObjectDetails.PerformLayout();
+            this.ctxMenuObjects.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -682,5 +692,6 @@ namespace Radegast
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox txtPrims;
+        private RadegastContextMenuStrip ctxMenuObjects;
     }
 }

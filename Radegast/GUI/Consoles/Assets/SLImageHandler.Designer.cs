@@ -60,7 +60,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             this.lblProgress = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.cmsImage = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmsImage = new RadegastContextMenuStrip(this.components);
             this.tbtnViewFullSize = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnCopyUUID = new System.Windows.Forms.ToolStripMenuItem();
@@ -165,7 +165,7 @@ namespace Radegast
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.ContextMenuStrip cmsImage;
+        private RadegastContextMenuStrip cmsImage;
         private System.Windows.Forms.ToolStripMenuItem tbtnViewFullSize;
         private System.Windows.Forms.ToolStripMenuItem tbtnCopyUUID;
         private System.Windows.Forms.ToolStripMenuItem tbtnSave;

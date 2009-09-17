@@ -28,7 +28,9 @@
 //
 // $Id$
 //
-﻿namespace Radegast
+using System.ComponentModel;
+
+namespace Radegast
 {
     partial class InventoryConsole
     {
@@ -102,7 +104,7 @@
             this.lblAsset = new System.Windows.Forms.Label();
             this.lblCreator = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
-            this.ctxInv = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxInv = new RadegastContextMenuStrip(this.components);
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -129,6 +131,7 @@
             this.invTree.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_BeforeLabelEdit);
             this.invTree.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.invTree_ItemDrag);
             this.invTree.DragOver += new System.Windows.Forms.DragEventHandler(this.invTree_DragOver);
+            this.invTree.ContextMenuStrip = ctxInv;
             // 
             // splitContainer1
             // 
@@ -356,6 +359,7 @@
             this.ctxInv.ShowImageMargin = false;
             this.ctxInv.Size = new System.Drawing.Size(36, 4);
             this.ctxInv.Text = "Inventory Folder";
+            this.ctxInv.Opening += new CancelEventHandler(ctxInv_Opening);
             // 
             // InventoryConsole
             // 
@@ -379,7 +383,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ContextMenuStrip ctxInv;
+        private RadegastContextMenuStrip ctxInv;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox txtItemName;
         private System.Windows.Forms.Label lblCreator;

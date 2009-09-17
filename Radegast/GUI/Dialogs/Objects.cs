@@ -38,7 +38,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class frmObjects : RadegastForm
+    public partial class frmObjects : RadegastForm, IContextMenuProvider
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client;} }
@@ -624,11 +624,31 @@ namespace Radegast
                 ListView box = (ListView)sender;
                 if (box.SelectedItems.Count > 0)
                 {
-                    System.Windows.Forms.ContextMenuStrip ctxMenuStripPrimitive = new ContextMenuStrip();
-                    instance.ContextActionManager.AddContributions(ctxMenuStripPrimitive, typeof(Primitive), box.SelectedItems[0].Tag, btnWalkTo.Parent);
-                    ctxMenuStripPrimitive.Show(lstPrims, new System.Drawing.Point(e.X, e.Y));
+                    ctxMenuObjects.Selection = box.SelectedItems[0];
+                    ctxMenuObjects.HasSelection = true;
+                    ctxMenuObjects.Show(lstPrims, new System.Drawing.Point(e.X, e.Y));
+                } else
+                {
+                    ctxMenuObjects.Selection = null;
+                    ctxMenuObjects.HasSelection = false;                    
                 }
             }
+        }
+        private void ctxMenuObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (lstPrims.SelectedItems.Count == 0)
+            {
+                ctxMenuObjects.Selection = null;
+                ctxMenuObjects.HasSelection = false;
+                e.Cancel = true;
+                return;
+            }
+            instance.ContextActionManager.AddContributions(ctxMenuObjects, typeof(Primitive), lstPrims.SelectedItems[0].Tag, btnWalkTo.Parent);
+        }
+
+        public RadegastContextMenuStrip GetContextMenu()
+        {
+            return ctxMenuObjects;
         }
     }
 

@@ -61,7 +61,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.tstTabs = new System.Windows.Forms.ToolStrip();
-            this.ctxTabs = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxTabs = new RadegastContextMenuStrip(this.components);
             this.ctxBtnDetach = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxBtnMerge = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxBtnClose = new System.Windows.Forms.ToolStripMenuItem();
@@ -224,7 +224,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem tmnuDetachTab;
         private System.Windows.Forms.ToolStripButton tbtnCloseTab;
-        private System.Windows.Forms.ContextMenuStrip ctxTabs;
+        private RadegastContextMenuStrip ctxTabs;
         private System.Windows.Forms.ToolStripMenuItem ctxBtnDetach;
         private System.Windows.Forms.ToolStripMenuItem ctxBtnClose;
         private System.Windows.Forms.ToolStripMenuItem ctxBtnMerge;

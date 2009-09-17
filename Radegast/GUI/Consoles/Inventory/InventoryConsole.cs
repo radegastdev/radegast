@@ -31,7 +31,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
+﻿using System.ComponentModel;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
 using OpenMetaverse;
@@ -952,6 +953,20 @@ namespace Radegast
             else if (e.Button == MouseButtons.Right)
             {
                 invTree.SelectedNode = node;
+                ctxInv.Show(invTree,e.X,e.Y);
+                Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, client);
+            }
+        }
+
+        private void ctxInv_Opening(object sender, CancelEventArgs e)
+        {
+            TreeNode node = invTree.SelectedNode;
+            if (node==null)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
                 if (node.Tag is InventoryFolder)
                 {
                     InventoryFolder folder = (InventoryFolder)node.Tag;
@@ -1023,7 +1038,6 @@ namespace Radegast
                     }
 
                     instance.ContextActionManager.AddContributions(ctxInv, folder);
-                    ctxInv.Show(invTree, new Point(e.X, e.Y));
                 }
                 else if (node.Tag is InventoryItem)
                 {
@@ -1127,10 +1141,8 @@ namespace Radegast
                     }
 
                     instance.ContextActionManager.AddContributions(ctxInv, item);
-                    ctxInv.Show(invTree, new Point(e.X, e.Y));
 
                 }
-                Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, client);
             }
         }
 
@@ -1442,6 +1454,9 @@ namespace Radegast
                     InventoryFolder f = invTree.SelectedNode.Tag as InventoryFolder;
                     client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
                 }
+            } else if (e.KeyCode == Keys.Apps && invTree.SelectedNode != null)
+            {
+                ctxInv.Show();
             }
         }
 
