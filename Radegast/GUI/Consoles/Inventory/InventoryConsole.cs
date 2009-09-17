@@ -1053,6 +1053,35 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
+                    if (item.InventoryType == InventoryType.Landmark)
+                    {
+                        ctxItem = new ToolStripMenuItem("Teleport", null, OnInvContextClick);
+                        ctxItem.Name = "lm_teleport";
+                        ctxInv.Items.Add(ctxItem);
+
+                        ctxItem = new ToolStripMenuItem("Info", null, OnInvContextClick);
+                        ctxItem.Name = "lm_info";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+                    if (item.InventoryType == InventoryType.Notecard)
+                    {
+                        ctxItem = new ToolStripMenuItem("Open", null, OnInvContextClick);
+                        ctxItem.Name = "notecard_open";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+                    if (item.InventoryType == InventoryType.Gesture)
+                    {
+                        ctxItem = new ToolStripMenuItem("Play", null, OnInvContextClick);
+                        ctxItem.Name = "gesture_play";
+                        ctxInv.Items.Add(ctxItem);
+
+                        ctxItem = new ToolStripMenuItem("Info", null, OnInvContextClick);
+                        ctxItem.Name = "gesture_info";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
                     ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                     ctxItem.Name = "rename_item";
                     ctxInv.Items.Add(ctxItem);
@@ -1302,6 +1331,27 @@ namespace Radegast
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.AddToOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
+                        break;
+
+                    case "lm_teleport":
+                        instance.TabConsole.DisplayNotificationInChat("Teleporting to " + item.Name);
+                        client.Self.RequestTeleport(item.AssetUUID);
+                        break;
+
+                    case "lm_info":
+                        UpdateItemInfo(item);
+                        break;
+
+                    case "notecard_open":
+                        UpdateItemInfo(item);
+                        break;
+
+                    case "gesture_info":
+                        UpdateItemInfo(item);
+                        break;
+
+                    case "gesture_play":
+                        client.Self.PlayGesture(item.AssetUUID);
                         break;
                 }
                 #endregion
