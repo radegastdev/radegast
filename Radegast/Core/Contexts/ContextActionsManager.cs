@@ -73,7 +73,8 @@ namespace Radegast
 
         internal void AddContributions(ToolStripDropDown strip, Object o)
         {
-            AddContributions(strip, o.GetType(), o);
+            SetCurrentItem(strip, o);
+            AddContributions(strip, o != null ? o.GetType() : null, o);
         }
 
         public void AddContributions(ToolStripDropDown strip, List<ToolStripMenuItem> itemsIn)
@@ -107,6 +108,7 @@ namespace Radegast
 
         internal void AddContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
+            SetCurrentItem(strip, obj);
             List<ToolStripMenuItem> items = new List<ToolStripMenuItem>();
             GleanContributions(strip, type, obj, controls);
             if (strip.Parent != null) GleanContributions(strip, type, obj, strip.Parent);
@@ -137,6 +139,12 @@ namespace Radegast
             AddContributions(strip, item1);
         }
 
+        private void SetCurrentItem(ToolStripDropDown strip, object o)
+        {
+            RadegastContextMenuStrip rmenu = strip as RadegastContextMenuStrip;
+            if (rmenu != null) rmenu.Selection = o;
+        }
+
         private string ToString(object sender)
         {
             string t = sender.GetType().Name + ":";
@@ -155,6 +163,7 @@ namespace Radegast
 
         public void GleanContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
+            SetCurrentItem(strip, obj);
             List<ToolStripMenuItem> items = new List<ToolStripMenuItem>();
             foreach (Control control in controls) GleanContributions(items, type, control, obj);                
             if (obj is Control)

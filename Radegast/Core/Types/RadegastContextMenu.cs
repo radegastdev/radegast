@@ -29,36 +29,474 @@
 // $Id$
 //
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using OpenMetaverse;
 
 namespace Radegast
 {
     /// <summary>
     /// A Radegast based ContextMenuStrip
-    ///   the Opening/Closing event my be subscribed to be users
+    ///   the Opened/Closing/Selected/Clicked events may be subscribed to by plugins
+    /// This class is our Drop In replacement that add accessablity features to context menus
+    /// 
+    /// To use:  
+    ///   1) In the 'Forms designer', intially drag in or use a ContextMenuStrip
+    ///   2) The replace the declared type and constructor with this class in the MyForm.Designer.cs
+    ///   3) Pretend it is a typical ContextMenuStrip
+    /// 
+    /// To hook:
+    /// 
+    /// <pre>
+    ///public class TestContextMenuOpen
+    ///{
+    ///    static TestContextMenuOpen testContextMenu = new TestContextMenuOpen();
+    ///    private RadegastContextMenuStrip TheirInterest;
+    ///    TestContextMenuOpen()
+    ///    {
+    ///        RadegastContextMenuStrip.OnContentMenuOpened += Test_OnContentMenuOpened;
+    ///        RadegastContextMenuStrip.OnContentMenuItemSelected += Test_OnContentMenuItemSelected;
+    ///        RadegastContextMenuStrip.OnContentMenuItemClicked += Test_OnContentMenuItemClicked;
+    ///        RadegastContextMenuStrip.OnContentMenuClosing += Test_OnContentMenuClosing;
+    ///    }
+    ///
+    ///    private void Test_OnContentMenuItemClicked(object sender, RadegastContextMenuStrip.ContextMenuEventArgs e)
+    ///    {
+    ///        Console.WriteLine("I hope you meant to " + e.MenuItem.Text + "  " + e.Selection + "!");
+    ///        if (!e.MenuItem.Enabled)
+    ///        {
+    ///            Console.WriteLine("If not do not worry it was not enabled ");
+    ///        }
+    ///    }
+    ///
+    ///    private void Test_OnContentMenuItemSelected(object sender, RadegastContextMenuStrip.ContextMenuEventArgs e)
+    ///    {
+    ///        lock (testContextMenu)
+    ///        {
+    ///            if (e.MenuItem == null)
+    ///            {
+    ///                Console.WriteLine("The last menu selection is not hightlighted by the mouse anymore so do not click");
+    ///            }
+    ///            else if (!e.MenuItem.Enabled)
+    ///            {
+    ///                Console.WriteLine("You cannot " + e.MenuItem.Text + " at this time to " + e.Selection);
+    ///            }
+    ///            else
+    ///            {
+    ///                Console.WriteLine("You can " + e.MenuItem.Text + " " + e.Selection + " if you press enter or click");
+    ///            }
+    ///        }
+    ///    }
+    ///
+    ///    private void Test_OnContentMenuClosing(object sender, RadegastContextMenuStrip.ContextMenuEventArgs e)
+    ///    {
+    ///        lock (testContextMenu)
+    ///        {
+    ///            Console.WriteLine("You can no longer see the Menu: " + TheirInterest);
+    ///            TheirInterest = null;
+    ///        }
+    ///    }
+    ///
+    ///    private void Test_OnContentMenuOpened(object sender, RadegastContextMenuStrip.ContextMenuEventArgs e)
+    ///    {
+    ///        lock (testContextMenu)
+    ///        {
+    ///            TheirInterest = e.Menu;
+    ///            Console.WriteLine("You are looking at Menu: " + TheirInterest);
+    ///            Console.WriteLine("The Item you are going to do something to is: " + e.Selection);
+    ///            foreach (var item in e.Menu.AllChoices())
+    ///                if (item.Enabled)
+    ///                    Console.WriteLine(" You can: " + item.Text);
+    ///                else
+    ///                    Console.WriteLine(" cannot: " + item.Text);
+    ///        }
+    ///    }
+    ///}     
+    /// </pre>  
     /// </summary>
     public class RadegastContextMenuStrip : ContextMenuStrip
-    {       
+    {
+        /// <summary>
+        /// MenuEventArgs e.Menu contains the reference to the RadegastContextMenuStrip 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public delegate void ContextMenuCallback(object sender, ContextMenuEventArgs e);
+
+        /// <summary>
+        /// Fires whenever a context menu is "Opening" (not yet opened) anywhere from Radegast
+        ///   Accesability should be more interested in OnContentMenuOpened
+        ///   This is for times context menus are busy deciding what to enable/disable
+        /// </summary>
+        public static event ContextMenuCallback OnContentMenuOpening;
+
+        /// <summary>
+        /// Fires whenever a context menu is "Opened" anywhere from Radegast
+        /// </summary>
+        public static event ContextMenuCallback OnContentMenuOpened;
+
+        /// <summary>
+        /// Fires whenever a context menu is "Closing" anywhere from Radegast
+        /// </summary>
+        public static event ContextMenuCallback OnContentMenuClosing;
+
+        /// <summary>
+        /// Fires whenever a context menu item is "Selected" (Hightlighted) anywhere from Radegast
+        /// </summary>
+        public static event ContextMenuCallback OnContentMenuItemSelected;
+
+        /// <summary>
+        /// Fires whenever a context menu item is "Clicked" anywhere from Radegast
+        /// </summary>
+        public static event ContextMenuCallback OnContentMenuItemClicked;
+
+        /// <summary>
+        /// Arguments for tab events
+        /// </summary>
+        public class ContextMenuEventArgs : EventArgs
+        {
+            /// <summary>
+            /// Menu that was manipulated in the event
+            /// </summary>
+            public RadegastContextMenuStrip Menu;
+
+            /// <summary>
+            /// The Menu Item that was clicked or selected on the System.Windows.Forms.ToolStrip
+            /// </summary>
+            public ToolStripDropDownItem MenuItem;
+
+            /// <summary>
+            /// The object (like AvatarListItem) that the context menu was/is targeting
+            /// </summary>
+            public object Selection;
+
+            public ContextMenuEventArgs(RadegastContextMenuStrip tab, ToolStripDropDownItem item, object target)
+                : base()
+            {
+                Menu = tab;
+                MenuItem = item;
+                Selection = item;
+            }
+        }
+
         /// <summary>
         /// If the context menu has a valid target
         /// </summary>
         public bool HasSelection;
         /// <summary>
-        /// The target
+        /// The target of the ContextMenu
         /// </summary>
         public object Selection;
 
-        // for Control Chartacter we use
+        /// <summary>
+        /// The MenuItem Currently Highlighted/Selected
+        /// </summary>
+        public ToolStripDropDownItem MenuItem;
+
+        /// <summary>
+        /// Locking arround changing the MenuItem
+        /// </summary>
+        readonly object _selectionLock = new object();
+
+        /// <summary>
+        /// Childs we have added our hooks into
+        /// </summary>
+        public readonly HashSet<ToolStripDropDownItem> KnownItems = new HashSet<ToolStripDropDownItem>();
+
+        // for Control Chartacter we'd use when the Keys.Apps is not available 
         public const Keys ContexMenuKeyCode = Keys.Enter;
-        public RadegastContextMenuStrip(IContainer components):base(components)
+
+        /// <summary>
+        /// Initializes a new instance of the System.Windows.Forms.ContextMenuStrip class and associates it with the specified container.
+        /// </summary>
+        /// <param name="components">A component that implements System.ComponentModel.IContainer that is the container of the System.Windows.Forms.ContextMenuStrip</param>
+        public RadegastContextMenuStrip(IContainer components)
+            : base(components)
         {
-       
+            RegisterEvents();
         }
+
+        /// <summary>
+        /// Initializes a new instance of the System.Windows.Forms.ContextMenuStrip class.
+        /// </summary>
         public RadegastContextMenuStrip()
             : base()
         {
+            RegisterEvents();
+        }
+
+        /// <summary>
+        /// Events we need on the ContextMenuStrip
+        /// </summary>
+        private void RegisterEvents()
+        {
+            Opening += Rad_Menu_Opening;
+            Opened += Rad_Menu_Opened;
+            Closing += Rad_Menu_Closing;
+            KeyUp += Rad_Menu_KeyUp;
+            ItemClicked += Rad_Menu_ItemClicked;
+            PreviewKeyDown += Rad_Menu_PreviewKeyDown;
+            ItemAdded += Rad_OnItemAdded;
+            Enter += Rad_OnEnter;
+            ScanAndHookItems();
+        }
+
+
+        private void Rad_OnItemAdded(object sender, ToolStripItemEventArgs e)
+        {
+            RegisterItemEvents(e.Item as ToolStripDropDownItem);
+        }
+
+        private void WriteDebug(string s)
+        {
+            Console.WriteLine(s + " " + ToString());
+        }
+
+        public override string ToString()
+        {
+            return string.Format("RadMenu {0} MenuItem='{1}' selection='{2}'", Name, MenuItem, Selection);
+        }
+
+        private void Rad_OnEnter(object sender, EventArgs e)
+        {
+            WriteDebug("Rad_OnEnter: " + sender + " " + e);
+        }
+
+        private void ScanForSelected()
+        {
+            lock (KnownItems)
+                foreach (ToolStripDropDownItem item in KnownItems)
+                {
+                    if (item.Selected)
+                    {
+                        SetMenuItemSelected(item);
+                        return;
+                    }
+                }
+        }
+
+        private void Rad_Menu_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            ScanForSelected();
+        }
+
+        private void Rad_Menu_KeyUp(object sender, KeyEventArgs e)
+        {
+            ScanForSelected();
+        }
+
+
+        private void Rad_Menu_Opened(object sender, EventArgs e)
+        {
+            WriteDebug("Menu_Opened: " + sender + " " + e);
+            if (OnContentMenuOpened != null)
+            {
+                try
+                {
+                    OnContentMenuOpened(sender, new ContextMenuEventArgs(this, MenuItem, Selection));
+                }
+                catch (Exception ex)
+                {
+                    Logger.DebugLog("ERROR " + ex + " in " + this);
+                }
+            }
+        }
+
+        private void Rad_Menu_Opening(object sender, CancelEventArgs e)
+        {
+            WriteDebug("Menu_Opening: " + sender + " " + e.Cancel);
+            if (OnContentMenuOpening != null)
+            {
+                try
+                {
+                    OnContentMenuOpening(sender, new ContextMenuEventArgs(this, MenuItem, Selection));
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+            }
+        }
+
+        private void Rad_Menu_Closing(object sender, ToolStripDropDownClosingEventArgs e)
+        {
+            WriteDebug("Menu_Closing: " + sender + " " + e.CloseReason);
+            if (OnContentMenuClosing != null)
+                try
+                {
+                    OnContentMenuClosing(sender, new ContextMenuEventArgs(this, MenuItem, Selection));
+                }
+                catch (Exception ex)
+                {
+                    Logger.DebugLog("ERROR " + ex + " in " + this);
+                }
+        }
+
+        // This might be both the best Keyboard and Mouse event
+        private void Rad_Menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            SetMenuItemSelected(e.ClickedItem);
+            WriteDebug("Menu_ItemClicked: " + sender + " " + e.ClickedItem);
+            if (OnContentMenuItemClicked != null)
+                try
+                {
+                    OnContentMenuItemClicked(sender, new ContextMenuEventArgs(this, MenuItem, Selection));
+                }
+                catch (Exception ex)
+                {
+                    Logger.DebugLog("ERROR " + ex + " in " + this);
+                }
+        }
+
+        /// <summary>
+        /// This main site that all clues hit for selection changing events
+        /// </summary>
+        /// <param name="sender"></param>
+        private void SetMenuItemSelected(object sender)
+        {
+            ToolStripDropDownItem stripDropDownItem = sender as ToolStripDropDownItem;
+            if (stripDropDownItem != null)
+            {
+                lock (_selectionLock)
+                {
+                    if (MenuItem == stripDropDownItem) return;
+                    MenuItem = stripDropDownItem;
+                    if (string.IsNullOrEmpty(MenuItem.ToolTipText) || MenuItem.ToolTipText.StartsWith(" "))
+                    {
+                        MenuItem.ToolTipText = " " + MenuItem.Text + " " + Selection;
+                    }
+                    OnItemSelected(MenuItem);
+                }
+            }
+        }
+
+        private void OnItemSelected(ToolStripDropDownItem item)
+        {
+            lock (_selectionLock)
+            {
+                Console.WriteLine("OnMenuItemChanged " + this);
+                if (OnContentMenuItemSelected != null)
+                    try
+                    {
+                        OnContentMenuItemSelected(this, new ContextMenuEventArgs(this, MenuItem, Selection));
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.DebugLog("ERROR " + ex + " in " + this);
+                    }
+            }
+        }
+
+        private void ScanAndHookItems()
+        {
+            lock (KnownItems)
+            {
+                foreach (var i in Items)
+                {
+                    ToolStripDropDownItem item = i as ToolStripDropDownItem;
+                    RegisterItemEvents(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Events we need on the ToolStripDropDownItem
+        /// </summary>
+        private void RegisterItemEvents(ToolStripDropDownItem item)
+        {
+            // Separators == null
+            if (item == null) return;
+            lock (KnownItems)
+            {
+                if (KnownItems.Add(item))
+                {
+                    // Vital events
+                    item.Click += Rad_Item_Click;
+                    item.DropDownItemClicked += Rad_Item_Clicked;
+                    item.MouseHover += Rad_Item_Enter;
+                    item.MouseEnter += Rad_Item_Enter;
+                    item.MouseLeave += Rad_Item_Leave;
+                    item.DropDownOpening += Rad_Item_Opening;
+
+                    // Not so vital events that may lead to discovering some accessiblity features
+                    item.GiveFeedback += Rad_Item_GiveFeedback;
+                    item.AvailableChanged += Rad_Item_AvailableChanged;
+                    item.QueryAccessibilityHelp += Rad_Item_QueryAccessibilityHelp;
+
+                    // Register childs
+                    if (item.HasDropDownItems)
+                    {
+                        foreach (var collection in item.DropDownItems)
+                        {
+                            RegisterItemEvents(collection as ToolStripDropDownItem);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private void Rad_Item_QueryAccessibilityHelp(object sender, QueryAccessibilityHelpEventArgs e)
+        {
+            WriteDebug("Item_QueryAccessibilityHelp: " + sender + " " + e);
+        }
+
+        private void Rad_Item_Opening(object sender, EventArgs e)
+        {
+            ToolStripDropDownItem stripDropDownItem = sender as ToolStripDropDownItem;
+            if (stripDropDownItem == null) return;
+            SetMenuItemSelected(stripDropDownItem);
+            if (stripDropDownItem.HasDropDownItems)
+            {
+                WriteDebug("Item_DropDownOpening: " + sender + " " + e);
+            }
+        }
+
+        private void Rad_Item_AvailableChanged(object sender, EventArgs e)
+        {
+            WriteDebug("Item_AvailableChanged: " + sender + " " + e);
+        }
+
+        private void Rad_Item_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            SetMenuItemSelected(sender);
+            WriteDebug("Item_GiveFeedback: " + sender + " " + e.Effect);
+        }
+
+        private void Rad_Item_Click(object sender, EventArgs e)
+        {
+            SetMenuItemSelected(sender);
+        }
+
+        private void Rad_Item_Enter(object sender, EventArgs e)
+        {
+            SetMenuItemSelected(sender);
+        }
+
+        private void Rad_Item_Leave(object sender, EventArgs e)
+        {
+            ToolStripDropDownItem stripDropDownItem = sender as ToolStripDropDownItem;
+            if (stripDropDownItem != null)
+            {
+                lock (_selectionLock)
+                {
+                    if (MenuItem == stripDropDownItem)
+                    {
+                        WriteDebug("Item_Leave: " + sender + " " + e);
+                        MenuItem = null;
+                        OnItemSelected(MenuItem);
+                    }
+                }
+            }
+        }
+
+        private void Rad_Item_Clicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            SetMenuItemSelected(sender);
+            WriteDebug("Item_Clicked: " + sender + " " + e.ClickedItem);
         }
 
         public IEnumerable<ToolStripItem> Choices()
@@ -68,6 +506,16 @@ namespace Radegast
             {
                 lst.Add(item);
             }
+            return lst;
+        }
+        public IEnumerable<ToolStripItem> AllChoices()
+        {
+            List<ToolStripItem> lst = new List<ToolStripItem>();
+            lock (KnownItems)
+                foreach (ToolStripDropDownItem item in KnownItems)
+                {
+                    lst.Add(item);
+                }
             return lst;
         }
     }
