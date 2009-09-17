@@ -239,8 +239,21 @@ namespace Radegast
             ItemClicked += Rad_Menu_ItemClicked;
             PreviewKeyDown += Rad_Menu_PreviewKeyDown;
             ItemAdded += Rad_OnItemAdded;
+            ItemRemoved += Rad_OnItemRemoved;
             Enter += Rad_OnEnter;
             ScanAndHookItems();
+        }
+
+        private void Rad_OnItemRemoved(object sender, ToolStripItemEventArgs e)
+        {
+            ToolStripDropDownItem Item = e.Item as ToolStripDropDownItem;
+            if (Item != null)
+                lock (KnownItems)
+                {
+                    DeregisterItemEvents(Item);
+                    Console.WriteLine(e.Item.Text + " removed");
+
+                }
         }
 
 
@@ -360,6 +373,21 @@ namespace Radegast
             ToolStripDropDownItem stripDropDownItem = sender as ToolStripDropDownItem;
             if (stripDropDownItem != null)
             {
+                // dereference a chain of dropdown items
+                if (stripDropDownItem.HasDropDownItems)
+                {
+                    foreach (var s in stripDropDownItem.DropDownItems)
+                    {
+                        ToolStripDropDownItem sub = s as ToolStripDropDownItem;
+                        if (sub == null) continue;
+                        if (sub.Selected)
+                        {
+                            SetMenuItemSelected(sub);
+                            return;
+                        }
+                    }
+                }
+                // otherwise use it
                 lock (_selectionLock)
                 {
                     if (MenuItem == stripDropDownItem) return;
@@ -438,6 +466,38 @@ namespace Radegast
             }
         }
 
+        private void DeregisterItemEvents(ToolStripDropDownItem item)
+        {
+            // Separators == null
+            if (item == null) return;
+            lock (KnownItems)
+            {
+                if (KnownItems.Remove(item))
+                {
+                    // Vital events
+                    item.Click -= Rad_Item_Click;
+                    item.DropDownItemClicked -= Rad_Item_Clicked;
+                    item.MouseHover -= Rad_Item_Enter;
+                    item.MouseEnter -= Rad_Item_Enter;
+                    item.MouseLeave -= Rad_Item_Leave;
+                    item.DropDownOpening -= Rad_Item_Opening;
+
+                    // Not so vital events that may lead to discovering some accessiblity features
+                    item.GiveFeedback -= Rad_Item_GiveFeedback;
+                    item.AvailableChanged -= Rad_Item_AvailableChanged;
+                    item.QueryAccessibilityHelp -= Rad_Item_QueryAccessibilityHelp;
+
+                    // Deregister childs
+                    if (item.HasDropDownItems)
+                    {
+                        foreach (var collection in item.DropDownItems)
+                        {
+                            DeregisterItemEvents(collection as ToolStripDropDownItem);
+                        }
+                    }
+                }
+            }
+        }
 
         private void Rad_Item_QueryAccessibilityHelp(object sender, QueryAccessibilityHelpEventArgs e)
         {
