@@ -352,6 +352,11 @@ namespace Radegast
 
             lvwGeneralMembers.Sort();
         }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.FindForm().Close();
+        }
     }
 
     public class EnhancedGroupMember
