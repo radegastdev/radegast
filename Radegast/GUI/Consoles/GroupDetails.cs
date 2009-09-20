@@ -527,9 +527,20 @@ namespace Radegast
             {
                 LastOnline = DateTime.Now;
             }
+            else if (string.IsNullOrEmpty(baseMember.OnlineStatus))
+            {
+                LastOnline = DateTime.MinValue;
+            }
             else
             {
-                LastOnline = Convert.ToDateTime(baseMember.OnlineStatus, Utils.EnUsCulture);
+                try
+                {
+                    LastOnline = Convert.ToDateTime(baseMember.OnlineStatus, Utils.EnUsCulture);
+                }
+                catch (FormatException)
+                {
+                    LastOnline = DateTime.MaxValue;
+                }
             }
         }
     }
