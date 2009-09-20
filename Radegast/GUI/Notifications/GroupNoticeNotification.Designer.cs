@@ -147,6 +147,7 @@ namespace Radegast
             this.btnSave.TabIndex = 1;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Visible = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // icnItem
@@ -165,6 +166,7 @@ namespace Radegast
             this.txtItemName.ReadOnly = true;
             this.txtItemName.Size = new System.Drawing.Size(198, 20);
             this.txtItemName.TabIndex = 7;
+            this.txtItemName.Visible = false;
             // 
             // ntfGroupNotice
             // 

@@ -50,7 +50,7 @@ namespace Radegast
             this.instance = instance;
             this.msg = msg;
 
-            if (msg.BinaryBucket.Length > 1)
+            if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
             {
                 type = (AssetType)msg.BinaryBucket[1];
                 destinationFolderID = client.Inventory.FindFolderForType(type);
@@ -60,11 +60,9 @@ namespace Radegast
                     icnItem.Image = frmMain.ResourceImages.Images[icoIndx];
                     icnItem.Visible = true;
                 }
-                if (msg.BinaryBucket.Length > 18)
-                {
-                    txtItemName.Text = Utils.BytesToString(msg.BinaryBucket, 18, msg.BinaryBucket.Length - 19);
-                    btnSave.Enabled = true;
-                }
+                txtItemName.Text = Utils.BytesToString(msg.BinaryBucket, 18, msg.BinaryBucket.Length - 19);
+                btnSave.Enabled = true;
+                btnSave.Visible = icnItem.Visible = txtItemName.Visible = true;
             }
 
             string group = string.Empty;
@@ -93,6 +91,11 @@ namespace Radegast
                 lblSentBy.Text, System.Environment.NewLine,
                 txtNotice.Text
                 );
+            if (btnSave.Visible == true)
+            {
+                args.Buttons.Add(btnSave);
+                args.Text += string.Format("{0}Attachment: {1}", System.Environment.NewLine, txtItemName.Text);
+            }
             args.Buttons.Add(btnOK);
             FireNotificationCallback(args);
         }
@@ -111,6 +114,7 @@ namespace Radegast
         {
             SendReply(InstantMessageDialog.GroupNoticeInventoryAccepted, destinationFolderID.GetBytes());
             btnSave.Enabled = false;
+            btnOK.Focus();
         }
     }
 }
