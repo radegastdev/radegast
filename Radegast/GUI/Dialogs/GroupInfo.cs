@@ -42,6 +42,7 @@ namespace Radegast
             GroupDetails gd = new GroupDetails(instance, group);
             gd.Dock = DockStyle.Fill;
             ClientSize = new Size(gd.Width, gd.Height);
+            MinimumSize = Size;
             Controls.Add(gd);
             Text = group.Name + " - Group information";
         }

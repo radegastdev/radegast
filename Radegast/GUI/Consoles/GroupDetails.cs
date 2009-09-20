@@ -65,13 +65,17 @@ namespace Radegast
             lblGroupName.Text = group.Name;
             lvwGeneralMembers.ListViewItemSorter = new GroupMemberSorter();
 
+            lvwNoticeArchive.SmallImageList = frmMain.ResourceImages;
+            lvwNoticeArchive.ListViewItemSorter = new GroupNoticeSorter();
+
             // Callbacks
             client.Groups.OnGroupTitles += new GroupManager.GroupTitlesCallback(Groups_OnGroupTitles);
             client.Groups.OnGroupMembers += new GroupManager.GroupMembersCallback(Groups_OnGroupMembers);
             client.Groups.OnGroupProfile += new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
             client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-
+            client.Groups.OnGroupNoticesList += new GroupManager.GroupNoticesListCallback(Groups_OnGroupNoticesList);
+            client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
             RefreshControlsAvailability();
             RefreshGroupInfo();
         }
@@ -83,9 +87,79 @@ namespace Radegast
             client.Groups.OnGroupProfile -= new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
             client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Groups.OnGroupNoticesList -= new GroupManager.GroupNoticesListCallback(Groups_OnGroupNoticesList);
+            client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
         }
 
         #region Network callbacks
+        UUID destinationFolderID;
+
+        void Self_OnInstantMessage(InstantMessage im, Simulator simulator)
+        {
+            if (im.Dialog != InstantMessageDialog.GroupNoticeRequested || im.FromAgentID != group.ID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Self_OnInstantMessage(im, simulator)));
+                return;
+            }
+
+            InstantMessage msg = im;
+            AssetType type;
+           
+
+            if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
+            {
+                type = (AssetType)msg.BinaryBucket[1];
+                destinationFolderID = client.Inventory.FindFolderForType(type);
+                int icoIndx = InventoryConsole.GetItemImageIndex(type.ToString().ToLower());
+                if (icoIndx >= 0)
+                {
+                    icnItem.Image = frmMain.ResourceImages.Images[icoIndx];
+                    icnItem.Visible = true;
+                }
+                txtItemName.Text = Utils.BytesToString(msg.BinaryBucket, 18, msg.BinaryBucket.Length - 19);
+                btnSave.Enabled = true;
+                btnSave.Visible = icnItem.Visible = txtItemName.Visible = true;
+                btnSave.Tag = msg;
+            }
+
+            string text = msg.Message.Replace("\n", System.Environment.NewLine);
+            int pos = msg.Message.IndexOf('|');
+            string title = msg.Message.Substring(0, pos);
+            text = text.Remove(0, pos + 1);
+            txtNotice.Text = text;
+        }
+
+        void Groups_OnGroupNoticesList(UUID groupID, GroupNoticeList notice)
+        {
+            if (groupID != group.ID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Groups_OnGroupNoticesList(groupID, notice)));
+                return;
+            }
+            
+            lvwNoticeArchive.BeginUpdate();
+
+            ListViewItem item = new ListViewItem();
+            item.SubItems.Add(notice.Subject);
+            item.SubItems.Add(notice.FromName);
+            item.SubItems.Add(Utils.UnixTimeToDateTime(notice.Timestamp).ToShortDateString());
+
+            if (notice.HasAttachment)
+            {
+                item.ImageIndex = InventoryConsole.GetItemImageIndex(notice.AssetType.ToString().ToLower());
+            }
+
+            item.Tag = notice;
+
+            lvwNoticeArchive.Items.Add(item);
+
+            lvwNoticeArchive.EndUpdate();
+        }
+
         void Groups_OnCurrentGroups(Dictionary<UUID, Group> groups)
         {
             BeginInvoke(new MethodInvoker(RefreshControlsAvailability));
@@ -285,7 +359,13 @@ namespace Radegast
                 cbxListInProfile.Enabled = false;
             }
         }
-        
+
+        private void RefreshGroupNotices()
+        {
+            lvwNoticeArchive.Items.Clear();
+            client.Groups.RequestGroupNoticeList(group.ID);
+        }
+
         private void RefreshGroupInfo()
         {
             lvwGeneralMembers.Items.Clear();
@@ -323,7 +403,16 @@ namespace Radegast
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            RefreshGroupInfo();
+            switch (tcGroupDetails.SelectedTab.Name)
+            {
+                case "tpGeneral":
+                    RefreshGroupInfo();
+                    break;
+
+                case "tpNotices":
+                    RefreshGroupNotices();
+                    break;
+            }
         }
         #endregion
 
@@ -353,9 +442,75 @@ namespace Radegast
             lvwGeneralMembers.Sort();
         }
 
+        private void lvwNoticeArchive_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            
+            GroupNoticeSorter sorter = (GroupNoticeSorter)lvwNoticeArchive.ListViewItemSorter;
+            
+            switch (e.Column)
+            {
+                case 1:
+                    sorter.SortBy = GroupNoticeSorter.SortByColumn.Subject;
+                    break;
+
+                case 2:
+                    sorter.SortBy = GroupNoticeSorter.SortByColumn.Sender;
+                    break;
+
+                case 3:
+                    sorter.SortBy = GroupNoticeSorter.SortByColumn.Date;
+                    break;
+            }
+
+            if (sorter.CurrentOrder == GroupNoticeSorter.SortOrder.Ascending)
+                sorter.CurrentOrder = GroupNoticeSorter.SortOrder.Descending;
+            else
+                sorter.CurrentOrder = GroupNoticeSorter.SortOrder.Ascending;
+
+            lvwNoticeArchive.Sort();
+        }
+
+
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.FindForm().Close();
+        }
+
+        private void tcGroupDetails_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (tcGroupDetails.SelectedTab.Name)
+            {
+                case "tpNotices":
+                    RefreshGroupNotices();
+                    break;
+            }
+        }
+
+        private void lvwNoticeArchive_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvwNoticeArchive.SelectedItems.Count == 1)
+            {
+                if (lvwNoticeArchive.SelectedItems[0].Tag is GroupNoticeList)
+                {
+                    GroupNoticeList notice = (GroupNoticeList)lvwNoticeArchive.SelectedItems[0].Tag;
+                    lblSentBy.Text = "Sent by " + notice.FromName;
+                    lblTitle.Text = notice.Subject;
+                    txtNotice.Text = string.Empty;
+                    btnSave.Enabled = btnSave.Visible = icnItem.Visible = txtItemName.Visible = false;
+                    client.Groups.RequestGroupNotice(notice.NoticeID);
+                }
+            }
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if (btnSave.Tag is InstantMessage)
+            {
+                InstantMessage msg = (InstantMessage)btnSave.Tag;
+                client.Self.InstantMessage(client.Self.Name, msg.FromAgentID, string.Empty, msg.IMSessionID, InstantMessageDialog.GroupNoticeInventoryAccepted, InstantMessageOnline.Offline, client.Self.SimPosition, client.Network.CurrentSim.RegionID, destinationFolderID.GetBytes());
+                btnSave.Enabled = false;
+                btnClose.Focus();
+            }
         }
     }
 
@@ -379,6 +534,7 @@ namespace Radegast
         }
     }
 
+    #region Sorter classes
     public class GroupMemberSorter : IComparer
     {
         public enum SortByColumn
@@ -428,4 +584,72 @@ namespace Radegast
             return 0;
         }
     }
+
+
+    public class GroupNoticeSorter : IComparer
+    {
+        public enum SortByColumn
+        {
+            Subject,
+            Sender,
+            Date
+        }
+
+        public enum SortOrder
+        {
+            Ascending,
+            Descending
+        }
+
+        public SortOrder CurrentOrder = SortOrder.Descending;
+        public SortByColumn SortBy = SortByColumn.Date;
+
+        private int IntCompare(uint x, uint y)
+        {
+            if (x < y)
+            {
+                return -1;
+            }
+            else if (x > y)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public int Compare(object x, object y)
+        {
+            ListViewItem item1 = (ListViewItem)x;
+            ListViewItem item2 = (ListViewItem)y;
+            GroupNoticeList member1 = (GroupNoticeList)item1.Tag;
+            GroupNoticeList member2 = (GroupNoticeList)item2.Tag;
+
+            switch (SortBy)
+            {
+                case SortByColumn.Subject:
+                    if (CurrentOrder == SortOrder.Ascending)
+                        return string.Compare(member1.Subject, member2.Subject);
+                    else
+                        return string.Compare(member2.Subject, member1.Subject);
+
+                case SortByColumn.Sender:
+                    if (CurrentOrder == SortOrder.Ascending)
+                        return string.Compare(member1.FromName, member2.FromName);
+                    else
+                        return string.Compare(member2.FromName, member1.FromName);
+
+                case SortByColumn.Date:
+                    if (CurrentOrder == SortOrder.Ascending)
+                        return IntCompare(member1.Timestamp, member2.Timestamp);
+                    else
+                        return IntCompare(member2.Timestamp, member1.Timestamp);
+            }
+
+            return 0;
+        }
+    }
+    #endregion
 }
