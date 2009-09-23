@@ -955,7 +955,7 @@ namespace Radegast
         private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tabsConsole.SelectTab("chat");
-            tabsConsole.DisplayNotificationInChat("Checking for updates...");
+            tabsConsole.DisplayNotificationInChat("Checking for updates...", ChatBufferTextStyle.StatusBlue);
             UpdateChecker upd = new UpdateChecker();
             upd.OnUpdateInfoReceived += new UpdateChecker.UpdateInfoCallback(OnUpdateInfoReceived);
             upd.StartCheck();

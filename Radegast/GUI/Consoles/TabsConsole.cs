@@ -290,13 +290,27 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Displays notification in the main chat tab
+        /// </summary>
+        /// <param name="msg">Message to be printed in the chat tab</param>
         public void DisplayNotificationInChat(string msg)
+        {
+            DisplayNotificationInChat(msg, ChatBufferTextStyle.ObjectChat);
+        }
+
+        /// <summary>
+        /// Displays notification in the main chat tab
+        /// </summary>
+        /// <param name="msg">Message to be printed in the chat tab</param>
+        /// <param name="style">Style of the message to be printed, normal, object, etc.</param>
+        public void DisplayNotificationInChat(string msg, ChatBufferTextStyle style)
         {
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(delegate()
                     {
-                        DisplayNotificationInChat(msg);
+                        DisplayNotificationInChat(msg, style);
                     }));
                 return;
             }
@@ -304,7 +318,7 @@ namespace Radegast
             ChatBufferItem line = new ChatBufferItem(
                 DateTime.Now,
                 msg,
-                ChatBufferTextStyle.ObjectChat
+                style
             );
             try
             {

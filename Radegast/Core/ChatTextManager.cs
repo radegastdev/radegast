@@ -169,7 +169,7 @@ namespace Radegast
                 DateTime.Now, Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev, ChatBufferTextStyle.StartupTitle);
 
             ChatBufferItem ready = new ChatBufferItem(
-                DateTime.Now, "Ready.\n", ChatBufferTextStyle.StatusBlue);
+                DateTime.Now, "Ready.", ChatBufferTextStyle.StatusBlue);
 
             ProcessBufferItem(title, true);
             ProcessBufferItem(ready, true);
