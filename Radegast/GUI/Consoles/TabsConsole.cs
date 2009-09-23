@@ -151,11 +151,14 @@ namespace Radegast
             InitializeInventoryTab();
             InitializeSearchTab();
 
-            if (selectedTab.Name == "login")
-                tabs["chat"].Select();
+            if (tabs.ContainsKey("login"))
+            {
+                if (selectedTab.Name == "login")
+                    tabs["chat"].Select();
 
-            tabs["login"].AllowClose = true;
-            tabs["login"].Close();
+                tabs["login"].AllowClose = true;
+                tabs["login"].Close();
+            }
 
             client.Self.RetrieveInstantMessages();
         }
