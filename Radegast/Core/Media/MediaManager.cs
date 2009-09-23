@@ -81,7 +81,7 @@ namespace Radegast.Media
 
                 // Forcing the ESD sound system on Linux seems to avoid a CPU loop
                 if (System.Environment.OSVersion.Platform == PlatformID.Unix)
-                    FMODExec(system.setOutput(FMOD.OUTPUTTYPE.ESD));
+                    FMODExec(system.setOutput(FMOD.OUTPUTTYPE.ALSA));
 
                 // The user has the 'Acceleration' slider set to off, which
                 // is really bad for latency.  At 48khz, the latency between
