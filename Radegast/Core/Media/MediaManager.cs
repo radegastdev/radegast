@@ -55,8 +55,6 @@ namespace Radegast.Media
         public MediaManager(RadegastInstance instance)
             : base(null)
         {
-            if (Environment.OSVersion.Platform == PlatformID.Unix) return;
-
             try
             {
                 FMODExec(FMOD.Factory.System_Create(ref system));

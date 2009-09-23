@@ -29,11 +29,9 @@
 // $Id$
 //
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 using FMOD;
 using OpenMetaverse;
-using System.Runtime.InteropServices;
 
 namespace Radegast.Media
 {
@@ -54,8 +52,8 @@ namespace Radegast.Media
         /// <summary>
         /// FMOD channel controller, should not be used directly, add methods to Radegast.Media.Sound
         /// </summary>
-        public FMOD.Channel FMODChannel { get { return channel; } }
-        private FMOD.Channel channel = null;
+        public Channel FMODChannel { get { return channel; } }
+        private Channel channel = null;
 
         /// <summary>
         /// FMOD sound object, should not be used directly, add methods to Radegast.Media.Sound
@@ -104,7 +102,7 @@ namespace Radegast.Media
             :base(system)
         {
             timer = new System.Timers.Timer();
-            timer.Interval = 500d;
+            timer.Interval = 50d;
             timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
             timer.Enabled = false;
         }
@@ -138,7 +136,7 @@ namespace Radegast.Media
         {
             if (!soundcreated)
             {
-                MediaManager.FMODExec(system.createSound(url, (FMOD.MODE.HARDWARE | FMOD.MODE._2D | FMOD.MODE.CREATESTREAM | FMOD.MODE.NONBLOCKING), ref sound));
+                MediaManager.FMODExec(system.createSound(url, (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING), ref sound));
                 soundcreated = true;
                 timer.Enabled = true;
                 timer_Elapsed(null, null);
@@ -170,7 +168,7 @@ namespace Radegast.Media
 
         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            FMOD.OPENSTATE openstate = 0;
+            OPENSTATE openstate = 0;
             uint percentbuffered = 0;
             bool starving = false;
 
@@ -180,9 +178,9 @@ namespace Radegast.Media
                 {
                     MediaManager.FMODExec(sound.getOpenState(ref openstate, ref percentbuffered, ref starving));
 
-                    if (openstate == FMOD.OPENSTATE.READY && channel == null)
+                    if (openstate == OPENSTATE.READY && channel == null)
                     {
-                        MediaManager.FMODExec(system.playSound(FMOD.CHANNELINDEX.FREE, sound, false, ref channel));
+                        MediaManager.FMODExec(system.playSound(CHANNELINDEX.FREE, sound, false, ref channel));
                         MediaManager.FMODExec(channel.setVolume(volume));
                         currentVolume = volume;
                     }
@@ -198,12 +196,15 @@ namespace Radegast.Media
 
                     for (; ; )
                     {
-                        FMOD.TAG tag = new FMOD.TAG();
-                        if (sound.getTag(null, -1, ref tag) != FMOD.RESULT.OK)
+                        if (Environment.OSVersion.Platform == PlatformID.Unix)
+                            break; // we get a sig 11 for some reason /me blames mono
+
+                        TAG tag = new TAG();
+                        if (sound.getTag(null, -1, ref tag) != RESULT.OK)
                         {
                             break;
                         }
-                        if (tag.datatype != FMOD.TAGDATATYPE.STRING)
+                        if (tag.datatype != TAGDATATYPE.STRING)
                         {
                             break;
                         }
@@ -217,7 +218,7 @@ namespace Radegast.Media
 
                     MediaManager.FMODExec(channel.getPaused(ref paused));
                     MediaManager.FMODExec(channel.isPlaying(ref playing));
-                    MediaManager.FMODExec(channel.getPosition(ref position, FMOD.TIMEUNIT.MS));
+                    MediaManager.FMODExec(channel.getPosition(ref position, TIMEUNIT.MS));
                 }
 
                 if (system != null)
