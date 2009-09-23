@@ -45,15 +45,15 @@ namespace Radegast
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            if (rtbLog.InvokeRequired)
+            {
+                rtbLog.BeginInvoke(new MethodInvoker(() =>Dispose(disposing)));
+                return;
+            }
             if (disposing && (components != null))
             {
                 components.Dispose();
             }
-            if (rtbLog.InvokeRequired)
-            {
-                rtbLog.BeginInvoke(new MethodInvoker(() => base.Dispose(disposing)));
-            }
-            else
             base.Dispose(disposing);
         }
 
