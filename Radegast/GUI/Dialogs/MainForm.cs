@@ -952,6 +952,23 @@ namespace Radegast
             (new frmAbout(instance)).ShowDialog();
         }
 
+        private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tabsConsole.SelectTab("chat");
+            tabsConsole.DisplayNotificationInChat("Checking for updates...");
+            UpdateChecker upd = new UpdateChecker();
+            upd.OnUpdateInfoReceived += new UpdateChecker.UpdateInfoCallback(OnUpdateInfoReceived);
+            upd.StartCheck();
+        }
+
+        void OnUpdateInfoReceived(object sender, UpdateCheckerArgs e)
+        {
+            if (!e.Success)
+            {
+                tabsConsole.DisplayNotificationInChat("Error: Failed connecting to the update site.");
+            }
+            ((UpdateChecker)sender).Dispose();
+        }
         #endregion
     }
 }

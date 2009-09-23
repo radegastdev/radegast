@@ -654,5 +654,14 @@ namespace Radegast.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to http://update.radegastclient.org/svc/get_latest.
+        /// </summary>
+        public static string UpdateCheckUri {
+            get {
+                return ResourceManager.GetString("UpdateCheckUri", resourceCulture);
+            }
+        }
     }
 }

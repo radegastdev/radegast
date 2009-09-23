@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A6D955CD-1F55-459F-A7AD-01E591404989}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -163,6 +163,7 @@
     <Compile Include="Core\Types\TransparentLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Core\Updater\UpdateChecker.cs" />
     <Compile Include="FormFlash.cs" />
     <Compile Include="GUI\Consoles\AnimDetail.cs">
       <SubType>UserControl</SubType>
@@ -996,9 +997,10 @@
     <None Include="openjpeg-dotnet.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="assemblies\fmodex-dotnet.dll" />
     <None Include="fmodex.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assemblies\fmodex-dotnet.dll">
     </None>
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

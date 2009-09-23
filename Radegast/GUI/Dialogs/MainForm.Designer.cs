@@ -130,6 +130,8 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
+            this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -501,6 +503,8 @@ namespace Radegast
             this.tbtnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.reportBugsToolStripMenuItem,
+            this.checkForUpdatesToolStripMenuItem,
+            this.toolStripMenuItem6,
             this.aboutRadegastToolStripMenuItem});
             this.tbtnHelp.Image = ((System.Drawing.Image)(resources.GetObject("tbtnHelp.Image")));
             this.tbtnHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -678,6 +682,18 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(200, 6);
+            // 
+            // checkForUpdatesToolStripMenuItem
+            // 
+            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
+            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -770,6 +786,8 @@ namespace Radegast
         private System.Windows.Forms.ToolStripDropDownButton tbtnHelp;
         private System.Windows.Forms.ToolStripMenuItem reportBugsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutRadegastToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
     }
 }
 
