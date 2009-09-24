@@ -35,6 +35,76 @@ using System.Windows.Forms;
 
 namespace Radegast
 {
+
+    /// <summary>
+    /// Base class for all notificatiosn (blue dialogs)
+    /// </summary>
+    public class Notification : UserControl
+    {
+        /// <summary>
+        /// Notification type
+        /// </summary>
+        public NotificationType Type;
+
+        /// <summary>
+        /// Callback when blue dialog notification is displayed or closed
+        /// </summary>
+        /// <param name="sender">Notification dialog</param>
+        /// <param name="e">Notification parameters</param>
+        public delegate void NotificationCallback(object sender, NotificationEventArgs e);
+
+        /// <summary>
+        /// Callback when blue dialog notification button is clicked
+        /// </summary>
+        /// <param name="sender">Notification dialog</param>
+        /// <param name="e">Notification parameters</param>
+        public delegate void NotificationClickedCallback(object sender, EventArgs e, NotificationEventArgs notice);
+
+        /// <summary>
+        /// Fired when a notification is displayed
+        /// </summary>
+        public static event NotificationCallback OnNotificationDisplayed;
+
+        public Notification()
+        {
+            Type = NotificationType.Generic;
+        }
+
+        public Notification(NotificationType type)
+        {
+            Type = type;
+        }
+
+        protected void FireNotificationCallback(NotificationEventArgs e)
+        {
+            if (OnNotificationDisplayed == null) return;
+            try
+            {
+                e.Type = this.Type;
+                ThreadPool.QueueUserWorkItem((object o) => Notificaton_Displayed(this, e));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("" + ex);
+                OpenMetaverse.Logger.Log("Error executing notification callback", OpenMetaverse.Helpers.LogLevel.Warning, ex);
+            }
+        }
+
+        private void Notificaton_Displayed(Notification notification, NotificationEventArgs e)
+        {
+            try
+            {
+                e.HookNotification(this);
+                if (OnNotificationDisplayed != null)
+                    OnNotificationDisplayed(notification, e);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("" + ex);
+                OpenMetaverse.Logger.Log("Error executing notification displayed", OpenMetaverse.Helpers.LogLevel.Warning, ex);
+            }
+        }
+    }
     /// <summary>
     /// What kind of notification this is (blue dialog)
     /// </summary>
@@ -53,8 +123,17 @@ namespace Radegast
     /// <summary>
     /// Fired when blue dialog notification is displayed
     /// </summary>
-    public class NotificationEventArgs : EventArgs
+    public class NotificationEventArgs : EventArgs, IDisposable
     {
+        public event Notification.NotificationCallback OnNotificationClosed;
+
+        public event Notification.NotificationClickedCallback OnNotificationClicked;
+
+        /// <summary>
+        /// The Notfication form itself
+        /// </summary>
+        public Notification Notice;
+
         /// <summary>
         /// Type of notfication
         /// </summary>
@@ -76,6 +155,16 @@ namespace Radegast
         public List<Button> Buttons = new List<Button>();
 
         /// <summary>
+        /// When set true the Dialog Can send the Close Event
+        /// </summary>
+        public bool CanClose = false;
+
+        /// <summary>
+        /// The button has been pushed once
+        /// </summary>        
+        public bool ButtonSelected = false;
+
+        /// <summary>
         /// Create new event args object
         /// </summary>
         /// <param name="instance">Instance of Radegast notification is coming from</param>
@@ -83,52 +172,89 @@ namespace Radegast
         {
             Instance = instance;
         }
-    }
 
-    /// <summary>
-    /// Base class for all notificatiosn (blue dialogs)
-    /// </summary>
-    public class Notification : UserControl
-    {
-        /// <summary>
-        /// Notification type
-        /// </summary>
-        public NotificationType Type;
-
-        /// <summary>
-        /// Callback when blue dialog notification is displayed
-        /// </summary>
-        /// <param name="sender">Notification dialog</param>
-        /// <param name="e">Notification parameters</param>
-        public delegate void NotificationCallback(object sender, NotificationEventArgs e);
-
-        /// <summary>
-        /// Fired when a notification is displayed
-        /// </summary>
-        public static event NotificationCallback OnNotificationDisplayed;
-
-        public Notification()
+        private void Notification_Closing(object sender, EventArgs e)
         {
-            Type = NotificationType.Generic;
+            Notification_Close();
         }
 
-        public Notification(NotificationType type)
+        /// <summary>
+        /// Triggers the OnNotificationClosing event.
+        /// </summary>
+        internal void Notification_Close()
         {
-            Type = type;
+            if (ButtonSelected)
+            {
+                try
+                {
+                    if (OnNotificationClosed != null)
+                        OnNotificationClosed(this, this);
+                }
+                catch (Exception ex)
+                {
+                    OpenMetaverse.Logger.Log("Error executing OnNotificationClosed " + Text,
+                                             OpenMetaverse.Helpers.LogLevel.Warning, ex);
+                }
+                if (!CanClose) Dispose();
+            }
+            CanClose = true;
         }
 
-        protected void FireNotificationCallback(NotificationEventArgs e)
+        /// <summary>
+        /// Triggers the OnNotificationClicked event.
+        /// </summary>
+        internal void Notification_Click(object sender, EventArgs e)
         {
-            if (OnNotificationDisplayed == null) return;
-
+            if (ButtonSelected) throw new InvalidOperationException("Clicked twice " + Text + " item: " + sender);
+            ButtonSelected = true;
             try
             {
-                e.Type = this.Type;
-                ThreadPool.QueueUserWorkItem((object o) => OnNotificationDisplayed(this, e));
+                if (OnNotificationClicked != null)
+                    OnNotificationClicked(sender, e, this);
             }
             catch (Exception ex)
             {
-                OpenMetaverse.Logger.Log("Error executing notification callback", OpenMetaverse.Helpers.LogLevel.Warning, ex);
+                OpenMetaverse.Logger.Log("Error executing OnNotificationClicked", OpenMetaverse.Helpers.LogLevel.Warning, ex);
+            }
+            if (CanClose)
+            {
+                Notification_Close();
+            }
+        }
+
+        public void HookNotification(Notification notification)
+        {
+            Notice = notification;
+            int hooked = 0;
+            lock (notification)
+            {
+                notification.HandleDestroyed += Notification_Closing;
+                lock (Buttons)
+                    foreach (var button in Buttons)
+                    {
+                        button.Click += Notification_Click;
+                        hooked++;
+                    }
+            }
+            if (hooked == 0)
+                throw new InvalidOperationException("No buttons found on Dialog " + Text);
+
+        }
+
+        public void Dispose()
+        {
+            if (!CanClose)
+            {
+                CanClose = true;
+                ButtonSelected = true;
+                Notification_Close();
+            }
+            lock (Notice)
+            {
+                Notice.HandleDestroyed -= Notification_Closing;
+                lock (Buttons)
+                    foreach (var button in Buttons)
+                        button.Click -= Notification_Click;
             }
         }
     }
