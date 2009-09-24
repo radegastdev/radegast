@@ -53,6 +53,7 @@ namespace Radegast
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
         private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();
         private readonly Dictionary<UUID, ulong> agentSimHandle = new Dictionary<UUID, ulong>();
+        public ComboBox ChatInputText { get { return cbxInput; } }
 
         public ChatConsole(RadegastInstance instance)
         {
