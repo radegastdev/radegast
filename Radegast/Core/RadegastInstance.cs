@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using Radegast.Commands;
 using Radegast.Netcom;
@@ -149,8 +150,9 @@ namespace Radegast
         public RadegastInstance(GridClient client0)
         {
             // incase something else calls GlobalInstance while we are loading
-            globalInstance = this; 
-
+            globalInstance = this;
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.ThreadException += HandleThreadException;
             client = client0;
 
             // Are we running mono?
@@ -216,28 +218,52 @@ namespace Radegast
 
             lock (PluginsLoaded)
             {
-                PluginsLoaded.ForEach(plug =>
+                 List<IRadegastPlugin> unload = new List<IRadegastPlugin>(PluginsLoaded);
+                 unload.ForEach(plug =>
                 {
+                    PluginsLoaded.Remove(plug);
                     try
                     {
                         plug.StopPlugin(this);
                     }
-                    catch (Exception) { }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("ERROR in Shutdown Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug, ex);
+                    }
                 });
             }
 
-            movement.Dispose();
-            movement = null;
-            commandsManager.Dispose();
-            commandsManager = null;
-            ContextActionManager.Dispose();
-            ContextActionManager = null;
-            mediaManager.Dispose();
-            mediaManager = null;
-            state.Dispose();
-            state = null;
-            netcom.Dispose();
-            netcom = null;
+            if (movement != null)
+            {
+                movement.Dispose();
+                movement = null;
+            }
+            if (commandsManager != null)
+            {
+                commandsManager.Dispose();
+                commandsManager = null;
+            }
+            if (ContextActionManager != null)
+            {
+                ContextActionManager.Dispose();
+                ContextActionManager = null;
+            }
+            if (mediaManager != null)
+            {
+                mediaManager.Dispose();
+                mediaManager = null;
+            }
+            if (state != null)
+            {
+                state.Dispose();
+                state = null;
+            }
+            if (netcom != null)
+            {
+                netcom.Dispose();
+                netcom = null;
+            }
+
             Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
         }
 
@@ -483,6 +509,11 @@ namespace Radegast
         public TabsConsole TabConsole
         {
             get { return tabsConsole; }
+        }
+
+        public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            Logger.Log("Unhandled Thread Exception: "+e.Exception + " in " +sender,Helpers.LogLevel.Error,client);
         }
     }
 }
