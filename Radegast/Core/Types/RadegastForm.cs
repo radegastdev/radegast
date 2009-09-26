@@ -86,7 +86,7 @@ namespace Radegast
         protected RadegastNetcom Netcom { get { return instance.Netcom; } }
 
         private System.Threading.Timer SettingsTimer;
-        private const int SettingsTimerTimeout = 3000;
+        private const int SettingsTimerTimeout = 500;
 
         public RadegastForm()
             : base()
@@ -141,17 +141,31 @@ namespace Radegast
 
         protected void RestoreSavedPosition()
         {
+            int left = Left, top = Top, width = Width, height = Height;
+
             if (Instance.GlobalSettings[GetSettingsKey("left")].Type != OSDType.Unknown)
-                Left = Instance.GlobalSettings[GetSettingsKey("left")].AsInteger();
+                left = Instance.GlobalSettings[GetSettingsKey("left")].AsInteger();
 
             if (Instance.GlobalSettings[GetSettingsKey("top")].Type != OSDType.Unknown)
-                Top = Instance.GlobalSettings[GetSettingsKey("top")].AsInteger();
+                top = Instance.GlobalSettings[GetSettingsKey("top")].AsInteger();
 
             if (Instance.GlobalSettings[GetSettingsKey("width")].Type != OSDType.Unknown)
-                Width = Instance.GlobalSettings[GetSettingsKey("width")].AsInteger();
+                width = Instance.GlobalSettings[GetSettingsKey("width")].AsInteger();
 
             if (Instance.GlobalSettings[GetSettingsKey("height")].Type != OSDType.Unknown)
-                Height = Instance.GlobalSettings[GetSettingsKey("height")].AsInteger();
+                height = Instance.GlobalSettings[GetSettingsKey("height")].AsInteger();
+
+            System.Drawing.Rectangle rec = SystemInformation.VirtualScreen;
+
+            if (left < 0 || (left > rec.Width - width)) left = 0;
+            if (top < 0 || (top > rec.Height -height)) top = 0;
+            if (width > rec.Width) width = rec.Width;
+            if (height > rec.Height) height = rec.Height;
+
+            Left = left;
+            Top = top;
+            Width = width;
+            Height = height;
         }
         
         protected virtual string SettingsKeyBase()
