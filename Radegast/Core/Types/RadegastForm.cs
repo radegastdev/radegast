@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text;
 using System.ComponentModel;
+using System.Drawing;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using Radegast.Netcom;
@@ -155,10 +156,12 @@ namespace Radegast
             if (Instance.GlobalSettings[GetSettingsKey("height")].Type != OSDType.Unknown)
                 height = Instance.GlobalSettings[GetSettingsKey("height")].AsInteger();
 
-            System.Drawing.Rectangle rec = SystemInformation.VirtualScreen;
+            Rectangle rec = Screen.GetWorkingArea(new Rectangle(left, top, width, height));
 
-            if (left < 0 || (left > rec.Width - width)) left = 0;
-            if (top < 0 || (top > rec.Height -height)) top = 0;
+            if (left > rec.X + rec.Width - width) left = rec.X + rec.Width - width;
+            if (top > rec.Y + rec.Height - height) top = rec.Y + rec.Height - height;
+            if (left < rec.X) left = rec.X;
+            if (top < rec.Y) top = rec.Y;
             if (width > rec.Width) width = rec.Width;
             if (height > rec.Height) height = rec.Height;
 
@@ -184,6 +187,7 @@ namespace Radegast
             if (AutoSavePosition)
                 RestoreSavedPosition();
         }
+
         protected override void OnMove(EventArgs e)
         {
             base.OnMove(e);
