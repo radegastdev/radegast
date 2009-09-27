@@ -32,7 +32,7 @@ using System;
 
 namespace Radegast
 {
-    public partial class SleekTab
+    public partial class RadegastTab
     {
         public event EventHandler TabSelected;
         public event EventHandler TabDeselected;

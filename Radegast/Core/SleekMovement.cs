@@ -34,7 +34,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public class SleekMovement : IDisposable
+    public class RadegastMovement : IDisposable
     {
         private GridClient client;
         private Timer timer;
@@ -129,7 +129,7 @@ namespace Radegast
             }
         }
 
-        public SleekMovement(GridClient c)
+        public RadegastMovement(GridClient c)
         {
             client = c;
             angle = client.Self.Movement.BodyRotation.Z;

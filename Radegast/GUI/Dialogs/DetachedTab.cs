@@ -36,13 +36,13 @@ namespace Radegast
     public partial class frmDetachedTab : Form
     {
         private RadegastInstance instance;
-        private SleekTab tab;
+        private RadegastTab tab;
 
         //For reattachment
         private ToolStrip strip;
         private Panel container;
 
-        public frmDetachedTab(RadegastInstance instance, SleekTab tab)
+        public frmDetachedTab(RadegastInstance instance, RadegastTab tab)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmDetachedTab_Disposed);

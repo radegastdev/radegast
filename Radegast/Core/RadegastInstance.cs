@@ -141,11 +141,11 @@ namespace Radegast
         /// </summary>
         public ContextActionsManager ContextActionManager { get; private set; }
 
-        private SleekMovement movement;
+        private RadegastMovement movement;
         /// <summary>
         /// Allows key emulation for moving avatar around
         /// </summary>
-        public SleekMovement Movement { get { return movement; } }
+        public RadegastMovement Movement { get { return movement; } }
 
         public RadegastInstance(GridClient client0)
         {
@@ -165,7 +165,7 @@ namespace Radegast
             mediaManager = new MediaManager(this);
             commandsManager = new CommandsManager(this);
             ContextActionManager = new ContextActionsManager(this);
-            movement = new SleekMovement(client);
+            movement = new RadegastMovement(client);
 
             InitializeLoggingAndConfig();
 

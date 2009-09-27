@@ -31,8 +31,8 @@
 
 namespace Radegast
 {
-    public interface ISleekTabControl
+    public interface IRadegastTabControl
     {
-        void RegisterTab(SleekTab tab);
+        void RegisterTab(RadegastTab tab);
     }
 }

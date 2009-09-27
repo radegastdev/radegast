@@ -48,7 +48,7 @@ namespace Radegast
         private ChatTextManager chatManager;
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
-        private SleekMovement movement { get { return instance.Movement; } }
+        private RadegastMovement movement { get { return instance.Movement; } }
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
         private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();

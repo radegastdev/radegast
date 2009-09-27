@@ -67,17 +67,17 @@ namespace Radegast
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private ChatTextManager mainChatManger;
 
-        private Dictionary<string, SleekTab> tabs = new Dictionary<string, SleekTab>();
-        public Dictionary<string, SleekTab> Tabs { get { return tabs; } }
+        private Dictionary<string, RadegastTab> tabs = new Dictionary<string, RadegastTab>();
+        public Dictionary<string, RadegastTab> Tabs { get { return tabs; } }
 
         private ChatConsole chatConsole;
 
-        private SleekTab selectedTab;
+        private RadegastTab selectedTab;
 
         /// <summary>
         /// Currently selected tab
         /// </summary>
-        public SleekTab SelectedTab
+        public RadegastTab SelectedTab
         {
             get
             {
@@ -238,7 +238,7 @@ namespace Radegast
                 case InstantMessageDialog.StartTyping:
                     if (TabExists(e.IM.FromAgentName))
                     {
-                        SleekTab tab = tabs[e.IM.FromAgentName.ToLower()];
+                        RadegastTab tab = tabs[e.IM.FromAgentName.ToLower()];
                         if (!tab.Highlighted) tab.PartialHighlight();
                     }
 
@@ -247,7 +247,7 @@ namespace Radegast
                 case InstantMessageDialog.StopTyping:
                     if (TabExists(e.IM.FromAgentName))
                     {
-                        SleekTab tab = tabs[e.IM.FromAgentName.ToLower()];
+                        RadegastTab tab = tabs[e.IM.FromAgentName.ToLower()];
                         if (!tab.Highlighted) tab.Unhighlight();
                     }
 
@@ -331,7 +331,7 @@ namespace Radegast
         {
             if (TabExists(e.IM.IMSessionID.ToString()))
             {
-                SleekTab tab = tabs[e.IM.IMSessionID.ToString()];
+                RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
                 if (!tab.Selected) tab.Highlight();
                 return;
             }
@@ -344,7 +344,7 @@ namespace Radegast
         {
             if (TabExists(e.IM.IMSessionID.ToString()))
             {
-                SleekTab tab = tabs[e.IM.IMSessionID.ToString()];
+                RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
                 if (!tab.Selected) tab.Highlight();
                 return;
             }
@@ -357,7 +357,7 @@ namespace Radegast
         {
             if (TabExists(e.IM.IMSessionID.ToString()))
             {
-                SleekTab tab = tabs[e.IM.IMSessionID.ToString()];
+                RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
                 if (!tab.Selected) tab.Highlight();
                 return;
             }
@@ -370,7 +370,7 @@ namespace Radegast
         {
             MainConsole mainConsole = new MainConsole(instance);
 
-            SleekTab tab = AddTab("login", "Login", mainConsole);
+            RadegastTab tab = AddTab("login", "Login", mainConsole);
             tab.AllowClose = false;
             tab.AllowDetach = false;
             tab.AllowMerge = false;
@@ -383,7 +383,7 @@ namespace Radegast
             chatConsole = new ChatConsole(instance);
             mainChatManger = chatConsole.ChatManager;
 
-            SleekTab tab = AddTab("chat", "Chat", chatConsole);
+            RadegastTab tab = AddTab("chat", "Chat", chatConsole);
             tab.AllowClose = false;
             tab.AllowDetach = false;
             tab.AllowHide = false;
@@ -395,7 +395,7 @@ namespace Radegast
         /// </summary>
         private void InitializeOnlineTabs()
         {
-            SleekTab tab = AddTab("friends", "Friends", new FriendsConsole(instance));
+            RadegastTab tab = AddTab("friends", "Friends", new FriendsConsole(instance));
             tab.AllowClose = false;
             tab.AllowDetach = true;
             tab.Visible = false;
@@ -438,7 +438,7 @@ namespace Radegast
         {
             if (!TabExists(name)) return;
 
-            SleekTab tab = tabs[name];
+            RadegastTab tab = tabs[name];
             if (tab.Merged) SplitTab(tab);
 
             tab.AllowClose = true;
@@ -457,7 +457,7 @@ namespace Radegast
             instance.ContextActionManager.AddContextMenu(handler);
         }
 
-        public void AddTab(SleekTab tab)
+        public void AddTab(RadegastTab tab)
         {
             ToolStripButton button = (ToolStripButton)tstTabs.Items.Add(tab.Label);
             button.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
@@ -475,7 +475,7 @@ namespace Radegast
             }
         }
 
-        public SleekTab AddTab(string name, string label, Control control)
+        public RadegastTab AddTab(string name, string label, Control control)
         {
             toolStripContainer1.ContentPanel.Controls.Add(control);
             control.Visible = false;
@@ -488,7 +488,7 @@ namespace Radegast
             button.Tag = name.ToLower();
             button.Click += new EventHandler(TabButtonClick);
 
-            SleekTab tab = new SleekTab(instance, button, control, name.ToLower(), label);
+            RadegastTab tab = new RadegastTab(instance, button, control, name.ToLower(), label);
             tab.TabAttached += new EventHandler(tab_TabAttached);
             tab.TabDetached += new EventHandler(tab_TabDetached);
             tab.TabSelected += new EventHandler(tab_TabSelected);
@@ -507,13 +507,13 @@ namespace Radegast
 
         private void tab_TabAttached(object sender, EventArgs e)
         {
-            SleekTab tab = (SleekTab)sender;
+            RadegastTab tab = (RadegastTab)sender;
             tab.Select();
         }
 
         private void tab_TabDetached(object sender, EventArgs e)
         {
-            SleekTab tab = (SleekTab)sender;
+            RadegastTab tab = (RadegastTab)sender;
             frmDetachedTab form = (frmDetachedTab)tab.Owner;
 
             form.ReattachStrip = tstTabs;
@@ -522,7 +522,7 @@ namespace Radegast
 
         private void tab_TabSelected(object sender, EventArgs e)
         {
-            SleekTab tab = (SleekTab)sender;
+            RadegastTab tab = (RadegastTab)sender;
 
             if (selectedTab != null &&
                 selectedTab != tab)
@@ -542,7 +542,7 @@ namespace Radegast
 
         void tab_TabHidden(object sender, EventArgs e)
         {
-            SleekTab tab = (SleekTab)sender;
+            RadegastTab tab = (RadegastTab)sender;
 
             if (selectedTab != null && selectedTab == tab)
             {
@@ -553,7 +553,7 @@ namespace Radegast
 
         private void tab_TabClosed(object sender, EventArgs e)
         {
-            SleekTab tab = (SleekTab)sender;
+            RadegastTab tab = (RadegastTab)sender;
 
             if (selectedTab != null && selectedTab == tab)
             {
@@ -576,11 +576,11 @@ namespace Radegast
         {
             ToolStripButton button = (ToolStripButton)sender;
 
-            SleekTab tab = tabs[button.Tag.ToString()];
+            RadegastTab tab = tabs[button.Tag.ToString()];
             tab.Select();
         }
 
-        public void RemoveTabEntry(SleekTab tab)
+        public void RemoveTabEntry(RadegastTab tab)
         {
             if (tstTabs.Items.Contains(tab.Button))
             {
@@ -610,21 +610,21 @@ namespace Radegast
             return tabs.ContainsKey(name.ToLower());
         }
 
-        public SleekTab GetTab(string name)
+        public RadegastTab GetTab(string name)
         {
             return tabs[name.ToLower()];
         }
 
-        public List<SleekTab> GetOtherTabs()
+        public List<RadegastTab> GetOtherTabs()
         {
-            List<SleekTab> otherTabs = new List<SleekTab>();
+            List<RadegastTab> otherTabs = new List<RadegastTab>();
 
             foreach (ToolStripItem item in tstTabs.Items)
             {
                 if (item.Tag == null) continue;
                 if ((ToolStripItem)item == selectedTab.Button) continue;
 
-                SleekTab tab = tabs[item.Tag.ToString()];
+                RadegastTab tab = tabs[item.Tag.ToString()];
                 if (!tab.AllowMerge) continue;
                 if (tab.Merged) continue;
 
@@ -705,7 +705,7 @@ namespace Radegast
         {
             IMTabWindow imTab = new IMTabWindow(instance, target, session, targetName);
 
-            SleekTab tab = AddTab(session.ToString(), "IM: " + targetName, imTab);
+            RadegastTab tab = AddTab(session.ToString(), "IM: " + targetName, imTab);
             imTab.SelectIMInput();
             tab.Highlight();
 
@@ -716,7 +716,7 @@ namespace Radegast
         {
             ConferenceIMTabWindow imTab = new ConferenceIMTabWindow(instance, session, name);
 
-            SleekTab tab = AddTab(session.ToString(), name, imTab);
+            RadegastTab tab = AddTab(session.ToString(), name, imTab);
             imTab.SelectIMInput();
 
             return imTab;
@@ -734,7 +734,7 @@ namespace Radegast
         {
             GroupIMTabWindow imTab = new GroupIMTabWindow(instance, session, name);
 
-            SleekTab tab = AddTab(session.ToString(), name, imTab);
+            RadegastTab tab = AddTab(session.ToString(), name, imTab);
             imTab.SelectIMInput();
 
             return imTab;
@@ -758,7 +758,7 @@ namespace Radegast
         {
             OutfitTextures otTab = new OutfitTextures(instance, avatar);
 
-            SleekTab tab = AddTab("OT: " + avatar.Name, "OT: " + avatar.Name, otTab);
+            RadegastTab tab = AddTab("OT: " + avatar.Name, "OT: " + avatar.Name, otTab);
             otTab.GetTextures();
             return otTab;
         }
@@ -767,7 +767,7 @@ namespace Radegast
         {
             MasterTab msTab = new MasterTab(instance, avatar);
 
-            SleekTab tab = AddTab("MS: " + avatar.Name, "MS: " + avatar.Name, msTab);
+            RadegastTab tab = AddTab("MS: " + avatar.Name, "MS: " + avatar.Name, msTab);
             return msTab;
         }
 
@@ -775,7 +775,7 @@ namespace Radegast
         {
             AttachmentTab atTab = new AttachmentTab(instance, avatar);
 
-            SleekTab tab = AddTab("AT: " + avatar.Name, "AT: " + avatar.Name, atTab);
+            RadegastTab tab = AddTab("AT: " + avatar.Name, "AT: " + avatar.Name, atTab);
             return atTab;
         }
 
@@ -783,7 +783,7 @@ namespace Radegast
         {
             AnimTab animTab = new AnimTab(instance, avatar);
 
-            SleekTab tab = AddTab("Anim: " + avatar.Name, "Anim: " + avatar.Name, animTab);
+            RadegastTab tab = AddTab("Anim: " + avatar.Name, "Anim: " + avatar.Name, animTab);
             return animTab;
         }
 
@@ -799,12 +799,12 @@ namespace Radegast
             {
                 tmnuMergeWith.Text = "Merge With";
 
-                List<SleekTab> otherTabs = GetOtherTabs();
+                List<RadegastTab> otherTabs = GetOtherTabs();
 
                 tmnuMergeWith.Enabled = (otherTabs.Count > 0);
                 if (!tmnuMergeWith.Enabled) return;
 
-                foreach (SleekTab tab in otherTabs)
+                foreach (RadegastTab tab in otherTabs)
                 {
                     ToolStripItem item = tmnuMergeWith.DropDown.Items.Add(tab.Label);
                     item.Tag = tab.Name;
@@ -821,7 +821,7 @@ namespace Radegast
         private void MergeItemClick(object sender, EventArgs e)
         {
             ToolStripItem item = (ToolStripItem)sender;
-            SleekTab tab = tabs[item.Tag.ToString()];
+            RadegastTab tab = tabs[item.Tag.ToString()];
 
             selectedTab.MergeWith(tab);
 
@@ -840,9 +840,9 @@ namespace Radegast
             selectedTab.Select();
         }
 
-        public void SplitTab(SleekTab tab)
+        public void SplitTab(RadegastTab tab)
         {
-            SleekTab otherTab = tab.Split();
+            RadegastTab otherTab = tab.Split();
             if (otherTab == null) return;
 
             toolStripContainer1.ContentPanel.Controls.Add(tab.Control);
@@ -855,14 +855,14 @@ namespace Radegast
         private void tmnuDetachTab_Click(object sender, EventArgs e)
         {
             if (!selectedTab.AllowDetach) return;
-            SleekTab tab = selectedTab;
+            RadegastTab tab = selectedTab;
             tabs["chat"].Select();
             tab.Detach(instance);
         }
 
         private void tbtnCloseTab_Click(object sender, EventArgs e)
         {
-            SleekTab tab = selectedTab;
+            RadegastTab tab = selectedTab;
             if (tab.AllowHide)
                 tab.Hide();
             else if (tab.AllowClose)
@@ -903,12 +903,12 @@ namespace Radegast
                 {
                     ctxBtnMerge.Text = "Merge With";
 
-                    List<SleekTab> otherTabs = GetOtherTabs();
+                    List<RadegastTab> otherTabs = GetOtherTabs();
 
                     ctxBtnMerge.Enabled = (otherTabs.Count > 0);
                     if (!ctxBtnMerge.Enabled) return;
 
-                    foreach (SleekTab tab in otherTabs)
+                    foreach (RadegastTab tab in otherTabs)
                     {
                         ToolStripItem item = ctxBtnMerge.DropDown.Items.Add(tab.Label);
                         item.Tag = tab.Name;
@@ -934,14 +934,14 @@ namespace Radegast
         /// <summary>
         /// Tab that was manipulated in the event
         /// </summary>
-        public SleekTab Tab;
+        public RadegastTab Tab;
 
         public TabEventArgs()
             : base()
         {
         }
 
-        public TabEventArgs(SleekTab tab)
+        public TabEventArgs(RadegastTab tab)
             : base()
         {
             Tab = tab;

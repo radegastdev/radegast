@@ -34,7 +34,7 @@ using System.Windows.Forms;
 
 namespace Radegast
 {
-    public partial class SleekTab
+    public partial class RadegastTab
     {
         private RadegastInstance instance;
         private ToolStripButton button;
@@ -43,7 +43,7 @@ namespace Radegast
         private Button defaultControlButton;
         private string name;
         private string label;
-        private SleekTab mergedTab;
+        private RadegastTab mergedTab;
         private Form owner;
         private string originalLabel;
         
@@ -59,7 +59,7 @@ namespace Radegast
         private bool merged = false;
         private bool hidden = false;
 
-        public SleekTab(RadegastInstance instance, ToolStripButton button, Control control, string name, string label)
+        public RadegastTab(RadegastInstance instance, ToolStripButton button, Control control, string name, string label)
         {
             this.instance = instance;
             this.button = button;
@@ -224,7 +224,7 @@ namespace Radegast
             OnTabDetached(EventArgs.Empty);            
         }
 
-        public void MergeWith(SleekTab tab)
+        public void MergeWith(RadegastTab tab)
         {
             if (!allowMerge) return;
             if (merged) return;
@@ -254,12 +254,12 @@ namespace Radegast
             OnTabMerged(EventArgs.Empty);
         }
 
-        public SleekTab Split()
+        public RadegastTab Split()
         {
             if (!allowMerge) return null;
             if (!merged) return null;
 
-            SleekTab returnTab = mergedTab;
+            RadegastTab returnTab = mergedTab;
             mergedTab = null;
             returnTab.mergedTab = null;
 
@@ -303,7 +303,7 @@ namespace Radegast
             set { label = button.Text = value; }
         }
 
-        public SleekTab MergedTab
+        public RadegastTab MergedTab
         {
             get { return mergedTab; }
         }

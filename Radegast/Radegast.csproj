@@ -125,9 +125,9 @@
     <Compile Include="Core\RadegastMisc.cs" />
     <Compile Include="Core\SleekMovement.cs" />
     <Compile Include="Core\StateManager.cs" />
-    <Compile Include="Core\Tabs\ISleekTabControl.cs" />
-    <Compile Include="Core\Tabs\SleekTab.cs" />
-    <Compile Include="Core\Tabs\SleekTabEvents.cs" />
+    <Compile Include="Core\Tabs\IRadegastTabControl.cs" />
+    <Compile Include="Core\Tabs\RadegastTab.cs" />
+    <Compile Include="Core\Tabs\RadegastTabEvents.cs" />
     <Compile Include="Core\Types\AgentNameTextBox.cs">
       <SubType>Component</SubType>
     </Compile>

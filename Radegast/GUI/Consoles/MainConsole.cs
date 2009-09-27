@@ -37,7 +37,7 @@ using Radegast.Netcom;
 
 namespace Radegast
 {
-    public partial class MainConsole : UserControl, ISleekTabControl
+    public partial class MainConsole : UserControl, IRadegastTabControl
     {
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
@@ -261,9 +261,9 @@ namespace Radegast
             }
         }
 
-        #region ISleekTabControl Members
+        #region IRadegastTabControl Members
 
-        public void RegisterTab(SleekTab tab)
+        public void RegisterTab(RadegastTab tab)
         {
             tab.DefaultControlButton = btnLogin;
         }

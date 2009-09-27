@@ -68,7 +68,7 @@ namespace Radegast
             }
         }
 
-        public SleekTab MapTab
+        public RadegastTab MapTab
         {
             get
             {
@@ -958,7 +958,7 @@ namespace Radegast
         {
             if (!tabsConsole.TabExists(tabName)) return;
 
-            SleekTab tab = tabsConsole.Tabs[tabName];
+            RadegastTab tab = tabsConsole.Tabs[tabName];
 
             if (tab.Hidden)
             {
@@ -1001,7 +1001,7 @@ namespace Radegast
         {
             if (tabsConsole.TabExists("objects"))
             {
-                SleekTab tab = tabsConsole.Tabs["objects"];
+                RadegastTab tab = tabsConsole.Tabs["objects"];
                 if (!tab.Selected)
                 {
                     tab.Select();
@@ -1014,7 +1014,7 @@ namespace Radegast
             }
             else
             {
-                SleekTab tab = tabsConsole.AddTab("objects", "Objects", new ObjectsConsole(instance));
+                RadegastTab tab = tabsConsole.AddTab("objects", "Objects", new ObjectsConsole(instance));
                 tab.AllowClose = true;
                 tab.AllowDetach = true;
                 tab.Visible = true;

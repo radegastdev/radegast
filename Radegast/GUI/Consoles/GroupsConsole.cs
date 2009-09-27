@@ -116,7 +116,7 @@ namespace Radegast
             }
             else
             {
-                SleekTab t = instance.TabConsole.Tabs[g.ID.ToString()];
+                RadegastTab t = instance.TabConsole.Tabs[g.ID.ToString()];
                 if (!t.Selected)
                 {
                     t.Highlight();
