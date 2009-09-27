@@ -220,19 +220,19 @@ namespace Radegast
 
             lock (PluginsLoaded)
             {
-                 List<IRadegastPlugin> unload = new List<IRadegastPlugin>(PluginsLoaded);
-                 unload.ForEach(plug =>
-                {
-                    PluginsLoaded.Remove(plug);
-                    try
-                    {
-                        plug.StopPlugin(this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR in Shutdown Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug, ex);
-                    }
-                });
+                List<IRadegastPlugin> unload = new List<IRadegastPlugin>(PluginsLoaded);
+                unload.ForEach(plug =>
+               {
+                   PluginsLoaded.Remove(plug);
+                   try
+                   {
+                       plug.StopPlugin(this);
+                   }
+                   catch (Exception ex)
+                   {
+                       Logger.Log("ERROR in Shutdown Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug, ex);
+                   }
+               });
             }
 
             if (movement != null)
@@ -515,7 +515,7 @@ namespace Radegast
 
         public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            Logger.Log("Unhandled Thread Exception: "+e.Exception + " in " +sender,Helpers.LogLevel.Error,client);
+            Logger.Log("Unhandled Thread Exception: " + e.Exception + " in " + sender, Helpers.LogLevel.Error, client);
         }
     }
 }
