@@ -151,8 +151,10 @@ namespace Radegast
         {
             // incase something else calls GlobalInstance while we are loading
             globalInstance = this;
+#if !DEBUG
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.ThreadException += HandleThreadException;
+#endif
             client = client0;
 
             // Are we running mono?
