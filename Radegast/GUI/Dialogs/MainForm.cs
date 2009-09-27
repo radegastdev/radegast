@@ -239,13 +239,7 @@ namespace Radegast
         private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
         {
             if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
-
-            tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = false;
-
-            statusTimer.Stop();
-
-            RefreshStatusBar();
-            RefreshWindowTitle();
+            netcom_ClientLoggedOut(sender, EventArgs.Empty);
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)

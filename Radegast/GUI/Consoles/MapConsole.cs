@@ -78,13 +78,10 @@ namespace Radegast
                 pnlMap.Visible = false;
                 map = null;
             }
-            pnlSearch.Visible = Active;
 
             // Register callbacks
             client.Grid.OnGridRegion += new GridManager.GridRegionCallback(Grid_OnGridRegion);
-            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
-            client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
         }
 
@@ -92,9 +89,7 @@ namespace Radegast
         {
             // Unregister callbacks
             client.Grid.OnGridRegion -= new GridManager.GridRegionCallback(Grid_OnGridRegion);
-            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
-            client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
 
             if (map != null)
@@ -197,24 +192,6 @@ namespace Radegast
             {
                 prgTeleport.Style = ProgressBarStyle.Blocks;
             }
-        }
-
-        void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
-        {
-            if (pnlSearch.InvokeRequired)
-                pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = false));
-            else
-                pnlSearch.Visible = false;
-        }
-
-        void Network_OnLogin(LoginStatus login, string message)
-        {
-            if (login != LoginStatus.Success) return;
-
-            if (pnlSearch.InvokeRequired)
-                pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = true));
-            else
-                pnlSearch.Visible = true;
         }
 
         void Grid_OnGridRegion(GridRegion region)
