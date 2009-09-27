@@ -454,10 +454,8 @@ namespace Radegast
                         fileName = fileName.Replace(lDisallowed.ToString(), "_");
                     }
 
-                    StreamWriter logfile = File.AppendText(Path.Combine(ClientDir, fileName));
-                    logfile.WriteLine(DateTime.Now.ToString("yyyy-MM-dd [HH:mm:ss] ") + message);
-                    logfile.Close();
-                    logfile.Dispose();
+                    File.AppendAllText(Path.Combine(ClientDir, fileName),
+                        DateTime.Now.ToString("yyyy-MM-dd [HH:mm:ss] ") + message + Environment.NewLine);
                 }
                 catch (Exception) { }
             }

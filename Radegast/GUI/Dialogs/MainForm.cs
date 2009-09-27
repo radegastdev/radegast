@@ -117,7 +117,6 @@ namespace Radegast
         private RadegastNetcom netcom;
         private GridClient client;
         private TabsConsole tabsConsole;
-        private frmDebugLog debugLogForm;
         private System.Timers.Timer statusTimer;
         private AutoPilot ap;
         private bool AutoPilotActive = false;
@@ -207,7 +206,7 @@ namespace Radegast
         public void InitializeControls()
         {
             InitializeTabsConsole();
-            InitializeDebugLogForm();
+
             if (instance.MediaManager.SoundSystemAvailable)
             {
                 mediaConsole = new MediaConsole(instance);
@@ -255,13 +254,6 @@ namespace Radegast
             {
                 mediaConsole.Dispose();
                 mediaConsole = null;
-            }
-
-            if (debugLogForm != null)
-            {
-                debugLogForm.Close();
-                debugLogForm.Dispose();
-                debugLogForm = null;
             }
 
             if (netcom.IsLoggedIn)
@@ -416,11 +408,6 @@ namespace Radegast
             toolStripContainer1.ContentPanel.Controls.Add(tabsConsole);
         }
 
-        private void InitializeDebugLogForm()
-        {
-            debugLogForm = new frmDebugLog(instance);
-        }
-
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Control && e.Alt && e.KeyCode == Keys.D)
@@ -457,13 +444,6 @@ namespace Radegast
 
         private void frmMain_KeyUp(object sender, KeyEventArgs e)
         {
-            // alt-ctrl-d activate debug menu
-            if (e.Control && e.Alt && e.KeyCode == Keys.D)
-            {
-                tbtnDebug.Visible = !tbtnDebug.Visible;
-                e.Handled = e.SuppressKeyPress = true;
-            }
-
             // ctrl-o, open objects finder
             if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
             {
@@ -521,15 +501,6 @@ namespace Radegast
         #endregion
 
         #region Public methods
-
-        public void AddLogMessage(string msg, log4net.Core.Level level)
-        {
-            if (debugLogForm != null && !debugLogForm.IsDisposed)
-            {
-                // Log form handlles the InvokeNeeded                                      
-                debugLogForm.AddLogMessage(msg, level);
-            }
-        }
 
         public void ProcessLink(string link)
         {
@@ -697,11 +668,6 @@ namespace Radegast
         private void tmnuControlAlwaysRun_Click(object sender, EventArgs e)
         {
             instance.State.SetAlwaysRun(tmnuControlAlwaysRun.Checked);
-        }
-
-        private void tmnuDebugLog_Click(object sender, EventArgs e)
-        {
-            debugLogForm.Show();
         }
 
         private void tmnuPrefs_Click(object sender, EventArgs e)

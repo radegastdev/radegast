@@ -82,8 +82,6 @@ namespace Radegast
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbtnDebug = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tmnuDebugLog = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnWorld = new System.Windows.Forms.ToolStripDropDownButton();
             this.tmnuControlFly = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuControlAlwaysRun = new System.Windows.Forms.ToolStripMenuItem();
@@ -110,6 +108,7 @@ namespace Radegast
             this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
             this.tbtnInventory = new System.Windows.Forms.ToolStripButton();
             this.tbtnSearch = new System.Windows.Forms.ToolStripButton();
+            this.tbtnMap = new System.Windows.Forms.ToolStripButton();
             this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
@@ -132,7 +131,6 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
-            this.tbtnMap = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -146,7 +144,6 @@ namespace Radegast
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtnSLeek,
             this.toolStripSeparator1,
-            this.tbtnDebug,
             this.tbtnWorld,
             this.toolStripSeparator2,
             this.tbnTools,
@@ -235,27 +232,6 @@ namespace Radegast
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // tbtnDebug
-            // 
-            this.tbtnDebug.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.tbtnDebug.AutoToolTip = false;
-            this.tbtnDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnDebug.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tmnuDebugLog});
-            this.tbtnDebug.Image = ((System.Drawing.Image)(resources.GetObject("tbtnDebug.Image")));
-            this.tbtnDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnDebug.Name = "tbtnDebug";
-            this.tbtnDebug.Size = new System.Drawing.Size(55, 22);
-            this.tbtnDebug.Text = "Debug";
-            this.tbtnDebug.Visible = false;
-            // 
-            // tmnuDebugLog
-            // 
-            this.tmnuDebugLog.Name = "tmnuDebugLog";
-            this.tmnuDebugLog.Size = new System.Drawing.Size(103, 22);
-            this.tmnuDebugLog.Text = "Log...";
-            this.tmnuDebugLog.Click += new System.EventHandler(this.tmnuDebugLog_Click);
             // 
             // tbtnWorld
             // 
@@ -481,6 +457,17 @@ namespace Radegast
             this.tbtnSearch.Size = new System.Drawing.Size(46, 22);
             this.tbtnSearch.Text = "Search";
             this.tbtnSearch.Click += new System.EventHandler(this.tbtnSearch_Click);
+            // 
+            // tbtnMap
+            // 
+            this.tbtnMap.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnMap.Enabled = false;
+            this.tbtnMap.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMap.Image")));
+            this.tbtnMap.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnMap.Name = "tbtnMap";
+            this.tbtnMap.Size = new System.Drawing.Size(35, 22);
+            this.tbtnMap.Text = "Map";
+            this.tbtnMap.Click += new System.EventHandler(this.tbtnMap_Click);
             // 
             // tbnObjects
             // 
@@ -708,17 +695,6 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
-            // tbtnMap
-            // 
-            this.tbtnMap.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnMap.Enabled = false;
-            this.tbtnMap.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMap.Image")));
-            this.tbtnMap.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnMap.Name = "tbtnMap";
-            this.tbtnMap.Size = new System.Drawing.Size(35, 22);
-            this.tbtnMap.Text = "Map";
-            this.tbtnMap.Click += new System.EventHandler(this.tbtnMap_Click);
-            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -760,10 +736,8 @@ namespace Radegast
         private System.Windows.Forms.ToolStripStatusLabel tlblLoginName;
         private System.Windows.Forms.ToolStripStatusLabel tlblRegionInfo;
         private System.Windows.Forms.ToolStripStatusLabel tlblMoneyBalance;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnDebug;
         private System.Windows.Forms.ToolStripMenuItem tmnuPrefs;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem tmnuDebugLog;
         private System.Windows.Forms.ToolStripDropDownButton tbtnWorld;
         private System.Windows.Forms.ToolStripMenuItem tmnuControlFly;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;

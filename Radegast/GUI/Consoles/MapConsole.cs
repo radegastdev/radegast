@@ -201,13 +201,20 @@ namespace Radegast
 
         void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
         {
-            pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = false));
+            if (pnlSearch.InvokeRequired)
+                pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = false));
+            else
+                pnlSearch.Visible = false;
         }
 
         void Network_OnLogin(LoginStatus login, string message)
         {
             if (login != LoginStatus.Success) return;
-            pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = true));
+
+            if (pnlSearch.InvokeRequired)
+                pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = true));
+            else
+                pnlSearch.Visible = true;
         }
 
         void Grid_OnGridRegion(GridRegion region)

@@ -47,9 +47,6 @@ namespace Radegast
             {
                 string loggingMessage = RenderLoggingEvent(le);
 
-                if (RadegastInstance.GlobalInstance.MainForm != null)
-                    RadegastInstance.GlobalInstance.MainForm.AddLogMessage(loggingMessage, le.Level);
-
                 string regex = @"^(?<Front>.*?)\[(?<Category>[^\]]+)\]:?(?<End>.*)";
 
                 Regex RE = new Regex(regex, RegexOptions.Multiline);
@@ -83,15 +80,8 @@ namespace Radegast
                     System.Console.WriteLine(loggingMessage);
                 }
 
-                lock (this)
-                {
-                    // No need to have ArgumemntNullException in File.AppendText
-                    if (RadegastInstance.GlobalInstance.GlobalLogFile==null) return;
-                    StreamWriter logfile = File.AppendText(RadegastInstance.GlobalInstance.GlobalLogFile);
-                    logfile.WriteLine(loggingMessage);
-                    logfile.Close();
-                    logfile.Dispose();
-                }
+                if (RadegastInstance.GlobalInstance.GlobalLogFile != null)
+                    File.AppendAllText(RadegastInstance.GlobalInstance.GlobalLogFile, loggingMessage + Environment.NewLine);
             }
             catch (Exception) { }
         }
