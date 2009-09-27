@@ -123,7 +123,7 @@
     <Compile Include="Core\RadegastInstance.cs" />
     <Compile Include="Core\RadegastLogger.cs" />
     <Compile Include="Core\RadegastMisc.cs" />
-    <Compile Include="Core\SleekMovement.cs" />
+    <Compile Include="Core\RadegastMovement.cs" />
     <Compile Include="Core\StateManager.cs" />
     <Compile Include="Core\Tabs\IRadegastTabControl.cs" />
     <Compile Include="Core\Tabs\RadegastTab.cs" />
