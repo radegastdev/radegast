@@ -41,7 +41,7 @@ namespace Radegast
 {
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [System.Runtime.InteropServices.ComVisibleAttribute(true)]
-    public partial class frmMap : Form
+    public partial class MapConsole : UserControl
     {
         RadegastInstance instance;
         GridClient client {get {return instance.Client;}}
@@ -50,7 +50,7 @@ namespace Radegast
         Regex slscheme = new Regex("^secondlife://(.+)/([0-9]+)/([0-9]+)");
         bool InTeleport = false;
 
-        public frmMap(RadegastInstance i)
+        public MapConsole(RadegastInstance i)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmMap_Disposed);
@@ -123,7 +123,6 @@ namespace Radegast
             nudZ.Value = z;
             gotoRegion(txtRegion.Text,x ,y);
             btnTeleport.Enabled = true;
-            AcceptButton = btnTeleport;
             btnTeleport.Focus();
             lblStatus.Text = "Ready for " + region;
         }
@@ -202,32 +201,13 @@ namespace Radegast
 
         void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Network_OnDisconnected(reason, message);
-                }
-                ));
-                return;
-            }
-            pnlSearch.Visible = false;
+            pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = false));
         }
 
         void Network_OnLogin(LoginStatus login, string message)
         {
             if (login != LoginStatus.Success) return;
-
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Network_OnLogin(login, message);
-                }
-                ));
-                return;
-            }
-            pnlSearch.Visible = true;
+            pnlSearch.Invoke(new MethodInvoker(() => pnlSearch.Visible = true));
         }
 
         void Grid_OnGridRegion(GridRegion region)
@@ -319,12 +299,6 @@ namespace Radegast
 
         #region GUIEvents
 
-        private void frmMap_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            e.Cancel = true;
-            Hide();
-        }
-
         private void txtRegion_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -379,11 +353,6 @@ namespace Radegast
             lblStatus.Text = "Teleporting home...";
 
             client.Self.RequestTeleport(UUID.Zero);
-        }
-
-        private void txtRegion_Enter(object sender, EventArgs e)
-        {
-            AcceptButton = btnSearch;
         }
 
         private void btnMyPos_Click(object sender, EventArgs e)

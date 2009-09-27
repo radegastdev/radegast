@@ -98,7 +98,6 @@ namespace Radegast
             this.tmnuStatusBusy = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbnTools = new System.Windows.Forms.ToolStripDropDownButton();
-            this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.locationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autopilotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -133,6 +132,7 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
+            this.tbtnMap = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -155,6 +155,7 @@ namespace Radegast
             this.tbtnGroups,
             this.tbtnInventory,
             this.tbtnSearch,
+            this.tbtnMap,
             this.tbnObjects,
             this.lblTime,
             this.tbtnMedia,
@@ -365,7 +366,6 @@ namespace Radegast
             // 
             this.tbnTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbnTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mapToolStripMenuItem,
             this.locationToolStripMenuItem,
             this.homeToolStripMenuItem,
             this.autopilotToolStripMenuItem,
@@ -379,13 +379,6 @@ namespace Radegast
             this.tbnTools.Name = "tbnTools";
             this.tbnTools.Size = new System.Drawing.Size(49, 22);
             this.tbnTools.Text = "&Tools";
-            // 
-            // mapToolStripMenuItem
-            // 
-            this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
-            this.mapToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.mapToolStripMenuItem.Text = "Map";
-            this.mapToolStripMenuItem.Click += new System.EventHandler(this.mapToolStripMenuItem_Click);
             // 
             // locationToolStripMenuItem
             // 
@@ -715,6 +708,17 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
+            // tbtnMap
+            // 
+            this.tbtnMap.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnMap.Enabled = false;
+            this.tbtnMap.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMap.Image")));
+            this.tbtnMap.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnMap.Name = "tbtnMap";
+            this.tbtnMap.Size = new System.Drawing.Size(35, 22);
+            this.tbtnMap.Text = "Map";
+            this.tbtnMap.Click += new System.EventHandler(this.tbtnMap_Click);
+            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -774,7 +778,6 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem cleanCacheToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setAppearanceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rebakeTexturesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem standToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem groundSitToolStripMenuItem;
         public System.Windows.Forms.ToolStrip toolStrip1;
@@ -810,6 +813,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tbtnFriends;
         private System.Windows.Forms.ToolStripButton tbtnInventory;
         private System.Windows.Forms.ToolStripButton tbtnSearch;
+        private System.Windows.Forms.ToolStripButton tbtnMap;
     }
 }
 

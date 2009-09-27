@@ -415,6 +415,11 @@ namespace Radegast
             tab.AllowDetach = false;
             tab.Visible = false;
 
+            tab = AddTab("map", "Map", new MapConsole(instance));
+            tab.AllowClose = false;
+            tab.AllowDetach = true;
+            tab.Visible = false;
+
         }
 
         /// <summary>
@@ -422,6 +427,7 @@ namespace Radegast
         /// </summary>
         private void DisposeOnlineTabs()
         {
+            ForceCloseTab("map");
             ForceCloseTab("search");
             ForceCloseTab("inventory");
             ForceCloseTab("groups");
@@ -849,12 +855,9 @@ namespace Radegast
         private void tmnuDetachTab_Click(object sender, EventArgs e)
         {
             if (!selectedTab.AllowDetach) return;
-
-            tstTabs.Items.Remove(selectedTab.Button);
-            selectedTab.Detach(instance);
-            selectedTab.Owner.Show();
-
+            SleekTab tab = selectedTab;
             tabs["chat"].Select();
+            tab.Detach(instance);
         }
 
         private void tbtnCloseTab_Click(object sender, EventArgs e)

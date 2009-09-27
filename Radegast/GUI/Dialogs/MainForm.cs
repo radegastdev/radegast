@@ -50,11 +50,37 @@ namespace Radegast
         #region Public members
         public static ImageList ResourceImages = new ImageList();
         public static List<string> ImageNames = new List<string>();
-        public frmMap WorldMap { get { return worldMap; } }
-        private frmMap worldMap;
+
         public TabsConsole TabConsole
         {
             get { return tabsConsole; }
+        }
+
+        public MapConsole WorldMap
+        {
+            get
+            {
+                if (MapTab != null)
+                {
+                    return (MapConsole)MapTab.Control;
+                }
+                return null;
+            }
+        }
+
+        public SleekTab MapTab
+        {
+            get
+            {
+                if (tabsConsole.TabExists("map"))
+                {
+                    return tabsConsole.Tabs["map"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         public MediaConsole MediaConsole { get { return mediaConsole; } }
@@ -194,7 +220,7 @@ namespace Radegast
             if (e.Status != LoginStatus.Success) return;
 
             tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
-                tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = true;
+                tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
 
             statusTimer.Start();
             RefreshWindowTitle();
@@ -203,7 +229,7 @@ namespace Radegast
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
             tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
-                tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = false;
+                tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = false;
 
             statusTimer.Stop();
 
@@ -236,13 +262,6 @@ namespace Radegast
                 debugLogForm.Close();
                 debugLogForm.Dispose();
                 debugLogForm = null;
-            }
-
-            if (worldMap != null)
-            {
-                worldMap.Close();
-                worldMap.Dispose();
-                worldMap = null;
             }
 
             if (netcom.IsLoggedIn)
@@ -485,7 +504,6 @@ namespace Radegast
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            worldMap = new frmMap(instance);
             tabsConsole.SelectTab("login");
             ResourceManager rm = Properties.Resources.ResourceManager;
             ResourceSet set = rm.GetResourceSet(System.Globalization.CultureInfo.CurrentCulture, true, true);
@@ -507,7 +525,7 @@ namespace Radegast
         public void AddLogMessage(string msg, log4net.Core.Level level)
         {
             if (debugLogForm != null && !debugLogForm.IsDisposed)
-            {            
+            {
                 // Log form handlles the InvokeNeeded                                      
                 debugLogForm.AddLogMessage(msg, level);
             }
@@ -540,9 +558,8 @@ namespace Radegast
                     z = int.Parse(m.Groups[6].Value);
                 }
 
-                worldMap.Show();
-                worldMap.Focus();
-                worldMap.DisplayLocation(region, x, y, z);
+                WorldMap.Select();
+                WorldMap.DisplayLocation(region, x, y, z);
                 return true;
             }
             else if (!onlyMap)
@@ -767,20 +784,14 @@ namespace Radegast
 
         public void MapToCurrentLocation()
         {
-            if (worldMap != null && client.Network.Connected)
+            if (MapTab != null && client.Network.Connected)
             {
-                worldMap.Show();
-                worldMap.Focus();
-                worldMap.DisplayLocation(client.Network.CurrentSim.Name,
+                MapTab.Select();
+                WorldMap.DisplayLocation(client.Network.CurrentSim.Name,
                     (int)client.Self.SimPosition.X,
                     (int)client.Self.SimPosition.Y,
                     (int)client.Self.SimPosition.Z);
             }
-        }
-
-        private void mapToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MapToCurrentLocation();
         }
 
         private void standToolStripMenuItem_Click(object sender, EventArgs e)
@@ -806,9 +817,9 @@ namespace Radegast
 
         private void tlblRegionInfo_Click(object sender, EventArgs e)
         {
-            if (worldMap != null && client.Network.Connected)
+            if (WorldMap != null && client.Network.Connected)
             {
-                worldMap.Show();
+                WorldMap.Select();
             }
         }
 
@@ -866,7 +877,10 @@ namespace Radegast
 
         private void tmnuTeleportHome_Click(object sender, EventArgs e)
         {
-            worldMap.GoHome();
+            if (WorldMap != null)
+            {
+                WorldMap.GoHome();
+            }
         }
 
         private TimeZoneInfo SLTime;
@@ -1009,6 +1023,14 @@ namespace Radegast
                 ((ObjectsConsole)tab.Control).RefreshObjectList();
             }
         }
+        
+        private void tbtnMap_Click(object sender, EventArgs e)
+        {
+            ToggleHidden("map");
+            if (!MapTab.Hidden)
+                MapToCurrentLocation();
+        }
+
         #endregion
     }
 }

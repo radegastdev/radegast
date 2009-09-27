@@ -100,10 +100,16 @@ namespace Radegast
         {
             if (detached) return;
 
+            if (hidden)
+            {
+                hidden = false;
+            }
+
             control.Visible = true;
             control.BringToFront();
 
             if (!partialHighlighted) Unhighlight();
+            button.Visible = true;
             button.Checked = true;
             selected = true;
 
@@ -196,7 +202,9 @@ namespace Radegast
             if (!allowDetach) return;
             if (!detached) return;
 
-            strip.Items.Add(button);
+            button.Visible = true;
+            foreach (Control c in container.Controls)
+                c.Hide();
             container.Controls.Add(control);
 
             owner = null;
@@ -208,8 +216,10 @@ namespace Radegast
         {
             if (!allowDetach) return;
             if (detached) return;
-
+            button.Visible = false;
             owner = new frmDetachedTab(instance, this);
+            owner.Show();
+            owner.Focus();
             detached = true;
             OnTabDetached(EventArgs.Empty);            
         }

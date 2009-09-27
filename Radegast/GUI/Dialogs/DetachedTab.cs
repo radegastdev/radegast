@@ -46,58 +46,30 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new EventHandler(frmDetachedTab_Disposed);
-            
+
             this.instance = instance;
             this.tab = tab;
-            this.Controls.Add(tab.Control);
+            ClientSize = tab.Control.Size;
+            Controls.Add(tab.Control);
+            tab.Control.Visible = true;
             tab.Control.BringToFront();
 
-            AddTabEvents();
-            this.Text = tab.Label + " (tab) - " + Properties.Resources.ProgramName;
+            this.Text = tab.Label + " - " + Properties.Resources.ProgramName;
         }
 
         void frmDetachedTab_Disposed(object sender, EventArgs e)
         {
-            RemoveTabEvents();
-        }
-
-        private void AddTabEvents()
-        {
-            tab.TabPartiallyHighlighted += new EventHandler(tab_TabPartiallyHighlighted);
-            tab.TabUnhighlighted += new EventHandler(tab_TabUnhighlighted);
-        }
-
-        private void RemoveTabEvents()
-        {
-            tab.TabPartiallyHighlighted -= new EventHandler(tab_TabPartiallyHighlighted);
-            tab.TabUnhighlighted -= new EventHandler(tab_TabUnhighlighted);
-        }
-
-        private void tab_TabUnhighlighted(object sender, EventArgs e)
-        {
-            tlblTyping.Visible = false;
-        }
-
-        private void tab_TabPartiallyHighlighted(object sender, EventArgs e)
-        {
-            tlblTyping.Visible = true;
         }
 
         private void frmDetachedTab_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (tab.Detached)
             {
-                if (tab.AllowClose)
-                    tab.Close();
-                else
-                    tab.AttachTo(strip, container);
+                //if (tab.AllowClose)
+                //    tab.Close();
+                //else
+                tab.AttachTo(strip, container);
             }
-        }
-
-        private void tbtnReattach_Click(object sender, EventArgs e)
-        {
-            tab.AttachTo(strip, container);
-            this.Close();
         }
 
         public ToolStrip ReattachStrip
