@@ -38,7 +38,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class frmObjects : RadegastForm, IContextMenuProvider
+    public partial class ObjectsConsole : UserControl, IContextMenuProvider
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client;} }
@@ -47,8 +47,7 @@ namespace Radegast
         private float searchRadius = 40.0f;
         PropertiesQueue propRequester;
 
-        public frmObjects(RadegastInstance instance)
-            : base(instance)
+        public ObjectsConsole(RadegastInstance instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmObjects_Disposed);
@@ -91,6 +90,11 @@ namespace Radegast
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
+        }
+
+        public void RefreshObjectList()
+        {
+            btnRefresh_Click(this, EventArgs.Empty);
         }
 
         void propRequester_OnTick(int remaining)
@@ -252,7 +256,11 @@ namespace Radegast
                 ));
                 return;
             }
-            this.Close();
+
+            if (instance.TabConsole.TabExists("objects"))
+            {
+                instance.TabConsole.Tabs["objects"].Close();
+            }
         }
 
         private string GetObjectName(Primitive prim, int distance)
@@ -452,11 +460,6 @@ namespace Radegast
             btnRefresh_Click(null, null);
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             lstPrims.BeginUpdate();
@@ -549,20 +552,6 @@ namespace Radegast
             }
         }
 
-        private void frmObjects_Activated(object sender, EventArgs e)
-        {
-            lstPrims.Focus();
-            if (lstPrims.Items.Count > 0)
-            {
-                lstPrims.FocusedItem = lstPrims.Items[0];
-            }
-        }
-
-        private void frmObjects_Shown(object sender, EventArgs e)
-        {
-            btnRefresh_Click(null, null);
-        }
-
         private void btnTurnTo_Click(object sender, EventArgs e)
         {
             if (lstPrims.SelectedItems.Count != 1) return;
@@ -650,6 +639,7 @@ namespace Radegast
         {
             return ctxMenuObjects;
         }
+
     }
 
     public class ObjectSorter : IComparer

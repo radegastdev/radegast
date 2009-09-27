@@ -50,12 +50,14 @@ namespace Radegast
         private bool allowMerge = true;
         private bool allowDetach = true;
         private bool allowClose = true;
+        private bool allowHide = true;
 
         private bool partialHighlighted = false;
         private bool highlighted = false;
         private bool selected = false;
         private bool detached = false;
         private bool merged = false;
+        private bool hidden = false;
 
         public SleekTab(RadegastInstance instance, ToolStripButton button, Control control, string name, string label)
         {
@@ -118,6 +120,30 @@ namespace Radegast
             selected = false;
 
             OnTabDeselected(EventArgs.Empty);
+        }
+
+        public void Hide()
+        {
+            if (!allowHide || detached) return;
+
+            if (control != null) control.Visible = false;
+            if (button != null) button.Visible = false;
+
+            hidden = true;
+
+            OnTabHidden(EventArgs.Empty);
+        }
+
+        public void Show()
+        {
+            if (detached) return;
+
+            if (button != null) button.Visible = true;
+            Select();
+
+            hidden = false;
+
+            OnTabShown(EventArgs.Empty);
         }
 
         public void PartialHighlight()
@@ -318,6 +344,34 @@ namespace Radegast
         public bool Merged
         {
             get { return merged; }
+        }
+
+        public bool AllowHide
+        {
+            get { return allowHide; }
+            set { allowHide = value; }
+        }
+
+        public bool Hidden
+        {
+            get { return hidden; }
+        }
+
+        public bool Visible
+        {
+            get { return !hidden; }
+
+            set
+            {
+                if (value)
+                {
+                    Show();
+                }
+                else if (allowHide)
+                {
+                    Hide();
+                }
+            }
         }
     }
 }

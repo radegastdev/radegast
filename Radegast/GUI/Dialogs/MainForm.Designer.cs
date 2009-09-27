@@ -102,19 +102,22 @@ namespace Radegast
             this.locationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autopilotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nearbyObjectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tbnObjects = new System.Windows.Forms.ToolStripButton();
+            this.tbtnFriends = new System.Windows.Forms.ToolStripButton();
             this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
+            this.tbtnInventory = new System.Windows.Forms.ToolStripButton();
+            this.tbtnSearch = new System.Windows.Forms.ToolStripButton();
+            this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutRadegastToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tlblLoginName = new System.Windows.Forms.ToolStripStatusLabel();
@@ -130,8 +133,6 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
-            this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
-            this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -150,8 +151,11 @@ namespace Radegast
             this.toolStripSeparator2,
             this.tbnTools,
             this.tbnPlugins,
-            this.tbnObjects,
+            this.tbtnFriends,
             this.tbtnGroups,
+            this.tbtnInventory,
+            this.tbtnSearch,
+            this.tbnObjects,
             this.lblTime,
             this.tbtnMedia,
             this.tbtnHelp});
@@ -365,9 +369,7 @@ namespace Radegast
             this.locationToolStripMenuItem,
             this.homeToolStripMenuItem,
             this.autopilotToolStripMenuItem,
-            this.groupsToolStripMenuItem,
             this.cleanCacheToolStripMenuItem,
-            this.nearbyObjectsToolStripMenuItem,
             this.setAppearanceToolStripMenuItem,
             this.rebakeTexturesToolStripMenuItem,
             this.toolStripMenuItem1});
@@ -407,26 +409,12 @@ namespace Radegast
             this.autopilotToolStripMenuItem.Text = "&Autopilot";
             this.autopilotToolStripMenuItem.Click += new System.EventHandler(this.autopilotToolStripMenuItem_Click);
             // 
-            // groupsToolStripMenuItem
-            // 
-            this.groupsToolStripMenuItem.Name = "groupsToolStripMenuItem";
-            this.groupsToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.groupsToolStripMenuItem.Text = "Groups";
-            this.groupsToolStripMenuItem.Click += new System.EventHandler(this.groupsToolStripMenuItem_Click);
-            // 
             // cleanCacheToolStripMenuItem
             // 
             this.cleanCacheToolStripMenuItem.Name = "cleanCacheToolStripMenuItem";
             this.cleanCacheToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.cleanCacheToolStripMenuItem.Text = "Clean cache";
             this.cleanCacheToolStripMenuItem.Click += new System.EventHandler(this.cleanCacheToolStripMenuItem_Click);
-            // 
-            // nearbyObjectsToolStripMenuItem
-            // 
-            this.nearbyObjectsToolStripMenuItem.Name = "nearbyObjectsToolStripMenuItem";
-            this.nearbyObjectsToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.nearbyObjectsToolStripMenuItem.Text = "Nearby objects";
-            this.nearbyObjectsToolStripMenuItem.Click += new System.EventHandler(this.tbtnObjects_Click);
             // 
             // setAppearanceToolStripMenuItem
             // 
@@ -457,17 +445,16 @@ namespace Radegast
             this.tbnPlugins.Text = "Plugins";
             this.tbnPlugins.Visible = false;
             // 
-            // tbnObjects
+            // tbtnFriends
             // 
-            this.tbnObjects.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbnObjects.Enabled = false;
-            this.tbnObjects.Image = ((System.Drawing.Image)(resources.GetObject("tbnObjects.Image")));
-            this.tbnObjects.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbnObjects.Name = "tbnObjects";
-            this.tbnObjects.Size = new System.Drawing.Size(51, 22);
-            this.tbnObjects.Text = "Objects";
-            this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on";
-            this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
+            this.tbtnFriends.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnFriends.Enabled = false;
+            this.tbtnFriends.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFriends.Image")));
+            this.tbtnFriends.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnFriends.Name = "tbtnFriends";
+            this.tbtnFriends.Size = new System.Drawing.Size(49, 22);
+            this.tbtnFriends.Text = "Friends";
+            this.tbtnFriends.Click += new System.EventHandler(this.tbtnFriends_Click);
             // 
             // tbtnGroups
             // 
@@ -479,6 +466,40 @@ namespace Radegast
             this.tbtnGroups.Size = new System.Drawing.Size(49, 22);
             this.tbtnGroups.Text = "Groups";
             this.tbtnGroups.Click += new System.EventHandler(this.tbtnGroups_Click);
+            // 
+            // tbtnInventory
+            // 
+            this.tbtnInventory.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnInventory.Enabled = false;
+            this.tbtnInventory.Image = ((System.Drawing.Image)(resources.GetObject("tbtnInventory.Image")));
+            this.tbtnInventory.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnInventory.Name = "tbtnInventory";
+            this.tbtnInventory.Size = new System.Drawing.Size(61, 22);
+            this.tbtnInventory.Text = "Inventory";
+            this.tbtnInventory.Click += new System.EventHandler(this.tbtnInventory_Click);
+            // 
+            // tbtnSearch
+            // 
+            this.tbtnSearch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnSearch.Enabled = false;
+            this.tbtnSearch.Image = ((System.Drawing.Image)(resources.GetObject("tbtnSearch.Image")));
+            this.tbtnSearch.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnSearch.Name = "tbtnSearch";
+            this.tbtnSearch.Size = new System.Drawing.Size(46, 22);
+            this.tbtnSearch.Text = "Search";
+            this.tbtnSearch.Click += new System.EventHandler(this.tbtnSearch_Click);
+            // 
+            // tbnObjects
+            // 
+            this.tbnObjects.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbnObjects.Enabled = false;
+            this.tbnObjects.Image = ((System.Drawing.Image)(resources.GetObject("tbnObjects.Image")));
+            this.tbnObjects.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbnObjects.Name = "tbnObjects";
+            this.tbnObjects.Size = new System.Drawing.Size(51, 22);
+            this.tbnObjects.Text = "Objects";
+            this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on";
+            this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
             // 
             // lblTime
             // 
@@ -518,6 +539,18 @@ namespace Radegast
             this.reportBugsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.reportBugsToolStripMenuItem.Text = "Bugs/Feature Requests...";
             this.reportBugsToolStripMenuItem.Click += new System.EventHandler(this.reportBugsToolStripMenuItem_Click);
+            // 
+            // checkForUpdatesToolStripMenuItem
+            // 
+            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
+            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(200, 6);
             // 
             // aboutRadegastToolStripMenuItem
             // 
@@ -682,18 +715,6 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
-            // toolStripMenuItem6
-            // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(200, 6);
-            // 
-            // checkForUpdatesToolStripMenuItem
-            // 
-            this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
-            this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
-            this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -751,11 +772,9 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem tmnuImport;
         private System.Windows.Forms.ToolStripMenuItem autopilotToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cleanCacheToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem nearbyObjectsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setAppearanceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rebakeTexturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mapToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem groupsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem standToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem groundSitToolStripMenuItem;
         public System.Windows.Forms.ToolStrip toolStrip1;
@@ -788,6 +807,9 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem aboutRadegastToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
         private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton tbtnFriends;
+        private System.Windows.Forms.ToolStripButton tbtnInventory;
+        private System.Windows.Forms.ToolStripButton tbtnSearch;
     }
 }
 

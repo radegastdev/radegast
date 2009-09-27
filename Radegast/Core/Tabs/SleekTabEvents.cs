@@ -44,6 +44,8 @@ namespace Radegast
         public event EventHandler TabDetached;
         public event EventHandler TabAttached;
         public event EventHandler TabClosed;
+        public event EventHandler TabHidden;
+        public event EventHandler TabShown;
 
         protected virtual void OnTabSelected(EventArgs e)
         {
@@ -93,6 +95,16 @@ namespace Radegast
         protected virtual void OnTabClosed(EventArgs e)
         {
             if (TabClosed != null) TabClosed(this, e);
+        }
+
+        protected virtual void OnTabHidden(EventArgs e)
+        {
+            if (TabHidden != null) TabHidden(this, e);
+        }
+
+        protected virtual void OnTabShown(EventArgs e)
+        {
+            if (TabShown != null) TabShown(this, e);
         }
     }
 }

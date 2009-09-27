@@ -35,12 +35,12 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class GroupsDialog : Form
+    public partial class GroupsConsole : UserControl
     {
         GridClient client;
         RadegastInstance instance;
  
-        public GroupsDialog(RadegastInstance instance)
+        public GroupsConsole(RadegastInstance instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(GroupsDialog_Disposed);
@@ -84,11 +84,6 @@ namespace Radegast
             }
         }
 
-        private void cancelBtn_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void activateBtn_Click(object sender, EventArgs e)
         {
             if (listBox1.SelectedItem == null) return;
@@ -127,7 +122,6 @@ namespace Radegast
                     t.Highlight();
                 }
             }
-            Close();
         }
 
         private void btnInfo_Click(object sender, EventArgs e)

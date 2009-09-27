@@ -193,14 +193,17 @@ namespace Radegast
         {
             if (e.Status != LoginStatus.Success) return;
 
-            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled = true;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
+                tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = true;
+
             statusTimer.Start();
             RefreshWindowTitle();
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled = false;
+            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
+                tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = false;
 
             statusTimer.Stop();
 
@@ -445,7 +448,7 @@ namespace Radegast
             // ctrl-o, open objects finder
             if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
             {
-                (new frmObjects(instance)).Show();
+                tbnObjects_Click(this, EventArgs.Empty);
                 e.Handled = e.SuppressKeyPress = true;
             }
 
@@ -689,19 +692,9 @@ namespace Radegast
             (new frmSettings(instance)).ShowDialog();
         }
 
-        private void tbtnObjects_Click(object sender, EventArgs e)
-        {
-            (new frmObjects(instance)).Show();
-        }
-
         private void tbtnAppearance_Click(object sender, EventArgs e)
         {
             client.Appearance.RequestSetAppearance(false);
-        }
-
-        private void groupsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            (new GroupsDialog(instance)).Show();
         }
 
         private void importObjectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -800,24 +793,6 @@ namespace Radegast
             client.Self.SitOnGround();
         }
 
-        private frmObjects objectWindow;
-
-        private void tbnObjects_Click(object sender, EventArgs e)
-        {
-            if (objectWindow == null)
-            {
-                objectWindow = new frmObjects(instance);
-                objectWindow.Disposed += new EventHandler(objectWindow_Disposed);
-                objectWindow.Show();
-            }
-            objectWindow.Focus();
-        }
-
-        void objectWindow_Disposed(object sender, EventArgs e)
-        {
-            objectWindow = null;
-        }
-
         private void newWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try { System.Diagnostics.Process.Start(Application.ExecutablePath); }
@@ -835,11 +810,6 @@ namespace Radegast
             {
                 worldMap.Show();
             }
-        }
-
-        private void tbtnGroups_Click(object sender, EventArgs e)
-        {
-            (new GroupsDialog(instance)).Show();
         }
 
         private void scriptEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -968,6 +938,76 @@ namespace Radegast
                 tabsConsole.DisplayNotificationInChat("Error: Failed connecting to the update site.");
             }
             ((UpdateChecker)sender).Dispose();
+        }
+
+        private void ToggleHidden(string tabName)
+        {
+            if (!tabsConsole.TabExists(tabName)) return;
+
+            SleekTab tab = tabsConsole.Tabs[tabName];
+
+            if (tab.Hidden)
+            {
+                tab.Show();
+            }
+            else
+            {
+                if (!tab.Selected)
+                {
+                    tab.Select();
+                }
+                else
+                {
+                    tab.Hide();
+                }
+            }
+        }
+
+        private void tbtnFriends_Click(object sender, EventArgs e)
+        {
+            ToggleHidden("friends");
+        }
+
+        private void tbtnInventory_Click(object sender, EventArgs e)
+        {
+            ToggleHidden("inventory");
+        }
+
+        private void tbtnSearch_Click(object sender, EventArgs e)
+        {
+            ToggleHidden("search");
+        }
+
+        private void tbtnGroups_Click(object sender, EventArgs e)
+        {
+            ToggleHidden("groups");
+        }
+
+        private void tbnObjects_Click(object sender, EventArgs e)
+        {
+            if (tabsConsole.TabExists("objects"))
+            {
+                SleekTab tab = tabsConsole.Tabs["objects"];
+                if (!tab.Selected)
+                {
+                    tab.Select();
+                    ((ObjectsConsole)tab.Control).RefreshObjectList();
+                }
+                else
+                {
+                    tab.Close();
+                }
+            }
+            else
+            {
+                SleekTab tab = tabsConsole.AddTab("objects", "Objects", new ObjectsConsole(instance));
+                tab.AllowClose = true;
+                tab.AllowDetach = true;
+                tab.Visible = true;
+                tab.AllowHide = false;
+                tab.Select();
+                ((ObjectsConsole)tab.Control).RefreshObjectList();
+            }
         }
         #endregion
     }

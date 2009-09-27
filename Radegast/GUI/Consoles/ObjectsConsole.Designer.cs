@@ -30,7 +30,7 @@
 //
 namespace Radegast
 {
-    partial class frmObjects
+    partial class ObjectsConsole
     {
         /// <summary>
         /// Required designer variable.
@@ -59,7 +59,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmObjects));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectsConsole));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
             this.btnWalkTo = new System.Windows.Forms.Button();
             this.btnTurnTo = new System.Windows.Forms.Button();
@@ -73,9 +73,9 @@ namespace Radegast
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
             this.lstPrims = new Radegast.ListViewNoFlicker();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.btnRefresh = new System.Windows.Forms.Button();
             this.nudRadius = new System.Windows.Forms.NumericUpDown();
             this.lblDistance = new System.Windows.Forms.Label();
@@ -105,13 +105,11 @@ namespace Radegast
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
-            this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.gbxObjectDetails.SuspendLayout();
-            this.ctxMenuObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbxInworld
@@ -252,18 +250,6 @@ namespace Radegast
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // btnClose
-            // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(539, 393);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(100, 23);
-            this.btnClose.TabIndex = 9;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
             // lstPrims
             // 
             this.lstPrims.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -272,6 +258,7 @@ namespace Radegast
             this.lstPrims.AutoArrange = false;
             this.lstPrims.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
+            this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
             this.lstPrims.FullRowSelect = true;
             this.lstPrims.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstPrims.HideSelection = false;
@@ -280,22 +267,27 @@ namespace Radegast
             this.lstPrims.MultiSelect = false;
             this.lstPrims.Name = "lstPrims";
             this.lstPrims.ShowGroups = false;
-            this.lstPrims.Size = new System.Drawing.Size(365, 377);
+            this.lstPrims.Size = new System.Drawing.Size(365, 353);
             this.lstPrims.TabIndex = 10;
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
             this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
             this.lstPrims.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstPrims_MouseUp);
-            this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
             // 
             // columnHeader1
             // 
             this.columnHeader1.Width = 340;
             // 
+            // ctxMenuObjects
+            // 
+            this.ctxMenuObjects.Name = "ctxMenuObjects";
+            this.ctxMenuObjects.Size = new System.Drawing.Size(61, 4);
+            this.ctxMenuObjects.Opening += new System.ComponentModel.CancelEventHandler(this.ctxMenuObjects_Opening);
+            // 
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.Location = new System.Drawing.Point(539, 363);
+            this.btnRefresh.Location = new System.Drawing.Point(539, 369);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 23);
             this.btnRefresh.TabIndex = 11;
@@ -341,7 +333,7 @@ namespace Radegast
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.rbName);
             this.groupBox1.Controls.Add(this.rbDistance);
-            this.groupBox1.Location = new System.Drawing.Point(383, 379);
+            this.groupBox1.Location = new System.Drawing.Point(383, 356);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(149, 37);
             this.groupBox1.TabIndex = 14;
@@ -376,7 +368,7 @@ namespace Radegast
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 432);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 395);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(651, 22);
             this.statusStrip1.TabIndex = 15;
@@ -411,7 +403,7 @@ namespace Radegast
             this.gbxObjectDetails.Controls.Add(this.label3);
             this.gbxObjectDetails.Controls.Add(this.label2);
             this.gbxObjectDetails.Controls.Add(this.lblName);
-            this.gbxObjectDetails.Location = new System.Drawing.Point(384, 170);
+            this.gbxObjectDetails.Location = new System.Drawing.Point(384, 167);
             this.gbxObjectDetails.Name = "gbxObjectDetails";
             this.gbxObjectDetails.Size = new System.Drawing.Size(255, 187);
             this.gbxObjectDetails.TabIndex = 16;
@@ -600,37 +592,25 @@ namespace Radegast
             this.lblName.TabIndex = 0;
             this.lblName.Text = "Name";
             // 
-            // ctxMenuObjects
+            // ObjectsConsole
             // 
-            this.ctxMenuObjects.Name = "ctxMenuObjects";
-            this.ctxMenuObjects.Size = new System.Drawing.Size(124, 26);
-            this.ctxMenuObjects.Opening += new System.ComponentModel.CancelEventHandler(ctxMenuObjects_Opening);
-            // frmObjects
-            // 
-            this.AutoSavePosition = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(651, 447);
             this.Controls.Add(this.gbxObjectDetails);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.nudRadius);
-            this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.lstPrims);
-            this.Controls.Add(this.btnClose);
+            this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.lblDistance);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.gbxInworld);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(508, 481);
-            this.Name = "frmObjects";
-            this.Text = "Objects - Radegast";
-            this.Shown += new System.EventHandler(this.frmObjects_Shown);
-            this.Activated += new System.EventHandler(this.frmObjects_Activated);
+            this.MinimumSize = new System.Drawing.Size(508, 417);
+            this.Name = "ObjectsConsole";
+            this.Size = new System.Drawing.Size(651, 417);
             this.gbxInworld.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -639,7 +619,6 @@ namespace Radegast
             this.statusStrip1.PerformLayout();
             this.gbxObjectDetails.ResumeLayout(false);
             this.gbxObjectDetails.PerformLayout();
-            this.ctxMenuObjects.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -654,7 +633,6 @@ namespace Radegast
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnClear;
-        private System.Windows.Forms.Button btnClose;
         private Radegast.ListViewNoFlicker lstPrims;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button btnRefresh;

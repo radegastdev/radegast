@@ -147,9 +147,7 @@ namespace Radegast
         {
             if (e.Status != LoginStatus.Success) return;
 
-            InitializeFriendsTab();
-            InitializeInventoryTab();
-            InitializeSearchTab();
+            InitializeOnlineTabs();
 
             if (tabs.ContainsKey("login"))
             {
@@ -165,22 +163,18 @@ namespace Radegast
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            DisposeSearchTab();
-            DisposeInventoryTab();
-            DisposeFriendsTab();
+            DisposeOnlineTabs();
 
             tabs["chat"].Select();
             DisplayNotificationInChat("Logged out.");
-            
+
         }
 
         private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
         {
             if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
 
-            DisposeSearchTab();
-            DisposeInventoryTab();
-            DisposeFriendsTab();
+            DisposeOnlineTabs();
 
             tabs["chat"].Select();
             DisplayNotificationInChat("Disconnected.");
@@ -361,7 +355,8 @@ namespace Radegast
 
         private void HandleGroupIM(InstantMessageEventArgs e)
         {
-            if (TabExists(e.IM.IMSessionID.ToString())) {
+            if (TabExists(e.IM.IMSessionID.ToString()))
+            {
                 SleekTab tab = tabs[e.IM.IMSessionID.ToString()];
                 if (!tab.Selected) tab.Highlight();
                 return;
@@ -391,48 +386,46 @@ namespace Radegast
             SleekTab tab = AddTab("chat", "Chat", chatConsole);
             tab.AllowClose = false;
             tab.AllowDetach = false;
+            tab.AllowHide = false;
         }
 
-        private void InitializeFriendsTab()
+
+        /// <summary>
+        /// Create Tabs that only make sense when connected
+        /// </summary>
+        private void InitializeOnlineTabs()
         {
-            FriendsConsole friendsConsole = new FriendsConsole(instance);
-
-            SleekTab tab = AddTab("friends", "Friends", friendsConsole);
-            tab.AllowClose = false;
-            tab.AllowDetach = false;
-        }
-
-        private void InitializeSearchTab()
-        {
-            SearchConsole searchConsole = new SearchConsole(instance);
-
-            SleekTab tab = AddTab("search", "Search", searchConsole);
-            tab.AllowClose = false;
-            tab.AllowDetach = false;
-        }
-
-        private void InitializeInventoryTab()
-        {
-            InventoryConsole invConsole = new InventoryConsole(instance);
-
-            SleekTab tab = AddTab("inventory", "Inventory", invConsole);
+            SleekTab tab = AddTab("friends", "Friends", new FriendsConsole(instance));
             tab.AllowClose = false;
             tab.AllowDetach = true;
+            tab.Visible = false;
+
+            tab = AddTab("groups", "Groups", new GroupsConsole(instance));
+            tab.AllowClose = false;
+            tab.AllowDetach = true;
+            tab.Visible = false;
+
+            tab = AddTab("inventory", "Inventory", new InventoryConsole(instance));
+            tab.AllowClose = false;
+            tab.AllowDetach = true;
+            tab.Visible = false;
+
+            tab = AddTab("search", "Search", new SearchConsole(instance));
+            tab.AllowClose = false;
+            tab.AllowDetach = false;
+            tab.Visible = false;
+
         }
 
-        private void DisposeFriendsTab()
-        {
-            ForceCloseTab("friends");
-        }
-
-        private void DisposeSearchTab()
+        /// <summary>
+        /// Close tabs that make no sense when not connected
+        /// </summary>
+        private void DisposeOnlineTabs()
         {
             ForceCloseTab("search");
-        }
-
-        private void DisposeInventoryTab()
-        {
             ForceCloseTab("inventory");
+            ForceCloseTab("groups");
+            ForceCloseTab("friends");
         }
 
         private void ForceCloseTab(string name)
@@ -452,6 +445,7 @@ namespace Radegast
         {
             instance.ContextActionManager.AddContextMenu(libomvType, label, handler);
         }
+
         public void AddContextMenu(ContextAction handler)
         {
             instance.ContextActionManager.AddContextMenu(handler);
@@ -493,6 +487,7 @@ namespace Radegast
             tab.TabDetached += new EventHandler(tab_TabDetached);
             tab.TabSelected += new EventHandler(tab_TabSelected);
             tab.TabClosed += new EventHandler(tab_TabClosed);
+            tab.TabHidden += new EventHandler(tab_TabHidden);
             tabs.Add(name.ToLower(), tab);
 
             if (OnTabAdded != null)
@@ -526,10 +521,10 @@ namespace Radegast
             if (selectedTab != null &&
                 selectedTab != tab)
             { selectedTab.Deselect(); }
-            
+
             selectedTab = tab;
 
-            tbtnCloseTab.Enabled = tab.AllowClose;
+            tbtnCloseTab.Enabled = tab.AllowClose || tab.AllowHide;
             owner.AcceptButton = tab.DefaultControlButton;
 
             if (OnTabSelected != null)
@@ -539,10 +534,27 @@ namespace Radegast
             }
         }
 
+        void tab_TabHidden(object sender, EventArgs e)
+        {
+            SleekTab tab = (SleekTab)sender;
+
+            if (selectedTab != null && selectedTab == tab)
+            {
+                tab.Deselect();
+                tabs["chat"].Select();
+            }
+        }
+
         private void tab_TabClosed(object sender, EventArgs e)
         {
             SleekTab tab = (SleekTab)sender;
-            
+
+            if (selectedTab != null && selectedTab == tab)
+            {
+                tab.Deselect();
+                tabs["chat"].Select();
+            }
+
             tabs.Remove(tab.Name);
 
             if (OnTabRemoved != null)
@@ -609,7 +621,7 @@ namespace Radegast
                 SleekTab tab = tabs[item.Tag.ToString()];
                 if (!tab.AllowMerge) continue;
                 if (tab.Merged) continue;
-                
+
                 otherTabs.Add(tab);
             }
 
@@ -728,7 +740,7 @@ namespace Radegast
             imTab.TextManager.ProcessIM(e);
             return imTab;
         }
-        
+
         public IMTabWindow AddIMTab(InstantMessageEventArgs e)
         {
             IMTabWindow imTab = AddIMTab(e.IM.FromAgentID, e.IM.IMSessionID, e.IM.FromAgentName);
@@ -848,11 +860,10 @@ namespace Radegast
         private void tbtnCloseTab_Click(object sender, EventArgs e)
         {
             SleekTab tab = selectedTab;
-
-            tabs["chat"].Select();
-            tab.Close();
-            
-            tab = null;
+            if (tab.AllowHide)
+                tab.Hide();
+            else if (tab.AllowClose)
+                tab.Close();
         }
 
         private void TabsConsole_Load(object sender, EventArgs e)
@@ -873,7 +884,7 @@ namespace Radegast
             {
                 tabs[stripItem.Tag.ToString()].Select();
 
-                ctxBtnClose.Enabled = selectedTab.AllowClose;
+                ctxBtnClose.Enabled = selectedTab.AllowClose || selectedTab.AllowHide;
                 ctxBtnDetach.Enabled = selectedTab.AllowDetach;
                 ctxBtnMerge.Enabled = selectedTab.AllowMerge;
                 ctxBtnMerge.DropDown.Items.Clear();
@@ -909,6 +920,7 @@ namespace Radegast
 
             }
         }
+
     }
 
     /// <summary>

@@ -30,7 +30,7 @@
 //
 namespace Radegast
 {
-    partial class GroupsDialog
+    partial class GroupsConsole
     {
         /// <summary>
         /// Required designer variable.
@@ -57,11 +57,9 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GroupsDialog));
             this.label1 = new System.Windows.Forms.Label();
             this.btnActivate = new System.Windows.Forms.Button();
             this.btnLeave = new System.Windows.Forms.Button();
-            this.btnClose = new System.Windows.Forms.Button();
             this.btnIM = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.btnInfo = new System.Windows.Forms.Button();
@@ -98,18 +96,6 @@ namespace Radegast
             this.btnLeave.UseVisualStyleBackColor = true;
             this.btnLeave.Click += new System.EventHandler(this.leaveBtn_Click);
             // 
-            // btnClose
-            // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(279, 289);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(79, 23);
-            this.btnClose.TabIndex = 2;
-            this.btnClose.Text = "&Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.cancelBtn_Click);
-            // 
             // btnIM
             // 
             this.btnIM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -135,6 +121,7 @@ namespace Radegast
             // 
             // btnInfo
             // 
+            this.btnInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnInfo.Location = new System.Drawing.Point(279, 33);
             this.btnInfo.Name = "btnInfo";
             this.btnInfo.Size = new System.Drawing.Size(79, 23);
@@ -143,23 +130,18 @@ namespace Radegast
             this.btnInfo.UseVisualStyleBackColor = true;
             this.btnInfo.Click += new System.EventHandler(this.btnInfo_Click);
             // 
-            // GroupsDialog
+            // GroupsConsole
             // 
-            this.AcceptButton = this.btnInfo;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(370, 324);
             this.Controls.Add(this.btnInfo);
             this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnIM);
             this.Controls.Add(this.btnLeave);
             this.Controls.Add(this.btnActivate);
             this.Controls.Add(this.label1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "GroupsDialog";
-            this.Text = "Groups";
+            this.Name = "GroupsConsole";
+            this.Size = new System.Drawing.Size(370, 324);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -170,7 +152,6 @@ namespace Radegast
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnActivate;
         private System.Windows.Forms.Button btnLeave;
-        private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnIM;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button btnInfo;

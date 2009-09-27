@@ -231,6 +231,12 @@
     <Compile Include="GUI\Consoles\FriendsConsole.Designer.cs">
       <DependentUpon>FriendsConsole.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\GroupsConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\GroupsConsole.Designer.cs">
+      <DependentUpon>GroupsConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\Inventory\InventoryBackup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -254,6 +260,12 @@
     </Compile>
     <Compile Include="GUI\Consoles\Assets\Notecard.Designer.cs">
       <DependentUpon>Notecard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\ObjectsConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\ObjectsConsole.Designer.cs">
+      <DependentUpon>ObjectsConsole.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Consoles\OutfitTextures.cs">
       <SubType>UserControl</SubType>
@@ -321,23 +333,11 @@
     <Compile Include="GUI\Dialogs\PrimWorkshop.designer.cs">
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Dialogs\GroupsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\GroupsDialog.Designer.cs">
-      <DependentUpon>GroupsDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Dialogs\Map.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Dialogs\Map.Designer.cs">
       <DependentUpon>Map.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GUI\Dialogs\Objects.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Dialogs\Objects.Designer.cs">
-      <DependentUpon>Objects.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\Pay.cs">
       <SubType>Form</SubType>
@@ -508,6 +508,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>FriendsConsole.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\GroupsConsole.resx">
+      <DependentUpon>GroupsConsole.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\Inventory\InventoryBackup.resx">
       <DependentUpon>InventoryBackup.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -523,6 +526,9 @@
     <EmbeddedResource Include="GUI\Consoles\Assets\Notecard.resx">
       <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\ObjectsConsole.resx">
+      <DependentUpon>ObjectsConsole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\OutfitTextures.resx">
       <DependentUpon>OutfitTextures.cs</DependentUpon>
@@ -568,10 +574,6 @@
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\GroupsDialog.resx">
-      <DependentUpon>GroupsDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\MainForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -583,10 +585,6 @@
     <EmbeddedResource Include="GUI\Dialogs\Map.resx">
       <DependentUpon>Map.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\Objects.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>Objects.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\Pay.resx">
       <SubType>Designer</SubType>
