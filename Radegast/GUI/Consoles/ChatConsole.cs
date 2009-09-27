@@ -337,6 +337,7 @@ namespace Radegast
             }
 
             tabConsole.AddIMTab(av, client.Self.AgentID ^ av, name);
+            tabConsole.SelectTab((client.Self.AgentID ^ av).ToString());
         }
 
         private void tbtnFollow_Click(object sender, EventArgs e)

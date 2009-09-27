@@ -60,11 +60,14 @@ namespace Radegast
         {
             this.tabProfile = new System.Windows.Forms.TabControl();
             this.tpgProfile = new System.Windows.Forms.TabPage();
+            this.btnFriend = new System.Windows.Forms.Button();
             this.slPicPanel = new System.Windows.Forms.Panel();
             this.btnOfferTeleport = new System.Windows.Forms.Button();
             this.btnPay = new System.Windows.Forms.Button();
             this.rtbAccountInfo = new System.Windows.Forms.RichTextBox();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
+            this.txtUUID = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.txtPartner = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -93,9 +96,7 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.txtUUID = new System.Windows.Forms.TextBox();
-            this.btnFriend = new System.Windows.Forms.Button();
+            this.btnIM = new System.Windows.Forms.Button();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
@@ -121,6 +122,7 @@ namespace Radegast
             // 
             // tpgProfile
             // 
+            this.tpgProfile.Controls.Add(this.btnIM);
             this.tpgProfile.Controls.Add(this.btnFriend);
             this.tpgProfile.Controls.Add(this.slPicPanel);
             this.tpgProfile.Controls.Add(this.btnOfferTeleport);
@@ -145,6 +147,16 @@ namespace Radegast
             this.tpgProfile.Text = "Profile";
             this.tpgProfile.UseVisualStyleBackColor = true;
             // 
+            // btnFriend
+            // 
+            this.btnFriend.Location = new System.Drawing.Point(210, 368);
+            this.btnFriend.Name = "btnFriend";
+            this.btnFriend.Size = new System.Drawing.Size(96, 23);
+            this.btnFriend.TabIndex = 18;
+            this.btnFriend.Text = "Add Friend";
+            this.btnFriend.UseVisualStyleBackColor = true;
+            this.btnFriend.Click += new System.EventHandler(this.btnFriend_Click);
+            // 
             // slPicPanel
             // 
             this.slPicPanel.Location = new System.Drawing.Point(9, 33);
@@ -157,7 +169,7 @@ namespace Radegast
             this.btnOfferTeleport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnOfferTeleport.Location = new System.Drawing.Point(6, 368);
             this.btnOfferTeleport.Name = "btnOfferTeleport";
-            this.btnOfferTeleport.Size = new System.Drawing.Size(108, 23);
+            this.btnOfferTeleport.Size = new System.Drawing.Size(96, 23);
             this.btnOfferTeleport.TabIndex = 16;
             this.btnOfferTeleport.Text = "Offer Teleport";
             this.btnOfferTeleport.UseVisualStyleBackColor = true;
@@ -166,9 +178,9 @@ namespace Radegast
             // btnPay
             // 
             this.btnPay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnPay.Location = new System.Drawing.Point(120, 368);
+            this.btnPay.Location = new System.Drawing.Point(108, 368);
             this.btnPay.Name = "btnPay";
-            this.btnPay.Size = new System.Drawing.Size(75, 23);
+            this.btnPay.Size = new System.Drawing.Size(96, 23);
             this.btnPay.TabIndex = 15;
             this.btnPay.Text = "Pay...";
             this.btnPay.UseVisualStyleBackColor = true;
@@ -195,6 +207,25 @@ namespace Radegast
             this.rtbAbout.TabIndex = 13;
             this.rtbAbout.Text = "";
             this.rtbAbout.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAbout_LinkClicked);
+            // 
+            // txtUUID
+            // 
+            this.txtUUID.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtUUID.Location = new System.Drawing.Point(41, 430);
+            this.txtUUID.Name = "txtUUID";
+            this.txtUUID.ReadOnly = true;
+            this.txtUUID.Size = new System.Drawing.Size(259, 21);
+            this.txtUUID.TabIndex = 10;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 433);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(29, 13);
+            this.label9.TabIndex = 9;
+            this.label9.Text = "Key:";
             // 
             // txtPartner
             // 
@@ -483,34 +514,15 @@ namespace Radegast
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
             // 
-            // label9
+            // btnIM
             // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 433);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(29, 13);
-            this.label9.TabIndex = 9;
-            this.label9.Text = "Key:";
-            // 
-            // txtUUID
-            // 
-            this.txtUUID.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtUUID.Location = new System.Drawing.Point(41, 430);
-            this.txtUUID.Name = "txtUUID";
-            this.txtUUID.ReadOnly = true;
-            this.txtUUID.Size = new System.Drawing.Size(259, 21);
-            this.txtUUID.TabIndex = 10;
-            // 
-            // btnFriend
-            // 
-            this.btnFriend.Location = new System.Drawing.Point(207, 368);
-            this.btnFriend.Name = "btnFriend";
-            this.btnFriend.Size = new System.Drawing.Size(75, 23);
-            this.btnFriend.TabIndex = 18;
-            this.btnFriend.Text = "Add Friend";
-            this.btnFriend.UseVisualStyleBackColor = true;
-            this.btnFriend.Click += new System.EventHandler(this.btnFriend_Click);
+            this.btnIM.Location = new System.Drawing.Point(312, 368);
+            this.btnIM.Name = "btnIM";
+            this.btnIM.Size = new System.Drawing.Size(96, 23);
+            this.btnIM.TabIndex = 19;
+            this.btnIM.Text = "Start IM";
+            this.btnIM.UseVisualStyleBackColor = true;
+            this.btnIM.Click += new System.EventHandler(this.btnIM_Click);
             // 
             // frmProfile
             // 
@@ -579,5 +591,6 @@ namespace Radegast
         private System.Windows.Forms.TextBox txtUUID;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btnFriend;
+        private System.Windows.Forms.Button btnIM;
     }
 }

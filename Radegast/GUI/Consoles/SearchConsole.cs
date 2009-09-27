@@ -113,6 +113,7 @@ namespace Radegast
             }
 
             instance.TabConsole.AddIMTab(console.SelectedAgentUUID, client.Self.AgentID ^ console.SelectedAgentUUID, console.SelectedName);
+            instance.TabConsole.SelectTab((client.Self.AgentID ^ console.SelectedAgentUUID).ToString());
         }
 
         private void btnFind_Click(object sender, EventArgs e)

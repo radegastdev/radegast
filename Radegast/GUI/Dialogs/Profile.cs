@@ -276,5 +276,17 @@ namespace Radegast
         {
             client.Friends.OfferFriendship(agentID);
         }
+
+        private void btnIM_Click(object sender, EventArgs e)
+        {
+            if (instance.TabConsole.TabExists((client.Self.AgentID ^ agentID).ToString()))
+            {
+                instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
+                return;
+            }
+
+            instance.TabConsole.AddIMTab(agentID, client.Self.AgentID ^ agentID, fullName);
+            instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
+        }
     }
 }
