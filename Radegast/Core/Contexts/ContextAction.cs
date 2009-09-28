@@ -245,7 +245,7 @@ namespace Radegast
 
         public void DebugLog(string s)
         {
-            instance.TabConsole.DisplayNotificationInChat(string.Format("ContextAction {0}: {1}", Label, s));
+           // instance.TabConsole.DisplayNotificationInChat(string.Format("ContextAction {0}: {1}", Label, s));
         }
     }
 }
