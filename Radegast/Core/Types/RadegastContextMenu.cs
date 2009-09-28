@@ -240,7 +240,6 @@ namespace Radegast
             PreviewKeyDown += Rad_Menu_PreviewKeyDown;
             ItemAdded += Rad_OnItemAdded;
             ItemRemoved += Rad_OnItemRemoved;
-            Enter += Rad_OnEnter;
             ScanAndHookItems();
         }
 
@@ -251,8 +250,7 @@ namespace Radegast
                 lock (KnownItems)
                 {
                     DeregisterItemEvents(Item);
-                    Console.WriteLine(e.Item.Text + " removed");
-
+                    WriteDebug("removed {0}", e.Item);
                 }
         }
 
@@ -262,9 +260,10 @@ namespace Radegast
             RegisterItemEvents(e.Item as ToolStripDropDownItem);
         }
 
-        private void WriteDebug(string s)
+        private void WriteDebug(string s, params object[] args)
         {
-            Console.WriteLine(s + " " + ToString());
+            // maybe for debugging why a context menu isnt working correctly
+            //Console.WriteLine(s + " " + ToString(),args);
         }
 
         public override string ToString()
@@ -272,10 +271,6 @@ namespace Radegast
             return string.Format("RadMenu {0} MenuItem='{1}' selection='{2}'", Name, MenuItem, Selection);
         }
 
-        private void Rad_OnEnter(object sender, EventArgs e)
-        {
-            WriteDebug("Rad_OnEnter: " + sender + " " + e);
-        }
 
         private void ScanForSelected()
         {
@@ -303,7 +298,7 @@ namespace Radegast
 
         private void Rad_Menu_Opened(object sender, EventArgs e)
         {
-            WriteDebug("Menu_Opened: " + sender + " " + e);
+            WriteDebug("Menu_Opened: {0} {1}", sender, e);
             if (OnContentMenuOpened != null)
             {
                 try
@@ -319,7 +314,7 @@ namespace Radegast
 
         private void Rad_Menu_Opening(object sender, CancelEventArgs e)
         {
-            WriteDebug("Menu_Opening: " + sender + " " + e.Cancel);
+            WriteDebug("Menu_Opening: {0} {1}", sender, e.Cancel);
             if (OnContentMenuOpening != null)
             {
                 try
@@ -336,7 +331,7 @@ namespace Radegast
 
         private void Rad_Menu_Closing(object sender, ToolStripDropDownClosingEventArgs e)
         {
-            WriteDebug("Menu_Closing: " + sender + " " + e.CloseReason);
+            WriteDebug("Menu_Closing: {0} {1}", sender, e.CloseReason);
             if (OnContentMenuClosing != null)
                 try
                 {
@@ -352,7 +347,7 @@ namespace Radegast
         private void Rad_Menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             SetMenuItemSelected(e.ClickedItem);
-            WriteDebug("Menu_ItemClicked: " + sender + " " + e.ClickedItem);
+            WriteDebug("Menu_ItemClicked: {0} {1}", sender, e.ClickedItem);
             if (OnContentMenuItemClicked != null)
                 try
                 {
@@ -405,7 +400,7 @@ namespace Radegast
         {
             lock (_selectionLock)
             {
-                Console.WriteLine("OnMenuItemChanged " + this);
+                WriteDebug("OnMenuItemChanged {0}", this);
                 if (OnContentMenuItemSelected != null)
                     try
                     {
@@ -451,8 +446,6 @@ namespace Radegast
 
                     // Not so vital events that may lead to discovering some accessiblity features
                     item.GiveFeedback += Rad_Item_GiveFeedback;
-                    item.AvailableChanged += Rad_Item_AvailableChanged;
-                    item.QueryAccessibilityHelp += Rad_Item_QueryAccessibilityHelp;
 
                     // Register childs
                     if (item.HasDropDownItems)
@@ -484,8 +477,6 @@ namespace Radegast
 
                     // Not so vital events that may lead to discovering some accessiblity features
                     item.GiveFeedback -= Rad_Item_GiveFeedback;
-                    item.AvailableChanged -= Rad_Item_AvailableChanged;
-                    item.QueryAccessibilityHelp -= Rad_Item_QueryAccessibilityHelp;
 
                     // Deregister childs
                     if (item.HasDropDownItems)
@@ -499,10 +490,6 @@ namespace Radegast
             }
         }
 
-        private void Rad_Item_QueryAccessibilityHelp(object sender, QueryAccessibilityHelpEventArgs e)
-        {
-            WriteDebug("Item_QueryAccessibilityHelp: " + sender + " " + e);
-        }
 
         private void Rad_Item_Opening(object sender, EventArgs e)
         {
@@ -511,19 +498,14 @@ namespace Radegast
             SetMenuItemSelected(stripDropDownItem);
             if (stripDropDownItem.HasDropDownItems)
             {
-                WriteDebug("Item_DropDownOpening: " + sender + " " + e);
+                WriteDebug("Item_DropDownOpening: {0} {1}", sender, e);
             }
-        }
-
-        private void Rad_Item_AvailableChanged(object sender, EventArgs e)
-        {
-            WriteDebug("Item_AvailableChanged: " + sender + " " + e);
         }
 
         private void Rad_Item_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
             SetMenuItemSelected(sender);
-            WriteDebug("Item_GiveFeedback: " + sender + " " + e.Effect);
+            WriteDebug("Item_GiveFeedback: {0} {1}", sender, e.Effect);
         }
 
         private void Rad_Item_Click(object sender, EventArgs e)
@@ -545,7 +527,7 @@ namespace Radegast
                 {
                     if (MenuItem == stripDropDownItem)
                     {
-                        WriteDebug("Item_Leave: " + sender + " " + e);
+                        WriteDebug("Item_Leave: {0} {1}", sender, e);
                         MenuItem = null;
                         OnItemSelected(MenuItem);
                     }
@@ -556,7 +538,7 @@ namespace Radegast
         private void Rad_Item_Clicked(object sender, ToolStripItemClickedEventArgs e)
         {
             SetMenuItemSelected(sender);
-            WriteDebug("Item_Clicked: " + sender + " " + e.ClickedItem);
+            WriteDebug("Item_Clicked: {0} {1}", sender, e.ClickedItem);
         }
 
         public IEnumerable<ToolStripItem> Choices()
