@@ -643,7 +643,7 @@ namespace Radegast
 
             foreach (ToolStripItem item in tstTabs.Items)
             {
-                if (item.Tag == null) continue;
+                if (item.Tag == null || !item.Visible) continue;
 
                 buttons.Add(item);
             }
@@ -676,7 +676,7 @@ namespace Radegast
 
             foreach (ToolStripItem item in tstTabs.Items)
             {
-                if (item.Tag == null) continue;
+                if (item.Tag == null || !item.Visible) continue;
 
                 buttons.Add(item);
             }
