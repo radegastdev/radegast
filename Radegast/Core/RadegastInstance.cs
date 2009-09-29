@@ -49,7 +49,6 @@ namespace Radegast
         private StateManager state;
 
         private frmMain mainForm;
-        private TabsConsole tabsConsole;
 
         // Singleton, there can be only one instance
         private static RadegastInstance globalInstance = null;
@@ -193,7 +192,6 @@ namespace Radegast
 
             mainForm = new frmMain(this);
             mainForm.InitializeControls();
-            tabsConsole = mainForm.TabConsole;
 
             groups = new Dictionary<UUID, Group>();
 
@@ -203,7 +201,7 @@ namespace Radegast
             client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
-            ScanAndLoadPlugins();
+            mainForm.Load += new EventHandler(mainForm_Load);
         }
 
         public void CleanUp()
@@ -265,8 +263,16 @@ namespace Radegast
                 netcom.Dispose();
                 netcom = null;
             }
-
+            if (mainForm != null)
+            {
+                mainForm.Load -= new EventHandler(mainForm_Load);
+            }
             Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
+        }
+
+        void mainForm_Load(object sender, EventArgs e)
+        {
+            ScanAndLoadPlugins();
         }
 
         private void ScanAndLoadPlugins()
@@ -508,7 +514,7 @@ namespace Radegast
 
         public TabsConsole TabConsole
         {
-            get { return tabsConsole; }
+            get { return mainForm.TabConsole; }
         }
 
         public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
