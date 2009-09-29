@@ -143,11 +143,10 @@ namespace Radegast
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tbtnSLeek,
-            this.toolStripSeparator1,
             this.tbtnWorld,
-            this.toolStripSeparator2,
             this.tbnTools,
             this.tbnPlugins,
+            this.toolStripSeparator1,
             this.tbtnFriends,
             this.tbtnGroups,
             this.tbtnInventory,
@@ -156,6 +155,7 @@ namespace Radegast
             this.tbnObjects,
             this.lblTime,
             this.tbtnMedia,
+            this.toolStripSeparator2,
             this.tbtnHelp});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
