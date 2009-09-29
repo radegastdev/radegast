@@ -300,10 +300,26 @@ namespace Radegast
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " because " + ex.Message + " " + ex.StackTrace, Helpers.LogLevel.Debug);
+                        Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " because " + ex, Helpers.LogLevel.Debug);
                     }
                 }
             }
+            // run the StartPlugin
+            lock (PluginsLoaded)
+            {
+                foreach (IRadegastPlugin plug in PluginsLoaded)
+                {
+                    try
+                    {
+                        plug.StartPlugin(this);                    
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("ERROR in Starting Radegast Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug);
+                    }
+                }
+            }
+
         }
 
         public void LoadAssembly(string loadfilename, Assembly assembly)
@@ -318,13 +334,12 @@ namespace Radegast
                         try
                         {
                             IRadegastPlugin plug = (IRadegastPlugin)ci.Invoke(new object[0]);
-                            plug.StartPlugin(this);
                             lock (PluginsLoaded) PluginsLoaded.Add(plug);
                             break;
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because " + ex.Message, Helpers.LogLevel.Debug);
+                            Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because " + ex, Helpers.LogLevel.Debug);
                             throw ex;
                         }
                     }
