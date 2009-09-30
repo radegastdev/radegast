@@ -523,7 +523,7 @@ namespace Radegast
                     z = int.Parse(m.Groups[6].Value);
                 }
 
-                WorldMap.Select();
+                MapTab.Select();
                 WorldMap.DisplayLocation(region, x, y, z);
                 return true;
             }
@@ -779,7 +779,7 @@ namespace Radegast
         {
             if (WorldMap != null && client.Network.Connected)
             {
-                WorldMap.Select();
+                MapTab.Select();
             }
         }
 

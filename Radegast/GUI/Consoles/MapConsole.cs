@@ -29,22 +29,22 @@
 // $Id$
 //
 ﻿using System;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Threading;
-using System.Security.Permissions;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
 using OpenMetaverse;
 
 namespace Radegast
 {
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-    [System.Runtime.InteropServices.ComVisibleAttribute(true)]
+    [ComVisibleAttribute(true)]
     public partial class MapConsole : UserControl
     {
         RadegastInstance instance;
-        GridClient client {get {return instance.Client;}}
+        GridClient client { get { return instance.Client; } }
         bool Active { get { return client.Network.Connected; } }
         WebBrowser map;
         Regex slscheme = new Regex("^secondlife://(.+)/([0-9]+)/([0-9]+)");
@@ -116,7 +116,7 @@ namespace Radegast
             nudX.Value = x;
             nudY.Value = y;
             nudZ.Value = z;
-            gotoRegion(txtRegion.Text,x ,y);
+            gotoRegion(txtRegion.Text, x, y);
             btnTeleport.Enabled = true;
             btnTeleport.Focus();
             lblStatus.Text = "Ready for " + region;
@@ -171,16 +171,17 @@ namespace Radegast
                     lblStatus.Text = "Teleporting to " + txtRegion.Text;
                     InTeleport = true;
                     break;
-             
+
                 case TeleportStatus.Cancelled:
                 case TeleportStatus.Failed:
                     InTeleport = false;
                     lblStatus.Text = "Failed: " + message;
                     break;
-                
+
                 case TeleportStatus.Finished:
                     lblStatus.Text = "Teleport complete";
                     InTeleport = false;
+                    Network_OnCurrentSimChanged(null);
                     break;
 
                 default:
@@ -196,9 +197,9 @@ namespace Radegast
 
         void Grid_OnGridRegion(GridRegion region)
         {
-            if (InvokeRequired) 
+            if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate ()
+                BeginInvoke(new MethodInvoker(delegate()
                     {
                         Grid_OnGridRegion(region);
                     }
