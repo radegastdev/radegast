@@ -151,8 +151,9 @@ namespace Radegast
             // incase something else calls GlobalInstance while we are loading
             globalInstance = this;
 #if !DEBUG
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
             Application.ThreadException += HandleThreadException;
+            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 #endif
             client = client0;
 
@@ -298,6 +299,10 @@ namespace Radegast
                     {
                         // Out of date or dlls missing sub dependencies
                     }
+                    catch (TypeLoadException)
+                    {
+                        // Another version of: Out of date or dlls missing sub dependencies
+                    }
                     catch (Exception ex)
                     {
                         Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " because " + ex, Helpers.LogLevel.Debug);
@@ -328,20 +333,29 @@ namespace Radegast
             {
                 if (typeof(IRadegastPlugin).IsAssignableFrom(type))
                 {
-                    foreach (var ci in type.GetConstructors())
+                    try
                     {
-                        if (ci.GetParameters().Length > 0) continue;
-                        try
+                        IRadegastPlugin plug;
+                        ConstructorInfo constructorInfo = type.GetConstructor(new Type[] {typeof (RadegastInstance)});
+                        if (constructorInfo != null)
+                            plug = (IRadegastPlugin) constructorInfo.Invoke(new[] {this});
+                        else
                         {
-                            IRadegastPlugin plug = (IRadegastPlugin)ci.Invoke(new object[0]);
-                            lock (PluginsLoaded) PluginsLoaded.Add(plug);
-                            break;
+                            constructorInfo = type.GetConstructor(new Type[] {});
+                            if (constructorInfo != null)
+                                plug = (IRadegastPlugin) constructorInfo.Invoke(new object[0]);
+                            else
+                            {
+                                Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because "+type+ " has no usable constructor.",Helpers.LogLevel.Debug);
+                                continue;
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because " + ex, Helpers.LogLevel.Debug);
-                            throw ex;
-                        }
+                        lock (PluginsLoaded) PluginsLoaded.Add(plug);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because " + ex,
+                                   Helpers.LogLevel.Debug);
                     }
                 }
                 else
@@ -534,7 +548,14 @@ namespace Radegast
 
         public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
         {
+            Console.WriteLine("" + e.Exception);
             Logger.Log("Unhandled Thread Exception: " + e.Exception + " in " + sender, Helpers.LogLevel.Error, client);
+        }
+
+        private void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Console.WriteLine("" + e.ExceptionObject);
+            Logger.Log("Unhandled Exception: " + e.ExceptionObject + " in " + sender, Helpers.LogLevel.Error, client);
         }
     }
 }
