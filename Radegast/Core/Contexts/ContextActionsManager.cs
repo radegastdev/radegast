@@ -71,7 +71,7 @@ namespace Radegast
             }
         }
 
-        internal void AddContributions(ToolStripDropDown strip, Object o)
+        public void AddContributions(ToolStripDropDown strip, Object o)
         {
             SetCurrentItem(strip, o);
             AddContributions(strip, o != null ? o.GetType() : null, o);
@@ -106,7 +106,7 @@ namespace Radegast
             strip.Closing += ((sender, args) => items.ForEach((o) => strip.Items.Remove(o)));
         }
 
-        internal void AddContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
+        public void AddContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
             SetCurrentItem(strip, obj);
             List<ToolStripMenuItem> items = new List<ToolStripMenuItem>();
@@ -139,7 +139,7 @@ namespace Radegast
             AddContributions(strip, item1);
         }
 
-        private void SetCurrentItem(ToolStripDropDown strip, object o)
+        public void SetCurrentItem(ToolStripDropDown strip, object o)
         {
             RadegastContextMenuStrip rmenu = strip as RadegastContextMenuStrip;
             if (rmenu != null) rmenu.Selection = o;
