@@ -925,7 +925,7 @@ namespace Radegast
                 raw += " (no copy)";
 
             if ((item.Permissions.OwnerMask & PermissionMask.Transfer) == 0)
-                raw += " (no trasnfer)";
+                raw += " (no transfer)";
 
             if (IsWorn(item))
                 raw += " (worn)";
