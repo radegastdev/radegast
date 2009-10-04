@@ -203,6 +203,7 @@ namespace Radegast
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
             mainForm.Load += new EventHandler(mainForm_Load);
+            ScanAndLoadPlugins();
         }
 
         public void CleanUp()
@@ -273,7 +274,25 @@ namespace Radegast
 
         void mainForm_Load(object sender, EventArgs e)
         {
-            ScanAndLoadPlugins();
+            StartPlugins();
+        }
+
+        private void StartPlugins()
+        {
+            lock (PluginsLoaded)
+            {
+                foreach (IRadegastPlugin plug in PluginsLoaded)
+                {
+                    try
+                    {
+                        plug.StartPlugin(this);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("ERROR in Starting Radegast Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug);
+                    }
+                }
+            }
         }
 
         private void ScanAndLoadPlugins()
@@ -309,22 +328,6 @@ namespace Radegast
                     }
                 }
             }
-            // run the StartPlugin
-            lock (PluginsLoaded)
-            {
-                foreach (IRadegastPlugin plug in PluginsLoaded)
-                {
-                    try
-                    {
-                        plug.StartPlugin(this);                    
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR in Starting Radegast Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug);
-                    }
-                }
-            }
-
         }
 
         public void LoadAssembly(string loadfilename, Assembly assembly)
@@ -333,6 +336,7 @@ namespace Radegast
             {
                 if (typeof(IRadegastPlugin).IsAssignableFrom(type))
                 {
+                    if  (type.IsInterface) continue;
                     try
                     {
                         IRadegastPlugin plug;
