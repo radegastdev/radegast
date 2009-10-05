@@ -150,11 +150,12 @@ namespace Radegast
         {
             // incase something else calls GlobalInstance while we are loading
             globalInstance = this;
-#if !DEBUG
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
+
+#if HANDLE_THREAD_EXCEPTIONS
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.ThreadException += HandleThreadException;
-            AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 #endif
+
             client = client0;
 
             // Are we running mono?
@@ -184,8 +185,7 @@ namespace Radegast
             client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir, "cache");
             client.Assets.Cache.AutoPruneEnabled = false;
 
-            client.Throttle.Texture = 2446000.0f;
-            client.Throttle.Asset = 2446000.0f;
+            client.Throttle.Total = 5000000f;
             client.Settings.THROTTLE_OUTGOING_PACKETS = true;
             client.Settings.LOGIN_TIMEOUT = 120 * 1000;
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
@@ -552,14 +552,13 @@ namespace Radegast
 
         public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            Console.WriteLine("" + e.Exception);
-            Logger.Log("Unhandled Thread Exception: " + e.Exception + " in " + sender, Helpers.LogLevel.Error, client);
-        }
+            Logger.Log("Unhandled Thread Exception: " 
+                + e.Exception.Message + Environment.NewLine
+                + e.Exception.StackTrace + Environment.NewLine,
+                Helpers.LogLevel.Error,
+                client);
 
-        private void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Console.WriteLine("" + e.ExceptionObject);
-            Logger.Log("Unhandled Exception: " + e.ExceptionObject + " in " + sender, Helpers.LogLevel.Error, client);
+            Application.Exit();
         }
     }
 }
