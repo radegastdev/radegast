@@ -175,54 +175,59 @@ namespace Radegast
             ProcessBufferItem(ready, true);
         }
 
+        private Object SyncChat = new Object();
+
         public void ProcessBufferItem(ChatBufferItem item, bool addToBuffer)
         {
-            instance.LogClientMessage("chat.txt", item.Text);
-            if (addToBuffer) textBuffer.Add(item);
-
-            if (showTimestamps)
+            lock (SyncChat)
             {
-                textPrinter.ForeColor = Color.Gray;
-                textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
+                instance.LogClientMessage("chat.txt", item.Text);
+                if (addToBuffer) textBuffer.Add(item);
+
+                if (showTimestamps)
+                {
+                    textPrinter.ForeColor = Color.Gray;
+                    textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
+                }
+
+                switch (item.Style)
+                {
+                    case ChatBufferTextStyle.Normal:
+                        textPrinter.ForeColor = Color.Black;
+                        break;
+
+                    case ChatBufferTextStyle.StatusBlue:
+                        textPrinter.ForeColor = Color.Blue;
+                        break;
+
+                    case ChatBufferTextStyle.StatusDarkBlue:
+                        textPrinter.ForeColor = Color.DarkBlue;
+                        break;
+
+                    case ChatBufferTextStyle.LindenChat:
+                        textPrinter.ForeColor = Color.DarkGreen;
+                        break;
+
+                    case ChatBufferTextStyle.ObjectChat:
+                        textPrinter.ForeColor = Color.DarkCyan;
+                        break;
+
+                    case ChatBufferTextStyle.StartupTitle:
+                        textPrinter.ForeColor = Color.Black;
+                        textPrinter.Font = new Font(textPrinter.Font, FontStyle.Bold);
+                        break;
+
+                    case ChatBufferTextStyle.Alert:
+                        textPrinter.ForeColor = Color.DarkRed;
+                        break;
+
+                    case ChatBufferTextStyle.Error:
+                        textPrinter.ForeColor = Color.Red;
+                        break;
+                }
+
+                textPrinter.PrintTextLine(item.Text);
             }
-
-            switch (item.Style)
-            {
-                case ChatBufferTextStyle.Normal:
-                    textPrinter.ForeColor = Color.Black;
-                    break;
-
-                case ChatBufferTextStyle.StatusBlue:
-                    textPrinter.ForeColor = Color.Blue;
-                    break;
-
-                case ChatBufferTextStyle.StatusDarkBlue:
-                    textPrinter.ForeColor = Color.DarkBlue;
-                    break;
-
-                case ChatBufferTextStyle.LindenChat:
-                    textPrinter.ForeColor = Color.DarkGreen;
-                    break;
-
-                case ChatBufferTextStyle.ObjectChat:
-                    textPrinter.ForeColor = Color.DarkCyan;
-                    break;
-
-                case ChatBufferTextStyle.StartupTitle:
-                    textPrinter.ForeColor = Color.Black;
-                    textPrinter.Font = new Font(textPrinter.Font, FontStyle.Bold);
-                    break;
-
-                case ChatBufferTextStyle.Alert:
-                    textPrinter.ForeColor = Color.DarkRed;
-                    break;
-
-                case ChatBufferTextStyle.Error:
-                    textPrinter.ForeColor = Color.Red;
-                    break;
-            }
-
-            textPrinter.PrintTextLine(item.Text);
         }
 
         //Used only for non-public chat
