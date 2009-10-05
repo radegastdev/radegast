@@ -78,6 +78,7 @@ namespace Radegast
         ObjectChat,
         StartupTitle,
         Error,
-        Alert
+        Alert,
+        OwnerSay
     }
 }

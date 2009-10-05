@@ -224,6 +224,10 @@ namespace Radegast
                     case ChatBufferTextStyle.Error:
                         textPrinter.ForeColor = Color.Red;
                         break;
+
+                    case ChatBufferTextStyle.OwnerSay:
+                        textPrinter.ForeColor = Color.FromArgb(0, 180, 150, 0);
+                        break;
                 }
 
                 textPrinter.PrintTextLine(item.Text);
@@ -270,51 +274,28 @@ namespace Radegast
             // if (e.SourceType == ChatSourceType.Object) {
             //    sb.Append(e.Position + " ");
             // }
+            sb.Append(e.FromName);
+
+            switch (e.Type)
+            {
+
+                case ChatType.Whisper:
+                    sb.Append(" whispers");
+                    break;
+
+                case ChatType.Shout:
+                    sb.Append(" shouts");
+                    break;
+            }
+
             if (e.Message.StartsWith("/me "))
             {
-                sb.Append(e.FromName);
+                sb.Append(" ");
                 sb.Append(e.Message.Substring(3));
-            }
-            else if (e.FromName == netcom.LoginOptions.FullName && e.SourceType == ChatSourceType.Agent)
-            {
-                sb.Append(client.Self.Name);
-
-                switch (e.Type)
-                {
-                    case ChatType.Normal:
-                        sb.Append(": ");
-                        break;
-
-                    case ChatType.Whisper:
-                        sb.Append(" whispers: ");
-                        break;
-
-                    case ChatType.Shout:
-                        sb.Append(" shouts: ");
-                        break;
-                }
-
-                sb.Append(e.Message);
             }
             else
             {
-                sb.Append(e.FromName);
-
-                switch (e.Type)
-                {
-                    case ChatType.Normal:
-                        sb.Append(": ");
-                        break;
-
-                    case ChatType.Whisper:
-                        sb.Append(" whispers: ");
-                        break;
-
-                    case ChatType.Shout:
-                        sb.Append(" shouts: ");
-                        break;
-                }
-
+                sb.Append(": ");
                 sb.Append(e.Message);
             }
 
@@ -331,7 +312,14 @@ namespace Radegast
                     break;
 
                 case ChatSourceType.Object:
-                    item.Style = ChatBufferTextStyle.ObjectChat;
+                    if (e.Type == ChatType.OwnerSay)
+                    {
+                        item.Style = ChatBufferTextStyle.OwnerSay;
+                    }
+                    else
+                    {
+                        item.Style = ChatBufferTextStyle.ObjectChat;
+                    }
                     break;
             }
 
