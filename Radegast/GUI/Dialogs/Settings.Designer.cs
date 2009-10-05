@@ -61,10 +61,11 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.cbTrasactChat = new System.Windows.Forms.CheckBox();
+            this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
-            this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
-            this.cbTrasactChat = new System.Windows.Forms.CheckBox();
+            this.cbFriendsNotifications = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -82,6 +83,7 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.cbFriendsNotifications);
             this.tbpGeneral.Controls.Add(this.cbTrasactChat);
             this.tbpGeneral.Controls.Add(this.cbTrasactDialog);
             this.tbpGeneral.Controls.Add(this.cbIMTimeStamps);
@@ -93,6 +95,28 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // cbTrasactChat
+            // 
+            this.cbTrasactChat.AutoSize = true;
+            this.cbTrasactChat.Location = new System.Drawing.Point(8, 75);
+            this.cbTrasactChat.Name = "cbTrasactChat";
+            this.cbTrasactChat.Size = new System.Drawing.Size(170, 17);
+            this.cbTrasactChat.TabIndex = 1;
+            this.cbTrasactChat.Text = "Display L$ transactions in chat";
+            this.cbTrasactChat.UseVisualStyleBackColor = true;
+            this.cbTrasactChat.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            // 
+            // cbTrasactDialog
+            // 
+            this.cbTrasactDialog.AutoSize = true;
+            this.cbTrasactDialog.Location = new System.Drawing.Point(8, 52);
+            this.cbTrasactDialog.Name = "cbTrasactDialog";
+            this.cbTrasactDialog.Size = new System.Drawing.Size(176, 17);
+            this.cbTrasactDialog.TabIndex = 1;
+            this.cbTrasactDialog.Text = "Display dialog on L$ transaction";
+            this.cbTrasactDialog.UseVisualStyleBackColor = true;
+            this.cbTrasactDialog.CheckedChanged += new System.EventHandler(this.cbTrasactDialog_CheckedChanged);
             // 
             // cbIMTimeStamps
             // 
@@ -114,27 +138,16 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbTrasactDialog
+            // cbFriendsNotifications
             // 
-            this.cbTrasactDialog.AutoSize = true;
-            this.cbTrasactDialog.Location = new System.Drawing.Point(8, 52);
-            this.cbTrasactDialog.Name = "cbTrasactDialog";
-            this.cbTrasactDialog.Size = new System.Drawing.Size(176, 17);
-            this.cbTrasactDialog.TabIndex = 1;
-            this.cbTrasactDialog.Text = "Display dialog on L$ transaction";
-            this.cbTrasactDialog.UseVisualStyleBackColor = true;
-            this.cbTrasactDialog.CheckedChanged += new System.EventHandler(this.cbTrasactDialog_CheckedChanged);
-            // 
-            // cbTrasactChat
-            // 
-            this.cbTrasactChat.AutoSize = true;
-            this.cbTrasactChat.Location = new System.Drawing.Point(8, 75);
-            this.cbTrasactChat.Name = "cbTrasactChat";
-            this.cbTrasactChat.Size = new System.Drawing.Size(170, 17);
-            this.cbTrasactChat.TabIndex = 1;
-            this.cbTrasactChat.Text = "Display L$ transactions in chat";
-            this.cbTrasactChat.UseVisualStyleBackColor = true;
-            this.cbTrasactChat.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            this.cbFriendsNotifications.AutoSize = true;
+            this.cbFriendsNotifications.Location = new System.Drawing.Point(6, 98);
+            this.cbFriendsNotifications.Name = "cbFriendsNotifications";
+            this.cbFriendsNotifications.Size = new System.Drawing.Size(184, 17);
+            this.cbFriendsNotifications.TabIndex = 1;
+            this.cbFriendsNotifications.Text = "Display friends online notifications";
+            this.cbFriendsNotifications.UseVisualStyleBackColor = true;
+            this.cbFriendsNotifications.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -160,5 +173,6 @@ namespace Radegast
         private System.Windows.Forms.CheckBox cbChatTimestamps;
         private System.Windows.Forms.CheckBox cbTrasactChat;
         private System.Windows.Forms.CheckBox cbTrasactDialog;
+        private System.Windows.Forms.CheckBox cbFriendsNotifications;
     }
 }

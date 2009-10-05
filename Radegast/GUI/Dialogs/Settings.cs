@@ -63,6 +63,14 @@ namespace Radegast
             cbTrasactDialog.Checked = s["transaction_notification_dialog"].AsBoolean();
             cbTrasactChat.Checked = s["transaction_notification_chat"].AsBoolean();
 
+            cbFriendsNotifications.Checked = s["show_friends_online_notifications"].AsBoolean();
+            cbFriendsNotifications.CheckedChanged += new EventHandler(cbFriendsNotifications_CheckedChanged);
+
+        }
+
+        void cbFriendsNotifications_CheckedChanged(object sender, EventArgs e)
+        {
+            s["show_friends_online_notifications"] = OSD.FromBoolean(cbFriendsNotifications.Checked);
         }
 
         void cbChatTimestamps_CheckedChanged(object sender, EventArgs e)

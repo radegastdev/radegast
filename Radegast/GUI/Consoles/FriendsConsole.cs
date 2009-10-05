@@ -34,6 +34,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
@@ -44,6 +45,7 @@ namespace Radegast
         private FriendInfo selectedFriend;
 
         private bool settingFriend = false;
+        private bool showNotifications;
 
         public FriendsConsole(RadegastInstance instance)
         {
@@ -51,6 +53,15 @@ namespace Radegast
             Disposed += new EventHandler(FriendsConsole_Disposed);
 
             this.instance = instance;
+
+            if (instance.GlobalSettings["show_friends_online_notifications"].Type == OSDType.Unknown)
+            {
+                instance.GlobalSettings["show_friends_online_notifications"] = OSD.FromBoolean(showNotifications = true);
+            }
+            else
+            {
+                showNotifications = instance.GlobalSettings["show_friends_online_notifications"].AsBoolean();
+            }
 
             // Callbacks
             client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
@@ -92,7 +103,10 @@ namespace Radegast
                 return;
             }
 
-            instance.MainForm.TabConsole.DisplayNotificationInChat(friend.Name + " is offline");
+            if (showNotifications)
+            {
+                instance.MainForm.TabConsole.DisplayNotificationInChat(friend.Name + " is offline");
+            }
             RefreshFriendsList();
         }
 
@@ -104,33 +118,37 @@ namespace Radegast
                 return;
             }
 
-            string name = friend.Name;
-
-            if (string.IsNullOrEmpty(name))
+            if (showNotifications)
             {
-                ManualResetEvent done = new ManualResetEvent(false);               
+                string name = friend.Name;
+
+                if (string.IsNullOrEmpty(name))
                 {
-
-                    AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
+                    ManualResetEvent done = new ManualResetEvent(false);
                     {
-                        if (names.ContainsKey(friend.UUID))
+
+                        AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
                         {
-                            name = names[friend.UUID];
-                            done.Set();
-                        }
-                    };
+                            if (names.ContainsKey(friend.UUID))
+                            {
+                                name = names[friend.UUID];
+                                done.Set();
+                            }
+                        };
 
-                    client.Avatars.OnAvatarNames += callback;
-                    name = instance.getAvatarName(friend.UUID);
-                    if (name == RadegastInstance.INCOMPLETE_NAME)
-                    {
-                        done.WaitOne(3000, false);
+                        client.Avatars.OnAvatarNames += callback;
+                        name = instance.getAvatarName(friend.UUID);
+                        if (name == RadegastInstance.INCOMPLETE_NAME)
+                        {
+                            done.WaitOne(3000, false);
+                        }
+                        client.Avatars.OnAvatarNames -= callback;
                     }
-                    client.Avatars.OnAvatarNames -= callback;
                 }
+
+                instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online");
             }
 
-            instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online");
             RefreshFriendsList();
         }
 
