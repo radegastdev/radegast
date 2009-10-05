@@ -477,6 +477,15 @@ namespace Radegast
 
         public RadegastTab AddTab(string name, string label, Control control)
         {
+            // WORKAROUND: one should never add tab that alrady exists
+            // but under some weird conditions disconnect/connect
+            // fire in the wrong order
+            if (TabExists(name))
+            {
+                Logger.Log("Force closing tab '" + name + "'", Helpers.LogLevel.Warning, client);
+                ForceCloseTab(name);
+            }
+
             toolStripContainer1.ContentPanel.Controls.Add(control);
             control.Visible = false;
             control.Dock = DockStyle.Fill;
