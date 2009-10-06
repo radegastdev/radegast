@@ -44,7 +44,7 @@ namespace Radegast
 
         public override string ToString()
         {
-            return friend.Name;
+            return friend.Name ?? String.Empty;
         }
 
         public int CompareTo(object obj)
