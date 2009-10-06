@@ -36,7 +36,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class frmProfile : Form
+    public partial class frmProfile : RadegastForm
     {
         private RadegastInstance instance;
         private RadegastNetcom netcom;
@@ -54,10 +54,13 @@ namespace Radegast
         private Dictionary<UUID, ParcelInfo> parcelCache = new Dictionary<UUID, ParcelInfo>();
 
         public frmProfile(RadegastInstance instance, string fullName, UUID agentID)
+            : base(instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmProfile_Disposed);
-
+            
+            AutoSavePosition = true;
+            
             this.instance = instance;
             netcom = this.instance.Netcom;
             client = this.instance.Client;
