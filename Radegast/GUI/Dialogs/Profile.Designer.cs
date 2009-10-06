@@ -60,6 +60,7 @@ namespace Radegast
         {
             this.tabProfile = new System.Windows.Forms.TabControl();
             this.tpgProfile = new System.Windows.Forms.TabPage();
+            this.btnIM = new System.Windows.Forms.Button();
             this.btnFriend = new System.Windows.Forms.Button();
             this.slPicPanel = new System.Windows.Forms.Panel();
             this.btnOfferTeleport = new System.Windows.Forms.Button();
@@ -84,8 +85,11 @@ namespace Radegast
             this.label6 = new System.Windows.Forms.Label();
             this.tbpPicks = new System.Windows.Forms.TabPage();
             this.pickDetailPanel = new System.Windows.Forms.Panel();
-            this.picksLowerPanel = new System.Windows.Forms.Panel();
             this.pickDetail = new System.Windows.Forms.TextBox();
+            this.pickLocation = new System.Windows.Forms.TextBox();
+            this.picksLowerPanel = new System.Windows.Forms.Panel();
+            this.btnShowOnMap = new System.Windows.Forms.Button();
+            this.btnTeleport = new System.Windows.Forms.Button();
             this.pickTitle = new System.Windows.Forms.TextBox();
             this.pickPicturePanel = new System.Windows.Forms.Panel();
             this.pickListPanel = new System.Windows.Forms.Panel();
@@ -96,12 +100,12 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.btnIM = new System.Windows.Forms.Button();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
             this.tbpPicks.SuspendLayout();
             this.pickDetailPanel.SuspendLayout();
+            this.picksLowerPanel.SuspendLayout();
             this.tpgFirstLife.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -119,6 +123,7 @@ namespace Radegast
             this.tabProfile.SelectedIndex = 0;
             this.tabProfile.Size = new System.Drawing.Size(468, 483);
             this.tabProfile.TabIndex = 0;
+            this.tabProfile.SelectedIndexChanged += new System.EventHandler(this.tabProfile_SelectedIndexChanged);
             // 
             // tpgProfile
             // 
@@ -147,6 +152,16 @@ namespace Radegast
             this.tpgProfile.Text = "Profile";
             this.tpgProfile.UseVisualStyleBackColor = true;
             // 
+            // btnIM
+            // 
+            this.btnIM.Location = new System.Drawing.Point(312, 368);
+            this.btnIM.Name = "btnIM";
+            this.btnIM.Size = new System.Drawing.Size(96, 23);
+            this.btnIM.TabIndex = 19;
+            this.btnIM.Text = "Start IM";
+            this.btnIM.UseVisualStyleBackColor = true;
+            this.btnIM.Click += new System.EventHandler(this.btnIM_Click);
+            // 
             // btnFriend
             // 
             this.btnFriend.Location = new System.Drawing.Point(210, 368);
@@ -161,7 +176,7 @@ namespace Radegast
             // 
             this.slPicPanel.Location = new System.Drawing.Point(9, 33);
             this.slPicPanel.Name = "slPicPanel";
-            this.slPicPanel.Size = new System.Drawing.Size(236, 159);
+            this.slPicPanel.Size = new System.Drawing.Size(237, 178);
             this.slPicPanel.TabIndex = 17;
             // 
             // btnOfferTeleport
@@ -200,10 +215,10 @@ namespace Radegast
             // 
             this.rtbAbout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtbAbout.Location = new System.Drawing.Point(6, 212);
+            this.rtbAbout.Location = new System.Drawing.Point(6, 231);
             this.rtbAbout.Name = "rtbAbout";
             this.rtbAbout.ReadOnly = true;
-            this.rtbAbout.Size = new System.Drawing.Size(448, 150);
+            this.rtbAbout.Size = new System.Drawing.Size(448, 131);
             this.rtbAbout.TabIndex = 13;
             this.rtbAbout.Text = "";
             this.rtbAbout.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAbout_LinkClicked);
@@ -250,7 +265,7 @@ namespace Radegast
             // 
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 196);
+            this.label4.Location = new System.Drawing.Point(6, 215);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(40, 13);
             this.label4.TabIndex = 8;
@@ -386,8 +401,9 @@ namespace Radegast
             // 
             // pickDetailPanel
             // 
-            this.pickDetailPanel.Controls.Add(this.picksLowerPanel);
             this.pickDetailPanel.Controls.Add(this.pickDetail);
+            this.pickDetailPanel.Controls.Add(this.pickLocation);
+            this.pickDetailPanel.Controls.Add(this.picksLowerPanel);
             this.pickDetailPanel.Controls.Add(this.pickTitle);
             this.pickDetailPanel.Controls.Add(this.pickPicturePanel);
             this.pickDetailPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -396,22 +412,52 @@ namespace Radegast
             this.pickDetailPanel.Size = new System.Drawing.Size(315, 451);
             this.pickDetailPanel.TabIndex = 1;
             // 
-            // picksLowerPanel
-            // 
-            this.picksLowerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.picksLowerPanel.Location = new System.Drawing.Point(0, 410);
-            this.picksLowerPanel.Name = "picksLowerPanel";
-            this.picksLowerPanel.Size = new System.Drawing.Size(315, 41);
-            this.picksLowerPanel.TabIndex = 3;
-            // 
             // pickDetail
             // 
             this.pickDetail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pickDetail.Location = new System.Drawing.Point(0, 259);
             this.pickDetail.Multiline = true;
             this.pickDetail.Name = "pickDetail";
-            this.pickDetail.Size = new System.Drawing.Size(315, 192);
+            this.pickDetail.Size = new System.Drawing.Size(315, 130);
             this.pickDetail.TabIndex = 2;
+            // 
+            // pickLocation
+            // 
+            this.pickLocation.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pickLocation.Location = new System.Drawing.Point(0, 389);
+            this.pickLocation.Name = "pickLocation";
+            this.pickLocation.Size = new System.Drawing.Size(315, 21);
+            this.pickLocation.TabIndex = 4;
+            // 
+            // picksLowerPanel
+            // 
+            this.picksLowerPanel.Controls.Add(this.btnShowOnMap);
+            this.picksLowerPanel.Controls.Add(this.btnTeleport);
+            this.picksLowerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.picksLowerPanel.Location = new System.Drawing.Point(0, 410);
+            this.picksLowerPanel.Name = "picksLowerPanel";
+            this.picksLowerPanel.Size = new System.Drawing.Size(315, 41);
+            this.picksLowerPanel.TabIndex = 3;
+            // 
+            // btnShowOnMap
+            // 
+            this.btnShowOnMap.Location = new System.Drawing.Point(87, 10);
+            this.btnShowOnMap.Name = "btnShowOnMap";
+            this.btnShowOnMap.Size = new System.Drawing.Size(98, 23);
+            this.btnShowOnMap.TabIndex = 0;
+            this.btnShowOnMap.Text = "Show on Map";
+            this.btnShowOnMap.UseVisualStyleBackColor = true;
+            this.btnShowOnMap.Click += new System.EventHandler(this.btnShowOnMap_Click);
+            // 
+            // btnTeleport
+            // 
+            this.btnTeleport.Location = new System.Drawing.Point(6, 10);
+            this.btnTeleport.Name = "btnTeleport";
+            this.btnTeleport.Size = new System.Drawing.Size(75, 23);
+            this.btnTeleport.TabIndex = 0;
+            this.btnTeleport.Text = "Teleport";
+            this.btnTeleport.UseVisualStyleBackColor = true;
+            this.btnTeleport.Click += new System.EventHandler(this.btnTeleport_Click);
             // 
             // pickTitle
             // 
@@ -503,6 +549,7 @@ namespace Radegast
             // textBox1
             // 
             this.textBox1.AllowDrop = true;
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.textBox1.BackColor = System.Drawing.SystemColors.Info;
             this.textBox1.Location = new System.Drawing.Point(18, 503);
             this.textBox1.Name = "textBox1";
@@ -513,16 +560,6 @@ namespace Radegast
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
-            // 
-            // btnIM
-            // 
-            this.btnIM.Location = new System.Drawing.Point(312, 368);
-            this.btnIM.Name = "btnIM";
-            this.btnIM.Size = new System.Drawing.Size(96, 23);
-            this.btnIM.TabIndex = 19;
-            this.btnIM.Text = "Start IM";
-            this.btnIM.UseVisualStyleBackColor = true;
-            this.btnIM.Click += new System.EventHandler(this.btnIM_Click);
             // 
             // frmProfile
             // 
@@ -544,6 +581,7 @@ namespace Radegast
             this.tbpPicks.ResumeLayout(false);
             this.pickDetailPanel.ResumeLayout(false);
             this.pickDetailPanel.PerformLayout();
+            this.picksLowerPanel.ResumeLayout(false);
             this.tpgFirstLife.ResumeLayout(false);
             this.tpgFirstLife.PerformLayout();
             this.ResumeLayout(false);
@@ -592,5 +630,8 @@ namespace Radegast
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Button btnFriend;
         private System.Windows.Forms.Button btnIM;
+        private System.Windows.Forms.TextBox pickLocation;
+        private System.Windows.Forms.Button btnShowOnMap;
+        private System.Windows.Forms.Button btnTeleport;
     }
 }

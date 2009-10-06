@@ -250,7 +250,10 @@ namespace Radegast
                 map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
             }
 
-            Thread t = new Thread(new ThreadStart(delegate()
+            lblStatus.Text = "Teleporting to " + txtRegion.Text;
+            prgTeleport.Style = ProgressBarStyle.Marquee;
+
+            ThreadPool.QueueUserWorkItem((object state) =>
                 {
                     if (!client.Self.Teleport(txtRegion.Text, new Vector3((int)nudX.Value, (int)nudY.Value, (int)nudZ.Value)))
                     {
@@ -258,12 +261,7 @@ namespace Radegast
                     }
                     InTeleport = false;
                 }
-            ));
-            t.IsBackground = true;
-            t.Name = "Teleport thread";
-            lblStatus.Text = "Teleporting to " + txtRegion.Text;
-            prgTeleport.Style = ProgressBarStyle.Marquee;
-            t.Start();
+            );
         }
 
         #region JavascriptHooks

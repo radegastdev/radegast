@@ -47,13 +47,16 @@ namespace Radegast
         private UUID FLImageID;
         private UUID SLImageID;
 
+        private bool gotPicks = false;
+        private UUID requestedPick;
+        private ProfilePick currentPick;
+        private Dictionary<UUID, ProfilePick> pickCache = new Dictionary<UUID, ProfilePick>();
+        private Dictionary<UUID, ParcelInfo> parcelCache = new Dictionary<UUID, ParcelInfo>();
+
         public frmProfile(RadegastInstance instance, string fullName, UUID agentID)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmProfile_Disposed);
-
-            // Picks tab is not made yet
-            tabProfile.TabPages.Remove(tbpPicks);
 
             this.instance = instance;
             netcom = this.instance.Netcom;
@@ -63,7 +66,7 @@ namespace Radegast
 
             this.Text = fullName + " (profile) - " + Properties.Resources.ProgramName;
             txtUUID.Text = agentID.ToString();
-            
+
             if (client.Friends.FriendList.ContainsKey(agentID))
             {
                 btnFriend.Enabled = false;
@@ -74,6 +77,7 @@ namespace Radegast
             client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             client.Avatars.OnAvatarPicks += new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
             client.Avatars.OnPickInfo += new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
+            client.Parcels.OnParcelInfo += new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
 
             InitializeProfile();
@@ -85,22 +89,143 @@ namespace Radegast
             client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             client.Avatars.OnAvatarPicks -= new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
             client.Avatars.OnPickInfo -= new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
+            client.Parcels.OnParcelInfo -= new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-        }
-
-        void Avatars_OnPickInfo(UUID pickid, ProfilePick pick)
-        {
-            System.Console.WriteLine("Pick" + pickid + ": " + pick.Name + "\n" + pick.Desc);
-            System.Console.WriteLine(pick);
         }
 
         void Avatars_OnAvatarPicks(UUID id, Dictionary<UUID, string> picks)
         {
-            System.Console.WriteLine("Picks for: " + id);
-            foreach (KeyValuePair<UUID, string> pick in picks) {
-                System.Console.WriteLine(pick.Value + ": " + pick.Key);
-                client.Avatars.RequestPickInfo(id, pick.Key);
+            if (id != agentID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Avatars_OnAvatarPicks(id, picks)));
+                return;
             }
+            gotPicks = true;
+            DisplayListOfPicks(picks);
+
+        }
+
+        private void DisplayListOfPicks(Dictionary<UUID, string> picks)
+        {
+            pickListPanel.Controls.Clear();
+
+            int i = 0;
+            Button firstButton = null;
+
+            foreach (KeyValuePair<UUID, string> PickInfo in picks)
+            {
+                Button b = new Button();
+                b.AutoSize = false;
+                b.Tag = PickInfo.Key;
+                b.Name = PickInfo.Key.ToString();
+                b.Text = PickInfo.Value;
+                b.Width = 135;
+                b.Height = 25;
+                b.Left = 2;
+                b.Top = i++ * b.Height + 5;
+                b.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+                b.Click += new EventHandler(PickButtonClick);
+                pickListPanel.Controls.Add(b);
+
+                if (firstButton == null)
+                    firstButton = b;
+            }
+
+            if (firstButton != null)
+                firstButton.PerformClick();
+
+        }
+
+        void PickButtonClick(object sender, EventArgs e)
+        {
+            Button b = (Button)sender;
+            requestedPick = (UUID)b.Tag;
+
+            if (pickCache.ContainsKey(requestedPick))
+            {
+                Avatars_OnPickInfo(requestedPick, pickCache[requestedPick]);
+            }
+            else
+            {
+                client.Avatars.RequestPickInfo(agentID, requestedPick);
+            }
+        }
+
+        void Avatars_OnPickInfo(UUID pickid, ProfilePick pick)
+        {
+            if (pickid != requestedPick) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Avatars_OnPickInfo(pickid, pick)));
+                return;
+            }
+
+            lock (pickCache)
+            {
+                if (!pickCache.ContainsKey(pickid))
+                    pickCache.Add(pickid, pick);
+            }
+
+            currentPick = pick;
+
+            if (pickPicturePanel.Controls.Count > 0)
+                pickPicturePanel.Controls[0].Dispose();
+            pickPicturePanel.Controls.Clear();
+
+            if (pick.SnapshotID != UUID.Zero)
+            {
+                SLImageHandler img = new SLImageHandler(instance, pick.SnapshotID, string.Empty);
+                img.Dock = DockStyle.Fill;
+                img.SizeMode = PictureBoxSizeMode.StretchImage;
+                pickPicturePanel.Controls.Add(img);
+            }
+
+            pickTitle.Text = pick.Name;
+
+            pickDetail.Text = pick.Desc;
+
+            if (!parcelCache.ContainsKey(pick.ParcelID))
+            {
+                pickLocation.Text = string.Format("Unkown parcel, {0} ({1}, {2}, {3})",
+                    pick.SimName,
+                    ((int)pick.PosGlobal.X) % 256,
+                    ((int)pick.PosGlobal.Y) % 256,
+                    ((int)pick.PosGlobal.Z) % 256
+                );
+                client.Parcels.InfoRequest(pick.ParcelID);
+            }
+            else
+            {
+                Parcels_OnParcelInfo(parcelCache[pick.ParcelID]);
+            }
+        }
+
+        void Parcels_OnParcelInfo(ParcelInfo parcel)
+        {
+            if (currentPick.ParcelID != parcel.ID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Parcels_OnParcelInfo(parcel)));
+                return;
+            }
+
+            lock (parcelCache)
+            {
+                if (!parcelCache.ContainsKey(parcel.ID))
+                    parcelCache.Add(parcel.ID, parcel);
+            }
+
+            pickLocation.Text = string.Format("{0}, {1} ({2}, {3}, {4})",
+                parcel.Name,
+                currentPick.SimName,
+                ((int)currentPick.PosGlobal.X) % 256,
+                ((int)currentPick.PosGlobal.Y) % 256,
+                ((int)currentPick.PosGlobal.Z) % 256
+            );
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
@@ -123,12 +248,13 @@ namespace Radegast
             txtPartner.Text = partner;
         }
 
-         //comes in on separate thread
+        //comes in on separate thread
         private void Avatars_OnAvatarProperties(UUID avatarID, Avatar.AvatarProperties properties)
         {
             if (avatarID != agentID) return;
-            
-            if (InvokeRequired) {
+
+            if (InvokeRequired)
+            {
                 Invoke(new MethodInvoker(delegate()
                 {
                     Avatars_OnAvatarProperties(avatarID, properties);
@@ -138,11 +264,12 @@ namespace Radegast
 
             FLImageID = properties.FirstLifeImage;
             SLImageID = properties.ProfileImage;
-            
+
             if (SLImageID != UUID.Zero)
             {
                 SLImageHandler pic = new SLImageHandler(instance, SLImageID, "");
                 pic.Dock = DockStyle.Fill;
+                pic.SizeMode = PictureBoxSizeMode.StretchImage;
                 slPicPanel.Controls.Add(pic);
                 slPicPanel.Show();
             }
@@ -151,12 +278,15 @@ namespace Radegast
                 slPicPanel.Hide();
             }
 
-            if (FLImageID != UUID.Zero) {
+            if (FLImageID != UUID.Zero)
+            {
                 SLImageHandler pic = new SLImageHandler(instance, FLImageID, "");
                 pic.Dock = DockStyle.Fill;
                 rlPicPanel.Controls.Add(pic);
                 rlPicPanel.Show();
-            } else {
+            }
+            else
+            {
                 rlPicPanel.Hide();
             }
 
@@ -171,13 +301,13 @@ namespace Radegast
         {
             txtBornOn.Text = properties.BornOn;
             if (properties.Partner != UUID.Zero) client.Avatars.RequestAvatarName(properties.Partner);
-            
+
             if (fullName.EndsWith("Linden")) rtbAccountInfo.AppendText("Linden Lab Employee\n");
             if (properties.Identified) rtbAccountInfo.AppendText("Identified\n");
             if (properties.Transacted) rtbAccountInfo.AppendText("Transacted\n");
 
             rtbAbout.AppendText(properties.AboutText);
-            
+
             txtWebURL.Text = properties.ProfileURL;
             btnWebView.Enabled = btnWebOpen.Enabled = (txtWebURL.TextLength > 0);
 
@@ -190,7 +320,6 @@ namespace Radegast
             btnOfferTeleport.Enabled = btnPay.Enabled = (agentID != client.Self.AgentID);
 
             client.Avatars.RequestAvatarProperties(agentID);
-            client.Avatars.RequestAvatarPicks(agentID);
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -287,6 +416,33 @@ namespace Radegast
 
             instance.TabConsole.AddIMTab(agentID, client.Self.AgentID ^ agentID, fullName);
             instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
+        }
+
+        private void tabProfile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabProfile.SelectedTab.Name == "tbpPicks" && !gotPicks)
+            {
+                client.Avatars.RequestAvatarPicks(agentID);
+            }
+        }
+
+        private void btnTeleport_Click(object sender, EventArgs e)
+        {
+            if (currentPick.PickID == UUID.Zero) return;
+            btnShowOnMap_Click(this, EventArgs.Empty);
+            instance.MainForm.WorldMap.DoTeleport();
+        }
+
+        private void btnShowOnMap_Click(object sender, EventArgs e)
+        {
+            if (currentPick.PickID == UUID.Zero) return;
+            instance.MainForm.MapTab.Select();
+            instance.MainForm.WorldMap.DisplayLocation(
+                currentPick.SimName,
+                ((int)currentPick.PosGlobal.X) % 256,
+                ((int)currentPick.PosGlobal.Y) % 256,
+                ((int)currentPick.PosGlobal.Z) % 256
+            );
         }
     }
 }

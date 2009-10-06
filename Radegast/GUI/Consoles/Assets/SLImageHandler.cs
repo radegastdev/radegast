@@ -50,10 +50,17 @@ namespace Radegast
         ManagedImage imgManaged;
         Image image;
 
+        public PictureBoxSizeMode SizeMode
+        {
+            get { return pictureBox1.SizeMode; }
+            set { pictureBox1.SizeMode = value; }
+        }
+
         public override string Text
         {
             get
             {
+                
                 return base.Text;
             }
             set

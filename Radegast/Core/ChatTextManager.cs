@@ -226,7 +226,7 @@ namespace Radegast
                         break;
 
                     case ChatBufferTextStyle.OwnerSay:
-                        textPrinter.ForeColor = Color.FromArgb(0, 180, 150, 0);
+                        textPrinter.ForeColor = Color.FromArgb(255, 180, 150, 0);
                         break;
                 }
 
