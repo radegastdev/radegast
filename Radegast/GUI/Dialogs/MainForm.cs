@@ -246,7 +246,15 @@ namespace Radegast
         {
             if (mediaConsole != null)
             {
-                mediaConsole.Dispose();
+                if (tabsConsole.TabExists("media"))
+                {
+                    tabsConsole.Tabs["media"].AllowClose = true;
+                    tabsConsole.Tabs["media"].Close();
+                }
+                else
+                {
+                    mediaConsole.Dispose();
+                }
                 mediaConsole = null;
             }
 
@@ -945,14 +953,6 @@ namespace Radegast
             lblTime.Text = now.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
         }
 
-        private void tbtnMedia_Click(object sender, EventArgs e)
-        {
-            if (!mediaConsole.Detached)
-                mediaConsole.Detached = true;
-            else
-                mediaConsole.Focus();
-        }
-
         private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ProcessLink("http://jira.openmetaverse.org/browse/RAD");
@@ -1068,6 +1068,21 @@ namespace Radegast
         private void tbtnGroups_Click(object sender, EventArgs e)
         {
             ToggleHidden("groups");
+        }
+
+        private void tbtnMedia_Click(object sender, EventArgs e)
+        {
+            if (tabsConsole.TabExists("media"))
+            {
+                ToggleHidden("media");
+            }
+            else
+            {
+                RadegastTab tab = tabsConsole.AddTab("media", "Media", mediaConsole);
+                tab.AllowClose = false;
+                tab.AllowHide = true;
+                tab.Select();
+            }
         }
 
         private void tbnObjects_Click(object sender, EventArgs e)
