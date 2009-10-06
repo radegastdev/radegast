@@ -97,8 +97,10 @@ namespace Radegast
                         CurrentVersion = upd["CurrentVersion"].AsString(),
                         DownloadSite = upd["DownloadSite"].AsString(),
                         DisplayMOTD = upd["DisplayMOTD"].AsBoolean(),
-                        MOTD = upd["MOTD"].AsString()
+                        MOTD = upd["MOTD"].AsString(),
+                        UpdateAvailable = MyAssembly.Version < new Version(upd["CurrentVersion"].AsString())
                     };
+
                     FireCallback(new UpdateCheckerArgs() { Success = !inf.Error, Info = inf });
                 }
                 catch (Exception ex)
@@ -127,6 +129,7 @@ namespace Radegast
         public string DownloadSite { get; set; }
         public bool DisplayMOTD { get; set; }
         public string MOTD { get; set; }
+        public bool UpdateAvailable { get; set; }
     }
 
     public class UpdateCheckerArgs : EventArgs

@@ -491,6 +491,7 @@ namespace Radegast
                     ImageNames.Add(de.Entry.Key.ToString());
                 }
             }
+            StartUpdateCheck(false);
         }
         #endregion
 
@@ -962,23 +963,69 @@ namespace Radegast
             (new frmAbout(instance)).ShowDialog();
         }
 
+        #region Update Checking
+        private UpdateChecker updateChecker = null;
+        private bool ManualUpdateCheck = false;
+
+        public void StartUpdateCheck(bool userInitiated)
+        {
+            ManualUpdateCheck = userInitiated;
+
+            if (updateChecker != null)
+            {
+                if (ManualUpdateCheck)
+                    tabsConsole.DisplayNotificationInChat("Update check already in progress.");
+                return;
+            }
+
+            if (ManualUpdateCheck)
+                tabsConsole.DisplayNotificationInChat("Checking for updates...", ChatBufferTextStyle.StatusBlue);
+            updateChecker = new UpdateChecker();
+            updateChecker.OnUpdateInfoReceived += new UpdateChecker.UpdateInfoCallback(OnUpdateInfoReceived);
+            updateChecker.StartCheck();
+        }
+
         private void checkForUpdatesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tabsConsole.SelectTab("chat");
-            tabsConsole.DisplayNotificationInChat("Checking for updates...", ChatBufferTextStyle.StatusBlue);
-            UpdateChecker upd = new UpdateChecker();
-            upd.OnUpdateInfoReceived += new UpdateChecker.UpdateInfoCallback(OnUpdateInfoReceived);
-            upd.StartCheck();
+            StartUpdateCheck(true);
         }
 
         void OnUpdateInfoReceived(object sender, UpdateCheckerArgs e)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => OnUpdateInfoReceived(sender, e)));
+                return;
+            }
+
             if (!e.Success)
             {
-                tabsConsole.DisplayNotificationInChat("Error: Failed connecting to the update site.");
+                if (ManualUpdateCheck)
+                    tabsConsole.DisplayNotificationInChat("Error: Failed connecting to the update site.", ChatBufferTextStyle.StatusBlue);
             }
-            ((UpdateChecker)sender).Dispose();
+            else
+            {
+                if (!ManualUpdateCheck && e.Info.DisplayMOTD)
+                {
+                    tabsConsole.DisplayNotificationInChat(e.Info.MOTD, ChatBufferTextStyle.StatusBlue);
+                }
+
+                if (e.Info.UpdateAvailable)
+                {
+                    tabsConsole.DisplayNotificationInChat("New version available at " + e.Info.DownloadSite, ChatBufferTextStyle.Alert);
+                }
+                else
+                {
+                    if (ManualUpdateCheck)
+                        tabsConsole.DisplayNotificationInChat("Your version is up to date.", ChatBufferTextStyle.StatusBlue);
+                }
+            }
+
+            updateChecker.Dispose();
+            updateChecker = null;
         }
+        #endregion
 
         private void ToggleHidden(string tabName)
         {
