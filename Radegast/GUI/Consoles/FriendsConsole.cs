@@ -68,7 +68,7 @@ namespace Radegast
             client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
             client.Friends.OnFriendOnline += new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
             client.Friends.OnFriendshipTerminated += new FriendsManager.FriendshipTerminatedEvent(Friends_OnFriendshipTerminated);
-
+            InitializeFriendsList();
         }
 
         void FriendsConsole_Disposed(object sender, EventArgs e)
@@ -303,14 +303,6 @@ namespace Radegast
         private void btnOfferTeleport_Click(object sender, EventArgs e)
         {
             client.Self.SendTeleportLure(selectedFriend.UUID, "Join me in " + client.Network.CurrentSim.Name + "!");
-        }
-
-        private void timInitDelay_Tick(object sender, EventArgs e)
-        {
-            timInitDelay.Enabled = false;
-            lblFriendName.Text = "Please select a friend.";
-
-            InitializeFriendsList();
         }
 
         private void btnPay_Click(object sender, EventArgs e)

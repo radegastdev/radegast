@@ -60,8 +60,6 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.lbxFriends = new Radegast.ListBoxCustomSort();
             this.lblFriendName = new System.Windows.Forms.Label();
             this.btnIM = new System.Windows.Forms.Button();
             this.btnProfile = new System.Windows.Forms.Button();
@@ -73,26 +71,9 @@ namespace Radegast
             this.chkSeeMeOnline = new System.Windows.Forms.CheckBox();
             this.chkSeeMeOnMap = new System.Windows.Forms.CheckBox();
             this.chkModifyMyObjects = new System.Windows.Forms.CheckBox();
-            this.timInitDelay = new System.Windows.Forms.Timer(this.components);
+            this.lbxFriends = new Radegast.ListBoxCustomSort();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lbxFriends
-            // 
-            this.lbxFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
-            this.lbxFriends.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.lbxFriends.IntegralHeight = false;
-            this.lbxFriends.ItemHeight = 20;
-            this.lbxFriends.Location = new System.Drawing.Point(3, 3);
-            this.lbxFriends.Name = "lbxFriends";
-            this.lbxFriends.Size = new System.Drawing.Size(200, 460);
-            this.lbxFriends.TabIndex = 0;
-            this.lbxFriends.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseUp);
-            this.lbxFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lbxFriends_DrawItem);
-            this.lbxFriends.SelectedIndexChanged += new System.EventHandler(this.lbxFriends_SelectedIndexChanged);
-            this.lbxFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseDown);
-            this.lbxFriends.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lbxFriends_KeyUp);
             // 
             // lblFriendName
             // 
@@ -100,9 +81,8 @@ namespace Radegast
             this.lblFriendName.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFriendName.Location = new System.Drawing.Point(6, 17);
             this.lblFriendName.Name = "lblFriendName";
-            this.lblFriendName.Size = new System.Drawing.Size(120, 13);
+            this.lblFriendName.Size = new System.Drawing.Size(0, 13);
             this.lblFriendName.TabIndex = 1;
-            this.lblFriendName.Text = "Getting friends list...";
             // 
             // btnIM
             // 
@@ -220,11 +200,22 @@ namespace Radegast
             this.chkModifyMyObjects.UseVisualStyleBackColor = true;
             this.chkModifyMyObjects.CheckedChanged += new System.EventHandler(this.chkModifyMyObjects_CheckedChanged);
             // 
-            // timInitDelay
+            // lbxFriends
             // 
-            this.timInitDelay.Enabled = true;
-            this.timInitDelay.Interval = 3000;
-            this.timInitDelay.Tick += new System.EventHandler(this.timInitDelay_Tick);
+            this.lbxFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbxFriends.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.lbxFriends.IntegralHeight = false;
+            this.lbxFriends.ItemHeight = 20;
+            this.lbxFriends.Location = new System.Drawing.Point(3, 3);
+            this.lbxFriends.Name = "lbxFriends";
+            this.lbxFriends.Size = new System.Drawing.Size(200, 460);
+            this.lbxFriends.TabIndex = 0;
+            this.lbxFriends.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseUp);
+            this.lbxFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lbxFriends_DrawItem);
+            this.lbxFriends.SelectedIndexChanged += new System.EventHandler(this.lbxFriends_SelectedIndexChanged);
+            this.lbxFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseDown);
+            this.lbxFriends.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lbxFriends_KeyUp);
             // 
             // FriendsConsole
             // 
@@ -255,7 +246,6 @@ namespace Radegast
         private System.Windows.Forms.CheckBox chkSeeMeOnMap;
         private System.Windows.Forms.CheckBox chkModifyMyObjects;
         private System.Windows.Forms.Button btnOfferTeleport;
-        private System.Windows.Forms.Timer timInitDelay;
         private System.Windows.Forms.Button btnPay;
         private System.Windows.Forms.Button btnRemove;
         public Radegast.ListBoxCustomSort lbxFriends;
