@@ -134,7 +134,10 @@ namespace Radegast
             }
 
             if (firstButton != null)
+            {
                 firstButton.PerformClick();
+                pickDetailPanel.Visible = true;
+            }
 
         }
 

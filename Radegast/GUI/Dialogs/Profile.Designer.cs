@@ -411,6 +411,7 @@ namespace Radegast
             this.pickDetailPanel.Name = "pickDetailPanel";
             this.pickDetailPanel.Size = new System.Drawing.Size(315, 451);
             this.pickDetailPanel.TabIndex = 1;
+            this.pickDetailPanel.Visible = false;
             // 
             // pickDetail
             // 
