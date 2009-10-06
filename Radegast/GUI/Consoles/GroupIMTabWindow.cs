@@ -333,7 +333,7 @@ namespace Radegast
             {
                 try
                 {
-                    new frmProfile(instance, item.Text, new UUID(item.Name)).Show();
+                    instance.MainForm.ShowAgentProfile(item.Text, new UUID(item.Name));
                 }
                 catch (Exception) { }
             }

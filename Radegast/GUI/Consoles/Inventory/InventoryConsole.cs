@@ -750,8 +750,7 @@ namespace Radegast
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
-            (new frmProfile(instance, txtCreator.Text, txtCreator.AgentID)).Show();
-
+            instance.MainForm.ShowAgentProfile(txtCreator.Text, txtCreator.AgentID);
         }
 
         void UpdateItemInfo(InventoryItem item)

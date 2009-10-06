@@ -42,7 +42,9 @@ namespace Radegast
         private RadegastNetcom netcom;
         private GridClient client;
         private string fullName;
+
         private UUID agentID;
+        public UUID AgentID { get { return agentID; } }
 
         private UUID FLImageID;
         private UUID SLImageID;

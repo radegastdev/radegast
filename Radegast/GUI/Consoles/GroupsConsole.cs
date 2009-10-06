@@ -130,7 +130,7 @@ namespace Radegast
             Group g = (Group)listBox1.SelectedItem;
             if (g.ID == UUID.Zero) return;
 
-            (new frmGroupInfo(instance, g)).Show();
+            instance.MainForm.ShowGroupProfile(g);
         }
     }
 }

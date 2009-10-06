@@ -54,7 +54,7 @@ namespace Radegast
                 DebugLog("cannot find avatar" + target);
                 return;
             }
-            (new frmProfile(instance, instance.getAvatarName(id), id)).Show();
+            instance.MainForm.ShowAgentProfile(instance.getAvatarName(id), id);
         }
     }
 }

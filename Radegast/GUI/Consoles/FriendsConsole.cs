@@ -270,7 +270,7 @@ namespace Radegast
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
-            (new frmProfile(instance, selectedFriend.Name, selectedFriend.UUID)).Show();
+            instance.MainForm.ShowAgentProfile(selectedFriend.Name, selectedFriend.UUID);
         }
 
         private void chkSeeMeOnline_CheckedChanged(object sender, EventArgs e)

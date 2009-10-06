@@ -164,7 +164,7 @@ namespace Radegast
 
         private void tbtnProfile_Click(object sender, EventArgs e)
         {
-            (new frmProfile(instance, toName, target)).Show();
+            instance.MainForm.ShowAgentProfile(toName, target);
         }
 
         private void cbxInput_KeyDown(object sender, KeyEventArgs e)

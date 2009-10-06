@@ -168,7 +168,7 @@ namespace Radegast
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
-            (new frmProfile(instance, console.SelectedName, console.SelectedAgentUUID)).Show();
+            instance.MainForm.ShowAgentProfile(console.SelectedName, console.SelectedAgentUUID);
         }
 
         private void txtPersonName_KeyDown(object sender, KeyEventArgs e)

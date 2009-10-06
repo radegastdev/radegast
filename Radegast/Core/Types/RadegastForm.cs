@@ -92,14 +92,12 @@ namespace Radegast
         public RadegastForm()
             : base()
         {
-            InitForm();
         }
 
         public RadegastForm(RadegastInstance instance)
             : base()
         {
             this.instance = instance;
-            InitForm();
         }
 
         protected override void Dispose(bool disposing)
@@ -115,7 +113,7 @@ namespace Radegast
             base.Dispose(disposing);
         }
 
-        private void InitForm()
+        private void InitTimer()
         {
             SettingsTimer = new System.Threading.Timer(
                 SettingsTimer_Tick,
@@ -145,7 +143,7 @@ namespace Radegast
             int left = Left, top = Top, width = Width, height = Height;
 
             if (Instance.GlobalSettings[GetSettingsKey("left")].Type != OSDType.Unknown)
-                left = Instance.GlobalSettings[GetSettingsKey("left")].AsInteger();
+                 left = Instance.GlobalSettings[GetSettingsKey("left")].AsInteger();
 
             if (Instance.GlobalSettings[GetSettingsKey("top")].Type != OSDType.Unknown)
                 top = Instance.GlobalSettings[GetSettingsKey("top")].AsInteger();
@@ -186,6 +184,7 @@ namespace Radegast
             base.OnLoad(e);
             if (AutoSavePosition)
                 RestoreSavedPosition();
+            InitTimer();
         }
 
         protected override void OnMove(EventArgs e)

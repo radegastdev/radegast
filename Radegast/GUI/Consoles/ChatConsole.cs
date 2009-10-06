@@ -412,7 +412,7 @@ namespace Radegast
             UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
             string name = instance.getAvatarName(av);
 
-            (new frmProfile(instance, name, av)).Show();
+            instance.MainForm.ShowAgentProfile(name, av);
         }
 
         private void cbxInput_KeyDown(object sender, KeyEventArgs e)

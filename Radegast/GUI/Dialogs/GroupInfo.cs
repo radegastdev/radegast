@@ -34,17 +34,31 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class frmGroupInfo : Form
+    public partial class frmGroupInfo : RadegastForm
     {
+        public Group Group { get; set; }
+        public GroupDetails GroupDetails { get; set; }
+
         public frmGroupInfo(RadegastInstance instance, Group group)
+            : base(instance)
         {
             InitializeComponent();
-            GroupDetails gd = new GroupDetails(instance, group);
-            gd.Dock = DockStyle.Fill;
-            ClientSize = new Size(gd.Width, gd.Height);
+            Disposed += new System.EventHandler(frmGroupInfo_Disposed);
+            AutoSavePosition = true;
+
+            this.Group = group;
+
+            GroupDetails = new GroupDetails(instance, group);
+            GroupDetails.Dock = DockStyle.Fill;
+            ClientSize = new Size(GroupDetails.Width, GroupDetails.Height);
             MinimumSize = Size;
-            Controls.Add(gd);
+            Controls.Add(GroupDetails);
             Text = group.Name + " - Group information";
+        }
+
+        void frmGroupInfo_Disposed(object sender, System.EventArgs e)
+        {
+            GroupDetails.Dispose();
         }
     }
 }

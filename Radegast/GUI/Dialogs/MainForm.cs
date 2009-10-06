@@ -496,6 +496,72 @@ namespace Radegast
 
         #region Public methods
 
+        private Dictionary<UUID, frmProfile> shownProfiles = new Dictionary<UUID, frmProfile>();
+        
+        public void ShowAgentProfile(string name, UUID agentID)
+        {
+            lock (shownProfiles)
+            {
+                frmProfile profile = null;
+                if (shownProfiles.TryGetValue(agentID, out profile))
+                {
+                    profile.WindowState = FormWindowState.Normal;
+                    profile.Focus();
+                }
+                else
+                {
+                    profile = new frmProfile(instance, name, agentID);
+                    
+                    profile.Disposed += (object sender, EventArgs e) =>
+                        {
+                            lock (shownProfiles)
+                            {
+                                frmProfile agentProfile = (frmProfile)sender;
+                                if (shownProfiles.ContainsKey(agentProfile.AgentID))
+                                    shownProfiles.Remove(agentProfile.AgentID);
+                            }
+                        };
+
+                    profile.Show();
+                    profile.Focus();
+                    shownProfiles.Add(agentID, profile);
+                }
+            }
+        }
+
+        private Dictionary<UUID, frmGroupInfo> shownGroupProfiles = new Dictionary<UUID, frmGroupInfo>();
+
+        public void ShowGroupProfile(OpenMetaverse.Group group)
+        {
+            lock (shownGroupProfiles)
+            {
+                frmGroupInfo profile = null;
+                if (shownGroupProfiles.TryGetValue(group.ID, out profile))
+                {
+                    profile.WindowState = FormWindowState.Normal;
+                    profile.Focus();
+                }
+                else
+                {
+                    profile = new frmGroupInfo(instance, group);
+                    
+                    profile.Disposed += (object sender, EventArgs e) =>
+                        {
+                            lock (shownGroupProfiles)
+                            {
+                                frmGroupInfo groupProfile = (frmGroupInfo)sender;
+                                if (shownGroupProfiles.ContainsKey(groupProfile.Group.ID))
+                                    shownGroupProfiles.Remove(groupProfile.Group.ID);
+                            }
+                        };
+
+                    profile.Show();
+                    profile.Focus();
+                    shownGroupProfiles.Add(group.ID, profile);
+                }
+            }
+        }
+
         public void ProcessLink(string link)
         {
             ProcessLink(link, false);
