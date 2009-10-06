@@ -46,6 +46,7 @@ namespace Radegast
 
         private bool settingFriend = false;
         private bool showNotifications;
+        readonly object lockOneAtaTime = new object();
 
         public FriendsConsole(RadegastInstance instance)
         {
@@ -79,6 +80,7 @@ namespace Radegast
 
         private void InitializeFriendsList()
         {
+            if (!Monitor.TryEnter(lockOneAtaTime)) return;
             List<FriendInfo> friends = client.Friends.FriendList.FindAll(delegate(FriendInfo f) { return true; });
 
             lbxFriends.BeginUpdate();
@@ -89,6 +91,7 @@ namespace Radegast
             }
             lbxFriends.PerformSort();
             lbxFriends.EndUpdate();
+            Monitor.Exit(lockOneAtaTime);
         }
 
         private void RefreshFriendsList()
