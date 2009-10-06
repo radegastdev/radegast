@@ -84,8 +84,10 @@ namespace Radegast
             lbxFriends.BeginUpdate();
             lbxFriends.Items.Clear();
             foreach (FriendInfo friend in friends)
+            {
                 lbxFriends.Items.Add(new FriendsListItem(friend));
-
+            }
+            lbxFriends.PerformSort();
             lbxFriends.EndUpdate();
         }
 

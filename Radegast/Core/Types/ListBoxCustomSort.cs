@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009, Radegast Development Team
 // All rights reserved.
@@ -26,37 +26,62 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id$
+// $Id: ListBoxCustomSort.cs 300 2009-10-05 09:29:46Z latifer@gmail.com $
 //
 using System;
-using OpenMetaverse;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Radegast
 {
-    public class FriendsListItem : IComparable 
+    public class ListBoxCustomSort : ListBox
     {
-        private FriendInfo friend;
-
-        public FriendsListItem(FriendInfo friend)
+        protected override void Sort()
         {
-            this.friend = friend;
+            QuickSort(0, Items.Count - 1);
         }
 
-        public override string ToString()
+        public void PerformSort()
         {
-            return friend.Name;
+            Sort();
         }
 
-        public int CompareTo(object obj)
+        private void QuickSort(int left, int right)
         {
-            FriendsListItem otherItem = (FriendsListItem)obj;
-            return string.Compare((this.Friend.IsOnline ? "0 " : "1 ") + this.Friend.Name, (otherItem.Friend.IsOnline ? "0 " : "1 ") + otherItem.Friend.Name);
+            if (right > left)
+            {
+                int pivotIndex = left;
+                int pivotNewIndex = QuickSortPartition(left, right, pivotIndex);
+
+                QuickSort(left, pivotNewIndex - 1);
+                QuickSort(pivotNewIndex + 1, right);
+            }
         }
 
-        public FriendInfo Friend
+        private int QuickSortPartition(int left, int right, int pivot)
         {
-            get { return friend; }
-            set { friend = value; }
+            var pivotValue = (IComparable)Items[pivot];
+            Swap(pivot, right);
+
+            int storeIndex = left;
+            for (int i = left; i < right; ++i)
+            {
+                if (pivotValue.CompareTo(Items[i]) >= 0)
+                {
+                    Swap(i, storeIndex);
+                    ++storeIndex;
+                }
+            }
+
+            Swap(storeIndex, right);
+            return storeIndex;
+        }
+
+        private void Swap(int left, int right)
+        {
+            var temp = Items[left];
+            Items[left] = Items[right];
+            Items[right] = temp;
         }
     }
 }

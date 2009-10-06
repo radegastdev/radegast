@@ -138,6 +138,9 @@
     <Compile Include="Core\Types\ExtendedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Core\Types\ListBoxCustomSort.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Types\RadegastContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>

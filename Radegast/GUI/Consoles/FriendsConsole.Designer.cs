@@ -61,7 +61,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.lbxFriends = new System.Windows.Forms.ListBox();
+            this.lbxFriends = new Radegast.ListBoxCustomSort();
             this.lblFriendName = new System.Windows.Forms.Label();
             this.btnIM = new System.Windows.Forms.Button();
             this.btnProfile = new System.Windows.Forms.Button();
@@ -87,7 +87,6 @@ namespace Radegast
             this.lbxFriends.Location = new System.Drawing.Point(3, 3);
             this.lbxFriends.Name = "lbxFriends";
             this.lbxFriends.Size = new System.Drawing.Size(200, 460);
-            this.lbxFriends.Sorted = true;
             this.lbxFriends.TabIndex = 0;
             this.lbxFriends.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseUp);
             this.lbxFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lbxFriends_DrawItem);
@@ -259,6 +258,6 @@ namespace Radegast
         private System.Windows.Forms.Timer timInitDelay;
         private System.Windows.Forms.Button btnPay;
         private System.Windows.Forms.Button btnRemove;
-        public ListBox lbxFriends;
+        public Radegast.ListBoxCustomSort lbxFriends;
     }
 }
