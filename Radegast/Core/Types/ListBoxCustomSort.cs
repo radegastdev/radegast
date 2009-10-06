@@ -36,14 +36,14 @@ namespace Radegast
 {
     public class ListBoxCustomSort : ListBox
     {
-        protected override void Sort()
+        public ListBoxCustomSort()
+            : base()
         {
-            QuickSort(0, Items.Count - 1);
         }
 
         public void PerformSort()
         {
-            Sort();
+            QuickSort(0, Items.Count - 1);
         }
 
         private void QuickSort(int left, int right)
