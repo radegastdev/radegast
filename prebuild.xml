@@ -153,11 +153,11 @@
             <Reference name="System.Xml"/>
             <Reference name="System.Data"/>
             <Reference name="System.Drawing"/>
-            <Reference name="log4net"/>
+            <Reference name="log4net" localCopy="true"/>
             <Reference name="OpenMetaverseTypes"/>
             <Reference name="OpenMetaverse.StructuredData"/>
             <Reference name="OpenMetaverse.Http"/>
-            <Reference name="XMLRPC"/>
+            <Reference name="XMLRPC" localCopy="true"/>
             <Files>
                 <Match pattern="*.cs" recurse="true"/>
             </Files>
@@ -242,7 +242,7 @@
             <Reference name="OpenMetaverseTypes" localCopy="false"/>
             <Reference name="OpenMetaverse.StructuredData"/>
             <Reference name="System.Windows.Forms" localCopy="false"/>
-            <Reference name="assemblies/AIMLbot.dll" localCopy="false" />
+            <Reference name="assemblies/AIMLbot.dll" localCopy="true" />
             <Reference name="Radegast.exe" localCopy="false" />
             <Files>
                 <Match path="." pattern="*.cs" recurse="true" subType="Code">
@@ -287,11 +287,13 @@
                     <Exclude name="AssemblyInfo.cs"/>
                 </Match>
                 <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
+                <Match path="assemblies" pattern="*.*" buildAction="Content" copyToOutput="Always"/>
             </Files>
         </Project>
 
     </Solution>
 
 </Prebuild>
+
 
 
