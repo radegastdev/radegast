@@ -106,32 +106,6 @@
             </Files>
         </Project>
 
-        <Project name="OpenMetaverseCore" path="../libopenmetaverse/OpenMetaverseCore" type="Library" rootNamespace="OpenMetaverseCore" frameworkVersion="v3_5">
-            <Configuration name="Debug">
-                <Options>
-                    <OutputPath>../../radegast/bin/</OutputPath>
-                    <XmlDocFile>OpenMetaverseCore.XML</XmlDocFile>
-                </Options>
-            </Configuration>
-            <Configuration name="Release">
-                <Options>
-                    <OutputPath>../../radegast/bin/</OutputPath>
-                    <XmlDocFile>OpenMetaverseCore.XML</XmlDocFile>
-                    <PlatformTarget>x86</PlatformTarget>
-                </Options>
-            </Configuration>
-
-            <ReferencePath>../../radegast/bin/</ReferencePath>
-            <Reference name="System"/>
-            <Reference name="System.Core"/>
-            <Reference name="System.Xml"/>
-            <Reference name="OpenMetaverse.StructuredData" localCopy="false"/>
-            <Reference name="OpenMetaverseTypes" localCopy="false"/>
-            <Files>
-                <Match pattern="*.cs" recurse="true"/>
-            </Files>
-        </Project>
-
         <Project name="OpenMetaverse.Http" path="../libopenmetaverse/OpenMetaverse.Http" type="Library" rootNamespace="OpenMetaverse.Http" frameworkVersion="v3_5">
             <Configuration name="Debug">
                 <Options>
@@ -181,7 +155,6 @@
             <Reference name="log4net"/>
             <Reference name="OpenMetaverseTypes"/>
             <Reference name="OpenMetaverse.StructuredData"/>
-            <Reference name="OpenMetaverseCore"/>
             <Reference name="OpenMetaverse.Http"/>
             <Reference name="XMLRPC"/>
             <Files>
@@ -206,24 +179,27 @@
             </Configuration>
 
             <ReferencePath>../bin/</ReferencePath>
-            <Reference name="fmodex-dotnet.dll" localCopy="false"/>
-            <Reference name="System.Drawing" localCopy="false"/>
-            <Reference name="System.Windows.Forms" localCopy="false"/>
-            <Reference name="OpenMetaverse" localCopy="false"/>
-            <Reference name="OpenMetaverseTypes" localCopy="false"/>
-            <Reference name="OpenMetaverseCore" localCopy="false"/>
-            <Reference name="OpenMetaverse.StructuredData"/>
-            <Reference name="System.Data" localCopy="false"/>
-            <Reference name="log4net" localCopy="false" />
 
             <Reference name="System" localCopy="false" />
             <Reference name="System.Core" localCopy="false" />
+            <Reference name="System.Data" localCopy="false"/>
+            <Reference name="System.Drawing" localCopy="false"/>
             <Reference name="System.Web" localCopy="false" />
             <Reference name="System.Windows.Forms" localCopy="false" />
             <Reference name="System.Xml" localCopy="false" />
-            <Reference name="Tao.OpenGl" localCopy="false"/>
-            <Reference name="Tao.Platform.Windows" localCopy="false" />
-            <Reference name="Tools" localCopy="false" />
+
+            <Reference name="OpenMetaverse" localCopy="false"/>
+            <Reference name="OpenMetaverseTypes" localCopy="false"/>
+            <Reference name="OpenMetaverse.StructuredData" localCopy="false"/>
+
+            <Reference name="assemblies/fmodex-dotnet.dll" localCopy="true"/>
+            <Reference name="assemblies/Tao.OpenGl.dll" localCopy="true"/>
+            <Reference name="assemblies/Tao.Platform.Windows.dll" localCopy="true" />
+            <Reference name="assemblies/Tools.dll" localCopy="true" />
+            <Reference name="assemblies/log4net.dll" localCopy="true" />
+
+            <Reference name="../../libopenmetaverse/bin/XMLRPC.dll" localCopy="true" />
+
             <Files>
                 <Match path="." pattern="*.cs" recurse="true" subType="Code">
                     <Exclude name="AssemblyInfo.cs"/>
@@ -259,7 +235,6 @@
             <Reference name="System.Xml.Linq" localCopy="false"/>
             <Reference name="OpenMetaverse" localCopy="false"/>
             <Reference name="OpenMetaverseTypes" localCopy="false"/>
-            <Reference name="OpenMetaverseCore" localCopy="false"/>
             <Reference name="OpenMetaverse.StructuredData"/>
             <Reference name="System.Windows.Forms" localCopy="false"/>
             <Reference name="assemblies/AIMLbot.dll" localCopy="false" />
@@ -300,10 +275,9 @@
             <Reference name="System.Xml.Linq" localCopy="false"/>
             <Reference name="OpenMetaverse" localCopy="false"/>
             <Reference name="OpenMetaverseTypes" localCopy="false"/>
-            <Reference name="OpenMetaverseCore" localCopy="false"/>
             <Reference name="OpenMetaverse.StructuredData"/>
             <Reference name="System.Windows.Forms" localCopy="false"/>
-            <Reference name="Radegast" localCopy="false" />
+            <Reference name="Radegast.exe" localCopy="false" />
             <Files>
                 <Match path="." pattern="*.cs" recurse="true" subType="Code">
                     <Exclude name="AssemblyInfo.cs"/>
@@ -312,8 +286,6 @@
                 <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
             </Files>
         </Project>
-
-  
 
     </Solution>
 

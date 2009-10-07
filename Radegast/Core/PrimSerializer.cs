@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using ClientHelpers = OpenMetaverse.Helpers;
 
 namespace Radegast
 {
