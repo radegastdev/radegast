@@ -211,6 +211,7 @@
                 <Match path="." pattern="*.so" recurse="true" buildAction="Content" copyToOutput="Always"/>
                 <Match path="." pattern="*.dylib" recurse="true" buildAction="Content" copyToOutput="Always"/>
                 <Match path="." pattern="fmodex.*" recurse="true" buildAction="Content" copyToOutput="Always"/>
+                <Match path="." pattern="*.html" recurse="true" buildAction="Content" copyToOutput="Always"/>
             </Files>
         </Project>
 
