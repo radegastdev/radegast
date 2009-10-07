@@ -273,6 +273,7 @@ namespace Radegast
             this.lstPrims.View = System.Windows.Forms.View.Details;
             this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
             this.lstPrims.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstPrims_MouseUp);
+            this.lstPrims.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lstPrims_KeyUp);
             // 
             // columnHeader1
             // 
@@ -377,7 +378,7 @@ namespace Radegast
             // lblStatus
             // 
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(62, 17);
+            this.lblStatus.Size = new System.Drawing.Size(59, 17);
             this.lblStatus.Text = "Tracking...";
             // 
             // gbxObjectDetails

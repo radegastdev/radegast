@@ -640,6 +640,20 @@ namespace Radegast
             return ctxMenuObjects;
         }
 
+        private void lstPrims_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Apps)
+            {
+                if (lstPrims.SelectedItems.Count > 0)
+                {
+                    e.SuppressKeyPress = true;
+                    ctxMenuObjects.Selection = lstPrims.SelectedItems[0];
+                    ctxMenuObjects.HasSelection = true;
+
+                    ctxMenuObjects.Show(lstPrims, new System.Drawing.Point(0, 0));
+                }
+            }
+        }
     }
 
     public class ObjectSorter : IComparer
