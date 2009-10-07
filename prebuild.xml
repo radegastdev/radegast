@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Prebuild xmlns="prebuild-1.7.xsd" version="1.7">
+    <Solution name="Radegast" activeConfig="Debug" version="0.6.0-$Rev: 5161 $">
+        <Configuration name="Debug">
+            <Options>
+                <CompilerDefines>TRACE;DEBUG</CompilerDefines>
+                <OptimizeCode>false</OptimizeCode>
+                <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
+                <AllowUnsafe>true</AllowUnsafe>
+                <WarningLevel>3</WarningLevel>
+                <WarningsAsErrors>false</WarningsAsErrors>
+                <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
+                <OutputPath>bin</OutputPath>
+                <DebugInformation>true</DebugInformation>
+                <IncrementalBuild>true</IncrementalBuild>
+                <NoStdLib>false</NoStdLib>
+                <PlatformTarget>x86</PlatformTarget>
+            </Options>
+        </Configuration>
+        <Configuration name="Release">
+            <Options>
+                <CompilerDefines>TRACE</CompilerDefines>
+                <OptimizeCode>true</OptimizeCode>
+                <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
+                <AllowUnsafe>true</AllowUnsafe>
+                <WarningLevel>3</WarningLevel>
+                <WarningsAsErrors>false</WarningsAsErrors>
+                <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
+                <OutputPath>bin</OutputPath>
+                <DebugInformation>false</DebugInformation>
+                <IncrementalBuild>true</IncrementalBuild>
+                <NoStdLib>false</NoStdLib>
+                <PlatformTarget>x86</PlatformTarget>
+            </Options>
+        </Configuration>
+
+
+        <!-- External Libraries -->
+
+        <Project name="HttpServer" path="../libopenmetaverse/HttpServer" type="Library" guid="455E7D70-1C85-4D7F-9F01-DC801B8B8C34">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../radegast/bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Web"/>
+            <Files>
+                <Match pattern="*.cs" recurse="true"/>
+            </Files>
+        </Project>
+
+        <!-- Libraries -->
+
+        <Project name="OpenMetaverseTypes" path="../libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverseTypes.XML</XmlDocFile>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverseTypes.XML</XmlDocFile>
+                    <PlatformTarget>x86</PlatformTarget>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../radegast/bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Core"/>
+            <Reference name="System.Xml"/>
+            <Files>
+                <Match pattern="*.cs" recurse="true"/>
+            </Files>
+        </Project>
+
+        <Project name="OpenMetaverse.StructuredData" path="../libopenmetaverse/OpenMetaverse.StructuredData" type="Library" rootNamespace="OpenMetaverse.StructuredData" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverse.StructuredData.XML</XmlDocFile>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverse.StructuredData.XML</XmlDocFile>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../radegast/bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Xml"/>
+            <Reference name="OpenMetaverseTypes"/>
+            <Files>
+                <Match pattern="*.cs" recurse="true"/>
+            </Files>
+        </Project>
+
+        <Project name="OpenMetaverseCore" path="../libopenmetaverse/OpenMetaverseCore" type="Library" rootNamespace="OpenMetaverseCore" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverseCore.XML</XmlDocFile>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverseCore.XML</XmlDocFile>
+                    <PlatformTarget>x86</PlatformTarget>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../radegast/bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Core"/>
+            <Reference name="System.Xml"/>
+            <Reference name="OpenMetaverse.StructuredData" localCopy="false"/>
+            <Reference name="OpenMetaverseTypes" localCopy="false"/>
+            <Files>
+                <Match pattern="*.cs" recurse="true"/>
+            </Files>
+        </Project>
+
+        <Project name="OpenMetaverse.Http" path="../libopenmetaverse/OpenMetaverse.Http" type="Library" rootNamespace="OpenMetaverse.Http" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverse.Http.XML</XmlDocFile>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Xml"/>
+            <Reference name="OpenMetaverseTypes"/>
+            <Reference name="OpenMetaverse.StructuredData"/>
+            <Reference name="HttpServer"/>
+            <Reference name="log4net"/>
+            <Reference name="Mono.Security"/>
+            <Files>
+                <Match pattern="*.cs" recurse="true"/>
+            </Files>
+        </Project>
+
+        <Project name="OpenMetaverse" path="../libopenmetaverse/OpenMetaverse" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverse.XML</XmlDocFile>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <OutputPath>../../radegast/bin/</OutputPath>
+                    <XmlDocFile>OpenMetaverse.XML</XmlDocFile>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Core"/>
+            <Reference name="System.Xml"/>
+            <Reference name="System.Data"/>
+            <Reference name="System.Drawing"/>
+            <Reference name="log4net"/>
+            <Reference name="OpenMetaverseTypes"/>
+            <Reference name="OpenMetaverse.StructuredData"/>
+            <Reference name="OpenMetaverseCore"/>
+            <Reference name="OpenMetaverse.Http"/>
+            <Reference name="XMLRPC"/>
+            <Files>
+                <Match pattern="*.cs" recurse="true"/>
+            </Files>
+        </Project>
+
+        <!-- Main App -->
+
+        <Project name="Radegast" path="Radegast" type="exe" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../bin/</OutputPath>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
+                    <OutputPath>../bin/</OutputPath>
+                    <PlatformTarget>x86</PlatformTarget>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../bin/</ReferencePath>
+            <Reference name="fmodex-dotnet.dll" localCopy="false"/>
+            <Reference name="System.Drawing" localCopy="false"/>
+            <Reference name="System.Windows.Forms" localCopy="false"/>
+            <Reference name="OpenMetaverse" localCopy="false"/>
+            <Reference name="OpenMetaverseTypes" localCopy="false"/>
+            <Reference name="OpenMetaverseCore" localCopy="false"/>
+            <Reference name="OpenMetaverse.StructuredData"/>
+            <Reference name="System.Data" localCopy="false"/>
+            <Reference name="log4net" localCopy="false" />
+
+            <Reference name="System" localCopy="false" />
+            <Reference name="System.Core" localCopy="false" />
+            <Reference name="System.Web" localCopy="false" />
+            <Reference name="System.Windows.Forms" localCopy="false" />
+            <Reference name="System.Xml" localCopy="false" />
+            <Reference name="Tao.OpenGl" localCopy="false"/>
+            <Reference name="Tao.Platform.Windows" localCopy="false" />
+            <Reference name="Tools" localCopy="false" />
+            <Files>
+                <Match path="." pattern="*.cs" recurse="true" subType="Code">
+                    <Exclude name="AssemblyInfo.cs"/>
+                </Match>
+                <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
+                <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
+            </Files>
+        </Project>
+
+
+        <!-- Plugins -->
+
+        <Project name="Radegast.Plugin.Alice" path="plugins/Radegast.Plugin.Alice" type="Library" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../bin/</OutputPath>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
+                    <OutputPath>../../bin/</OutputPath>
+                    <PlatformTarget>x86</PlatformTarget>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Core"/>
+            <Reference name="System.Xml"/>
+            <Reference name="System.Data"/>
+            <Reference name="System.Drawing"/>
+            <Reference name="System.Xml.Linq" localCopy="false"/>
+            <Reference name="OpenMetaverse" localCopy="false"/>
+            <Reference name="OpenMetaverseTypes" localCopy="false"/>
+            <Reference name="OpenMetaverseCore" localCopy="false"/>
+            <Reference name="OpenMetaverse.StructuredData"/>
+            <Reference name="System.Windows.Forms" localCopy="false"/>
+            <Reference name="assemblies/AIMLbot.dll" localCopy="false" />
+            <Reference name="Radegast.exe" localCopy="false" />
+            <Files>
+                <Match path="." pattern="*.cs" recurse="true" subType="Code">
+                    <Exclude name="AssemblyInfo.cs"/>
+                </Match>
+                <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
+                <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
+                <Match path="." pattern="*.aiml" recurse="true" buildAction="Content" copyToOutput="Always"/>
+                <Match path="." pattern="*.xml" recurse="true" buildAction="Content" copyToOutput="Always"/>
+            </Files>
+        </Project>
+
+
+
+        <Project name="Radegast.Plugin.Demo" path="plugins/Radegast.Plugin.Demo" type="Library" frameworkVersion="v3_5">
+            <Configuration name="Debug">
+                <Options>
+                    <OutputPath>../../bin/</OutputPath>
+                </Options>
+            </Configuration>
+            <Configuration name="Release">
+                <Options>
+                    <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
+                    <OutputPath>../../bin/</OutputPath>
+                    <PlatformTarget>x86</PlatformTarget>
+                </Options>
+            </Configuration>
+
+            <ReferencePath>../../bin/</ReferencePath>
+            <Reference name="System"/>
+            <Reference name="System.Core"/>
+            <Reference name="System.Xml"/>
+            <Reference name="System.Data"/>
+            <Reference name="System.Drawing"/>
+            <Reference name="System.Xml.Linq" localCopy="false"/>
+            <Reference name="OpenMetaverse" localCopy="false"/>
+            <Reference name="OpenMetaverseTypes" localCopy="false"/>
+            <Reference name="OpenMetaverseCore" localCopy="false"/>
+            <Reference name="OpenMetaverse.StructuredData"/>
+            <Reference name="System.Windows.Forms" localCopy="false"/>
+            <Reference name="Radegast" localCopy="false" />
+            <Files>
+                <Match path="." pattern="*.cs" recurse="true" subType="Code">
+                    <Exclude name="AssemblyInfo.cs"/>
+                </Match>
+                <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
+                <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
+            </Files>
+        </Project>
+
+  
+
+    </Solution>
+
+</Prebuild>
+
+
