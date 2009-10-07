@@ -68,6 +68,7 @@ namespace Radegast
             client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
             client.Friends.OnFriendOnline += new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
             client.Friends.OnFriendshipTerminated += new FriendsManager.FriendshipTerminatedEvent(Friends_OnFriendshipTerminated);
+            client.Friends.OnFriendshipResponse += new FriendsManager.FriendshipResponseEvent(Friends_OnFriendshipResponse);
             InitializeFriendsList();
         }
 
@@ -76,6 +77,7 @@ namespace Radegast
             client.Friends.OnFriendOffline -= new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
             client.Friends.OnFriendOnline -= new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
             client.Friends.OnFriendshipTerminated -= new FriendsManager.FriendshipTerminatedEvent(Friends_OnFriendshipTerminated);
+            client.Friends.OnFriendshipResponse -= new FriendsManager.FriendshipResponseEvent(Friends_OnFriendshipResponse);
         }
 
         private void InitializeFriendsList()
@@ -98,6 +100,17 @@ namespace Radegast
         {
             InitializeFriendsList();
             SetFriend(selectedFriend);
+        }
+
+        void Friends_OnFriendshipResponse(UUID agentID, string agentName, bool accepted)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Friends_OnFriendshipResponse(agentID, agentName, accepted)));
+                return;
+            }
+
+            RefreshFriendsList();
         }
 
         private void Friends_OnFriendOffline(FriendInfo friend)
