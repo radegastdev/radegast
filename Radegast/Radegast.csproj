@@ -1025,10 +1025,6 @@
       <Project>{00DACF2E-3C2B-48D2-BA0E-F781098D444E}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseCore\OpenMetaverseCore.csproj">
-      <Project>{67075314-81D9-48E0-A164-6AF9EDF2508F}</Project>
-      <Name>OpenMetaverseCore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
       <Project>{6B0F663B-C5FB-4DE5-AD48-46E51F33D070}</Project>
       <Name>OpenMetaverseTypes</Name>
