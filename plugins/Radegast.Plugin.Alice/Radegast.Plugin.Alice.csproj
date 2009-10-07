@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{F3F9E7F8-B5C5-47A3-AE2F-2ED58033323C}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -72,19 +72,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Project>{00DACF2E-3C2B-48D2-BA0E-F781098D444E}</Project>
+      <Project>{F4C69F1E-BB59-47F1-AB25-BF9920F3AEC4}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\libopenmetaverse\OpenMetaverseCore\OpenMetaverseCore.csproj">
-      <Project>{67075314-81D9-48E0-A164-6AF9EDF2508F}</Project>
-      <Name>OpenMetaverseCore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
-      <Project>{6B0F663B-C5FB-4DE5-AD48-46E51F33D070}</Project>
+      <Project>{3FCA89ED-3EB0-4D69-893E-38638D0AB002}</Project>
       <Name>OpenMetaverseTypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Project>{96E47C9F-D84F-4F5A-89D6-0F8E2F86C76F}</Project>
+      <Project>{818EA26A-A1E0-48FC-B7BB-1477716DBC2B}</Project>
       <Name>OpenMetaverse</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Radegast\Radegast.csproj">
