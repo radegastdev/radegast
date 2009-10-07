@@ -2,7 +2,6 @@
 
 mono Radegast/Prebuild.exe /target nant
 mono Radegast/Prebuild.exe /target monodev
-mono Radegast/Prebuild.exe /target vs2008
 
 if [ x$1 == xnant ]; then
     nant -buildfile:Radegast.build

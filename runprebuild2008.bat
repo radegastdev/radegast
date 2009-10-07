@@ -19,6 +19,8 @@ echo creating prebuild files for: vs2008
 echo Parameters: %1 %2
 echo ##########################################
 
+if not exist bin mkdir bin
+
 :: run prebuild to generate solution/project files from prebuild.xml configuration file
 Radegast\Prebuild.exe /target vs2008
 

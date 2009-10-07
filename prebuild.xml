@@ -37,7 +37,7 @@
 
         <!-- External Libraries -->
 
-        <Project name="HttpServer" path="../libopenmetaverse/HttpServer" type="Library" guid="455E7D70-1C85-4D7F-9F01-DC801B8B8C34">
+        <Project name="HttpServer" path="../libopenmetaverse/HttpServer" type="Library" frameworkVersion="v3_5" gid="455E7D70-1C85-4D7F-9F01-DC801B8B8C34">
             <Configuration name="Debug">
                 <Options>
                     <OutputPath>../../radegast/bin/</OutputPath>
@@ -51,6 +51,7 @@
 
             <ReferencePath>../../radegast/bin/</ReferencePath>
             <Reference name="System"/>
+            <Reference name="System.Core"/>
             <Reference name="System.Web"/>
             <Files>
                 <Match pattern="*.cs" recurse="true"/>
@@ -206,6 +207,10 @@
                 </Match>
                 <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
                 <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
+                <Match path="." pattern="*.config" recurse="true" buildAction="Content" copyToOutput="Always"/>
+                <Match path="." pattern="*.so" recurse="true" buildAction="Content" copyToOutput="Always"/>
+                <Match path="." pattern="*.dylib" recurse="true" buildAction="Content" copyToOutput="Always"/>
+                <Match path="." pattern="fmodex.*" recurse="true" buildAction="Content" copyToOutput="Always"/>
             </Files>
         </Project>
 
@@ -244,7 +249,6 @@
                     <Exclude name="AssemblyInfo.cs"/>
                 </Match>
                 <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
-                <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
                 <Match path="." pattern="*.aiml" recurse="true" buildAction="Content" copyToOutput="Always"/>
                 <Match path="." pattern="*.xml" recurse="true" buildAction="Content" copyToOutput="Always"/>
             </Files>
@@ -282,7 +286,6 @@
                 <Match path="." pattern="*.cs" recurse="true" subType="Code">
                     <Exclude name="AssemblyInfo.cs"/>
                 </Match>
-                <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
                 <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
             </Files>
         </Project>
