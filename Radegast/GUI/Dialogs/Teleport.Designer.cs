@@ -368,27 +368,28 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtSearchFor;
-        private System.Windows.Forms.Button btnFind;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtRegion;
-        private System.Windows.Forms.NumericUpDown nudX;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown nudY;
-        private System.Windows.Forms.NumericUpDown nudZ;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button btnTeleport;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.ListBox lbxRegionSearch;
-        private System.Windows.Forms.Panel pnlTeleporting;
-        private System.Windows.Forms.ProgressBar proTeleporting;
-        private System.Windows.Forms.Label lblTeleportStatus;
-        private System.Windows.Forms.Panel pnlTeleportOptions;
-        private System.Windows.Forms.TrackBar trkIconSize;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel statusLabel;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.TextBox txtSearchFor;
+        public System.Windows.Forms.Button btnFind;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.TextBox txtRegion;
+        public System.Windows.Forms.NumericUpDown nudX;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.NumericUpDown nudY;
+        public System.Windows.Forms.NumericUpDown nudZ;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.Button btnTeleport;
+        public System.Windows.Forms.Button btnCancel;
+        public System.Windows.Forms.ListBox lbxRegionSearch;
+        public System.Windows.Forms.Panel pnlTeleporting;
+        public System.Windows.Forms.ProgressBar proTeleporting;
+        public System.Windows.Forms.Label lblTeleportStatus;
+        public System.Windows.Forms.Panel pnlTeleportOptions;
+        public System.Windows.Forms.TrackBar trkIconSize;
+        public System.Windows.Forms.Label label6;
+        public System.Windows.Forms.StatusStrip statusStrip1;
+        public System.Windows.Forms.ToolStripStatusLabel statusLabel;
+
     }
 }

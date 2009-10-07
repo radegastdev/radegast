@@ -309,24 +309,25 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Panel pnlLoginPrompt;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtFirstName;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox txtLastName;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtPassword;
-        private System.Windows.Forms.ComboBox cbxLocation;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button btnLogin;
-        private System.Windows.Forms.Panel pnlLoggingIn;
-        private System.Windows.Forms.Label lblLoginStatus;
-        private System.Windows.Forms.ProgressBar proLogin;
-        private System.Windows.Forms.ComboBox cbxGrid;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox txtCustomLoginUri;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
+        public System.Windows.Forms.Panel pnlLoginPrompt;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.TextBox txtFirstName;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.TextBox txtLastName;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.TextBox txtPassword;
+        public System.Windows.Forms.ComboBox cbxLocation;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Button btnLogin;
+        public System.Windows.Forms.Panel pnlLoggingIn;
+        public System.Windows.Forms.Label lblLoginStatus;
+        public System.Windows.Forms.ProgressBar proLogin;
+        public System.Windows.Forms.ComboBox cbxGrid;
+        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.TextBox txtCustomLoginUri;
+        public System.Windows.Forms.Label label6;
+        public System.Windows.Forms.Panel panel1;
+        public System.Windows.Forms.Panel panel2;
+
     }
 }

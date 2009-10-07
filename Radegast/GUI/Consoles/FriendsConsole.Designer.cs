@@ -237,17 +237,17 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label lblFriendName;
-        private System.Windows.Forms.Button btnIM;
-        private System.Windows.Forms.Button btnProfile;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox chkSeeMeOnline;
-        private System.Windows.Forms.CheckBox chkSeeMeOnMap;
-        private System.Windows.Forms.CheckBox chkModifyMyObjects;
-        private System.Windows.Forms.Button btnOfferTeleport;
-        private System.Windows.Forms.Button btnPay;
-        private System.Windows.Forms.Button btnRemove;
         public Radegast.ListBoxCustomSort lbxFriends;
+        public Label lblFriendName;
+        public Button btnIM;
+        public Button btnProfile;
+        public GroupBox groupBox1;
+        public Label label1;
+        public CheckBox chkSeeMeOnline;
+        public CheckBox chkSeeMeOnMap;
+        public CheckBox chkModifyMyObjects;
+        public Button btnOfferTeleport;
+        public Button btnPay;
+        public Button btnRemove;
     }
 }

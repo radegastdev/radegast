@@ -486,9 +486,9 @@ namespace Radegast
                 ForceCloseTab(name);
             }
 
-            toolStripContainer1.ContentPanel.Controls.Add(control);
             control.Visible = false;
             control.Dock = DockStyle.Fill;
+            toolStripContainer1.ContentPanel.Controls.Add(control);
 
             ToolStripButton button = (ToolStripButton)tstTabs.Items.Add(label);
             button.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;

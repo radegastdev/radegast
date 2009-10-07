@@ -119,9 +119,10 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblName;
-        private System.Windows.Forms.Panel pnlImages;
-        private System.Windows.Forms.Panel pnlTop;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Label lblName;
+        public System.Windows.Forms.Panel pnlImages;
+        public System.Windows.Forms.Panel pnlTop;
+
     }
 }

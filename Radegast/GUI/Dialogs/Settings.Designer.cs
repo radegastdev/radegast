@@ -61,11 +61,11 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.cbFriendsNotifications = new System.Windows.Forms.CheckBox();
             this.cbTrasactChat = new System.Windows.Forms.CheckBox();
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
-            this.cbFriendsNotifications = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -95,6 +95,17 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // cbFriendsNotifications
+            // 
+            this.cbFriendsNotifications.AutoSize = true;
+            this.cbFriendsNotifications.Location = new System.Drawing.Point(6, 98);
+            this.cbFriendsNotifications.Name = "cbFriendsNotifications";
+            this.cbFriendsNotifications.Size = new System.Drawing.Size(184, 17);
+            this.cbFriendsNotifications.TabIndex = 1;
+            this.cbFriendsNotifications.Text = "Display friends online notifications";
+            this.cbFriendsNotifications.UseVisualStyleBackColor = true;
+            this.cbFriendsNotifications.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // cbTrasactChat
             // 
@@ -138,17 +149,6 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbFriendsNotifications
-            // 
-            this.cbFriendsNotifications.AutoSize = true;
-            this.cbFriendsNotifications.Location = new System.Drawing.Point(6, 98);
-            this.cbFriendsNotifications.Name = "cbFriendsNotifications";
-            this.cbFriendsNotifications.Size = new System.Drawing.Size(184, 17);
-            this.cbFriendsNotifications.TabIndex = 1;
-            this.cbFriendsNotifications.Text = "Display friends online notifications";
-            this.cbFriendsNotifications.UseVisualStyleBackColor = true;
-            this.cbFriendsNotifications.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -167,12 +167,13 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tbpGeneral;
-        private System.Windows.Forms.CheckBox cbIMTimeStamps;
-        private System.Windows.Forms.CheckBox cbChatTimestamps;
-        private System.Windows.Forms.CheckBox cbTrasactChat;
-        private System.Windows.Forms.CheckBox cbTrasactDialog;
-        private System.Windows.Forms.CheckBox cbFriendsNotifications;
+        public System.Windows.Forms.TabControl tabControl1;
+        public System.Windows.Forms.TabPage tbpGeneral;
+        public System.Windows.Forms.CheckBox cbIMTimeStamps;
+        public System.Windows.Forms.CheckBox cbChatTimestamps;
+        public System.Windows.Forms.CheckBox cbTrasactChat;
+        public System.Windows.Forms.CheckBox cbTrasactDialog;
+        public System.Windows.Forms.CheckBox cbFriendsNotifications;
+
     }
 }

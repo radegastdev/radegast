@@ -125,9 +125,10 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnTeleport;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.TextBox txtHead;
-        private System.Windows.Forms.TextBox txtMessage;
+        public System.Windows.Forms.Button btnTeleport;
+        public System.Windows.Forms.Button btnCancel;
+        public System.Windows.Forms.TextBox txtHead;
+        public System.Windows.Forms.TextBox txtMessage;
+
     }
 }

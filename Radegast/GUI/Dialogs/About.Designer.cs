@@ -168,11 +168,12 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label txtTitle;
-        private System.Windows.Forms.TextBox txtLicense;
-        private System.Windows.Forms.TextBox txtOtherLicenses;
-        private System.Windows.Forms.TextBox txtWrittenBy;
-        private System.Windows.Forms.Button btnClose;
+        public System.Windows.Forms.PictureBox pictureBox1;
+        public System.Windows.Forms.Label txtTitle;
+        public System.Windows.Forms.TextBox txtLicense;
+        public System.Windows.Forms.TextBox txtOtherLicenses;
+        public System.Windows.Forms.TextBox txtWrittenBy;
+        public System.Windows.Forms.Button btnClose;
+
     }
 }

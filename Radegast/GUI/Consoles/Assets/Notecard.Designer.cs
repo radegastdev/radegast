@@ -116,26 +116,26 @@
             // tbtnSave
             // 
             this.tbtnSave.Name = "tbtnSave";
-            this.tbtnSave.Size = new System.Drawing.Size(152, 22);
+            this.tbtnSave.Size = new System.Drawing.Size(146, 22);
             this.tbtnSave.Text = "Save";
             this.tbtnSave.Click += new System.EventHandler(this.tbtnSave_Click);
             // 
             // tbtnSaveToDisk
             // 
             this.tbtnSaveToDisk.Name = "tbtnSaveToDisk";
-            this.tbtnSaveToDisk.Size = new System.Drawing.Size(152, 22);
+            this.tbtnSaveToDisk.Size = new System.Drawing.Size(146, 22);
             this.tbtnSaveToDisk.Text = "Save to Disk...";
             // 
             // sprtExit
             // 
             this.sprtExit.Name = "sprtExit";
-            this.sprtExit.Size = new System.Drawing.Size(149, 6);
+            this.sprtExit.Size = new System.Drawing.Size(143, 6);
             // 
             // tbtnExit
             // 
             this.tbtnExit.Enabled = false;
             this.tbtnExit.Name = "tbtnExit";
-            this.tbtnExit.Size = new System.Drawing.Size(152, 22);
+            this.tbtnExit.Size = new System.Drawing.Size(146, 22);
             this.tbtnExit.Text = "Exit";
             this.tbtnExit.Click += new System.EventHandler(this.tbtnExit_Click);
             // 
@@ -184,15 +184,16 @@
 
         #endregion
 
-        private RRichTextBox rtbContent;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnFile;
-        private System.Windows.Forms.ToolStripMenuItem tbtnSave;
-        private System.Windows.Forms.ToolStripMenuItem tbtnSaveToDisk;
-        private System.Windows.Forms.ToolStripSeparator sprtExit;
-        private System.Windows.Forms.ToolStripMenuItem tbtnExit;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnAttachments;
-        private System.Windows.Forms.ToolStripButton tbtnAttach;
-        private System.Windows.Forms.ToolStripLabel tlblStatus;
+        public RRichTextBox rtbContent;
+        public System.Windows.Forms.ToolStrip toolStrip1;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnFile;
+        public System.Windows.Forms.ToolStripMenuItem tbtnSave;
+        public System.Windows.Forms.ToolStripMenuItem tbtnSaveToDisk;
+        public System.Windows.Forms.ToolStripSeparator sprtExit;
+        public System.Windows.Forms.ToolStripMenuItem tbtnExit;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnAttachments;
+        public System.Windows.Forms.ToolStripButton tbtnAttach;
+        public System.Windows.Forms.ToolStripLabel tlblStatus;
+
     }
 }

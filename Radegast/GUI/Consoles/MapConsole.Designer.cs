@@ -59,6 +59,7 @@
         private void InitializeComponent()
         {
             this.pnlSearch = new System.Windows.Forms.Panel();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.btnDestination = new System.Windows.Forms.Button();
             this.btnMyPos = new System.Windows.Forms.Button();
             this.btnGoHome = new System.Windows.Forms.Button();
@@ -71,11 +72,10 @@
             this.label5 = new System.Windows.Forms.Label();
             this.nudZ = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
+            this.lstRegions = new Radegast.ListViewNoFlicker();
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.pnlMap = new System.Windows.Forms.Panel();
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.lstRegions = new Radegast.ListViewNoFlicker();
             this.pnlSearch.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).BeginInit();
@@ -105,6 +105,17 @@
             this.pnlSearch.Name = "pnlSearch";
             this.pnlSearch.Size = new System.Drawing.Size(194, 412);
             this.pnlSearch.TabIndex = 0;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblStatus.Location = new System.Drawing.Point(3, 359);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(185, 21);
+            this.lblStatus.TabIndex = 22;
+            this.lblStatus.Text = "Teleport status";
+            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnDestination
             // 
@@ -238,6 +249,21 @@
             this.label4.TabIndex = 16;
             this.label4.Text = "Y";
             // 
+            // lstRegions
+            // 
+            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstRegions.Location = new System.Drawing.Point(6, 38);
+            this.lstRegions.MultiSelect = false;
+            this.lstRegions.Name = "lstRegions";
+            this.lstRegions.ShowGroups = false;
+            this.lstRegions.Size = new System.Drawing.Size(182, 175);
+            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lstRegions.TabIndex = 2;
+            this.lstRegions.UseCompatibleStateImageBehavior = false;
+            this.lstRegions.View = System.Windows.Forms.View.List;
+            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
+            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
+            // 
             // btnSearch
             // 
             this.btnSearch.Location = new System.Drawing.Point(136, 11);
@@ -264,32 +290,6 @@
             this.pnlMap.Size = new System.Drawing.Size(560, 412);
             this.pnlMap.TabIndex = 1;
             // 
-            // lblStatus
-            // 
-            this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(3, 359);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(185, 21);
-            this.lblStatus.TabIndex = 22;
-            this.lblStatus.Text = "Teleport status";
-            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lstRegions
-            // 
-            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lstRegions.Location = new System.Drawing.Point(6, 38);
-            this.lstRegions.MultiSelect = false;
-            this.lstRegions.Name = "lstRegions";
-            this.lstRegions.ShowGroups = false;
-            this.lstRegions.Size = new System.Drawing.Size(182, 175);
-            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lstRegions.TabIndex = 2;
-            this.lstRegions.UseCompatibleStateImageBehavior = false;
-            this.lstRegions.View = System.Windows.Forms.View.List;
-            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
-            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
-            // 
             // MapConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,23 +310,24 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel pnlSearch;
-        private System.Windows.Forms.Panel pnlMap;
-        private System.Windows.Forms.TextBox txtRegion;
-        private Radegast.ListViewNoFlicker lstRegions;
-        private System.Windows.Forms.Button btnSearch;
-        private System.Windows.Forms.NumericUpDown nudX;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown nudY;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown nudZ;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button btnTeleport;
-        private System.Windows.Forms.Panel pnlProgress;
-        private System.Windows.Forms.ProgressBar prgTeleport;
-        private System.Windows.Forms.Button btnGoHome;
-        private System.Windows.Forms.Button btnDestination;
-        private System.Windows.Forms.Button btnMyPos;
-        private System.Windows.Forms.Label lblStatus;
+        public System.Windows.Forms.Panel pnlSearch;
+        public System.Windows.Forms.Panel pnlMap;
+        public System.Windows.Forms.TextBox txtRegion;
+        public ListViewNoFlicker lstRegions;
+        public System.Windows.Forms.Button btnSearch;
+        public System.Windows.Forms.NumericUpDown nudX;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.NumericUpDown nudY;
+        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.NumericUpDown nudZ;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.Button btnTeleport;
+        public System.Windows.Forms.Panel pnlProgress;
+        public System.Windows.Forms.ProgressBar prgTeleport;
+        public System.Windows.Forms.Button btnGoHome;
+        public System.Windows.Forms.Button btnDestination;
+        public System.Windows.Forms.Button btnMyPos;
+        public System.Windows.Forms.Label lblStatus;
+
     }
 }

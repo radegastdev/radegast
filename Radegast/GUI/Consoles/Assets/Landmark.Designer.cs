@@ -59,11 +59,11 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.pnlControls = new System.Windows.Forms.Panel();
+            this.txtParcelDescription = new System.Windows.Forms.TextBox();
             this.btnShowOnMap = new System.Windows.Forms.Button();
+            this.txtParcelName = new System.Windows.Forms.TextBox();
             this.btnTeleport = new System.Windows.Forms.Button();
             this.pnlDetail = new System.Windows.Forms.Panel();
-            this.txtParcelDescription = new System.Windows.Forms.TextBox();
-            this.txtParcelName = new System.Windows.Forms.TextBox();
             this.pnlControls.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,6 +79,19 @@ namespace Radegast
             this.pnlControls.Size = new System.Drawing.Size(320, 103);
             this.pnlControls.TabIndex = 0;
             // 
+            // txtParcelDescription
+            // 
+            this.txtParcelDescription.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.txtParcelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtParcelDescription.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtParcelDescription.Location = new System.Drawing.Point(0, 13);
+            this.txtParcelDescription.Multiline = true;
+            this.txtParcelDescription.Name = "txtParcelDescription";
+            this.txtParcelDescription.ReadOnly = true;
+            this.txtParcelDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtParcelDescription.Size = new System.Drawing.Size(320, 58);
+            this.txtParcelDescription.TabIndex = 1;
+            // 
             // btnShowOnMap
             // 
             this.btnShowOnMap.Enabled = false;
@@ -89,6 +102,18 @@ namespace Radegast
             this.btnShowOnMap.Text = "Show on map";
             this.btnShowOnMap.UseVisualStyleBackColor = true;
             this.btnShowOnMap.Click += new System.EventHandler(this.btnShowOnMap_Click);
+            // 
+            // txtParcelName
+            // 
+            this.txtParcelName.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.txtParcelName.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtParcelName.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtParcelName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtParcelName.Location = new System.Drawing.Point(0, 0);
+            this.txtParcelName.Name = "txtParcelName";
+            this.txtParcelName.ReadOnly = true;
+            this.txtParcelName.Size = new System.Drawing.Size(320, 13);
+            this.txtParcelName.TabIndex = 0;
             // 
             // btnTeleport
             // 
@@ -110,31 +135,6 @@ namespace Radegast
             this.pnlDetail.TabIndex = 1;
             this.pnlDetail.Visible = false;
             // 
-            // txtParcelDescription
-            // 
-            this.txtParcelDescription.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.txtParcelDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtParcelDescription.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtParcelDescription.Location = new System.Drawing.Point(0, 13);
-            this.txtParcelDescription.Multiline = true;
-            this.txtParcelDescription.Name = "txtParcelDescription";
-            this.txtParcelDescription.ReadOnly = true;
-            this.txtParcelDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtParcelDescription.Size = new System.Drawing.Size(320, 58);
-            this.txtParcelDescription.TabIndex = 1;
-            // 
-            // txtParcelName
-            // 
-            this.txtParcelName.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.txtParcelName.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtParcelName.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtParcelName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtParcelName.Location = new System.Drawing.Point(0, 0);
-            this.txtParcelName.Name = "txtParcelName";
-            this.txtParcelName.ReadOnly = true;
-            this.txtParcelName.Size = new System.Drawing.Size(320, 13);
-            this.txtParcelName.TabIndex = 0;
-            // 
             // Landmark
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -151,11 +151,12 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Panel pnlControls;
-        private System.Windows.Forms.Button btnShowOnMap;
-        private System.Windows.Forms.Button btnTeleport;
-        private System.Windows.Forms.Panel pnlDetail;
-        private System.Windows.Forms.TextBox txtParcelName;
-        private System.Windows.Forms.TextBox txtParcelDescription;
+        public System.Windows.Forms.Panel pnlControls;
+        public System.Windows.Forms.Button btnShowOnMap;
+        public System.Windows.Forms.Button btnTeleport;
+        public System.Windows.Forms.Panel pnlDetail;
+        public System.Windows.Forms.TextBox txtParcelName;
+        public System.Windows.Forms.TextBox txtParcelDescription;
+
     }
 }

@@ -62,8 +62,8 @@ namespace Radegast
             this.cbxInput = new System.Windows.Forms.ComboBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.chatSplit = new System.Windows.Forms.SplitContainer();
-            this.btnShow = new System.Windows.Forms.Button();
             this.Participants = new Radegast.ListViewNoFlicker();
+            this.btnShow = new System.Windows.Forms.Button();
             this.chatSplit.Panel1.SuspendLayout();
             this.chatSplit.Panel2.SuspendLayout();
             this.chatSplit.SuspendLayout();
@@ -126,17 +126,6 @@ namespace Radegast
             this.chatSplit.SplitterDistance = 373;
             this.chatSplit.TabIndex = 3;
             // 
-            // btnShow
-            // 
-            this.btnShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShow.Location = new System.Drawing.Point(442, 305);
-            this.btnShow.Name = "btnShow";
-            this.btnShow.Size = new System.Drawing.Size(55, 23);
-            this.btnShow.TabIndex = 2;
-            this.btnShow.Text = "Show";
-            this.btnShow.UseVisualStyleBackColor = true;
-            this.btnShow.Click += new System.EventHandler(this.btnShow_Click);
-            // 
             // Participants
             // 
             this.Participants.Activation = System.Windows.Forms.ItemActivation.OneClick;
@@ -152,6 +141,17 @@ namespace Radegast
             this.Participants.UseCompatibleStateImageBehavior = false;
             this.Participants.View = System.Windows.Forms.View.List;
             this.Participants.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Participants_MouseDoubleClick);
+            // 
+            // btnShow
+            // 
+            this.btnShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnShow.Location = new System.Drawing.Point(442, 305);
+            this.btnShow.Name = "btnShow";
+            this.btnShow.Size = new System.Drawing.Size(55, 23);
+            this.btnShow.TabIndex = 2;
+            this.btnShow.Text = "Show";
+            this.btnShow.UseVisualStyleBackColor = true;
+            this.btnShow.Click += new System.EventHandler(this.btnShow_Click);
             // 
             // GroupIMTabWindow
             // 
@@ -173,11 +173,12 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox rtbIMText;
-        private System.Windows.Forms.ComboBox cbxInput;
-        private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.SplitContainer chatSplit;
-        private ListViewNoFlicker Participants;
-        private System.Windows.Forms.Button btnShow;
+        public System.Windows.Forms.RichTextBox rtbIMText;
+        public System.Windows.Forms.ComboBox cbxInput;
+        public System.Windows.Forms.Button btnSend;
+        public System.Windows.Forms.SplitContainer chatSplit;
+        public ListViewNoFlicker Participants;
+        public System.Windows.Forms.Button btnShow;
+
     }
 }

@@ -61,6 +61,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             this.volAudioStream = new System.Windows.Forms.TrackBar();
             this.pnlParcelAudio = new System.Windows.Forms.GroupBox();
+            this.lblStation = new System.Windows.Forms.Label();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnPlay = new System.Windows.Forms.Button();
             this.cbKeep = new System.Windows.Forms.CheckBox();
@@ -70,7 +71,6 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.lblStation = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.volAudioStream)).BeginInit();
             this.pnlParcelAudio.SuspendLayout();
             this.SuspendLayout();
@@ -104,6 +104,16 @@ namespace Radegast
             this.pnlParcelAudio.TabIndex = 2;
             this.pnlParcelAudio.TabStop = false;
             this.pnlParcelAudio.Text = "Parcel Audio Stream";
+            // 
+            // lblStation
+            // 
+            this.lblStation.AutoSize = true;
+            this.lblStation.ForeColor = System.Drawing.Color.Blue;
+            this.lblStation.Location = new System.Drawing.Point(76, 93);
+            this.lblStation.Name = "lblStation";
+            this.lblStation.Size = new System.Drawing.Size(40, 13);
+            this.lblStation.TabIndex = 6;
+            this.lblStation.Text = "Station";
             // 
             // btnStop
             // 
@@ -187,16 +197,6 @@ namespace Radegast
             this.label1.TabIndex = 2;
             this.label1.Text = "Stream";
             // 
-            // lblStation
-            // 
-            this.lblStation.AutoSize = true;
-            this.lblStation.ForeColor = System.Drawing.Color.Blue;
-            this.lblStation.Location = new System.Drawing.Point(76, 93);
-            this.lblStation.Name = "lblStation";
-            this.lblStation.Size = new System.Drawing.Size(40, 13);
-            this.lblStation.TabIndex = 6;
-            this.lblStation.Text = "Station";
-            // 
             // MediaConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -213,17 +213,18 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.TrackBar volAudioStream;
-        private System.Windows.Forms.GroupBox pnlParcelAudio;
-        private System.Windows.Forms.TextBox txtAudioURL;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox cbKeep;
-        private System.Windows.Forms.CheckBox cbPlayAudioStream;
-        private System.Windows.Forms.Button btnPlay;
-        private System.Windows.Forms.Button btnStop;
-        private System.Windows.Forms.TextBox txtSongTitle;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.Label lblStation;
+        public System.Windows.Forms.TrackBar volAudioStream;
+        public System.Windows.Forms.GroupBox pnlParcelAudio;
+        public System.Windows.Forms.TextBox txtAudioURL;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.CheckBox cbKeep;
+        public System.Windows.Forms.CheckBox cbPlayAudioStream;
+        public System.Windows.Forms.Button btnPlay;
+        public System.Windows.Forms.Button btnStop;
+        public System.Windows.Forms.TextBox txtSongTitle;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.ToolTip toolTip1;
+        public System.Windows.Forms.Label lblStation;
+
     }
 }

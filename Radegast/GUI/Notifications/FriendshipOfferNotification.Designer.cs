@@ -120,7 +120,7 @@
             this.btnIgnore.UseVisualStyleBackColor = true;
             this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
             // 
-            // ntfFriendshopOffer
+            // ntfFriendshipOffer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -129,7 +129,7 @@
             this.Controls.Add(this.btnYes);
             this.Controls.Add(this.txtMessage);
             this.Controls.Add(this.txtHead);
-            this.Name = "ntfFriendshopOffer";
+            this.Name = "ntfFriendshipOffer";
             this.Size = new System.Drawing.Size(263, 131);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -138,10 +138,11 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnNo;
-        private System.Windows.Forms.Button btnYes;
-        private System.Windows.Forms.TextBox txtMessage;
-        private System.Windows.Forms.TextBox txtHead;
-        private System.Windows.Forms.Button btnIgnore;
+        public System.Windows.Forms.Button btnNo;
+        public System.Windows.Forms.Button btnYes;
+        public System.Windows.Forms.TextBox txtMessage;
+        public System.Windows.Forms.TextBox txtHead;
+        public System.Windows.Forms.Button btnIgnore;
+
     }
 }

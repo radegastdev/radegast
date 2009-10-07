@@ -149,11 +149,12 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnActivate;
-        private System.Windows.Forms.Button btnLeave;
-        private System.Windows.Forms.Button btnIM;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.Button btnInfo;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Button btnActivate;
+        public System.Windows.Forms.Button btnLeave;
+        public System.Windows.Forms.Button btnIM;
+        public System.Windows.Forms.ListBox listBox1;
+        public System.Windows.Forms.Button btnInfo;
+
     }
 }

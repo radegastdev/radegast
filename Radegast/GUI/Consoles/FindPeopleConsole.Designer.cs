@@ -102,8 +102,9 @@ namespace Radegast
 
         #endregion
 
-        private Radegast.ListViewNoFlicker lvwFindPeople;
-        private System.Windows.Forms.ColumnHeader chdName;
-        private System.Windows.Forms.ColumnHeader chdOnline;
+        public ListViewNoFlicker lvwFindPeople;
+        public System.Windows.Forms.ColumnHeader chdName;
+        public System.Windows.Forms.ColumnHeader chdOnline;
+
     }
 }

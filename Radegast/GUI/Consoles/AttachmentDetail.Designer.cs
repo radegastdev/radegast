@@ -167,13 +167,14 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label lblAttachment;
-        private System.Windows.Forms.TextBox boxID;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox boxName;
-        private System.Windows.Forms.Button btnTouch;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Label lblPrimCount;
-        private System.Windows.Forms.Label lblAttachmentPoint;
+        public System.Windows.Forms.Label lblAttachment;
+        public System.Windows.Forms.TextBox boxID;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.TextBox boxName;
+        public System.Windows.Forms.Button btnTouch;
+        public System.Windows.Forms.Button btnSave;
+        public System.Windows.Forms.Label lblPrimCount;
+        public System.Windows.Forms.Label lblAttachmentPoint;
+
     }
 }

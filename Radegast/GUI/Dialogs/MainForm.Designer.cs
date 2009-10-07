@@ -81,7 +81,6 @@ namespace Radegast
             this.tmnuPrefs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnWorld = new System.Windows.Forms.ToolStripDropDownButton();
             this.tmnuControlFly = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuControlAlwaysRun = new System.Windows.Forms.ToolStripMenuItem();
@@ -94,7 +93,6 @@ namespace Radegast
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuStatusAway = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuStatusBusy = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbnTools = new System.Windows.Forms.ToolStripDropDownButton();
             this.locationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,6 +102,7 @@ namespace Radegast
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnFriends = new System.Windows.Forms.ToolStripButton();
             this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
             this.tbtnInventory = new System.Windows.Forms.ToolStripButton();
@@ -112,6 +111,7 @@ namespace Radegast
             this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -228,11 +228,6 @@ namespace Radegast
             this.tmnuExit.Text = "E&xit";
             this.tmnuExit.Click += new System.EventHandler(this.tmnuExit_Click);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
             // tbtnWorld
             // 
             this.tbtnWorld.AutoToolTip = false;
@@ -333,11 +328,6 @@ namespace Radegast
             this.tmnuStatusBusy.Text = "Busy";
             this.tmnuStatusBusy.Click += new System.EventHandler(this.tmnuStatusBusy_Click);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
             // tbnTools
             // 
             this.tbnTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -413,6 +403,11 @@ namespace Radegast
             this.tbnPlugins.Size = new System.Drawing.Size(59, 22);
             this.tbnPlugins.Text = "Plugins";
             this.tbnPlugins.Visible = false;
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // tbtnFriends
             // 
@@ -498,6 +493,11 @@ namespace Radegast
             this.tbtnMedia.Text = "Media";
             this.tbtnMedia.Visible = false;
             this.tbtnMedia.Click += new System.EventHandler(this.tbtnMedia_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // tbtnHelp
             // 
@@ -729,65 +729,65 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.ToolStripDropDownButton tbtnSLeek;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem tmnuExit;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel tlblLoginName;
-        private System.Windows.Forms.ToolStripStatusLabel tlblRegionInfo;
-        private System.Windows.Forms.ToolStripStatusLabel tlblMoneyBalance;
-        private System.Windows.Forms.ToolStripMenuItem tmnuPrefs;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnWorld;
-        private System.Windows.Forms.ToolStripMenuItem tmnuControlFly;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem tmnuControlAlwaysRun;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripStatusLabel tlblParcel;
-        private System.Windows.Forms.ToolStripDropDownButton tbnTools;
-        private System.Windows.Forms.ToolStripMenuItem locationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem homeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tmnuImport;
-        private System.Windows.Forms.ToolStripMenuItem autopilotToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cleanCacheToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setAppearanceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem rebakeTexturesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem standToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem groundSitToolStripMenuItem;
         public System.Windows.Forms.ToolStrip toolStrip1;
         public System.Windows.Forms.ToolStripContainer toolStripContainer1;
         public System.Windows.Forms.Panel pnlDialog;
-        private System.Windows.Forms.ToolStripButton tbnObjects;
-        private System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripStatusLabel icoNoBuild;
-        private System.Windows.Forms.ToolStripStatusLabel icoHealth;
-        private System.Windows.Forms.ToolStripStatusLabel icoNoFly;
-        private System.Windows.Forms.ToolStripStatusLabel icoNoScript;
-        private System.Windows.Forms.ToolStripStatusLabel icoNoPush;
-        private System.Windows.Forms.ToolStripStatusLabel icoNoVoice;
-        private System.Windows.Forms.ToolStripButton tbtnGroups;
-        private System.Windows.Forms.ToolStripMenuItem scriptEditorToolStripMenuItem;
-        private System.Windows.Forms.ToolStripDropDownButton tbnPlugins;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem tmnuCreateLandmark;
-        private System.Windows.Forms.ToolStripMenuItem tmnuSetHome;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem tmnuStatusAway;
-        private System.Windows.Forms.ToolStripMenuItem tmnuStatusBusy;
-        private System.Windows.Forms.ToolStripMenuItem tmnuTeleportHome;
-        private System.Windows.Forms.ToolStripLabel lblTime;
-        private System.Windows.Forms.Timer timerWorldClock;
-        private System.Windows.Forms.ToolStripButton tbtnMedia;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnHelp;
-        private System.Windows.Forms.ToolStripMenuItem reportBugsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutRadegastToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
-        private System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripButton tbtnFriends;
-        private System.Windows.Forms.ToolStripButton tbtnInventory;
-        private System.Windows.Forms.ToolStripButton tbtnSearch;
-        private System.Windows.Forms.ToolStripButton tbtnMap;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnSLeek;
+        public System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        public System.Windows.Forms.ToolStripMenuItem tmnuExit;
+        public System.Windows.Forms.StatusStrip statusStrip1;
+        public System.Windows.Forms.ToolStripStatusLabel tlblLoginName;
+        public System.Windows.Forms.ToolStripStatusLabel tlblRegionInfo;
+        public System.Windows.Forms.ToolStripStatusLabel tlblMoneyBalance;
+        public System.Windows.Forms.ToolStripMenuItem tmnuPrefs;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnWorld;
+        public System.Windows.Forms.ToolStripMenuItem tmnuControlFly;
+        public System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        public System.Windows.Forms.ToolStripMenuItem tmnuControlAlwaysRun;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        public System.Windows.Forms.ToolStripStatusLabel tlblParcel;
+        public System.Windows.Forms.ToolStripDropDownButton tbnTools;
+        public System.Windows.Forms.ToolStripMenuItem locationToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem homeToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem tmnuImport;
+        public System.Windows.Forms.ToolStripMenuItem autopilotToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem cleanCacheToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem setAppearanceToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem rebakeTexturesToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem standToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem groundSitToolStripMenuItem;
+        public System.Windows.Forms.ToolStripButton tbnObjects;
+        public System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
+        public System.Windows.Forms.ToolStripStatusLabel icoNoBuild;
+        public System.Windows.Forms.ToolStripStatusLabel icoHealth;
+        public System.Windows.Forms.ToolStripStatusLabel icoNoFly;
+        public System.Windows.Forms.ToolStripStatusLabel icoNoScript;
+        public System.Windows.Forms.ToolStripStatusLabel icoNoPush;
+        public System.Windows.Forms.ToolStripStatusLabel icoNoVoice;
+        public System.Windows.Forms.ToolStripButton tbtnGroups;
+        public System.Windows.Forms.ToolStripMenuItem scriptEditorToolStripMenuItem;
+        public System.Windows.Forms.ToolStripDropDownButton tbnPlugins;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
+        public System.Windows.Forms.ToolStripMenuItem tmnuCreateLandmark;
+        public System.Windows.Forms.ToolStripMenuItem tmnuSetHome;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
+        public System.Windows.Forms.ToolStripMenuItem tmnuStatusAway;
+        public System.Windows.Forms.ToolStripMenuItem tmnuStatusBusy;
+        public System.Windows.Forms.ToolStripMenuItem tmnuTeleportHome;
+        public System.Windows.Forms.ToolStripLabel lblTime;
+        public System.Windows.Forms.Timer timerWorldClock;
+        public System.Windows.Forms.ToolStripButton tbtnMedia;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnHelp;
+        public System.Windows.Forms.ToolStripMenuItem reportBugsToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem aboutRadegastToolStripMenuItem;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem6;
+        public System.Windows.Forms.ToolStripMenuItem checkForUpdatesToolStripMenuItem;
+        public System.Windows.Forms.ToolStripButton tbtnFriends;
+        public System.Windows.Forms.ToolStripButton tbtnInventory;
+        public System.Windows.Forms.ToolStripButton tbtnSearch;
+        public System.Windows.Forms.ToolStripButton tbtnMap;
     }
 }
 

@@ -81,6 +81,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InventoryConsole));
             this.invTree = new System.Windows.Forms.TreeView();
+            this.ctxInv = new Radegast.RadegastContextMenuStrip(this.components);
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tstripInventory = new System.Windows.Forms.ToolStrip();
             this.tlabelStatus = new System.Windows.Forms.ToolStripLabel();
@@ -104,7 +105,6 @@ namespace Radegast
             this.lblAsset = new System.Windows.Forms.Label();
             this.lblCreator = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
-            this.ctxInv = new RadegastContextMenuStrip(this.components);
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -116,6 +116,7 @@ namespace Radegast
             // 
             this.invTree.AllowDrop = true;
             this.invTree.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(62)))));
+            this.invTree.ContextMenuStrip = this.ctxInv;
             this.invTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.invTree.ForeColor = System.Drawing.Color.White;
             this.invTree.LabelEdit = true;
@@ -131,7 +132,14 @@ namespace Radegast
             this.invTree.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_BeforeLabelEdit);
             this.invTree.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.invTree_ItemDrag);
             this.invTree.DragOver += new System.Windows.Forms.DragEventHandler(this.invTree_DragOver);
-            this.invTree.ContextMenuStrip = ctxInv;
+            // 
+            // ctxInv
+            // 
+            this.ctxInv.Name = "folderContext";
+            this.ctxInv.ShowImageMargin = false;
+            this.ctxInv.Size = new System.Drawing.Size(36, 4);
+            this.ctxInv.Text = "Inventory Folder";
+            this.ctxInv.Opening += new System.ComponentModel.CancelEventHandler(this.ctxInv_Opening);
             // 
             // splitContainer1
             // 
@@ -353,14 +361,6 @@ namespace Radegast
             this.lblItemName.TabIndex = 0;
             this.lblItemName.Text = "Item";
             // 
-            // ctxInv
-            // 
-            this.ctxInv.Name = "folderContext";
-            this.ctxInv.ShowImageMargin = false;
-            this.ctxInv.Size = new System.Drawing.Size(36, 4);
-            this.ctxInv.Text = "Inventory Folder";
-            this.ctxInv.Opening += new CancelEventHandler(ctxInv_Opening);
-            // 
             // InventoryConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -382,30 +382,30 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private RadegastContextMenuStrip ctxInv;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox txtItemName;
-        private System.Windows.Forms.Label lblCreator;
-        private System.Windows.Forms.Label lblItemName;
-        private Radegast.AgentNameTextBox txtCreator;
-        private System.Windows.Forms.TextBox txtAssetID;
-        private System.Windows.Forms.Label lblAsset;
-        private System.Windows.Forms.Panel pnlDetail;
-        private System.Windows.Forms.Button btnProfile;
-        private System.Windows.Forms.TextBox txtCreated;
-        private System.Windows.Forms.Label lblCreated;
-        private System.Windows.Forms.ToolStrip tstripInventory;
-        private System.Windows.Forms.ToolStripLabel tlabelStatus;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnFile;
-        private System.Windows.Forms.ToolStripMenuItem saveAllTToolStripMenuItem;
-        private System.Windows.Forms.ToolStripDropDownButton tbtbSort;
-        private System.Windows.Forms.ToolStripMenuItem tbtbSortByName;
-        private System.Windows.Forms.ToolStripMenuItem tbtnSortByDate;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem tbtbFoldersByName;
-        private System.Windows.Forms.ToolStripMenuItem tbtnSystemFoldersFirst;
-        private System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
         public System.Windows.Forms.TreeView invTree;
+        public System.Windows.Forms.SplitContainer splitContainer1;
+        public RadegastContextMenuStrip ctxInv;
+        public System.Windows.Forms.Panel panel1;
+        public System.Windows.Forms.TextBox txtItemName;
+        public System.Windows.Forms.Label lblCreator;
+        public System.Windows.Forms.Label lblItemName;
+        public AgentNameTextBox txtCreator;
+        public System.Windows.Forms.TextBox txtAssetID;
+        public System.Windows.Forms.Label lblAsset;
+        public System.Windows.Forms.Panel pnlDetail;
+        public System.Windows.Forms.Button btnProfile;
+        public System.Windows.Forms.TextBox txtCreated;
+        public System.Windows.Forms.Label lblCreated;
+        public System.Windows.Forms.ToolStrip tstripInventory;
+        public System.Windows.Forms.ToolStripLabel tlabelStatus;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnFile;
+        public System.Windows.Forms.ToolStripMenuItem saveAllTToolStripMenuItem;
+        public System.Windows.Forms.ToolStripDropDownButton tbtbSort;
+        public System.Windows.Forms.ToolStripMenuItem tbtbSortByName;
+        public System.Windows.Forms.ToolStripMenuItem tbtnSortByDate;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem tbtbFoldersByName;
+        public System.Windows.Forms.ToolStripMenuItem tbtnSystemFoldersFirst;
+        public System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
     }
 }

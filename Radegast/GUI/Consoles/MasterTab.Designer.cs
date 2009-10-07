@@ -69,13 +69,13 @@ namespace Radegast
             this.saveBtn = new System.Windows.Forms.Button();
             this.payBtn = new System.Windows.Forms.Button();
             this.objInfoBtn = new System.Windows.Forms.Button();
+            this.lastPrimLocalID = new System.Windows.Forms.TextBox();
             this.lastPrimLLUUID = new System.Windows.Forms.TextBox();
             this.lastPrimName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlImages = new System.Windows.Forms.Panel();
-            this.lastPrimLocalID = new System.Windows.Forms.TextBox();
             this.primInfoPanel.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -211,6 +211,15 @@ namespace Radegast
             this.objInfoBtn.UseVisualStyleBackColor = true;
             this.objInfoBtn.Click += new System.EventHandler(this.objInfoBtn_Click);
             // 
+            // lastPrimLocalID
+            // 
+            this.lastPrimLocalID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lastPrimLocalID.Location = new System.Drawing.Point(264, 45);
+            this.lastPrimLocalID.Name = "lastPrimLocalID";
+            this.lastPrimLocalID.ReadOnly = true;
+            this.lastPrimLocalID.Size = new System.Drawing.Size(62, 20);
+            this.lastPrimLocalID.TabIndex = 2;
+            // 
             // lastPrimLLUUID
             // 
             this.lastPrimLLUUID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -266,15 +275,6 @@ namespace Radegast
             this.pnlImages.Size = new System.Drawing.Size(529, 195);
             this.pnlImages.TabIndex = 4;
             // 
-            // lastPrimLocalID
-            // 
-            this.lastPrimLocalID.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lastPrimLocalID.Location = new System.Drawing.Point(264, 45);
-            this.lastPrimLocalID.Name = "lastPrimLocalID";
-            this.lastPrimLocalID.ReadOnly = true;
-            this.lastPrimLocalID.Size = new System.Drawing.Size(62, 20);
-            this.lastPrimLocalID.TabIndex = 2;
-            // 
             // MasterTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -293,23 +293,24 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Panel primInfoPanel;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button standBtn;
-        private System.Windows.Forms.Button sitBitn;
-        private System.Windows.Forms.Button touchBtn;
-        private System.Windows.Forms.Button texturesBtn;
-        private System.Windows.Forms.Button saveBtn;
-        private System.Windows.Forms.Button payBtn;
-        private System.Windows.Forms.Button objInfoBtn;
-        private System.Windows.Forms.TextBox lastPrimLLUUID;
-        private System.Windows.Forms.TextBox lastPrimName;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Panel pnlImages;
-        private System.Windows.Forms.Button loadBtn;
-        private System.Windows.Forms.Button btnPoint;
-        private System.Windows.Forms.TextBox lastPrimLocalID;
+        public System.Windows.Forms.Panel primInfoPanel;
+        public System.Windows.Forms.GroupBox groupBox1;
+        public System.Windows.Forms.Button standBtn;
+        public System.Windows.Forms.Button sitBitn;
+        public System.Windows.Forms.Button touchBtn;
+        public System.Windows.Forms.Button texturesBtn;
+        public System.Windows.Forms.Button saveBtn;
+        public System.Windows.Forms.Button payBtn;
+        public System.Windows.Forms.Button objInfoBtn;
+        public System.Windows.Forms.TextBox lastPrimLLUUID;
+        public System.Windows.Forms.TextBox lastPrimName;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Panel pnlImages;
+        public System.Windows.Forms.Button loadBtn;
+        public System.Windows.Forms.Button btnPoint;
+        public System.Windows.Forms.TextBox lastPrimLocalID;
+
     }
 }

@@ -97,7 +97,8 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Panel pnlControls;
-        private System.Windows.Forms.Button btnRefresh;
+        public System.Windows.Forms.Panel pnlControls;
+        public System.Windows.Forms.Button btnRefresh;
+
     }
 }

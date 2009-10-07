@@ -58,13 +58,13 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.pnlSave = new System.Windows.Forms.Panel();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.cbFriends = new System.Windows.Forms.ComboBox();
+            this.boxAnimName = new System.Windows.Forms.TextBox();
+            this.btnSend = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.playBox = new System.Windows.Forms.CheckBox();
-            this.pnlSave = new System.Windows.Forms.Panel();
-            this.btnSend = new System.Windows.Forms.Button();
-            this.boxAnimName = new System.Windows.Forms.TextBox();
-            this.cbFriends = new System.Windows.Forms.ComboBox();
-            this.lblStatus = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.pnlSave.SuspendLayout();
             this.SuspendLayout();
@@ -79,6 +79,53 @@ namespace Radegast
             this.groupBox1.Size = new System.Drawing.Size(635, 41);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
+            // 
+            // pnlSave
+            // 
+            this.pnlSave.BackColor = System.Drawing.Color.Transparent;
+            this.pnlSave.Controls.Add(this.lblStatus);
+            this.pnlSave.Controls.Add(this.cbFriends);
+            this.pnlSave.Controls.Add(this.boxAnimName);
+            this.pnlSave.Controls.Add(this.btnSend);
+            this.pnlSave.Controls.Add(this.btnSave);
+            this.pnlSave.Location = new System.Drawing.Point(58, 0);
+            this.pnlSave.Name = "pnlSave";
+            this.pnlSave.Size = new System.Drawing.Size(577, 41);
+            this.pnlSave.TabIndex = 2;
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.Location = new System.Drawing.Point(483, 16);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(91, 18);
+            this.lblStatus.TabIndex = 6;
+            // 
+            // cbFriends
+            // 
+            this.cbFriends.FormattingEnabled = true;
+            this.cbFriends.Location = new System.Drawing.Point(190, 13);
+            this.cbFriends.Name = "cbFriends";
+            this.cbFriends.Size = new System.Drawing.Size(162, 21);
+            this.cbFriends.TabIndex = 5;
+            this.cbFriends.SelectedValueChanged += new System.EventHandler(this.cbFriends_SelectedValueChanged);
+            // 
+            // boxAnimName
+            // 
+            this.boxAnimName.Location = new System.Drawing.Point(358, 13);
+            this.boxAnimName.Name = "boxAnimName";
+            this.boxAnimName.Size = new System.Drawing.Size(119, 20);
+            this.boxAnimName.TabIndex = 4;
+            // 
+            // btnSend
+            // 
+            this.btnSend.Enabled = false;
+            this.btnSend.Location = new System.Drawing.Point(95, 11);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(89, 23);
+            this.btnSend.TabIndex = 2;
+            this.btnSend.Text = "$L10 Send to";
+            this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
             // btnSave
             // 
@@ -101,53 +148,6 @@ namespace Radegast
             this.playBox.UseVisualStyleBackColor = true;
             this.playBox.CheckStateChanged += new System.EventHandler(this.playBox_CheckStateChanged);
             // 
-            // pnlSave
-            // 
-            this.pnlSave.BackColor = System.Drawing.Color.Transparent;
-            this.pnlSave.Controls.Add(this.lblStatus);
-            this.pnlSave.Controls.Add(this.cbFriends);
-            this.pnlSave.Controls.Add(this.boxAnimName);
-            this.pnlSave.Controls.Add(this.btnSend);
-            this.pnlSave.Controls.Add(this.btnSave);
-            this.pnlSave.Location = new System.Drawing.Point(58, 0);
-            this.pnlSave.Name = "pnlSave";
-            this.pnlSave.Size = new System.Drawing.Size(577, 41);
-            this.pnlSave.TabIndex = 2;
-            // 
-            // btnSend
-            // 
-            this.btnSend.Enabled = false;
-            this.btnSend.Location = new System.Drawing.Point(95, 11);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(89, 23);
-            this.btnSend.TabIndex = 2;
-            this.btnSend.Text = "$L10 Send to";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-            // 
-            // boxAnimName
-            // 
-            this.boxAnimName.Location = new System.Drawing.Point(358, 13);
-            this.boxAnimName.Name = "boxAnimName";
-            this.boxAnimName.Size = new System.Drawing.Size(119, 20);
-            this.boxAnimName.TabIndex = 4;
-            // 
-            // cbFriends
-            // 
-            this.cbFriends.FormattingEnabled = true;
-            this.cbFriends.Location = new System.Drawing.Point(190, 13);
-            this.cbFriends.Name = "cbFriends";
-            this.cbFriends.Size = new System.Drawing.Size(162, 21);
-            this.cbFriends.TabIndex = 5;
-            this.cbFriends.SelectedValueChanged += new System.EventHandler(this.cbFriends_SelectedValueChanged);
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.Location = new System.Drawing.Point(483, 16);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(91, 18);
-            this.lblStatus.TabIndex = 6;
-            // 
             // AnimDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -166,13 +166,14 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.CheckBox playBox;
-        private System.Windows.Forms.Panel pnlSave;
-        private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.TextBox boxAnimName;
-        private System.Windows.Forms.ComboBox cbFriends;
-        private System.Windows.Forms.Label lblStatus;
+        public System.Windows.Forms.GroupBox groupBox1;
+        public System.Windows.Forms.Button btnSave;
+        public System.Windows.Forms.CheckBox playBox;
+        public System.Windows.Forms.Panel pnlSave;
+        public System.Windows.Forms.Button btnSend;
+        public System.Windows.Forms.TextBox boxAnimName;
+        public System.Windows.Forms.ComboBox cbFriends;
+        public System.Windows.Forms.Label lblStatus;
+
     }
 }

@@ -182,15 +182,16 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtFolderName;
-        private System.Windows.Forms.Button btnFolder;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripLabel lblStatus;
-        private System.Windows.Forms.ToolStripProgressBar sbrProgress;
-        private ListViewNoFlicker lvwFiles;
-        private System.Windows.Forms.ColumnHeader InventoryItem;
-        private System.Windows.Forms.ColumnHeader clFileName;
-        private System.Windows.Forms.ColumnHeader Progress;
+        public System.Windows.Forms.TextBox txtFolderName;
+        public System.Windows.Forms.Button btnFolder;
+        public System.Windows.Forms.OpenFileDialog openFileDialog1;
+        public System.Windows.Forms.ToolStrip toolStrip1;
+        public System.Windows.Forms.ToolStripLabel lblStatus;
+        public System.Windows.Forms.ToolStripProgressBar sbrProgress;
+        public ListViewNoFlicker lvwFiles;
+        public System.Windows.Forms.ColumnHeader InventoryItem;
+        public System.Windows.Forms.ColumnHeader clFileName;
+        public System.Windows.Forms.ColumnHeader Progress;
+
     }
 }

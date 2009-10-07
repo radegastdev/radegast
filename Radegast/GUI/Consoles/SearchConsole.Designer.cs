@@ -72,15 +72,15 @@ namespace Radegast
             this.btnLink = new System.Windows.Forms.Button();
             this.tpgPlaces = new System.Windows.Forms.TabPage();
             this.pnlPlaceDetail = new System.Windows.Forms.Panel();
+            this.lvwPlaces = new Radegast.ListViewNoFlicker();
+            this.Place = new System.Windows.Forms.ColumnHeader();
+            this.Traffic = new System.Windows.Forms.ColumnHeader();
             this.btnSearchPlace = new System.Windows.Forms.Button();
             this.txtSearchPlace = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnNextPlace = new System.Windows.Forms.Button();
             this.btnPrevPlace = new System.Windows.Forms.Button();
             this.lblNrPlaces = new System.Windows.Forms.Label();
-            this.lvwPlaces = new Radegast.ListViewNoFlicker();
-            this.Place = new System.Windows.Forms.ColumnHeader();
-            this.Traffic = new System.Windows.Forms.ColumnHeader();
             this.tabControl1.SuspendLayout();
             this.tpgPeople.SuspendLayout();
             this.tpgPlaces.SuspendLayout();
@@ -253,6 +253,41 @@ namespace Radegast
             this.pnlPlaceDetail.Size = new System.Drawing.Size(353, 338);
             this.pnlPlaceDetail.TabIndex = 15;
             // 
+            // lvwPlaces
+            // 
+            this.lvwPlaces.AllowColumnReorder = true;
+            this.lvwPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lvwPlaces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Place,
+            this.Traffic});
+            this.lvwPlaces.FullRowSelect = true;
+            this.lvwPlaces.GridLines = true;
+            this.lvwPlaces.HideSelection = false;
+            this.lvwPlaces.Location = new System.Drawing.Point(12, 35);
+            this.lvwPlaces.MultiSelect = false;
+            this.lvwPlaces.Name = "lvwPlaces";
+            this.lvwPlaces.ShowGroups = false;
+            this.lvwPlaces.ShowItemToolTips = true;
+            this.lvwPlaces.Size = new System.Drawing.Size(294, 315);
+            this.lvwPlaces.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lvwPlaces.TabIndex = 14;
+            this.lvwPlaces.UseCompatibleStateImageBehavior = false;
+            this.lvwPlaces.View = System.Windows.Forms.View.Details;
+            this.lvwPlaces.SelectedIndexChanged += new System.EventHandler(this.lvwPlaces_SelectedIndexChanged);
+            this.lvwPlaces.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwPlaces_ColumnClick);
+            // 
+            // Place
+            // 
+            this.Place.Text = "Place";
+            this.Place.Width = 200;
+            // 
+            // Traffic
+            // 
+            this.Traffic.Text = "Traffic";
+            this.Traffic.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.Traffic.Width = 50;
+            // 
             // btnSearchPlace
             // 
             this.btnSearchPlace.Enabled = false;
@@ -317,41 +352,6 @@ namespace Radegast
             this.lblNrPlaces.TabIndex = 8;
             this.lblNrPlaces.Text = "0 places found";
             // 
-            // lvwPlaces
-            // 
-            this.lvwPlaces.AllowColumnReorder = true;
-            this.lvwPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
-            this.lvwPlaces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.Place,
-            this.Traffic});
-            this.lvwPlaces.FullRowSelect = true;
-            this.lvwPlaces.GridLines = true;
-            this.lvwPlaces.HideSelection = false;
-            this.lvwPlaces.Location = new System.Drawing.Point(12, 35);
-            this.lvwPlaces.MultiSelect = false;
-            this.lvwPlaces.Name = "lvwPlaces";
-            this.lvwPlaces.ShowGroups = false;
-            this.lvwPlaces.ShowItemToolTips = true;
-            this.lvwPlaces.Size = new System.Drawing.Size(294, 315);
-            this.lvwPlaces.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lvwPlaces.TabIndex = 14;
-            this.lvwPlaces.UseCompatibleStateImageBehavior = false;
-            this.lvwPlaces.View = System.Windows.Forms.View.Details;
-            this.lvwPlaces.SelectedIndexChanged += new System.EventHandler(this.lvwPlaces_SelectedIndexChanged);
-            this.lvwPlaces.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwPlaces_ColumnClick);
-            // 
-            // Place
-            // 
-            this.Place.Text = "Place";
-            this.Place.Width = 200;
-            // 
-            // Traffic
-            // 
-            this.Traffic.Text = "Traffic";
-            this.Traffic.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.Traffic.Width = 50;
-            // 
             // SearchConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -372,28 +372,29 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Panel pnlFindPeople;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox txtPersonName;
-        private System.Windows.Forms.Button btnFind;
-        private System.Windows.Forms.Button btnNewIM;
-        private System.Windows.Forms.Label lblResultCount;
-        private System.Windows.Forms.Button btnPrevious;
-        private System.Windows.Forms.Button btnNext;
-        private System.Windows.Forms.Button btnProfile;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tpgPeople;
-        private System.Windows.Forms.Button btnLink;
-        private System.Windows.Forms.TabPage tpgPlaces;
-        private System.Windows.Forms.Button btnSearchPlace;
-        private System.Windows.Forms.TextBox txtSearchPlace;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btnNextPlace;
-        private System.Windows.Forms.Button btnPrevPlace;
-        private System.Windows.Forms.Label lblNrPlaces;
-        private ListViewNoFlicker lvwPlaces;
-        private System.Windows.Forms.ColumnHeader Place;
-        private System.Windows.Forms.ColumnHeader Traffic;
-        private System.Windows.Forms.Panel pnlPlaceDetail;
+        public System.Windows.Forms.Panel pnlFindPeople;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.TextBox txtPersonName;
+        public System.Windows.Forms.Button btnFind;
+        public System.Windows.Forms.Button btnNewIM;
+        public System.Windows.Forms.Label lblResultCount;
+        public System.Windows.Forms.Button btnPrevious;
+        public System.Windows.Forms.Button btnNext;
+        public System.Windows.Forms.Button btnProfile;
+        public System.Windows.Forms.TabControl tabControl1;
+        public System.Windows.Forms.TabPage tpgPeople;
+        public System.Windows.Forms.Button btnLink;
+        public System.Windows.Forms.TabPage tpgPlaces;
+        public System.Windows.Forms.Button btnSearchPlace;
+        public System.Windows.Forms.TextBox txtSearchPlace;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Button btnNextPlace;
+        public System.Windows.Forms.Button btnPrevPlace;
+        public System.Windows.Forms.Label lblNrPlaces;
+        public ListViewNoFlicker lvwPlaces;
+        public System.Windows.Forms.ColumnHeader Place;
+        public System.Windows.Forms.ColumnHeader Traffic;
+        public System.Windows.Forms.Panel pnlPlaceDetail;
+
     }
 }

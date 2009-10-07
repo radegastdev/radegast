@@ -91,9 +91,10 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnAccept;
-        private System.Windows.Forms.Button btnDiscard;
-        private System.Windows.Forms.Button btnIgnore;
-        private System.Windows.Forms.RichTextBox txtInfo;
+        public System.Windows.Forms.Button btnAccept;
+        public System.Windows.Forms.Button btnDiscard;
+        public System.Windows.Forms.Button btnIgnore;
+        public System.Windows.Forms.RichTextBox txtInfo;
+
     }
 }

@@ -117,31 +117,31 @@ namespace Radegast
             this.toolStripMenuItem2,
             this.ctxBtnClose});
             this.ctxTabs.Name = "ctxTabs";
-            this.ctxTabs.Size = new System.Drawing.Size(153, 98);
+            this.ctxTabs.Size = new System.Drawing.Size(135, 76);
             this.ctxTabs.Opening += new System.ComponentModel.CancelEventHandler(this.ctxTabs_Opening);
             // 
             // ctxBtnDetach
             // 
             this.ctxBtnDetach.Name = "ctxBtnDetach";
-            this.ctxBtnDetach.Size = new System.Drawing.Size(152, 22);
+            this.ctxBtnDetach.Size = new System.Drawing.Size(134, 22);
             this.ctxBtnDetach.Text = "Detach";
             this.ctxBtnDetach.Click += new System.EventHandler(this.tmnuDetachTab_Click);
             // 
             // ctxBtnMerge
             // 
             this.ctxBtnMerge.Name = "ctxBtnMerge";
-            this.ctxBtnMerge.Size = new System.Drawing.Size(152, 22);
+            this.ctxBtnMerge.Size = new System.Drawing.Size(134, 22);
             this.ctxBtnMerge.Text = "Merge with";
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(131, 6);
             // 
             // ctxBtnClose
             // 
             this.ctxBtnClose.Name = "ctxBtnClose";
-            this.ctxBtnClose.Size = new System.Drawing.Size(152, 22);
+            this.ctxBtnClose.Size = new System.Drawing.Size(134, 22);
             this.ctxBtnClose.Text = "Close";
             this.ctxBtnClose.ToolTipText = " Close ";
             this.ctxBtnClose.Click += new System.EventHandler(this.tbtnCloseTab_Click);
@@ -218,15 +218,15 @@ namespace Radegast
 
         public System.Windows.Forms.ToolStripContainer toolStripContainer1;
         public System.Windows.Forms.ToolStrip tstTabs;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnTabOptions;
-        private System.Windows.Forms.ToolStripMenuItem tmnuMergeWith;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem tmnuDetachTab;
-        private System.Windows.Forms.ToolStripButton tbtnCloseTab;
-        private RadegastContextMenuStrip ctxTabs;
-        private System.Windows.Forms.ToolStripMenuItem ctxBtnDetach;
-        private System.Windows.Forms.ToolStripMenuItem ctxBtnClose;
-        private System.Windows.Forms.ToolStripMenuItem ctxBtnMerge;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnTabOptions;
+        public System.Windows.Forms.ToolStripMenuItem tmnuMergeWith;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem tmnuDetachTab;
+        public System.Windows.Forms.ToolStripButton tbtnCloseTab;
+        public RadegastContextMenuStrip ctxTabs;
+        public System.Windows.Forms.ToolStripMenuItem ctxBtnDetach;
+        public System.Windows.Forms.ToolStripMenuItem ctxBtnClose;
+        public System.Windows.Forms.ToolStripMenuItem ctxBtnMerge;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }
 }

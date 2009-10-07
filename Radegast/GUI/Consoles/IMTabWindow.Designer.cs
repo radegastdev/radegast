@@ -146,10 +146,11 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.RichTextBox rtbIMText;
-        private System.Windows.Forms.ComboBox cbxInput;
-        private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton tbtnProfile;
+        public System.Windows.Forms.RichTextBox rtbIMText;
+        public System.Windows.Forms.ComboBox cbxInput;
+        public System.Windows.Forms.Button btnSend;
+        public System.Windows.Forms.ToolStrip toolStrip1;
+        public System.Windows.Forms.ToolStripButton tbtnProfile;
+
     }
 }

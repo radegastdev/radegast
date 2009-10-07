@@ -63,9 +63,9 @@ namespace Radegast
             this.rtbInfo = new Radegast.RRichTextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnPlay = new System.Windows.Forms.ToolStripButton();
+            this.tbtnReupload = new System.Windows.Forms.ToolStripButton();
             this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
             this.tlblStatus = new System.Windows.Forms.ToolStripLabel();
-            this.tbtnReupload = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -115,6 +115,16 @@ namespace Radegast
             this.tbtnPlay.ToolTipText = "Play guesture in world";
             this.tbtnPlay.Click += new System.EventHandler(this.tbtnPlay_Click);
             // 
+            // tbtnReupload
+            // 
+            this.tbtnReupload.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnReupload.Image = ((System.Drawing.Image)(resources.GetObject("tbtnReupload.Image")));
+            this.tbtnReupload.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnReupload.Name = "tbtnReupload";
+            this.tbtnReupload.Size = new System.Drawing.Size(61, 22);
+            this.tbtnReupload.Text = "Reupload";
+            this.tbtnReupload.Click += new System.EventHandler(this.tbtnReupload_Click);
+            // 
             // tbtnAttach
             // 
             this.tbtnAttach.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -134,16 +144,6 @@ namespace Radegast
             this.tlblStatus.Text = "Status";
             this.tlblStatus.ToolTipText = "Status";
             // 
-            // tbtnReupload
-            // 
-            this.tbtnReupload.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnReupload.Image = ((System.Drawing.Image)(resources.GetObject("tbtnReupload.Image")));
-            this.tbtnReupload.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnReupload.Name = "tbtnReupload";
-            this.tbtnReupload.Size = new System.Drawing.Size(61, 22);
-            this.tbtnReupload.Text = "Reupload";
-            this.tbtnReupload.Click += new System.EventHandler(this.tbtnReupload_Click);
-            // 
             // Guesture
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -162,12 +162,13 @@ namespace Radegast
 
         #endregion
 
-        private Radegast.LineNumberPanel lnPanel;
-        private Radegast.RRichTextBox rtbInfo;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton tbtnPlay;
-        private System.Windows.Forms.ToolStripButton tbtnAttach;
-        private System.Windows.Forms.ToolStripLabel tlblStatus;
-        private System.Windows.Forms.ToolStripButton tbtnReupload;
+        public LineNumberPanel lnPanel;
+        public RRichTextBox rtbInfo;
+        public System.Windows.Forms.ToolStrip toolStrip1;
+        public System.Windows.Forms.ToolStripButton tbtnPlay;
+        public System.Windows.Forms.ToolStripButton tbtnAttach;
+        public System.Windows.Forms.ToolStripLabel tlblStatus;
+        public System.Windows.Forms.ToolStripButton tbtnReupload;
+
     }
 }

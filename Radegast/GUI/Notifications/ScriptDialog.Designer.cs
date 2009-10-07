@@ -110,8 +110,9 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel btnsPanel;
-        private System.Windows.Forms.TextBox descBox;
-        private System.Windows.Forms.Button ignoreBtn;
+        public System.Windows.Forms.Panel btnsPanel;
+        public System.Windows.Forms.TextBox descBox;
+        public System.Windows.Forms.Button ignoreBtn;
+
     }
 }

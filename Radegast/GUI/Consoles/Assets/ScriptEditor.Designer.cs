@@ -469,7 +469,7 @@ namespace Radegast
             this.rtb.HideSelection = false;
             this.rtb.Location = new System.Drawing.Point(33, 25);
             this.rtb.Name = "rtb";
-            this.rtb.Size = new System.Drawing.Size(628, 395);
+            this.rtb.Size = new System.Drawing.Size(628, 370);
             this.rtb.SyntaxHighlightEnabled = true;
             this.rtb.TabIndex = 1;
             this.rtb.Text = "";
@@ -487,7 +487,7 @@ namespace Radegast
             this.lineNubersForRtb.Location = new System.Drawing.Point(0, 25);
             this.lineNubersForRtb.Name = "lineNubersForRtb";
             this.lineNubersForRtb.RTB = this.rtb;
-            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 395);
+            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 370);
             this.lineNubersForRtb.TabIndex = 6;
             // 
             // ScriptEditor
@@ -514,46 +514,47 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.ToolTip ttKeyWords;
-        private System.Windows.Forms.ToolStrip tsMenu;
-        private System.Windows.Forms.ToolStripDropDownButton tbtbFile;
-        private System.Windows.Forms.ToolStripMenuItem tbtbSave;
-        private System.Windows.Forms.ToolStripMenuItem tbtbSaveToDiskAs;
-        private System.Windows.Forms.ToolStripMenuItem tbtbLoadFromDisk;
-        private System.Windows.Forms.ToolStripButton tbtnAttach;
-        private System.Windows.Forms.ToolStripSeparator tSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem tbtnExit;
-        private System.Windows.Forms.ToolStrip tsStatus;
-        private System.Windows.Forms.ToolStripLabel lblScripStatus;
-        private System.Windows.Forms.ToolStripLabel lblCol;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripLabel lblLine;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem tbtbSaveToDisk;
-        private System.Windows.Forms.ToolStripDropDownButton tbtnEdit;
-        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
-        private System.Windows.Forms.ToolStrip tsFindReplace;
-        private System.Windows.Forms.ToolStripButton tfindClose;
-        private System.Windows.Forms.ToolStripTextBox tfindFindText;
-        private ToolStripCheckBox tfindMatchCase;
-        private System.Windows.Forms.ToolStripButton tfindDoFind;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-        private System.Windows.Forms.ToolStripTextBox tfindReplaceText;
-        private System.Windows.Forms.ToolStripButton tfindFindNextReplace;
-        private System.Windows.Forms.ToolStripButton tfindReplace;
-        private System.Windows.Forms.ToolStripButton tfindReplaceAll;
-        private System.Windows.Forms.ToolStripSeparator toolStripButton1;
-        private RRichTextBox rtb;
-        private LineNumberPanel lineNubersForRtb;
-        private System.Windows.Forms.ToolStripMenuItem syntaxHiglightingToolStripMenuItem;
+        public System.Windows.Forms.ToolTip ttKeyWords;
+        public System.Windows.Forms.ToolStrip tsMenu;
+        public System.Windows.Forms.ToolStripDropDownButton tbtbFile;
+        public System.Windows.Forms.ToolStripMenuItem tbtbSave;
+        public System.Windows.Forms.ToolStripMenuItem tbtbSaveToDiskAs;
+        public System.Windows.Forms.ToolStripMenuItem tbtbLoadFromDisk;
+        public System.Windows.Forms.ToolStripButton tbtnAttach;
+        public System.Windows.Forms.ToolStripSeparator tSeparator1;
+        public System.Windows.Forms.ToolStripMenuItem tbtnExit;
+        public System.Windows.Forms.ToolStrip tsStatus;
+        public System.Windows.Forms.ToolStripLabel lblScripStatus;
+        public System.Windows.Forms.ToolStripLabel lblCol;
+        public System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        public System.Windows.Forms.ToolStripLabel lblLine;
+        public System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        public System.Windows.Forms.ToolStripMenuItem tbtbSaveToDisk;
+        public System.Windows.Forms.ToolStripDropDownButton tbtnEdit;
+        public System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem cutToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem pasteToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem selectAllToolStripMenuItem;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        public System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
+        public System.Windows.Forms.ToolStrip tsFindReplace;
+        public System.Windows.Forms.ToolStripButton tfindClose;
+        public System.Windows.Forms.ToolStripTextBox tfindFindText;
+        public ToolStripCheckBox tfindMatchCase;
+        public System.Windows.Forms.ToolStripButton tfindDoFind;
+        public System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        public System.Windows.Forms.ToolStripTextBox tfindReplaceText;
+        public System.Windows.Forms.ToolStripButton tfindFindNextReplace;
+        public System.Windows.Forms.ToolStripButton tfindReplace;
+        public System.Windows.Forms.ToolStripButton tfindReplaceAll;
+        public System.Windows.Forms.ToolStripSeparator toolStripButton1;
+        public RRichTextBox rtb;
+        public LineNumberPanel lineNubersForRtb;
+        public System.Windows.Forms.ToolStripMenuItem syntaxHiglightingToolStripMenuItem;
+
     }
 }

@@ -100,7 +100,8 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox txtMessage;
-        private System.Windows.Forms.Button btnOk;
+        public System.Windows.Forms.TextBox txtMessage;
+        public System.Windows.Forms.Button btnOk;
+
     }
 }

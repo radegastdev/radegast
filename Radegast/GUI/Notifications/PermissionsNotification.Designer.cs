@@ -124,10 +124,11 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnIgnore;
-        private System.Windows.Forms.Button btnNo;
-        private System.Windows.Forms.Button btnYes;
-        private System.Windows.Forms.TextBox txtMessage;
+        public System.Windows.Forms.Button btnIgnore;
+        public System.Windows.Forms.Button btnNo;
+        public System.Windows.Forms.Button btnYes;
+        public System.Windows.Forms.TextBox txtMessage;
+
 
     }
 }

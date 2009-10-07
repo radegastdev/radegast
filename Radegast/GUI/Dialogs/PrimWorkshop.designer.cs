@@ -294,20 +294,21 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.SplitContainer splitContainer;
-        private Tao.Platform.Windows.SimpleOpenGlControl glControl;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.HScrollBar scrollRoll;
-        private System.Windows.Forms.HScrollBar scrollPitch;
-        private System.Windows.Forms.HScrollBar scrollYaw;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox cboFace;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox cboPrim;
-        private System.Windows.Forms.PictureBox picTexture;
-        private System.Windows.Forms.HScrollBar scrollZoom;
+        public System.Windows.Forms.SplitContainer splitContainer;
+        public Tao.Platform.Windows.SimpleOpenGlControl glControl;
+        public System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        public System.Windows.Forms.HScrollBar scrollRoll;
+        public System.Windows.Forms.HScrollBar scrollPitch;
+        public System.Windows.Forms.HScrollBar scrollYaw;
+        public System.Windows.Forms.Panel panel2;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.ComboBox cboFace;
+        public System.Windows.Forms.Panel panel1;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.ComboBox cboPrim;
+        public System.Windows.Forms.PictureBox picTexture;
+        public System.Windows.Forms.HScrollBar scrollZoom;
+
     }
 }
 

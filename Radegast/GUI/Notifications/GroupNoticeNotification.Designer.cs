@@ -112,6 +112,7 @@ namespace Radegast
             this.imgGroup.Location = new System.Drawing.Point(5, 42);
             this.imgGroup.Name = "imgGroup";
             this.imgGroup.Size = new System.Drawing.Size(78, 78);
+            this.imgGroup.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.imgGroup.TabIndex = 3;
             this.imgGroup.TabStop = false;
             // 
@@ -191,14 +192,15 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblSentBy;
-        private System.Windows.Forms.TextBox txtNotice;
-        private Radegast.SLImageHandler imgGroup;
-        private System.Windows.Forms.Button btnOK;
-        private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.PictureBox icnItem;
-        private System.Windows.Forms.TextBox txtItemName;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Label lblSentBy;
+        public System.Windows.Forms.TextBox txtNotice;
+        public SLImageHandler imgGroup;
+        public System.Windows.Forms.Button btnOK;
+        public System.Windows.Forms.Label lblTitle;
+        public System.Windows.Forms.Button btnSave;
+        public System.Windows.Forms.PictureBox icnItem;
+        public System.Windows.Forms.TextBox txtItemName;
+
     }
 }

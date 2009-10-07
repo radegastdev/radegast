@@ -210,16 +210,17 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label lblResident;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnPay;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button btnFastPay1;
-        private System.Windows.Forms.Button btnFastPay2;
-        private System.Windows.Forms.Button btnFastPay3;
-        private System.Windows.Forms.Button btnFastPay4;
-        private System.Windows.Forms.TextBox txtAmount;
-        private System.Windows.Forms.Label lblObject;
+        public System.Windows.Forms.Label lblResident;
+        public System.Windows.Forms.Button btnCancel;
+        public System.Windows.Forms.Button btnPay;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Button btnFastPay1;
+        public System.Windows.Forms.Button btnFastPay2;
+        public System.Windows.Forms.Button btnFastPay3;
+        public System.Windows.Forms.Button btnFastPay4;
+        public System.Windows.Forms.TextBox txtAmount;
+        public System.Windows.Forms.Label lblObject;
+
     }
 }
