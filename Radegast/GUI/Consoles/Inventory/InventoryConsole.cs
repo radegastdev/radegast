@@ -1254,6 +1254,7 @@ namespace Radegast
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.ReplaceOutfit(newOutfit);
+                        client.Appearance.RequestSetAppearance(true);
                         UpdateWornLabels();
                         break;
 
