@@ -45,16 +45,16 @@ namespace Radegast
         }
 
         /// <summary>
-        ///             AddContextMenu(typeof(Object), "Clueless Object!",
+        ///             RegisterContextAction(typeof(Object), "Clueless Object!",
         ///                   (obj, hand)
         ///                   => Console.WriteLine("I am an Object!: {0} {1} {2}", obj, hand, obj.GetType()));
         /// </summary>
         /// <param name="libomvType"></param>
         /// <param name="label"></param>
         /// <param name="handler"></param>
-        public void AddContextMenu(Type libomvType, String label, EventHandler handler)
+        public void RegisterContextAction(Type libomvType, String label, EventHandler handler)
         {
-            AddContextMenu(new ContextAction(instance)
+            RegisterContextAction(new ContextAction(instance)
                                {
                                    Label = label,
                                    Handler = handler,
@@ -62,7 +62,7 @@ namespace Radegast
                                });
         }
 
-        public void AddContextMenu(IContextAction handler)
+        public void RegisterContextAction(IContextAction handler)
         {
             lock (contextEventHandlers)
             {
@@ -237,14 +237,14 @@ namespace Radegast
                     if (c != null)
                     {
                         IContextAction plug = (IContextAction)c.Invoke(new object[] { instance });
-                        AddContextMenu(plug);
+                        RegisterContextAction(plug);
                         return;
                     }
                     c = type.GetConstructor(Type.EmptyTypes);
                     if (c != null)
                     {
                         IContextAction plug = (IContextAction)c.Invoke(new object[0]);
-                        AddContextMenu(plug);
+                        RegisterContextAction(plug);
                         return;
                     }
                 }

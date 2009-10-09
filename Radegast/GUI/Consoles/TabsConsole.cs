@@ -447,14 +447,14 @@ namespace Radegast
         }
 
 
-        public void AddContextMenu(Type libomvType, String label, EventHandler handler)
+        public void RegisterContextAction(Type libomvType, String label, EventHandler handler)
         {
-            instance.ContextActionManager.AddContextMenu(libomvType, label, handler);
+            instance.ContextActionManager.RegisterContextAction(libomvType, label, handler);
         }
 
-        public void AddContextMenu(ContextAction handler)
+        public void RegisterContextAction(ContextAction handler)
         {
-            instance.ContextActionManager.AddContextMenu(handler);
+            instance.ContextActionManager.RegisterContextAction(handler);
         }
 
         public void AddTab(RadegastTab tab)

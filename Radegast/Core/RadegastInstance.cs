@@ -367,7 +367,6 @@ namespace Radegast
                     try
                     {
                         commandsManager.LoadType(type);
-                        ContextActionManager.LoadType(type);
                     }
                     catch (Exception ex)
                     {
