@@ -128,6 +128,17 @@ namespace Radegast
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
         {
+            if (TreeUpdateTimer != null)
+            {
+                TreeUpdateTimer.Dispose();
+                TreeUpdateTimer = null;
+            }
+            if (InventoryUpdate != null)
+            {
+                if (InventoryUpdate.IsAlive)
+                    InventoryUpdate.Abort();
+                InventoryUpdate = null;
+            }
             Inventory.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             Inventory.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
@@ -653,13 +664,7 @@ namespace Radegast
             }
 
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
-            Thread saveInvToDisk = new Thread(new ThreadStart(
-                delegate()
-                {
-                    Inventory.SaveToDisk(instance.InventoryCacheFileName);
-                }));
-            saveInvToDisk.Name = "Save inventory to disk";
-            saveInvToDisk.Start();
+            ThreadPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
         }
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
