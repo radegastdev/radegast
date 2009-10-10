@@ -153,9 +153,7 @@ namespace Radegast
             {
                 if (selectedTab.Name == "login")
                     tabs["chat"].Select();
-
-                tabs["login"].AllowClose = true;
-                tabs["login"].Close();
+                ForceCloseTab("login");
             }
 
             client.Self.RetrieveInstantMessages();
@@ -368,14 +366,15 @@ namespace Radegast
 
         private void InitializeMainTab()
         {
-            MainConsole mainConsole = new MainConsole(instance);
+            LoginConsole loginConsole = new LoginConsole(instance);
 
-            RadegastTab tab = AddTab("login", "Login", mainConsole);
+            RadegastTab tab = AddTab("login", "Login", loginConsole);
             tab.AllowClose = false;
             tab.AllowDetach = false;
             tab.AllowMerge = false;
+            tab.AllowHide = false;
 
-            mainConsole.RegisterTab(tab);
+            loginConsole.RegisterTab(tab);
         }
 
         private void InitializeChatTab()
@@ -412,7 +411,7 @@ namespace Radegast
 
             tab = AddTab("search", "Search", new SearchConsole(instance));
             tab.AllowClose = false;
-            tab.AllowDetach = false;
+            tab.AllowDetach = true;
             tab.Visible = false;
 
             tab = AddTab("map", "Map", new MapConsole(instance));

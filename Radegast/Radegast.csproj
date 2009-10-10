@@ -312,11 +312,11 @@
     <Compile Include="GUI\Consoles\SearchConsole.Designer.cs">
       <DependentUpon>SearchConsole.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Consoles\MainConsole.cs">
+    <Compile Include="GUI\Consoles\LoginConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\MainConsole.Designer.cs">
-      <DependentUpon>MainConsole.cs</DependentUpon>
+    <Compile Include="GUI\Consoles\LoginConsole.Designer.cs">
+      <DependentUpon>LoginConsole.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Consoles\TabsConsole.cs">
       <SubType>UserControl</SubType>
@@ -558,9 +558,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>IMTabWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Consoles\MainConsole.resx">
+    <EmbeddedResource Include="GUI\Consoles\LoginConsole.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>MainConsole.cs</DependentUpon>
+      <DependentUpon>LoginConsole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\GroupInfo.resx">
       <DependentUpon>GroupInfo.cs</DependentUpon>

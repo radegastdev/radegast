@@ -37,12 +37,12 @@ using Radegast.Netcom;
 
 namespace Radegast
 {
-    public partial class MainConsole : UserControl, IRadegastTabControl
+    public partial class LoginConsole : UserControl, IRadegastTabControl
     {
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
 
-        public MainConsole(RadegastInstance instance)
+        public LoginConsole(RadegastInstance instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(MainConsole_Disposed);

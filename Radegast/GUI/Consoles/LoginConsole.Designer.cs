@@ -30,7 +30,7 @@
 //
 namespace Radegast
 {
-    partial class MainConsole
+    partial class LoginConsole
     {
         /// <summary> 
         /// Required designer variable.
