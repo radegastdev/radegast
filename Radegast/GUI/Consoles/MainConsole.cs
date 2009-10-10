@@ -104,8 +104,17 @@ namespace Radegast
             txtPassword.Text = s["password"].AsString();
             netcom.LoginOptions.IsPasswordMD5 = true;
 
-            cbxLocation.SelectedIndex = s["login_location_type"].AsInteger();
-            cbxLocation.Text = s["login_location"].AsString();
+            // Use last location as default
+            if (s["login_location_type"].Type == OSDType.Unknown)
+            {
+                cbxLocation.SelectedIndex = 1;
+                s["login_location_type"] = OSD.FromInteger(1);
+            }
+            else
+            {
+                cbxLocation.SelectedIndex = s["login_location_type"].AsInteger();
+                cbxLocation.Text = s["login_location"].AsString();
+            }
 
             cbxGrid.SelectedIndex = s["login_grid"].AsInteger();
             txtCustomLoginUri.Text = s["login_uri"].AsString();
