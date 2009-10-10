@@ -186,8 +186,7 @@ namespace Radegast
                 lblStatus.Text = "Sending to " + friend.Name;
                 Logger.Log("Sending item to " + friend.Name, Helpers.LogLevel.Info);
 
-                InventoryItem item = (InventoryItem)instance.Client.Inventory.Store[itemID];
-                instance.Client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, friend.UUID, false);
+                instance.Client.Inventory.GiveItem(itemID, boxAnimName.Text, AssetType.Animation, friend.UUID, false);
                 lblStatus.Text = "Sent";
             }
 

@@ -41,5 +41,10 @@ namespace Radegast
             txtTitle.Text = Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev;
         }
 
+        private void lblHomepage_Click(object sender, System.EventArgs e)
+        {
+            Instance.MainForm.ProcessLink("http://www.radegastclient.org/");
+        }
+
     }
 }
