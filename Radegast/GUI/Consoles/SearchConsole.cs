@@ -29,8 +29,6 @@
 // $Id$
 //
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
 using System.Diagnostics;
@@ -39,6 +37,7 @@ namespace Radegast
 {
     public partial class SearchConsole : UserControl
     {
+        #region Private members
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
 
@@ -48,7 +47,9 @@ namespace Radegast
         private int startResult = 0;
 
         private int totalResults = 0;
+        #endregion Private members
 
+        #region Construction and disposal
         public SearchConsole(RadegastInstance instance)
         {
             InitializeComponent();
@@ -72,6 +73,9 @@ namespace Radegast
             client.Directory.DirPlacesReply -= new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
         }
 
+        #endregion Construction and disposal
+
+        #region People search
         private void console_SelectedIndexChanged(object sender, EventArgs e)
         {
             btnNewIM.Enabled = btnProfile.Enabled = (console.SelectedName != null);
@@ -180,6 +184,7 @@ namespace Radegast
             ProcessStartInfo sInfo = new ProcessStartInfo(((Button)sender).Tag.ToString());
             Process.Start(sInfo);
         }
+        #endregion People search
 
         #region Places search
         private UUID placeSearch;
