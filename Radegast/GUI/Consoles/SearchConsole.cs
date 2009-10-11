@@ -57,8 +57,8 @@ namespace Radegast
             this.instance = instance;
 
             // Callbacks
-            client.Directory.OnDirPeopleReply += new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
-            client.Directory.OnDirPlacesReply += new DirectoryManager.DirPlacesReplyCallback(Directory_OnDirPlacesReply);
+            client.Directory.DirPeopleReply += new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
+            client.Directory.DirPlacesReply += new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
             console = new FindPeopleConsole(instance, UUID.Random());
             console.Dock = DockStyle.Fill;
             console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
@@ -68,8 +68,8 @@ namespace Radegast
 
         void SearchConsole_Disposed(object sender, EventArgs e)
         {
-            client.Directory.OnDirPeopleReply -= new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
-            client.Directory.OnDirPlacesReply -= new DirectoryManager.DirPlacesReplyCallback(Directory_OnDirPlacesReply);
+            client.Directory.DirPeopleReply -= new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
+            client.Directory.DirPlacesReply -= new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
         }
 
         private void console_SelectedIndexChanged(object sender, EventArgs e)
@@ -78,18 +78,17 @@ namespace Radegast
         }
 
 
-        //Separate thread
-        private void Directory_OnDirPeopleReply(UUID queryID, List<DirectoryManager.AgentSearchData> matchedPeople)
+        void Directory_DirPeopleReply(object sender, DirPeopleReplyEventArgs e)
         {
-            BeginInvoke(new DirectoryManager.DirPeopleReplyCallback(PeopleReply), new object[] { queryID, matchedPeople });
-        }
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Directory_DirPeopleReply(sender, e)));
+                return;
+            }
 
-        //UI thread
-        private void PeopleReply(UUID queryID, List<DirectoryManager.AgentSearchData> matchedPeople)
-        {
-            if (console.QueryID != queryID) return;
+            if (console.QueryID != e.QueryID) return;
 
-            totalResults += matchedPeople.Count;
+            totalResults += e.MatchedPeople.Count;
             lblResultCount.Text = totalResults.ToString() + " people found";
 
             txtPersonName.Enabled = true;
@@ -147,10 +146,10 @@ namespace Radegast
             btnNext.Enabled = false;
 
             console.ClearResults();
-            console.QueryID = client.Directory.StartPeopleSearch(
+            console.QueryID = client.Directory.StartPeopleSearch(/*
                 DirectoryManager.DirFindFlags.NameSort |
                 DirectoryManager.DirFindFlags.SortAsc |
-                DirectoryManager.DirFindFlags.People,
+                DirectoryManager.DirFindFlags.People,*/
                 lastQuery, startResult);
         }
 
@@ -187,22 +186,22 @@ namespace Radegast
         private int placeMatches = 0;
         private int placeStart = 0;
 
-        void Directory_OnDirPlacesReply(UUID queryID, List<DirectoryManager.DirectoryParcel> matchedParcels)
+        void Directory_DirPlacesReply(object sender, DirPlacesReplyEventArgs e)
         {
-            if (queryID != placeSearch) return;
+            if (e.QueryID != placeSearch) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Directory_OnDirPlacesReply(queryID, matchedParcels)));
+                BeginInvoke(new MethodInvoker(() => Directory_DirPlacesReply(sender, e)));
                 return;
             }
 
             lvwPlaces.BeginUpdate();
 
-            if (placeMatches == 0)
+            if (e.MatchedParcels.Count == 0)
                 lvwPlaces.Items.Clear();
 
-            foreach (DirectoryManager.DirectoryParcel parcel in matchedParcels)
+            foreach (DirectoryManager.DirectoryParcel parcel in e.MatchedParcels)
             {
                 if (parcel.ID == UUID.Zero) continue;
 
@@ -216,12 +215,12 @@ namespace Radegast
             lvwPlaces.Sort();
             lvwPlaces.EndUpdate();
 
-            placeMatches += matchedParcels.Count;
+            placeMatches += e.MatchedParcels.Count;
 
             btnNextPlace.Enabled = placeMatches > 100;
             btnPrevPlace.Enabled = placeStart != 0;
 
-            if (matchedParcels.Count > 0 && matchedParcels[matchedParcels.Count - 1].ID == UUID.Zero)
+            if (e.MatchedParcels.Count > 0 && e.MatchedParcels[e.MatchedParcels.Count - 1].ID == UUID.Zero)
                 placeMatches -= 1;
 
             lblNrPlaces.Visible = true;

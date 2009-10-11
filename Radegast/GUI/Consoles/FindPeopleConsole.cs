@@ -60,28 +60,27 @@ namespace Radegast
             client = this.instance.Client;
 
             // Callbacks
-            client.Directory.OnDirPeopleReply += new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
+            client.Directory.DirPeopleReply += new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
         }
 
         void FindPeopleConsole_Disposed(object sender, EventArgs e)
         {
-            client.Directory.OnDirPeopleReply -= new DirectoryManager.DirPeopleReplyCallback(Directory_OnDirPeopleReply);
+            client.Directory.DirPeopleReply -= new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
         }
 
-        //Separate thread
-        private void Directory_OnDirPeopleReply(UUID queryID, List<DirectoryManager.AgentSearchData> matchedPeople)
+        void Directory_DirPeopleReply(object sender, DirPeopleReplyEventArgs e)
         {
-            BeginInvoke(new DirectoryManager.DirPeopleReplyCallback(PeopleReply), new object[] { queryID, matchedPeople });
-        }
+            if (e.QueryID != this.queryID) return;
 
-        //UI thread
-        private void PeopleReply(UUID queryID, List<DirectoryManager.AgentSearchData> matchedPeople)
-        {
-            if (queryID != this.queryID) return;
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Directory_DirPeopleReply(sender, e)));
+                return;
+            }
 
             lvwFindPeople.BeginUpdate();
 
-            foreach (DirectoryManager.AgentSearchData person in matchedPeople)
+            foreach (DirectoryManager.AgentSearchData person in e.MatchedPeople)
             {
                 string fullName = person.FirstName + " " + person.LastName;
                 findPeopleResults.Add(fullName, person.AgentID);
