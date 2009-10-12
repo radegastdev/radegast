@@ -194,6 +194,7 @@ namespace Radegast
                                                     })
                               {
                                   Enabled = button.Enabled,
+                                  Visible = button.Visible,                                  
                                   ToolTipText = "" + obj
                               });
                 return;
