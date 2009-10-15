@@ -1,5 +1,9 @@
 #!/bin/bash
 
+cd `dirname "$0"`
+mkdir bin 2>/dev/null
+cp Radegast/assemblies/* bin
+
 mono Radegast/Prebuild.exe /target nant
 mono Radegast/Prebuild.exe /target monodev
 
