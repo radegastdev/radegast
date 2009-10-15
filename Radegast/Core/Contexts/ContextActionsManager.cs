@@ -45,9 +45,11 @@ namespace Radegast
         }
 
         /// <summary>
-        ///             RegisterContextAction(typeof(Object), "Clueless Object!",
+        /// Register a Context Action 
+        ///  <code>           RegisterContextAction(typeof(Object), "Clueless Object!",
         ///                   (obj, hand)
         ///                   => Console.WriteLine("I am an Object!: {0} {1} {2}", obj, hand, obj.GetType()));
+        /// </code>
         /// </summary>
         /// <param name="libomvType"></param>
         /// <param name="label"></param>
@@ -62,6 +64,25 @@ namespace Radegast
                                });
         }
 
+        /// <summary>
+        /// Deregister a Context Action 
+        ///  <code></code>DeregisterContextAction(typeof(Object), "Clueless Object!");</code>
+        /// </summary>
+        /// <param name="libomvType"></param>
+        /// <param name="label"></param>
+        public void DeregisterContextAction(Type libomvType, String label)
+        {
+            lock (contextEventHandlers)
+            {
+                contextEventHandlers.RemoveAll(e =>
+                                                   {
+                                                       ContextAction ca = e as ContextAction;
+                                                       return ca != null && ca.Label == label &&
+                                                              libomvType == ca.ContextType;
+                                                   });
+            }
+        }
+
         public void RegisterContextAction(IContextAction handler)
         {
             lock (contextEventHandlers)
@@ -71,13 +92,35 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Register a Context Action 
+        /// </summary>
+        /// <param name="handler"></param>
+        public void DeregisterContextAction(IContextAction handler)
+        {
+            lock (contextEventHandlers)
+            {
+                contextEventHandlers.Remove(handler);
+            }
+        }
+
+        /// <summary>
+        /// Used by UI forms to add new ContextMenu Items to a Menu they are about to Display based on the Object
+        /// </summary>
+        /// <param name="strip">The form's menu</param>
+        /// <param name="o">The target object</param>
         public void AddContributions(ToolStripDropDown strip, Object o)
         {
             SetCurrentItem(strip, o);
             AddContributions(strip, o != null ? o.GetType() : null, o);
         }
 
-        public void AddContributions(ToolStripDropDown strip, List<ToolStripMenuItem> itemsIn)
+        /// <summary>
+        /// Used by AddContributions to add new ContextMenu Items to a Menu they are about to Display
+        /// </summary>
+        /// <param name="strip">The form's menu</param>
+        /// <param name="itemsIn">New Items to Add</param>
+        public static void AddContributions_Helper(ToolStripDropDown strip, List<ToolStripMenuItem> itemsIn)
         {
             if (itemsIn == null || itemsIn.Count == 0) return;
             List<ToolStripItem> items = new List<ToolStripItem>();
@@ -106,6 +149,13 @@ namespace Radegast
             strip.Closing += ((sender, args) => items.ForEach((o) => strip.Items.Remove(o)));
         }
 
+        /// <summary>
+        /// Used by UI forms to add new ContextMenu Items to a Menu they are about to Display
+        /// </summary>
+        /// <param name="strip">The form's menu</param>        
+        /// <param name="type">The type it will target</param>
+        /// <param name="obj">the Target ofbject</param>
+        /// <param name="controls">Control to search for extra contributions (like buttons)</param>
         public void AddContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
             SetCurrentItem(strip, obj);
@@ -119,7 +169,7 @@ namespace Radegast
                 if (v != null) items.AddRange(v);
             }
             items.Sort(CompareItems);
-            AddContributions(strip, items);
+            AddContributions_Helper(strip, items);
             if (!instance.advancedDebugging) return;
             List<ToolStripMenuItem> item1 = new List<ToolStripMenuItem>();
             string newVariable = obj.GetType() == type
@@ -136,9 +186,14 @@ namespace Radegast
                 ToolTipText = "" + obj
             });
 
-            AddContributions(strip, item1);
+            AddContributions_Helper(strip, item1);
         }
 
+        /// <summary>
+        /// Used by UI forms to set the Context target (saved in the toplevel strip if it's a RadegastContextMenuStrip)
+        /// </summary>
+        /// <param name="strip"></param>
+        /// <param name="o"></param>
         public void SetCurrentItem(ToolStripDropDown strip, object o)
         {
             RadegastContextMenuStrip rmenu = strip as RadegastContextMenuStrip;
@@ -161,22 +216,36 @@ namespace Radegast
             return t + sender;
         }
 
+        /// <summary>
+        /// Used by UI forms to add new ContextMenu Items gleaned from Controls
+        /// </summary>
+        /// <param name="strip">The form's menu</param>        
+        /// <param name="type">The type it will target</param>
+        /// <param name="obj">the Target ofbject</param>
+        /// <param name="controls">Control to search for extra contributions (like buttons)</param>
         public void GleanContributions(ToolStripDropDown strip, Type type, Object obj, params Control[] controls)
         {
             SetCurrentItem(strip, obj);
             List<ToolStripMenuItem> items = new List<ToolStripMenuItem>();
-            foreach (Control control in controls) GleanContributions(items, type, control, obj);                
+            foreach (Control control in controls) GleanContributions_Helper(items, type, control, obj);                
             if (obj is Control)
             {
                 Control control1 = (Control) obj;
-                GleanContributions(items, type, control1.Parent, obj);
+                GleanContributions_Helper(items, type, control1.Parent, obj);
             }
             if (items.Count == 0) return;
             items.Sort(CompareItems);
-            AddContributions(strip, items);
+            AddContributions_Helper(strip, items);
         }
 
-        public void GleanContributions(List<ToolStripMenuItem> items, Type type, Control control, Object obj)
+        /// <summary>
+        /// Used by GleanContributions to add new ContextMenu Items gleaned from Parent control that has buttons on it
+        /// </summary>
+        /// <param name="items">Collection of Items to be added to</param>        
+        /// <param name="type">The type it will target</param>
+        /// <param name="control">Parent control that has buttons on it</param>
+        /// <param name="obj">Will becvome the button's target when </param>
+        static public void GleanContributions_Helper(ICollection<ToolStripMenuItem> items, Type type, Control control, Object obj)
         {
             if (control == null) return;
             if (control is Button)
@@ -200,7 +269,7 @@ namespace Radegast
                 return;
             }
             foreach (object v in control.Controls)
-                GleanContributions(items, type, (Control) v, obj);
+                GleanContributions_Helper(items, type, (Control) v, obj);
         }
 
         static int CompareItems(ToolStripItem i1, ToolStripItem i2)
