@@ -78,7 +78,6 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             client.Avatars.OnAvatarPicks += new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
             client.Avatars.OnPickInfo += new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
@@ -90,7 +89,6 @@ namespace Radegast
 
         void frmProfile_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             client.Avatars.OnAvatarPicks -= new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
             client.Avatars.OnPickInfo -= new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
@@ -241,21 +239,6 @@ namespace Radegast
             Close();
         }
 
-        private void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
-        {
-            foreach (KeyValuePair<UUID, string> kvp in names)
-            {
-                BeginInvoke(new OnSetPartnerText(SetPartnerText), new object[] { kvp.Value });
-                break;
-            }
-        }
-
-        private delegate void OnSetPartnerText(string partner);
-        private void SetPartnerText(string partner)
-        {
-            txtPartner.Text = partner;
-        }
-
         //comes in on separate thread
         private void Avatars_OnAvatarProperties(UUID avatarID, Avatar.AvatarProperties properties)
         {
@@ -308,7 +291,7 @@ namespace Radegast
         private void SetProfileProperties(Avatar.AvatarProperties properties)
         {
             txtBornOn.Text = properties.BornOn;
-            if (properties.Partner != UUID.Zero) client.Avatars.RequestAvatarName(properties.Partner);
+            anPartner.AgentID = properties.Partner;
 
             if (fullName.EndsWith("Linden")) rtbAccountInfo.AppendText("Linden Lab Employee\n");
             if (properties.Identified) rtbAccountInfo.AppendText("Identified\n");

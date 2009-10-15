@@ -61,6 +61,7 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProfile));
             this.tabProfile = new System.Windows.Forms.TabControl();
             this.tpgProfile = new System.Windows.Forms.TabPage();
+            this.anPartner = new Radegast.AgentNameTextBox();
             this.btnIM = new System.Windows.Forms.Button();
             this.btnFriend = new System.Windows.Forms.Button();
             this.slPicPanel = new System.Windows.Forms.Panel();
@@ -70,12 +71,10 @@ namespace Radegast
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
             this.txtUUID = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.txtPartner = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.txtBornOn = new System.Windows.Forms.TextBox();
-            this.txtFullName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.tpgWeb = new System.Windows.Forms.TabPage();
@@ -101,6 +100,7 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtFullName = new System.Windows.Forms.TextBox();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
@@ -128,6 +128,8 @@ namespace Radegast
             // 
             // tpgProfile
             // 
+            this.tpgProfile.Controls.Add(this.txtFullName);
+            this.tpgProfile.Controls.Add(this.anPartner);
             this.tpgProfile.Controls.Add(this.btnIM);
             this.tpgProfile.Controls.Add(this.btnFriend);
             this.tpgProfile.Controls.Add(this.slPicPanel);
@@ -137,12 +139,10 @@ namespace Radegast
             this.tpgProfile.Controls.Add(this.rtbAbout);
             this.tpgProfile.Controls.Add(this.txtUUID);
             this.tpgProfile.Controls.Add(this.label9);
-            this.tpgProfile.Controls.Add(this.txtPartner);
             this.tpgProfile.Controls.Add(this.label5);
             this.tpgProfile.Controls.Add(this.label4);
             this.tpgProfile.Controls.Add(this.label3);
             this.tpgProfile.Controls.Add(this.txtBornOn);
-            this.tpgProfile.Controls.Add(this.txtFullName);
             this.tpgProfile.Controls.Add(this.label2);
             this.tpgProfile.Controls.Add(this.label1);
             this.tpgProfile.Location = new System.Drawing.Point(4, 22);
@@ -152,6 +152,15 @@ namespace Radegast
             this.tpgProfile.TabIndex = 0;
             this.tpgProfile.Text = "Profile";
             this.tpgProfile.UseVisualStyleBackColor = true;
+            // 
+            // anPartner
+            // 
+            this.anPartner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("anPartner.AgentID")));
+            this.anPartner.Location = new System.Drawing.Point(306, 34);
+            this.anPartner.Name = "anPartner";
+            this.anPartner.ReadOnly = true;
+            this.anPartner.Size = new System.Drawing.Size(148, 21);
+            this.anPartner.TabIndex = 20;
             // 
             // btnIM
             // 
@@ -243,15 +252,6 @@ namespace Radegast
             this.label9.TabIndex = 9;
             this.label9.Text = "Key:";
             // 
-            // txtPartner
-            // 
-            this.txtPartner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPartner.Location = new System.Drawing.Point(306, 33);
-            this.txtPartner.Name = "txtPartner";
-            this.txtPartner.ReadOnly = true;
-            this.txtPartner.Size = new System.Drawing.Size(148, 21);
-            this.txtPartner.TabIndex = 10;
-            // 
             // label5
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -290,16 +290,6 @@ namespace Radegast
             this.txtBornOn.ReadOnly = true;
             this.txtBornOn.Size = new System.Drawing.Size(148, 21);
             this.txtBornOn.TabIndex = 5;
-            // 
-            // txtFullName
-            // 
-            this.txtFullName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFullName.Location = new System.Drawing.Point(50, 6);
-            this.txtFullName.Name = "txtFullName";
-            this.txtFullName.ReadOnly = true;
-            this.txtFullName.Size = new System.Drawing.Size(196, 21);
-            this.txtFullName.TabIndex = 4;
             // 
             // label2
             // 
@@ -563,6 +553,14 @@ namespace Radegast
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
             // 
+            // txtFullName
+            // 
+            this.txtFullName.Location = new System.Drawing.Point(50, 6);
+            this.txtFullName.Name = "txtFullName";
+            this.txtFullName.ReadOnly = true;
+            this.txtFullName.Size = new System.Drawing.Size(196, 21);
+            this.txtFullName.TabIndex = 4;
+            // 
             // frmProfile
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -598,12 +596,10 @@ namespace Radegast
         public System.Windows.Forms.TabPage tpgWeb;
         public System.Windows.Forms.TabPage tpgFirstLife;
         public System.Windows.Forms.Label label1;
-        public System.Windows.Forms.TextBox txtFullName;
         public System.Windows.Forms.Label label2;
         public System.Windows.Forms.Label label4;
         public System.Windows.Forms.Label label3;
         public System.Windows.Forms.TextBox txtBornOn;
-        public System.Windows.Forms.TextBox txtPartner;
         public System.Windows.Forms.Label label5;
         public System.Windows.Forms.Button btnClose;
         public System.Windows.Forms.Panel pnlWeb;
@@ -635,6 +631,8 @@ namespace Radegast
         public System.Windows.Forms.TextBox pickLocation;
         public System.Windows.Forms.Button btnShowOnMap;
         public System.Windows.Forms.Button btnTeleport;
+        public AgentNameTextBox anPartner;
+        public System.Windows.Forms.TextBox txtFullName;
 
     }
 }
