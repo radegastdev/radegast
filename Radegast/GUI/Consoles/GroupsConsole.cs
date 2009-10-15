@@ -117,10 +117,7 @@ namespace Radegast
             else
             {
                 RadegastTab t = instance.TabConsole.Tabs[g.ID.ToString()];
-                if (!t.Selected)
-                {
-                    t.Highlight();
-                }
+                t.Select();
             }
         }
 

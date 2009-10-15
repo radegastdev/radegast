@@ -871,10 +871,10 @@ namespace Radegast
         private void tbtnCloseTab_Click(object sender, EventArgs e)
         {
             RadegastTab tab = selectedTab;
-            if (tab.AllowHide)
-                tab.Hide();
-            else if (tab.AllowClose)
+            if (tab.AllowClose)
                 tab.Close();
+            else if (tab.AllowHide)
+                tab.Hide();
         }
 
         private void TabsConsole_Load(object sender, EventArgs e)
