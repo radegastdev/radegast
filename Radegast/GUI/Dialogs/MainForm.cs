@@ -432,17 +432,20 @@ namespace Radegast
                 e.Handled = e.SuppressKeyPress = true;
             }
 
-            if (e.Control && e.KeyCode == Keys.Right)
+            // ctrl-(shift)-tab for next/previous tab
+            if (e.Control && e.KeyCode == Keys.Tab)
             {
-                e.Handled = e.SuppressKeyPress = true;
-            }
-
-            if (e.Control && e.KeyCode == Keys.Left)
-            {
+                if (e.Shift)
+                {
+                    TabConsole.SelectPreviousTab();
+                }
+                else
+                {
+                    TabConsole.SelectNextTab();
+                }
                 e.Handled = e.SuppressKeyPress = true;
             }
         }
-
 
         private void frmMain_KeyUp(object sender, KeyEventArgs e)
         {
@@ -465,20 +468,6 @@ namespace Radegast
             if (e.Control && e.KeyCode == Keys.M && Clipboard.ContainsText() && client.Network.Connected)
             {
                 MapToCurrentLocation();
-                e.Handled = e.SuppressKeyPress = true;
-            }
-
-            // ctrl-right_arrow, select next tab
-            if (e.Control && e.KeyCode == Keys.Right)
-            {
-                TabConsole.SelectNextTab();
-                e.Handled = e.SuppressKeyPress = true;
-            }
-
-            // ctrl-right_arrow, select previous tab
-            if (e.Control && e.KeyCode == Keys.Left)
-            {
-                TabConsole.SelectPreviousTab();
                 e.Handled = e.SuppressKeyPress = true;
             }
         }
