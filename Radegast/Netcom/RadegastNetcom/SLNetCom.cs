@@ -140,14 +140,12 @@ namespace Radegast.Netcom
             client.Self.RequestBalance();
         }
 
-        private void Self_ChatFromSimulator(object sender, OpenMetaverse.ChatEventArgs e)
+        private void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
-            ChatEventArgs ea = new ChatEventArgs(e.Message, e.AudibleLevel, e.Type, e.SourceType, e.FromName, e.SourceID, e.OwnerID, e.Position);
-
             if (netcomSync != null)
-                netcomSync.BeginInvoke(new OnChatRaise(OnChatReceived), new object[] { ea });
+                netcomSync.BeginInvoke(new OnChatRaise(OnChatReceived), new object[] { e });
             else
-                OnChatReceived(ea);
+                OnChatReceived(e);
         }
 
         private void AddPacketCallbacks()
