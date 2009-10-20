@@ -36,17 +36,17 @@ using OpenMetaverse.Packets;
 
 namespace Radegast.Netcom
 {
-	/// <summary>
-	/// RadegastNetcom is a class built on top of libsecondlife that provides a way to
+    /// <summary>
+    /// RadegastNetcom is a class built on top of libsecondlife that provides a way to
     /// raise events on the proper thread (for GUI apps especially).
-	/// </summary>
-	public partial class RadegastNetcom : IDisposable
-	{
-		private GridClient client;
+    /// </summary>
+    public partial class RadegastNetcom : IDisposable
+    {
+        private GridClient client;
         private LoginOptions loginOptions;
 
         private bool loggingIn = false;
-        private bool loggedIn = false;        
+        private bool loggedIn = false;
         private bool teleporting = false;
 
         private const string MainGridLogin = @"https://login.agni.lindenlab.com/cgi-bin/login.cgi";
@@ -61,17 +61,17 @@ namespace Radegast.Netcom
         {
             this.client = client;
             loginOptions = new LoginOptions();
-            
+
             AddClientEvents();
             AddPacketCallbacks();
         }
 
         private void AddClientEvents()
         {
-            client.Self.OnChat += new AgentManager.ChatCallback(Self_OnChat);
-            client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
-            client.Self.OnBalanceUpdated += new AgentManager.BalanceCallback(Avatar_OnBalanceUpdated);
-            client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
+            client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
+            client.Self.MoneyBalance += new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
+            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
@@ -82,10 +82,10 @@ namespace Radegast.Netcom
         {
             if (client != null)
             {
-                client.Self.OnChat -= new AgentManager.ChatCallback(Self_OnChat);
-                client.Self.OnInstantMessage -= new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
-                client.Self.OnBalanceUpdated -= new AgentManager.BalanceCallback(Avatar_OnBalanceUpdated);
-                client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
+                client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+                client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
+                client.Self.MoneyBalance -= new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
+                client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
                 client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
                 client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
                 client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
@@ -93,14 +93,12 @@ namespace Radegast.Netcom
             }
         }
 
-        private void Self_OnInstantMessage(InstantMessage im, Simulator simulator)
+        void Self_IM(object sender, InstantMessageEventArgs e)
         {
-            InstantMessageEventArgs ea = new InstantMessageEventArgs(im, simulator);
-
             if (netcomSync != null)
-                netcomSync.BeginInvoke(new OnInstantMessageRaise(OnInstantMessageReceived), new object[] { ea });
+                netcomSync.BeginInvoke(new OnInstantMessageRaise(OnInstantMessageReceived), new object[] { e });
             else
-                OnInstantMessageReceived(ea);
+                OnInstantMessageReceived(e);
         }
 
         private void Network_OnLogin(LoginStatus login, string message)
@@ -126,17 +124,15 @@ namespace Radegast.Netcom
                 OnClientLoggedOut(EventArgs.Empty);
         }
 
-        private void Self_OnTeleport(string message, TeleportStatus status, TeleportFlags flags)
+        void Self_TeleportProgress(object sender, TeleportEventArgs e)
         {
-            if (status == TeleportStatus.Finished || status == TeleportStatus.Failed)
+            if (e.Status == TeleportStatus.Finished || e.Status == TeleportStatus.Failed)
                 teleporting = false;
 
-            TeleportStatusEventArgs ea = new TeleportStatusEventArgs(message, status, flags);
-
             if (netcomSync != null)
-                netcomSync.BeginInvoke(new OnTeleportStatusRaise(OnTeleportStatusChanged), new object[] { ea });
+                netcomSync.BeginInvoke(new OnTeleportStatusRaise(OnTeleportStatusChanged), new object[] { e });
             else
-                OnTeleportStatusChanged(ea);
+                OnTeleportStatusChanged(e);
         }
 
         private void Network_OnConnected(object sender)
@@ -144,9 +140,9 @@ namespace Radegast.Netcom
             client.Self.RequestBalance();
         }
 
-        private void Self_OnChat(string message, ChatAudibleLevel audible, ChatType type, ChatSourceType sourceType, string fromName, UUID id, UUID ownerid, Vector3 position)
+        private void Self_ChatFromSimulator(object sender, OpenMetaverse.ChatEventArgs e)
         {
-            ChatEventArgs ea = new ChatEventArgs(message, audible, type, sourceType, fromName, id, ownerid, position);
+            ChatEventArgs ea = new ChatEventArgs(e.Message, e.AudibleLevel, e.Type, e.SourceType, e.FromName, e.SourceID, e.OwnerID, e.Position);
 
             if (netcomSync != null)
                 netcomSync.BeginInvoke(new OnChatRaise(OnChatReceived), new object[] { ea });
@@ -172,14 +168,12 @@ namespace Radegast.Netcom
                 OnClientDisconnected(ea);
         }
 
-        private void Avatar_OnBalanceUpdated(int balance)
+        void Self_MoneyBalance(object sender, BalanceEventArgs e)
         {
-            MoneyBalanceEventArgs ea = new MoneyBalanceEventArgs(balance);
-
             if (netcomSync != null)
-                netcomSync.BeginInvoke(new OnMoneyBalanceRaise(OnMoneyBalanceUpdated), new object[] { ea });
+                netcomSync.BeginInvoke(new OnMoneyBalanceRaise(OnMoneyBalanceUpdated), new object[] { e });
             else
-                OnMoneyBalanceUpdated(ea);
+                OnMoneyBalanceUpdated(e);
         }
 
         private void AlertMessageHandler(Packet packet, Simulator simulator)
@@ -195,9 +189,9 @@ namespace Radegast.Netcom
             else
                 OnAlertMessageReceived(ea);
         }
-		
-		public void Login()
-		{
+
+        public void Login()
+        {
             loggingIn = true;
 
             OverrideEventArgs ea = new OverrideEventArgs();
@@ -223,7 +217,7 @@ namespace Radegast.Netcom
             {
                 case StartLocationType.Home: startLocation = "home"; break;
                 case StartLocationType.Last: startLocation = "last"; break;
-                
+
                 case StartLocationType.Custom:
                     startLocation = loginOptions.StartLocationCustom.Trim();
 
@@ -252,12 +246,12 @@ namespace Radegast.Netcom
                 case LoginGrid.BetaGrid: loginParams.URI = BetaGridLogin; break;
                 case LoginGrid.Custom: loginParams.URI = loginOptions.GridCustomLoginUri; break;
             }
-            
+
             client.Network.BeginLogin(loginParams);
-		}
-		
-		public void Logout()
-		{
+        }
+
+        public void Logout()
+        {
             if (!loggedIn)
             {
                 OnClientLoggedOut(EventArgs.Empty);
@@ -269,24 +263,24 @@ namespace Radegast.Netcom
             if (ea.Cancel) return;
 
             client.Network.Logout();
-		}
-		
-		public void ChatOut(string chat, ChatType type, int channel)
-		{
+        }
+
+        public void ChatOut(string chat, ChatType type, int channel)
+        {
             if (!loggedIn) return;
 
             client.Self.Chat(chat, channel, type);
             OnChatSent(new ChatSentEventArgs(chat, type, channel));
-		}
+        }
 
         public void SendInstantMessage(string message, UUID target, UUID session)
         {
             if (!loggedIn) return;
-            
+
             client.Self.InstantMessage(
                 loginOptions.FullName, target, message, session, InstantMessageDialog.MessageFromAgent,
                 InstantMessageOnline.Online, client.Self.SimPosition, client.Network.CurrentSim.ID, null);
-            
+
             OnInstantMessageSent(new InstantMessageSentEventArgs(message, target, session, DateTime.Now));
         }
 
@@ -347,5 +341,5 @@ namespace Radegast.Netcom
             get { return netcomSync; }
             set { netcomSync = value; }
         }
-	}
+    }
 }

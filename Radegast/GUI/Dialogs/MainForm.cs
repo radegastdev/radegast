@@ -173,8 +173,8 @@ namespace Radegast
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            client.Parcels.OnParcelProperties += new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
-            client.Self.OnMoneyBalanceReplyReceived += new AgentManager.MoneyBalanceReplyCallback(Self_OnMoneyBalanceReplyReceived);
+            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Self.MoneyBalanceReply += new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
 
             InitializeStatusTimer();
             RefreshWindowTitle();
@@ -185,21 +185,21 @@ namespace Radegast
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            client.Parcels.OnParcelProperties -= new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
-            client.Self.OnMoneyBalanceReplyReceived -= new AgentManager.MoneyBalanceReplyCallback(Self_OnMoneyBalanceReplyReceived);
+            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Self.MoneyBalanceReply -= new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
             this.instance.CleanUp();
         }
         #endregion
 
         #region Event handlers
-        void Self_OnMoneyBalanceReplyReceived(UUID transactionID, bool transactionSuccess, int balance, int metersCredit, int metersCommitted, string description)
+        void Self_MoneyBalanceReply(object sender, MoneyBalanceReplyEventArgs e)
         {
-            if (!String.IsNullOrEmpty(description))
+            if (!String.IsNullOrEmpty(e.Description))
             {
                 if (instance.GlobalSettings["transaction_notification_dialog"].AsBoolean())
-                    AddNotification(new ntfGeneric(instance, description));
+                    AddNotification(new ntfGeneric(instance, e.Description));
                 if (instance.GlobalSettings["transaction_notification_chat"].AsBoolean())
-                    TabConsole.DisplayNotificationInChat(description);
+                    TabConsole.DisplayNotificationInChat(e.Description);
             }
         }
 
@@ -275,19 +275,16 @@ namespace Radegast
 
         # region Update status
 
-        private void Parcels_OnParcelProperties(Simulator simulator, Parcel parcel, ParcelResult result, int selectedPrims,
-    int sequenceID, bool snapSelection)
+        void Parcels_ParcelProperties(object sender, ParcelPropertiesEventArgs e)
         {
-            if (result != ParcelResult.Single) return;
+            if (e.Result != ParcelResult.Single) return;
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Parcels_OnParcelProperties(simulator, parcel, result, selectedPrims, sequenceID, snapSelection);
-                }
-                ));
+                BeginInvoke(new MethodInvoker(() => Parcels_ParcelProperties(sender, e)));
                 return;
             }
+            
+            Parcel parcel = e.Parcel;
 
             tlblParcel.Text = parcel.Name;
             tlblParcel.ToolTipText = parcel.Desc;

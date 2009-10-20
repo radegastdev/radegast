@@ -65,19 +65,19 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Friends.OnFriendOffline += new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
-            client.Friends.OnFriendOnline += new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
-            client.Friends.OnFriendshipTerminated += new FriendsManager.FriendshipTerminatedEvent(Friends_OnFriendshipTerminated);
-            client.Friends.OnFriendshipResponse += new FriendsManager.FriendshipResponseEvent(Friends_OnFriendshipResponse);
+            client.Friends.FriendOffline += new EventHandler<FriendInfoEventArgs>(Friends_FriendOffline);
+            client.Friends.FriendOnline += new EventHandler<FriendInfoEventArgs>(Friends_FriendOnline);
+            client.Friends.FriendshipTerminated += new EventHandler<FriendshipTerminatedEventArgs>(Friends_FriendshipTerminated);
+            client.Friends.FriendshipResponse += new EventHandler<FriendshipResponseEventArgs>(Friends_FriendshipResponse);
             InitializeFriendsList();
         }
 
         void FriendsConsole_Disposed(object sender, EventArgs e)
         {
-            client.Friends.OnFriendOffline -= new FriendsManager.FriendOfflineEvent(Friends_OnFriendOffline);
-            client.Friends.OnFriendOnline -= new FriendsManager.FriendOnlineEvent(Friends_OnFriendOnline);
-            client.Friends.OnFriendshipTerminated -= new FriendsManager.FriendshipTerminatedEvent(Friends_OnFriendshipTerminated);
-            client.Friends.OnFriendshipResponse -= new FriendsManager.FriendshipResponseEvent(Friends_OnFriendshipResponse);
+            client.Friends.FriendOffline -= new EventHandler<FriendInfoEventArgs>(Friends_FriendOffline);
+            client.Friends.FriendOnline -= new EventHandler<FriendInfoEventArgs>(Friends_FriendOnline);
+            client.Friends.FriendshipTerminated -= new EventHandler<FriendshipTerminatedEventArgs>(Friends_FriendshipTerminated);
+            client.Friends.FriendshipResponse -= new EventHandler<FriendshipResponseEventArgs>(Friends_FriendshipResponse);
         }
 
         private void InitializeFriendsList()
@@ -102,43 +102,43 @@ namespace Radegast
             SetFriend(selectedFriend);
         }
 
-        void Friends_OnFriendshipResponse(UUID agentID, string agentName, bool accepted)
+        void Friends_FriendshipResponse(object sender, FriendshipResponseEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Friends_OnFriendshipResponse(agentID, agentName, accepted)));
+                BeginInvoke(new MethodInvoker(() => Friends_FriendshipResponse(sender, e)));
                 return;
             }
 
             RefreshFriendsList();
         }
 
-        private void Friends_OnFriendOffline(FriendInfo friend)
+        void Friends_FriendOffline(object sender, FriendInfoEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Friends_OnFriendOffline(friend)));
+                BeginInvoke(new MethodInvoker(() => Friends_FriendOffline(sender, e)));
                 return;
             }
 
             if (showNotifications)
             {
-                instance.MainForm.TabConsole.DisplayNotificationInChat(friend.Name + " is offline");
+                instance.MainForm.TabConsole.DisplayNotificationInChat(e.Friend.Name + " is offline");
             }
             RefreshFriendsList();
         }
 
-        private void Friends_OnFriendOnline(FriendInfo friend)
+        void Friends_FriendOnline(object sender, FriendInfoEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Friends_OnFriendOnline(friend)));
+                BeginInvoke(new MethodInvoker(() => Friends_FriendOnline(sender, e)));
                 return;
             }
 
             if (showNotifications)
             {
-                string name = friend.Name;
+                string name = e.Friend.Name;
 
                 if (string.IsNullOrEmpty(name))
                 {
@@ -147,15 +147,15 @@ namespace Radegast
 
                         AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
                         {
-                            if (names.ContainsKey(friend.UUID))
+                            if (names.ContainsKey(e.Friend.UUID))
                             {
-                                name = names[friend.UUID];
+                                name = names[e.Friend.UUID];
                                 done.Set();
                             }
                         };
 
                         client.Avatars.OnAvatarNames += callback;
-                        name = instance.getAvatarName(friend.UUID);
+                        name = instance.getAvatarName(e.Friend.UUID);
                         if (name == RadegastInstance.INCOMPLETE_NAME)
                         {
                             done.WaitOne(3000, false);
@@ -170,8 +170,10 @@ namespace Radegast
             RefreshFriendsList();
         }
 
-        void Friends_OnFriendshipTerminated(UUID agentID, string agentName)
+        void Friends_FriendshipTerminated(object sender, FriendshipTerminatedEventArgs e)
         {
+            string agentName = e.AgentName;
+
             if (agentName == string.Empty)
             {
                 using (ManualResetEvent done = new ManualResetEvent(false))
@@ -179,15 +181,15 @@ namespace Radegast
 
                     AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
                     {
-                        if (names.ContainsKey(agentID))
+                        if (names.ContainsKey(e.AgentID))
                         {
-                            agentName = names[agentID];
+                            agentName = names[e.AgentID];
                             done.Set();
                         }
                     };
 
                     client.Avatars.OnAvatarNames += callback;
-                    agentName = instance.getAvatarName(agentID);
+                    agentName = instance.getAvatarName(e.AgentID);
                     if (agentName == RadegastInstance.INCOMPLETE_NAME)
                     {
                         done.WaitOne(3000, false);
@@ -198,7 +200,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Friends_OnFriendshipTerminated(agentID, agentName)));
+                BeginInvoke(new MethodInvoker(() => Friends_FriendshipTerminated(sender, e)));
                 return;
             }
 

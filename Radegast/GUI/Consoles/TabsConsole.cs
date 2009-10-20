@@ -100,15 +100,15 @@ namespace Radegast
             InitializeChatTab();
 
             // Callbacks
-            client.Self.OnScriptQuestion += new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
-            client.Self.OnScriptDialog += new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
+            client.Self.ScriptQuestion += new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
+            client.Self.ScriptDialog += new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
         }
 
         void TabsConsole_Disposed(object sender, EventArgs e)
         {
             RemoveNetcomEvents();
-            client.Self.OnScriptQuestion -= new AgentManager.ScriptQuestionCallback(Self_OnScriptQuestion);
-            client.Self.OnScriptDialog -= new AgentManager.ScriptDialogCallback(Self_OnScriptDialog);
+            client.Self.ScriptQuestion -= new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
+            client.Self.ScriptDialog -= new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
         }
 
         private void AddNetcomEvents()
@@ -133,14 +133,14 @@ namespace Radegast
             netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
         }
 
-        void Self_OnScriptDialog(string message, string objectName, UUID imageID, UUID objectID, string firstName, string lastName, int chatChannel, List<string> buttons)
+        void Self_ScriptDialog(object sender, ScriptDialogEventArgs e)
         {
-            instance.MainForm.AddNotification(new ntfScriptDialog(instance, message, objectName, imageID, objectID, firstName, lastName, chatChannel, buttons));
+            instance.MainForm.AddNotification(new ntfScriptDialog(instance, e.Message, e.ObjectName, e.ImageID, e.ObjectID, e.FirstName, e.LastName, e.Channel, e.ButtonLabels));
         }
 
-        void Self_OnScriptQuestion(Simulator simulator, UUID taskID, UUID itemID, string objectName, string objectOwner, ScriptPermission questions)
+        void Self_ScriptQuestion(object sender, ScriptQuestionEventArgs e)
         {
-            instance.MainForm.AddNotification(new ntfPermissions(instance, simulator, taskID, itemID, objectName, objectOwner, questions));
+            instance.MainForm.AddNotification(new ntfPermissions(instance, e.Simulator, e.TaskID, e.ItemID, e.ObjectName, e.ObjectOwnerName, e.Questions));
         }
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)

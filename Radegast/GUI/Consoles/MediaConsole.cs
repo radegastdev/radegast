@@ -78,14 +78,14 @@ namespace Radegast
             lblStation.Click += new EventHandler(lblStation_Click);
 
             // Network callbacks
-            client.Parcels.OnParcelProperties += new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
+            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
         }
 
         private void MediaConsole_Disposed(object sender, EventArgs e)
         {
             Stop();
 
-            client.Parcels.OnParcelProperties -= new ParcelManager.ParcelPropertiesCallback(Parcels_OnParcelProperties);
+            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
 
             if (configTimer != null)
             {
@@ -95,18 +95,18 @@ namespace Radegast
             }
         }
 
-        void Parcels_OnParcelProperties(Simulator simulator, Parcel parcel, ParcelResult result, int selectedPrims, int sequenceID, bool snapSelection)
+        void Parcels_ParcelProperties(object sender, ParcelPropertiesEventArgs e)
         {
-            if (cbKeep.Checked || result != ParcelResult.Single) return;
+            if (cbKeep.Checked || e.Result != ParcelResult.Single) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Parcels_OnParcelProperties(simulator, parcel, result, selectedPrims, sequenceID, snapSelection)));
+                BeginInvoke(new MethodInvoker(() => Parcels_ParcelProperties(sender, e)));
                 return;
             }
             lock (parcelMusicLock)
             {
-                txtAudioURL.Text = parcel.MusicURL;
+                txtAudioURL.Text = e.Parcel.MusicURL;
                 if (playing)
                 {
                     if (currentURL != txtAudioURL.Text)

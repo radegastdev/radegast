@@ -62,9 +62,9 @@ namespace Radegast
             chatSplit.Panel2Collapsed = true;
 
             // Callbacks
-            client.Self.OnGroupChatJoin += new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
-            client.Self.OnChatSessionMemberAdded += new AgentManager.ChatSessionMemberAddedCallback(Self_OnChatSessionMemberAdded);
-            client.Self.OnChatSessionMemberLeft += new AgentManager.ChatSessionMemberLeftCallback(Self_OnChatSessionMemberLeft);
+            client.Self.GroupChatJoined += new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
+            client.Self.ChatSessionMemberAdded += new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
+            client.Self.ChatSessionMemberLeft += new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Self.RequestJoinGroupChat(session);
         }
@@ -72,9 +72,9 @@ namespace Radegast
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
             client.Self.RequestLeaveGroupChat(session);
-            client.Self.OnGroupChatJoin -= new AgentManager.GroupChatJoinedCallback(Self_OnGroupChatJoin);
-            client.Self.OnChatSessionMemberAdded -= new AgentManager.ChatSessionMemberAddedCallback(Self_OnChatSessionMemberAdded);
-            client.Self.OnChatSessionMemberLeft -= new AgentManager.ChatSessionMemberLeftCallback(Self_OnChatSessionMemberLeft);
+            client.Self.GroupChatJoined -= new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
+            client.Self.ChatSessionMemberAdded -= new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
+            client.Self.ChatSessionMemberLeft -= new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             CleanUp();
         }
@@ -99,15 +99,15 @@ namespace Radegast
             Participants.EndUpdate();
         }
 
-        void Self_OnChatSessionMemberLeft(UUID sessionID, UUID agent_key)
+        void Self_ChatSessionMemberLeft(object sender, ChatSessionMemberLeftEventArgs e)
         {
-            if (sessionID == session)
+            if (e.SessionID == session)
                 UpdateParticipantList();
         }
 
-        void Self_OnChatSessionMemberAdded(UUID sessionID, UUID agent_key)
+        void Self_ChatSessionMemberAdded(object sender, ChatSessionMemberAddedEventArgs e)
         {
-            if (sessionID == session)
+            if (e.SessionID == session)
                 UpdateParticipantList();
         }
 
@@ -155,25 +155,20 @@ namespace Radegast
             Participants.EndUpdate();
         }
 
-        void Self_OnGroupChatJoin(UUID groupChatSessionID, string sessionName, UUID tmpSessionID, bool success)
+        void Self_GroupChatJoined(object sender, GroupChatJoinedEventArgs e)
         {
-            if (groupChatSessionID != session && tmpSessionID != session)
+            if (e.SessionID != session && e.TmpSessionID != session)
             {
                 return;
             }
 
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(
-                    delegate()
-                    {
-                        Self_OnGroupChatJoin(groupChatSessionID, sessionName, tmpSessionID, success);
-                    }
-                    )
-                );
+                Invoke(new MethodInvoker(() => Self_GroupChatJoined(sender, e)));
                 return;
             }
-            if (success)
+
+            if (e.Success)
             {
                 textManager.TextPrinter.PrintTextLine("Join Group Chat Success!", Color.Green);
                 WaitForSessionStart.Set();

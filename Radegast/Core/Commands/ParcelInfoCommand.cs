@@ -61,13 +61,13 @@ namespace Radegast.Commands
             StringBuilder sb = new StringBuilder();
             string result;
 
-            ParcelManager.SimParcelsDownloaded del = delegate(Simulator simulator, InternalDictionary<int, Parcel> simParcels, int[,] parcelMap)
+            EventHandler<SimParcelsDownloadedEventArgs> del = delegate(object sender, SimParcelsDownloadedEventArgs e)
             {
                 ParcelsDownloaded.Set();
             };
 
             ParcelsDownloaded.Reset();
-            Client.Parcels.OnSimParcelsDownloaded += del;
+            Client.Parcels.SimParcelsDownloaded += del;
             Client.Parcels.RequestAllSimParcels(Client.Network.CurrentSim);
 
             if (Client.Network.CurrentSim.IsParcelMapFull())
@@ -89,7 +89,7 @@ namespace Radegast.Commands
             else
                 result = "Failed to retrieve information on all the simulator parcels";
 
-            Client.Parcels.OnSimParcelsDownloaded -= del;
+            Client.Parcels.SimParcelsDownloaded -= del;
 
             WriteLine("Parcel Infro results:\n{0}", result);
         }

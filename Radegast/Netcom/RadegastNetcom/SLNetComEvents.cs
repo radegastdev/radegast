@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using OpenMetaverse;
 
 namespace Radegast.Netcom
 {
@@ -41,8 +42,8 @@ namespace Radegast.Netcom
         private delegate void OnChatRaise(ChatEventArgs e);
         private delegate void OnInstantMessageRaise(InstantMessageEventArgs e);
         private delegate void OnAlertMessageRaise(AlertMessageEventArgs e);
-        private delegate void OnMoneyBalanceRaise(MoneyBalanceEventArgs e);
-        private delegate void OnTeleportStatusRaise(TeleportStatusEventArgs e);
+        private delegate void OnMoneyBalanceRaise(BalanceEventArgs e);
+        private delegate void OnTeleportStatusRaise(TeleportEventArgs e);
 
         public event EventHandler<OverrideEventArgs> ClientLoggingIn;
         public event EventHandler<ClientLoginEventArgs> ClientLoginStatus;
@@ -54,9 +55,9 @@ namespace Radegast.Netcom
         public event EventHandler<InstantMessageEventArgs> InstantMessageReceived;
         public event EventHandler<InstantMessageSentEventArgs> InstantMessageSent;
         public event EventHandler<TeleportingEventArgs> Teleporting;
-        public event EventHandler<TeleportStatusEventArgs> TeleportStatusChanged;
+        public event EventHandler<TeleportEventArgs> TeleportStatusChanged;
         public event EventHandler<AlertMessageEventArgs> AlertMessageReceived;
-        public event EventHandler<MoneyBalanceEventArgs> MoneyBalanceUpdated;
+        public event EventHandler<BalanceEventArgs> MoneyBalanceUpdated;
 
         protected virtual void OnClientLoggingIn(OverrideEventArgs e)
         {
@@ -108,7 +109,7 @@ namespace Radegast.Netcom
             if (Teleporting != null) Teleporting(this, e);
         }
 
-        protected virtual void OnTeleportStatusChanged(TeleportStatusEventArgs e)
+        protected virtual void OnTeleportStatusChanged(TeleportEventArgs e)
         {
             if (TeleportStatusChanged != null) TeleportStatusChanged(this, e);
         }
@@ -118,7 +119,7 @@ namespace Radegast.Netcom
             if (AlertMessageReceived != null) AlertMessageReceived(this, e);
         }
 
-        protected virtual void OnMoneyBalanceUpdated(MoneyBalanceEventArgs e)
+        protected virtual void OnMoneyBalanceUpdated(BalanceEventArgs e)
         {
             if (MoneyBalanceUpdated != null) MoneyBalanceUpdated(this, e);
         }

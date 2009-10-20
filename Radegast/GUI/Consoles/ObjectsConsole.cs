@@ -759,9 +759,12 @@ namespace Radegast
 
         public void Dispose()
         {
-            qTimer.Elapsed -= new ElapsedEventHandler(qTimer_Elapsed);
-            qTimer.Enabled = false;
-            qTimer = null;
+            if (qTimer != null)
+            {
+                qTimer.Elapsed -= new ElapsedEventHandler(qTimer_Elapsed);
+                qTimer.Enabled = false;
+                qTimer = null;
+            }
             props = null;
             instance = null;
         }

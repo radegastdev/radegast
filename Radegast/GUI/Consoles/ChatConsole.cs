@@ -76,7 +76,7 @@ namespace Radegast
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            client.Grid.OnCoarseLocationUpdate += new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
+            client.Grid.CoarseLocationUpdate += new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
 
             chatManager = new ChatTextManager(instance, new RichTextBoxPrinter(rtbChat));
             chatManager.PrintStartupMessage();
@@ -91,12 +91,12 @@ namespace Radegast
         {
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            client.Grid.OnCoarseLocationUpdate -= new GridManager.CoarseLocationUpdateCallback(Grid_OnCoarseLocationUpdate);
+            client.Grid.CoarseLocationUpdate -= new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
             chatManager.Dispose();
             chatManager = null;
         }
 
-        void Grid_OnCoarseLocationUpdate(Simulator sim, List<UUID> newEntries, List<UUID> removedEntries)
+        void Grid_CoarseLocationUpdate(object sender, CoarseLocationUpdateEventArgs e)
         {
             if (client.Network.CurrentSim == null /*|| client.Network.CurrentSim.Handle != sim.Handle*/)
             {
@@ -108,7 +108,7 @@ namespace Radegast
                
                 BeginInvoke(new MethodInvoker(delegate()
                 {
-                    Grid_OnCoarseLocationUpdate(sim, newEntries, removedEntries);
+                    Grid_CoarseLocationUpdate(sender, e);
                 }));
                 return;
             }
@@ -119,14 +119,14 @@ namespace Radegast
                 try
                 {
                     lvwObjects.BeginUpdate();
-                    Vector3d mypos = sim.AvatarPositions.ContainsKey(client.Self.AgentID)
-                                        ? ToVector3D(sim, sim.AvatarPositions[client.Self.AgentID])
+                    Vector3d mypos = e.Simulator.AvatarPositions.ContainsKey(client.Self.AgentID)
+                                        ? ToVector3D(e.Simulator, e.Simulator.AvatarPositions[client.Self.AgentID])
                                         : client.Self.GlobalPosition;
 
                     List<UUID> existing = new List<UUID>();
-                    List<UUID> removed = new List<UUID>(removedEntries);
+                    List<UUID> removed = new List<UUID>(e.RemovedEntries);
 
-                    sim.AvatarPositions.ForEach(delegate(KeyValuePair<UUID, Vector3> avi)
+                    e.Simulator.AvatarPositions.ForEach(delegate(KeyValuePair<UUID, Vector3> avi)
                     {
                         existing.Add(avi.Key);
                         if (!lvwObjects.Items.ContainsKey(avi.Key.ToString()))
@@ -140,7 +140,7 @@ namespace Radegast
                                 item.Font = new Font(item.Font, FontStyle.Bold);
                             }
                             item.Tag = avi.Key;
-                            agentSimHandle[avi.Key] = sim.Handle;
+                            agentSimHandle[avi.Key] = e.Simulator.Handle;
                         }
                     });
 
@@ -148,7 +148,7 @@ namespace Radegast
                     {
                         if (item == null) continue;
                         UUID key = (UUID)item.Tag;
-                        if (agentSimHandle[key] != sim.Handle)
+                        if (agentSimHandle[key] != e.Simulator.Handle)
                         {
                             // not for this sim
                             continue;
@@ -160,7 +160,7 @@ namespace Radegast
                         //the AvatarPostions is checked once more because it changes wildly on its own
                         //even though the !existing should have been adequate
                         Vector3 pos;
-                        if (!existing.Contains(key) || !sim.AvatarPositions.TryGetValue(key,out pos))
+                        if (!existing.Contains(key) || !e.Simulator.AvatarPositions.TryGetValue(key, out pos))
                         {
                             // not here anymore
                             removed.Add(key);
@@ -174,8 +174,8 @@ namespace Radegast
                             pos.Z = 2000f;
                         }
 
-                        int d = (int)Vector3d.Distance(ToVector3D(sim, pos), mypos);
-                        if (sim != client.Network.CurrentSim && d > MAX_DISTANCE)
+                        int d = (int)Vector3d.Distance(ToVector3D(e.Simulator, pos), mypos);
+                        if (e.Simulator != client.Network.CurrentSim && d > MAX_DISTANCE)
                         {
                             removed.Add(key);
                             continue;
@@ -190,9 +190,9 @@ namespace Radegast
 
                     lvwObjects.Sort();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Logger.Log("Grid_OnCoarseLocationUpdate: " + e, OpenMetaverse.Helpers.LogLevel.Error, client);
+                    Logger.Log("Grid_OnCoarseLocationUpdate: " + ex, OpenMetaverse.Helpers.LogLevel.Error, client);
                 }
                 finally
                 {

@@ -80,16 +80,16 @@ namespace Radegast
             }
 
             // Register callbacks
-            client.Grid.OnGridRegion += new GridManager.GridRegionCallback(Grid_OnGridRegion);
-            client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
+            client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
         }
 
         void frmMap_Disposed(object sender, EventArgs e)
         {
             // Unregister callbacks
-            client.Grid.OnGridRegion -= new GridManager.GridRegionCallback(Grid_OnGridRegion);
-            client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
+            client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
 
             if (map != null)
@@ -148,22 +148,18 @@ namespace Radegast
             lblStatus.Text = "Now in " + client.Network.CurrentSim.Name;
         }
 
-        void Self_OnTeleport(string message, TeleportStatus status, TeleportFlags flags)
+        void Self_TeleportProgress(object sender, TeleportEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Self_OnTeleport(message, status, flags);
-                }
-                ));
+                BeginInvoke(new MethodInvoker(() => Self_TeleportProgress(sender, e)));
                 return;
             }
 
-            switch (status)
+            switch (e.Status)
             {
                 case TeleportStatus.Progress:
-                    lblStatus.Text = "Progress: " + message;
+                    lblStatus.Text = "Progress: " + e.Message;
                     InTeleport = true;
                     break;
 
@@ -175,7 +171,7 @@ namespace Radegast
                 case TeleportStatus.Cancelled:
                 case TeleportStatus.Failed:
                     InTeleport = false;
-                    lblStatus.Text = "Failed: " + message;
+                    lblStatus.Text = "Failed: " + e.Message;
                     break;
 
                 case TeleportStatus.Finished:
@@ -195,19 +191,15 @@ namespace Radegast
             }
         }
 
-        void Grid_OnGridRegion(GridRegion region)
+        void Grid_GridRegion(object sender, GridRegionEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Grid_OnGridRegion(region);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Grid_GridRegion(sender, e)));
                 return;
             }
 
-            ListViewItem item = new ListViewItem(region.Name);
+            ListViewItem item = new ListViewItem(e.Region.Name);
             lstRegions.Items.Add(item);
         }
         #endregion NetworkEvents
@@ -257,7 +249,7 @@ namespace Radegast
                 {
                     if (!client.Self.Teleport(txtRegion.Text, new Vector3((int)nudX.Value, (int)nudY.Value, (int)nudZ.Value)))
                     {
-                        Self_OnTeleport("", TeleportStatus.Failed, TeleportFlags.Default);
+                        Self_TeleportProgress(this, new TeleportEventArgs(string.Empty, TeleportStatus.Failed, TeleportFlags.Default));
                     }
                     InTeleport = false;
                 }

@@ -81,7 +81,7 @@ namespace Radegast
             client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             client.Avatars.OnAvatarPicks += new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
             client.Avatars.OnPickInfo += new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
-            client.Parcels.OnParcelInfo += new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
+            client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
 
             InitializeProfile();
@@ -92,7 +92,7 @@ namespace Radegast
             client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             client.Avatars.OnAvatarPicks -= new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
             client.Avatars.OnPickInfo -= new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
-            client.Parcels.OnParcelInfo -= new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
+            client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
         }
 
@@ -201,32 +201,32 @@ namespace Radegast
                     ((int)pick.PosGlobal.Y) % 256,
                     ((int)pick.PosGlobal.Z) % 256
                 );
-                client.Parcels.InfoRequest(pick.ParcelID);
+                client.Parcels.RequestParcelInfo(pick.ParcelID);
             }
             else
             {
-                Parcels_OnParcelInfo(parcelCache[pick.ParcelID]);
+                Parcels_ParcelInfoReply(this, new ParcelInfoReplyEventArgs(parcelCache[pick.ParcelID]));
             }
         }
 
-        void Parcels_OnParcelInfo(ParcelInfo parcel)
+        void Parcels_ParcelInfoReply(object sender, ParcelInfoReplyEventArgs e)
         {
-            if (currentPick.ParcelID != parcel.ID) return;
+            if (currentPick.ParcelID != e.Parcel.ID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Parcels_OnParcelInfo(parcel)));
+                BeginInvoke(new MethodInvoker(() => Parcels_ParcelInfoReply(sender, e)));
                 return;
             }
 
             lock (parcelCache)
             {
-                if (!parcelCache.ContainsKey(parcel.ID))
-                    parcelCache.Add(parcel.ID, parcel);
+                if (!parcelCache.ContainsKey(e.Parcel.ID))
+                    parcelCache.Add(e.Parcel.ID, e.Parcel);
             }
 
             pickLocation.Text = string.Format("{0}, {1} ({2}, {3}, {4})",
-                parcel.Name,
+                e.Parcel.Name,
                 currentPick.SimName,
                 ((int)currentPick.PosGlobal.X) % 256,
                 ((int)currentPick.PosGlobal.Y) % 256,

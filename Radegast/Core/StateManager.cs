@@ -84,8 +84,7 @@ namespace Radegast
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             client.Objects.OnObjectUpdated += new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
-            client.Self.OnAlertMessage += new AgentManager.AlertMessageCallback(Self_OnAlertMessage);
-
+            client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
         }
 
         public void Dispose()
@@ -93,7 +92,7 @@ namespace Radegast
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             client.Objects.OnObjectUpdated -= new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
-            client.Self.OnAlertMessage -= new AgentManager.AlertMessageCallback(Self_OnAlertMessage);
+            client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             beamTimer.Dispose();
             beamTimer = null;
 
@@ -231,9 +230,9 @@ namespace Radegast
             }
         }
 
-        void Self_OnAlertMessage(string message)
+        void Self_AlertMessage(object sender, AlertMessageEventArgs e)
         {
-            if (message.Contains("Autopilot cancel"))
+            if (e.Message.Contains("Autopilot cancel"))
             {
                 if (walking)
                 {

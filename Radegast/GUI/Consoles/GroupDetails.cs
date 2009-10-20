@@ -75,7 +75,7 @@ namespace Radegast
             client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Groups.OnGroupNoticesList += new GroupManager.GroupNoticesListCallback(Groups_OnGroupNoticesList);
-            client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+            client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             RefreshControlsAvailability();
             RefreshGroupInfo();
         }
@@ -88,23 +88,23 @@ namespace Radegast
             client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
             client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Groups.OnGroupNoticesList -= new GroupManager.GroupNoticesListCallback(Groups_OnGroupNoticesList);
-            client.Self.OnInstantMessage -= new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+            client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
         }
 
         #region Network callbacks
         UUID destinationFolderID;
 
-        void Self_OnInstantMessage(InstantMessage im, Simulator simulator)
+        void Self_IM(object sender, InstantMessageEventArgs e)
         {
-            if (im.Dialog != InstantMessageDialog.GroupNoticeRequested || im.FromAgentID != group.ID) return;
+            if (e.IM.Dialog != InstantMessageDialog.GroupNoticeRequested || e.IM.FromAgentID != group.ID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Self_OnInstantMessage(im, simulator)));
+                BeginInvoke(new MethodInvoker(() => Self_IM(sender, e)));
                 return;
             }
 
-            InstantMessage msg = im;
+            InstantMessage msg = e.IM;
             AssetType type;
            
 

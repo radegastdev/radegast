@@ -58,7 +58,7 @@ namespace Radegast
             this.parcelID = parcelID;
             Init(instance);
             parcelLocation = true;
-            client.Parcels.InfoRequest(parcelID);
+            client.Parcels.RequestParcelInfo(parcelID);
         }
 
         void Init(RadegastInstance instance)
@@ -69,31 +69,27 @@ namespace Radegast
             this.instance = instance;
 
             // Callbacks
-            client.Grid.OnRegionHandleReply += new GridManager.RegionHandleReplyCallback(Grid_OnRegionHandleReply);
-            client.Parcels.OnParcelInfo += new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
+            client.Grid.RegionHandleReply += new EventHandler<RegionHandleReplyEventArgs>(Grid_RegionHandleReply);
+            client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
         }
 
         void Landmark_Disposed(object sender, EventArgs e)
         {
-            client.Grid.OnRegionHandleReply -= new GridManager.RegionHandleReplyCallback(Grid_OnRegionHandleReply);
-            client.Parcels.OnParcelInfo -= new ParcelManager.ParcelInfoCallback(Parcels_OnParcelInfo);
+            client.Grid.RegionHandleReply -= new EventHandler<RegionHandleReplyEventArgs>(Grid_RegionHandleReply);
+            client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
         }
 
-        void Parcels_OnParcelInfo(ParcelInfo parcel)
+        void Parcels_ParcelInfoReply(object sender, ParcelInfoReplyEventArgs e)
         {
-            if (parcel.ID != parcelID) return;
+            if (e.Parcel.ID != parcelID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Parcels_OnParcelInfo(parcel);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Parcels_ParcelInfoReply(sender, e)));
                 return;
             }
 
-            this.parcel = parcel;
+            this.parcel = e.Parcel;
 
             pnlDetail.Visible = true;
             if (parcel.SnapshotID != UUID.Zero)
@@ -101,7 +97,7 @@ namespace Radegast
                 SLImageHandler img = new SLImageHandler(instance, parcel.SnapshotID, "");
                 img.Dock = DockStyle.Fill;
                 pnlDetail.Controls.Add(img);
-                pnlDetail.Disposed += (object sender, EventArgs e) =>
+                pnlDetail.Disposed += (object senderx, EventArgs ex) =>
                 {
                     img.Dispose();
                 };
@@ -131,14 +127,14 @@ namespace Radegast
             txtParcelDescription.Text = parcel.Description;
         }
 
-        void Grid_OnRegionHandleReply(UUID regionID, ulong regionHandle)
+        void Grid_RegionHandleReply(object sender, RegionHandleReplyEventArgs e)
         {
-            if (decodedLandmark != null && decodedLandmark.RegionID != regionID) return;
+            if (decodedLandmark != null && decodedLandmark.RegionID != e.RegionID) return;
 
-            parcelID = client.Parcels.RequestRemoteParcelID(decodedLandmark.Position, regionHandle, regionID);
+            parcelID = client.Parcels.RequestRemoteParcelID(decodedLandmark.Position, e.RegionHandle, e.RegionID);
             if (parcelID != UUID.Zero)
             {
-                client.Parcels.InfoRequest(parcelID);
+                client.Parcels.RequestParcelInfo(parcelID);
             }
         }
 

@@ -74,7 +74,7 @@ namespace Radegast
 
         private void agentCountWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            List<OpenMetaverse.GridItem> items =
+            List<OpenMetaverse.MapItem> items =
                 client.Grid.MapItems(
                     region.RegionHandle,
                     OpenMetaverse.GridItemType.AgentLocations,

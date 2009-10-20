@@ -87,8 +87,8 @@ namespace Radegast.Plugin.Alice
             }
 
             // Events
-            Client.Self.OnChat += new AgentManager.ChatCallback(Self_OnChat);
-            Client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+            Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            Client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             Client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             Client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
 
@@ -100,8 +100,8 @@ namespace Radegast.Plugin.Alice
             Instance.MainForm.ToolsMenu.DropDownItems.Remove(MenuButton);
 
             // Unregister events
-            Client.Self.OnChat -= new AgentManager.ChatCallback(Self_OnChat);
-            Client.Self.OnInstantMessage -= new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+            Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            Client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
             Client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
             Client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
         }
@@ -133,29 +133,29 @@ namespace Radegast.Plugin.Alice
             }
         }
 
-        void Self_OnChat(string message, ChatAudibleLevel audible, ChatType type, ChatSourceType sourceType, string fromName, UUID id, UUID ownerid, Vector3 position)
+        void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
-            if (sourceType != ChatSourceType.Agent || fromName == Client.Self.Name) return;
+            if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name) return;
 
-            if (Alice.isAcceptingUserInput && message.ToLower().Contains(FirstName(Client.Self.Name).ToLower()) && Enabled)
+            if (Alice.isAcceptingUserInput && e.Message.ToLower().Contains(FirstName(Client.Self.Name).ToLower()) && Enabled)
             {
                 Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
-                string msg = message.ToLower();
+                string msg = e.Message.ToLower();
                 msg = msg.Replace(FirstName(Client.Self.Name).ToLower(), "");
                 AIMLbot.User user;
-                if (AliceUsers.ContainsKey(fromName))
+                if (AliceUsers.ContainsKey(e.FromName))
                 {
-                    user = (AIMLbot.User)AliceUsers[fromName];
+                    user = (AIMLbot.User)AliceUsers[e.FromName];
                 }
                 else
                 {
-                    user = new User(fromName, Alice);
+                    user = new User(e.FromName, Alice);
                     user.Predicates.removeSetting("name");
-                    user.Predicates.addSetting("name", FirstName(fromName));
-                    AliceUsers[fromName] = user;
+                    user.Predicates.addSetting("name", FirstName(e.FromName));
+                    AliceUsers[e.FromName] = user;
                 }
-                Client.Self.Movement.TurnToward(position);
+                Client.Self.Movement.TurnToward(e.Position);
                 if (!Instance.State.IsTyping)
                 {
                     Instance.State.SetTyping(true);
@@ -174,7 +174,7 @@ namespace Radegast.Plugin.Alice
             }
         }
 
-        void Self_OnInstantMessage(InstantMessage im, Simulator simulator)
+        void Self_IM(object sender, InstantMessageEventArgs e)
         {
             // Every event coming from a different thread (almost all of them, most certanly those
             // from libomv) needs to be executed on the GUI thread. This code can be basically
@@ -188,42 +188,42 @@ namespace Radegast.Plugin.Alice
                     new MethodInvoker(
                         delegate()
                         {
-                            Self_OnInstantMessage(im, simulator);
+                            Self_IM(sender, e);
                         }
                         ));
                 return;
             }
 
             // We need to filter out all sorts of things that come in as a instante message
-            if (im.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
-                && !Instance.Groups.ContainsKey(im.IMSessionID)  // Message is not group IM (sessionID == groupID)
-                && im.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
-                && im.FromAgentName != "Second Life"             // Not a system message
+            if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
+                && !Instance.Groups.ContainsKey(e.IM.IMSessionID)  // Message is not group IM (sessionID == groupID)
+                && e.IM.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
+                && e.IM.FromAgentName != "Second Life"             // Not a system message
                 && Alice.isAcceptingUserInput                    // Alice bot loaded successfully
                 && Enabled                                       // Alice bot is enabled
                 )
             {
                 Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
                 AIMLbot.User user;
-                if (AliceUsers.ContainsKey(im.FromAgentName))
+                if (AliceUsers.ContainsKey(e.IM.FromAgentName))
                 {
-                    user = (AIMLbot.User)AliceUsers[im.FromAgentName];
+                    user = (AIMLbot.User)AliceUsers[e.IM.FromAgentName];
                 }
                 else
                 {
-                    user = new User(im.FromAgentName, Alice);
+                    user = new User(e.IM.FromAgentName, Alice);
                     user.Predicates.removeSetting("name");
-                    user.Predicates.addSetting("name", FirstName(im.FromAgentName));
-                    AliceUsers[im.FromAgentName] = user;
+                    user.Predicates.addSetting("name", FirstName(e.IM.FromAgentName));
+                    AliceUsers[e.IM.FromAgentName] = user;
                 }
-                AIMLbot.Request req = new Request(im.Message, user, Alice);
+                AIMLbot.Request req = new Request(e.IM.Message, user, Alice);
                 AIMLbot.Result res = Alice.Chat(req);
                 string msg = res.Output;
                 if (msg.Length > 1000)
                 {
                     msg = msg.Substring(0, 1000);
                 }
-                Instance.Netcom.SendInstantMessage(msg, im.FromAgentID, im.IMSessionID);
+                Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID);
 
             }
         }

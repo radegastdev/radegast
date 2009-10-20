@@ -55,8 +55,8 @@ namespace Radegast
 
             // Callbacks
             netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            client.Grid.OnGridRegion += new GridManager.GridRegionCallback(Grid_OnGridRegion);
-            client.Self.OnTeleport += new AgentManager.TeleportCallback(Self_OnTeleport);
+            client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
 
             SetDefaultValues();
         }
@@ -64,32 +64,28 @@ namespace Radegast
         void frmTeleport_Disposed(object sender, EventArgs e)
         {
             netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            client.Grid.OnGridRegion -= new GridManager.GridRegionCallback(Grid_OnGridRegion);
-            client.Self.OnTeleport -= new AgentManager.TeleportCallback(Self_OnTeleport);
+            client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
         }
 
-        void Self_OnTeleport(string message, TeleportStatus status, TeleportFlags flags)
+        void Self_TeleportProgress(object sender, TeleportEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Self_OnTeleport(message, status, flags);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Self_TeleportProgress(sender, e)));
                 return;
             }
 
-            statusLabel.Text = message;
+            statusLabel.Text = e.Message;
 
-            switch (status)
+            switch (e.Status)
             {
                 case TeleportStatus.Progress:
                     IsTeleporting = true;
                     break;
                 case TeleportStatus.Cancelled:
                 case TeleportStatus.Failed:
-                    statusLabel.Text = "Teleport failed: " + message;
+                    statusLabel.Text = "Teleport failed: " + e.Message;
                     IsTeleporting = false;
                     break;
                 case TeleportStatus.Finished:
@@ -100,20 +96,14 @@ namespace Radegast
             RefreshControls();
         }
 
-        private void RemoveClientEvents()
+        void Grid_GridRegion(object sender, GridRegionEventArgs e)
         {
-            client.Grid.OnGridRegion -= new GridManager.GridRegionCallback(Grid_OnGridRegion);
-        }
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Grid_GridRegion(sender, e)));
+                return;
+            }
 
-        //Separate thread
-        private void Grid_OnGridRegion(GridRegion region)
-        {
-            BeginInvoke(new GridManager.GridRegionCallback(RegionSearchResult), new object[] { region });
-        }
-
-        //UI thread
-        private void RegionSearchResult(GridRegion region)
-        {
             RegionSearchResultItem item = new RegionSearchResultItem(instance, region, lbxRegionSearch);
             int index = lbxRegionSearch.Items.Add(item);
             item.ListIndex = index;
@@ -142,7 +132,7 @@ namespace Radegast
             nudZ.Value = z;
         }
 
-        private void netcom_TeleportStatusChanged(object sender, TeleportStatusEventArgs e)
+        private void netcom_TeleportStatusChanged(object sender, TeleportEventArgs e)
         {
             switch (e.Status)
             {
@@ -205,11 +195,9 @@ namespace Radegast
         {
             if (IsTeleporting && netcom.IsLoggedIn)
                 e.Cancel = true;
-            else
-                RemoveClientEvents();
         }
 
-         private void lbxRegionSearch_DoubleClick(object sender, EventArgs e)
+        private void lbxRegionSearch_DoubleClick(object sender, EventArgs e)
         {
             if (lbxRegionSearch.SelectedItem == null) return;
             RegionSearchResultItem item = (RegionSearchResultItem)lbxRegionSearch.SelectedItem;
@@ -237,7 +225,7 @@ namespace Radegast
             lbxRegionSearch.Items.Clear();
 
             client.Grid.RequestMapRegion(txtSearchFor.Text, GridLayerType.Terrain);
-            
+
         }
 
         private void lbxRegionSearch_DrawItem(object sender, DrawItemEventArgs e)
@@ -253,10 +241,10 @@ namespace Radegast
                 textBrush = new SolidBrush(Color.FromKnownColor(KnownColor.HighlightText));
             else
                 textBrush = new SolidBrush(Color.FromKnownColor(KnownColor.ControlText));
-            
+
             Font newFont = new Font(e.Font, FontStyle.Bold);
             SizeF stringSize = e.Graphics.MeasureString(itemToDraw.Region.Name, newFont);
-            
+
             float iconSize = (float)trkIconSize.Value;
             float leftTextMargin = e.Bounds.Left + iconSize + 6.0f;
             float topTextMargin = e.Bounds.Top + 4.0f;
@@ -273,7 +261,7 @@ namespace Radegast
                 if (!itemToDraw.IsImageDownloading)
                     itemToDraw.RequestMapImage(125000.0f);
             }
-            
+
             e.Graphics.DrawString(itemToDraw.Region.Name, newFont, textBrush, new PointF(leftTextMargin, topTextMargin));
 
             if (itemToDraw.GotAgentCount)
