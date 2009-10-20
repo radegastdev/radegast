@@ -52,10 +52,10 @@ namespace Radegast.Plugin.Demo
             Instance.MainForm.TabConsole.DisplayNotificationInChat("Demo Plugin version 1.0 loaded");
 
             // We want to process incoming chat in this plugin
-            Client.Self.OnChat += new AgentManager.ChatCallback(Self_OnChat);
+            Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
 
             // Ok, we want to answer to IMs as well
-            Client.Self.OnInstantMessage += new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+            Client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
 
             // Automatically handle notifications (blue dialogs)
             Notification.OnNotificationDisplayed += new Notification.NotificationCallback(Notification_OnNotificationDisplayed);
@@ -64,8 +64,8 @@ namespace Radegast.Plugin.Demo
         public void StopPlugin(RadegastInstance instance)
         {
             // Unregister events
-            Client.Self.OnChat -= new AgentManager.ChatCallback(Self_OnChat);
-            Client.Self.OnInstantMessage -= new AgentManager.InstantMessageCallback(Self_OnInstantMessage);
+            Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            Client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
             Notification.OnNotificationDisplayed -= new Notification.NotificationCallback(Notification_OnNotificationDisplayed);
         }
 
@@ -84,20 +84,20 @@ namespace Radegast.Plugin.Demo
             }
         }
 
-        void Self_OnChat(string message, ChatAudibleLevel audible, ChatType type, ChatSourceType sourceType, string fromName, UUID id, UUID ownerid, Vector3 position)
+        void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
 
-            if (type != ChatType.Normal || sourceType != ChatSourceType.Agent)
+            if (e.Type != ChatType.Normal || e.SourceType != ChatSourceType.Agent)
             {
                 return;
             }
 
             // See if somone said the magic words
-            if (message.ToLower() == "demo plugin version")
+            if (e.Message.ToLower() == "demo plugin version")
             {
                 // Turn towards the person who spoke
-                Client.Self.Movement.TurnToward(position);
+                Client.Self.Movement.TurnToward(e.Position);
 
                 // Play typing animation for 1 second
                 Instance.State.SetTyping(true);
@@ -105,11 +105,11 @@ namespace Radegast.Plugin.Demo
                 Instance.State.SetTyping(false);
 
                 // Finally send the answer back
-                Client.Self.Chat("Hello " + fromName + ", glad you asked. My version is " + version + ".", 0, ChatType.Normal);
+                Client.Self.Chat("Hello " + e.FromName + ", glad you asked. My version is " + version + ".", 0, ChatType.Normal);
             }
         }
 
-        void Self_OnInstantMessage(InstantMessage im, Simulator simulator)
+        void Self_IM(object sender, InstantMessageEventArgs e)
         {
             // Every event coming from a different thread (almost all of them, most certanly those
             // from libomv) needs to be executed on the GUI thread. This code can be basically
@@ -119,29 +119,23 @@ namespace Radegast.Plugin.Demo
             // In this case the IM we sent back as a reply is also displayed in the corresponding IM tab
             if (Instance.MainForm.InvokeRequired)
             {
-                Instance.MainForm.BeginInvoke(
-                    new MethodInvoker(
-                        delegate()
-                        {
-                            Self_OnInstantMessage(im, simulator);
-                        }
-                        ));
+                Instance.MainForm.BeginInvoke(new MethodInvoker(() => Self_IM(sender, e)));
                 return;
             }
 
             // We need to filter out all sorts of things that come in as a instante message
-            if (im.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
-                && !Instance.Groups.ContainsKey(im.IMSessionID)  // Message is not group IM (sessionID == groupID)
-                && im.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
-                && im.FromAgentName != "Second Life"             // Not a system message
+            if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
+                && !Instance.Groups.ContainsKey(e.IM.IMSessionID)  // Message is not group IM (sessionID == groupID)
+                && e.IM.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
+                && e.IM.FromAgentName != "Second Life"             // Not a system message
                 )
             {
-                if (im.Message == "demo plugin version")
+                if (e.IM.Message == "demo plugin version")
                 {
                     Instance.Netcom.SendInstantMessage(
-                        string.Format("Hello {0}, my version is {1}", im.FromAgentName, version),
-                        im.FromAgentID,
-                        im.IMSessionID);
+                        string.Format("Hello {0}, my version is {1}", e.IM.FromAgentName, version),
+                        e.IM.FromAgentID,
+                        e.IM.IMSessionID);
                 }
             }
         }
