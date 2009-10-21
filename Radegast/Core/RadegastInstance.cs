@@ -196,10 +196,10 @@ namespace Radegast
 
             groups = new Dictionary<UUID, Group>();
 
-            client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
-            client.Groups.OnGroupLeft += new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
-            client.Groups.OnGroupDropped += new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
-            client.Groups.OnGroupJoined += new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
+            client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
+            client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
+            client.Groups.GroupDropped += new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
+            client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
             client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
             mainForm.Load += new EventHandler(mainForm_Load);
@@ -210,10 +210,10 @@ namespace Radegast
         {
             if (client != null)
             {
-                client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
-                client.Groups.OnGroupLeft -= new GroupManager.GroupLeftCallback(Groups_OnGroupLeft);
-                client.Groups.OnGroupDropped -= new GroupManager.GroupDroppedCallback(Groups_OnGroupDropped);
-                client.Groups.OnGroupJoined -= new GroupManager.GroupJoinedCallback(Groups_OnGroupJoined);
+                client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
+                client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
+                client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
+                client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
                 client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
                 client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
             }
@@ -456,17 +456,7 @@ namespace Radegast
             }
         }
 
-        void Groups_OnGroupJoined(UUID groupID, bool success)
-        {
-            client.Groups.RequestCurrentGroups();
-        }
-
-        void Groups_OnGroupLeft(UUID groupID, bool success)
-        {
-            client.Groups.RequestCurrentGroups();
-        }
-
-        void Groups_OnGroupDropped(UUID groupID)
+        void Groups_GroupsChanged(object sender, EventArgs e)
         {
             client.Groups.RequestCurrentGroups();
         }
@@ -499,9 +489,9 @@ namespace Radegast
             }
         }
 
-        void Groups_OnCurrentGroups(Dictionary<UUID, Group> gr)
+        void Groups_CurrentGroups(object sender, CurrentGroupsEventArgs e)
         {
-            this.groups = gr;
+            this.groups = e.Groups;
         }
 
         private void InitializeLoggingAndConfig()

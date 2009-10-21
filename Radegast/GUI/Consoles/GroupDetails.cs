@@ -69,26 +69,29 @@ namespace Radegast
             lvwNoticeArchive.ListViewItemSorter = new GroupNoticeSorter();
 
             // Callbacks
-            client.Groups.OnGroupTitles += new GroupManager.GroupTitlesCallback(Groups_OnGroupTitles);
-            client.Groups.OnGroupMembers += new GroupManager.GroupMembersCallback(Groups_OnGroupMembers);
-            client.Groups.OnGroupProfile += new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
-            client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-            client.Groups.OnGroupNoticesList += new GroupManager.GroupNoticesListCallback(Groups_OnGroupNoticesList);
+            client.Groups.GroupTitlesReply += new EventHandler<GroupTitlesReplyEventArgs>(Groups_GroupTitlesReply);
+            client.Groups.GroupMembersReply += new EventHandler<GroupMembersReplyEventArgs>(Groups_GroupMembersReply);
+            client.Groups.GroupProfile += new EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
+            client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
+            client.Groups.GroupNoticesListReply += new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
+
+            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+
             RefreshControlsAvailability();
             RefreshGroupInfo();
         }
 
         void GroupDetails_Disposed(object sender, EventArgs e)
         {
-            client.Groups.OnGroupTitles -= new GroupManager.GroupTitlesCallback(Groups_OnGroupTitles);
-            client.Groups.OnGroupMembers -= new GroupManager.GroupMembersCallback(Groups_OnGroupMembers);
-            client.Groups.OnGroupProfile -= new GroupManager.GroupProfileCallback(Groups_OnGroupProfile);
-            client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
-            client.Groups.OnGroupNoticesList -= new GroupManager.GroupNoticesListCallback(Groups_OnGroupNoticesList);
+            client.Groups.GroupTitlesReply += new EventHandler<GroupTitlesReplyEventArgs>(Groups_GroupTitlesReply);
+            client.Groups.GroupMembersReply += new EventHandler<GroupMembersReplyEventArgs>(Groups_GroupMembersReply);
+            client.Groups.GroupProfile += new EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
+            client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
+            client.Groups.GroupNoticesListReply += new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
+
+            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
         }
 
         #region Network callbacks
@@ -131,51 +134,49 @@ namespace Radegast
             txtNotice.Text = text;
         }
 
-        void Groups_OnGroupNoticesList(UUID groupID, GroupNoticeList notice)
+        void Groups_GroupNoticesListReply(object sender, GroupNoticesListReplyEventArgs e)
         {
-            if (groupID != group.ID) return;
+            if (e.GroupID != group.ID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Groups_OnGroupNoticesList(groupID, notice)));
+                BeginInvoke(new MethodInvoker(() => Groups_GroupNoticesListReply(sender, e)));
                 return;
             }
             
             lvwNoticeArchive.BeginUpdate();
 
             ListViewItem item = new ListViewItem();
-            item.SubItems.Add(notice.Subject);
-            item.SubItems.Add(notice.FromName);
-            item.SubItems.Add(Utils.UnixTimeToDateTime(notice.Timestamp).ToShortDateString());
+            item.SubItems.Add(e.Notices.Subject);
+            item.SubItems.Add(e.Notices.FromName);
+            item.SubItems.Add(Utils.UnixTimeToDateTime(e.Notices.Timestamp).ToShortDateString());
 
-            if (notice.HasAttachment)
+            if (e.Notices.HasAttachment)
             {
-                item.ImageIndex = InventoryConsole.GetItemImageIndex(notice.AssetType.ToString().ToLower());
+                item.ImageIndex = InventoryConsole.GetItemImageIndex(e.Notices.AssetType.ToString().ToLower());
             }
 
-            item.Tag = notice;
+            item.Tag = e.Notices;
 
             lvwNoticeArchive.Items.Add(item);
 
             lvwNoticeArchive.EndUpdate();
         }
 
-        void Groups_OnCurrentGroups(Dictionary<UUID, Group> groups)
+        void Groups_CurrentGroups(object sender, CurrentGroupsEventArgs e)
         {
             BeginInvoke(new MethodInvoker(RefreshControlsAvailability));
         }
 
-        void Groups_OnGroupProfile(Group group)
+        void Groups_GroupProfile(object sender, GroupProfileEventArgs e)
         {
+            Group group = e.Group;
+
             if (group.ID != this.group.ID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Groups_OnGroupProfile(group);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Groups_GroupProfile(sender, e)));
                 return;
             }
 
@@ -247,21 +248,17 @@ namespace Radegast
             lvwGeneralMembers.EndUpdate();
         }
 
-        void Groups_OnGroupTitles(UUID requestID, UUID groupID, Dictionary<UUID, GroupTitle> titles)
+        void Groups_GroupTitlesReply(object sender, GroupTitlesReplyEventArgs e)
         {
-            if (groupTitlesRequest != requestID) return;
+            if (groupTitlesRequest != e.RequestID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Groups_OnGroupTitles(requestID, groupID, titles);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Groups_GroupTitlesReply(sender, e)));
                 return;
             }
 
-            this.titles = titles;
+            this.titles = e.Titles;
 
             foreach (GroupTitle title in titles.Values)
             {
@@ -275,17 +272,13 @@ namespace Radegast
             cbxActiveTitle.SelectedIndexChanged += cbxActiveTitle_SelectedIndexChanged;
         }
 
-        void Groups_OnGroupMembers(UUID requestID, UUID groupID, Dictionary<UUID, GroupMember> members)
+        void Groups_GroupMembersReply(object sender, GroupMembersReplyEventArgs e)
         {
-            if (groupMembersRequest != requestID) return;
+            if (groupMembersRequest != e.RequestID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Groups_OnGroupMembers(requestID, groupID, members);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Groups_GroupMembersReply(sender, e)));
                 return;
             }
 
@@ -293,7 +286,7 @@ namespace Radegast
             List<ListViewItem> newItems = new List<ListViewItem>();
             List<UUID> unknownNames = new List<UUID>();
 
-            foreach (GroupMember baseMember in members.Values)
+            foreach (GroupMember baseMember in e.Members.Values)
             {
                 EnhancedGroupMember member = new EnhancedGroupMember(baseMember);
                 string name;
@@ -363,7 +356,7 @@ namespace Radegast
         private void RefreshGroupNotices()
         {
             lvwNoticeArchive.Items.Clear();
-            client.Groups.RequestGroupNoticeList(group.ID);
+            client.Groups.RequestGroupNoticesList(group.ID);
         }
 
         private void RefreshGroupInfo()

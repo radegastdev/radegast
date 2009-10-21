@@ -46,17 +46,17 @@ namespace Radegast
             Disposed += new EventHandler(GroupsDialog_Disposed);
             this.client = instance.Client;
             this.instance = instance;
-            client.Groups.OnCurrentGroups += new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
+            client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.RequestCurrentGroups();
             UpdateDisplay();
         }
 
         void GroupsDialog_Disposed(object sender, EventArgs e)
         {
-            client.Groups.OnCurrentGroups -= new GroupManager.CurrentGroupsCallback(Groups_OnCurrentGroups);
+            client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
         }
 
-        void Groups_OnCurrentGroups(Dictionary<UUID, Group> groups)
+        void Groups_CurrentGroups(object sender, CurrentGroupsEventArgs e)
         {
             BeginInvoke(new MethodInvoker(UpdateDisplay));
         }
