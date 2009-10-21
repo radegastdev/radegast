@@ -45,6 +45,7 @@ namespace Radegast
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private UUID session;
         private IMTextManager textManager;
+        private object AvatarListSyncRoot = new object();
 
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);
 
@@ -87,16 +88,20 @@ namespace Radegast
                 return;
             }
 
-            Participants.BeginUpdate();
-
-            foreach (KeyValuePair<UUID, string> kvp in names)
+            lock (AvatarListSyncRoot)
             {
-                if (Participants.Items.ContainsKey(kvp.Key.ToString()))
-                    Participants.Items[kvp.Key.ToString()].Text = kvp.Value;
-            }
 
-            Participants.Sort();
-            Participants.EndUpdate();
+                Participants.BeginUpdate();
+
+                foreach (KeyValuePair<UUID, string> kvp in names)
+                {
+                    if (Participants.Items.ContainsKey(kvp.Key.ToString()))
+                        Participants.Items[kvp.Key.ToString()].Text = kvp.Value;
+                }
+
+                Participants.Sort();
+                Participants.EndUpdate();
+            }
         }
 
         void Self_ChatSessionMemberLeft(object sender, ChatSessionMemberLeftEventArgs e)
@@ -119,40 +124,43 @@ namespace Radegast
                 return;
             }
 
-            Participants.BeginUpdate();
-            Participants.Items.Clear();
-
-            List<ChatSessionMember> participants;
-            List<UUID> nameLookup = new List<UUID>();
-
-            if (client.Self.GroupChatSessions.TryGetValue(session, out participants))
+            lock (AvatarListSyncRoot)
             {
-                ChatSessionMember[] members = participants.ToArray();
-                for (int i = 0; i < members.Length; i++)
+                Participants.BeginUpdate();
+                Participants.Items.Clear();
+
+                List<ChatSessionMember> participants;
+                List<UUID> nameLookup = new List<UUID>();
+
+                if (client.Self.GroupChatSessions.TryGetValue(session, out participants))
                 {
-                    ChatSessionMember participant = members[i];
-                    ListViewItem item = new ListViewItem();
-                    item.Name = participant.AvatarKey.ToString();
-                    if (instance.nameCache.ContainsKey(participant.AvatarKey))
+                    ChatSessionMember[] members = participants.ToArray();
+                    for (int i = 0; i < members.Length; i++)
                     {
-                        item.Text = instance.nameCache[participant.AvatarKey];
+                        ChatSessionMember participant = members[i];
+                        ListViewItem item = new ListViewItem();
+                        item.Name = participant.AvatarKey.ToString();
+                        if (instance.nameCache.ContainsKey(participant.AvatarKey))
+                        {
+                            item.Text = instance.nameCache[participant.AvatarKey];
+                        }
+                        else
+                        {
+                            item.Text = RadegastInstance.INCOMPLETE_NAME;
+                            nameLookup.Add(participant.AvatarKey);
+                        }
+                        if (participant.IsModerator)
+                            item.Font = new Font(item.Font, FontStyle.Bold);
+                        Participants.Items.Add(item);
                     }
-                    else
-                    {
-                        item.Text = RadegastInstance.INCOMPLETE_NAME;
-                        nameLookup.Add(participant.AvatarKey);
-                    }
-                    if (participant.IsModerator)
-                        item.Font = new Font(item.Font, FontStyle.Bold);
-                    Participants.Items.Add(item);
+
+                    if (nameLookup.Count > 0)
+                        client.Avatars.RequestAvatarNames(nameLookup);
                 }
 
-                if (nameLookup.Count > 0)
-                    client.Avatars.RequestAvatarNames(nameLookup);
+                Participants.Sort();
+                Participants.EndUpdate();
             }
-
-            Participants.Sort();
-            Participants.EndUpdate();
         }
 
         void Self_GroupChatJoined(object sender, GroupChatJoinedEventArgs e)
