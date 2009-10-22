@@ -89,10 +89,11 @@ namespace Radegast.Plugin.Alice
             // Events
             Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
             Client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
-            Client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
+            Client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
             Client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
 
         }
+
 
         public void StopPlugin(RadegastInstance Instance)
         {
@@ -102,7 +103,7 @@ namespace Radegast.Plugin.Alice
             // Unregister events
             Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
             Client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-            Client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
+            Client.Avatars.AvatarPropertiesReply -= new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
             Client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
         }
 
@@ -111,11 +112,11 @@ namespace Radegast.Plugin.Alice
             Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
         }
 
-        void Avatars_OnAvatarProperties(UUID avatarID, Avatar.AvatarProperties properties)
+        void Avatars_AvatarPropertiesReply(object sender, AvatarPropertiesReplyEventArgs e)
         {
-            if (avatarID == Client.Self.AgentID)
+            if (e.AvatarID == Client.Self.AgentID)
             {
-                MyProfile = properties;
+                MyProfile = e.Properties;
                 Alice.GlobalSettings.updateSetting("birthday", MyProfile.BornOn);
                 DateTime bd;
                 if (DateTime.TryParse(MyProfile.BornOn, Utils.EnUsCulture, System.Globalization.DateTimeStyles.None, out bd))

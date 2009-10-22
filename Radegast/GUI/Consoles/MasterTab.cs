@@ -62,14 +62,14 @@ namespace Radegast
             this.avatar = avatar;
             
             // Callbacks
-            client.Avatars.OnPointAt += new AvatarManager.PointAtCallback(Avatars_OnPointAt);
+            client.Avatars.ViewerEffectPointAt += new EventHandler<ViewerEffectPointAtEventArgs>(Avatars_ViewerEffectPointAt);
             client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
 
         }
 
         void MasterTab_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.OnPointAt -= new AvatarManager.PointAtCallback(Avatars_OnPointAt);
+            client.Avatars.ViewerEffectPointAt -= new EventHandler<ViewerEffectPointAtEventArgs>(Avatars_ViewerEffectPointAt);
             client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
         }
 
@@ -129,12 +129,10 @@ namespace Radegast
             btnPoint.Enabled = true;
         }
 
-
-        void Avatars_OnPointAt(UUID sourceID, UUID targetID, Vector3d targetPos,
-    PointAtType pointType, float duration, UUID id)
+        void Avatars_ViewerEffectPointAt(object sender, ViewerEffectPointAtEventArgs e)
         {
-            if (sourceID == avatar.ID && targetID != UUID.Zero) {
-                selectedID = targetID;
+            if (e.SourceID == avatar.ID && e.TargetID != UUID.Zero) {
+                selectedID = e.TargetID;
                 selectedPrim = client.Network.CurrentSim.ObjectsPrimitives.Find(
                     delegate(Primitive prim) { return prim.ID == selectedID; }
                 );

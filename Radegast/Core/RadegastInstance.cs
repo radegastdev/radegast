@@ -200,7 +200,7 @@ namespace Radegast
             client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupDropped += new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
             mainForm.Load += new EventHandler(mainForm_Load);
             ScanAndLoadPlugins();
@@ -214,7 +214,7 @@ namespace Radegast
                 client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
                 client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
                 client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-                client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+                client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
                 client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
             }
 
@@ -392,11 +392,12 @@ namespace Radegast
             clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
         }
 
-        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
+
+        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             lock (nameCache)
             {
-                foreach (KeyValuePair<UUID, string> av in names)
+                foreach (KeyValuePair<UUID, string> av in e.Names)
                 {
                     if (!nameCache.ContainsKey(av.Key))
                     {

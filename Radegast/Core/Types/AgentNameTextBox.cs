@@ -82,7 +82,7 @@ namespace Radegast
         {
             if (client != null)
             {
-                client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+                client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             }
         }
 
@@ -90,16 +90,16 @@ namespace Radegast
         {
             if (client != null)
             {
-                client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+                client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             }
         }
 
-        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
+        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
-            if (names.ContainsKey(agentID))
+            if (e.Names.ContainsKey(agentID))
             {
                 CleanupHandlers(null, null);
-                SetName(names[agentID]);
+                SetName(e.Names[agentID]);
             }
         }
 

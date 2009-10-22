@@ -145,22 +145,22 @@ namespace Radegast
                     ManualResetEvent done = new ManualResetEvent(false);
                     {
 
-                        AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
+                        EventHandler<UUIDNameReplyEventArgs> callback = delegate(object senderx, UUIDNameReplyEventArgs ex)
                         {
-                            if (names.ContainsKey(e.Friend.UUID))
+                            if (ex.Names.ContainsKey(e.Friend.UUID))
                             {
-                                name = names[e.Friend.UUID];
+                                name = ex.Names[e.Friend.UUID];
                                 done.Set();
                             }
                         };
 
-                        client.Avatars.OnAvatarNames += callback;
+                        client.Avatars.UUIDNameReply += callback;
                         name = instance.getAvatarName(e.Friend.UUID);
                         if (name == RadegastInstance.INCOMPLETE_NAME)
                         {
                             done.WaitOne(3000, false);
                         }
-                        client.Avatars.OnAvatarNames -= callback;
+                        client.Avatars.UUIDNameReply -= callback;
                     }
                 }
 
@@ -179,22 +179,22 @@ namespace Radegast
                 using (ManualResetEvent done = new ManualResetEvent(false))
                 {
 
-                    AvatarManager.AvatarNamesCallback callback = delegate(Dictionary<UUID, string> names)
+                    EventHandler<UUIDNameReplyEventArgs> callback = delegate(object senderx, UUIDNameReplyEventArgs ex)
                     {
-                        if (names.ContainsKey(e.AgentID))
+                        if (ex.Names.ContainsKey(e.AgentID))
                         {
-                            agentName = names[e.AgentID];
+                            agentName = ex.Names[e.AgentID];
                             done.Set();
                         }
                     };
 
-                    client.Avatars.OnAvatarNames += callback;
+                    client.Avatars.UUIDNameReply += callback;
                     agentName = instance.getAvatarName(e.AgentID);
                     if (agentName == RadegastInstance.INCOMPLETE_NAME)
                     {
                         done.WaitOne(3000, false);
                     }
-                    client.Avatars.OnAvatarNames -= callback;
+                    client.Avatars.UUIDNameReply -= callback;
                 }
             }
 

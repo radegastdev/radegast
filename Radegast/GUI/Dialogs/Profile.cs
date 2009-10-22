@@ -78,9 +78,9 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Avatars.OnAvatarProperties += new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
-            client.Avatars.OnAvatarPicks += new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
-            client.Avatars.OnPickInfo += new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
+            client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
+            client.Avatars.AvatarPicksReply += new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
+            client.Avatars.PickInfoReply += new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
 
@@ -89,24 +89,24 @@ namespace Radegast
 
         void frmProfile_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.OnAvatarProperties -= new AvatarManager.AvatarPropertiesCallback(Avatars_OnAvatarProperties);
-            client.Avatars.OnAvatarPicks -= new AvatarManager.AvatarPicksCallback(Avatars_OnAvatarPicks);
-            client.Avatars.OnPickInfo -= new AvatarManager.PickInfoCallback(Avatars_OnPickInfo);
+            client.Avatars.AvatarPropertiesReply -= new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
+            client.Avatars.AvatarPicksReply -= new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
+            client.Avatars.PickInfoReply -= new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
         }
 
-        void Avatars_OnAvatarPicks(UUID id, Dictionary<UUID, string> picks)
+        void Avatars_AvatarPicksReply(object sender, AvatarPicksReplyEventArgs e)
         {
-            if (id != agentID) return;
+            if (e.AvatarID != agentID) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Avatars_OnAvatarPicks(id, picks)));
+                BeginInvoke(new MethodInvoker(() => Avatars_AvatarPicksReply(sender, e)));
                 return;
             }
             gotPicks = true;
-            DisplayListOfPicks(picks);
+            DisplayListOfPicks(e.Picks);
 
         }
 
@@ -151,7 +151,7 @@ namespace Radegast
 
             if (pickCache.ContainsKey(requestedPick))
             {
-                Avatars_OnPickInfo(requestedPick, pickCache[requestedPick]);
+                Avatars_PickInfoReply(this, new PickInfoReplyEventArgs(requestedPick, pickCache[requestedPick]));
             }
             else
             {
@@ -159,53 +159,53 @@ namespace Radegast
             }
         }
 
-        void Avatars_OnPickInfo(UUID pickid, ProfilePick pick)
+        void Avatars_PickInfoReply(object sender, PickInfoReplyEventArgs e)
         {
-            if (pickid != requestedPick) return;
+            if (e.PickID != requestedPick) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Avatars_OnPickInfo(pickid, pick)));
+                BeginInvoke(new MethodInvoker(() => Avatars_PickInfoReply(sender, e)));
                 return;
             }
 
             lock (pickCache)
             {
-                if (!pickCache.ContainsKey(pickid))
-                    pickCache.Add(pickid, pick);
+                if (!pickCache.ContainsKey(e.PickID))
+                    pickCache.Add(e.PickID, e.Pick);
             }
 
-            currentPick = pick;
+            currentPick = e.Pick;
 
             if (pickPicturePanel.Controls.Count > 0)
                 pickPicturePanel.Controls[0].Dispose();
             pickPicturePanel.Controls.Clear();
 
-            if (pick.SnapshotID != UUID.Zero)
+            if (e.Pick.SnapshotID != UUID.Zero)
             {
-                SLImageHandler img = new SLImageHandler(instance, pick.SnapshotID, string.Empty);
+                SLImageHandler img = new SLImageHandler(instance, e.Pick.SnapshotID, string.Empty);
                 img.Dock = DockStyle.Fill;
                 img.SizeMode = PictureBoxSizeMode.StretchImage;
                 pickPicturePanel.Controls.Add(img);
             }
 
-            pickTitle.Text = pick.Name;
+            pickTitle.Text = e.Pick.Name;
 
-            pickDetail.Text = pick.Desc;
+            pickDetail.Text = e.Pick.Desc;
 
-            if (!parcelCache.ContainsKey(pick.ParcelID))
+            if (!parcelCache.ContainsKey(e.Pick.ParcelID))
             {
                 pickLocation.Text = string.Format("Unkown parcel, {0} ({1}, {2}, {3})",
-                    pick.SimName,
-                    ((int)pick.PosGlobal.X) % 256,
-                    ((int)pick.PosGlobal.Y) % 256,
-                    ((int)pick.PosGlobal.Z) % 256
+                    e.Pick.SimName,
+                    ((int)e.Pick.PosGlobal.X) % 256,
+                    ((int)e.Pick.PosGlobal.Y) % 256,
+                    ((int)e.Pick.PosGlobal.Z) % 256
                 );
-                client.Parcels.RequestParcelInfo(pick.ParcelID);
+                client.Parcels.RequestParcelInfo(e.Pick.ParcelID);
             }
             else
             {
-                Parcels_ParcelInfoReply(this, new ParcelInfoReplyEventArgs(parcelCache[pick.ParcelID]));
+                Parcels_ParcelInfoReply(this, new ParcelInfoReplyEventArgs(parcelCache[e.Pick.ParcelID]));
             }
         }
 
@@ -239,22 +239,18 @@ namespace Radegast
             Close();
         }
 
-        //comes in on separate thread
-        private void Avatars_OnAvatarProperties(UUID avatarID, Avatar.AvatarProperties properties)
+        void Avatars_AvatarPropertiesReply(object sender, AvatarPropertiesReplyEventArgs e)
         {
-            if (avatarID != agentID) return;
+            if (e.AvatarID != agentID) return;
 
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    Avatars_OnAvatarProperties(avatarID, properties);
-                }));
+                Invoke(new MethodInvoker(() => Avatars_AvatarPropertiesReply(sender, e)));
                 return;
             }
 
-            FLImageID = properties.FirstLifeImage;
-            SLImageID = properties.ProfileImage;
+            FLImageID = e.Properties.FirstLifeImage;
+            SLImageID = e.Properties.ProfileImage;
 
             if (SLImageID != UUID.Zero)
             {
@@ -283,7 +279,7 @@ namespace Radegast
 
             this.BeginInvoke(
                 new OnSetProfileProperties(SetProfileProperties),
-                new object[] { properties });
+                new object[] { e.Properties});
         }
 
         //called on GUI thread

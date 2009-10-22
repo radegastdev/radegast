@@ -55,37 +55,34 @@ namespace Radegast
             this.client = instance.Client;
 
             // Callbacks
-            client.Avatars.OnAvatarAnimation += new AvatarManager.AvatarAnimationCallback(Avatars_OnAvatarAnimationUpdate);
+            client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(Avatars_AvatarAnimation);
         }
 
         void AnimTab_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.OnAvatarAnimation -= new AvatarManager.AvatarAnimationCallback(Avatars_OnAvatarAnimationUpdate);
+            client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(Avatars_AvatarAnimation);
         }
 
-        void Avatars_OnAvatarAnimationUpdate(UUID avatarID, InternalDictionary<UUID, int> anims)
+        void Avatars_AvatarAnimation(object sender, AvatarAnimationEventArgs e)
         {
             if (InvokeRequired) {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    Avatars_OnAvatarAnimationUpdate(avatarID, anims);
-                }));
+                Invoke(new MethodInvoker(() => Avatars_AvatarAnimation(sender, e)));
                 return;
             }
-            if (avatarID == av.ID)
+            if (e.AvatarID== av.ID)
             {
-                anims.ForEach(delegate(UUID AnimID)
+                foreach (Animation a in e.Animations)
                 {
-                    if (!seenAnim.Contains(AnimID))
+                    if (!seenAnim.Contains(a.AnimationID))
                     {
-                        Logger.Log("New anim for " + av.Name + ": " + AnimID, Helpers.LogLevel.Debug);
-                        seenAnim.Add(AnimID);
-                        AnimDetail ad = new AnimDetail(instance, av, AnimID, n);
+                        Logger.Log("New anim for " + av.Name + ": " + a.AnimationID, Helpers.LogLevel.Debug);
+                        seenAnim.Add(a.AnimationID);
+                        AnimDetail ad = new AnimDetail(instance, av, a.AnimationID, n);
                         ad.Location = new Point(0, n++ * ad.Height);
                         ad.Dock = DockStyle.Top;
                         Controls.Add(ad);
                     }
-                });
+                }
             }
         }
 
@@ -99,6 +96,5 @@ namespace Radegast
                 }
             }
         }
-
     }
 }

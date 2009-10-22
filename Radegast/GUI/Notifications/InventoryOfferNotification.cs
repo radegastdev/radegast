@@ -60,7 +60,7 @@ namespace Radegast
             this.instance = instance;
             this.msg = msg;
 
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
             if (msg.BinaryBucket.Length > 0)
             {
@@ -97,14 +97,14 @@ namespace Radegast
 
         void ntfInventoryOffer_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
-        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
+        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
-            if (names.Keys.Contains(msg.FromAgentID))
+            if (e.Names.Keys.Contains(msg.FromAgentID))
             {
-                client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+                client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
                 BeginInvoke(new MethodInvoker(() => txtInfo.Text = objectOfferText()));
             }
         }

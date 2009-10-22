@@ -66,7 +66,7 @@ namespace Radegast
             client.Self.GroupChatJoined += new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
             client.Self.ChatSessionMemberAdded += new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
             client.Self.ChatSessionMemberLeft += new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             client.Self.RequestJoinGroupChat(session);
         }
 
@@ -76,15 +76,15 @@ namespace Radegast
             client.Self.GroupChatJoined -= new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
             client.Self.ChatSessionMemberAdded -= new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
             client.Self.ChatSessionMemberLeft -= new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             CleanUp();
         }
 
-        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
+        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Avatars_OnAvatarNames(names)));
+                BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
                 return;
             }
 
@@ -93,7 +93,7 @@ namespace Radegast
 
                 Participants.BeginUpdate();
 
-                foreach (KeyValuePair<UUID, string> kvp in names)
+                foreach (KeyValuePair<UUID, string> kvp in e.Names)
                 {
                     if (Participants.Items.ContainsKey(kvp.Key.ToString()))
                         Participants.Items[kvp.Key.ToString()].Text = kvp.Value;

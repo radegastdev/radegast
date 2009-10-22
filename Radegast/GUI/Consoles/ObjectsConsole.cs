@@ -76,7 +76,7 @@ namespace Radegast
             client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
@@ -88,7 +88,7 @@ namespace Radegast
             client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
             client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
@@ -139,11 +139,11 @@ namespace Radegast
             btnRefresh_Click(null, null);
         }
 
-        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
+        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate() { Avatars_OnAvatarNames(names); }));
+                BeginInvoke(new MethodInvoker(delegate() { Avatars_UUIDNameReply(sender, e); }));
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace Radegast
                 foreach (ListViewItem item in lstPrims.Items)
                 {
                     Primitive prim = item.Tag as Primitive;
-                    if (prim.Properties != null && names.ContainsKey(prim.Properties.OwnerID))
+                    if (prim.Properties != null && e.Names.ContainsKey(prim.Properties.OwnerID))
                     {
                         item.Text = GetObjectName(prim);
                     }

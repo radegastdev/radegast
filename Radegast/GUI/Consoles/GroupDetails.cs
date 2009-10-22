@@ -75,8 +75,7 @@ namespace Radegast
             client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupNoticesListReply += new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
-
-            client.Avatars.OnAvatarNames += new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
             RefreshControlsAvailability();
             RefreshGroupInfo();
@@ -90,8 +89,7 @@ namespace Radegast
             client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupNoticesListReply -= new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-
-            client.Avatars.OnAvatarNames -= new AvatarManager.AvatarNamesCallback(Avatars_OnAvatarNames);
+            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         #region Network callbacks
@@ -216,26 +214,22 @@ namespace Radegast
             }
         }
 
-        void Avatars_OnAvatarNames(Dictionary<UUID, string> names)
+        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Avatars_OnAvatarNames(names);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
                 return;
             }
 
-            if (names.ContainsKey(group.FounderID))
+            if (e.Names.ContainsKey(group.FounderID))
             {
-                lblFounded.Text = "Founded by: " + names[group.FounderID];
+                lblFounded.Text = "Founded by: " + e.Names[group.FounderID];
             }
 
             lvwGeneralMembers.BeginUpdate();
             bool modified = false;
-            foreach (KeyValuePair<UUID, string> name in names)
+            foreach (KeyValuePair<UUID, string> name in e.Names)
             {
                 if (lvwGeneralMembers.Items.ContainsKey(name.Key.ToString()))
                 {
