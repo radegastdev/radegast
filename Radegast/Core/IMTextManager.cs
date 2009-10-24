@@ -41,7 +41,7 @@ namespace Radegast
     public class IMTextManager
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
         private ITextPrinter textPrinter;
         private UUID sessionID;
         private string sessionName;
@@ -58,7 +58,6 @@ namespace Radegast
             this.textBuffer = new ArrayList();
 
             this.instance = instance;
-            netcom = this.instance.Netcom;
             AddNetcomEvents();
             InitializeConfig();
         }

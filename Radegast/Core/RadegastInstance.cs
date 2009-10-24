@@ -99,7 +99,7 @@ namespace Radegast
         private bool monoRuntime;
         public bool MonoRuntime { get { return monoRuntime; } }
 
-        private Dictionary<UUID, Group> groups;
+        private Dictionary<UUID, Group> groups = new Dictionary<UUID, Group>();
         public Dictionary<UUID, Group> Groups { get { return groups; } }
 
         private Settings globalSettings;
@@ -146,6 +146,31 @@ namespace Radegast
         /// </summary>
         public RadegastMovement Movement { get { return movement; } }
 
+        #region Events
+        /// <summary>The event subscribers, null of no subscribers</summary>
+        private EventHandler<ClientChangedEventArgs> m_ClientChanged;
+
+        ///<summary>Raises the ClientChanged Event</summary>
+        /// <param name="e">A ClientChangedEventArgs object containing
+        /// the old and the new client</param>
+        protected virtual void OnClientChanged(ClientChangedEventArgs e)
+        {
+            EventHandler<ClientChangedEventArgs> handler = m_ClientChanged;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        /// <summary>Thread sync lock object</summary>
+        private readonly object m_ClientChangedLock = new object();
+
+        /// <summary>Raised when the GridClient object in the main Radegast instance is changed</summary>
+        public event EventHandler<ClientChangedEventArgs> ClientChanged
+        {
+            add { lock (m_ClientChangedLock) { m_ClientChanged += value; } }
+            remove { lock (m_ClientChangedLock) { m_ClientChanged -= value; } }
+        }
+        #endregion Events
+
         public RadegastInstance(GridClient client0)
         {
             // incase something else calls GlobalInstance while we are loading
@@ -161,15 +186,25 @@ namespace Radegast
             // Are we running mono?
             monoRuntime = Type.GetType("Mono.Runtime") != null;
 
-            netcom = new RadegastNetcom(client);
+            netcom = new RadegastNetcom(this);
             state = new StateManager(this);
             mediaManager = new MediaManager(this);
             commandsManager = new CommandsManager(this);
             ContextActionManager = new ContextActionsManager(this);
-            movement = new RadegastMovement(client);
+            movement = new RadegastMovement(this);
 
             InitializeLoggingAndConfig();
+            InitializeClient(client);
 
+            mainForm = new frmMain(this);
+            mainForm.InitializeControls();
+
+            mainForm.Load += new EventHandler(mainForm_Load);
+            ScanAndLoadPlugins();
+        }
+
+        private void InitializeClient(GridClient client)
+        {
             client.Settings.MULTIPLE_SIMS = true;
 
             client.Settings.USE_INTERPOLATION_TIMER = false;
@@ -191,31 +226,46 @@ namespace Radegast
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
             client.Settings.MAX_CONCURRENT_TEXTURE_DOWNLOADS = 20;
 
-            mainForm = new frmMain(this);
-            mainForm.InitializeControls();
+            RegisterClientEvents(client);
+        }
 
-            groups = new Dictionary<UUID, Group>();
-
+        private void RegisterClientEvents(GridClient client)
+        {
             client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupDropped += new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
-            mainForm.Load += new EventHandler(mainForm_Load);
-            ScanAndLoadPlugins();
+        }
+
+        private void UnregisterClientEvents(GridClient client)
+        {
+            client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
+            client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
+            client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
+            client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
+            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+        }
+
+        public void Reconnect()
+        {
+            TabConsole.DisplayNotificationInChat("Attempting to reconnect...", ChatBufferTextStyle.StatusDarkBlue);
+            Logger.Log("Attemting to reconnect", Helpers.LogLevel.Info, client);
+            GridClient oldClient = client;
+            client = new GridClient();
+            UnregisterClientEvents(oldClient);
+            InitializeClient(client);
+            OnClientChanged(new ClientChangedEventArgs(oldClient, client));
+            netcom.Login();
         }
 
         public void CleanUp()
         {
             if (client != null)
             {
-                client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
-                client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-                client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
-                client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-                client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-                client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+                UnregisterClientEvents(client);
             }
 
             lock (PluginsLoaded)
@@ -551,4 +601,21 @@ namespace Radegast
             Application.Exit();
         }
     }
+
+    #region Event classes
+    public class ClientChangedEventArgs : EventArgs
+    {
+        private GridClient m_OldClient;
+        private GridClient m_Client;
+
+        public GridClient OldClient { get { return m_OldClient; } }
+        public GridClient Client { get { return m_Client; } }
+
+        public ClientChangedEventArgs(GridClient OldClient, GridClient Client)
+        {
+            m_OldClient = OldClient;
+            m_Client = Client;
+        }
+    }
+    #endregion Event classes
 }

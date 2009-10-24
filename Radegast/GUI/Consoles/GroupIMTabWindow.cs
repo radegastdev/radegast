@@ -55,6 +55,7 @@ namespace Radegast
             Disposed += new EventHandler(IMTabWindow_Disposed);
 
             this.instance = instance;
+            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             this.session = session;
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
@@ -63,21 +64,52 @@ namespace Radegast
             chatSplit.Panel2Collapsed = true;
 
             // Callbacks
+            RegisterClientEvents(client);
+            client.Self.RequestJoinGroupChat(session);
+        }
+
+        private void RegisterClientEvents(GridClient client)
+        {
             client.Self.GroupChatJoined += new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
             client.Self.ChatSessionMemberAdded += new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
             client.Self.ChatSessionMemberLeft += new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            client.Self.RequestJoinGroupChat(session);
+            client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
+            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+        }
+
+        private void UnregisterClientEvents(GridClient client)
+        {
+            client.Self.GroupChatJoined -= new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
+            client.Self.ChatSessionMemberAdded -= new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
+            client.Self.ChatSessionMemberLeft -= new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
+            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+        }
+
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
             client.Self.RequestLeaveGroupChat(session);
-            client.Self.GroupChatJoined -= new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
-            client.Self.ChatSessionMemberAdded -= new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
-            client.Self.ChatSessionMemberLeft -= new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
-            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            UnregisterClientEvents(client);
             CleanUp();
+        }
+
+        void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
+        {
+            RefreshControls();
+        }
+
+        void Network_OnConnected(object sender)
+        {
+            client.Self.RequestJoinGroupChat(session);
+            RefreshControls();
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
@@ -124,41 +156,48 @@ namespace Radegast
                 return;
             }
 
-            lock (AvatarListSyncRoot)
+            try
             {
-                Participants.BeginUpdate();
-                Participants.Items.Clear();
-
-                List<ChatSessionMember> participants;
-                List<UUID> nameLookup = new List<UUID>();
-
-                if (client.Self.GroupChatSessions.TryGetValue(session, out participants))
+                lock (AvatarListSyncRoot)
                 {
-                    ChatSessionMember[] members = participants.ToArray();
-                    for (int i = 0; i < members.Length; i++)
+                    Participants.BeginUpdate();
+                    Participants.Items.Clear();
+
+                    List<ChatSessionMember> participants;
+                    List<UUID> nameLookup = new List<UUID>();
+
+                    if (client.Self.GroupChatSessions.TryGetValue(session, out participants))
                     {
-                        ChatSessionMember participant = members[i];
-                        ListViewItem item = new ListViewItem();
-                        item.Name = participant.AvatarKey.ToString();
-                        if (instance.nameCache.ContainsKey(participant.AvatarKey))
+                        ChatSessionMember[] members = participants.ToArray();
+                        for (int i = 0; i < members.Length; i++)
                         {
-                            item.Text = instance.nameCache[participant.AvatarKey];
+                            ChatSessionMember participant = members[i];
+                            ListViewItem item = new ListViewItem();
+                            item.Name = participant.AvatarKey.ToString();
+                            if (instance.nameCache.ContainsKey(participant.AvatarKey))
+                            {
+                                item.Text = instance.nameCache[participant.AvatarKey];
+                            }
+                            else
+                            {
+                                item.Text = RadegastInstance.INCOMPLETE_NAME;
+                                nameLookup.Add(participant.AvatarKey);
+                            }
+                            if (participant.IsModerator)
+                                item.Font = new Font(item.Font, FontStyle.Bold);
+                            Participants.Items.Add(item);
                         }
-                        else
-                        {
-                            item.Text = RadegastInstance.INCOMPLETE_NAME;
-                            nameLookup.Add(participant.AvatarKey);
-                        }
-                        if (participant.IsModerator)
-                            item.Font = new Font(item.Font, FontStyle.Bold);
-                        Participants.Items.Add(item);
+
+                        if (nameLookup.Count > 0)
+                            client.Avatars.RequestAvatarNames(nameLookup);
                     }
 
-                    if (nameLookup.Count > 0)
-                        client.Avatars.RequestAvatarNames(nameLookup);
+                    Participants.Sort();
+                    Participants.EndUpdate();
                 }
-
-                Participants.Sort();
+            }
+            catch (Exception)
+            {
                 Participants.EndUpdate();
             }
         }
@@ -185,24 +224,6 @@ namespace Radegast
             {
                 textManager.TextPrinter.PrintTextLine("Join Group Chat failed.", Color.Red);
             }
-        }
-
-        private void AddNetcomEvents()
-        {
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-        }
-
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
-        {
-            if (e.Status != LoginStatus.Success) return;
-
-            RefreshControls();
-        }
-
-        private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
-        {
-            RefreshControls();
         }
 
         public void CleanUp()
@@ -238,6 +259,12 @@ namespace Radegast
 
         private void RefreshControls()
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(RefreshControls));
+                return;
+            }
+
             if (!netcom.IsLoggedIn)
             {
                 cbxInput.Enabled = false;
@@ -248,8 +275,9 @@ namespace Radegast
                 return;
             }
 
+            cbxInput.Enabled = true;
             btnShow.Enabled = true;
-
+           
             if (cbxInput.Text.Length > 0)
             {
                 btnSend.Enabled = true;

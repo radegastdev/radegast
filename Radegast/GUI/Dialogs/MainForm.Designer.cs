@@ -78,6 +78,8 @@ namespace Radegast
             this.tmnuImport = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuPrefs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -173,6 +175,8 @@ namespace Radegast
             this.tmnuImport,
             this.scriptEditorToolStripMenuItem,
             this.toolStripMenuItem3,
+            this.disconnectToolStripMenuItem,
+            this.reconnectToolStripMenuItem,
             this.tmnuPrefs,
             this.toolStripMenuItem2,
             this.tmnuExit});
@@ -208,6 +212,22 @@ namespace Radegast
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
             this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 6);
+            // 
+            // disconnectToolStripMenuItem
+            // 
+            this.disconnectToolStripMenuItem.Enabled = false;
+            this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
+            this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.disconnectToolStripMenuItem.Text = "Disconnect";
+            this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.disconnectToolStripMenuItem_Click);
+            // 
+            // reconnectToolStripMenuItem
+            // 
+            this.reconnectToolStripMenuItem.Enabled = false;
+            this.reconnectToolStripMenuItem.Name = "reconnectToolStripMenuItem";
+            this.reconnectToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.reconnectToolStripMenuItem.Text = "Reconnect";
+            this.reconnectToolStripMenuItem.Click += new System.EventHandler(this.reconnectToolStripMenuItem_Click);
             // 
             // tmnuPrefs
             // 
@@ -788,6 +808,8 @@ namespace Radegast
         public System.Windows.Forms.ToolStripButton tbtnInventory;
         public System.Windows.Forms.ToolStripButton tbtnSearch;
         public System.Windows.Forms.ToolStripButton tbtnMap;
+        public System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem reconnectToolStripMenuItem;
     }
 }
 

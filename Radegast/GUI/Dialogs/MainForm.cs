@@ -114,8 +114,8 @@ namespace Radegast
 
         #region Private members
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
-        private GridClient client;
+        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
         private TabsConsole tabsConsole;
         private System.Timers.Timer statusTimer;
         private AutoPilot ap;
@@ -133,8 +133,7 @@ namespace Radegast
             Disposed += new EventHandler(frmMain_Disposed);
 
             this.instance = instance;
-            client = this.instance.Client;
-            netcom = this.instance.Netcom;
+            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             netcom.NetcomSync = this;
 
             pnlDialog.Visible = false;
@@ -173,11 +172,28 @@ namespace Radegast
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
-            client.Self.MoneyBalanceReply += new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
+            RegisterClientEvents(client);
 
             InitializeStatusTimer();
             RefreshWindowTitle();
+        }
+        
+        private void RegisterClientEvents(GridClient client)
+        {
+            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Self.MoneyBalanceReply += new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
+        }
+
+        private void UnregisterClientEvents(GridClient client)
+        {
+            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Self.MoneyBalanceReply -= new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
+        }
+
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
         }
 
         void frmMain_Disposed(object sender, EventArgs e)
@@ -185,8 +201,7 @@ namespace Radegast
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
-            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
-            client.Self.MoneyBalanceReply -= new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
+            UnregisterClientEvents(client);
             this.instance.CleanUp();
         }
         #endregion
@@ -218,6 +233,7 @@ namespace Radegast
         {
             if (e.Status != LoginStatus.Success) return;
 
+            disconnectToolStripMenuItem.Enabled =
             tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                 tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
 
@@ -227,8 +243,11 @@ namespace Radegast
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
+            disconnectToolStripMenuItem.Enabled =
             tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                 tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = false;
+
+            reconnectToolStripMenuItem.Enabled = true;
 
             statusTimer.Stop();
 
@@ -1105,6 +1124,16 @@ namespace Radegast
                 MapToCurrentLocation();
         }
 
+        private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (client.Network.Connected)
+                client.Network.RequestLogout();
+        }
+
+        private void reconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            instance.Reconnect();
+        }
         #endregion
     }
 }

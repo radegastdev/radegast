@@ -36,7 +36,8 @@ namespace Radegast
 {
     public class RadegastMovement : IDisposable
     {
-        private GridClient client;
+        private RadegastInstance instance;
+        private GridClient client { get { return instance.Client; } }
         private Timer timer;
         private float angle;
         private Vector3 forward = new Vector3(1, 0, 0);
@@ -129,9 +130,9 @@ namespace Radegast
             }
         }
 
-        public RadegastMovement(GridClient c)
+        public RadegastMovement(RadegastInstance instance)
         {
-            client = c;
+            this.instance = instance;
             angle = client.Self.Movement.BodyRotation.Z;
             timer = new System.Timers.Timer(250);
             timer.Elapsed +=new ElapsedEventHandler(timer_Elapsed);

@@ -93,6 +93,7 @@ namespace Radegast
             Disposed += new EventHandler(TabsConsole_Disposed);
 
             this.instance = instance;
+            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
             AddNetcomEvents();
 
@@ -100,15 +101,31 @@ namespace Radegast
             InitializeChatTab();
 
             // Callbacks
+            RegisterClientEvents(client);
+        }
+
+        private void RegisterClientEvents(GridClient client)
+        {
             client.Self.ScriptQuestion += new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
             client.Self.ScriptDialog += new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
+        }
+
+        private void UnregisterClientEvents(GridClient client)
+        {
+            client.Self.ScriptQuestion -= new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
+            client.Self.ScriptDialog -= new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
+        }
+
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
         }
 
         void TabsConsole_Disposed(object sender, EventArgs e)
         {
             RemoveNetcomEvents();
-            client.Self.ScriptQuestion -= new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
-            client.Self.ScriptDialog -= new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
+            UnregisterClientEvents(client);
         }
 
         private void AddNetcomEvents()
@@ -145,18 +162,26 @@ namespace Radegast
 
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
         {
-            if (e.Status != LoginStatus.Success) return;
-
-            InitializeOnlineTabs();
-
-            if (tabs.ContainsKey("login"))
+            if (e.Status == LoginStatus.Failed)
             {
-                if (selectedTab.Name == "login")
-                    tabs["chat"].Select();
-                ForceCloseTab("login");
+                DisplayNotificationInChat("Login error: " + e.Message, ChatBufferTextStyle.Error);
             }
+            else if (e.Status == LoginStatus.Success)
+            {
+                DisplayNotificationInChat("Logged in as " + netcom.LoginOptions.FullName + ".", ChatBufferTextStyle.StatusDarkBlue);
+                DisplayNotificationInChat("Login reply: " + e.Message, ChatBufferTextStyle.StatusDarkBlue);
 
-            client.Self.RetrieveInstantMessages();
+                InitializeOnlineTabs();
+
+                if (tabs.ContainsKey("login"))
+                {
+                    if (selectedTab.Name == "login")
+                        tabs["chat"].Select();
+                    ForceCloseTab("login");
+                }
+
+                client.Self.RetrieveInstantMessages();
+            }
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
@@ -175,7 +200,7 @@ namespace Radegast
             DisposeOnlineTabs();
 
             tabs["chat"].Select();
-            DisplayNotificationInChat("Disconnected.");
+            DisplayNotificationInChat("Disconnected: " + e.Message, ChatBufferTextStyle.Error);
         }
 
         private void netcom_AlertMessageReceived(object sender, AlertMessageEventArgs e)

@@ -43,8 +43,8 @@ namespace Radegast
     public partial class ChatConsole : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
-        private GridClient client;
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private GridClient client { get { return instance.Client; } }
         private ChatTextManager chatManager;
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
@@ -70,13 +70,12 @@ namespace Radegast
             }
 
             this.instance = instance;
-            netcom = this.instance.Netcom;
-            client = this.instance.Client;
+            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            client.Grid.CoarseLocationUpdate += new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
+            RegisterClientEvents(client);
 
             chatManager = new ChatTextManager(instance, new RichTextBoxPrinter(rtbChat));
             chatManager.PrintStartupMessage();
@@ -87,11 +86,27 @@ namespace Radegast
             lvwObjects.ListViewItemSorter = sc;
         }
 
+        private void RegisterClientEvents(GridClient client)
+        {
+            client.Grid.CoarseLocationUpdate += new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
+        }
+
+        private void UnregisterClientEvents(GridClient client)
+        {
+            client.Grid.CoarseLocationUpdate -= new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
+        }
+
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
+        }
+
         void ChatConsole_Disposed(object sender, EventArgs e)
         {
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            client.Grid.CoarseLocationUpdate -= new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
+            UnregisterClientEvents(client);
             chatManager.Dispose();
             chatManager = null;
         }

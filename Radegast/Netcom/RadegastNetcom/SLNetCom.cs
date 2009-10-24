@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using OpenMetaverse;
+using Radegast;
 using OpenMetaverse.Packets;
 
 namespace Radegast.Netcom
@@ -42,7 +43,8 @@ namespace Radegast.Netcom
     /// </summary>
     public partial class RadegastNetcom : IDisposable
     {
-        private GridClient client;
+        private RadegastInstance instance;
+        private GridClient client { get { return instance.Client; }}
         private LoginOptions loginOptions;
 
         private bool loggingIn = false;
@@ -57,39 +59,52 @@ namespace Radegast.Netcom
         // in the client app when responding to those events.
         private ISynchronizeInvoke netcomSync;
 
-        public RadegastNetcom(GridClient client)
+        public RadegastNetcom(RadegastInstance instance)
         {
-            this.client = client;
+            this.instance = instance;
             loginOptions = new LoginOptions();
 
-            AddClientEvents();
-            AddPacketCallbacks();
+            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            RegisterClientEvents(client);
         }
 
-        private void AddClientEvents()
+        private void RegisterClientEvents(GridClient client)
         {
             client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Self.MoneyBalance += new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
             client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
             client.Network.OnLogoutReply += new NetworkManager.LogoutCallback(Network_OnLogoutReply);
         }
 
+        private void UnregisterClientEvents(GridClient client)
+        {
+            client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
+            client.Self.MoneyBalance -= new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
+            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
+            client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
+            client.Network.OnLogoutReply -= new NetworkManager.LogoutCallback(Network_OnLogoutReply);
+        }
+
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
+        }
+
         public void Dispose()
         {
             if (client != null)
             {
-                client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-                client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-                client.Self.MoneyBalance -= new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
-                client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-                client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
-                client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-                client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
-                client.Network.OnLogoutReply -= new NetworkManager.LogoutCallback(Network_OnLogoutReply);
+                UnregisterClientEvents(client);
             }
         }
 
@@ -148,11 +163,6 @@ namespace Radegast.Netcom
                 OnChatReceived(e);
         }
 
-        private void AddPacketCallbacks()
-        {
-            client.Network.RegisterCallback(PacketType.AlertMessage, new NetworkManager.PacketCallback(AlertMessageHandler));
-        }
-
         private void Network_OnDisconnected(NetworkManager.DisconnectType type, string message)
         {
             if (!loggedIn) return;
@@ -174,18 +184,12 @@ namespace Radegast.Netcom
                 OnMoneyBalanceUpdated(e);
         }
 
-        private void AlertMessageHandler(Packet packet, Simulator simulator)
+        void Self_AlertMessage(object sender, AlertMessageEventArgs e)
         {
-            if (packet.Type != PacketType.AlertMessage) return;
-            AlertMessagePacket alertPacket = (AlertMessagePacket)packet;
-
-            AlertMessageEventArgs ea = new AlertMessageEventArgs(
-                Utils.BytesToString(alertPacket.AlertData.Message));
-
             if (netcomSync != null)
-                netcomSync.BeginInvoke(new OnAlertMessageRaise(OnAlertMessageReceived), new object[] { ea });
+                netcomSync.BeginInvoke(new OnAlertMessageRaise(OnAlertMessageReceived), new object[] { e });
             else
-                OnAlertMessageReceived(ea);
+                OnAlertMessageReceived(e);
         }
 
         public void Login()

@@ -41,8 +41,8 @@ namespace Radegast
     public class ChatTextManager : IDisposable
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom;
-        private GridClient client;
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private GridClient client { get { return instance.Client; } }
         private ITextPrinter textPrinter;
 
         private List<ChatBufferItem> textBuffer;
@@ -55,14 +55,9 @@ namespace Radegast
             this.textBuffer = new List<ChatBufferItem>();
 
             this.instance = instance;
-            netcom = this.instance.Netcom;
-            client = this.instance.Client;
             InitializeConfig();
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
             netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
@@ -70,9 +65,6 @@ namespace Radegast
 
         public void Dispose()
         {
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
             netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
@@ -106,54 +98,12 @@ namespace Radegast
             ProcessOutgoingChat(e);
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
-        {
-            if (e.Status == LoginStatus.Success)
-            {
-                ChatBufferItem loggedIn = new ChatBufferItem(
-                    DateTime.Now,
-                    "Logged into Second Life as " + netcom.LoginOptions.FullName + ".",
-                    ChatBufferTextStyle.StatusBlue);
-
-                ChatBufferItem loginReply = new ChatBufferItem(
-                    DateTime.Now, "Login reply: " + e.Message, ChatBufferTextStyle.StatusDarkBlue);
-
-                ProcessBufferItem(loggedIn, true);
-                ProcessBufferItem(loginReply, true);
-            }
-            else if (e.Status == LoginStatus.Failed)
-            {
-                ChatBufferItem loginError = new ChatBufferItem(
-                    DateTime.Now, "Login error: " + e.Message, ChatBufferTextStyle.Error);
-
-                ProcessBufferItem(loginError, true);
-            }
-        }
-
-        private void netcom_ClientLoggedOut(object sender, EventArgs e)
-        {
-            ChatBufferItem item = new ChatBufferItem(
-                DateTime.Now, "Logged out of Second Life.\n", ChatBufferTextStyle.StatusBlue);
-
-            ProcessBufferItem(item, true);
-        }
-
         private void netcom_AlertMessageReceived(object sender, AlertMessageEventArgs e)
         {
             if (e.Message.ToLower().Contains("autopilot canceled")) return; //workaround the stupid autopilot alerts
 
             ChatBufferItem item = new ChatBufferItem(
                 DateTime.Now, "Alert message: " + e.Message, ChatBufferTextStyle.Alert);
-
-            ProcessBufferItem(item, true);
-        }
-
-        private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
-        {
-            if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
-
-            ChatBufferItem item = new ChatBufferItem(
-                DateTime.Now, "Client disconnected. Message: " + e.Message, ChatBufferTextStyle.Error);
 
             ProcessBufferItem(item, true);
         }

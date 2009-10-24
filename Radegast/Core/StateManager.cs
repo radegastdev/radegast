@@ -40,8 +40,8 @@ namespace Radegast
     public class StateManager : IDisposable
     {
         private RadegastInstance instance;
-        private GridClient client;
-        private RadegastNetcom netcom;
+        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom { get { return instance.Netcom; } }
 
         private bool typing = false;
         private bool away = false;
@@ -73,8 +73,7 @@ namespace Radegast
         public StateManager(RadegastInstance instance)
         {
             this.instance = instance;
-            netcom = this.instance.Netcom;
-            client = this.instance.Client;
+            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -83,16 +82,32 @@ namespace Radegast
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            RegisterClientEvents(client);
+        }
+
+        private void RegisterClientEvents(GridClient client)
+        {
             client.Objects.OnObjectUpdated += new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
+        }
+
+        private void UnregisterClientEvents(GridClient client)
+        {
+            client.Objects.OnObjectUpdated -= new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
+            client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
+        }
+
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
         }
 
         public void Dispose()
         {
             netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            client.Objects.OnObjectUpdated -= new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
-            client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
+            UnregisterClientEvents(client);
             beamTimer.Dispose();
             beamTimer = null;
 

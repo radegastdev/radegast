@@ -35,7 +35,7 @@ using OpenMetaverse;
 
 namespace Radegast.Commands
 {
-    public class CommandsManager : ICommandInterpreter
+    public class CommandsManager : ICommandInterpreter, IDisposable
     {
         const string CmdPrefix = "//";
         public readonly List<IRadegastCommand> CommandsLoaded = new List<IRadegastCommand>();
