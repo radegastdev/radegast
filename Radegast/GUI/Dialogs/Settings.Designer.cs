@@ -66,6 +66,7 @@ namespace Radegast
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
+            this.cbAutoReconnect = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -83,6 +84,7 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.cbAutoReconnect);
             this.tbpGeneral.Controls.Add(this.cbFriendsNotifications);
             this.tbpGeneral.Controls.Add(this.cbTrasactChat);
             this.tbpGeneral.Controls.Add(this.cbTrasactDialog);
@@ -99,10 +101,10 @@ namespace Radegast
             // cbFriendsNotifications
             // 
             this.cbFriendsNotifications.AutoSize = true;
-            this.cbFriendsNotifications.Location = new System.Drawing.Point(6, 98);
+            this.cbFriendsNotifications.Location = new System.Drawing.Point(8, 98);
             this.cbFriendsNotifications.Name = "cbFriendsNotifications";
             this.cbFriendsNotifications.Size = new System.Drawing.Size(184, 17);
-            this.cbFriendsNotifications.TabIndex = 1;
+            this.cbFriendsNotifications.TabIndex = 4;
             this.cbFriendsNotifications.Text = "Display friends online notifications";
             this.cbFriendsNotifications.UseVisualStyleBackColor = true;
             this.cbFriendsNotifications.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -113,7 +115,7 @@ namespace Radegast
             this.cbTrasactChat.Location = new System.Drawing.Point(8, 75);
             this.cbTrasactChat.Name = "cbTrasactChat";
             this.cbTrasactChat.Size = new System.Drawing.Size(170, 17);
-            this.cbTrasactChat.TabIndex = 1;
+            this.cbTrasactChat.TabIndex = 3;
             this.cbTrasactChat.Text = "Display L$ transactions in chat";
             this.cbTrasactChat.UseVisualStyleBackColor = true;
             this.cbTrasactChat.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -124,7 +126,7 @@ namespace Radegast
             this.cbTrasactDialog.Location = new System.Drawing.Point(8, 52);
             this.cbTrasactDialog.Name = "cbTrasactDialog";
             this.cbTrasactDialog.Size = new System.Drawing.Size(176, 17);
-            this.cbTrasactDialog.TabIndex = 1;
+            this.cbTrasactDialog.TabIndex = 2;
             this.cbTrasactDialog.Text = "Display dialog on L$ transaction";
             this.cbTrasactDialog.UseVisualStyleBackColor = true;
             this.cbTrasactDialog.CheckedChanged += new System.EventHandler(this.cbTrasactDialog_CheckedChanged);
@@ -148,6 +150,17 @@ namespace Radegast
             this.cbChatTimestamps.TabIndex = 0;
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
+            // 
+            // cbAutoReconnect
+            // 
+            this.cbAutoReconnect.AutoSize = true;
+            this.cbAutoReconnect.Location = new System.Drawing.Point(8, 121);
+            this.cbAutoReconnect.Name = "cbAutoReconnect";
+            this.cbAutoReconnect.Size = new System.Drawing.Size(169, 17);
+            this.cbAutoReconnect.TabIndex = 5;
+            this.cbAutoReconnect.Text = "Auto reconnect on disconnect";
+            this.cbAutoReconnect.UseVisualStyleBackColor = true;
+            this.cbAutoReconnect.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -174,6 +187,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbTrasactChat;
         public System.Windows.Forms.CheckBox cbTrasactDialog;
         public System.Windows.Forms.CheckBox cbFriendsNotifications;
+        public System.Windows.Forms.CheckBox cbAutoReconnect;
 
     }
 }
