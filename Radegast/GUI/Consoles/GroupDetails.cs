@@ -144,20 +144,22 @@ namespace Radegast
             
             lvwNoticeArchive.BeginUpdate();
 
-            ListViewItem item = new ListViewItem();
-            item.SubItems.Add(e.Notices.Subject);
-            item.SubItems.Add(e.Notices.FromName);
-            item.SubItems.Add(Utils.UnixTimeToDateTime(e.Notices.Timestamp).ToShortDateString());
-
-            if (e.Notices.HasAttachment)
+            foreach (GroupNoticesListEntry notice in e.Notices)
             {
-                item.ImageIndex = InventoryConsole.GetItemImageIndex(e.Notices.AssetType.ToString().ToLower());
+                ListViewItem item = new ListViewItem();
+                item.SubItems.Add(notice.Subject);
+                item.SubItems.Add(notice.FromName);
+                item.SubItems.Add(Utils.UnixTimeToDateTime(notice.Timestamp).ToShortDateString());
+
+                if (notice.HasAttachment)
+                {
+                    item.ImageIndex = InventoryConsole.GetItemImageIndex(notice.AssetType.ToString().ToLower());
+                }
+
+                item.Tag = notice;
+
+                lvwNoticeArchive.Items.Add(item);
             }
-
-            item.Tag = e.Notices;
-
-            lvwNoticeArchive.Items.Add(item);
-
             lvwNoticeArchive.EndUpdate();
         }
 
@@ -477,9 +479,9 @@ namespace Radegast
         {
             if (lvwNoticeArchive.SelectedItems.Count == 1)
             {
-                if (lvwNoticeArchive.SelectedItems[0].Tag is GroupNoticeList)
+                if (lvwNoticeArchive.SelectedItems[0].Tag is GroupNoticesListEntry)
                 {
-                    GroupNoticeList notice = (GroupNoticeList)lvwNoticeArchive.SelectedItems[0].Tag;
+                    GroupNoticesListEntry notice = (GroupNoticesListEntry)lvwNoticeArchive.SelectedItems[0].Tag;
                     lblSentBy.Text = "Sent by " + notice.FromName;
                     lblTitle.Text = notice.Subject;
                     txtNotice.Text = string.Empty;
@@ -622,8 +624,8 @@ namespace Radegast
         {
             ListViewItem item1 = (ListViewItem)x;
             ListViewItem item2 = (ListViewItem)y;
-            GroupNoticeList member1 = (GroupNoticeList)item1.Tag;
-            GroupNoticeList member2 = (GroupNoticeList)item2.Tag;
+            GroupNoticesListEntry member1 = (GroupNoticesListEntry)item1.Tag;
+            GroupNoticesListEntry member2 = (GroupNoticesListEntry)item2.Tag;
 
             switch (SortBy)
             {
