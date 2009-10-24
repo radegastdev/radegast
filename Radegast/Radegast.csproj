@@ -348,6 +348,12 @@
     <Compile Include="GUI\Dialogs\Profile.Designer.cs">
       <DependentUpon>Profile.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Dialogs\Reconnect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\Reconnect.Designer.cs">
+      <DependentUpon>Reconnect.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Dialogs\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -580,6 +586,9 @@
     <EmbeddedResource Include="GUI\Dialogs\Profile.resx">
       <SubType>Designer</SubType>
       <DependentUpon>Profile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\Reconnect.resx">
+      <DependentUpon>Reconnect.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>

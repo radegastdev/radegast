@@ -177,7 +177,7 @@ namespace Radegast
             InitializeStatusTimer();
             RefreshWindowTitle();
         }
-        
+
         private void RegisterClientEvents(GridClient client)
         {
             client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
@@ -229,16 +229,62 @@ namespace Radegast
             }
         }
 
+        public bool InAutoReconnect { get; set; }
+
+        private void DisplayAutoReconnectForm()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(DisplayAutoReconnectForm));
+                return;
+            }
+
+            InAutoReconnect = true;
+            frmReconnect dialog = new frmReconnect(instance, 120);
+            dialog.ShowDialog(this);
+            dialog.Dispose();
+            dialog = null;
+        }
+
+        public void BeginAutoReconnect()
+        {
+            // Sleep for 3 seconds on a separate thread while things unwind on
+            // disconnect, since ShowDialog() blocks GUI thread
+            (new Thread(new ThreadStart(() =>
+                {
+                    System.Threading.Thread.Sleep(3000);
+                    DisplayAutoReconnectForm();
+                }
+                ))
+                {
+                    Name = "Reconnect Delay Thread",
+                    IsBackground = false
+                }
+            ).Start();
+        }
+
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
         {
-            if (e.Status != LoginStatus.Success) return;
+            if (e.Status == LoginStatus.Failed)
+            {
+                if (InAutoReconnect)
+                {
+                    if (instance.GlobalSettings["auto_reconnect"].AsBoolean())
+                        BeginAutoReconnect();
+                    else
+                        InAutoReconnect = false;
+                }
+            }
+            else if (e.Status == LoginStatus.Success)
+            {
+                InAutoReconnect = false;
+                disconnectToolStripMenuItem.Enabled =
+                tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
+                    tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
 
-            disconnectToolStripMenuItem.Enabled =
-            tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
-                tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
-
-            statusTimer.Start();
-            RefreshWindowTitle();
+                statusTimer.Start();
+                RefreshWindowTitle();
+            }
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
@@ -248,6 +294,7 @@ namespace Radegast
                 tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = false;
 
             reconnectToolStripMenuItem.Enabled = true;
+            InAutoReconnect = false;
 
             statusTimer.Stop();
 
@@ -259,6 +306,11 @@ namespace Radegast
         {
             if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
             netcom_ClientLoggedOut(sender, EventArgs.Empty);
+
+            if (instance.GlobalSettings["auto_reconnect"].AsBoolean())
+            {
+                BeginAutoReconnect();
+            }
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -302,7 +354,7 @@ namespace Radegast
                 BeginInvoke(new MethodInvoker(() => Parcels_ParcelProperties(sender, e)));
                 return;
             }
-            
+
             Parcel parcel = e.Parcel;
 
             tlblParcel.Text = parcel.Name;
@@ -511,7 +563,7 @@ namespace Radegast
         #region Public methods
 
         private Dictionary<UUID, frmProfile> shownProfiles = new Dictionary<UUID, frmProfile>();
-        
+
         public void ShowAgentProfile(string name, UUID agentID)
         {
             lock (shownProfiles)
@@ -525,7 +577,7 @@ namespace Radegast
                 else
                 {
                     profile = new frmProfile(instance, name, agentID);
-                    
+
                     profile.Disposed += (object sender, EventArgs e) =>
                         {
                             lock (shownProfiles)
@@ -558,7 +610,7 @@ namespace Radegast
                 else
                 {
                     profile = new frmGroupInfo(instance, group);
-                    
+
                     profile.Disposed += (object sender, EventArgs e) =>
                         {
                             lock (shownGroupProfiles)
@@ -1116,7 +1168,7 @@ namespace Radegast
                 ((ObjectsConsole)tab.Control).RefreshObjectList();
             }
         }
-        
+
         private void tbtnMap_Click(object sender, EventArgs e)
         {
             ToggleHidden("map");
