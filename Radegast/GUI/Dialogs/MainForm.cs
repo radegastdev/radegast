@@ -480,24 +480,60 @@ namespace Radegast
 
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.Alt && e.KeyCode == Keys.D)
+            if (e.Alt && !e.Shift)
             {
-                e.Handled = e.SuppressKeyPress = true;
+                switch (e.KeyCode)
+                {
+                    case Keys.D1:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tabsConsole.Tabs["chat"].Select();
+                        break;
+
+                    case Keys.D2:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbtnFriends.PerformClick();
+                        break;
+
+                    case Keys.D3:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbtnGroups.PerformClick();
+                        break;
+
+                    case Keys.D4:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbtnInventory.PerformClick();
+                        break;
+
+                    case Keys.D5:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbtnSearch.PerformClick();
+                        break;
+
+                    case Keys.D6:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbtnMap.PerformClick();
+                        break;
+
+                    case Keys.D7:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbnObjects.PerformClick();
+                        break;
+
+                    case Keys.D8:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbtnMedia.PerformClick();
+                        break;
+                }
             }
 
-            if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
-            {
-                e.Handled = e.SuppressKeyPress = true;
-            }
-
+            // ctrl-g, goto slurl
             if (e.Control && e.KeyCode == Keys.G)
             {
-                e.Handled = e.SuppressKeyPress = true;
-            }
+                if (!ProcessLink(Clipboard.GetText(), true))
+                    MapToCurrentLocation();
 
-            if (e.Control && e.KeyCode == Keys.M && Clipboard.ContainsText() && client.Network.Connected)
-            {
                 e.Handled = e.SuppressKeyPress = true;
+                return;
             }
 
             // ctrl-(shift)-tab for next/previous tab
@@ -512,32 +548,12 @@ namespace Radegast
                     TabConsole.SelectNextTab();
                 }
                 e.Handled = e.SuppressKeyPress = true;
+                return;
             }
         }
 
         private void frmMain_KeyUp(object sender, KeyEventArgs e)
         {
-            // ctrl-o, open objects finder
-            if (e.Control && e.KeyCode == Keys.O && client.Network.Connected)
-            {
-                tbnObjects_Click(this, EventArgs.Empty);
-                e.Handled = e.SuppressKeyPress = true;
-            }
-
-            // ctrl-g, goto slurl
-            if (e.Control && e.KeyCode == Keys.G && Clipboard.ContainsText() && client.Network.Connected)
-            {
-                if (!ProcessLink(Clipboard.GetText(), true))
-                    MapToCurrentLocation();
-                e.Handled = e.SuppressKeyPress = true;
-            }
-
-            // ctrl-m, open map
-            if (e.Control && e.KeyCode == Keys.M && Clipboard.ContainsText() && client.Network.Connected)
-            {
-                MapToCurrentLocation();
-                e.Handled = e.SuppressKeyPress = true;
-            }
         }
 
 
