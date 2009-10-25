@@ -269,13 +269,13 @@ namespace Radegast
             this.tbtnWorld.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnWorld.Name = "tbtnWorld";
             this.tbtnWorld.Size = new System.Drawing.Size(52, 22);
-            this.tbtnWorld.Text = "World";
+            this.tbtnWorld.Text = "&World";
             // 
             // tmnuControlFly
             // 
             this.tmnuControlFly.CheckOnClick = true;
             this.tmnuControlFly.Name = "tmnuControlFly";
-            this.tmnuControlFly.Size = new System.Drawing.Size(192, 22);
+            this.tmnuControlFly.Size = new System.Drawing.Size(223, 22);
             this.tmnuControlFly.Text = "Fly";
             this.tmnuControlFly.Click += new System.EventHandler(this.tmnuControlFly_Click);
             // 
@@ -283,60 +283,61 @@ namespace Radegast
             // 
             this.tmnuControlAlwaysRun.CheckOnClick = true;
             this.tmnuControlAlwaysRun.Name = "tmnuControlAlwaysRun";
-            this.tmnuControlAlwaysRun.Size = new System.Drawing.Size(192, 22);
+            this.tmnuControlAlwaysRun.Size = new System.Drawing.Size(223, 22);
             this.tmnuControlAlwaysRun.Text = "Always Run";
             this.tmnuControlAlwaysRun.Click += new System.EventHandler(this.tmnuControlAlwaysRun_Click);
             // 
             // groundSitToolStripMenuItem
             // 
             this.groundSitToolStripMenuItem.Name = "groundSitToolStripMenuItem";
-            this.groundSitToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.groundSitToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.groundSitToolStripMenuItem.Text = "Sit On Ground";
             this.groundSitToolStripMenuItem.Click += new System.EventHandler(this.groundSitToolStripMenuItem_Click);
             // 
             // standToolStripMenuItem
             // 
             this.standToolStripMenuItem.Name = "standToolStripMenuItem";
-            this.standToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.standToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.standToolStripMenuItem.Text = "Stand";
             this.standToolStripMenuItem.Click += new System.EventHandler(this.standToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(189, 6);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(220, 6);
             // 
             // tmnuCreateLandmark
             // 
             this.tmnuCreateLandmark.Name = "tmnuCreateLandmark";
-            this.tmnuCreateLandmark.Size = new System.Drawing.Size(192, 22);
+            this.tmnuCreateLandmark.Size = new System.Drawing.Size(223, 22);
             this.tmnuCreateLandmark.Text = "Create Landmark Here";
             this.tmnuCreateLandmark.Click += new System.EventHandler(this.tmnuCreateLandmark_Click);
             // 
             // tmnuSetHome
             // 
             this.tmnuSetHome.Name = "tmnuSetHome";
-            this.tmnuSetHome.Size = new System.Drawing.Size(192, 22);
+            this.tmnuSetHome.Size = new System.Drawing.Size(223, 22);
             this.tmnuSetHome.Text = "Set Home To Here";
             this.tmnuSetHome.Click += new System.EventHandler(this.tmnuSetHome_Click);
             // 
             // tmnuTeleportHome
             // 
             this.tmnuTeleportHome.Name = "tmnuTeleportHome";
-            this.tmnuTeleportHome.Size = new System.Drawing.Size(192, 22);
+            this.tmnuTeleportHome.ShortcutKeyDisplayString = "Ctrl-Shift-H";
+            this.tmnuTeleportHome.Size = new System.Drawing.Size(223, 22);
             this.tmnuTeleportHome.Text = "Teleport Home";
             this.tmnuTeleportHome.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(189, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(220, 6);
             // 
             // tmnuStatusAway
             // 
             this.tmnuStatusAway.CheckOnClick = true;
             this.tmnuStatusAway.Name = "tmnuStatusAway";
-            this.tmnuStatusAway.Size = new System.Drawing.Size(192, 22);
+            this.tmnuStatusAway.Size = new System.Drawing.Size(223, 22);
             this.tmnuStatusAway.Text = "Away";
             this.tmnuStatusAway.Click += new System.EventHandler(this.tmnuStatusAway_Click);
             // 
@@ -344,7 +345,7 @@ namespace Radegast
             // 
             this.tmnuStatusBusy.CheckOnClick = true;
             this.tmnuStatusBusy.Name = "tmnuStatusBusy";
-            this.tmnuStatusBusy.Size = new System.Drawing.Size(192, 22);
+            this.tmnuStatusBusy.Size = new System.Drawing.Size(223, 22);
             this.tmnuStatusBusy.Text = "Busy";
             this.tmnuStatusBusy.Click += new System.EventHandler(this.tmnuStatusBusy_Click);
             // 
@@ -421,7 +422,7 @@ namespace Radegast
             this.tbnPlugins.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbnPlugins.Name = "tbnPlugins";
             this.tbnPlugins.Size = new System.Drawing.Size(59, 22);
-            this.tbnPlugins.Text = "Plugins";
+            this.tbnPlugins.Text = "&Plugins";
             this.tbnPlugins.Visible = false;
             // 
             // toolStripSeparator1
@@ -438,6 +439,7 @@ namespace Radegast
             this.tbtnFriends.Name = "tbtnFriends";
             this.tbtnFriends.Size = new System.Drawing.Size(49, 22);
             this.tbtnFriends.Text = "Friends";
+            this.tbtnFriends.ToolTipText = "Friends (Alt-2)";
             this.tbtnFriends.Click += new System.EventHandler(this.tbtnFriends_Click);
             // 
             // tbtnGroups
@@ -449,6 +451,7 @@ namespace Radegast
             this.tbtnGroups.Name = "tbtnGroups";
             this.tbtnGroups.Size = new System.Drawing.Size(49, 22);
             this.tbtnGroups.Text = "Groups";
+            this.tbtnGroups.ToolTipText = "Groups (Alt-3)";
             this.tbtnGroups.Click += new System.EventHandler(this.tbtnGroups_Click);
             // 
             // tbtnInventory
@@ -460,6 +463,7 @@ namespace Radegast
             this.tbtnInventory.Name = "tbtnInventory";
             this.tbtnInventory.Size = new System.Drawing.Size(61, 22);
             this.tbtnInventory.Text = "Inventory";
+            this.tbtnInventory.ToolTipText = "Inventory (Alt-4)";
             this.tbtnInventory.Click += new System.EventHandler(this.tbtnInventory_Click);
             // 
             // tbtnSearch
@@ -471,6 +475,7 @@ namespace Radegast
             this.tbtnSearch.Name = "tbtnSearch";
             this.tbtnSearch.Size = new System.Drawing.Size(46, 22);
             this.tbtnSearch.Text = "Search";
+            this.tbtnSearch.ToolTipText = "Search (Alt-5)";
             this.tbtnSearch.Click += new System.EventHandler(this.tbtnSearch_Click);
             // 
             // tbtnMap
@@ -482,6 +487,7 @@ namespace Radegast
             this.tbtnMap.Name = "tbtnMap";
             this.tbtnMap.Size = new System.Drawing.Size(35, 22);
             this.tbtnMap.Text = "Map";
+            this.tbtnMap.ToolTipText = "Map (Alt-6)";
             this.tbtnMap.Click += new System.EventHandler(this.tbtnMap_Click);
             // 
             // tbnObjects
@@ -493,7 +499,8 @@ namespace Radegast
             this.tbnObjects.Name = "tbnObjects";
             this.tbnObjects.Size = new System.Drawing.Size(51, 22);
             this.tbnObjects.Text = "Objects";
-            this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on";
+            this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on (Alt" +
+                "-7)";
             this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
             // 
             // lblTime
@@ -511,6 +518,7 @@ namespace Radegast
             this.tbtnMedia.Name = "tbtnMedia";
             this.tbtnMedia.Size = new System.Drawing.Size(44, 22);
             this.tbtnMedia.Text = "Media";
+            this.tbtnMedia.ToolTipText = "Media (Alt-8)";
             this.tbtnMedia.Visible = false;
             this.tbtnMedia.Click += new System.EventHandler(this.tbtnMedia_Click);
             // 
@@ -531,7 +539,7 @@ namespace Radegast
             this.tbtnHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnHelp.Name = "tbtnHelp";
             this.tbtnHelp.Size = new System.Drawing.Size(45, 22);
-            this.tbtnHelp.Text = "Help";
+            this.tbtnHelp.Text = "&Help";
             // 
             // reportBugsToolStripMenuItem
             // 

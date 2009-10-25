@@ -480,7 +480,16 @@ namespace Radegast
 
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Alt && !e.Shift)
+            // Ctl-Shift-H: Teleport Home
+            if (e.Modifiers == (Keys.Control | Keys.Shift) && e.KeyCode == Keys.H)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                tmnuTeleportHome.PerformClick();
+                return;
+            }
+
+            // Alt 1-8: Toggle various tabs
+            if (e.Modifiers == Keys.Alt)
             {
                 switch (e.KeyCode)
                 {
@@ -555,7 +564,6 @@ namespace Radegast
         private void frmMain_KeyUp(object sender, KeyEventArgs e)
         {
         }
-
 
         private void frmMain_Load(object sender, EventArgs e)
         {
