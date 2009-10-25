@@ -330,6 +330,12 @@
     <Compile Include="GUI\Dialogs\GroupInfo.Designer.cs">
       <DependentUpon>GroupInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Dialogs\KeyboardShortcuts.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\KeyboardShortcuts.Designer.cs">
+      <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Dialogs\PrimWorkshop.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -566,6 +572,9 @@
     <EmbeddedResource Include="GUI\Dialogs\GroupInfo.resx">
       <DependentUpon>GroupInfo.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\KeyboardShortcuts.resx">
+      <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\PrimWorkshop.resx">
       <DependentUpon>PrimWorkshop.cs</DependentUpon>

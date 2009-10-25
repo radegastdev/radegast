@@ -133,6 +133,7 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
+            this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -531,6 +532,7 @@ namespace Radegast
             // 
             this.tbtnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.keyboardShortcutsToolStripMenuItem,
             this.reportBugsToolStripMenuItem,
             this.checkForUpdatesToolStripMenuItem,
             this.toolStripMenuItem6,
@@ -723,6 +725,13 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
+            // keyboardShortcutsToolStripMenuItem
+            // 
+            this.keyboardShortcutsToolStripMenuItem.Name = "keyboardShortcutsToolStripMenuItem";
+            this.keyboardShortcutsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.keyboardShortcutsToolStripMenuItem.Text = "Keyboard Shortcuts";
+            this.keyboardShortcutsToolStripMenuItem.Click += new System.EventHandler(this.keyboardShortcutsToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -818,6 +827,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripButton tbtnMap;
         public System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem reconnectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keyboardShortcutsToolStripMenuItem;
     }
 }
 

@@ -1210,6 +1210,38 @@ namespace Radegast
         {
             instance.Reconnect();
         }
+
+        private frmKeyboardShortcuts keyboardShortcutsForm = null;
+        private void keyboardShortcutsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (keyboardShortcutsForm != null)
+            {
+                keyboardShortcutsForm.Focus();
+            }
+            else
+            {
+                keyboardShortcutsForm = new frmKeyboardShortcuts(instance);
+
+                keyboardShortcutsForm.Disposed += (object senderx, EventArgs ex) =>
+                    {
+                        if (components != null)
+                        {
+                            components.Remove(keyboardShortcutsForm);
+                        }
+                        keyboardShortcutsForm = null;
+                    };
+
+                keyboardShortcutsForm.Show(this);
+                keyboardShortcutsForm.Top = Top + 100;
+                keyboardShortcutsForm.Left = Left + 100;
+
+                if (components != null)
+                {
+                    components.Add(keyboardShortcutsForm);
+                }
+            }
+        }
         #endregion
+
     }
 }
