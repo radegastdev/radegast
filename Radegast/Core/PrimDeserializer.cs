@@ -111,12 +111,12 @@ namespace Radegast
         public PrimDeserializer(GridClient c)
         {
             Client = c;
-            Client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
+            Client.Objects.NewPrim += new EventHandler<PrimEventArgs>(Objects_NewPrim);
         }
 
         public void CleanUp()
         {
-            Client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
+            Client.Objects.NewPrim -= new EventHandler<PrimEventArgs>(Objects_NewPrim);
         }
 
         public bool CreateObjectFromXml(string xml)
@@ -231,52 +231,49 @@ namespace Radegast
             return true;
         }
 
-        void Objects_OnNewPrim(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
+        void Objects_NewPrim(object sender, PrimEventArgs e)
         {
-            if ((prim.Flags & PrimFlags.CreateSelected) == 0)
+            if ((e.Prim.Flags & PrimFlags.CreateSelected) == 0)
                 return; // We received an update for an object we didn't create
-
-            if (prim.OwnerID != Client.Self.AgentID) {
-                //return;
-            }
 
             switch (state) {
                 case ImporterState.RezzingParent:
-                    rootLocalID = prim.LocalID;
+                    rootLocalID = e.Prim.LocalID;
                     goto case ImporterState.RezzingChildren;
                 case ImporterState.RezzingChildren:
-                    if (!primsCreated.Contains(prim)) {
-                        Console.WriteLine("Setting properties for " + prim.LocalID);
+                    if (!primsCreated.Contains(e.Prim))
+                    {
+                        Console.WriteLine("Setting properties for " + e.Prim.LocalID);
                         // TODO: Is there a way to set all of this at once, and update more ObjectProperties stuff?
-                        Client.Objects.SetPosition(simulator, prim.LocalID, currentPosition);
-                        Client.Objects.SetTextures(simulator, prim.LocalID, currentPrim.Textures);
+                        Client.Objects.SetPosition(e.Simulator, e.Prim.LocalID, currentPosition);
+                        Client.Objects.SetTextures(e.Simulator, e.Prim.LocalID, currentPrim.Textures);
 
                         if (currentPrim.Light.Intensity > 0) {
-                            Client.Objects.SetLight(simulator, prim.LocalID, currentPrim.Light);
+                            Client.Objects.SetLight(e.Simulator, e.Prim.LocalID, currentPrim.Light);
                         }
 
-                        Client.Objects.SetFlexible(simulator, prim.LocalID, currentPrim.Flexible);
+                        Client.Objects.SetFlexible(e.Simulator, e.Prim.LocalID, currentPrim.Flexible);
 
                         if (currentPrim.Sculpt.SculptTexture != UUID.Zero) {
-                            Client.Objects.SetSculpt(simulator, prim.LocalID, currentPrim.Sculpt);
+                            Client.Objects.SetSculpt(e.Simulator, e.Prim.LocalID, currentPrim.Sculpt);
                         }
 
                         if (!String.IsNullOrEmpty(currentPrim.Properties.Name)) {
-                            Client.Objects.SetName(simulator, prim.LocalID, currentPrim.Properties.Name);
+                            Client.Objects.SetName(e.Simulator, e.Prim.LocalID, currentPrim.Properties.Name);
                         }
 
                         if (!String.IsNullOrEmpty(currentPrim.Properties.Description)) {
-                            Client.Objects.SetDescription(simulator, prim.LocalID, currentPrim.Properties.Description);
+                            Client.Objects.SetDescription(e.Simulator, e.Prim.LocalID, currentPrim.Properties.Description);
                         }
 
-                        primsCreated.Add(prim);
+                        primsCreated.Add(e.Prim);
                         primDone.Set();
                     }
                     break;
                 case ImporterState.Linking:
                     lock (linkQueue)
                     {
-                        int index = linkQueue.IndexOf(prim.LocalID);
+                        int index = linkQueue.IndexOf(e.Prim.LocalID);
                         if (index != -1)
                         {
                             linkQueue.RemoveAt(index);

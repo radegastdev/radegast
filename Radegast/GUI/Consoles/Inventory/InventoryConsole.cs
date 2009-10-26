@@ -121,8 +121,8 @@ namespace Radegast
             Inventory.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             Inventory.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
-            client.Objects.OnNewAttachment += new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
-            client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Objects.NewAttachment += new EventHandler<PrimEventArgs>(Objects_NewAttachment);
+            client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Appearance.OnAppearanceSet += new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
         }
 
@@ -142,8 +142,8 @@ namespace Radegast
             Inventory.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             Inventory.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
-            client.Objects.OnNewAttachment -= new ObjectManager.NewAttachmentCallback(Objects_OnNewAttachment);
-            client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
+            client.Objects.NewAttachment -= new EventHandler<PrimEventArgs>(Objects_NewAttachment);
+            client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Appearance.OnAppearanceSet -= new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
         }
         #endregion
@@ -159,14 +159,14 @@ namespace Radegast
             }
         }
 
-        void Objects_OnObjectKilled(Simulator simulator, uint objectID)
+        void Objects_KillObject(object sender, KillObjectEventArgs e)
         {
             AttachmentInfo attachment = null;
             lock (attachments)
             {
                 foreach (AttachmentInfo att in attachments.Values)
                 {
-                    if (att.Prim != null && att.Prim.LocalID == objectID)
+                    if (att.Prim != null && att.Prim.LocalID == e.ObjectLocalID)
                     {
                         attachment = att;
                         break;
@@ -181,8 +181,10 @@ namespace Radegast
             }
         }
 
-        void Objects_OnNewAttachment(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
+        void Objects_NewAttachment(object sender, PrimEventArgs e)
         {
+            Primitive prim = e.Prim;
+
             if (prim.ParentID != client.Self.LocalID) return;
 
             for (int i = 0; i < prim.NameValues.Length; i++)

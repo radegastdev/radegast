@@ -60,12 +60,12 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+            client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
         }
 
         void AttachmentDetail_Disposed(object sender, EventArgs e)
         {
-            client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+            client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
         }
 
         private void AttachmentDetail_Load(object sender, EventArgs e)
@@ -107,10 +107,10 @@ namespace Radegast
             lblPrimCount.Text = "Prims: " + parts.Count.ToString();
         }
 
-        void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties properties)
+        void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)
         {
-            if (properties.ObjectID == attachment.ID) {
-                attachment.Properties = properties;
+            if (e.Properties.ObjectID == attachment.ID) {
+                attachment.Properties = e.Properties;
                 UpdateControls();
             }
         }

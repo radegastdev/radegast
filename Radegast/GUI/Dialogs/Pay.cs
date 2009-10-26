@@ -66,8 +66,8 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Objects.OnPayPriceReply += new ObjectManager.PayPriceReply(Objects_OnPayPriceReply);
-            client.Objects.OnObjectPropertiesFamily += new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
+            client.Objects.PayPriceReply += new EventHandler<PayPriceReplyEventArgs>(Objects_PayPriceReply);
+            client.Objects.ObjectPropertiesFamily += new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
             if (isObject)
@@ -86,8 +86,8 @@ namespace Radegast
 
         void frmPay_Disposed(object sender, EventArgs e)
         {
-            client.Objects.OnPayPriceReply -= new ObjectManager.PayPriceReply(Objects_OnPayPriceReply);
-            client.Objects.OnObjectPropertiesFamily -= new ObjectManager.ObjectPropertiesFamilyCallback(Objects_OnObjectPropertiesFamily);
+            client.Objects.PayPriceReply -= new EventHandler<PayPriceReplyEventArgs>(Objects_PayPriceReply);
+            client.Objects.ObjectPropertiesFamily -= new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
@@ -131,30 +131,26 @@ namespace Radegast
         }
 
 
-        void Objects_OnObjectPropertiesFamily(Simulator simulator, Primitive.ObjectProperties props, ReportType type)
+        void Objects_ObjectPropertiesFamily(object sender, ObjectPropertiesFamilyEventArgs e)
         {
-            if (props.ObjectID == target)
+            if (e.Properties.ObjectID == target)
             {
-                owner = props.OwnerID;
+                owner = e.Properties.OwnerID;
                 UpdateResident();
             }
         }
 
-        void Objects_OnPayPriceReply(Simulator simulator, UUID objectID, int defaultPrice, int[] buttonPrices)
+        void Objects_PayPriceReply(object sender, PayPriceReplyEventArgs e)
         {
-            if (objectID != target) return;
+            if (e.ObjectID != target) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Objects_OnPayPriceReply(simulator, objectID, defaultPrice, buttonPrices);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Objects_PayPriceReply(sender, e)));
                 return;
             }
 
-            switch (defaultPrice)
+            switch (e.DefaultPrice)
             {
                 case (int)PayPriceType.Default:
                     txtAmount.Text = string.Empty;
@@ -163,13 +159,13 @@ namespace Radegast
                     txtAmount.Visible = false;
                     break;
                 default:
-                    txtAmount.Text = defaultPrice.ToString();
+                    txtAmount.Text = e.DefaultPrice.ToString();
                     break;
             }
 
             for (int i = 0; i < buttons.Length; i++)
             {
-                switch (buttonPrices[i])
+                switch (e.ButtonPrices[i])
                 {
                     case (int)PayPriceType.Default:
                         buttons[i].Text = string.Format("L${0}", defaultAmounts[i]);
@@ -179,8 +175,8 @@ namespace Radegast
                         buttons[i].Visible = false;
                         break;
                     default:
-                        buttons[i].Text = string.Format("L${0}", buttonPrices[i]);
-                        buttons[i].Tag = buttonPrices[i];
+                        buttons[i].Text = string.Format("L${0}", e.ButtonPrices[i]);
+                        buttons[i].Tag = e.ButtonPrices[i];
                         break;
                 }
 

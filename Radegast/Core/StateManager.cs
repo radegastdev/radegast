@@ -87,13 +87,13 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Objects.OnObjectUpdated += new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
+            client.Objects.ObjectUpdated += new EventHandler<ObjectUpdatedEventArgs>(Objects_ObjectUpdated);
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Objects.OnObjectUpdated -= new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
+            client.Objects.ObjectUpdated -= new EventHandler<ObjectUpdatedEventArgs>(Objects_ObjectUpdated);
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
         }
 
@@ -131,13 +131,13 @@ namespace Radegast
             }
         }
 
-        private void Objects_OnObjectUpdated(Simulator simulator, ObjectUpdate update, ulong regionHandle, ushort timeDilation)
+        void Objects_ObjectUpdated(object sender, ObjectUpdatedEventArgs e)
         {
-            if (!update.Avatar) return;
+            if (!e.Update.Avatar) return;
             if (!following) return;
 
             Avatar av;
-            client.Network.CurrentSim.ObjectsAvatars.TryGetValue(update.LocalID, out av);
+            client.Network.CurrentSim.ObjectsAvatars.TryGetValue(e.Update.LocalID, out av);
             if (av == null) return;
 
             if (av.Name == followName)
@@ -161,8 +161,8 @@ namespace Radegast
 
                 if (Vector3.Distance(pos, client.Self.SimPosition) > followDistance)
                 {
-                    int followRegionX = (int)(regionHandle >> 32);
-                    int followRegionY = (int)(regionHandle & 0xFFFFFFFF);
+                    int followRegionX = (int)(e.Simulator.Handle >> 32);
+                    int followRegionY = (int)(e.Simulator.Handle & 0xFFFFFFFF);
                     ulong x = (ulong)(pos.X + followRegionX);
                     ulong y = (ulong)(pos.Y + followRegionY);
 

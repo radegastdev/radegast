@@ -72,9 +72,9 @@ namespace Radegast
 
             // Callbacks
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-            client.Objects.OnNewPrim += new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
-            client.Objects.OnObjectKilled += new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
-            client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+            client.Objects.NewPrim += new EventHandler<PrimEventArgs>(Objects_NewPrim);
+            client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
@@ -84,9 +84,9 @@ namespace Radegast
         {
             propRequester.Dispose();
             client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-            client.Objects.OnNewPrim -= new ObjectManager.NewPrimCallback(Objects_OnNewPrim);
-            client.Objects.OnObjectKilled -= new ObjectManager.KillObjectCallback(Objects_OnObjectKilled);
-            client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+            client.Objects.NewPrim -= new EventHandler<PrimEventArgs>(Objects_NewPrim);
+            client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
@@ -162,30 +162,30 @@ namespace Radegast
             lstPrims.EndUpdate();
         }
 
-        void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties props)
+        void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)
         {
-            if (simulator.Handle != client.Network.CurrentSim.Handle)
+            if (e.Simulator.Handle != client.Network.CurrentSim.Handle)
             {
                 return;
             }
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate() { Objects_OnObjectProperties(simulator, props); }));
+                BeginInvoke(new MethodInvoker(delegate() { Objects_ObjectProperties(sender, e); }));
                 return;
             }
 
             lock (lstPrims.Items)
             {
-                if (lstPrims.Items.ContainsKey(props.ObjectID.ToString()))
+                if (lstPrims.Items.ContainsKey(e.Properties.ObjectID.ToString()))
                 {
-                    Primitive prim = lstPrims.Items[props.ObjectID.ToString()].Tag as Primitive;
-                    prim.Properties = props;
-                    lstPrims.Items[props.ObjectID.ToString()].Text = GetObjectName(prim);
+                    Primitive prim = lstPrims.Items[e.Properties.ObjectID.ToString()].Tag as Primitive;
+                    prim.Properties = e.Properties;
+                    lstPrims.Items[e.Properties.ObjectID.ToString()].Text = GetObjectName(prim);
                 }
             }
 
-            if (props.ObjectID == currentPrim.ID)
+            if (e.Properties.ObjectID == currentPrim.ID)
             {
                 UpdateCurrentObject();
             }
@@ -331,46 +331,46 @@ namespace Radegast
             }
         }
 
-        private void Objects_OnNewPrim(Simulator simulator, Primitive prim, ulong regionHandle, ushort timeDilation)
+        void Objects_NewPrim(object sender, PrimEventArgs e)
         {
-            if (regionHandle != client.Network.CurrentSim.Handle || prim.Position == Vector3.Zero || prim is Avatar) return;
+            if (e.Simulator.Handle != client.Network.CurrentSim.Handle || e.Prim.Position == Vector3.Zero || e.Prim is Avatar) return;
 
-            if (prim.ParentID == 0)
+            if (e.Prim.ParentID == 0)
             {
-                int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
+                int distance = (int)Vector3.Distance(client.Self.SimPosition, e.Prim.Position);
                 if (distance < searchRadius)
                 {
-                    if (prim.Properties == null)
+                    if (e.Prim.Properties == null)
                     {
-                        propRequester.RequestProps(prim.LocalID);
+                        propRequester.RequestProps(e.Prim.LocalID);
                     }
-                    AddPrim(prim);
+                    AddPrim(e.Prim);
                 }
             }
 
-            if (prim.ID == currentPrim.ID)
+            if (e.Prim.ID == currentPrim.ID)
             {
                 if (currentPrim.Properties != null)
                 {
                     UpdateCurrentObject();
                 }
-                propRequester.RequestProps(prim.LocalID);
+                propRequester.RequestProps(e.Prim.LocalID);
             }
         }
 
-        private void Objects_OnObjectKilled(Simulator simulator, uint objectID)
+        void Objects_KillObject(object sender, KillObjectEventArgs e)
         {
-            if (simulator.Handle != client.Network.CurrentSim.Handle) return;
+            if (e.Simulator.Handle != client.Network.CurrentSim.Handle) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate() { Objects_OnObjectKilled(simulator, objectID); }));
+                BeginInvoke(new MethodInvoker(delegate() { Objects_KillObject(sender, e); }));
                 return;
             }
 
             Primitive prim;
 
-            if (client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(objectID, out prim))
+            if (client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(e.ObjectLocalID, out prim))
             {
                 lock (lstPrims.Items)
                 {

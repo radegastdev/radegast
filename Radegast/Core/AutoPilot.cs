@@ -67,13 +67,13 @@ namespace Radegast
             Client = client;
             Ticker.Enabled = false;
             Ticker.Elapsed += new System.Timers.ElapsedEventHandler(Ticker_Elapsed);
-            Client.Objects.OnObjectUpdated += new ObjectManager.ObjectUpdatedCallback(Objects_OnObjectUpdated);
+            Client.Objects.ObjectUpdated += new System.EventHandler<ObjectUpdatedEventArgs>(Objects_ObjectUpdated);
         }
 
-        void Objects_OnObjectUpdated(Simulator simulator, ObjectUpdate update, ulong regionHandle, ushort timeDilation)
+        void Objects_ObjectUpdated(object sender, ObjectUpdatedEventArgs e)
         {
-            if (update.Avatar && update.LocalID == Client.Self.LocalID) {
-                mypos = update.Position;
+            if (e.Update.Avatar && e.Update.LocalID == Client.Self.LocalID) {
+                mypos = e.Update.Position;
                 if (Vector3.Distance(mypos, Waypoints[NextWaypoint]) < 2f) {
                     NextWaypoint++;
                 }

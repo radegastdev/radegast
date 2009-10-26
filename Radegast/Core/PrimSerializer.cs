@@ -49,12 +49,12 @@ namespace Radegast
         public PrimSerializer(GridClient c)
         {
             Client = c;
-            Client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+            Client.Objects.ObjectProperties += new System.EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
         }
 
         public void CleanUp()
         {
-            Client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+            Client.Objects.ObjectProperties -= new System.EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
         }
 
         public string GetSerializedAttachmentPrims(Simulator sim, uint localID)
@@ -135,11 +135,11 @@ namespace Radegast
             return true;
         }
 
-        void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties properties)
+        void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)
         {
             lock (PrimsWaiting)
             {
-                PrimsWaiting.Remove(properties.ObjectID);
+                PrimsWaiting.Remove(e.Properties.ObjectID);
 
                 if (PrimsWaiting.Count == 0)
                     AllPropertiesReceived.Set();

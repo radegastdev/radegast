@@ -63,21 +63,20 @@ namespace Radegast
             
             // Callbacks
             client.Avatars.ViewerEffectPointAt += new EventHandler<ViewerEffectPointAtEventArgs>(Avatars_ViewerEffectPointAt);
-            client.Objects.OnObjectProperties += new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
-
+            client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
         }
 
         void MasterTab_Disposed(object sender, EventArgs e)
         {
             client.Avatars.ViewerEffectPointAt -= new EventHandler<ViewerEffectPointAtEventArgs>(Avatars_ViewerEffectPointAt);
-            client.Objects.OnObjectProperties -= new ObjectManager.ObjectPropertiesCallback(Objects_OnObjectProperties);
+            client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
         }
 
-        void Objects_OnObjectProperties(Simulator simulator, Primitive.ObjectProperties properties)
+        void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)
         {
             if (selectedPrim != null) {
-                if (selectedPrim.ID == properties.ObjectID) {
-                    selectedPrim.Properties = properties;
+                if (selectedPrim.ID == e.Properties.ObjectID) {
+                    selectedPrim.Properties = e.Properties;
                     UpdateDisplay();
                 }
             }
