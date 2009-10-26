@@ -59,7 +59,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.rtbIMText = new System.Windows.Forms.RichTextBox();
-            this.cbxInput = new System.Windows.Forms.ComboBox();
+            this.cbxInput = new Radegast.ChatInputBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.chatSplit = new System.Windows.Forms.SplitContainer();
             this.Participants = new Radegast.ListViewNoFlicker();
@@ -86,14 +86,13 @@ namespace Radegast
             // 
             this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbxInput.FormattingEnabled = true;
             this.cbxInput.Location = new System.Drawing.Point(3, 306);
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(373, 21);
             this.cbxInput.TabIndex = 0;
-            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
-            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
+            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
+            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
             // 
             // btnSend
             // 
@@ -168,13 +167,14 @@ namespace Radegast
             this.chatSplit.Panel2.ResumeLayout(false);
             this.chatSplit.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         public System.Windows.Forms.RichTextBox rtbIMText;
-        public System.Windows.Forms.ComboBox cbxInput;
+        public ChatInputBox cbxInput;
         public System.Windows.Forms.Button btnSend;
         public System.Windows.Forms.SplitContainer chatSplit;
         public ListViewNoFlicker Participants;

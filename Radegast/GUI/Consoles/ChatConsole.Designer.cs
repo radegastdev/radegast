@@ -63,7 +63,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatConsole));
             this.rtbChat = new System.Windows.Forms.RichTextBox();
-            this.cbxInput = new System.Windows.Forms.ComboBox();
+            this.cbxInput = new ChatInputBox();
             this.btnSay = new System.Windows.Forms.Button();
             this.btnShout = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -130,7 +130,6 @@ namespace Radegast
             this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxInput.Enabled = false;
-            this.cbxInput.FormattingEnabled = true;
             this.cbxInput.Location = new System.Drawing.Point(0, 0);
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(352, 21);
@@ -525,7 +524,7 @@ namespace Radegast
 
         public ListViewNoFlicker lvwObjects;
         public RichTextBox rtbChat;
-        public ComboBox cbxInput;
+        public ChatInputBox cbxInput;
         public Button btnSay;
         public Button btnShout;
         public SplitContainer splitContainer1;

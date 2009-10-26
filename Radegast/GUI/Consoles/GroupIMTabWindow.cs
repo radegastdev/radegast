@@ -300,7 +300,8 @@ namespace Radegast
         {
             if (cbxInput.Text.Length == 0) return;
 
-            string message = cbxInput.Text;
+            string message = cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n");
+
             if (message.Length > 1023) message = message.Remove(1023);
 
             if (!client.Self.GroupChatSessions.ContainsKey(session))
@@ -326,7 +327,6 @@ namespace Radegast
 
         private void ClearIMInput()
         {
-            cbxInput.Items.Add(cbxInput.Text);
             cbxInput.Text = string.Empty;
         }
 

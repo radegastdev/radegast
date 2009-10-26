@@ -131,6 +131,9 @@
     <Compile Include="Core\Types\AgentNameTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Core\Types\ChatInputBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Core\Types\CircularList.cs" />
     <Compile Include="Core\Types\DettachableControl.cs">
       <SubType>UserControl</SubType>

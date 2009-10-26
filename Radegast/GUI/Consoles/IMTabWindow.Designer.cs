@@ -59,10 +59,10 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.rtbIMText = new System.Windows.Forms.RichTextBox();
-            this.cbxInput = new System.Windows.Forms.ComboBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
+            this.cbxInput = new Radegast.ChatInputBox();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -81,24 +81,11 @@ namespace Radegast
             this.rtbIMText.Text = "";
             this.rtbIMText.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbIMText_LinkClicked);
             // 
-            // cbxInput
-            // 
-            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbxInput.FormattingEnabled = true;
-            this.cbxInput.Location = new System.Drawing.Point(3, 306);
-            this.cbxInput.Name = "cbxInput";
-            this.cbxInput.Size = new System.Drawing.Size(413, 21);
-            this.cbxInput.TabIndex = 0;
-            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
-            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
-            this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
-            // 
             // btnSend
             // 
             this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSend.Enabled = false;
-            this.btnSend.Location = new System.Drawing.Point(422, 304);
+            this.btnSend.Location = new System.Drawing.Point(422, 302);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 1;
@@ -126,6 +113,18 @@ namespace Radegast
             this.tbtnProfile.Text = "Profile";
             this.tbtnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 
+            // cbxInput
+            // 
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxInput.Location = new System.Drawing.Point(3, 304);
+            this.cbxInput.Name = "cbxInput";
+            this.cbxInput.Size = new System.Drawing.Size(413, 21);
+            this.cbxInput.TabIndex = 0;
+            this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
+            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
+            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
+            // 
             // IMTabWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -147,7 +146,7 @@ namespace Radegast
         #endregion
 
         public System.Windows.Forms.RichTextBox rtbIMText;
-        public System.Windows.Forms.ComboBox cbxInput;
+        public ChatInputBox cbxInput;
         public System.Windows.Forms.Button btnSend;
         public System.Windows.Forms.ToolStrip toolStrip1;
         public System.Windows.Forms.ToolStripButton tbtnProfile;

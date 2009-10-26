@@ -139,7 +139,8 @@ namespace Radegast
 
         private void SendMessage(string msg)
         {
-            string message = msg;
+            string message = msg.Replace(ChatInputBox.NewlineMarker, "\n");
+
             if (message.Length > 1023)
             {
                 message = message.Remove(1023);
@@ -152,7 +153,6 @@ namespace Radegast
 
         private void ClearIMInput()
         {
-            cbxInput.Items.Add(cbxInput.Text);
             cbxInput.Text = string.Empty;
         }
 

@@ -100,7 +100,7 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            netcom.SendInstantMessage(cbxInput.Text, target, session);
+            netcom.SendInstantMessage(cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n"), target, session);
             this.ClearIMInput();
         }
 
@@ -142,13 +142,12 @@ namespace Radegast
             e.SuppressKeyPress = true;
             if (cbxInput.Text.Length == 0) return;
 
-            netcom.SendInstantMessage(cbxInput.Text, target, session);
+            netcom.SendInstantMessage(cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n"), target, session);
             this.ClearIMInput();
         }
 
         private void ClearIMInput()
         {
-            cbxInput.Items.Add(cbxInput.Text);
             cbxInput.Text = string.Empty;
         }
 
@@ -194,6 +193,21 @@ namespace Radegast
         {
             get { return textManager; }
             set { textManager = value; }
+        }
+
+        private void chatInput_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chatInput_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void chatInput_KeyUp(object sender, KeyEventArgs e)
+        {
+
         }
     }
 }
