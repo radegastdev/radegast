@@ -118,6 +118,8 @@ namespace Radegast
                 return;
             }
 
+            cbxInput.Enabled = true;
+
             if (cbxInput.Text.Length > 0)
             {
                 btnSend.Enabled = true;
