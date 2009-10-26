@@ -56,6 +56,7 @@ namespace Radegast.Plugin.Alice
         public void StartPlugin(RadegastInstance inst)
         {
             Instance = inst;
+            Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
 
             Alice = new AIMLbot.Bot();
             Alice.isAcceptingUserInput = false;
@@ -87,11 +88,7 @@ namespace Radegast.Plugin.Alice
             }
 
             // Events
-            Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-            Client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
-            Client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
-            Client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
-
+            RegisterClientEvents(Client);
         }
 
 
@@ -101,12 +98,31 @@ namespace Radegast.Plugin.Alice
             Instance.MainForm.ToolsMenu.DropDownItems.Remove(MenuButton);
 
             // Unregister events
+            UnregisterClientEvents(Client);
+        }
+
+        private void RegisterClientEvents(GridClient client)
+        {
+            Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+            Client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
+            Client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
+            Client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
+        }
+
+        private void UnregisterClientEvents(GridClient client)
+        {
             Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
             Client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
             Client.Avatars.AvatarPropertiesReply -= new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
             Client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
         }
 
+        void Instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(Client);
+        }
+        
         void Network_OnConnected(object sender)
         {
             Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
