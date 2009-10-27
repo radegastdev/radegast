@@ -265,6 +265,7 @@ namespace Radegast
         {
             placeMatches = 0;
             placeStart = 0;
+            lvwPlaces.Items.Clear();
             placeSearch = client.Directory.StartDirPlacesSearch(txtSearchPlace.Text.Trim(), 0);
         }
 
@@ -272,6 +273,7 @@ namespace Radegast
         {
             placeMatches = 0;
             placeStart += 100;
+            lvwPlaces.Items.Clear();
             placeSearch = client.Directory.StartDirPlacesSearch(txtSearchPlace.Text.Trim(), placeStart);
         }
 
@@ -279,6 +281,7 @@ namespace Radegast
         {
             placeMatches = 0;
             placeStart -= 100;
+            lvwPlaces.Items.Clear();
             placeSearch = client.Directory.StartDirPlacesSearch(txtSearchPlace.Text.Trim(), placeStart);
         }
 
