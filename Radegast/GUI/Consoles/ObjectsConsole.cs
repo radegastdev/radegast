@@ -328,6 +328,7 @@ namespace Radegast
             else
             {
                 item.Text = GetObjectName(prim);
+                item.Tag = prim;
             }
         }
 

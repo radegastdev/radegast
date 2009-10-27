@@ -378,7 +378,7 @@ namespace Radegast
             // lblStatus
             // 
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(59, 17);
+            this.lblStatus.Size = new System.Drawing.Size(62, 17);
             this.lblStatus.Text = "Tracking...";
             // 
             // gbxObjectDetails
@@ -502,8 +502,10 @@ namespace Radegast
             // 
             // txtHover
             // 
+            this.txtHover.BackColor = System.Drawing.SystemColors.Window;
             this.txtHover.Location = new System.Drawing.Point(61, 66);
             this.txtHover.Name = "txtHover";
+            this.txtHover.ReadOnly = true;
             this.txtHover.Size = new System.Drawing.Size(188, 21);
             this.txtHover.TabIndex = 3;
             // 
