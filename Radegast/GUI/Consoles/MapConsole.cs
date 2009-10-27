@@ -56,6 +56,8 @@ namespace Radegast
             Disposed += new EventHandler(frmMap_Disposed);
 
             instance = i;
+            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+
             try
             {
                 map = new WebBrowser();
@@ -80,19 +82,36 @@ namespace Radegast
             }
 
             // Register callbacks
+            RegisterClientEvents(client);
+        }
+
+        private void RegisterClientEvents(GridClient client)
+        {
             client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
         }
 
-        void frmMap_Disposed(object sender, EventArgs e)
+        private void UnregisterClientEvents(GridClient client)
         {
-            // Unregister callbacks
             client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
+        }
 
-            if (map != null)
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
+        }
+
+
+        void frmMap_Disposed(object sender, EventArgs e)
+        {
+            // Unregister callbacks
+            UnregisterClientEvents(client);
+
+            if (map != null && !instance.MonoRuntime)
             {
                 map.Dispose();
                 map = null;

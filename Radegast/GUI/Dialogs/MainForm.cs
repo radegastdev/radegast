@@ -315,6 +315,13 @@ namespace Radegast
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (statusTimer != null)
+            {
+                statusTimer.Stop();
+                statusTimer.Dispose();
+                statusTimer = null;
+            }
+
             if (mediaConsole != null)
             {
                 if (tabsConsole.TabExists("media"))
@@ -465,8 +472,13 @@ namespace Radegast
 
         private void statusTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            RefreshWindowTitle();
-            RefreshStatusBar();
+            // Mono sometimes fires timer after is's disposed
+            try
+            {
+                RefreshWindowTitle();
+                RefreshStatusBar();
+            }
+            catch { }
         }
         #endregion
 

@@ -439,10 +439,13 @@ namespace Radegast
             tab.AllowDetach = true;
             tab.Visible = false;
 
-            tab = AddTab("map", "Map", new MapConsole(instance));
-            tab.AllowClose = false;
-            tab.AllowDetach = true;
-            tab.Visible = false;
+            if (!TabExists("map"))
+            {
+                tab = AddTab("map", "Map", new MapConsole(instance));
+                tab.AllowClose = false;
+                tab.AllowDetach = true;
+                tab.Visible = false;
+            }
 
         }
 
@@ -451,7 +454,12 @@ namespace Radegast
         /// </summary>
         private void DisposeOnlineTabs()
         {
-            ForceCloseTab("map");
+            // Mono crashes if we try to open map for the second time
+            if (!instance.MonoRuntime)
+                ForceCloseTab("map");
+            else
+                tabs["map"].Hide();
+
             ForceCloseTab("search");
             ForceCloseTab("inventory");
             ForceCloseTab("groups");
