@@ -67,10 +67,10 @@ namespace Radegast
             Client = client;
             Ticker.Enabled = false;
             Ticker.Elapsed += new System.Timers.ElapsedEventHandler(Ticker_Elapsed);
-            Client.Objects.ObjectUpdated += new System.EventHandler<ObjectUpdatedEventArgs>(Objects_ObjectUpdated);
+            Client.Objects.TerseObjectUpdate += new System.EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
         }
 
-        void Objects_ObjectUpdated(object sender, ObjectUpdatedEventArgs e)
+        void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
             if (e.Update.Avatar && e.Update.LocalID == Client.Self.LocalID) {
                 mypos = e.Update.Position;

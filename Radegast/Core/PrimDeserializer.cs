@@ -111,12 +111,12 @@ namespace Radegast
         public PrimDeserializer(GridClient c)
         {
             Client = c;
-            Client.Objects.NewPrim += new EventHandler<PrimEventArgs>(Objects_NewPrim);
+            Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
         }
 
         public void CleanUp()
         {
-            Client.Objects.NewPrim -= new EventHandler<PrimEventArgs>(Objects_NewPrim);
+            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
         }
 
         public bool CreateObjectFromXml(string xml)
@@ -231,7 +231,7 @@ namespace Radegast
             return true;
         }
 
-        void Objects_NewPrim(object sender, PrimEventArgs e)
+        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
             if ((e.Prim.Flags & PrimFlags.CreateSelected) == 0)
                 return; // We received an update for an object we didn't create

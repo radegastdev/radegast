@@ -72,7 +72,7 @@ namespace Radegast
 
             // Callbacks
             client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-            client.Objects.NewPrim += new EventHandler<PrimEventArgs>(Objects_NewPrim);
+            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
@@ -84,7 +84,7 @@ namespace Radegast
         {
             propRequester.Dispose();
             client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-            client.Objects.NewPrim -= new EventHandler<PrimEventArgs>(Objects_NewPrim);
+            client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
@@ -332,7 +332,7 @@ namespace Radegast
             }
         }
 
-        void Objects_NewPrim(object sender, PrimEventArgs e)
+        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
             if (e.Simulator.Handle != client.Network.CurrentSim.Handle || e.Prim.Position == Vector3.Zero || e.Prim is Avatar) return;
 

@@ -121,7 +121,7 @@ namespace Radegast
             Inventory.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             Inventory.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
-            client.Objects.NewAttachment += new EventHandler<PrimEventArgs>(Objects_NewAttachment);
+            client.Objects.AttachmentUpdate += new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Appearance.OnAppearanceSet += new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
         }
@@ -142,7 +142,7 @@ namespace Radegast
             Inventory.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
             Inventory.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
             Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
-            client.Objects.NewAttachment -= new EventHandler<PrimEventArgs>(Objects_NewAttachment);
+            client.Objects.AttachmentUpdate -= new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Appearance.OnAppearanceSet -= new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
         }
@@ -181,7 +181,7 @@ namespace Radegast
             }
         }
 
-        void Objects_NewAttachment(object sender, PrimEventArgs e)
+        void Objects_AttachmentUpdate(object sender, PrimEventArgs e)
         {
             Primitive prim = e.Prim;
 

@@ -87,13 +87,13 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
-            client.Objects.ObjectUpdated += new EventHandler<ObjectUpdatedEventArgs>(Objects_ObjectUpdated);
+            client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
-            client.Objects.ObjectUpdated -= new EventHandler<ObjectUpdatedEventArgs>(Objects_ObjectUpdated);
+            client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
         }
 
@@ -131,7 +131,7 @@ namespace Radegast
             }
         }
 
-        void Objects_ObjectUpdated(object sender, ObjectUpdatedEventArgs e)
+        void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
             if (!e.Update.Avatar) return;
             if (!following) return;
