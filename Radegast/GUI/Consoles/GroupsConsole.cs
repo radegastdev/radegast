@@ -61,25 +61,32 @@ namespace Radegast
             BeginInvoke(new MethodInvoker(UpdateDisplay));
         }
 
+        private object DisplaySyncRoot = new object();
+
         public void UpdateDisplay()
         {
-            Group none = new Group();
-            none.Name = "(none)";
-            none.ID = UUID.Zero;
-
-            listBox1.Items.Clear();
-            listBox1.Items.Add(none);
-
-            foreach (Group g in instance.Groups.Values) {
-                listBox1.Items.Add(g);
-            }
-
-            foreach (Group g in listBox1.Items)
+            lock (DisplaySyncRoot)
             {
-                if (g.ID == client.Self.ActiveGroup)
+
+                Group none = new Group();
+                none.Name = "(none)";
+                none.ID = UUID.Zero;
+
+                listBox1.Items.Clear();
+                listBox1.Items.Add(none);
+
+                foreach (Group g in instance.Groups.Values)
                 {
-                    listBox1.SelectedItem = g;
-                    break;
+                    listBox1.Items.Add(g);
+                }
+
+                foreach (Group g in listBox1.Items)
+                {
+                    if (g.ID == client.Self.ActiveGroup)
+                    {
+                        listBox1.SelectedItem = g;
+                        break;
+                    }
                 }
             }
         }
@@ -128,6 +135,11 @@ namespace Radegast
             if (g.ID == UUID.Zero) return;
 
             instance.MainForm.ShowGroupProfile(g);
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            client.Groups.RequestCurrentGroups();
         }
     }
 }

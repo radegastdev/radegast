@@ -63,6 +63,7 @@ namespace Radegast
             this.btnIM = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.btnInfo = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -91,7 +92,7 @@ namespace Radegast
             this.btnLeave.Location = new System.Drawing.Point(279, 120);
             this.btnLeave.Name = "btnLeave";
             this.btnLeave.Size = new System.Drawing.Size(79, 23);
-            this.btnLeave.TabIndex = 2;
+            this.btnLeave.TabIndex = 4;
             this.btnLeave.Text = "&Leave";
             this.btnLeave.UseVisualStyleBackColor = true;
             this.btnLeave.Click += new System.EventHandler(this.leaveBtn_Click);
@@ -102,7 +103,7 @@ namespace Radegast
             this.btnIM.Location = new System.Drawing.Point(279, 91);
             this.btnIM.Name = "btnIM";
             this.btnIM.Size = new System.Drawing.Size(79, 23);
-            this.btnIM.TabIndex = 2;
+            this.btnIM.TabIndex = 3;
             this.btnIM.Text = "&IM";
             this.btnIM.UseVisualStyleBackColor = true;
             this.btnIM.Click += new System.EventHandler(this.imBtn_Click);
@@ -117,7 +118,7 @@ namespace Radegast
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(261, 277);
             this.listBox1.Sorted = true;
-            this.listBox1.TabIndex = 3;
+            this.listBox1.TabIndex = 0;
             // 
             // btnInfo
             // 
@@ -125,10 +126,21 @@ namespace Radegast
             this.btnInfo.Location = new System.Drawing.Point(279, 33);
             this.btnInfo.Name = "btnInfo";
             this.btnInfo.Size = new System.Drawing.Size(79, 23);
-            this.btnInfo.TabIndex = 4;
+            this.btnInfo.TabIndex = 1;
             this.btnInfo.Text = "In&fo";
             this.btnInfo.UseVisualStyleBackColor = true;
             this.btnInfo.Click += new System.EventHandler(this.btnInfo_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(279, 149);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(79, 23);
+            this.btnRefresh.TabIndex = 5;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // GroupsConsole
             // 
@@ -137,6 +149,7 @@ namespace Radegast
             this.Controls.Add(this.btnInfo);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.btnIM);
+            this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnLeave);
             this.Controls.Add(this.btnActivate);
             this.Controls.Add(this.label1);
@@ -155,6 +168,7 @@ namespace Radegast
         public System.Windows.Forms.Button btnIM;
         public System.Windows.Forms.ListBox listBox1;
         public System.Windows.Forms.Button btnInfo;
+        public System.Windows.Forms.Button btnRefresh;
 
     }
 }
