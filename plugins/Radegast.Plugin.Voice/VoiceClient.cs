@@ -56,6 +56,7 @@ namespace Radegast.Plugin.Voice
             
             posThread = new Thread( new ThreadStart( PositionThreadBody ));
             posThread.Name = "VoicePositionUpdate";
+            posThread.IsBackground = true;
             posRestart = new ManualResetEvent(false);
             posThread.Start();
         }
