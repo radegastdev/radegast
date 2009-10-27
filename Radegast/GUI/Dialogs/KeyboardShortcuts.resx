@@ -127,8 +127,8 @@ Alt-6: Map
 Alt-7: Objects
 Alt-8: Media
 
-Alt-Tab: Next tab
-Alt-Shit-Tab: Previous tab
+Ctrl-Tab: Next tab
+Ctrl-Shit-Tab: Previous tab
 
 Ctrl-G: Open map and go to the SLURL in the clipboard
 Ctrl-Shift-H: Teleport Home
