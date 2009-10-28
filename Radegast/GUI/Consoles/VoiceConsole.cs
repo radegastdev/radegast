@@ -42,6 +42,14 @@ namespace Radegast
 {
     public partial class VoiceConsole : UserControl
     {
+        // These enumerated values must match the sequence of icons in TalkStates.
+        private enum State
+        {
+            Idle = 0,
+            Talking,
+            Muted
+        };
+
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private GridClient client { get { return instance.Client; } }

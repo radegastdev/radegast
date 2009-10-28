@@ -61,6 +61,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VoiceConsole));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.participants = new Radegast.ListViewNoFlicker();
             this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
@@ -74,6 +75,9 @@ namespace Radegast
             this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
+            this.chkVoiceEnable = new System.Windows.Forms.CheckBox();
+            this.TalkStates = new System.Windows.Forms.ImageList(this.components);
+            this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.avatarContext.SuspendLayout();
@@ -85,11 +89,15 @@ namespace Radegast
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.chkVoiceEnable);
+            // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.participants);
             this.splitContainer1.Size = new System.Drawing.Size(516, 334);
-            this.splitContainer1.SplitterDistance = 400;
+            this.splitContainer1.SplitterDistance = 366;
             this.splitContainer1.TabIndex = 7;
             this.splitContainer1.TabStop = false;
             // 
@@ -105,7 +113,8 @@ namespace Radegast
             this.participants.Location = new System.Drawing.Point(0, 0);
             this.participants.MultiSelect = false;
             this.participants.Name = "participants";
-            this.participants.Size = new System.Drawing.Size(112, 334);
+            this.participants.Size = new System.Drawing.Size(146, 334);
+            this.participants.StateImageList = this.TalkStates;
             this.participants.TabIndex = 8;
             this.participants.UseCompatibleStateImageBehavior = false;
             this.participants.View = System.Windows.Forms.View.List;
@@ -125,8 +134,76 @@ namespace Radegast
             this.ctxPoint,
             this.ctxSource});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(149, 224);
+            this.avatarContext.Size = new System.Drawing.Size(68, 224);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
+            // 
+            // ctxProfile
+            // 
+            this.ctxProfile.Name = "ctxProfile";
+            this.ctxProfile.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxPay
+            // 
+            this.ctxPay.Name = "ctxPay";
+            this.ctxPay.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxStartIM
+            // 
+            this.ctxStartIM.Name = "ctxStartIM";
+            this.ctxStartIM.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxFollow
+            // 
+            this.ctxFollow.Name = "ctxFollow";
+            this.ctxFollow.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxTextures
+            // 
+            this.ctxTextures.Name = "ctxTextures";
+            this.ctxTextures.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxAttach
+            // 
+            this.ctxAttach.Name = "ctxAttach";
+            this.ctxAttach.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxMaster
+            // 
+            this.ctxMaster.Name = "ctxMaster";
+            this.ctxMaster.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxAnim
+            // 
+            this.ctxAnim.Name = "ctxAnim";
+            this.ctxAnim.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxPoint
+            // 
+            this.ctxPoint.Name = "ctxPoint";
+            this.ctxPoint.Size = new System.Drawing.Size(67, 22);
+            // 
+            // ctxSource
+            // 
+            this.ctxSource.Name = "ctxSource";
+            this.ctxSource.Size = new System.Drawing.Size(67, 22);
+            // 
+            // chkVoiceEnable
+            // 
+            this.chkVoiceEnable.AutoSize = true;
+            this.chkVoiceEnable.Location = new System.Drawing.Point(13, 12);
+            this.chkVoiceEnable.Name = "chkVoiceEnable";
+            this.chkVoiceEnable.Size = new System.Drawing.Size(86, 17);
+            this.chkVoiceEnable.TabIndex = 0;
+            this.chkVoiceEnable.Text = "Enable voice";
+            this.chkVoiceEnable.UseVisualStyleBackColor = true;
+            // 
+            // TalkStates
+            // 
+            this.TalkStates.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("TalkStates.ImageStream")));
+            this.TalkStates.TransparentColor = System.Drawing.Color.Transparent;
+            this.TalkStates.Images.SetKeyName(0, "TalkIdle.png");
+            this.TalkStates.Images.SetKeyName(1, "Talking.png");
+            this.TalkStates.Images.SetKeyName(2, "TalkMute.png");
             // 
             // VoiceConsole
             // 
@@ -136,6 +213,8 @@ namespace Radegast
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "VoiceConsole";
             this.Size = new System.Drawing.Size(516, 334);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
             this.avatarContext.ResumeLayout(false);
@@ -158,5 +237,7 @@ namespace Radegast
         public ToolStripMenuItem ctxPoint;
         public ToolStripMenuItem ctxSource;
         public ToolStripMenuItem ctxPay;
+        private CheckBox chkVoiceEnable;
+        private ImageList TalkStates;
     }
 }
