@@ -56,7 +56,8 @@ namespace Radegast.Plugin.Voice
                 sessionForm.Hide();
 
                 // Remove the session from the contexts.
-                control.vClient.CloseSession(SessionHandle);
+                if (control.vClient != null)
+                    control.vClient.CloseSession(SessionHandle);
             }));
         }
 
