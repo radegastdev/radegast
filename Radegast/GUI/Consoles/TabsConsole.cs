@@ -439,6 +439,11 @@ namespace Radegast
             tab.AllowDetach = true;
             tab.Visible = false;
 
+            tab = AddTab("voice", "Voice", new VoiceConsole(instance));
+            tab.AllowClose = false;
+            tab.AllowDetach = true;
+            tab.Visible = false;
+
             if (!TabExists("map"))
             {
                 tab = AddTab("map", "Map", new MapConsole(instance));
@@ -464,6 +469,7 @@ namespace Radegast
             ForceCloseTab("inventory");
             ForceCloseTab("groups");
             ForceCloseTab("friends");
+            ForceCloseTab("voice");
         }
 
         private void ForceCloseTab(string name)
