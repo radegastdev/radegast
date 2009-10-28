@@ -130,35 +130,6 @@ namespace Radegast.Plugin.Voice
                 new MouseEventHandler(OnMouseDown);
             control.voiceConsole.MouseUp +=
                 new MouseEventHandler(OnMouseUp);
- 
-            // The startup steps are
-            //  0. Get voice account info
-            //  1. Start Daemon
-            //  2. Create TCP connection
-            //  3. Create Connector
-            //  4. Account login
-            //  5. Create session
-
-            // Get the voice provisioning data
-            System.Uri vCap =
-                control.instance.Client.Network.CurrentSim.Caps.CapabilityURI("ProvisionVoiceAccountRequest");
-            
-            // Do we have voice capability?
-            if (vCap == null)
-            {
-                Logger.Log("Null voice capability", Helpers.LogLevel.Warning);
-            }
-            else
-            {
-                OpenMetaverse.Http.CapsClient capClient =
-                    new OpenMetaverse.Http.CapsClient(vCap);
-                capClient.OnComplete +=
-                    new OpenMetaverse.Http.CapsClient.CompleteCallback(cClient_OnComplete);
-                OSD postData = new OSD();
-
-                // STEP 0
-                capClient.BeginGetResponse(postData, OSDFormat.Xml, 10000);
-            }
         }
 
         internal void Stop()
@@ -279,8 +250,45 @@ namespace Radegast.Plugin.Voice
             if (simulator != control.instance.Client.Network.CurrentSim)
                 return;
 
-            // Change voice session for this region.
-            ParcelChanged();
+            // Did we provision voice login info?
+            if (string.IsNullOrEmpty(voiceUser))
+            {
+                // The startup steps are
+                //  0. Get voice account info
+                //  1. Start Daemon
+                //  2. Create TCP connection
+                //  3. Create Connector
+                //  4. Account login
+                //  5. Create session
+
+                // Get the voice provisioning data
+                System.Uri vCap =
+                    control.instance.Client.Network.CurrentSim.Caps.CapabilityURI("ProvisionVoiceAccountRequest");
+
+                // Do we have voice capability?
+                if (vCap == null)
+                {
+                    Logger.Log("Null voice capability", Helpers.LogLevel.Warning);
+                }
+                else
+                {
+                    OpenMetaverse.Http.CapsClient capClient =
+                        new OpenMetaverse.Http.CapsClient(vCap);
+                    capClient.OnComplete +=
+                        new OpenMetaverse.Http.CapsClient.CompleteCallback(cClient_OnComplete);
+                    OSD postData = new OSD();
+
+                    // STEP 0
+                    capClient.BeginGetResponse(postData, OSDFormat.Xml, 10000);
+                }
+
+                return;
+            }
+            else
+            {
+                // Change voice session for this region.
+                ParcelChanged();
+            }
         }
 
 
