@@ -50,6 +50,7 @@
             this.participants.TabIndex = 0;
             this.participants.UseCompatibleStateImageBehavior = false;
             this.participants.View = System.Windows.Forms.View.Details;
+            this.participants.MouseUp += new System.Windows.Forms.MouseEventHandler(this.participants_MouseUp);
             // 
             // nameheader
             // 

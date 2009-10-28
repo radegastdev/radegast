@@ -9,40 +9,30 @@ using Radegast;
 
 namespace Radegast.Plugin.Voice
 {
-    internal class Session
+    public class Session
     {
         private VoiceControl control;
         internal string SessionHandle;
-        private static Dictionary<string, VoiceParticipant> knownParticipants;
+        private static Dictionary<string, Participant> knownParticipants;
         private SessionForm sessionForm;
-        private string regionName;
+        public string RegionName;
         internal bool IsSpatial { get; set; }
         private VoiceGateway connector;
 
-        internal Session(VoiceControl pc, VoiceGateway conn, string handle)
+        public VoiceGateway Connector { get { return connector; } }
+
+        public event System.EventHandler OnParticipantAdded;
+        public event System.EventHandler OnParticipantUpdate;
+        public event System.EventHandler OnParticipantRemoved;
+
+        public Session(VoiceControl pc, VoiceGateway conn, string handle)
         {
             control = pc;
             SessionHandle = handle;
             connector = conn;
 
             IsSpatial = true;
-            knownParticipants = new Dictionary<string, VoiceParticipant>();
-
-            IAsyncResult creation = control.instance.MainForm.BeginInvoke(
-               new MethodInvoker(delegate()
-            {
-                sessionForm = new SessionForm(control, this);
-                sessionForm.Show();
-            }));
-
-            // Wait for that to complete.
-            control.instance.MainForm.EndInvoke(creation);
-        }
-
-        internal void SetTitle(string n)
-        {
-            regionName = n;
-            sessionForm.SetTitle("Voice: " + regionName);
+            knownParticipants = new Dictionary<string, Participant>();
         }
 
         /// <summary>
@@ -50,32 +40,35 @@ namespace Radegast.Plugin.Voice
         /// </summary>
         internal void Close()
         {
-            control.instance.MainForm.BeginInvoke(new MethodInvoker(delegate()
-            {
-                // Close the visible form
-                sessionForm.Hide();
-
-                // Remove the session from the contexts.
-                if (control.vClient != null)
-                    control.vClient.CloseSession(SessionHandle);
-            }));
         }
 
-        internal void OnParticipantUpdate(string URI,
+        internal void ParticipantUpdate(string URI,
             bool isMuted,
             bool isSpeaking,
             int volume,
             float energy)
         {
-            VoiceParticipant p = FindParticipant(URI);
-            sessionForm.SetParticipant(p.AvatarName, isMuted, isSpeaking, energy);
+            // Locate in this session
+            Participant p = FindParticipant(URI);
+
+            // Set properties
+            p.SetProperties(isSpeaking, isMuted, energy);
+
+            // Inform interested parties.
+            if (OnParticipantUpdate != null)
+                OnParticipantUpdate( p, null );
         }
 
         internal void AddParticipant(string URI)
         {
-            VoiceParticipant p = FindParticipant(URI);
+            Participant p = FindParticipant(URI);
 
-            if (p.AvatarName == control.instance.Client.Self.Name)
+            // Inform interested parties.
+            if (OnParticipantAdded != null)
+                OnParticipantAdded(p, null);
+
+            // If this is ME, start sending position updates.
+            if (p.ID == control.instance.Client.Self.AgentID)
                 control.vClient.PosUpdating(true);
         }
 
@@ -83,32 +76,41 @@ namespace Radegast.Plugin.Voice
         {
             if (!knownParticipants.ContainsKey(URI))
                 return;
-            VoiceParticipant p = knownParticipants[URI];
-            sessionForm.RemoveParticipant(p.AvatarName);
 
-            if (p.AvatarName == control.instance.Client.Self.Name)
+            Participant p = knownParticipants[URI];
+
+            // Remove from list for this session.
+            knownParticipants.Remove(URI);
+
+            // Inform interested parties.
+            if (OnParticipantRemoved != null)
+                OnParticipantRemoved(p, null);
+
+            // If this was ME, stop sending position.
+            if (p.ID == control.instance.Client.Self.AgentID)
                 control.vClient.PosUpdating(false);
         }
 
-        private VoiceParticipant FindParticipant(string puri)
+        private Participant FindParticipant(string puri)
         {
-            VoiceParticipant p;
+            Participant p;
 
             if (knownParticipants.ContainsKey(puri))
             {
                 p = knownParticipants[puri];
-                if (p.AvatarName.StartsWith("Loading..."))
-                    p.AvatarName = control.instance.getAvatarName(p.id);
+                if (p.Name.StartsWith("Loading..."))
+                    p.Name = control.instance.getAvatarName(p.ID);
                 return p;
             }
 
-
+            // It was not found, so add it.
             lock (knownParticipants)
             {
-                p = new VoiceParticipant(puri);
+                p = new Participant( puri, this );
                 knownParticipants.Add(puri, p);
-                p.AvatarName = control.instance.getAvatarName(p.id);
-                sessionForm.AddParticipant(p.AvatarName);
+
+                // Set the name.  This might turn out to be "Loading..."
+                p.Name = control.instance.getAvatarName(p.ID);
             }
 
             return p;

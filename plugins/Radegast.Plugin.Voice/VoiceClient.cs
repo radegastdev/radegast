@@ -38,9 +38,14 @@ namespace Radegast.Plugin.Voice
         private ManualResetEvent posRestart;
         private Vector3d oldPosition;
         private Vector3d oldAt;
+        private SessionForm sessionForm;
+
+        public event EventHandler OnSessionCreate;
+        public event EventHandler OnSessionRemove;
 
         internal VoiceClient(VoiceControl pc)
         {
+            // Low-level functions that move to libomv.
             control = pc;
             sessions = new Dictionary<string, Session>();
             position = new VoiceGateway.VoicePosition();
@@ -54,6 +59,56 @@ namespace Radegast.Plugin.Voice
             slvoiceArgs += " -i 0.0.0.0:" + daemonPort.ToString();
 //            slvoiceArgs += " -lf " + control.instance.ClientDir;
             
+            // Here is real client-specific code
+            OnSessionCreate += new EventHandler(VoiceClient_OnSessionCreate);
+            OnSessionRemove += new EventHandler(VoiceClient_OnSessionRemove);
+        }
+
+        /// <summary>
+        /// Create user interface for a session
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void VoiceClient_OnSessionCreate(object sender, EventArgs e)
+        {
+            Session s = sender as Session;
+
+            // Create free-standing Form to represent this session.
+            control.instance.MainForm.BeginInvoke(
+               new MethodInvoker(delegate()
+                {
+                    sessionForm = new SessionForm(control, s);
+                    sessionForm.Show();
+                }));
+
+            control.instance.MainForm.TabConsole.DisplayNotificationInChat(
+                "Voice started in " + s.RegionName);
+
+            // Default Mic off and Spkr on
+            MicMute = true;
+            SpkrMute = false;
+            SpkrLevel = 64;
+            MicLevel = 64;           
+        }
+
+        /// <summary>
+        /// Remove user interface for a session
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void VoiceClient_OnSessionRemove(object sender, EventArgs e)
+        {
+            Session s = sender as Session;
+            if (sessionForm != null)
+                control.instance.MainForm.BeginInvoke(
+                   new MethodInvoker(delegate()
+                   {
+                       sessionForm.Hide();
+                       sessionForm = null;
+                   }));
+
+            control.instance.MainForm.TabConsole.DisplayNotificationInChat(
+                "Voice disconnected in " + s.RegionName);
         }
 
         /// <summary>
@@ -96,8 +151,6 @@ namespace Radegast.Plugin.Voice
                 new VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
             connector.OnSessionStateChangeEvent +=
                 new VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
-            connector.OnSessionTerminateResponse +=
-                new VoiceGateway.SessionTerminateResponseCallback(connector_OnSessionTerminateResponse);
             connector.OnSessionAddedEvent +=
                 new VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
 
@@ -130,6 +183,8 @@ namespace Radegast.Plugin.Voice
                 new MouseEventHandler(OnMouseDown);
             control.voiceConsole.MouseUp +=
                 new MouseEventHandler(OnMouseUp);
+
+            Logger.Log("Voice initialized", Helpers.LogLevel.Info);
         }
 
         internal void Stop()
@@ -160,8 +215,6 @@ namespace Radegast.Plugin.Voice
                     new VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
                 connector.OnSessionStateChangeEvent -=
                     new VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
-                connector.OnSessionTerminateResponse -=
-                    new VoiceGateway.SessionTerminateResponseCallback(connector_OnSessionTerminateResponse);
                 connector.OnSessionAddedEvent -=
                     new VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
 
@@ -197,7 +250,6 @@ namespace Radegast.Plugin.Voice
                     posThread.Abort();
                 posThread = null;
             }
-
 
             // Close all sessions
             foreach (Session s in sessions.Values)
@@ -236,6 +288,10 @@ namespace Radegast.Plugin.Voice
                 }
 
                 return Path.Combine(progFiles, @"SecondLife\SLVoice.exe");
+            }
+            else
+            {
+                //TODO return Path.Combine(progFiles, @"SecondLife\SLVoice");
             }
 
             return string.Empty;
@@ -279,6 +335,7 @@ namespace Radegast.Plugin.Voice
                     OSD postData = new OSD();
 
                     // STEP 0
+                    Logger.Log("Requesting voice capability", Helpers.LogLevel.Info);
                     capClient.BeginGetResponse(postData, OSDFormat.Xml, 10000);
                 }
 
@@ -321,8 +378,9 @@ namespace Radegast.Plugin.Voice
             int volume,
             float energy)
         {
-            Session s = FindSession(sessionHandle);
-            s.OnParticipantUpdate(URI, isMuted, isSpeaking, volume, energy);
+            Session s = FindSession(sessionHandle, false);
+            if (s == null) return;
+            s.ParticipantUpdate(URI, isMuted, isSpeaking, volume, energy);
         }
 
         public string SIPFromUUID(UUID id)
@@ -363,7 +421,8 @@ namespace Radegast.Plugin.Voice
                 OpenMetaverse.Voice.VoiceGateway.ParticipantType type,
                 string Application )
         {
-            Session s = FindSession(sessionHandle);
+            Session s = FindSession(sessionHandle, false);
+            if (s == null) return;
             s.AddParticipant( ParticipantUri );
         }
 
@@ -374,7 +433,8 @@ namespace Radegast.Plugin.Voice
                 string AccountName,
                 string Reason )
         {
-            Session s = FindSession(sessionHandle);
+            Session s = FindSession(sessionHandle, false);
+            if (s == null) return;
             s.RemoveParticipant(ParticipantUri);
         }
        #endregion
@@ -386,47 +446,18 @@ namespace Radegast.Plugin.Voice
             bool isChannel,
             bool isIncoming)
         {
-            control.voiceConsole.SetSStatus("Connected to "+regionName);
-            control.instance.MainForm.TabConsole.DisplayNotificationInChat(
-                "Voice started in " + regionName);
-
-            sessionHandle = newSessionHandle;
+           sessionHandle = newSessionHandle;
 
             // Create our session context.
-            Session s = FindSession(sessionHandle);
+            Session s = FindSession(sessionHandle, true);
+            s.RegionName = regionName;
 
-            // TODO handle non-spatial sessions.
+            Logger.Log("Added voice session in " + regionName, Helpers.LogLevel.Info);
             spatialSession = s;
-            s.SetTitle(regionName);
 
-            // Default Mic off and Spkr on
-            SetMicMute(true);
-            SetSpkrMute(false);
-            SetSpkrLevel(64);
-            SetMicLevel(44);
-        }
-
-        /// <summary>
-        /// Handle closing of a session.
-        /// </summary>
-        /// <param name="ReturnCode"></param>
-        /// <param name="StatusCode"></param>
-        /// <param name="StatusString"></param>
-        /// <param name="Request"></param>
-        void connector_OnSessionTerminateResponse(int ReturnCode,
-            int StatusCode, string StatusString,
-            VoiceGateway.VoiceRequest Request)
-        {
-            control.voiceConsole.SetSStatus("Disconnect " + StatusString);
-
-            // The previous session is now ended.  Check for a new one and
-            // start it going.
-            if (nextParcelCap != null)
-            {
-                currentParcelCap = nextParcelCap;
-                nextParcelCap = null;
-                RequestParcelInfo(currentParcelCap);
-            }
+            // Tell any user-facing code.
+            if (OnSessionCreate != null)
+                OnSessionCreate(s, null);
         }
 
         /// <summary>
@@ -460,25 +491,49 @@ namespace Radegast.Plugin.Voice
             string ChannelName)
         {
             Session s;
-            string msg = "Local voice session ";
+
             switch (State)
             {
                 case VoiceGateway.SessionState.Connected:
-                    s = FindSession(sessionHandle);
-                    msg += "connected.";
+                    s = FindSession(SessionHandle, true);
+                    sessionHandle = SessionHandle;
+                    s.RegionName = regionName;
+                    spatialSession = s;
+
+                    Logger.Log("Voice connected in " + regionName, Helpers.LogLevel.Info);
+                    // Tell any user-facing code.
+                    if (OnSessionCreate != null)
+                        OnSessionCreate(s, null);
                     break;
 
                 case VoiceGateway.SessionState.Disconnected:
-                    s = FindSession(sessionHandle);
+                    s = FindSession(sessionHandle, false);
                     sessions.Remove(sessionHandle);
-                    if (s == spatialSession)
-                        spatialSession = null;
-                    msg += "disconnected.";
-                    PosUpdating(false);
+
+                    if (s != null)
+                    {
+                        Logger.Log("Voice disconnected in " + s.RegionName, Helpers.LogLevel.Info);
+
+                        // Inform interested parties
+                        if (OnSessionRemove != null)
+                            OnSessionRemove(s, null);
+
+                        if (s == spatialSession)
+                            spatialSession = null;
+                    }
+
+                    // The previous session is now ended.  Check for a new one and
+                    // start it going.
+                    if (nextParcelCap != null)
+                    {
+                        currentParcelCap = nextParcelCap;
+                        nextParcelCap = null;
+                        RequestParcelInfo(currentParcelCap);
+                    }
                     break;
             }
             
-            control.instance.MainForm.TabConsole.DisplayNotificationInChat(msg);
+
         }
         
         /// <summary>
@@ -489,8 +544,6 @@ namespace Radegast.Plugin.Voice
         {
             if (!sessions.ContainsKey(sessionHandle))
                 return;
-
-            control.voiceConsole.SetSStatus("Closing");
 
             // Clean up spatial pointers.
             Session s = sessions[sessionHandle];
@@ -503,14 +556,12 @@ namespace Radegast.Plugin.Voice
             // Remove this session from the master session list
             sessions.Remove(sessionHandle);
 
-            // Close the session window
-            s.Close();
+            // Let any user-facing code clean up.
+            if (OnSessionRemove != null)
+                OnSessionRemove(s, null);
 
             // Tell SLVoice to clean it up as well.
             connector.SessionTerminate(sessionHandle);
-
-            control.instance.MainForm.TabConsole.DisplayNotificationInChat(
-                "Voice session closed.");
         }
 
         /// <summary>
@@ -519,10 +570,12 @@ namespace Radegast.Plugin.Voice
         /// <param name="sessionHandle"></param>
         /// <returns></returns>
         /// <remarks>Creates the session context if it does not exist.</remarks>
-        Session FindSession(string sessionHandle)
+        Session FindSession(string sessionHandle, bool make)
         {
             if (sessions.ContainsKey(sessionHandle))
                 return sessions[sessionHandle];
+
+            if (!make) return null;
 
             // Create a new session and add it to the sessions list.
             Session s = new Session(control, connector, sessionHandle);
@@ -557,7 +610,7 @@ namespace Radegast.Plugin.Voice
             if (e.Button == System.Windows.Forms.MouseButtons.Middle)
             {
                 control.voiceConsole.micMute_Set(true);
-                SetMicMute(true);
+                MicMute =true;
             }
         }
 
@@ -566,7 +619,7 @@ namespace Radegast.Plugin.Voice
             if (e.Button == System.Windows.Forms.MouseButtons.Middle)
             {
                 control.voiceConsole.micMute_Set(false);
-                SetMicMute(false);
+                MicMute = false;
             }
         }
         #endregion
@@ -587,7 +640,8 @@ namespace Radegast.Plugin.Voice
                 return;
             }
 
-            control.voiceConsole.SetCStatus("Provisioned");
+            Logger.Log("Voice provisioned", Helpers.LogLevel.Info);
+
             OpenMetaverse.StructuredData.OSDMap pMap = result as OpenMetaverse.StructuredData.OSDMap;
 
             // We can get back 4 interesting values:
@@ -620,12 +674,12 @@ namespace Radegast.Plugin.Voice
         #region Daemon
         void connector_OnDaemonCouldntConnect()
         {
-            control.voiceConsole.SetCStatus("No daemon connect");
+            Logger.Log("No voice daemon connect", Helpers.LogLevel.Error);
         }
 
         void connector_OnDaemonCouldntRun()
         {
-            control.voiceConsole.SetCStatus ( "Daemon not started" );
+            Logger.Log("Daemon not started", Helpers.LogLevel.Error);
         }
 
         /// <summary>
@@ -635,7 +689,7 @@ namespace Radegast.Plugin.Voice
         {
             connector.OnDaemonRunning -=
                 new VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
-            control.voiceConsole.SetCStatus ( "Daemon started" );
+            Logger.Log("Daemon started", Helpers.LogLevel.Info);
 
             // STEP 2
             connector.ConnectToDaemon(daemonNode, daemonPort);
@@ -652,7 +706,7 @@ namespace Radegast.Plugin.Voice
         /// <param name="Request"></param>
         void connector_OnDaemonConnected()
         {
-            control.voiceConsole.SetCStatus("Daemon connected; starting protocol");
+            Logger.Log("Daemon connected", Helpers.LogLevel.Info);
 
             // The connector is what does the logging.
             VoiceGateway.VoiceLoggingSettings vLog = new VoiceGateway.VoiceLoggingSettings();
@@ -687,13 +741,12 @@ namespace Radegast.Plugin.Voice
             string VersionID, int StatusCode,
             string StatusString, string ConnectorHandle, VoiceGateway.VoiceRequest Request)
         {
-            control.voiceConsole.SetCStatus("Protocol start " + StatusString);
+            Logger.Log("Voice daemon protocol started "+StatusString, Helpers.LogLevel.Info);
+
             connectionHandle = ConnectorHandle;
 
             if (StatusCode != 0)
                 return;
-
-            control.voiceConsole.SetCStatus("Logging in voice account");
 
             // Request the available devices, to populate the GUI for choosing.
             connector.AuxGetCaptureDevices();
@@ -715,7 +768,7 @@ namespace Radegast.Plugin.Voice
             string AccountHandle,
             VoiceGateway.VoiceRequest Request)
         {
-            control.voiceConsole.SetCStatus ("Account Login "+StatusString );
+            Logger.Log("Account Login "+StatusString, Helpers.LogLevel.Info );
             accountHandle = AccountHandle;
 
             ParcelChanged();
@@ -813,7 +866,7 @@ namespace Radegast.Plugin.Voice
         
         void RequestParcelInfo(Uri cap)
         {
-            control.voiceConsole.SetSStatus("Requesting region voice info");
+            Logger.Log("Requesting region voice info", Helpers.LogLevel.Info);
 
             parcelCap = new OpenMetaverse.Http.CapsClient(cap);
             parcelCap.OnComplete +=
@@ -840,7 +893,7 @@ namespace Radegast.Plugin.Voice
 
             if (error != null)
             {
-                control.voiceConsole.SetCStatus(error.Message);
+                Logger.Log("Region voice cap "+error.Message, Helpers.LogLevel.Error);
                 return;
             }
 
@@ -865,7 +918,7 @@ namespace Radegast.Plugin.Voice
                 return;
             }
 
-            control.voiceConsole.SetSStatus("Connecting");
+            Logger.Log("Voice connecting for region " + regionName, Helpers.LogLevel.Info);
 
             // STEP 5
             int reqId = connector.SessionCreate(
@@ -884,13 +937,19 @@ namespace Radegast.Plugin.Voice
 
         
 #region GUI
-        internal void SetMicLevel(int lvl)
+        internal int MicLevel
         {
-            connector.ConnectorSetLocalMicVolume(connectionHandle, lvl);
+            set
+            {
+                connector.ConnectorSetLocalMicVolume(connectionHandle, value);
+            }
         }
-        internal void SetSpkrLevel(int lvl)
+        internal int SpkrLevel
         {
-            connector.ConnectorSetLocalSpeakerVolume(connectionHandle, lvl);
+            set
+            {
+                connector.ConnectorSetLocalSpeakerVolume(connectionHandle, value);
+            }
         }
 
         /// <summary>
@@ -915,14 +974,20 @@ namespace Radegast.Plugin.Voice
                 OSD.FromString(name);
         }
 
-        internal void SetMicMute(bool mute)
+        internal bool MicMute
         {
-             connector.ConnectorMuteLocalMic(connectionHandle, mute);
+            set
+            {
+                connector.ConnectorMuteLocalMic(connectionHandle, value);
+            }
         }
 
-        internal void SetSpkrMute(bool mute)
+        internal bool SpkrMute
         {
-             connector.ConnectorMuteLocalSpeaker(connectionHandle, mute);
+            set
+            {
+                connector.ConnectorMuteLocalSpeaker(connectionHandle, value);
+            }
         }
 
         /// <summary>

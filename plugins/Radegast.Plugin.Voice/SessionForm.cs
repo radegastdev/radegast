@@ -11,6 +11,7 @@ namespace Radegast.Plugin.Voice
 {
     internal partial class SessionForm : Form
     {
+        // These enumerated values must match the sequence of icons.
         private enum State {
             Idle = 0,
             Talking,
@@ -25,77 +26,58 @@ namespace Radegast.Plugin.Voice
             session = s;
 
             InitializeComponent();
+            Text = "Voice: " + s.RegionName;
+
+            // Watch for updates on session participants.
+            session.OnParticipantUpdate += new EventHandler(session_OnParticipantUpdate);
+            session.OnParticipantAdded += new EventHandler(session_OnParticipantAdded);
+            session.OnParticipantRemoved += new EventHandler(session_OnParticipantRemoved);
+
+            // Watch for context-menu clicks.
+
         }
 
-        internal void AddParticipant( string name )
+        void session_OnParticipantRemoved(object sender, EventArgs e)
         {
-            if (name == "") name = "?";
-
-            this.BeginInvoke(new MethodInvoker(delegate()
-            {
-                ListViewItem item = new ListViewItem(name);
-                item.StateImageIndex = (int)State.Idle;
-                item.Name = name;
-                participants.Items.Add(item);
-            }));
-        }
-
-        internal void RemoveParticipant(string name)
-        {
-            this.BeginInvoke(new MethodInvoker(delegate()
-            {
-                foreach (ListViewItem item in participants.Items)
-                {
-                    if (item.Name == name)
-                    {
-                        participants.Items.Remove(item);
-                        return;
-                    }
-                }
+             Participant p = sender as Participant;
+ 
+             this.BeginInvoke(new MethodInvoker(delegate()
+             {
+                 ListViewItem item = participants.Items[p.Name];
+                 participants.Items.Remove(item);
             }));
 
         }
 
-        internal void SetTitle(string t)
+        void session_OnParticipantUpdate(object sender, EventArgs e)
         {
+            Participant p = sender as Participant;
+
             this.BeginInvoke(new MethodInvoker(delegate()
             {
-                this.Text = t;
-            }));
-        }
-
-        private int FindItem(string name)
-        {
-            for (int n = 0; n < participants.Items.Count; n++)
-            {
-                ListViewItem item = participants.Items[n];
-                if (item.Name == name) return n;
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// Indicate who is speaking
-        /// </summary>
-        /// <param name="name">Avatar name</param>
-        /// <param name="isSpeaking"></param>
-        internal void SetParticipant(string name, bool isMuted, bool isSpeaking, float energy)
-        {
-            this.BeginInvoke(new MethodInvoker(delegate()
-            {
-                int n = FindItem(name);
-                if (n < 0) return;
-
-                ListViewItem item = participants.Items[n];
+                ListViewItem item = participants.Items[p.Name];
 
                 // Set icon depending on what they are doing
-                if (isMuted)
+                if (p.IsMuted)
                     item.StateImageIndex = (int)State.Muted;
-                else if (isSpeaking)
+                else if (p.IsSpeaking)
                     item.StateImageIndex = (int)State.Talking;
                 else
                     item.StateImageIndex = (int)State.Idle;
+            }));
+        }
+
+        void session_OnParticipantAdded(object sender, EventArgs e)
+        {
+            Participant p = sender as Participant;
+
+            this.BeginInvoke(new MethodInvoker(delegate()
+            {
+                ListViewItem item = new ListViewItem(p.Name);
+                item.Tag = p;
+                item.StateImageIndex = (int)State.Idle;
+                item.Name = p.Name;
+                participants.Items.Add(item);
             }));
         }
 
@@ -125,6 +107,14 @@ namespace Radegast.Plugin.Voice
                 e.Cancel = true;
         }
 
- 
+        private void participants_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+
+            RadegastContextMenuStrip cms = new RadegastContextMenuStrip();
+            control.instance.ContextActionManager.AddContributions(cms, control.instance.Client);
+            cms.Show((Control)sender, new Point(e.X, e.Y));
+        }
+
     }
 }

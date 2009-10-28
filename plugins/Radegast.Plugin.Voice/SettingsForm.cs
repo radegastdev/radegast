@@ -36,12 +36,12 @@ namespace Radegast.Plugin.Voice
 
         private void micLevel_ValueChanged(object sender, EventArgs e)
         {
-            control.vClient.SetMicLevel(micLevel.Value);
+            control.vClient.MicLevel = micLevel.Value;
         }
 
         private void spkrLevel_ValueChanged(object sender, EventArgs e)
         {
-            control.vClient.SetMicLevel(spkrLevel.Value);
+            control.vClient.SpkrLevel = spkrLevel.Value;
         }
 
         internal void SetCaptureDevices(List<string> available, string current)
@@ -96,12 +96,12 @@ namespace Radegast.Plugin.Voice
 
         private void spkrMute_CheckedChanged(object sender, EventArgs e)
         {
-            control.vClient.SetSpkrMute(spkrMute.Checked);
+            control.vClient.SpkrMute = spkrMute.Checked;
         }
 
         private void micMute_CheckedChanged(object sender, EventArgs e)
         {
-            control.vClient.SetMicMute(micMute.Checked);
+            control.vClient.MicMute = micMute.Checked;
         }
 
         internal void micMute_Set(bool on)
