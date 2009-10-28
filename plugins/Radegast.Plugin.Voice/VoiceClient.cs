@@ -11,7 +11,7 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast.Plugin.Voice
 {
-    class VoiceClient
+    class VoiceClient : IDisposable
     {
         private VoiceGateway connector;
         private VoiceControl control;
@@ -22,7 +22,7 @@ namespace Radegast.Plugin.Voice
         private string sessionHandle;
         private string slvoicePath = "";
         private string slvoiceArgs = "-ll -1";
-        private string daemonNode = "localhost";
+        private string daemonNode = "127.0.0.1";
         private int daemonPort = 44124;
         private VoiceGateway.VoicePosition position;
         private string voiceUser;
@@ -54,11 +54,6 @@ namespace Radegast.Plugin.Voice
             slvoiceArgs += " -i 0.0.0.0:" + daemonPort.ToString();
 //            slvoiceArgs += " -lf " + control.instance.ClientDir;
             
-            posThread = new Thread( new ThreadStart( PositionThreadBody ));
-            posThread.Name = "VoicePositionUpdate";
-            posThread.IsBackground = true;
-            posRestart = new ManualResetEvent(false);
-            posThread.Start();
         }
 
         /// <summary>
@@ -66,6 +61,15 @@ namespace Radegast.Plugin.Voice
         /// </summary>
         internal void Start()
         {
+            // Start the background thread
+            if (posThread != null && posThread.IsAlive)
+                posThread.Abort();
+            posThread = new Thread(new ThreadStart(PositionThreadBody));
+            posThread.Name = "VoicePositionUpdate";
+            posThread.IsBackground = true;
+            posRestart = new ManualResetEvent(false);
+            posThread.Start();
+
             connector = new VoiceGateway();
 
             control.instance.Client.Network.OnEventQueueRunning +=
@@ -138,14 +142,23 @@ namespace Radegast.Plugin.Voice
             // Get the voice provisioning data
             System.Uri vCap =
                 control.instance.Client.Network.CurrentSim.Caps.CapabilityURI("ProvisionVoiceAccountRequest");
-            OpenMetaverse.Http.CapsClient capClient =
-                new OpenMetaverse.Http.CapsClient(vCap);
-            capClient.OnComplete +=
-                new OpenMetaverse.Http.CapsClient.CompleteCallback(cClient_OnComplete);
-            OSD postData = new OSD();
+            
+            // Do we have voice capability?
+            if (vCap == null)
+            {
+                Logger.Log("Null voice capability", Helpers.LogLevel.Warning);
+            }
+            else
+            {
+                OpenMetaverse.Http.CapsClient capClient =
+                    new OpenMetaverse.Http.CapsClient(vCap);
+                capClient.OnComplete +=
+                    new OpenMetaverse.Http.CapsClient.CompleteCallback(cClient_OnComplete);
+                OSD postData = new OSD();
 
-            // STEP 0
-            capClient.BeginGetResponse(postData, OSDFormat.Xml, 10000);
+                // STEP 0
+                capClient.BeginGetResponse(postData, OSDFormat.Xml, 10000);
+            }
         }
 
         internal void Stop()
@@ -153,57 +166,67 @@ namespace Radegast.Plugin.Voice
             control.instance.Client.Network.OnEventQueueRunning -=
                 new NetworkManager.EventQueueRunningCallback(Network_OnEventQueueRunning);
 
-            // Connection events
-            connector.OnDaemonRunning -=
-                 new VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
-            connector.OnDaemonCouldntRun -=
-                new VoiceGateway.DaemonCouldntRunCallback(connector_OnDaemonCouldntRun);
-            connector.OnConnectorCreateResponse -=
-                new VoiceGateway.ConnectorCreateResponseCallback(connector_OnConnectorCreateResponse);
-            connector.OnDaemonConnected -=
-                new VoiceGateway.DaemonConnectedCallback(connector_OnDaemonConnected);
-            connector.OnDaemonCouldntConnect -=
-                new VoiceGateway.DaemonCouldntConnectCallback(connector_OnDaemonCouldntConnect);
-            connector.OnAuxAudioPropertiesEvent -=
-                new VoiceGateway.AuxAudioPropertiesEventCallback(connector_OnAuxAudioPropertiesEvent);
+            if (connector != null)
+            {
+                // Connection events
+                connector.OnDaemonRunning -=
+                     new VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
+                connector.OnDaemonCouldntRun -=
+                    new VoiceGateway.DaemonCouldntRunCallback(connector_OnDaemonCouldntRun);
+                connector.OnConnectorCreateResponse -=
+                    new VoiceGateway.ConnectorCreateResponseCallback(connector_OnConnectorCreateResponse);
+                connector.OnDaemonConnected -=
+                    new VoiceGateway.DaemonConnectedCallback(connector_OnDaemonConnected);
+                connector.OnDaemonCouldntConnect -=
+                    new VoiceGateway.DaemonCouldntConnectCallback(connector_OnDaemonCouldntConnect);
+                connector.OnAuxAudioPropertiesEvent -=
+                    new VoiceGateway.AuxAudioPropertiesEventCallback(connector_OnAuxAudioPropertiesEvent);
 
-            // Session events
-            connector.OnSessionNewEvent -=
-                new VoiceGateway.SessionNewEventCallback(connector_OnSessionNewEvent);
-            connector.OnSessionCreateResponse -=
-                new VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
-            connector.OnSessionStateChangeEvent -=
-                new VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
-            connector.OnSessionTerminateResponse -=
-                new VoiceGateway.SessionTerminateResponseCallback(connector_OnSessionTerminateResponse);
-            connector.OnSessionAddedEvent -=
-                new VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
+                // Session events
+                connector.OnSessionNewEvent -=
+                    new VoiceGateway.SessionNewEventCallback(connector_OnSessionNewEvent);
+                connector.OnSessionCreateResponse -=
+                    new VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
+                connector.OnSessionStateChangeEvent -=
+                    new VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
+                connector.OnSessionTerminateResponse -=
+                    new VoiceGateway.SessionTerminateResponseCallback(connector_OnSessionTerminateResponse);
+                connector.OnSessionAddedEvent -=
+                    new VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
 
-            // Session Participants events
-            connector.OnSessionParticipantPropertiesEvent -=
-                new VoiceGateway.SessionParticipantPropertiesEventCallback(connector_OnSessionParticipantPropertiesEvent);
-            connector.OnSessionParticipantStateChangeEvent -=
-                new VoiceGateway.SessionParticipantStateChangeEventCallback(connector_OnSessionParticipantStateChangeEvent);
-            connector.OnSessionParticipantUpdatedEvent -=
-                new VoiceGateway.SessionParticipantUpdatedEventCallback(connector_OnSessionParticipantUpdatedEvent);
-            connector.OnSessionParticipantAddedEvent -=
-                new VoiceGateway.SessionParticipantAddedEventCallback(connector_OnSessionParticipantAddedEvent);
+                // Session Participants events
+                connector.OnSessionParticipantPropertiesEvent -=
+                    new VoiceGateway.SessionParticipantPropertiesEventCallback(connector_OnSessionParticipantPropertiesEvent);
+                connector.OnSessionParticipantStateChangeEvent -=
+                    new VoiceGateway.SessionParticipantStateChangeEventCallback(connector_OnSessionParticipantStateChangeEvent);
+                connector.OnSessionParticipantUpdatedEvent -=
+                    new VoiceGateway.SessionParticipantUpdatedEventCallback(connector_OnSessionParticipantUpdatedEvent);
+                connector.OnSessionParticipantAddedEvent -=
+                    new VoiceGateway.SessionParticipantAddedEventCallback(connector_OnSessionParticipantAddedEvent);
 
-            // Tuning events
-            connector.OnAuxCaptureAudioStartResponse -=
-                new VoiceGateway.AuxCaptureAudioStartResponseCallback(connector_OnAuxCaptureAudioStartResponse);
-            connector.OnAuxGetCaptureDevicesResponse -=
-                new VoiceGateway.AuxGetCaptureDevicesResponseCallback(connector_OnAuxGetCaptureDevicesResponse);
-            connector.OnAuxGetRenderDevicesResponse -=
-                new VoiceGateway.AuxGetRenderDevicesResponseCallback(connector_OnAuxGetRenderDevicesResponse);
+                // Tuning events
+                connector.OnAuxCaptureAudioStartResponse -=
+                    new VoiceGateway.AuxCaptureAudioStartResponseCallback(connector_OnAuxCaptureAudioStartResponse);
+                connector.OnAuxGetCaptureDevicesResponse -=
+                    new VoiceGateway.AuxGetCaptureDevicesResponseCallback(connector_OnAuxGetCaptureDevicesResponse);
+                connector.OnAuxGetRenderDevicesResponse -=
+                    new VoiceGateway.AuxGetRenderDevicesResponseCallback(connector_OnAuxGetRenderDevicesResponse);
 
-            // Account events
-            connector.OnAccountLoginResponse -=
-                new VoiceGateway.AccountLoginResponseCallback(connector_OnAccountLoginResponse);
+                // Account events
+                connector.OnAccountLoginResponse -=
+                    new VoiceGateway.AccountLoginResponseCallback(connector_OnAccountLoginResponse);
+            }
 
             // Stop the background thread
-            PosUpdating(false);
-            posThread.Abort();
+            if (posThread != null)
+            {
+                PosUpdating(false);
+
+                if (posThread.IsAlive)
+                    posThread.Abort();
+                posThread = null;
+            }
+
 
             // Close all sessions
             foreach (Session s in sessions.Values)
@@ -211,10 +234,41 @@ namespace Radegast.Plugin.Voice
                 s.Close();
             }
 
-            connector.ConnectorInitiateShutdown(connectionHandle);
-            connector.StopDaemon();
+            if (connector != null)
+            {
+                connector.ConnectorInitiateShutdown(connectionHandle);
+                connector.StopDaemon();
+            }
         }
 
+        /// <summary>
+        /// Cleanup oject resources
+        /// </summary>
+        public void Dispose()
+        {
+            Stop();
+        }
+
+        internal string GetVoiceDaemonPath()
+        {
+            if (Environment.OSVersion.Platform != PlatformID.MacOSX &&
+                Environment.OSVersion.Platform != PlatformID.Unix)
+            {
+                string progFiles;
+                if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ProgramFiles(x86)")))
+                {
+                    progFiles = Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+                }
+                else
+                {
+                    progFiles = Environment.GetEnvironmentVariable("ProgramFiles");
+                }
+
+                return Path.Combine(progFiles, @"SecondLife\SLVoice.exe");
+            }
+
+            return string.Empty;
+        }
         /// <summary>
         /// Request voice cap when changeing regions
         /// </summary>
@@ -541,9 +595,7 @@ namespace Radegast.Plugin.Voice
             voicePassword = pMap["password"].AsString();
 
             // Start the SLVoice daemon
-            slvoicePath = Path.Combine(
-                System.Windows.Forms.Application.StartupPath,
-                "SLVoice.exe");
+            slvoicePath = GetVoiceDaemonPath();
 
             // Test if the executable exists
             if (!System.IO.File.Exists(slvoicePath))

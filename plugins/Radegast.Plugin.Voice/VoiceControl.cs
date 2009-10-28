@@ -59,7 +59,6 @@ namespace Radegast.Plugin.Voice
         public void StartPlugin(RadegastInstance inst)
         {
             instance = inst;
-            vClient = new VoiceClient(this);
 
             // Add our enable/disable item to the Plugin Menu.
             ToolsMenu = instance.MainForm.PluginsMenu;
@@ -102,6 +101,10 @@ namespace Radegast.Plugin.Voice
 
             try
             {
+                if (vClient == null)
+                {
+                    vClient = new VoiceClient(this);
+                }
                 voiceConsole = new SettingsForm(this);
                 voiceConsole.Show();
                 vClient.Start();
@@ -130,12 +133,19 @@ namespace Radegast.Plugin.Voice
         /// We use this to release system resources.</remarks>
         public void StopPlugin(RadegastInstance inst)
         {
-            if (!VoiceButton.Checked) return;
-
             try
             {
-                vClient.Stop();
-                voiceConsole.Hide();
+                if (vClient != null)
+                {
+                    vClient.Dispose();
+                    vClient = null;
+                }
+                if (voiceConsole != null)
+                {
+                    voiceConsole.Hide();
+                }
+                instance.Netcom.ClientLoginStatus -=
+                    new EventHandler<Radegast.Netcom.ClientLoginEventArgs>(Netcom_ClientLoginStatus);
             }
             catch (Exception e)
             {
