@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This class is temporary.  It contains functions that will eventually
+// move into OpenMetaverse.Voice.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +12,24 @@ using OpenMetaverse;
 using OpenMetaverse.Voice;
 using OpenMetaverse.StructuredData;
 
-namespace Radegast.Plugin.Voice
+namespace Radegast.Core
 {
-    class VoiceClient : IDisposable
+    public class VoiceGateway : IDisposable
     {
-        private VoiceGateway connector;
-        private VoiceControl control;
+        public enum ConnectionState
+        {
+            None = 0,
+            Provisioned,
+            DaemonStarted,
+            DaemonConnected,
+            ConnectorConnected,
+            AccountLogin,
+            RegionCapAvailable,
+            SessionRunning
+        }
+
+        private OpenMetaverse.Voice.VoiceGateway connector;
+
         internal string sipServer = "";
         private string acctServer = "https://www.bhr.vivox.com/api2/";
         private string connectionHandle;
@@ -28,21 +43,21 @@ namespace Radegast.Plugin.Voice
         private string voicePassword;
         private string spatialUri;
         private string spatialCredentials;
-        private Dictionary<string, Session> sessions;
-        private Session spatialSession;
+        private Dictionary<string, VoiceSession> sessions;
+        private VoiceSession spatialSession;
         private Uri currentParcelCap;
         private Uri nextParcelCap;
         private string regionName;
         private Thread posThread;
         private ManualResetEvent posRestart;
+        public GridClient Client;
 
-        private VoiceGateway.VoicePosition position;
+        private OpenMetaverse.Voice.VoiceGateway.VoicePosition position;
 
         // Last places Self was located
         private Vector3d oldPosition;
         private Vector3d oldAt;
 
-        private SessionForm sessionForm;
         private List<string> inputDevices;
         public List<string> CaptureDevices { get { return inputDevices; } }
         private List<string> outputDevices;
@@ -50,13 +65,17 @@ namespace Radegast.Plugin.Voice
 
         public event EventHandler OnSessionCreate;
         public event EventHandler OnSessionRemove;
+        public delegate void VoiceConnectionChangeCallback( ConnectionState state );
+        public event VoiceConnectionChangeCallback OnVoiceConnectionChange;
+        public delegate void VoiceMicTestCallback(float level);
+        public event VoiceMicTestCallback OnVoiceMicTest;
 
-        internal VoiceClient(VoiceControl pc)
+        internal VoiceGateway( GridClient c )
         {
-            // Low-level functions that move to libomv.
-            control = pc;
-            sessions = new Dictionary<string, Session>();
-            position = new VoiceGateway.VoicePosition();
+            Client = c;
+
+            sessions = new Dictionary<string, VoiceSession>();
+            position = new OpenMetaverse.Voice.VoiceGateway.VoicePosition();
             position.UpOrientation = new Vector3d(0.0, 1.0, 0.0);
             position.Velocity = new Vector3d(0.0, 0.0, 0.0);
             oldPosition = new Vector3d(0, 0, 0);
@@ -66,63 +85,17 @@ namespace Radegast.Plugin.Voice
             slvoiceArgs += " -ll -1";    // Min logging
             slvoiceArgs += " -i 0.0.0.0:" + daemonPort.ToString();
 //            slvoiceArgs += " -lf " + control.instance.ClientDir;
-            
-            // Here is real client-specific code
-            OnSessionCreate += new EventHandler(VoiceClient_OnSessionCreate);
-            OnSessionRemove += new EventHandler(VoiceClient_OnSessionRemove);
         }
 
-        /// <summary>
-        /// Create user interface for a session
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void VoiceClient_OnSessionCreate(object sender, EventArgs e)
+        public int Request(string action, string requestXML)
         {
-            Session s = sender as Session;
-
-            // Create free-standing Form to represent this session.
-            control.instance.MainForm.BeginInvoke(
-               new MethodInvoker(delegate()
-                {
-                    sessionForm = new SessionForm(control, s);
-                    sessionForm.Show();
-                }));
-
-            control.instance.MainForm.TabConsole.DisplayNotificationInChat(
-                "Voice started in " + s.RegionName);
-
-            // Default Mic off and Spkr on
-            MicMute = true;
-            SpkrMute = false;
-            SpkrLevel = 64;
-            MicLevel = 64;           
-        }
-
-        /// <summary>
-        /// Remove user interface for a session
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void VoiceClient_OnSessionRemove(object sender, EventArgs e)
-        {
-            Session s = sender as Session;
-            if (sessionForm != null)
-                control.instance.MainForm.BeginInvoke(
-                   new MethodInvoker(delegate()
-                   {
-                       sessionForm.Hide();
-                       sessionForm = null;
-                   }));
-
-            control.instance.MainForm.TabConsole.DisplayNotificationInChat(
-                "Voice disconnected in " + s.RegionName);
+            return connector.Request(action, requestXML);
         }
 
         /// <summary>
         /// Start up the Voice service.
         /// </summary>
-        internal void Start()
+        public void Start()
         {
             // Start the background thread
             if (posThread != null && posThread.IsAlive)
@@ -133,120 +106,104 @@ namespace Radegast.Plugin.Voice
             posRestart = new ManualResetEvent(false);
             posThread.Start();
 
-            connector = new VoiceGateway();
+            connector = new OpenMetaverse.Voice.VoiceGateway();
 
-            control.instance.Client.Network.OnEventQueueRunning +=
+            Client.Network.OnEventQueueRunning +=
                 new NetworkManager.EventQueueRunningCallback(Network_OnEventQueueRunning);
 
             // Connection events
             connector.OnDaemonRunning +=
-                 new VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
+                 new OpenMetaverse.Voice.VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
             connector.OnDaemonCouldntRun +=
-                new VoiceGateway.DaemonCouldntRunCallback(connector_OnDaemonCouldntRun);
+                new OpenMetaverse.Voice.VoiceGateway.DaemonCouldntRunCallback(connector_OnDaemonCouldntRun);
             connector.OnConnectorCreateResponse +=
-                new VoiceGateway.ConnectorCreateResponseCallback(connector_OnConnectorCreateResponse);
+                new OpenMetaverse.Voice.VoiceGateway.ConnectorCreateResponseCallback(connector_OnConnectorCreateResponse);
             connector.OnDaemonConnected +=
-                new VoiceGateway.DaemonConnectedCallback(connector_OnDaemonConnected);
+                new OpenMetaverse.Voice.VoiceGateway.DaemonConnectedCallback(connector_OnDaemonConnected);
             connector.OnDaemonCouldntConnect +=
-                new VoiceGateway.DaemonCouldntConnectCallback(connector_OnDaemonCouldntConnect);
+                new OpenMetaverse.Voice.VoiceGateway.DaemonCouldntConnectCallback(connector_OnDaemonCouldntConnect);
             connector.OnAuxAudioPropertiesEvent +=
-                new VoiceGateway.AuxAudioPropertiesEventCallback(connector_OnAuxAudioPropertiesEvent);
+                new OpenMetaverse.Voice.VoiceGateway.AuxAudioPropertiesEventCallback(connector_OnAuxAudioPropertiesEvent);
 
             // Session events
-            connector.OnSessionNewEvent +=
-                new VoiceGateway.SessionNewEventCallback(connector_OnSessionNewEvent);
-            connector.OnSessionCreateResponse +=
-                new VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
+           connector.OnSessionCreateResponse +=
+                new OpenMetaverse.Voice.VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
             connector.OnSessionStateChangeEvent +=
-                new VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
+                new OpenMetaverse.Voice.VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
             connector.OnSessionAddedEvent +=
-                new VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
+                new OpenMetaverse.Voice.VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
 
             // Session Participants events
-            connector.OnSessionParticipantPropertiesEvent +=
-                new VoiceGateway.SessionParticipantPropertiesEventCallback(connector_OnSessionParticipantPropertiesEvent);
             connector.OnSessionParticipantStateChangeEvent +=
-                new VoiceGateway.SessionParticipantStateChangeEventCallback(connector_OnSessionParticipantStateChangeEvent);
+                new OpenMetaverse.Voice.VoiceGateway.SessionParticipantStateChangeEventCallback(connector_OnSessionParticipantStateChangeEvent);
             connector.OnSessionParticipantUpdatedEvent +=
-                new VoiceGateway.SessionParticipantUpdatedEventCallback(connector_OnSessionParticipantUpdatedEvent);
+                new OpenMetaverse.Voice.VoiceGateway.SessionParticipantUpdatedEventCallback(connector_OnSessionParticipantUpdatedEvent);
             connector.OnSessionParticipantAddedEvent +=
-                new VoiceGateway.SessionParticipantAddedEventCallback(connector_OnSessionParticipantAddedEvent);
+                new OpenMetaverse.Voice.VoiceGateway.SessionParticipantAddedEventCallback(connector_OnSessionParticipantAddedEvent);
 
             // Tuning events
             connector.OnAuxCaptureAudioStartResponse +=
-                new VoiceGateway.AuxCaptureAudioStartResponseCallback(connector_OnAuxCaptureAudioStartResponse);
+                new OpenMetaverse.Voice.VoiceGateway.AuxCaptureAudioStartResponseCallback(connector_OnAuxCaptureAudioStartResponse);
             connector.OnAuxGetCaptureDevicesResponse +=
-                new VoiceGateway.AuxGetCaptureDevicesResponseCallback(connector_OnAuxGetCaptureDevicesResponse);
+                new OpenMetaverse.Voice.VoiceGateway.AuxGetCaptureDevicesResponseCallback(connector_OnAuxGetCaptureDevicesResponse);
             connector.OnAuxGetRenderDevicesResponse +=
-                new VoiceGateway.AuxGetRenderDevicesResponseCallback(connector_OnAuxGetRenderDevicesResponse);
+                new OpenMetaverse.Voice.VoiceGateway.AuxGetRenderDevicesResponseCallback(connector_OnAuxGetRenderDevicesResponse);
 
             // Account events
             connector.OnAccountLoginResponse +=
-                new VoiceGateway.AccountLoginResponseCallback(connector_OnAccountLoginResponse);
-
-            Form main = control.instance.MainForm;
-            main.MouseDown += new MouseEventHandler(OnMouseDown);
-            main.MouseUp += new MouseEventHandler(OnMouseUp);
-            control.voiceConsole.MouseDown +=
-                new MouseEventHandler(OnMouseDown);
-            control.voiceConsole.MouseUp +=
-                new MouseEventHandler(OnMouseUp);
+                new OpenMetaverse.Voice.VoiceGateway.AccountLoginResponseCallback(connector_OnAccountLoginResponse);
 
             Logger.Log("Voice initialized", Helpers.LogLevel.Info);
         }
 
         internal void Stop()
         {
-            control.instance.Client.Network.OnEventQueueRunning -=
+            Client.Network.OnEventQueueRunning -=
                 new NetworkManager.EventQueueRunningCallback(Network_OnEventQueueRunning);
 
             if (connector != null)
             {
                 // Connection events
                 connector.OnDaemonRunning -=
-                     new VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
+                     new OpenMetaverse.Voice.VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
                 connector.OnDaemonCouldntRun -=
-                    new VoiceGateway.DaemonCouldntRunCallback(connector_OnDaemonCouldntRun);
+                    new OpenMetaverse.Voice.VoiceGateway.DaemonCouldntRunCallback(connector_OnDaemonCouldntRun);
                 connector.OnConnectorCreateResponse -=
-                    new VoiceGateway.ConnectorCreateResponseCallback(connector_OnConnectorCreateResponse);
+                    new OpenMetaverse.Voice.VoiceGateway.ConnectorCreateResponseCallback(connector_OnConnectorCreateResponse);
                 connector.OnDaemonConnected -=
-                    new VoiceGateway.DaemonConnectedCallback(connector_OnDaemonConnected);
+                    new OpenMetaverse.Voice.VoiceGateway.DaemonConnectedCallback(connector_OnDaemonConnected);
                 connector.OnDaemonCouldntConnect -=
-                    new VoiceGateway.DaemonCouldntConnectCallback(connector_OnDaemonCouldntConnect);
+                    new OpenMetaverse.Voice.VoiceGateway.DaemonCouldntConnectCallback(connector_OnDaemonCouldntConnect);
                 connector.OnAuxAudioPropertiesEvent -=
-                    new VoiceGateway.AuxAudioPropertiesEventCallback(connector_OnAuxAudioPropertiesEvent);
+                    new OpenMetaverse.Voice.VoiceGateway.AuxAudioPropertiesEventCallback(connector_OnAuxAudioPropertiesEvent);
 
                 // Session events
-                connector.OnSessionNewEvent -=
-                    new VoiceGateway.SessionNewEventCallback(connector_OnSessionNewEvent);
                 connector.OnSessionCreateResponse -=
-                    new VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
+                    new OpenMetaverse.Voice.VoiceGateway.SessionCreateResponseCallback(connector_OnSessionCreateResponse);
                 connector.OnSessionStateChangeEvent -=
-                    new VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
+                    new OpenMetaverse.Voice.VoiceGateway.SessionStateChangeEventCallback(connector_OnSessionStateChangeEvent);
                 connector.OnSessionAddedEvent -=
-                    new VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
+                    new OpenMetaverse.Voice.VoiceGateway.SessionAddedEventCallback(connector_OnSessionAddedEvent);
 
                 // Session Participants events
-                connector.OnSessionParticipantPropertiesEvent -=
-                    new VoiceGateway.SessionParticipantPropertiesEventCallback(connector_OnSessionParticipantPropertiesEvent);
-                connector.OnSessionParticipantStateChangeEvent -=
-                    new VoiceGateway.SessionParticipantStateChangeEventCallback(connector_OnSessionParticipantStateChangeEvent);
+               connector.OnSessionParticipantStateChangeEvent -=
+                    new OpenMetaverse.Voice.VoiceGateway.SessionParticipantStateChangeEventCallback(connector_OnSessionParticipantStateChangeEvent);
                 connector.OnSessionParticipantUpdatedEvent -=
-                    new VoiceGateway.SessionParticipantUpdatedEventCallback(connector_OnSessionParticipantUpdatedEvent);
+                    new OpenMetaverse.Voice.VoiceGateway.SessionParticipantUpdatedEventCallback(connector_OnSessionParticipantUpdatedEvent);
                 connector.OnSessionParticipantAddedEvent -=
-                    new VoiceGateway.SessionParticipantAddedEventCallback(connector_OnSessionParticipantAddedEvent);
+                    new OpenMetaverse.Voice.VoiceGateway.SessionParticipantAddedEventCallback(connector_OnSessionParticipantAddedEvent);
 
                 // Tuning events
                 connector.OnAuxCaptureAudioStartResponse -=
-                    new VoiceGateway.AuxCaptureAudioStartResponseCallback(connector_OnAuxCaptureAudioStartResponse);
+                    new OpenMetaverse.Voice.VoiceGateway.AuxCaptureAudioStartResponseCallback(connector_OnAuxCaptureAudioStartResponse);
                 connector.OnAuxGetCaptureDevicesResponse -=
-                    new VoiceGateway.AuxGetCaptureDevicesResponseCallback(connector_OnAuxGetCaptureDevicesResponse);
+                    new OpenMetaverse.Voice.VoiceGateway.AuxGetCaptureDevicesResponseCallback(connector_OnAuxGetCaptureDevicesResponse);
                 connector.OnAuxGetRenderDevicesResponse -=
-                    new VoiceGateway.AuxGetRenderDevicesResponseCallback(connector_OnAuxGetRenderDevicesResponse);
+                    new OpenMetaverse.Voice.VoiceGateway.AuxGetRenderDevicesResponseCallback(connector_OnAuxGetRenderDevicesResponse);
 
                 // Account events
                 connector.OnAccountLoginResponse -=
-                    new VoiceGateway.AccountLoginResponseCallback(connector_OnAccountLoginResponse);
+                    new OpenMetaverse.Voice.VoiceGateway.AccountLoginResponseCallback(connector_OnAccountLoginResponse);
             }
 
             // Stop the background thread
@@ -260,7 +217,7 @@ namespace Radegast.Plugin.Voice
             }
 
             // Close all sessions
-            foreach (Session s in sessions.Values)
+            foreach (VoiceSession s in sessions.Values)
             {
                 s.Close();
             }
@@ -311,7 +268,7 @@ namespace Radegast.Plugin.Voice
         void Network_OnEventQueueRunning(Simulator simulator)
         {
             // We only care about the sim we are in.
-            if (simulator != control.instance.Client.Network.CurrentSim)
+            if (simulator != Client.Network.CurrentSim)
                 return;
 
             // Did we provision voice login info?
@@ -327,7 +284,7 @@ namespace Radegast.Plugin.Voice
 
                 // Get the voice provisioning data
                 System.Uri vCap =
-                    control.instance.Client.Network.CurrentSim.Caps.CapabilityURI("ProvisionVoiceAccountRequest");
+                    Client.Network.CurrentSim.Caps.CapabilityURI("ProvisionVoiceAccountRequest");
 
                 // Do we have voice capability?
                 if (vCap == null)
@@ -362,21 +319,13 @@ namespace Radegast.Plugin.Voice
             string SessionHandle,
             int StatusCode,
             string StatusString,
-            VoiceGateway.ParticipantState State,
+            OpenMetaverse.Voice.VoiceGateway.ParticipantState State,
             string ParticipantURI,
             string AccountName,
             string DisplayName,
-            VoiceGateway.ParticipantType ParticipantType)
+            OpenMetaverse.Voice.VoiceGateway.ParticipantType ParticipantType)
         {
 
-        }
-
-        void connector_OnSessionParticipantPropertiesEvent(string SessionHandle,
-            string ParticipantURI, bool IsLocallyMuted, bool IsModeratorMuted,
-            bool IsSpeaking, int Volume, float Energy)
-        {
-            control.voiceConsole.SetSStatus(ParticipantURI);
-            control.voiceConsole.SetSpkrDial((int)(Energy * 100.0));
         }
 
         void connector_OnSessionParticipantUpdatedEvent(string sessionHandle,
@@ -386,7 +335,7 @@ namespace Radegast.Plugin.Voice
             int volume,
             float energy)
         {
-            Session s = FindSession(sessionHandle, false);
+            VoiceSession s = FindSession(sessionHandle, false);
             if (s == null) return;
             s.ParticipantUpdate(URI, isMuted, isSpeaking, volume, energy);
         }
@@ -429,7 +378,7 @@ namespace Radegast.Plugin.Voice
                 OpenMetaverse.Voice.VoiceGateway.ParticipantType type,
                 string Application )
         {
-            Session s = FindSession(sessionHandle, false);
+            VoiceSession s = FindSession(sessionHandle, false);
             if (s == null) return;
             s.AddParticipant( ParticipantUri );
         }
@@ -441,7 +390,7 @@ namespace Radegast.Plugin.Voice
                 string AccountName,
                 string Reason )
         {
-            Session s = FindSession(sessionHandle, false);
+            VoiceSession s = FindSession(sessionHandle, false);
             if (s == null) return;
             s.RemoveParticipant(ParticipantUri);
         }
@@ -457,7 +406,7 @@ namespace Radegast.Plugin.Voice
            sessionHandle = newSessionHandle;
 
             // Create our session context.
-            Session s = FindSession(sessionHandle, true);
+            VoiceSession s = FindSession(sessionHandle, true);
             s.RegionName = regionName;
 
             Logger.Log("Added voice session in " + regionName, Helpers.LogLevel.Info);
@@ -474,10 +423,9 @@ namespace Radegast.Plugin.Voice
         void connector_OnSessionCreateResponse(int ReturnCode,
             int StatusCode, string StatusString,
             string SessionHandle,
-            VoiceGateway.VoiceRequest Request)
+            OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
             if (StatusCode == 0) return;
-            control.voiceConsole.SetSStatus(StatusString);
         }
 
         /// <summary>
@@ -493,16 +441,16 @@ namespace Radegast.Plugin.Voice
         void connector_OnSessionStateChangeEvent(string SessionHandle,
             int StatusCode,
             string StatusString,
-            VoiceGateway.SessionState State,
+            OpenMetaverse.Voice.VoiceGateway.SessionState State,
             string URI,
             bool IsChannel,
             string ChannelName)
         {
-            Session s;
+            VoiceSession s;
 
             switch (State)
             {
-                case VoiceGateway.SessionState.Connected:
+                case OpenMetaverse.Voice.VoiceGateway.SessionState.Connected:
                     s = FindSession(SessionHandle, true);
                     sessionHandle = SessionHandle;
                     s.RegionName = regionName;
@@ -514,7 +462,7 @@ namespace Radegast.Plugin.Voice
                         OnSessionCreate(s, null);
                     break;
 
-                case VoiceGateway.SessionState.Disconnected:
+                case OpenMetaverse.Voice.VoiceGateway.SessionState.Disconnected:
                     s = FindSession(sessionHandle, false);
                     sessions.Remove(sessionHandle);
 
@@ -554,7 +502,7 @@ namespace Radegast.Plugin.Voice
                 return;
 
             // Clean up spatial pointers.
-            Session s = sessions[sessionHandle];
+            VoiceSession s = sessions[sessionHandle];
             if (s.IsSpatial)
             {
                 spatialSession = null;
@@ -578,7 +526,7 @@ namespace Radegast.Plugin.Voice
         /// <param name="sessionHandle"></param>
         /// <returns></returns>
         /// <remarks>Creates the session context if it does not exist.</remarks>
-        Session FindSession(string sessionHandle, bool make)
+        VoiceSession FindSession(string sessionHandle, bool make)
         {
             if (sessions.ContainsKey(sessionHandle))
                 return sessions[sessionHandle];
@@ -586,7 +534,7 @@ namespace Radegast.Plugin.Voice
             if (!make) return null;
 
             // Create a new session and add it to the sessions list.
-            Session s = new Session(control, connector, sessionHandle);
+            VoiceSession s = new VoiceSession( this, sessionHandle);
             sessions.Add(sessionHandle, s);
             return s;
         }
@@ -595,42 +543,27 @@ namespace Radegast.Plugin.Voice
 
         #region MinorResponses
 
-        void connector_OnSessionNewEvent(string AccountHandle, string SessionHandle,
-            string URI, bool IsChannel, string Name, string AudioMedia)
-        {
-            control.voiceConsole.SetCStatus("New session " + Name);
-        }
-
         void connector_OnAuxCaptureAudioStartResponse(int ReturnCode, int StatusCode,
-            string StatusString, VoiceGateway.VoiceRequest Request)
+            string StatusString, OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
-            control.voiceConsole.SetCStatus("Capture " + StatusString);
+
         }
 
         void connector_OnAuxAudioPropertiesEvent(bool MicIsActive,
             float MicEnergy, float MicVolume, float SpeakerVolume)
         {
-            control.voiceConsole.SetMicDial( (int)(MicEnergy * 100.0));
+            if (OnVoiceMicTest != null)
+                OnVoiceMicTest(MicEnergy);
         }
 
-        void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
-            {
-                control.voiceConsole.micMute_Set(true);
-                MicMute =true;
-            }
-        }
-
-        void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
-            {
-                control.voiceConsole.micMute_Set(false);
-                MicMute = false;
-            }
-        }
         #endregion
+
+        private void ReportConnectionState(ConnectionState s)
+        {
+            if (OnVoiceConnectionChange == null) return;
+
+            OnVoiceConnectionChange(s);
+        }
 
         /// <summary>
         /// Handle completion of main voice cap request.
@@ -644,11 +577,12 @@ namespace Radegast.Plugin.Voice
         {
             if (error != null)
             {
-                control.voiceConsole.SetCStatus(error.Message);
+                Logger.Log("Voice cap error "+error.Message, Helpers.LogLevel.Error);
                 return;
             }
 
             Logger.Log("Voice provisioned", Helpers.LogLevel.Info);
+            ReportConnectionState(ConnectionState.Provisioned);
 
             OpenMetaverse.StructuredData.OSDMap pMap = result as OpenMetaverse.StructuredData.OSDMap;
 
@@ -670,7 +604,6 @@ namespace Radegast.Plugin.Voice
             // Test if the executable exists
             if (!System.IO.File.Exists(slvoicePath))
             {
-                control.voiceConsole.SetCStatus("SLVoice.exe is missing");
                 Logger.Log("SLVoice is missing", Helpers.LogLevel.Error);
                 return;
             }
@@ -696,8 +629,10 @@ namespace Radegast.Plugin.Voice
         void connector_OnDaemonRunning()
         {
             connector.OnDaemonRunning -=
-                new VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
+                new OpenMetaverse.Voice.VoiceGateway.DaemonRunningCallback(connector_OnDaemonRunning);
+
             Logger.Log("Daemon started", Helpers.LogLevel.Info);
+            ReportConnectionState(ConnectionState.DaemonStarted);
 
             // STEP 2
             connector.ConnectToDaemon(daemonNode, daemonPort);
@@ -717,12 +652,13 @@ namespace Radegast.Plugin.Voice
             Logger.Log("Daemon connected", Helpers.LogLevel.Info);
 
             // The connector is what does the logging.
-            VoiceGateway.VoiceLoggingSettings vLog = new VoiceGateway.VoiceLoggingSettings();
-            vLog.Folder = control.instance.ClientDir;
+            OpenMetaverse.Voice.VoiceGateway.VoiceLoggingSettings vLog =
+                new OpenMetaverse.Voice.VoiceGateway.VoiceLoggingSettings();
+//TODO            vLog.Folder = control.instance.ClientDir;
             vLog.Enabled = true;
-            vLog.FileNamePrefix = "Voice";
+            vLog.FileNamePrefix = "RadegastVoice";
+            vLog.FileNameSuffix = ".log";
             vLog.LogLevel = 5;
-
 
             // STEP 3
             int reqId = connector.ConnectorCreate(
@@ -732,7 +668,7 @@ namespace Radegast.Plugin.Voice
                 vLog);
             if (reqId < 0)
             {
-                control.voiceConsole.SetCStatus("No connector");
+                Logger.Log("No voice connector request", Helpers.LogLevel.Error);
             }
         }
 
@@ -747,7 +683,8 @@ namespace Radegast.Plugin.Voice
         /// <param name="Request"></param>
         void connector_OnConnectorCreateResponse(int ReturnCode,
             string VersionID, int StatusCode,
-            string StatusString, string ConnectorHandle, VoiceGateway.VoiceRequest Request)
+            string StatusString, string ConnectorHandle,
+            OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
             Logger.Log("Voice daemon protocol started "+StatusString, Helpers.LogLevel.Info);
 
@@ -774,7 +711,7 @@ namespace Radegast.Plugin.Voice
 
         void connector_OnAccountLoginResponse(int ReturnCode, int StatusCode, string StatusString,
             string AccountHandle,
-            VoiceGateway.VoiceRequest Request)
+            OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
             Logger.Log("Account Login "+StatusString, Helpers.LogLevel.Info );
             accountHandle = AccountHandle;
@@ -797,14 +734,9 @@ namespace Radegast.Plugin.Voice
            string StatusString,
            List<string> RenderDevices,
            string CurrentRenderDevice,
-           VoiceGateway.VoiceRequest Request)
+           OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
-            // Put the list of devices on the Setup form
-            // Default comes form the settings file
-            string selectedOutput =
-                control.instance.GlobalSettings["plugin.voice.render"].AsString();
             outputDevices = RenderDevices;
-            control.voiceConsole.SetRenderDevices(RenderDevices, selectedOutput);
         }
 
         /// <summary>
@@ -820,14 +752,9 @@ namespace Radegast.Plugin.Voice
             int StatusCode, string StatusString,
             List<string> CaptureDevices,
             string CurrentCaptureDevice,
-            VoiceGateway.VoiceRequest Request)
+            OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
-            // Put the list of devices on the Setup form.
-            // Default comes from the settings file.
-            string selectedInput =
-                control.instance.GlobalSettings["plugin.voice.capture"].AsString();
             inputDevices = CaptureDevices;
-            control.voiceConsole.SetCaptureDevices( CaptureDevices, selectedInput);
         }
 
         #endregion
@@ -841,7 +768,7 @@ namespace Radegast.Plugin.Voice
         internal void ParcelChanged()
         {
             // Get the capability for this parcel.
-            Caps c = control.instance.Client.Network.CurrentSim.Caps;
+            Caps c = Client.Network.CurrentSim.Caps;
             System.Uri pCap = c.CapabilityURI("ParcelVoiceInfoRequest");
 
             if (pCap == null)
@@ -910,6 +837,7 @@ namespace Radegast.Plugin.Voice
             OpenMetaverse.StructuredData.OSDMap pMap = result as OpenMetaverse.StructuredData.OSDMap;
 
             regionName = pMap["region_name"].AsString();
+            ReportConnectionState(ConnectionState.RegionCapAvailable);
 
             if (pMap.ContainsKey("voice_credentials"))
             {
@@ -924,7 +852,7 @@ namespace Radegast.Plugin.Voice
 
             if (spatialUri == null || spatialUri == "")
             {
-                control.voiceConsole.SetSStatus("No voice chat allowed here");
+                // "No voice chat allowed here");
                 return;
             }
 
@@ -941,7 +869,7 @@ namespace Radegast.Plugin.Voice
                 "");
             if (reqId < 0)
             {
-                control.voiceConsole.SetCStatus("Session ReqID " + reqId.ToString());
+                Logger.Log("Voice Session ReqID " + reqId.ToString(), Helpers.LogLevel.Error);
             }
         }
 
@@ -969,8 +897,6 @@ namespace Radegast.Plugin.Voice
         internal void SetMicDevice(string name)
          {
              connector.AuxSetCaptureDevice(name);
-             control.instance.GlobalSettings["plugin.voice.capture"] =
-                OSD.FromString(name);
          }
 
         /// <summary>
@@ -980,8 +906,6 @@ namespace Radegast.Plugin.Voice
         internal void SetSpkrDevice(string name)
         {
              connector.AuxSetRenderDevice(name);
-             control.instance.GlobalSettings["plugin.voice.render"] =
-                OSD.FromString(name);
         }
 
         internal bool MicMute
@@ -1082,7 +1006,7 @@ namespace Radegast.Plugin.Voice
             {
                 posRestart.WaitOne();
                 Thread.Sleep(1500);
-                UpdatePosition(control.instance.Client.Self);
+                UpdatePosition(Client.Self);
             }
         }
 #endregion

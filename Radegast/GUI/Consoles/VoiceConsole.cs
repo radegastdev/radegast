@@ -57,6 +57,8 @@ namespace Radegast
         private Avatar currentAvatar;
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
         private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();
+        private Radegast.Core.VoiceGateway gateway;
+        private Radegast.Core.VoiceSession session;
 
         public VoiceConsole(RadegastInstance instance)
         {
@@ -69,21 +71,63 @@ namespace Radegast
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+
+            gateway = new Radegast.Core.VoiceGateway(this.instance.Client);
+            SetProgress(0);
             RegisterClientEvents(client);
 
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
             SorterClass sc = new SorterClass();
             participants.ListViewItemSorter = sc;
+
+
+            chkVoiceEnable.Checked = instance.GlobalSettings["Voice.enabled"].AsBoolean();
+//            if (chkVoiceEnable.Checked)
+//                gateway.Start();
         }
 
         private void RegisterClientEvents(GridClient client)
         {
+            gateway.OnSessionCreate += new EventHandler(gateway_OnSessionCreate);
+        }
+
+        void gateway_OnSessionCreate(object sender, EventArgs e)
+        {
+            session = sender as Radegast.Core.VoiceSession;
+            participants.Items.Clear();
+
+            // Default Mic off and Spkr on
+            gateway.MicMute = true;
+            gateway.SpkrMute = false;
+            gateway.SpkrLevel = 64;
+            gateway.MicLevel = 64;           
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
         }
+
+#region Connection Status
+        void gateway_OnDaemonRunning()
+        {
+            SetProgress( 1 );
+        }
+
+        void SetProgress(int value)
+        {
+            if (value == progressBar1.Maximum)
+                progressBar1.ForeColor = Color.Green;
+            else if (value > (progressBar1.Maximum / 2))
+                progressBar1.ForeColor = Color.Yellow;
+            else
+                progressBar1.ForeColor = Color.Red;
+
+            progressBar1.Value = value;
+        }
+#endregion
+        #region Sessions
+        #endregion
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
         {
@@ -106,69 +150,78 @@ namespace Radegast
         private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
         {
             if (e.Status != LoginStatus.Success) return;
-
-            client.Avatars.RequestAvatarProperties(client.Self.AgentID);
-
-         }
+        }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
              participants.Items.Clear();
         }
 
-        private void lvwObjects_SelectedIndexChanged(object sender, EventArgs e)
+        #region Talk control
+        void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (participants.SelectedItems.Count == 0)
+            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
             {
-                currentAvatar = null;
+                micMute_Set(true);
+                gateway.MicMute = true;
+            }
+        }
+
+        void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                micMute_Set(false);
+                gateway.MicMute = false;
+            }
+        }
+        #endregion
+
+        #region Audio Settings
+        private void micMute_Set(bool on)
+        {
+            this.BeginInvoke(new MethodInvoker(delegate()
+            {
+                micMute.Checked = on;
+            }));
+        }
+
+        private void spkrDevice_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void micDevice_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void micLevel_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void spkrLevel_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+#endregion
+
+        private void chkVoiceEnable_Click(object sender, EventArgs e)
+        {
+            chkVoiceEnable.Checked = !chkVoiceEnable.Checked;
+            instance.GlobalSettings["Voice.enabled"] =
+                OpenMetaverse.StructuredData.OSD.FromBoolean(chkVoiceEnable.Checked);
+
+            if (chkVoiceEnable.Checked)
+            {
+                gateway.Start();
             }
             else
             {
-                currentAvatar = client.Network.CurrentSim.ObjectsAvatars.Find(delegate(Avatar a)
-                {
-                    return a.ID == (UUID)participants.SelectedItems[0].Tag;
-                });
-
+                gateway.Stop();
             }
         }
-
-        private void avatarContext_Opening(object sender, CancelEventArgs e)
-        {
-            if (participants.SelectedItems.Count == 0 && !instance.State.IsPointing)
-            {
-                e.Cancel = true;
-                return;
-            }
-            else if (instance.State.IsPointing)
-            {
-                ctxPoint.Enabled = true;
-                ctxPoint.Text = "Unpoint";
-            }
-            instance.ContextActionManager.AddContributions(
-                avatarContext, typeof(Avatar), participants.SelectedItems[0]);
-        }
-
-        private void ctxSource_Click(object sender, EventArgs e)
-        {
-            if (participants.SelectedItems.Count != 1) return;
-
-            instance.State.EffectSource = (UUID)participants.SelectedItems[0].Tag;
-        }
-
-        private void ctxPay_Click(object sender, EventArgs e)
-        {
-            if (participants.SelectedItems.Count != 1) return;
-            (new frmPay(instance, (UUID)participants.SelectedItems[0].Tag, instance.getAvatarName((UUID)participants.SelectedItems[0].Tag), false)).ShowDialog();
-        }
-
-        private void rtbChat_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button!=MouseButtons.Right) return;
-            RadegastContextMenuStrip cms = new RadegastContextMenuStrip();
-            instance.ContextActionManager.AddContributions(cms,instance.Client);
-            cms.Show((Control)sender,new Point(e.X,e.Y));
-        }
-
     }
 }
 

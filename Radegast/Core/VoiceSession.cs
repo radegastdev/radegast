@@ -1,4 +1,6 @@
-﻿using System;
+﻿// This class is temporary.  It contains functions that will eventually
+// move into OpenMetaverse.Voice.
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,13 +9,12 @@ using System.Windows.Forms;
 using OpenMetaverse.Voice;
 using Radegast;
 
-namespace Radegast.Plugin.Voice
+namespace Radegast.Core
 {
-    public class Session
+    public class VoiceSession
     {
-        private VoiceControl control;
         internal string SessionHandle;
-        private static Dictionary<string, Participant> knownParticipants;
+        private static Dictionary<string, VoiceParticipant> knownParticipants;
         public string RegionName;
         internal bool IsSpatial { get; set; }
         private VoiceGateway connector;
@@ -24,14 +25,13 @@ namespace Radegast.Plugin.Voice
         public event System.EventHandler OnParticipantUpdate;
         public event System.EventHandler OnParticipantRemoved;
 
-        public Session(VoiceControl pc, VoiceGateway conn, string handle)
+        public VoiceSession(VoiceGateway conn, string handle)
         {
-            control = pc;
             SessionHandle = handle;
             connector = conn;
 
             IsSpatial = true;
-            knownParticipants = new Dictionary<string, Participant>();
+            knownParticipants = new Dictionary<string, VoiceParticipant>();
         }
 
         /// <summary>
@@ -48,27 +48,27 @@ namespace Radegast.Plugin.Voice
             float energy)
         {
             // Locate in this session
-            Participant p = FindParticipant(URI);
+            VoiceParticipant p = FindParticipant(URI);
 
             // Set properties
             p.SetProperties(isSpeaking, isMuted, energy);
 
             // Inform interested parties.
             if (OnParticipantUpdate != null)
-                OnParticipantUpdate( p, null );
+                OnParticipantUpdate(p, null);
         }
 
         internal void AddParticipant(string URI)
         {
-            Participant p = FindParticipant(URI);
+            VoiceParticipant p = FindParticipant(URI);
 
             // Inform interested parties.
             if (OnParticipantAdded != null)
                 OnParticipantAdded(p, null);
 
             // If this is ME, start sending position updates.
-            if (p.ID == control.instance.Client.Self.AgentID)
-                control.vClient.PosUpdating(true);
+            if (p.ID == connector.Client.Self.AgentID)
+                connector.PosUpdating(true);
         }
 
         internal void RemoveParticipant(string URI)
@@ -76,7 +76,7 @@ namespace Radegast.Plugin.Voice
             if (!knownParticipants.ContainsKey(URI))
                 return;
 
-            Participant p = knownParticipants[URI];
+            VoiceParticipant p = knownParticipants[URI];
 
             // Remove from list for this session.
             knownParticipants.Remove(URI);
@@ -86,32 +86,31 @@ namespace Radegast.Plugin.Voice
                 OnParticipantRemoved(p, null);
 
             // If this was ME, stop sending position.
-            if (p.ID == control.instance.Client.Self.AgentID)
-                control.vClient.PosUpdating(false);
+            if (p.ID == connector.Client.Self.AgentID)
+                connector.PosUpdating(false);
         }
 
-        private Participant FindParticipant(string puri)
+        private VoiceParticipant FindParticipant(string puri)
         {
-            Participant p;
+            VoiceParticipant p;
 
-            if (knownParticipants.ContainsKey(puri))
-            {
-                p = knownParticipants[puri];
-                if (p.Name.StartsWith("Loading..."))
-                    p.Name = control.instance.getAvatarName(p.ID);
-                return p;
-            }
-
-            // It was not found, so add it.
             lock (knownParticipants)
             {
-                p = new Participant( puri, this );
-                knownParticipants.Add(puri, p);
-
-                // Set the name.  This might turn out to be "Loading..."
-                p.Name = control.instance.getAvatarName(p.ID);
+                if (knownParticipants.ContainsKey(puri))
+                    p = knownParticipants[puri];
+                else
+                {
+                    // It was not found, so add it.
+                    p = new VoiceParticipant(puri, this);
+                    knownParticipants.Add(puri, p);
+                }
             }
-
+/* TODO
+            // Fill in the name.
+            if (p.Name == null || p.Name.StartsWith("Loading..."))
+                    p.Name = control.instance.getAvatarName(p.ID);
+                return p;
+*/
             return p;
         }
 
