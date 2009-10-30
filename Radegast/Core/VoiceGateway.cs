@@ -16,6 +16,8 @@ namespace Radegast.Core
 {
     public class VoiceGateway : IDisposable
     {
+        // These states should be in increasing order of 'completeness'
+        // so that the (int) values can drive a progress bar.
         public enum ConnectionState
         {
             None = 0,
@@ -35,33 +37,47 @@ namespace Radegast.Core
         private string connectionHandle;
         private string accountHandle;
         private string sessionHandle;
+
+        // Parameters to Vivox daemon
         private string slvoicePath = "";
         private string slvoiceArgs = "-ll -1";
         private string daemonNode = "127.0.0.1";
         private int daemonPort = 44124;
+
         private string voiceUser;
         private string voicePassword;
         private string spatialUri;
         private string spatialCredentials;
+
+        // Session management
         private Dictionary<string, VoiceSession> sessions;
         private VoiceSession spatialSession;
         private Uri currentParcelCap;
         private Uri nextParcelCap;
         private string regionName;
+
+        // Position update thread
         private Thread posThread;
         private ManualResetEvent posRestart;
         public GridClient Client;
-
         private OpenMetaverse.Voice.VoiceGateway.VoicePosition position;
-
-        // Last places Self was located
         private Vector3d oldPosition;
         private Vector3d oldAt;
 
+        // Audio interfaces
         private List<string> inputDevices;
+        /// <summary>
+        /// List of audio input devices
+        /// </summary>
         public List<string> CaptureDevices { get { return inputDevices; } }
         private List<string> outputDevices;
+        /// <summary>
+        /// List of audio output devices
+        /// </summary>
         public List<string> PlaybackDevices { get { return outputDevices; } }
+        private string currentCaptureDevice;
+        private string currentPlaybackDevice;
+        private bool testing = false;
 
         public event EventHandler OnSessionCreate;
         public event EventHandler OnSessionRemove;
@@ -69,6 +85,8 @@ namespace Radegast.Core
         public event VoiceConnectionChangeCallback OnVoiceConnectionChange;
         public delegate void VoiceMicTestCallback(float level);
         public event VoiceMicTestCallback OnVoiceMicTest;
+        public delegate void VoiceDevicesAvailableEvent(List<string> capture, List<string> playback);
+        public event VoiceDevicesAvailableEvent OnVoiceDevicesAvailable;
 
         internal VoiceGateway( GridClient c )
         {
@@ -153,6 +171,15 @@ namespace Radegast.Core
                 new OpenMetaverse.Voice.VoiceGateway.AccountLoginResponseCallback(connector_OnAccountLoginResponse);
 
             Logger.Log("Voice initialized", Helpers.LogLevel.Info);
+
+            // If voice provisioning capability is already available,
+            // proceed with voice startup.   Otherwise the EventQueueRunning
+            // event will do it.
+            System.Uri vCap =
+                 Client.Network.CurrentSim.Caps.CapabilityURI("ProvisionVoiceAccountRequest");
+            if (vCap != null)
+                RequestVoiceProvision(vCap);
+
         }
 
         internal void Stop()
@@ -259,6 +286,20 @@ namespace Radegast.Core
 
             return string.Empty;
         }
+
+        void RequestVoiceProvision( System.Uri cap )
+        {
+            OpenMetaverse.Http.CapsClient capClient =
+                new OpenMetaverse.Http.CapsClient(cap);
+            capClient.OnComplete +=
+                new OpenMetaverse.Http.CapsClient.CompleteCallback(cClient_OnComplete);
+            OSD postData = new OSD();
+
+            // STEP 0
+            Logger.Log("Requesting voice capability", Helpers.LogLevel.Info);
+            capClient.BeginGetResponse(postData, OSDFormat.Xml, 10000);
+        }
+
         /// <summary>
         /// Request voice cap when changeing regions
         /// </summary>
@@ -287,19 +328,11 @@ namespace Radegast.Core
                 // Do we have voice capability?
                 if (vCap == null)
                 {
-                    Logger.Log("Null voice capability", Helpers.LogLevel.Warning);
+                    Logger.Log("Null voice capability after event queue running", Helpers.LogLevel.Warning);
                 }
                 else
                 {
-                    OpenMetaverse.Http.CapsClient capClient =
-                        new OpenMetaverse.Http.CapsClient(vCap);
-                    capClient.OnComplete +=
-                        new OpenMetaverse.Http.CapsClient.CompleteCallback(cClient_OnComplete);
-                    OSD postData = new OSD();
-
-                    // STEP 0
-                    Logger.Log("Requesting voice capability", Helpers.LogLevel.Info);
-                    capClient.BeginGetResponse(postData, OSDFormat.Xml, 10000);
+                    RequestVoiceProvision(vCap);
                 }
 
                 return;
@@ -499,6 +532,8 @@ namespace Radegast.Core
             if (!sessions.ContainsKey(sessionHandle))
                 return;
 
+            ReportConnectionState(ConnectionState.AccountLogin);
+
             // Clean up spatial pointers.
             VoiceSession s = sessions[sessionHandle];
             if (s.IsSpatial)
@@ -648,6 +683,7 @@ namespace Radegast.Core
         void connector_OnDaemonConnected()
         {
             Logger.Log("Daemon connected", Helpers.LogLevel.Info);
+            ReportConnectionState(ConnectionState.DaemonConnected);
 
             // The connector is what does the logging.
             OpenMetaverse.Voice.VoiceGateway.VoiceLoggingSettings vLog =
@@ -713,11 +749,11 @@ namespace Radegast.Core
         {
             Logger.Log("Account Login "+StatusString, Helpers.LogLevel.Info );
             accountHandle = AccountHandle;
-
+            ReportConnectionState(ConnectionState.AccountLogin);
             ParcelChanged();
         }
 
-        #region Tuning
+        #region Audio devices
         /// <summary>
         /// Handle response to audio output device query
         /// </summary>
@@ -735,6 +771,8 @@ namespace Radegast.Core
            OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
             outputDevices = RenderDevices;
+            if (inputDevices != null && OnVoiceDevicesAvailable != null)
+                OnVoiceDevicesAvailable(inputDevices, outputDevices);
         }
 
         /// <summary>
@@ -753,9 +791,88 @@ namespace Radegast.Core
             OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
             inputDevices = CaptureDevices;
+            if (outputDevices != null && OnVoiceDevicesAvailable != null)
+                OnVoiceDevicesAvailable(inputDevices, outputDevices);
         }
 
-        #endregion
+        public string CaptureDevice
+        {
+            get { return currentCaptureDevice; }
+            set
+            {
+                currentCaptureDevice = value;
+                connector.AuxSetCaptureDevice(value);
+            }
+        }
+        public string PlaybackDevice
+        {
+            get { return currentPlaybackDevice; }
+            set
+            {
+                currentPlaybackDevice = value;
+                connector.AuxSetRenderDevice(value);
+            }
+        }
+
+                internal int MicLevel
+        {
+            set
+            {
+                connector.ConnectorSetLocalMicVolume(connectionHandle, value);
+            }
+        }
+        internal int SpkrLevel
+        {
+            set
+            {
+                connector.ConnectorSetLocalSpeakerVolume(connectionHandle, value);
+            }
+        }
+
+        internal bool MicMute
+        {
+            set
+            {
+                connector.ConnectorMuteLocalMic(connectionHandle, value);
+            }
+        }
+
+        internal bool SpkrMute
+        {
+            set
+            {
+                connector.ConnectorMuteLocalSpeaker(connectionHandle, value);
+            }
+        }
+
+        /// <summary>
+        /// Set audio test mode
+        /// </summary>
+        /// <param name="on"></param>
+        public bool TestMode
+        {
+            get { return testing;  }
+            set
+            {
+                testing = value;
+                if (testing)
+                {
+                    if (spatialSession != null)
+                    {
+                        spatialSession.Close();
+                        spatialSession = null;
+                    }
+                    connector.AuxCaptureAudioStart(0);
+                }
+                else
+                {
+                    connector.AuxCaptureAudioStop();
+                    ParcelChanged();
+                }
+            }
+        }
+#endregion
+
 
 
 
@@ -871,79 +988,6 @@ namespace Radegast.Core
             }
         }
 
-        
-#region GUI
-        internal int MicLevel
-        {
-            set
-            {
-                connector.ConnectorSetLocalMicVolume(connectionHandle, value);
-            }
-        }
-        internal int SpkrLevel
-        {
-            set
-            {
-                connector.ConnectorSetLocalSpeakerVolume(connectionHandle, value);
-            }
-        }
-
-        /// <summary>
-        /// Change the audio capture device by user input
-        /// </summary>
-        /// <param name="name"></param>
-        internal void SetMicDevice(string name)
-         {
-             connector.AuxSetCaptureDevice(name);
-         }
-
-        /// <summary>
-        /// Change the audio render device by user input
-        /// </summary>
-        /// <param name="name"></param>
-        internal void SetSpkrDevice(string name)
-        {
-             connector.AuxSetRenderDevice(name);
-        }
-
-        internal bool MicMute
-        {
-            set
-            {
-                connector.ConnectorMuteLocalMic(connectionHandle, value);
-            }
-        }
-
-        internal bool SpkrMute
-        {
-            set
-            {
-                connector.ConnectorMuteLocalSpeaker(connectionHandle, value);
-            }
-        }
-
-        /// <summary>
-        /// Toggle test mode
-        /// </summary>
-        /// <param name="on"></param>
-        internal void TestMode(bool on)
-        {
-            if (on)
-            {
-                if (spatialSession != null)
-                {
-                    spatialSession.Close();
-                    spatialSession = null;
-                }
-                connector.AuxCaptureAudioStart(0);
-            }
-            else
-            {
-                connector.AuxCaptureAudioStop();
-                ParcelChanged();
-            }
-        }
-#endregion
 
         internal class SessionListItem : System.Windows.Forms.ListViewItem
         {

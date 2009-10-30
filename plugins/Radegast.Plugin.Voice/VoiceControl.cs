@@ -90,6 +90,7 @@ namespace Radegast.Plugin.Voice
         /// </summary>
         private void StartControls()
         {
+#if DISABLED
             // If we are not logged in, do not do this.
             if (!instance.Netcom.IsLoggedIn) return;
 
@@ -114,6 +115,7 @@ namespace Radegast.Plugin.Voice
                 MarkDisabled();
                 return;
             }
+#endif
         }
 
         void MarkDisabled()
