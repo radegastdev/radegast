@@ -296,7 +296,8 @@ namespace Radegast
             reconnectToolStripMenuItem.Enabled = true;
             InAutoReconnect = false;
 
-            statusTimer.Stop();
+            if (statusTimer != null)
+                statusTimer.Stop();
 
             RefreshStatusBar();
             RefreshWindowTitle();
