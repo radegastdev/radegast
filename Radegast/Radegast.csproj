@@ -294,6 +294,12 @@
     <Compile Include="GUI\Consoles\Assets\SLImageHandler.Designer.cs">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\VoiceConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\VoiceConsole.Designer.cs">
+      <DependentUpon>VoiceConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Dialogs\About.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -548,6 +554,9 @@
     <EmbeddedResource Include="GUI\Consoles\Assets\SLImageHandler.resx">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\VoiceConsole.resx">
+      <DependentUpon>VoiceConsole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\About.resx">
       <DependentUpon>About.cs</DependentUpon>

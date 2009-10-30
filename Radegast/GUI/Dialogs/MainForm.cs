@@ -278,7 +278,7 @@ namespace Radegast
             else if (e.Status == LoginStatus.Success)
             {
                 InAutoReconnect = false;
-                disconnectToolStripMenuItem.Enabled =
+                tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
                 tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                     tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
 
@@ -289,7 +289,7 @@ namespace Radegast
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            disconnectToolStripMenuItem.Enabled =
+            tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
             tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                 tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = false;
 
@@ -544,6 +544,11 @@ namespace Radegast
                     case Keys.D8:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnMedia.PerformClick();
+                        break;
+
+                    case Keys.D9:
+                        e.Handled = e.SuppressKeyPress = true;
+                        tbtnVoice.PerformClick();
                         break;
                 }
             }
@@ -1164,6 +1169,11 @@ namespace Radegast
             ToggleHidden("groups");
         }
 
+        private void tbtnVoice_Click(object sender, EventArgs e)
+        {
+            ToggleHidden("voice");
+        }
+
         private void tbtnMedia_Click(object sender, EventArgs e)
         {
             if (tabsConsole.TabExists("media"))
@@ -1255,6 +1265,5 @@ namespace Radegast
             }
         }
         #endregion
-
     }
 }

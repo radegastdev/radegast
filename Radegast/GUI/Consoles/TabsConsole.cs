@@ -447,10 +447,10 @@ namespace Radegast
                 tab.Visible = false;
             }
 
-            //tab = AddTab("voice", "Voice", new VoiceConsole(instance));
-            //tab.AllowClose = false;
-            //tab.AllowDetach = true;
-            //tab.Visible = false;
+            tab = AddTab("voice", "Voice", new VoiceConsole(instance));
+            tab.AllowClose = false;
+            tab.AllowDetach = true;
+            tab.Visible = false;
         }
 
         /// <summary>

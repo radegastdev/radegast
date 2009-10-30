@@ -112,9 +112,11 @@ namespace Radegast
             this.tbtnMap = new System.Windows.Forms.ToolStripButton();
             this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
+            this.tbtnVoice = new System.Windows.Forms.ToolStripButton();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
+            this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
@@ -133,7 +135,6 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
-            this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -158,6 +159,7 @@ namespace Radegast
             this.tbnObjects,
             this.lblTime,
             this.tbtnMedia,
+            this.tbtnVoice,
             this.toolStripSeparator2,
             this.tbtnHelp});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -511,6 +513,17 @@ namespace Radegast
             this.lblTime.Size = new System.Drawing.Size(30, 22);
             this.lblTime.Text = "--:--";
             // 
+            // tbtnVoice
+            // 
+            this.tbtnVoice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnVoice.Enabled = false;
+            this.tbtnVoice.Image = ((System.Drawing.Image)(resources.GetObject("tbtnVoice.Image")));
+            this.tbtnVoice.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnVoice.Name = "tbtnVoice";
+            this.tbtnVoice.Size = new System.Drawing.Size(40, 22);
+            this.tbtnVoice.Text = "Voice";
+            this.tbtnVoice.Click += new System.EventHandler(this.tbtnVoice_Click);
+            // 
             // tbtnMedia
             // 
             this.tbtnMedia.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -542,6 +555,13 @@ namespace Radegast
             this.tbtnHelp.Name = "tbtnHelp";
             this.tbtnHelp.Size = new System.Drawing.Size(45, 22);
             this.tbtnHelp.Text = "&Help";
+            // 
+            // keyboardShortcutsToolStripMenuItem
+            // 
+            this.keyboardShortcutsToolStripMenuItem.Name = "keyboardShortcutsToolStripMenuItem";
+            this.keyboardShortcutsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.keyboardShortcutsToolStripMenuItem.Text = "Keyboard Shortcuts";
+            this.keyboardShortcutsToolStripMenuItem.Click += new System.EventHandler(this.keyboardShortcutsToolStripMenuItem_Click);
             // 
             // reportBugsToolStripMenuItem
             // 
@@ -725,13 +745,6 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
-            // keyboardShortcutsToolStripMenuItem
-            // 
-            this.keyboardShortcutsToolStripMenuItem.Name = "keyboardShortcutsToolStripMenuItem";
-            this.keyboardShortcutsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
-            this.keyboardShortcutsToolStripMenuItem.Text = "Keyboard Shortcuts";
-            this.keyboardShortcutsToolStripMenuItem.Click += new System.EventHandler(this.keyboardShortcutsToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -828,6 +841,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem reconnectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem keyboardShortcutsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripButton tbtnVoice;
     }
 }
 

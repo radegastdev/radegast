@@ -56,7 +56,7 @@ namespace Radegast
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
-        private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();
+        private Dictionary<uint, bool> bots = new Dictionary<uint, bool>();
         private Radegast.Core.VoiceGateway gateway;
         private Radegast.Core.VoiceSession session;
 
@@ -69,7 +69,7 @@ namespace Radegast
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
 
             gateway = new Radegast.Core.VoiceGateway(this.instance.Client);
@@ -83,8 +83,8 @@ namespace Radegast
 
 
             chkVoiceEnable.Checked = instance.GlobalSettings["Voice.enabled"].AsBoolean();
-//            if (chkVoiceEnable.Checked)
-//                gateway.Start();
+            //            if (chkVoiceEnable.Checked)
+            //                gateway.Start();
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -101,17 +101,17 @@ namespace Radegast
             gateway.MicMute = true;
             gateway.SpkrMute = false;
             gateway.SpkrLevel = 64;
-            gateway.MicLevel = 64;           
+            gateway.MicLevel = 64;
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
         }
 
-#region Connection Status
+        #region Connection Status
         void gateway_OnDaemonRunning()
         {
-            SetProgress( 1 );
+            SetProgress(1);
         }
 
         void SetProgress(int value)
@@ -125,7 +125,7 @@ namespace Radegast
 
             progressBar1.Value = value;
         }
-#endregion
+        #endregion
         #region Sessions
         #endregion
 
@@ -137,24 +137,24 @@ namespace Radegast
 
         void ChatConsole_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             UnregisterClientEvents(client);
         }
 
-       private void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             tabConsole = instance.TabConsole;
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
+        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
         {
             if (e.Status != LoginStatus.Success) return;
         }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-             participants.Items.Clear();
+            participants.Items.Clear();
         }
 
         #region Talk control
@@ -205,7 +205,7 @@ namespace Radegast
         {
 
         }
-#endregion
+        #endregion
 
         private void chkVoiceEnable_Click(object sender, EventArgs e)
         {
