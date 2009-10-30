@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Forms;
 using OpenMetaverse;
 using Radegast;
 using OpenMetaverse.Packets;
@@ -44,7 +45,7 @@ namespace Radegast.Netcom
     public partial class RadegastNetcom : IDisposable
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; }}
+        private GridClient client { get { return instance.Client; } }
         private LoginOptions loginOptions;
 
         private bool loggingIn = false;
@@ -58,6 +59,34 @@ namespace Radegast.Netcom
         // GUI/main thread. Useful if you're modifying GUI controls
         // in the client app when responding to those events.
         private ISynchronizeInvoke netcomSync;
+
+        #region ClientConnected event
+        /// <summary>The event subscribers, null of no subscribers</summary>
+        private EventHandler<EventArgs> m_ClientConnected;
+
+        ///<summary>Raises the ClientConnected Event</summary>
+        /// <param name="e">A ClientConnectedEventArgs object containing
+        /// the old and the new client</param>
+        protected virtual void OnClientConnected(EventArgs e)
+        {
+            EventHandler<EventArgs> handler = m_ClientConnected;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        /// <summary>Thread sync lock object</summary>
+        private readonly object m_ClientConnectedLock = new object();
+
+        /// <summary>Raise event delegate</summary>
+        private delegate void ClientConnectedRaise(EventArgs e);
+
+        /// <summary>Raised when the GridClient object in the main Radegast instance is changed</summary>
+        public event EventHandler<EventArgs> ClientConnected
+        {
+            add { lock (m_ClientConnectedLock) { m_ClientConnected += value; } }
+            remove { lock (m_ClientConnectedLock) { m_ClientConnected -= value; } }
+        }
+        #endregion ClientConnected event
 
         public RadegastNetcom(RadegastInstance instance)
         {
@@ -75,10 +104,9 @@ namespace Radegast.Netcom
             client.Self.MoneyBalance += new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
-            client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
-            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-            client.Network.OnLogin += new NetworkManager.LoginCallback(Network_OnLogin);
-            client.Network.OnLogoutReply += new NetworkManager.LogoutCallback(Network_OnLogoutReply);
+            client.Network.Disconnected += new EventHandler<DisconnectedEventArgs>(Network_Disconnected);
+            client.Network.LoginProgress += new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
+            client.Network.LoggedOut += new EventHandler<LoggedOutEventArgs>(Network_LoggedOut);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -88,10 +116,9 @@ namespace Radegast.Netcom
             client.Self.MoneyBalance -= new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
-            client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
-            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
-            client.Network.OnLogin -= new NetworkManager.LoginCallback(Network_OnLogin);
-            client.Network.OnLogoutReply -= new NetworkManager.LogoutCallback(Network_OnLogoutReply);
+            client.Network.Disconnected -= new EventHandler<DisconnectedEventArgs>(Network_Disconnected);
+            client.Network.LoginProgress -= new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
+            client.Network.LoggedOut -= new EventHandler<LoggedOutEventArgs>(Network_LoggedOut);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -110,30 +137,41 @@ namespace Radegast.Netcom
 
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
-            if (netcomSync != null)
+            if (netcomSync != null && netcomSync.InvokeRequired)
                 netcomSync.BeginInvoke(new OnInstantMessageRaise(OnInstantMessageReceived), new object[] { e });
             else
                 OnInstantMessageReceived(e);
         }
 
-        private void Network_OnLogin(LoginStatus login, string message)
+        void Network_LoginProgress(object sender, LoginProgressEventArgs e)
         {
-            if (login == LoginStatus.Success)
+            if (e.Status == LoginStatus.Success)
+            {
                 loggedIn = true;
+                client.Self.RequestBalance();
+                if (netcomSync != null && netcomSync.InvokeRequired)
+                {
+                    netcomSync.BeginInvoke(new ClientConnectedRaise(OnClientConnected), new object[] { EventArgs.Empty });
+                }
+                else
+                {
+                    OnClientConnected(EventArgs.Empty);
+                }
+            }
 
-            ClientLoginEventArgs ea = new ClientLoginEventArgs(login, message);
+            LoginProgressEventArgs ea = new LoginProgressEventArgs(e.Status, e.Message);
 
-            if (netcomSync != null)
-                netcomSync.BeginInvoke(new OnClientLoginRaise(OnClientLoginStatus), new object[] { ea });
+            if (netcomSync != null && netcomSync.InvokeRequired)
+                netcomSync.BeginInvoke(new OnClientLoginRaise(OnClientLoginStatus), new object[] { e });
             else
-                OnClientLoginStatus(ea);
+                OnClientLoginStatus(e);
         }
 
-        private void Network_OnLogoutReply(List<UUID> inventoryItems)
+        void Network_LoggedOut(object sender, LoggedOutEventArgs e)
         {
             loggedIn = false;
 
-            if (netcomSync != null)
+            if (netcomSync != null && netcomSync.InvokeRequired)
                 netcomSync.BeginInvoke(new OnClientLogoutRaise(OnClientLoggedOut), new object[] { EventArgs.Empty });
             else
                 OnClientLoggedOut(EventArgs.Empty);
@@ -144,41 +182,33 @@ namespace Radegast.Netcom
             if (e.Status == TeleportStatus.Finished || e.Status == TeleportStatus.Failed)
                 teleporting = false;
 
-            if (netcomSync != null)
+            if (netcomSync != null && netcomSync.InvokeRequired)
                 netcomSync.BeginInvoke(new OnTeleportStatusRaise(OnTeleportStatusChanged), new object[] { e });
             else
                 OnTeleportStatusChanged(e);
         }
 
-        private void Network_OnConnected(object sender)
-        {
-            client.Self.RequestBalance();
-        }
-
         private void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
-            if (netcomSync != null)
+            if (netcomSync != null && netcomSync.InvokeRequired)
                 netcomSync.BeginInvoke(new OnChatRaise(OnChatReceived), new object[] { e });
             else
                 OnChatReceived(e);
         }
 
-        private void Network_OnDisconnected(NetworkManager.DisconnectType type, string message)
+        void Network_Disconnected(object sender, DisconnectedEventArgs e)
         {
-            if (!loggedIn) return;
             loggedIn = false;
 
-            ClientDisconnectEventArgs ea = new ClientDisconnectEventArgs(type, message);
-
-            if (netcomSync != null)
-                netcomSync.BeginInvoke(new OnClientDisconnectRaise(OnClientDisconnected), new object[] { ea });
+            if (netcomSync != null && netcomSync.InvokeRequired)
+                netcomSync.BeginInvoke(new OnClientDisconnectRaise(OnClientDisconnected), new object[] { e });
             else
-                OnClientDisconnected(ea);
+                OnClientDisconnected(e);
         }
 
         void Self_MoneyBalance(object sender, BalanceEventArgs e)
         {
-            if (netcomSync != null)
+            if (netcomSync != null && netcomSync.InvokeRequired)
                 netcomSync.BeginInvoke(new OnMoneyBalanceRaise(OnMoneyBalanceUpdated), new object[] { e });
             else
                 OnMoneyBalanceUpdated(e);
@@ -186,7 +216,7 @@ namespace Radegast.Netcom
 
         void Self_AlertMessage(object sender, AlertMessageEventArgs e)
         {
-            if (netcomSync != null)
+            if (netcomSync != null && netcomSync.InvokeRequired)
                 netcomSync.BeginInvoke(new OnAlertMessageRaise(OnAlertMessageReceived), new object[] { e });
             else
                 OnAlertMessageReceived(e);
@@ -210,7 +240,7 @@ namespace Radegast.Netcom
                 string.IsNullOrEmpty(loginOptions.Password))
             {
                 OnClientLoginStatus(
-                    new ClientLoginEventArgs(LoginStatus.Failed, "One or more fields are blank."));
+                    new LoginProgressEventArgs(LoginStatus.Failed, "One or more fields are blank."));
             }
 
             string startLocation = string.Empty;

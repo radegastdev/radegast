@@ -69,8 +69,7 @@ namespace Radegast.Plugin.Voice
             VoiceButton.Checked = instance.GlobalSettings["plugin.voice.enabled"].AsBoolean();
 
             // Watch for login and logout
-            instance.Netcom.ClientLoginStatus +=
-                new EventHandler<Radegast.Netcom.ClientLoginEventArgs>(Netcom_ClientLoginStatus);
+            instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
 
             ToolsMenu.Visible = true;
 
@@ -80,13 +79,10 @@ namespace Radegast.Plugin.Voice
             }
         }
 
-        void Netcom_ClientLoginStatus(object sender, Radegast.Netcom.ClientLoginEventArgs e)
+        void Netcom_ClientConnected(object sender, EventArgs e)
         {
-            if (e.Status == LoginStatus.Success)
-            {
-                if (VoiceButton.Checked)
-                    StartControls();
-            }
+            if (VoiceButton.Checked)
+                StartControls();
         }
 
         /// <summary>
@@ -144,8 +140,7 @@ namespace Radegast.Plugin.Voice
                 {
                     voiceConsole.Hide();
                 }
-                instance.Netcom.ClientLoginStatus -=
-                    new EventHandler<Radegast.Netcom.ClientLoginEventArgs>(Netcom_ClientLoginStatus);
+                instance.Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_ClientConnected);
             }
             catch (Exception e)
             {
@@ -176,7 +171,7 @@ namespace Radegast.Plugin.Voice
             }
 
             // Save this into the config file.
-            instance.GlobalSettings["plugin.voice.enabled"] = 
+            instance.GlobalSettings["plugin.voice.enabled"] =
                 OSD.FromBoolean(VoiceButton.Checked);
         }
     }

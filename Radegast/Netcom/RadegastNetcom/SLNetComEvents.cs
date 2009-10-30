@@ -36,9 +36,9 @@ namespace Radegast.Netcom
     public partial class RadegastNetcom
     {
         // For the NetcomSync stuff
-        private delegate void OnClientLoginRaise(ClientLoginEventArgs e);
+        private delegate void OnClientLoginRaise(LoginProgressEventArgs e);
         private delegate void OnClientLogoutRaise(EventArgs e);
-        private delegate void OnClientDisconnectRaise(ClientDisconnectEventArgs e);
+        private delegate void OnClientDisconnectRaise(DisconnectedEventArgs e);
         private delegate void OnChatRaise(ChatEventArgs e);
         private delegate void OnInstantMessageRaise(InstantMessageEventArgs e);
         private delegate void OnAlertMessageRaise(AlertMessageEventArgs e);
@@ -46,10 +46,10 @@ namespace Radegast.Netcom
         private delegate void OnTeleportStatusRaise(TeleportEventArgs e);
 
         public event EventHandler<OverrideEventArgs> ClientLoggingIn;
-        public event EventHandler<ClientLoginEventArgs> ClientLoginStatus;
+        public event EventHandler<LoginProgressEventArgs> ClientLoginStatus;
         public event EventHandler<OverrideEventArgs> ClientLoggingOut;
         public event EventHandler ClientLoggedOut;
-        public event EventHandler<ClientDisconnectEventArgs> ClientDisconnected;
+        public event EventHandler<DisconnectedEventArgs> ClientDisconnected;
         public event EventHandler<ChatEventArgs> ChatReceived;
         public event EventHandler<ChatSentEventArgs> ChatSent;
         public event EventHandler<InstantMessageEventArgs> InstantMessageReceived;
@@ -64,7 +64,7 @@ namespace Radegast.Netcom
             if (ClientLoggingIn != null) ClientLoggingIn(this, e);
         }
 
-        protected virtual void OnClientLoginStatus(ClientLoginEventArgs e)
+        protected virtual void OnClientLoginStatus(LoginProgressEventArgs e)
         {
             if (ClientLoginStatus != null) ClientLoginStatus(this, e);
         }
@@ -79,7 +79,7 @@ namespace Radegast.Netcom
             if (ClientLoggedOut != null) ClientLoggedOut(this, e);
         }
 
-        protected virtual void OnClientDisconnected(ClientDisconnectEventArgs e)
+        protected virtual void OnClientDisconnected(DisconnectedEventArgs e)
         {
             if (ClientDisconnected != null) ClientDisconnected(this, e);
         }

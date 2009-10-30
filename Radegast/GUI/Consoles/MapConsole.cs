@@ -89,14 +89,14 @@ namespace Radegast
         {
             client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
+            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
             client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
-            client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
+            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -151,15 +151,11 @@ namespace Radegast
 
         #region NetworkEvents
 
-        void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
+        void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Network_OnCurrentSimChanged(PreviousSimulator);
-                    }
-                ));
+                BeginInvoke(new MethodInvoker(() => Network_SimChanged(sender, e)));
                 return;
             }
 
@@ -196,7 +192,7 @@ namespace Radegast
                 case TeleportStatus.Finished:
                     lblStatus.Text = "Teleport complete";
                     InTeleport = false;
-                    Network_OnCurrentSimChanged(null);
+                    Network_SimChanged(null, null);
                     break;
 
                 default:

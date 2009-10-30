@@ -80,7 +80,7 @@ namespace Radegast
             beamTimer.Elapsed += new ElapsedEventHandler(beamTimer_Elapsed);
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             RegisterClientEvents(client);
         }
@@ -105,7 +105,7 @@ namespace Radegast
 
         public void Dispose()
         {
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             UnregisterClientEvents(client);
             beamTimer.Dispose();
@@ -123,7 +123,7 @@ namespace Radegast
             typing = away = busy = walking = false;
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
+        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
         {
             if (e.Status == LoginStatus.Success) {
                 client.Self.Movement.Camera.Far = 256f;

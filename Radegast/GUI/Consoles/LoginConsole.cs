@@ -63,7 +63,7 @@ namespace Radegast
         private void AddNetcomEvents()
         {
             netcom.ClientLoggingIn += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingIn);
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggingOut += new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
         }
@@ -71,7 +71,7 @@ namespace Radegast
         private void RemoveNetcomEvents()
         {
             netcom.ClientLoggingIn -= new EventHandler<OverrideEventArgs>(netcom_ClientLoggingIn);
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggingOut -= new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
         }
@@ -120,7 +120,7 @@ namespace Radegast
             txtCustomLoginUri.Text = s["login_uri"].AsString();
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
+        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
         {
             switch (e.Status)
             {

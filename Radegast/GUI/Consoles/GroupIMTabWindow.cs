@@ -74,8 +74,8 @@ namespace Radegast
             client.Self.ChatSessionMemberAdded += new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
             client.Self.ChatSessionMemberLeft += new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
-            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_Connected);
+            instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -84,8 +84,8 @@ namespace Radegast
             client.Self.ChatSessionMemberAdded -= new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
             client.Self.ChatSessionMemberLeft -= new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
-            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            instance.Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_Connected);
+            instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -101,12 +101,12 @@ namespace Radegast
             CleanUp();
         }
 
-        void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
+        void Netcom_Disconnected(object sender, DisconnectedEventArgs e)
         {
             RefreshControls();
         }
 
-        void Network_OnConnected(object sender)
+        void Netcom_Connected(object sender, EventArgs e)
         {
             client.Self.RequestJoinGroupChat(session);
             RefreshControls();

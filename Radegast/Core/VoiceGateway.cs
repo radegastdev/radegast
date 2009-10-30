@@ -108,8 +108,7 @@ namespace Radegast.Core
 
             connector = new OpenMetaverse.Voice.VoiceGateway();
 
-            Client.Network.OnEventQueueRunning +=
-                new NetworkManager.EventQueueRunningCallback(Network_OnEventQueueRunning);
+            Client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
 
             // Connection events
             connector.OnDaemonRunning +=
@@ -158,8 +157,7 @@ namespace Radegast.Core
 
         internal void Stop()
         {
-            Client.Network.OnEventQueueRunning -=
-                new NetworkManager.EventQueueRunningCallback(Network_OnEventQueueRunning);
+            Client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
 
             if (connector != null)
             {
@@ -265,10 +263,10 @@ namespace Radegast.Core
         /// Request voice cap when changeing regions
         /// </summary>
         /// <param name="simulator"></param>
-        void Network_OnEventQueueRunning(Simulator simulator)
+        void Network_EventQueueRunning(object sender, EventQueueRunningEventArgs e)
         {
             // We only care about the sim we are in.
-            if (simulator != Client.Network.CurrentSim)
+            if (e.Simulator != Client.Network.CurrentSim)
                 return;
 
             // Did we provision voice login info?

@@ -39,6 +39,7 @@ namespace Radegast.Commands
     public class ParcelInfoCommand : RadegastCommand
     {
         private ManualResetEvent ParcelsDownloaded = new ManualResetEvent(false);
+        private RadegastInstance instance;
 
         public ParcelInfoCommand(RadegastInstance instance)
             : base(instance)
@@ -47,13 +48,14 @@ namespace Radegast.Commands
             Description = "Prints out info about all the parcels in this simulator";
             Usage = Name;
 
-            Client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            this.instance = instance;
+            this.instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
         }
 
         public override void Dispose()
         {
             base.Dispose();
-            Client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
         }
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
@@ -94,7 +96,7 @@ namespace Radegast.Commands
             WriteLine("Parcel Infro results:\n{0}", result);
         }
 
-        void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
+        void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
             ParcelsDownloaded.Set();
         }

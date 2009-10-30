@@ -118,12 +118,13 @@ namespace Radegast
             _EditTimer = new System.Threading.Timer(OnLabelEditTimer, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
             // Callbacks
-            Inventory.OnInventoryObjectAdded += new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
-            Inventory.OnInventoryObjectUpdated += new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
-            Inventory.OnInventoryObjectRemoved += new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
+            Inventory.InventoryObjectAdded += new EventHandler<InventoryObjectAddedEventArgs>(Inventory_InventoryObjectAdded);
+            Inventory.InventoryObjectUpdated += new EventHandler<InventoryObjectUpdatedEventArgs>(Inventory_InventoryObjectUpdated);
+            Inventory.InventoryObjectRemoved += new EventHandler<InventoryObjectRemovedEventArgs>(Inventory_InventoryObjectRemoved);
+
             client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-            client.Appearance.OnAppearanceSet += new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
+            client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
         }
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
@@ -139,17 +140,19 @@ namespace Radegast
                     InventoryUpdate.Abort();
                 InventoryUpdate = null;
             }
-            Inventory.OnInventoryObjectAdded -= new Inventory.InventoryObjectAdded(Store_OnInventoryObjectAdded);
-            Inventory.OnInventoryObjectUpdated -= new Inventory.InventoryObjectUpdated(Store_OnInventoryObjectUpdated);
-            Inventory.OnInventoryObjectRemoved -= new Inventory.InventoryObjectRemoved(Store_OnInventoryObjectRemoved);
+
+            Inventory.InventoryObjectAdded -= new EventHandler<InventoryObjectAddedEventArgs>(Inventory_InventoryObjectAdded);
+            Inventory.InventoryObjectUpdated -= new EventHandler<InventoryObjectUpdatedEventArgs>(Inventory_InventoryObjectUpdated);
+            Inventory.InventoryObjectRemoved -= new EventHandler<InventoryObjectRemovedEventArgs>(Inventory_InventoryObjectRemoved);
+
             client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-            client.Appearance.OnAppearanceSet -= new AppearanceManager.AppearanceSetCallback(Appearance_OnAppearanceSet);
+            client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
         }
         #endregion
 
         #region Network callbacks
-        void Appearance_OnAppearanceSet(bool success)
+        void Appearance_AppearanceSet(object sender, AppearanceSetEventArgs e)
         {
             UpdateWornLabels();
             if (appearnceWasBusy)
@@ -176,7 +179,7 @@ namespace Radegast
                 if (attachment != null)
                 {
                     attachments.Remove(attachment.InventoryID);
-                    Store_OnInventoryObjectUpdated(attachment.Item, attachment.Item);
+                    Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(attachment.Item, attachment.Item));
                 }
             }
         }
@@ -217,7 +220,7 @@ namespace Radegast
                             if (oldAttachment.Item != null)
                             {
                                 attachment.MarkedAttached = false;
-                                Store_OnInventoryObjectUpdated(oldAttachment.Item, oldAttachment.Item);
+                                Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(oldAttachment.Item, oldAttachment.Item));
                             }
                         }
 
@@ -249,7 +252,7 @@ namespace Radegast
                                 if (!attachment.MarkedAttached)
                                 {
                                     attachment.MarkedAttached = true;
-                                    Store_OnInventoryObjectUpdated(attachments[attachment.InventoryID].Item, attachments[attachment.InventoryID].Item);
+                                    Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(attachments[attachment.InventoryID].Item, attachments[attachment.InventoryID].Item));
                                 }
                             }
                             else
@@ -263,18 +266,18 @@ namespace Radegast
             }
         }
 
-        void Store_OnInventoryObjectAdded(InventoryBase obj)
+        void Inventory_InventoryObjectAdded(object sender, InventoryObjectAddedEventArgs e)
         {
             if (TreeUpdateInProgress)
             {
                 lock (ItemsToAdd)
                 {
-                    ItemsToAdd.Enqueue(obj);
+                    ItemsToAdd.Enqueue(e.Obj);
                 }
             }
             else
             {
-                Exec_OnInventoryObjectAdded(obj);
+                Exec_OnInventoryObjectAdded(e.Obj);
             }
         }
 
@@ -318,54 +321,50 @@ namespace Radegast
             newItemName = string.Empty;
         }
 
-        void Store_OnInventoryObjectRemoved(InventoryBase obj)
+        void Inventory_InventoryObjectRemoved(object sender, InventoryObjectRemovedEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Store_OnInventoryObjectRemoved(obj);
-                }
-                ));
+                BeginInvoke(new MethodInvoker(() => Inventory_InventoryObjectRemoved(sender, e)));
                 return;
             }
 
             lock (attachments)
             {
-                if (attachments.ContainsKey(obj.UUID))
+                if (attachments.ContainsKey(e.Obj.UUID))
                 {
-                    attachments.Remove(obj.UUID);
+                    attachments.Remove(e.Obj.UUID);
                 }
             }
 
-            TreeNode currentNode = findNodeForItem(obj.UUID);
+            TreeNode currentNode = findNodeForItem(e.Obj.UUID);
             if (currentNode != null)
             {
                 removeNode(currentNode);
             }
         }
 
-        void Store_OnInventoryObjectUpdated(InventoryBase oldObject, InventoryBase newObject)
+        void Inventory_InventoryObjectUpdated(object sender, InventoryObjectUpdatedEventArgs e)
         {
             if (TreeUpdateInProgress)
             {
                 lock (ItemsToUpdate)
                 {
-                    if (newObject is InventoryFolder)
+                    if (e.NewObject is InventoryFolder)
                     {
-                        TreeNode currentNode = findNodeForItem(newObject.UUID);
-                        if (currentNode != null && currentNode.Text == newObject.Name) return;
+                        TreeNode currentNode = findNodeForItem(e.NewObject.UUID);
+                        if (currentNode != null && currentNode.Text == e.NewObject.Name) return;
                     }
 
-                    if (!ItemsToUpdate.Contains(newObject))
+                    if (!ItemsToUpdate.Contains(e.NewObject))
                     {
-                        ItemsToUpdate.Enqueue(newObject);
+                        ItemsToUpdate.Enqueue(e.NewObject);
                     }
                 }
             }
             else
             {
-                Exec_OnInventoryObjectUpdated(oldObject, newObject);
+                Exec_OnInventoryObjectUpdated(e.OldObject, e.NewObject);
             }
         }
 
@@ -373,11 +372,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Store_OnInventoryObjectUpdated(oldObject, newObject);
-                }
-                ));
+                BeginInvoke(new MethodInvoker(() => Exec_OnInventoryObjectUpdated(oldObject, newObject)));
                 return;
             }
 
@@ -596,11 +591,11 @@ namespace Radegast
                 AutoResetEvent gotFolderEvent = new AutoResetEvent(false);
                 bool success = false;
 
-                InventoryManager.FolderUpdatedCallback callback = delegate(UUID folderID)
+                EventHandler<FolderUpdatedEventArgs> callback = delegate(object sender, FolderUpdatedEventArgs ea)
                 {
-                    if (f.UUID == folderID)
+                    if (f.UUID == ea.FolderID)
                     {
-                        if (((InventoryFolder)Inventory.Items[folderID].Data).DescendentCount <= Inventory.Items[folderID].Nodes.Count)
+                        if (((InventoryFolder)Inventory.Items[ea.FolderID].Data).DescendentCount <= Inventory.Items[ea.FolderID].Nodes.Count)
                         {
                             success = true;
                             gotFolderEvent.Set();
@@ -608,10 +603,10 @@ namespace Radegast
                     }
                 };
 
-                client.Inventory.OnFolderUpdated += callback;
+                client.Inventory.FolderUpdated += callback;
                 fetchFolder(f.UUID, f.OwnerID, true);
                 gotFolderEvent.WaitOne(30 * 1000, false);
-                client.Inventory.OnFolderUpdated -= callback;
+                client.Inventory.FolderUpdated -= callback;
 
                 if (!success)
                 {
@@ -654,7 +649,7 @@ namespace Radegast
                         {
                             a.MarkedAttached = true;
                             a.Item = (InventoryItem)Inventory[a.InventoryID];
-                            Store_OnInventoryObjectUpdated(a.Item, a.Item);
+                            Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(a.Item, a.Item));
                         }
                         else
                         {

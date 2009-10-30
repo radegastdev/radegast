@@ -61,27 +61,27 @@ namespace Radegast
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
             
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
 
             this.client.Self.ChatterBoxAcceptInvite(session);
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             CleanUp();
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
+        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
         {
             if (e.Status != LoginStatus.Success) return;
 
             RefreshControls();
         }
 
-        private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
+        private void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
             RefreshControls();
         }

@@ -73,7 +73,7 @@ namespace Radegast
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             RegisterClientEvents(client);
 
@@ -104,7 +104,7 @@ namespace Radegast
 
         void ChatConsole_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             UnregisterClientEvents(client);
             chatManager.Dispose();
@@ -236,7 +236,7 @@ namespace Radegast
             tabConsole = instance.TabConsole;
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
+        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
         {
             if (e.Status != LoginStatus.Success) return;
 

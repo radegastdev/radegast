@@ -130,9 +130,9 @@ namespace Radegast
 
         private void AddNetcomEvents()
         {
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
@@ -141,9 +141,9 @@ namespace Radegast
 
         private void RemoveNetcomEvents()
         {
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
@@ -160,7 +160,7 @@ namespace Radegast
             instance.MainForm.AddNotification(new ntfPermissions(instance, e.Simulator, e.TaskID, e.ItemID, e.ObjectName, e.ObjectOwnerName, e.Questions));
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
+        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
         {
             if (e.Status == LoginStatus.Failed)
             {
@@ -193,9 +193,9 @@ namespace Radegast
 
         }
 
-        private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
+        private void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
+            if (e.Reason == NetworkManager.DisconnectType.ClientInitiated) return;
 
             DisposeOnlineTabs();
 
@@ -439,11 +439,6 @@ namespace Radegast
             tab.AllowDetach = true;
             tab.Visible = false;
 
-            tab = AddTab("voice", "Voice", new VoiceConsole(instance));
-            tab.AllowClose = false;
-            tab.AllowDetach = true;
-            tab.Visible = false;
-
             if (!TabExists("map"))
             {
                 tab = AddTab("map", "Map", new MapConsole(instance));
@@ -452,6 +447,10 @@ namespace Radegast
                 tab.Visible = false;
             }
 
+            //tab = AddTab("voice", "Voice", new VoiceConsole(instance));
+            //tab.AllowClose = false;
+            //tab.AllowDetach = true;
+            //tab.Visible = false;
         }
 
         /// <summary>
@@ -459,6 +458,8 @@ namespace Radegast
         /// </summary>
         private void DisposeOnlineTabs()
         {
+            ForceCloseTab("voice");
+
             // Mono crashes if we try to open map for the second time
             if (!instance.MonoRuntime)
                 ForceCloseTab("map");
@@ -469,7 +470,6 @@ namespace Radegast
             ForceCloseTab("inventory");
             ForceCloseTab("groups");
             ForceCloseTab("friends");
-            ForceCloseTab("voice");
         }
 
         private void ForceCloseTab(string name)

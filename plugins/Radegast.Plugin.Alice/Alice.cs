@@ -106,7 +106,7 @@ namespace Radegast.Plugin.Alice
             Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
             Client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             Client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
-            Client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
+            Instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -114,7 +114,7 @@ namespace Radegast.Plugin.Alice
             Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
             Client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
             Client.Avatars.AvatarPropertiesReply -= new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
-            Client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+            Instance.Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_ClientConnected);
         }
 
         void Instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -123,7 +123,7 @@ namespace Radegast.Plugin.Alice
             RegisterClientEvents(Client);
         }
         
-        void Network_OnConnected(object sender)
+        void Netcom_ClientConnected(object sender, EventArgs e)
         {
             Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
         }

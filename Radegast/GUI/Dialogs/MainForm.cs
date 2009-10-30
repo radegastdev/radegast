@@ -169,9 +169,9 @@ namespace Radegast
                 instance.GlobalSettings["transaction_notification_dialog"] = OSD.FromBoolean(true);
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             RegisterClientEvents(client);
 
             InitializeStatusTimer();
@@ -198,9 +198,9 @@ namespace Radegast
 
         void frmMain_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientLoginStatus -= new EventHandler<ClientLoginEventArgs>(netcom_ClientLoginStatus);
+            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             UnregisterClientEvents(client);
             this.instance.CleanUp();
         }
@@ -263,7 +263,7 @@ namespace Radegast
             ).Start();
         }
 
-        private void netcom_ClientLoginStatus(object sender, ClientLoginEventArgs e)
+        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
         {
             if (e.Status == LoginStatus.Failed)
             {
@@ -302,9 +302,9 @@ namespace Radegast
             RefreshWindowTitle();
         }
 
-        private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
+        private void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            if (e.Type == NetworkManager.DisconnectType.ClientInitiated) return;
+            if (e.Reason == NetworkManager.DisconnectType.ClientInitiated) return;
             netcom_ClientLoggedOut(sender, EventArgs.Empty);
 
             if (instance.GlobalSettings["auto_reconnect"].AsBoolean())

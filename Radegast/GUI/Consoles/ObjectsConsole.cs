@@ -71,11 +71,11 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Network.OnDisconnected += new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
-            client.Network.OnCurrentSimChanged += new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
+            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
@@ -83,11 +83,11 @@ namespace Radegast
         void frmObjects_Disposed(object sender, EventArgs e)
         {
             propRequester.Dispose();
-            client.Network.OnDisconnected -= new NetworkManager.DisconnectedCallback(Network_OnDisconnected);
+            instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
-            client.Network.OnCurrentSimChanged -= new NetworkManager.CurrentSimChangedCallback(Network_OnCurrentSimChanged);
+            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
@@ -124,15 +124,11 @@ namespace Radegast
             lblStatus.Text = sb.ToString();
         }
 
-        void Network_OnCurrentSimChanged(Simulator PreviousSimulator)
+        void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Network_OnCurrentSimChanged(PreviousSimulator);
-                }
-                ));
+                BeginInvoke(new MethodInvoker(() => Network_SimChanged(sender, e)));
                 return;
             }
 
@@ -245,18 +241,8 @@ namespace Radegast
             }
         }
 
-        private void Network_OnDisconnected(NetworkManager.DisconnectType reason, string message)
+        void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Network_OnDisconnected(reason, message);
-                    }
-                ));
-                return;
-            }
-
             if (instance.TabConsole.TabExists("objects"))
             {
                 instance.TabConsole.Tabs["objects"].Close();

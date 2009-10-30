@@ -236,8 +236,8 @@ namespace Radegast
             client.Groups.GroupDropped += new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            client.Network.OnConnected += new NetworkManager.ConnectedCallback(Network_OnConnected);
-        }
+            netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
+       }
 
         private void UnregisterClientEvents(GridClient client)
         {
@@ -246,7 +246,7 @@ namespace Radegast
             client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            client.Network.OnConnected -= new NetworkManager.ConnectedCallback(Network_OnConnected);
+            netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
         }
 
         public void Reconnect()
@@ -427,7 +427,7 @@ namespace Radegast
             }
         }
 
-        void Network_OnConnected(object sender)
+        void netcom_ClientConnected(object sender, EventArgs e)
         {
             try
             {

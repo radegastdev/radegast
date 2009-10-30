@@ -135,8 +135,7 @@ namespace Radegast.Plugin.Voice
 
             connector = new VoiceGateway();
 
-            control.instance.Client.Network.OnEventQueueRunning +=
-                new NetworkManager.EventQueueRunningCallback(Network_OnEventQueueRunning);
+            control.instance.Client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
 
             // Connection events
             connector.OnDaemonRunning +=
@@ -197,8 +196,7 @@ namespace Radegast.Plugin.Voice
 
         internal void Stop()
         {
-            control.instance.Client.Network.OnEventQueueRunning -=
-                new NetworkManager.EventQueueRunningCallback(Network_OnEventQueueRunning);
+            control.instance.Client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
 
             if (connector != null)
             {
@@ -308,10 +306,10 @@ namespace Radegast.Plugin.Voice
         /// Request voice cap when changeing regions
         /// </summary>
         /// <param name="simulator"></param>
-        void Network_OnEventQueueRunning(Simulator simulator)
+        void Network_EventQueueRunning(object sender, EventQueueRunningEventArgs e)
         {
             // We only care about the sim we are in.
-            if (simulator != control.instance.Client.Network.CurrentSim)
+            if (e.Simulator != control.instance.Client.Network.CurrentSim)
                 return;
 
             // Did we provision voice login info?

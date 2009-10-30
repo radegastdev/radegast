@@ -54,7 +54,7 @@ namespace Radegast
             client = this.instance.Client;
 
             // Callbacks
-            netcom.ClientDisconnected += new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
 
@@ -63,7 +63,7 @@ namespace Radegast
 
         void frmTeleport_Disposed(object sender, EventArgs e)
         {
-            netcom.ClientDisconnected -= new EventHandler<ClientDisconnectEventArgs>(netcom_ClientDisconnected);
+            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
         }
@@ -153,7 +153,7 @@ namespace Radegast
             }
         }
 
-        private void netcom_ClientDisconnected(object sender, ClientDisconnectEventArgs e)
+        private void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
             this.Close();
         }
