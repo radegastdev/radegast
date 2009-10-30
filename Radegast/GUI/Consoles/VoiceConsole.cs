@@ -72,16 +72,28 @@ namespace Radegast
 
             gateway = new VoiceGateway(this.instance.Client);
 
+            this.instance.MainForm.Load += new EventHandler(MainForm_Load);
+
+            chkVoiceEnable.Checked = instance.GlobalSettings["Voice.enabled"].AsBoolean();
+            if (chkVoiceEnable.Checked)
+                Start();
+        }
+
+        private void Start()
+        {
             // Initialize progress bar
             progressBar1.Maximum = (int)VoiceGateway.ConnectionState.SessionRunning;
             SetProgress(0);
             RegisterClientEvents();
 
-            this.instance.MainForm.Load += new EventHandler(MainForm_Load);
+            gateway.Start();
+        }
 
-            chkVoiceEnable.Checked = instance.GlobalSettings["Voice.enabled"].AsBoolean();
-            if (chkVoiceEnable.Checked)
-                gateway.Start();
+        private void Stop()
+        {
+            participants.Items.Clear();
+            SetProgress(VoiceGateway.ConnectionState.None);
+            gateway.Stop();
         }
 
         private void RegisterClientEvents()
@@ -92,8 +104,6 @@ namespace Radegast
                 new EventHandler(gateway_OnSessionRemove);
             gateway.OnVoiceConnectionChange +=
                 new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
-            gateway.OnVoiceDevicesAvailable +=
-                new VoiceGateway.VoiceDevicesAvailableEvent(gateway_OnVoiceDevicesAvailable);
 
             KeyDown += new KeyEventHandler(VoiceConsole_KeyDown);
             KeyUp += new KeyEventHandler(VoiceConsole_KeyUp);
@@ -109,8 +119,6 @@ namespace Radegast
                 new EventHandler(gateway_OnSessionRemove);
             gateway.OnVoiceConnectionChange -=
                 new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
-            gateway.OnVoiceDevicesAvailable -=
-                new VoiceGateway.VoiceDevicesAvailableEvent(gateway_OnVoiceDevicesAvailable);
 
             MouseDown -= new MouseEventHandler(OnMouseDown);
             MouseUp -= new MouseEventHandler(OnMouseUp);
@@ -126,6 +134,12 @@ namespace Radegast
         {
             BeginInvoke(new MethodInvoker(delegate()
             {
+                if (state == VoiceGateway.ConnectionState.AccountLogin)
+                {
+                    LoadMicDevices( gateway.CaptureDevices );
+                    LoadSpkrDevices( gateway.PlaybackDevices );
+                }
+
                 SetProgress(state);
             }));
         }
@@ -335,15 +349,6 @@ namespace Radegast
 
         #region Audio Settings
  
-        void gateway_OnVoiceDevicesAvailable(List<string> capture, List<string> playback)
-        {
-            this.BeginInvoke(new MethodInvoker(delegate()
-            {
-                LoadMicDevices(capture);
-                LoadSpkrDevices(playback);
-            }));
-        }
-
         void LoadMicDevices(List<string> available)
         {
             foreach (string name in available)
@@ -360,16 +365,16 @@ namespace Radegast
 
         private void spkrDevice_SelectedIndexChanged(object sender, EventArgs e)
         {
-            gateway.PlaybackDevice = (string)spkrDevice.SelectedValue;
+            gateway.PlaybackDevice = (string)spkrDevice.SelectedItem;
             instance.GlobalSettings["Voice.playback.device"] =
-                OpenMetaverse.StructuredData.OSD.FromString((string)spkrDevice.SelectedValue);
+                OpenMetaverse.StructuredData.OSD.FromString((string)spkrDevice.SelectedItem);
         }
 
         private void micDevice_SelectedIndexChanged(object sender, EventArgs e)
         {
-            gateway.CaptureDevice = (string)micDevice.SelectedValue;
+            gateway.CaptureDevice = (string)micDevice.SelectedItem;
             instance.GlobalSettings["Voice.capture.device"] =
-               OpenMetaverse.StructuredData.OSD.FromString((string)micDevice.SelectedValue);
+               OpenMetaverse.StructuredData.OSD.FromString((string)micDevice.SelectedItem);
         }
 
         private void micLevel_ValueChanged(object sender, EventArgs e)
@@ -395,11 +400,11 @@ namespace Radegast
 
                 if (chkVoiceEnable.Checked)
                 {
-                    gateway.Start();
+                    Start();
                 }
                 else
                 {
-                    gateway.Stop();
+                    Stop();
                 }
             }));
         }

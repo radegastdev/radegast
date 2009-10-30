@@ -85,8 +85,6 @@ namespace Radegast.Core
         public event VoiceConnectionChangeCallback OnVoiceConnectionChange;
         public delegate void VoiceMicTestCallback(float level);
         public event VoiceMicTestCallback OnVoiceMicTest;
-        public delegate void VoiceDevicesAvailableEvent(List<string> capture, List<string> playback);
-        public event VoiceDevicesAvailableEvent OnVoiceDevicesAvailable;
 
         internal VoiceGateway( GridClient c )
         {
@@ -249,6 +247,8 @@ namespace Radegast.Core
 
             if (connector != null)
             {
+                connector.SessionTerminate( sessionHandle );
+                connector.AccountLogout( accountHandle );
                 connector.ConnectorInitiateShutdown(connectionHandle);
                 connector.StopDaemon();
             }
@@ -771,8 +771,6 @@ namespace Radegast.Core
            OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
             outputDevices = RenderDevices;
-            if (inputDevices != null && OnVoiceDevicesAvailable != null)
-                OnVoiceDevicesAvailable(inputDevices, outputDevices);
         }
 
         /// <summary>
@@ -791,8 +789,6 @@ namespace Radegast.Core
             OpenMetaverse.Voice.VoiceGateway.VoiceRequest Request)
         {
             inputDevices = CaptureDevices;
-            if (outputDevices != null && OnVoiceDevicesAvailable != null)
-                OnVoiceDevicesAvailable(inputDevices, outputDevices);
         }
 
         public string CaptureDevice
