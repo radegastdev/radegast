@@ -82,7 +82,7 @@ namespace Radegast
             client.Avatars.AvatarPicksReply += new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
             client.Avatars.PickInfoReply += new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
 
             InitializeProfile();
         }
@@ -93,7 +93,7 @@ namespace Radegast
             client.Avatars.AvatarPicksReply -= new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
             client.Avatars.PickInfoReply -= new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
         }
 
         void Avatars_AvatarPicksReply(object sender, AvatarPicksReplyEventArgs e)
@@ -234,7 +234,7 @@ namespace Radegast
             );
         }
 
-        private void netcom_ClientLoggedOut(object sender, EventArgs e)
+        void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
             Close();
         }

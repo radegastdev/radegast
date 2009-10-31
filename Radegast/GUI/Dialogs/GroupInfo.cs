@@ -36,6 +36,8 @@ namespace Radegast
 {
     public partial class frmGroupInfo : RadegastForm
     {
+        private RadegastInstance instance;
+
         public Group Group { get; set; }
         public GroupDetails GroupDetails { get; set; }
 
@@ -46,6 +48,7 @@ namespace Radegast
             Disposed += new System.EventHandler(frmGroupInfo_Disposed);
             AutoSavePosition = true;
 
+            this.instance = instance;
             this.Group = group;
 
             GroupDetails = new GroupDetails(instance, group);
@@ -54,11 +57,18 @@ namespace Radegast
             MinimumSize = Size;
             Controls.Add(GroupDetails);
             Text = group.Name + " - Group information";
+            instance.Netcom.ClientDisconnected += new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
         }
 
         void frmGroupInfo_Disposed(object sender, System.EventArgs e)
         {
             GroupDetails.Dispose();
+            instance.Netcom.ClientDisconnected -= new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+        }
+
+        void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
+        {
+            Close();
         }
     }
 }
