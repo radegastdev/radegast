@@ -171,7 +171,7 @@ namespace Radegast
         public void Highlight()
         {
             if (selected) return;
-            FormFlash.StartFlash(instance.MainForm);
+            FormFlash.StartFlash(control.FindForm());
 
             if (!detached)
             {
