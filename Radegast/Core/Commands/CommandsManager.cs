@@ -62,7 +62,8 @@ namespace Radegast.Commands
                    });
             _commandWorker = new Thread(CommandsManager_CommandWorker)
                                 {
-                                    Name = "CommandsManager Worker"
+                                    Name = "CommandsManager Worker",
+                                    IsBackground = true
                                 };
             _commandWorker.Start();
         }
