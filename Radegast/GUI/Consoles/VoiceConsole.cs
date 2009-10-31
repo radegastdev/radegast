@@ -68,7 +68,6 @@ namespace Radegast
 
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
 
             gateway = new VoiceGateway(this.instance.Client);
 
@@ -276,7 +275,6 @@ namespace Radegast
         {
 
             netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             UnregisterClientEvents();
             gateway.Stop();
         }
@@ -297,15 +295,6 @@ namespace Radegast
             }));
 
         }
-
-        private void netcom_ClientLoggedOut(object sender, EventArgs e)
-        {
-            BeginInvoke(new MethodInvoker(delegate()
-            {
-                participants.Items.Clear();
-                gateway.Stop();
-            }));
-       }
 
         #region Talk control
         void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)

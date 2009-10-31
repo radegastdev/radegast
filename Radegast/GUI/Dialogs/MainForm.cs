@@ -198,6 +198,7 @@ namespace Radegast
 
         void frmMain_Disposed(object sender, EventArgs e)
         {
+            netcom.NetcomSync = null;
             netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
