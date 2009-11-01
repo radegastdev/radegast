@@ -63,6 +63,8 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VoiceConsole));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button1 = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.spkrMute = new System.Windows.Forms.CheckBox();
             this.micMute = new System.Windows.Forms.CheckBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
@@ -86,10 +88,10 @@ namespace Radegast
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.TalkStates = new System.Windows.Forms.ImageList(this.components);
-            this.label1 = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.micLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.spkrLevel)).BeginInit();
@@ -104,7 +106,8 @@ namespace Radegast
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.label1);
+            this.splitContainer1.Panel1.Controls.Add(this.button1);
+            this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             this.splitContainer1.Panel1.Controls.Add(this.spkrMute);
             this.splitContainer1.Panel1.Controls.Add(this.micMute);
             this.splitContainer1.Panel1.Controls.Add(this.pictureBox2);
@@ -115,6 +118,8 @@ namespace Radegast
             this.splitContainer1.Panel1.Controls.Add(this.spkrDevice);
             this.splitContainer1.Panel1.Controls.Add(this.micDevice);
             this.splitContainer1.Panel1.Controls.Add(this.chkVoiceEnable);
+            this.splitContainer1.Panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+            this.splitContainer1.Panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
             // 
             // splitContainer1.Panel2
             // 
@@ -124,10 +129,30 @@ namespace Radegast
             this.splitContainer1.TabIndex = 7;
             this.splitContainer1.TabStop = false;
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.button1.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(92, 228);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(293, 97);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "PTT";
+            this.button1.UseVisualStyleBackColor = false;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::Radegast.Properties.Resources.mic;
+            this.pictureBox1.Location = new System.Drawing.Point(22, 67);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(32, 32);
+            this.pictureBox1.TabIndex = 23;
+            this.pictureBox1.TabStop = false;
+            // 
             // spkrMute
             // 
             this.spkrMute.AutoSize = true;
-            this.spkrMute.Location = new System.Drawing.Point(92, 114);
+            this.spkrMute.Location = new System.Drawing.Point(92, 112);
             this.spkrMute.Name = "spkrMute";
             this.spkrMute.Size = new System.Drawing.Size(50, 17);
             this.spkrMute.TabIndex = 21;
@@ -151,7 +176,7 @@ namespace Radegast
             // 
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.InitialImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.InitialImage")));
-            this.pictureBox2.Location = new System.Drawing.Point(28, 112);
+            this.pictureBox2.Location = new System.Drawing.Point(22, 114);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(31, 29);
             this.pictureBox2.TabIndex = 19;
@@ -320,15 +345,6 @@ namespace Radegast
             this.TalkStates.Images.SetKeyName(1, "Talking.png");
             this.TalkStates.Images.SetKeyName(2, "TalkMute.png");
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(170, 241);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(134, 13);
-            this.label1.TabIndex = 22;
-            this.label1.Text = "Middle Mouse here for PTT";
-            // 
             // VoiceConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -341,6 +357,7 @@ namespace Radegast
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.micLevel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.spkrLevel)).EndInit();
@@ -375,6 +392,7 @@ namespace Radegast
         private PictureBox pictureBox2;
         private CheckBox micMute;
         private CheckBox spkrMute;
-        private Label label1;
+        private PictureBox pictureBox1;
+        private Button button1;
     }
 }

@@ -124,6 +124,9 @@
   <data name="inv_item_socks" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_socks.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="RadegastAuthor" xml:space="preserve">
+    <value>Radegast Development Team</value>
+  </data>
   <data name="inv_item_landmark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_landmark.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -163,6 +166,15 @@
   <data name="inv_item_skin" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_skin.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="radegast_large" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/radegast_large.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="inv_folder_sound" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_sound.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="inv_folder_snapshot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_snapshot.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="folder_open_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/folder-open_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -190,9 +202,6 @@
   <data name="inv_item_undershirt" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_undershirt.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="add_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/add_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="inv_item_pants" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_pants.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -202,8 +211,8 @@
   <data name="radegast_main_screen2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/radegast-main screen2.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="inv_folder_clothing" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/inv_folder_clothing.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="checkerboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/checkerboard.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GreenOrb_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/GreenOrb_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -222,9 +231,6 @@
   </data>
   <data name="inv_item_snapshot" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_snapshot.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="status_no_build" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/status_no_build.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="inv_folder_script" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_folder_script.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -250,11 +256,11 @@
   <data name="folder_closed_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/folder-closed_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="RadegastAuthor" xml:space="preserve">
-    <value>Radegast Development Team</value>
+  <data name="inv_folder_clothing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_clothing.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="status_no_scripts" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/status_no_scripts.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="add_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/add_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="inv_item_hair" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_hair.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -262,8 +268,8 @@
   <data name="computer_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/computer_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="inv_folder_sound" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/inv_folder_sound.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="status_no_build" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/status_no_build.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="applications_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/applications_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -283,11 +289,14 @@
   <data name="inv_item_notecard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_notecard.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="client_signatures" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/client_signatures.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="UpdateCheckUri" xml:space="preserve">
+    <value>http://update.radegastclient.org/svc/get_latest</value>
+  </data>
   <data name="delete_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/delete_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="checkerboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/checkerboard.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="inv_item_script_dangerous" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_script_dangerous.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -301,8 +310,8 @@
   <data name="arrow_forward_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/arrow-forward_16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="btn_play" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/btn_play.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="status_no_scripts" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/status_no_scripts.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ProgramName" xml:space="preserve">
     <value>Radegast</value>
@@ -310,8 +319,8 @@
   <data name="inv_item_shape" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_shape.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="inv_folder_snapshot" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/inv_folder_snapshot.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="btn_play" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/btn_play.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="inv_item_shoes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_shoes.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -361,13 +370,7 @@
   <data name="inv_folder_bodypart" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_folder_bodypart.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="radegast_large" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/radegast_large.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="UpdateCheckUri" xml:space="preserve">
-    <value>http://update.radegastclient.org/svc/get_latest</value>
-  </data>
-  <data name="client_signatures" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>../Resources/client_signatures.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="mic" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\mic.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

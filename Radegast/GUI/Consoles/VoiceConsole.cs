@@ -109,6 +109,8 @@ namespace Radegast
             // GUI hooks
             MouseDown += new MouseEventHandler(OnMouseDown);
             MouseUp += new MouseEventHandler(OnMouseUp);
+            instance.MainForm.MouseDown += new MouseEventHandler(OnMouseDown);
+            instance.MainForm.MouseUp += new MouseEventHandler(OnMouseUp);
         }
 
         private void UnregisterClientEvents()
@@ -296,20 +298,27 @@ namespace Radegast
         #region Talk control
         void OnMouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Middle)
+            this.BeginInvoke(new MethodInvoker(delegate()
             {
-                micMute.Checked = false;
-                gateway.MicMute = true;
-            }
+                if (e.Button == MouseButtons.Middle)
+                {
+                    micMute.Checked = true;
+                    gateway.MicMute = true;
+                }
+            }));
         }
 
         void OnMouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Middle)
+            this.BeginInvoke(new MethodInvoker(delegate()
             {
-                micMute.Checked = false;
-                gateway.MicMute = false;
-            }
+
+                if (e.Button == MouseButtons.Middle)
+                {
+                    micMute.Checked = false;
+                    gateway.MicMute = false;
+                }
+            }));
         }
         #endregion
 
@@ -379,6 +388,7 @@ namespace Radegast
        {
            gateway.MicMute = micMute.Checked;
        }
+
 
     }
 }
