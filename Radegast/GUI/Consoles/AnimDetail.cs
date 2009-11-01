@@ -45,6 +45,7 @@ namespace Radegast
         private int n;
         private List<FriendInfo> friends;
         private FriendInfo friend;
+        private byte[] animData;
 
         public AnimDetail(RadegastInstance instance, Avatar av, UUID anim, int n)
         {
@@ -62,9 +63,10 @@ namespace Radegast
 
         private void AnimDetail_Load(object sender, EventArgs e)
         {
-            if (File.Exists(instance.AnimCacheDir + "/" + anim + ".fail"))
+            if (Animations.ToDictionary().ContainsKey(anim))
             {
                 Visible = false;
+                Dispose();
                 return;
             }
 
@@ -80,13 +82,6 @@ namespace Radegast
             {
                 cbFriends.Items.Add(f);
             }
-
-            if (File.Exists(instance.AnimCacheDir + "/" + anim + ".sla"))
-            {
-                pnlSave.Visible = true;
-                return;
-            }
-
 
             instance.Client.Assets.RequestAsset(anim, AssetType.Animation, true, Assets_OnAssetReceived);
         }
@@ -105,8 +100,7 @@ namespace Radegast
             {
                 try
                 {
-                    byte[] data = File.ReadAllBytes(instance.AnimCacheDir + "/" + anim + ".sla");
-                    File.WriteAllBytes(dlg.FileName, data);
+                    File.WriteAllBytes(dlg.FileName, animData);
                 }
                 catch (Exception ex)
                 {
@@ -119,25 +113,21 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(delegate()
-                {
-                    Assets_OnAssetReceived(transfer, asset);
-                }));
+                Invoke(new MethodInvoker(() => Assets_OnAssetReceived(transfer, asset)));
                 return;
             }
 
             if (transfer.Success)
             {
                 Logger.Log("Animation " + anim + " download success " + asset.AssetData.Length + " bytes.", Helpers.LogLevel.Debug);
-                File.WriteAllBytes(instance.AnimCacheDir + "/" + anim + ".sla", asset.AssetData);
                 pnlSave.Visible = true;
+                animData = asset.AssetData;
             }
             else
             {
                 Logger.Log("Animation " + anim + " download failed.", Helpers.LogLevel.Debug);
-                FileStream f = File.Create(instance.AnimCacheDir + "/" + anim + ".fail");
-                f.Close();
                 Visible = false;
+                Dispose();
             }
         }
 
@@ -155,8 +145,9 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            byte[] data = File.ReadAllBytes(instance.AnimCacheDir + "/" + anim + ".sla");
-            instance.Client.Inventory.RequestCreateItemFromAsset(data, boxAnimName.Text, "(No description)", AssetType.Animation, InventoryType.Animation, instance.Client.Inventory.FindFolderForType(AssetType.Animation), On_ItemCreated);
+            if (animData == null) return;
+
+            instance.Client.Inventory.RequestCreateItemFromAsset(animData, boxAnimName.Text, "(No description)", AssetType.Animation, InventoryType.Animation, instance.Client.Inventory.FindFolderForType(AssetType.Animation), On_ItemCreated);
             lblStatus.Text = "Uploading...";
             cbFriends.Enabled = false;
         }

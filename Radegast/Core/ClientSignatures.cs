@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009, Radegast Development Team
 // All rights reserved.
@@ -26,59 +26,51 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id$
+// $Id: IMTextManager.cs 361 2009-10-24 15:04:57Z latifer $
 //
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Reflection;
+using OpenMetaverse;
+using OpenMetaverse.StructuredData;
+
 namespace Radegast
 {
-    partial class AnimTab
+    public class ClientSignatures
     {
-        /// <summary> 
-        /// Required designer variable.
-        /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        public static Dictionary<UUID, string> Signatures { get; private set; }
 
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        static ClientSignatures()
         {
-            if (disposing && (components != null)) {
-                components.Dispose();
-            }
-            
-            if (disposing)
+            Signatures = new Dictionary<UUID, string>();
+
+            try
             {
-                foreach (System.Windows.Forms.Control c in Controls)
+                OSDMap clients = (OSDMap)OSDParser.DeserializeLLSDXml(Properties.Resources.client_signatures);
+
+                foreach (KeyValuePair<string, OSD> kvp in clients)
                 {
-                    if (!c.IsDisposed)
-                        c.Dispose();
+                    UUID sig;
+                    
+                    if (UUID.TryParse(kvp.Key, out sig))
+                    {
+                        if (kvp.Value.Type == OSDType.Map)
+                        {
+                            OSDMap client = (OSDMap)kvp.Value;
+                            if (client.ContainsKey("name"))
+                            {
+                                Signatures.Add(sig, client["name"].AsString());
+                            }
+                        }
+                    }
                 }
             }
-            base.Dispose(disposing);
+            catch 
+            {
+                Logger.Log("Failed to parse client signatures.", Helpers.LogLevel.Warning);
+            }
         }
-
-        #region Component Designer generated code
-
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // AnimTab
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoScroll = true;
-            this.Name = "AnimTab";
-            this.Load += new System.EventHandler(this.AnimTab_Load);
-            this.ResumeLayout(false);
-
-        }
-
-        #endregion
     }
 }

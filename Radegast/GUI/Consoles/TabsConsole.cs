@@ -176,7 +176,7 @@ namespace Radegast
                 if (tabs.ContainsKey("login"))
                 {
                     if (selectedTab.Name == "login")
-                        tabs["chat"].Select();
+                        SelectDefaultTab();
                     ForceCloseTab("login");
                 }
 
@@ -188,7 +188,7 @@ namespace Radegast
         {
             DisposeOnlineTabs();
 
-            tabs["chat"].Select();
+            SelectDefaultTab();
             DisplayNotificationInChat("Logged out.");
 
         }
@@ -198,8 +198,7 @@ namespace Radegast
             if (e.Reason == NetworkManager.DisconnectType.ClientInitiated) return;
 
             DisposeOnlineTabs();
-
-            tabs["chat"].Select();
+            SelectDefaultTab();
             DisplayNotificationInChat("Disconnected: " + e.Message, ChatBufferTextStyle.Error);
         }
 
@@ -307,6 +306,14 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Make default tab (chat) active
+        /// </summary>
+        public void SelectDefaultTab()
+        {
+            if (TabExists("chat"))
+                tabs["chat"].Select();
+        }
         /// <summary>
         /// Displays notification in the main chat tab
         /// </summary>
@@ -458,18 +465,21 @@ namespace Radegast
         /// </summary>
         private void DisposeOnlineTabs()
         {
-            ForceCloseTab("voice");
+            lock (tabs)
+            {
+                ForceCloseTab("voice");
 
-            // Mono crashes if we try to open map for the second time
-            if (!instance.MonoRuntime)
-                ForceCloseTab("map");
-            else
-                tabs["map"].Hide();
+                // Mono crashes if we try to open map for the second time
+                if (!instance.MonoRuntime)
+                    ForceCloseTab("map");
+                else if (TabExists("map"))
+                    tabs["map"].Hide();
 
-            ForceCloseTab("search");
-            ForceCloseTab("inventory");
-            ForceCloseTab("groups");
-            ForceCloseTab("friends");
+                ForceCloseTab("search");
+                ForceCloseTab("inventory");
+                ForceCloseTab("groups");
+                ForceCloseTab("friends");
+            }
         }
 
         private void ForceCloseTab(string name)
@@ -594,7 +604,7 @@ namespace Radegast
             if (selectedTab != null && selectedTab == tab)
             {
                 tab.Deselect();
-                tabs["chat"].Select();
+                SelectDefaultTab();
             }
         }
 
@@ -602,10 +612,10 @@ namespace Radegast
         {
             RadegastTab tab = (RadegastTab)sender;
 
-            if (selectedTab != null && selectedTab == tab)
+            if (selectedTab != null && selectedTab == tab && tab.Name != "chat")
             {
                 tab.Deselect();
-                tabs["chat"].Select();
+                SelectDefaultTab();
             }
 
             tabs.Remove(tab.Name);
@@ -903,7 +913,7 @@ namespace Radegast
         {
             if (!selectedTab.AllowDetach) return;
             RadegastTab tab = selectedTab;
-            tabs["chat"].Select();
+            SelectDefaultTab();
             tab.Detach(instance);
         }
 

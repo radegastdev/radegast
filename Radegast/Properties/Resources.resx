@@ -367,4 +367,7 @@
   <data name="UpdateCheckUri" xml:space="preserve">
     <value>http://update.radegastclient.org/svc/get_latest</value>
   </data>
+  <data name="client_signatures" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/client_signatures.txt;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

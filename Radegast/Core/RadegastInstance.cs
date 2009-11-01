@@ -90,9 +90,6 @@ namespace Radegast
 
         public string InventoryCacheFileName { get { return Path.Combine(ClientDir, "inventory.cache"); } }
 
-        private string animCacheDir;
-        public string AnimCacheDir { get { return animCacheDir; } }
-
         private string globalLogFile;
         public string GlobalLogFile { get { return globalLogFile; } }
 
@@ -560,7 +557,6 @@ namespace Radegast
                 userDir = System.Environment.CurrentDirectory;
             };
 
-            animCacheDir = Path.Combine(userDir, @"anim_cache");
             globalLogFile = Path.Combine(userDir, Properties.Resources.ProgramName + ".log");
             globalSettings = new Settings(Path.Combine(userDir, "settings.xml"));
         }

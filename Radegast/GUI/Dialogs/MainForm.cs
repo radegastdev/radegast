@@ -42,6 +42,7 @@ using System.Web;
 using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using OpenMetaverse.Assets;
 
 namespace Radegast
 {
@@ -234,6 +235,8 @@ namespace Radegast
 
         private void DisplayAutoReconnectForm()
         {
+            if (IsDisposed) return;
+
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(DisplayAutoReconnectForm));
@@ -259,7 +262,7 @@ namespace Radegast
                 ))
                 {
                     Name = "Reconnect Delay Thread",
-                    IsBackground = false
+                    IsBackground = true
                 }
             ).Start();
         }
@@ -898,18 +901,6 @@ namespace Radegast
         private void cleanCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
             client.Assets.Cache.Clear();
-            DirectoryInfo di = new DirectoryInfo(instance.AnimCacheDir);
-            FileInfo[] files = di.GetFiles();
-
-            int num = 0;
-            foreach (FileInfo file in files)
-            {
-                file.Delete();
-                ++num;
-            }
-
-            Logger.Log("Wiped out " + num + " files from the anim cache directory.", Helpers.LogLevel.Debug);
-
         }
 
         private void rebakeTexturesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1265,6 +1256,20 @@ namespace Radegast
                 }
             }
         }
+
+        // Menu item for testing out stuff
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (KeyValuePair<UUID, string> kvp in Sounds.ToDictionary())
+            {
+                client.Assets.RequestAsset(kvp.Key, AssetType.Sound, true, (AssetDownload transfer, Asset asset) =>
+                    {
+                        System.Console.WriteLine("Sound '{0}' download success: {1}", transfer.AssetID, transfer.Success);
+                    }
+                );
+            }
+        }
+
         #endregion
     }
 }

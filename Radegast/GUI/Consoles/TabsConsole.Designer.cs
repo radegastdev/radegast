@@ -47,6 +47,21 @@ namespace Radegast
             {
                 components.Dispose();
             }
+
+            if (disposing)
+            {
+                lock (tabs)
+                {
+                    System.Collections.Generic.List<string> tabNames = new System.Collections.Generic.List<string>(tabs.Keys);
+                    for (int i = 0; i < tabNames.Count; i++)
+                    {
+                        if (tabNames[i] != "chat")
+                            ForceCloseTab(tabNames[i]);
+                    }
+                    ForceCloseTab("chat");
+                }
+            }
+
             base.Dispose(disposing);
         }
 

@@ -83,6 +83,7 @@ namespace Radegast
             this.tmnuPrefs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnWorld = new System.Windows.Forms.ToolStripDropDownButton();
             this.tmnuControlFly = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuControlAlwaysRun = new System.Windows.Forms.ToolStripMenuItem();
@@ -112,8 +113,8 @@ namespace Radegast
             this.tbtnMap = new System.Windows.Forms.ToolStripButton();
             this.tbnObjects = new System.Windows.Forms.ToolStripButton();
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
-            this.tbtnVoice = new System.Windows.Forms.ToolStripButton();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
+            this.tbtnVoice = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -182,7 +183,8 @@ namespace Radegast
             this.reconnectToolStripMenuItem,
             this.tmnuPrefs,
             this.toolStripMenuItem2,
-            this.tmnuExit});
+            this.tmnuExit,
+            this.testToolStripMenuItem});
             this.tbtnSLeek.Image = global::Radegast.Properties.Resources.computer_16;
             this.tbtnSLeek.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnSLeek.Name = "tbtnSLeek";
@@ -250,6 +252,14 @@ namespace Radegast
             this.tmnuExit.Size = new System.Drawing.Size(155, 22);
             this.tmnuExit.Text = "E&xit";
             this.tmnuExit.Click += new System.EventHandler(this.tmnuExit_Click);
+            // 
+            // testToolStripMenuItem
+            // 
+            this.testToolStripMenuItem.Name = "testToolStripMenuItem";
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.testToolStripMenuItem.Text = "Test";
+            this.testToolStripMenuItem.Visible = false;
+            this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
             // 
             // tbtnWorld
             // 
@@ -513,17 +523,6 @@ namespace Radegast
             this.lblTime.Size = new System.Drawing.Size(30, 22);
             this.lblTime.Text = "--:--";
             // 
-            // tbtnVoice
-            // 
-            this.tbtnVoice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnVoice.Enabled = false;
-            this.tbtnVoice.Image = ((System.Drawing.Image)(resources.GetObject("tbtnVoice.Image")));
-            this.tbtnVoice.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnVoice.Name = "tbtnVoice";
-            this.tbtnVoice.Size = new System.Drawing.Size(40, 22);
-            this.tbtnVoice.Text = "Voice";
-            this.tbtnVoice.Click += new System.EventHandler(this.tbtnVoice_Click);
-            // 
             // tbtnMedia
             // 
             this.tbtnMedia.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -535,6 +534,17 @@ namespace Radegast
             this.tbtnMedia.ToolTipText = "Media (Alt-8)";
             this.tbtnMedia.Visible = false;
             this.tbtnMedia.Click += new System.EventHandler(this.tbtnMedia_Click);
+            // 
+            // tbtnVoice
+            // 
+            this.tbtnVoice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnVoice.Enabled = false;
+            this.tbtnVoice.Image = ((System.Drawing.Image)(resources.GetObject("tbtnVoice.Image")));
+            this.tbtnVoice.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnVoice.Name = "tbtnVoice";
+            this.tbtnVoice.Size = new System.Drawing.Size(40, 22);
+            this.tbtnVoice.Text = "Voice";
+            this.tbtnVoice.Click += new System.EventHandler(this.tbtnVoice_Click);
             // 
             // toolStripSeparator2
             // 
@@ -842,6 +852,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem reconnectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem keyboardShortcutsToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tbtnVoice;
+        public System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
     }
 }
 

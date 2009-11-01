@@ -116,6 +116,37 @@ namespace Radegast.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///&lt;!-- $Id$ --&gt;
+        ///&lt;llsd&gt;
+        ///  &lt;map&gt;
+        ///    &lt;key&gt;0bcd5f5d-a4ce-9ea4-f9e8-15132653b3d8&lt;/key&gt;
+        ///    &lt;map&gt;
+        ///      &lt;key&gt;color&lt;/key&gt;
+        ///      &lt;array&gt;
+        ///        &lt;real&gt;2&lt;/real&gt;
+        ///        &lt;real&gt;1&lt;/real&gt;
+        ///
+        ///        &lt;real&gt;1.6000000238418579&lt;/real&gt;
+        ///        &lt;real&gt;1&lt;/real&gt;
+        ///      &lt;/array&gt;
+        ///      &lt;key&gt;multiple&lt;/key&gt;
+        ///      &lt;real&gt;2&lt;/real&gt;
+        ///      &lt;key&gt;name&lt;/key&gt;
+        ///
+        ///      &lt;string&gt;MoyMix&lt;/string&gt;
+        ///    &lt;/map&gt;
+        ///    &lt;key&gt;0f6723d2-5b23-6b58-08ab-308112b33786&lt;/key&gt;
+        ///    &lt;map&gt;
+        ///      &lt;key&gt;color&lt;/key&gt; [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string client_signatures {
+            get {
+                return ResourceManager.GetString("client_signatures", resourceCulture);
+            }
+        }
+        
         public static System.Drawing.Bitmap computer_16 {
             get {
                 object obj = ResourceManager.GetObject("computer_16", resourceCulture);

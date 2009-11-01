@@ -93,6 +93,7 @@
   <ItemGroup>
     <Compile Include="Core\AutoPilot.cs" />
     <Compile Include="Core\ChatBufferItem.cs" />
+    <Compile Include="Core\ClientSignatures.cs" />
     <Compile Include="Core\Commands\CommandsManager.cs" />
     <Compile Include="Core\Commands\ICommandInterpreter.cs" />
     <Compile Include="Core\Commands\IRadegastCommand.cs" />
@@ -1041,6 +1042,7 @@
     <None Include="Resources\checkerboard.png" />
     <Content Include="Resources\btn_play.png" />
     <Content Include="Resources\btn_stop.png" />
+    <None Include="Resources\client_signatures.txt" />
     <Content Include="Resources\radegast_large.png" />
     <Content Include="worldmap.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

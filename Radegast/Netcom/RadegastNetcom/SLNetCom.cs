@@ -58,7 +58,7 @@ namespace Radegast.Netcom
         // NetcomSync is used for raising certain events on the
         // GUI/main thread. Useful if you're modifying GUI controls
         // in the client app when responding to those events.
-        private ISynchronizeInvoke netcomSync;
+        private Control netcomSync;
 
         #region ClientConnected event
         /// <summary>The event subscribers, null of no subscribers</summary>
@@ -127,6 +127,14 @@ namespace Radegast.Netcom
             RegisterClientEvents(client);
         }
 
+        private bool CanSyncInvoke
+        {
+            get
+            {
+                return netcomSync != null && !netcomSync.IsDisposed && netcomSync.IsHandleCreated && netcomSync.InvokeRequired;
+            }
+        }
+
         public void Dispose()
         {
             if (client != null)
@@ -137,7 +145,7 @@ namespace Radegast.Netcom
 
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnInstantMessageRaise(OnInstantMessageReceived), new object[] { e });
             else
                 OnInstantMessageReceived(e);
@@ -149,7 +157,7 @@ namespace Radegast.Netcom
             {
                 loggedIn = true;
                 client.Self.RequestBalance();
-                if (netcomSync != null && netcomSync.InvokeRequired)
+                if (CanSyncInvoke)
                 {
                     netcomSync.BeginInvoke(new ClientConnectedRaise(OnClientConnected), new object[] { EventArgs.Empty });
                 }
@@ -161,7 +169,7 @@ namespace Radegast.Netcom
 
             LoginProgressEventArgs ea = new LoginProgressEventArgs(e.Status, e.Message);
 
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnClientLoginRaise(OnClientLoginStatus), new object[] { e });
             else
                 OnClientLoginStatus(e);
@@ -171,7 +179,7 @@ namespace Radegast.Netcom
         {
             loggedIn = false;
 
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnClientLogoutRaise(OnClientLoggedOut), new object[] { EventArgs.Empty });
             else
                 OnClientLoggedOut(EventArgs.Empty);
@@ -182,7 +190,7 @@ namespace Radegast.Netcom
             if (e.Status == TeleportStatus.Finished || e.Status == TeleportStatus.Failed)
                 teleporting = false;
 
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnTeleportStatusRaise(OnTeleportStatusChanged), new object[] { e });
             else
                 OnTeleportStatusChanged(e);
@@ -190,7 +198,7 @@ namespace Radegast.Netcom
 
         private void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnChatRaise(OnChatReceived), new object[] { e });
             else
                 OnChatReceived(e);
@@ -200,7 +208,7 @@ namespace Radegast.Netcom
         {
             loggedIn = false;
 
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnClientDisconnectRaise(OnClientDisconnected), new object[] { e });
             else
                 OnClientDisconnected(e);
@@ -208,7 +216,7 @@ namespace Radegast.Netcom
 
         void Self_MoneyBalance(object sender, BalanceEventArgs e)
         {
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnMoneyBalanceRaise(OnMoneyBalanceUpdated), new object[] { e });
             else
                 OnMoneyBalanceUpdated(e);
@@ -216,7 +224,7 @@ namespace Radegast.Netcom
 
         void Self_AlertMessage(object sender, AlertMessageEventArgs e)
         {
-            if (netcomSync != null && netcomSync.InvokeRequired)
+            if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnAlertMessageRaise(OnAlertMessageReceived), new object[] { e });
             else
                 OnAlertMessageReceived(e);
@@ -368,7 +376,7 @@ namespace Radegast.Netcom
             set { loginOptions = value; }
         }
 
-        public ISynchronizeInvoke NetcomSync
+        public Control NetcomSync
         {
             get { return netcomSync; }
             set { netcomSync = value; }

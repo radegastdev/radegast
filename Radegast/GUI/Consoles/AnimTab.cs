@@ -44,7 +44,6 @@ namespace Radegast
         private Avatar av;
         private List<UUID> seenAnim = new List<UUID>();
         private int n = 0;
-        private static bool checkedDir = false;
 
         public AnimTab(RadegastInstance instance, Avatar av)
         {
@@ -88,13 +87,6 @@ namespace Radegast
 
         private void AnimTab_Load(object sender, EventArgs e)
         {
-            if (!checkedDir) {
-                checkedDir = true;
-                if (!Directory.Exists(instance.AnimCacheDir))
-                {
-                    Directory.CreateDirectory(instance.AnimCacheDir);
-                }
-            }
         }
     }
 }
