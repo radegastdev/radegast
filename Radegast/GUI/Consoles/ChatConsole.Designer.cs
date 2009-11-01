@@ -63,7 +63,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatConsole));
             this.rtbChat = new System.Windows.Forms.RichTextBox();
-            this.cbxInput = new ChatInputBox();
+            this.cbxInput = new Radegast.ChatInputBox();
             this.btnSay = new System.Windows.Forms.Button();
             this.btnShout = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -134,9 +134,9 @@ namespace Radegast
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(352, 21);
             this.cbxInput.TabIndex = 0;
-            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
-            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
+            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
+            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
             // 
             // btnSay
             // 
@@ -516,6 +516,7 @@ namespace Radegast
             this.toolStrip1.PerformLayout();
             this.pnlMovement.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }

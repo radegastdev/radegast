@@ -82,8 +82,7 @@ namespace Radegast
 
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
-            SorterClass sc = new SorterClass();
-            lvwObjects.ListViewItemSorter = sc;
+            lvwObjects.ListViewItemSorter = new SorterClass();
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -138,6 +137,13 @@ namespace Radegast
                                         ? ToVector3D(e.Simulator, e.Simulator.AvatarPositions[client.Self.AgentID])
                                         : client.Self.GlobalPosition;
 
+                    // CoarseLocationUpdate gives us hight of 0 when actual height is
+                    // between 1024-4096m. Hard code somewhere in the middle (2000m)
+                    if (mypos.Z < 0.1)
+                    {
+                        mypos.Z = 2000f;
+                    }
+
                     List<UUID> existing = new List<UUID>();
                     List<UUID> removed = new List<UUID>(e.RemovedEntries);
 
@@ -163,15 +169,18 @@ namespace Radegast
                     {
                         if (item == null) continue;
                         UUID key = (UUID)item.Tag;
+
                         if (agentSimHandle[key] != e.Simulator.Handle)
                         {
                             // not for this sim
                             continue;
                         }
+
                         if (key == client.Self.AgentID)
                         {
                             continue;
                         }
+
                         //the AvatarPostions is checked once more because it changes wildly on its own
                         //even though the !existing should have been adequate
                         Vector3 pos;
@@ -190,12 +199,19 @@ namespace Radegast
                         }
 
                         int d = (int)Vector3d.Distance(ToVector3D(e.Simulator, pos), mypos);
+
                         if (e.Simulator != client.Network.CurrentSim && d > MAX_DISTANCE)
                         {
                             removed.Add(key);
                             continue;
                         }
+
                         item.Text = instance.getAvatarName(key) + " (" + d + "m)";
+
+                        if (e.Simulator.ObjectsAvatars.Find((Avatar av) => { return av.ID == key; }) != null)
+                        {
+                            item.Text += "*";
+                        }
                     }
 
                     foreach (UUID key in removed)
@@ -614,6 +630,8 @@ namespace System.Windows.Forms
 
     public class SorterClass : System.Collections.IComparer
     {
+        private static Regex distanceRegex = new Regex(@"\((?<dist>\d+)\s*m\)", RegexOptions.Compiled);
+        private Match match;
 
         public SorterClass()
         {
@@ -630,36 +648,18 @@ namespace System.Windows.Forms
 
             int distance1 = 0, distance2 = 0;
 
-            int start1 = item1.Text.IndexOf('(');
-            int end1 = item1.Text.IndexOf(')') - 2;
-            if (start1 == -1)
-                return -1;
+            if ((match = distanceRegex.Match(item1.Text)).Success)
+                distance1 = int.Parse(match.Groups["dist"].Value);
 
-            // data is "First Last (xyz m)"
-            start1++;
-
-            string substr1 = item1.Text.Substring(start1, end1 - start1);
-
-            int.TryParse(substr1, out distance1);
-
-            int start2 = item2.Text.IndexOf('(');
-            int end2 = item2.Text.IndexOf(')') - 2;
-            if (start2 == -1)
-                return 1;
-
-            // data is "First Last (xyz m)"
-            start2++;
-
-            string substr2 = item2.Text.Substring(start2, end2 - start2);
-
-            int.TryParse(substr2, out distance2);
+            if ((match = distanceRegex.Match(item2.Text)).Success)
+                distance2 = int.Parse(match.Groups["dist"].Value);
 
             if (distance1 < distance2)
                 return -1;
             else if (distance1 > distance2)
                 return 1;
             else
-                return 0;
+                return string.Compare(item1.Text, item2.Text);
 
         }
     }
