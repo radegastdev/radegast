@@ -91,12 +91,14 @@ namespace Radegast
         private void Stop()
         {
             participants.Items.Clear();
+            session = null;
             SetProgress(VoiceGateway.ConnectionState.None);
             gateway.Stop();
         }
 
         private void RegisterClientEvents()
         {
+            // Voice hooks
             gateway.OnSessionCreate +=
                 new EventHandler(gateway_OnSessionCreate);
             gateway.OnSessionRemove +=
@@ -104,16 +106,15 @@ namespace Radegast
             gateway.OnVoiceConnectionChange +=
                 new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
 
-            KeyDown += new KeyEventHandler(VoiceConsole_KeyDown);
-            KeyUp += new KeyEventHandler(VoiceConsole_KeyUp);
+            // GUI hooks
             MouseDown += new MouseEventHandler(OnMouseDown);
             MouseUp += new MouseEventHandler(OnMouseUp);
         }
 
-       void MainForm_MouseDown(object sender, MouseEventArgs e)
+        private void UnregisterClientEvents()
         {
             gateway.OnSessionCreate -=
-                new EventHandler(gateway_OnSessionCreate);
+               new EventHandler(gateway_OnSessionCreate);
             gateway.OnSessionRemove -=
                 new EventHandler(gateway_OnSessionRemove);
             gateway.OnVoiceConnectionChange -=
@@ -121,11 +122,6 @@ namespace Radegast
 
             MouseDown -= new MouseEventHandler(OnMouseDown);
             MouseUp -= new MouseEventHandler(OnMouseUp);
-            
-        }
-
-        private void UnregisterClientEvents()
-        {
         }
 
         #region Connection Status
@@ -270,7 +266,7 @@ namespace Radegast
         }
 
         #endregion
-
+        #region Console control
         void VoiceConsole_Disposed(object sender, EventArgs e)
         {
 
@@ -295,43 +291,24 @@ namespace Radegast
             }));
 
         }
+        #endregion
 
         #region Talk control
-        void OnMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        void OnMouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            if (e.Button == MouseButtons.Middle)
             {
                 micMute.Checked = false;
-//                gateway.MicMute = true;
+                gateway.MicMute = true;
             }
         }
-        void VoiceConsole_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.RControlKey)
-                micMute.Checked = false;
-        }
 
-        void VoiceConsole_KeyUp(object sender, KeyEventArgs e)
+        void OnMouseDown(object sender, MouseEventArgs e)
         {
-            if (e.KeyCode == Keys.RControlKey)
-                micMute.Checked = true;
-        }
-        private void splitContainer1_Panel1_MouseDown(object sender, MouseEventArgs e)
-        {
-            OnMouseDown(sender, e);
-        }
-
-        private void splitContainer1_Panel1_MouseUp(object sender, MouseEventArgs e)
-        {
-            OnMouseUp(sender, e);
-        }
-
-        void OnMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            if (e.Button == MouseButtons.Middle)
             {
                 micMute.Checked = false;
-//                gateway.MicMute = false;
+                gateway.MicMute = false;
             }
         }
         #endregion

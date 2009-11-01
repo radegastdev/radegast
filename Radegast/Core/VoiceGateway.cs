@@ -245,11 +245,21 @@ namespace Radegast.Core
                 s.Close();
             }
 
+            // Clear out lots of state so in case of restart we begin at the beginning.
+            currentParcelCap = null;
+            sessions.Clear();
+            accountHandle = null;
+            voiceUser = null;
+            voicePassword = null;
+
             if (connector != null)
             {
                 connector.SessionTerminate( sessionHandle );
+                sessionHandle = null;
                 connector.AccountLogout( accountHandle );
+                accountHandle = null;
                 connector.ConnectorInitiateShutdown(connectionHandle);
+                connectionHandle = null;
                 connector.StopDaemon();
             }
         }
