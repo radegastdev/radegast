@@ -326,6 +326,8 @@ namespace Radegast
  
         void LoadMicDevices(List<string> available)
         {
+            if (available == null) return;
+
             foreach (string name in available)
                 micDevice.Items.Add(name);
             micDevice.SelectedItem = instance.GlobalSettings["Voice.capture.device"].AsString();
