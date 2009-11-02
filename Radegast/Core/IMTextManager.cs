@@ -156,7 +156,7 @@ namespace Radegast
                 sb.Append(message);
             }
 
-            instance.LogClientMessage(sessionName + ".txt", message);
+            instance.LogClientMessage(sessionName + ".txt", sb.ToString());
             textPrinter.PrintTextLine(sb.ToString());
             sb = null;
         }
