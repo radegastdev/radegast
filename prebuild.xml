@@ -192,6 +192,7 @@
             <Reference name="OpenMetaverse" localCopy="false"/>
             <Reference name="OpenMetaverseTypes" localCopy="false"/>
             <Reference name="OpenMetaverse.StructuredData" localCopy="false"/>
+            <Reference name="OpenMetaverse.Http" localCopy="false"/>
 
             <Reference name="assemblies/fmodex-dotnet.dll" localCopy="true"/>
             <Reference name="assemblies/Tao.OpenGl.dll" localCopy="true"/>
