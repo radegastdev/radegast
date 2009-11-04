@@ -61,6 +61,7 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProfile));
             this.tabProfile = new System.Windows.Forms.TabControl();
             this.tpgProfile = new System.Windows.Forms.TabPage();
+            this.txtFullName = new System.Windows.Forms.TextBox();
             this.anPartner = new Radegast.AgentNameTextBox();
             this.btnIM = new System.Windows.Forms.Button();
             this.btnFriend = new System.Windows.Forms.Button();
@@ -85,7 +86,7 @@ namespace Radegast
             this.label6 = new System.Windows.Forms.Label();
             this.tbpPicks = new System.Windows.Forms.TabPage();
             this.pickDetailPanel = new System.Windows.Forms.Panel();
-            this.pickDetail = new System.Windows.Forms.TextBox();
+            this.pickDetail = new System.Windows.Forms.RichTextBox();
             this.pickLocation = new System.Windows.Forms.TextBox();
             this.picksLowerPanel = new System.Windows.Forms.Panel();
             this.btnShowOnMap = new System.Windows.Forms.Button();
@@ -100,7 +101,6 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.txtFullName = new System.Windows.Forms.TextBox();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
@@ -152,6 +152,14 @@ namespace Radegast
             this.tpgProfile.TabIndex = 0;
             this.tpgProfile.Text = "Profile";
             this.tpgProfile.UseVisualStyleBackColor = true;
+            // 
+            // txtFullName
+            // 
+            this.txtFullName.Location = new System.Drawing.Point(50, 6);
+            this.txtFullName.Name = "txtFullName";
+            this.txtFullName.ReadOnly = true;
+            this.txtFullName.Size = new System.Drawing.Size(196, 21);
+            this.txtFullName.TabIndex = 4;
             // 
             // anPartner
             // 
@@ -406,12 +414,15 @@ namespace Radegast
             // 
             // pickDetail
             // 
+            this.pickDetail.BackColor = System.Drawing.SystemColors.Window;
             this.pickDetail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pickDetail.Location = new System.Drawing.Point(0, 259);
-            this.pickDetail.Multiline = true;
             this.pickDetail.Name = "pickDetail";
+            this.pickDetail.ReadOnly = true;
             this.pickDetail.Size = new System.Drawing.Size(315, 130);
             this.pickDetail.TabIndex = 2;
+            this.pickDetail.Text = "";
+            this.pickDetail.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAbout_LinkClicked);
             // 
             // pickLocation
             // 
@@ -553,14 +564,6 @@ namespace Radegast
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
             // 
-            // txtFullName
-            // 
-            this.txtFullName.Location = new System.Drawing.Point(50, 6);
-            this.txtFullName.Name = "txtFullName";
-            this.txtFullName.ReadOnly = true;
-            this.txtFullName.Size = new System.Drawing.Size(196, 21);
-            this.txtFullName.TabIndex = 4;
-            // 
             // frmProfile
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -619,7 +622,7 @@ namespace Radegast
         public System.Windows.Forms.TabPage tbpPicks;
         public System.Windows.Forms.Panel pickDetailPanel;
         public System.Windows.Forms.Panel picksLowerPanel;
-        public System.Windows.Forms.TextBox pickDetail;
+        public System.Windows.Forms.RichTextBox pickDetail;
         public System.Windows.Forms.TextBox pickTitle;
         public System.Windows.Forms.Panel pickPicturePanel;
         public System.Windows.Forms.Panel pickListPanel;
