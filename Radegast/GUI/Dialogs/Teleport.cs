@@ -104,7 +104,7 @@ namespace Radegast
                 return;
             }
 
-            RegionSearchResultItem item = new RegionSearchResultItem(instance, region, lbxRegionSearch);
+            RegionSearchResultItem item = new RegionSearchResultItem(instance, e.Region, lbxRegionSearch);
             int index = lbxRegionSearch.Items.Add(item);
             item.ListIndex = index;
             if (lbxRegionSearch.Items.Count == 1)
