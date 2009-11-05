@@ -19,6 +19,9 @@ namespace RadegastSpeech
             try
             {
                 rec = new SpeechRecognizer();
+                dGrammar = new DictationGrammar();
+                rec.LoadGrammar(dGrammar);
+                cGrammars = new Dictionary<string, Grammar>();
             }
             catch (Exception e)
             {
@@ -27,9 +30,6 @@ namespace RadegastSpeech
                     Helpers.LogLevel.Warning);
                 return;
             }
-            dGrammar = new DictationGrammar();
-            rec.LoadGrammar(dGrammar);
-            cGrammars = new Dictionary<string, Grammar>();
         }
 
         internal void Start()
@@ -54,6 +54,8 @@ namespace RadegastSpeech
         /// <param name="name"></param>
         internal void ActivateGrammar(string name)
         {
+            if (rec == null) return;
+
             if (rec.Grammars.Contains(cGrammars[name]))
                 return;
             rec.LoadGrammar(cGrammars[name]);
@@ -65,6 +67,8 @@ namespace RadegastSpeech
         /// <param name="name"></param>
         internal void DeactivateGrammar(string name)
         {
+            if (rec == null) return;
+
             // Avoid exceptions from deactiovating what is not active
             Grammar v = cGrammars[name];
             if (!rec.Grammars.Contains(v))
@@ -74,6 +78,8 @@ namespace RadegastSpeech
 
         void onSpeech(object sender, SpeechRecognizedEventArgs e)
         {
+            if (rec == null) return;
+
             if (OnWinRecognition == null) return;
 
             RecognitionResult r = e.Result;
@@ -82,6 +88,8 @@ namespace RadegastSpeech
 
         internal void CreateGrammar(string name, string[] options)
         {
+            if (rec == null) return;
+
             GrammarBuilder gb = new GrammarBuilder();
             gb.Append(new Choices(options));
             cGrammars[name] = new Grammar(gb);
