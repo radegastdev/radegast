@@ -12,6 +12,7 @@ namespace RadegastSpeech
     {
         private MacSynth synth;
 
+        #pragma warning disable 67
         public event SpeechEventHandler OnRecognition;
 
         public MacSpeech()

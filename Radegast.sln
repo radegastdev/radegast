@@ -16,6 +16,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.Alice", "pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.Demo", "plugins\Radegast.Plugin.Demo\Radegast.Plugin.Demo.csproj", "{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.Speech", "plugins\Radegast.Plugin.Speech\RadSpeech\Radegast.Plugin.Speech.csproj", "{BA078535-BB58-45F0-9225-D2F6DF1197E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechWin", "plugins\Radegast.Plugin.Speech\RadSpeechWin\RadSpeechWin.csproj", "{D19A654B-FE91-4010-A654-FC88AE62F7CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechLin", "plugins\Radegast.Plugin.Speech\RadSpeechLin\RadSpeechLin.csproj", "{33B46397-BA1C-490A-A0A6-81C409884CE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechMac", "plugins\Radegast.Plugin.Speech\RadSpeechMac\RadSpeechMac.csproj", "{DDFA3357-938D-41A3-881E-152105641A3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +95,34 @@ Global
 		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C191AC11-5EF9-4F37-82C4-BD2C5E0369D2}.Release|x86.ActiveCfg = Release|x86
+		{BA078535-BB58-45F0-9225-D2F6DF1197E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA078535-BB58-45F0-9225-D2F6DF1197E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA078535-BB58-45F0-9225-D2F6DF1197E4}.Debug|x86.ActiveCfg = Debug|x86
+		{BA078535-BB58-45F0-9225-D2F6DF1197E4}.Debug|x86.Build.0 = Debug|x86
+		{BA078535-BB58-45F0-9225-D2F6DF1197E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA078535-BB58-45F0-9225-D2F6DF1197E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA078535-BB58-45F0-9225-D2F6DF1197E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{D19A654B-FE91-4010-A654-FC88AE62F7CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D19A654B-FE91-4010-A654-FC88AE62F7CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D19A654B-FE91-4010-A654-FC88AE62F7CC}.Debug|x86.ActiveCfg = Debug|x86
+		{D19A654B-FE91-4010-A654-FC88AE62F7CC}.Debug|x86.Build.0 = Debug|x86
+		{D19A654B-FE91-4010-A654-FC88AE62F7CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D19A654B-FE91-4010-A654-FC88AE62F7CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D19A654B-FE91-4010-A654-FC88AE62F7CC}.Release|x86.ActiveCfg = Release|Any CPU
+		{33B46397-BA1C-490A-A0A6-81C409884CE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33B46397-BA1C-490A-A0A6-81C409884CE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33B46397-BA1C-490A-A0A6-81C409884CE2}.Debug|x86.ActiveCfg = Debug|x86
+		{33B46397-BA1C-490A-A0A6-81C409884CE2}.Debug|x86.Build.0 = Debug|x86
+		{33B46397-BA1C-490A-A0A6-81C409884CE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33B46397-BA1C-490A-A0A6-81C409884CE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33B46397-BA1C-490A-A0A6-81C409884CE2}.Release|x86.ActiveCfg = Release|Any CPU
+		{DDFA3357-938D-41A3-881E-152105641A3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDFA3357-938D-41A3-881E-152105641A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDFA3357-938D-41A3-881E-152105641A3D}.Debug|x86.ActiveCfg = Debug|x86
+		{DDFA3357-938D-41A3-881E-152105641A3D}.Debug|x86.Build.0 = Debug|x86
+		{DDFA3357-938D-41A3-881E-152105641A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDFA3357-938D-41A3-881E-152105641A3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDFA3357-938D-41A3-881E-152105641A3D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
