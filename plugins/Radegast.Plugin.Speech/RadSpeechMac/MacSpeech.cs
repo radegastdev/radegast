@@ -23,6 +23,9 @@ namespace RadegastSpeech
         public void SpeechStart( PluginControl pc, string[] beeps)
         {
             synth = new MacSynth( pc, beeps);
+            if (OnRecognition != null)
+            {
+            }
         }
 
         public void SpeechStop()
@@ -48,6 +51,9 @@ namespace RadegastSpeech
 
         public void RecogStart()
         {
+            if (OnRecognition != null) // Supress compiler wanring until we have something for this
+            {
+            }
         }
 
         public void RecogStop()

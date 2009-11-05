@@ -41,9 +41,9 @@ namespace RadegastSpeech.Talk
             OSDMap subs = pc.config["substitutions"] as OSDMap;
             if (subs != null)
             {
-                foreach (System.Collections.DictionaryEntry entry in subs)
+                foreach (string key in subs.Keys)
                 {
-                    Add((string)entry.Key, (string)entry.Value);
+                    Add( key, subs[key].AsString() );
                 }
             }
 

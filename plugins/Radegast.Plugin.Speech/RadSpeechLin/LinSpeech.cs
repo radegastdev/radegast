@@ -22,6 +22,9 @@ namespace RadegastSpeech
         // Speech recognition is not yet available on Linux
         public void RecogStart()
         {
+            if (OnRecognition != null) // Supress compiler wanring until we have something for this
+            {
+            }
         }
 
         public void RecogStop()

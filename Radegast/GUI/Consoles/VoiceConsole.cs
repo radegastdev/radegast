@@ -38,6 +38,7 @@ using System.Windows.Forms;
 using Radegast.Netcom;
 using Radegast.Core;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
@@ -55,7 +56,7 @@ namespace Radegast
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private GridClient client { get { return instance.Client; } }
         private TabsConsole tabConsole;
-
+        private OSDMap config;
         public VoiceGateway gateway;
         public VoiceSession session;
 
@@ -73,7 +74,16 @@ namespace Radegast
 
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
-            chkVoiceEnable.Checked = instance.GlobalSettings["Voice.enabled"].AsBoolean();
+            config = instance.GlobalSettings["voice"] as OSDMap;
+            if (config == null)
+            {
+                config = new OSDMap();
+                config["enabled"] = new OSDBoolean(false);
+                instance.GlobalSettings["voice"] = config;
+                instance.GlobalSettings.Save();
+            }
+
+            chkVoiceEnable.Checked = config["enabled"].AsBoolean();
             if (chkVoiceEnable.Checked)
                 Start();
         }
@@ -330,28 +340,28 @@ namespace Radegast
 
             foreach (string name in available)
                 micDevice.Items.Add(name);
-            micDevice.SelectedItem = instance.GlobalSettings["Voice.capture.device"].AsString();
+            micDevice.SelectedItem = config["capture.device"].AsString();
         }
 
         void LoadSpkrDevices(List<string> available)
         {
             foreach (string name in available)
                 spkrDevice.Items.Add(name);
-            spkrDevice.SelectedItem = instance.GlobalSettings["Voice.playback.device"].AsString();
+            spkrDevice.SelectedItem = config["playback.device"].AsString();
         }
 
         private void spkrDevice_SelectedIndexChanged(object sender, EventArgs e)
         {
             gateway.PlaybackDevice = (string)spkrDevice.SelectedItem;
-            instance.GlobalSettings["Voice.playback.device"] =
-                OpenMetaverse.StructuredData.OSD.FromString((string)spkrDevice.SelectedItem);
+            config["playback.device"] = new OSDString((string)spkrDevice.SelectedItem);
+            instance.GlobalSettings.Save();
         }
 
         private void micDevice_SelectedIndexChanged(object sender, EventArgs e)
         {
             gateway.CaptureDevice = (string)micDevice.SelectedItem;
-            instance.GlobalSettings["Voice.capture.device"] =
-               OpenMetaverse.StructuredData.OSD.FromString((string)micDevice.SelectedItem);
+            config["capture.device"] = new OSDString((string)micDevice.SelectedItem);
+            instance.GlobalSettings.Save();
         }
 
         private void micLevel_ValueChanged(object sender, EventArgs e)
@@ -372,8 +382,8 @@ namespace Radegast
         {
             this.BeginInvoke(new MethodInvoker(delegate()
             {
-                instance.GlobalSettings["Voice.enabled"] =
-                    OpenMetaverse.StructuredData.OSD.FromBoolean(chkVoiceEnable.Checked);
+                config["enabled"] = new OSDBoolean( chkVoiceEnable.Checked );
+                instance.GlobalSettings.Save();
 
                 if (chkVoiceEnable.Checked)
                 {

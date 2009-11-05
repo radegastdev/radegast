@@ -73,7 +73,8 @@ namespace RadegastSpeech
                 config["voices"] = new OSDMap();
                 config["properties"] = new OSDMap();
                 config["substitutions"] = new OSDMap();
-                instance.GlobalSettings["plugin.voice"] = config;
+                instance.GlobalSettings["plugin.speech"] = config;
+                instance.GlobalSettings.Save();
             }
 
             // Do the one-time only initializations.
