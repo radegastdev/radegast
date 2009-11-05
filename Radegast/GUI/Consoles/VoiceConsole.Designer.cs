@@ -381,7 +381,6 @@ namespace Radegast
         public ToolStripMenuItem ctxPoint;
         public ToolStripMenuItem ctxSource;
         public ToolStripMenuItem ctxPay;
-        private CheckBox chkVoiceEnable;
         private ImageList TalkStates;
         private ComboBox micDevice;
         private ComboBox spkrDevice;
@@ -394,5 +393,6 @@ namespace Radegast
         private CheckBox spkrMute;
         private PictureBox pictureBox1;
         private Button button1;
+        public CheckBox chkVoiceEnable;
     }
 }

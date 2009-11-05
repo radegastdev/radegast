@@ -56,8 +56,8 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private TabsConsole tabConsole;
 
-        private VoiceGateway gateway;
-        private VoiceSession session;
+        public VoiceGateway gateway;
+        public VoiceSession session;
 
         public VoiceConsole(RadegastInstance instance)
         {

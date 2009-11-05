@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BA078535-BB58-45F0-9225-D2F6DF1197E4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RadegastSpeech</RootNamespace>
+    <AssemblyName>Radegast.Plugin.Speech</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ReleaseVersion>0.4</ReleaseVersion>
+    <BaseDirectory>..\..\..\..\..\..\..\..\home\pd\Debug</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="fmodex-dotnet, Version=4.26.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\fmodex-dotnet.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenMetaverse, Version=0.0.0.14875, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\OpenMetaverse.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenMetaverse.StructuredData, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\OpenMetaverse.StructuredData.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenMetaverseTypes, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\OpenMetaverseTypes.dll</HintPath>
+    </Reference>
+    <Reference Include="Radegast, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\Radegast.exe</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AreaControl.cs" />
+    <Compile Include="Conversation\Chat.cs" />
+    <Compile Include="Conversation\Control.cs" />
+    <Compile Include="Conversation\BlueMenu.cs" />
+    <Compile Include="Conversation\Friends.cs" />
+    <Compile Include="Conversation\Friendship.cs" />
+    <Compile Include="Conversation\GroupIMSession.cs" />
+    <Compile Include="Conversation\IMSession.cs" />
+    <Compile Include="Conversation\Closet.cs" />
+    <Compile Include="Conversation\InvLandmark.cs" />
+    <Compile Include="Conversation\InvNotecard.cs" />
+    <Compile Include="Conversation\Max.cs" />
+    <Compile Include="Conversation\Mode.cs" />
+    <Compile Include="Conversation\Movement.cs" />
+    <Compile Include="Conversation\SingleIMSession.cs" />
+    <Compile Include="Conversation\Surroundings.cs" />
+    <Compile Include="Conversation\TalkingContextMenu.cs" />
+    <Compile Include="Conversation\Voice.cs" />
+    <Compile Include="Environment\Control.cs" />
+    <Compile Include="Environment\People.cs" />
+    <Compile Include="GUI\AvatarSpeechAction.cs" />
+    <Compile Include="GUI\NotecardReadAction.cs" />
+    <Compile Include="GUI\VoiceAssignment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\VoiceAssignment.Designer.cs">
+      <DependentUpon>VoiceAssignment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IRadSpeech.cs" />
+    <Compile Include="Listen\Control.cs" />
+    <Compile Include="Listen\Recognizer.cs" />
+    <Compile Include="PluginControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sound\Control.cs" />
+    <Compile Include="Sound\FmodSound.cs" />
+    <Compile Include="Talk\Control.cs" />
+    <Compile Include="Talk\Substitutions.cs" />
+    <Compile Include="Talk\Synthesizer.cs" />
+    <Compile Include="Talk\Voices.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GUI\VoiceAssignment.resx">
+      <DependentUpon>VoiceAssignment.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>copy $(ProjectDir)\*.wav $(SolutionDir)\bin</PostBuildEvent>
+  </PropertyGroup>
+</Project>
