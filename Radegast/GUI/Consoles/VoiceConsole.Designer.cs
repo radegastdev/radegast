@@ -118,8 +118,6 @@ namespace Radegast
             this.splitContainer1.Panel1.Controls.Add(this.spkrDevice);
             this.splitContainer1.Panel1.Controls.Add(this.micDevice);
             this.splitContainer1.Panel1.Controls.Add(this.chkVoiceEnable);
-            this.splitContainer1.Panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
-            this.splitContainer1.Panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
             // 
             // splitContainer1.Panel2
             // 
@@ -139,6 +137,8 @@ namespace Radegast
             this.button1.TabIndex = 24;
             this.button1.Text = "PTT";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+            this.button1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
             // 
             // pictureBox1
             // 
@@ -270,7 +270,6 @@ namespace Radegast
             this.participants.TabIndex = 8;
             this.participants.UseCompatibleStateImageBehavior = false;
             this.participants.View = System.Windows.Forms.View.List;
-            this.participants.SelectedIndexChanged += new System.EventHandler(this.participants_SelectedIndexChanged);
             // 
             // avatarContext
             // 

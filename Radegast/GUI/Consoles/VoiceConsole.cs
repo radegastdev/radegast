@@ -115,12 +115,6 @@ namespace Radegast
                 new EventHandler(gateway_OnSessionRemove);
             gateway.OnVoiceConnectionChange +=
                 new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
-
-            // GUI hooks
-            MouseDown += new MouseEventHandler(OnMouseDown);
-            MouseUp += new MouseEventHandler(OnMouseUp);
-            instance.MainForm.MouseDown += new MouseEventHandler(OnMouseDown);
-            instance.MainForm.MouseUp += new MouseEventHandler(OnMouseUp);
         }
 
         private void UnregisterClientEvents()
@@ -131,9 +125,6 @@ namespace Radegast
                 new EventHandler(gateway_OnSessionRemove);
             gateway.OnVoiceConnectionChange -=
                 new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
-
-            MouseDown -= new MouseEventHandler(OnMouseDown);
-            MouseUp -= new MouseEventHandler(OnMouseUp);
         }
 
         #region Connection Status
@@ -310,7 +301,7 @@ namespace Radegast
         {
             this.BeginInvoke(new MethodInvoker(delegate()
             {
-                if (e.Button == MouseButtons.Middle)
+                if (e.Button == MouseButtons.Left)
                 {
                     micMute.Checked = true;
                     gateway.MicMute = true;
@@ -323,7 +314,7 @@ namespace Radegast
             this.BeginInvoke(new MethodInvoker(delegate()
             {
 
-                if (e.Button == MouseButtons.Middle)
+                if (e.Button == MouseButtons.Left)
                 {
                     micMute.Checked = false;
                     gateway.MicMute = false;
@@ -399,11 +390,6 @@ namespace Radegast
        private void micMute_CheckedChanged(object sender, EventArgs e)
        {
            gateway.MicMute = micMute.Checked;
-       }
-
-       private void participants_SelectedIndexChanged(object sender, EventArgs e)
-       {
-
        }
 
 
