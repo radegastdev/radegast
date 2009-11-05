@@ -96,7 +96,11 @@ namespace Radegast
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
         {
-            client.Self.RequestLeaveGroupChat(session);
+            if (instance.Netcom.IsLoggedIn)
+            {
+                client.Self.RequestLeaveGroupChat(session);
+            }
+
             UnregisterClientEvents(client);
             CleanUp();
         }
@@ -277,7 +281,7 @@ namespace Radegast
 
             cbxInput.Enabled = true;
             btnShow.Enabled = true;
-           
+
             if (cbxInput.Text.Length > 0)
             {
                 btnSend.Enabled = true;
