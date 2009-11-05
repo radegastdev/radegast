@@ -293,6 +293,139 @@
             </Files>
         </Project>
 
+        <Project name="Radegast.Plugin.Speech" path="plugins/Radegast.Plugin.Speech/RadSpeech" type="Library" frameworkVersion="v3_5">
+         <Configuration name="Debug">
+           <Options>
+             <OutputPath>../../../bin/</OutputPath>
+           </Options>
+         </Configuration>
+         <Configuration name="Release">
+           <Options>
+             <OutputPath>../../../bin/</OutputPath>             
+           </Options>
+         </Configuration>
+
+         <ReferencePath>../../../bin/</ReferencePath>
+         <Reference name="OpenMetaverse" localCopy="false"/>
+         <Reference name="OpenMetaverseTypes" localCopy="false"/>
+         <Reference name="OpenMetaverse.StructuredData"/>
+
+         <Reference name="Radegast.exe" />
+         <Reference name="fmodex-dotnet.dll" />
+         <Reference name="System" />
+         <Reference name="System.Core"/>
+         <Reference name="System.Drawing"/>
+         <Reference name="System.Windows.Forms"/>
+         <Reference name="System.Xml.Linq"/>
+         <Reference name="System.Data.DataSetExtensions"/>
+         <Reference name="System.Data" />
+         <Reference name="System.Xml" />
+         <Files>
+             <Match path="." pattern="*.cs"  recurse="true"  subType="Form"/>
+             <Match path="." pattern="*.resx"  recurse="true" subType="Settings"  buildAction="EmbeddedResource"/>
+             <Match path="." pattern="*.wav" buildAction="Content" copyToOutput="Always"/>
+         </Files>
+      </Project>
+
+        <Project name="RadSpeechLin" path="plugins/Radegast.Plugin.Speech/RadSpeechLin" type="Library" frameworkVersion="v3_5">
+         <Configuration name="Debug">
+           <Options>
+             <OutputPath>../../../bin/</OutputPath>
+           </Options>
+         </Configuration>
+         <Configuration name="Release">
+           <Options>
+             <OutputPath>../../bin/</OutputPath>
+           </Options>
+         </Configuration>
+
+         <ReferencePath>../../../bin/</ReferencePath>
+         <Reference name="OpenMetaverse" localCopy="false"/>
+         <Reference name="OpenMetaverseTypes" localCopy="false"/>\
+         <Reference name="OpenMetaverse.StructuredData"/>
+
+         <Reference name="Radegast" />
+         <Reference name="Radegast.Plugin.Speech" />
+         <Reference name="System" />
+         <Reference name="System.Core"/>
+         <Reference name="System.Xml.Linq"/>
+         <Reference name="System.Data.DataSetExtensions"/>
+         <Reference name="System.Data" />
+         <Reference name="System.Xml" />
+         <Files>
+             <Match path="." pattern="*.cs"  recurse="true"  subType="Form"/>
+         </Files>
+      </Project>
+
+        <Project name="RadSpeechWin" path="plugins/Radegast.Plugin.Speech/RadSpeechWin" type="Library" frameworkVersion="v3_5">
+         <Configuration name="Debug">
+           <Options>
+             <OutputPath>../../../bin/</OutputPath>
+           </Options>
+         </Configuration>
+         <Configuration name="Release">
+           <Options>
+             <OutputPath>../../bin/</OutputPath>
+           </Options>
+         </Configuration>
+
+         <ReferencePath>../../../bin/</ReferencePath>
+         <Reference name="OpenMetaverse" localCopy="false"/>
+         <Reference name="OpenMetaverseTypes" localCopy="false"/>
+         <Reference name="OpenMetaverse.StructuredData"/>
+
+         <Reference name="Radegast" />
+         <Reference name="Radegast.Plugin.Speech" />
+         <Reference name="Radegast.exe" />
+         <Reference name="System" />
+         <Reference name="System.Core"/>
+         <Reference name="System.Speech"/>
+         <Reference name="System.Xml.Linq"/>
+         <Reference name="System.Data.DataSetExtensions"/>
+         <Reference name="System.Data" />
+         <Reference name="System.Xml" />
+         <Files>
+             <Match path="." pattern="*.cs"  recurse="true"  subType="Form"/>
+         </Files>
+      </Project>
+
+
+        <Project name="RadSpeechMac" path="plugins/Radegast.Plugin.Speech/RadSpeechMac" type="Library" frameworkVersion="v3_5">
+         <Configuration name="Debug">
+           <Options>
+             <OutputPath>../../../bin/</OutputPath>
+           </Options>
+         </Configuration>
+         <Configuration name="Release">
+           <Options>
+             <OutputPath>../../bin/</OutputPath>
+           </Options>
+         </Configuration>
+
+         <ReferencePath>../../../bin/</ReferencePath>
+         <Reference name="OpenMetaverse" localCopy="false"/>
+         <Reference name="OpenMetaverseTypes" localCopy="false"/>
+         <Reference name="OpenMetaverse.StructuredData"/>
+
+         <Reference name="Radegast" />
+         <Reference name="Radegast.Plugin.Speech" />
+         <Reference name="Assemblies/Monobjc.dll" />
+         <Reference name="Assemblies/Monobjc.Cocoa.dll" />
+         
+         <Reference name="Radegast.exe" />
+         <Reference name="System" />
+         <Reference name="System.Core"/>
+         <Reference name="System.Speech"/>
+         <Reference name="System.Xml.Linq"/>
+         <Reference name="System.Data.DataSetExtensions"/>
+         <Reference name="System.Data" />
+         <Reference name="System.Xml" />
+         <Files>
+             <Match path="." pattern="*.cs"  recurse="true"  subType="Form"/>
+             <Match path="Assemblies" pattern="*.*" buildAction="Content" copyToOutput="Always"/>
+         </Files>
+      </Project>
+
     </Solution>
 
 </Prebuild>
