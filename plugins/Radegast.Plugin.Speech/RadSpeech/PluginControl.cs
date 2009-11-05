@@ -65,7 +65,7 @@ namespace RadegastSpeech
             instance = inst;
 
             // Get configuration settings, and initialize if not found.
-            config = instance.GlobalSettings["plugin.voice"] as OSDMap;
+            config = instance.GlobalSettings["plugin.speech"] as OSDMap;
             if (config == null)
             {
                 config = new OSDMap();

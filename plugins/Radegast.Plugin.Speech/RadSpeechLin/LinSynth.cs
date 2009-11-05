@@ -37,6 +37,15 @@ namespace RadegastSpeech
             ToASCII = new System.Text.ASCIIEncoding();
 			
 			OSDMap speech = pc.config["synthesizer"] as OSDMap;
+            if (speech == null)
+            {
+                speech = new OSDMap();
+                speech["server"] = new OSDString("localhost:1314");
+                speech["speed"] = new OSDInteger(0);
+                pc.config["synthesizer"] = speech;
+                pc.SaveSpeechSettings();
+            }
+
 			string server = speech["server"].AsString();
             if (server==null)
                 server = "localhost:1314";
