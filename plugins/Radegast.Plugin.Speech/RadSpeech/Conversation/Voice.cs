@@ -29,12 +29,15 @@ namespace RadegastSpeech.Conversation
         {
             vTab.gateway.OnSessionCreate +=new EventHandler(OnSessionCreate);
             vTab.gateway.OnSessionRemove += new EventHandler(gateway_OnSessionRemove);
+            vTab.chkVoiceEnable.CheckStateChanged += new EventHandler(chkVoiceEnable_CheckStateChanged);
+            SayEnabled();
         }
 
         internal override void Stop()
         {
             vTab.gateway.OnSessionCreate -= new EventHandler(OnSessionCreate);
             vTab.gateway.OnSessionRemove -= new EventHandler(gateway_OnSessionRemove);
+            vTab.chkVoiceEnable.CheckStateChanged -= new EventHandler(chkVoiceEnable_CheckStateChanged);
         }
 #endregion
 
@@ -42,7 +45,7 @@ namespace RadegastSpeech.Conversation
         void OnSessionCreate(object sender, EventArgs e)
         {
             session = sender as VoiceSession;
-            control.talker.Say("Voice session started in " + session.RegionName);
+            control.talker.Say("Voice started in " + session.RegionName);
 //            session.OnParticipantAdded += new EventHandler(session_OnParticipantAdded);
         }
 
@@ -62,5 +65,24 @@ namespace RadegastSpeech.Conversation
         }
 
         #endregion
+
+        void chkVoiceEnable_CheckStateChanged(object sender, EventArgs e)
+        {
+            SayEnabled();
+        }
+
+        void SayEnabled()
+        {
+            string msg = "Voice is ";
+            if (vTab.chkVoiceEnable.Checked)
+            {
+                msg += "enabled";
+                if (session != null)
+                    msg += " in " + session.RegionName;
+                Talker.SayMore(msg);
+            }
+            else
+                Talker.SayMore("Voice is disabled.");
+        }
     }
 }

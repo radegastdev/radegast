@@ -270,6 +270,7 @@ namespace Radegast
             this.participants.TabIndex = 8;
             this.participants.UseCompatibleStateImageBehavior = false;
             this.participants.View = System.Windows.Forms.View.List;
+            this.participants.SelectedIndexChanged += new System.EventHandler(this.participants_SelectedIndexChanged);
             // 
             // avatarContext
             // 

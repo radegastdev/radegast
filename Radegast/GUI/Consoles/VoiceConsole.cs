@@ -401,6 +401,11 @@ namespace Radegast
            gateway.MicMute = micMute.Checked;
        }
 
+       private void participants_SelectedIndexChanged(object sender, EventArgs e)
+       {
+
+       }
+
 
     }
 }
