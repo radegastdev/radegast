@@ -60,6 +60,7 @@ namespace Radegast
         {
             this.tcGroupDetails = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
+            this.btnJoin = new System.Windows.Forms.Button();
             this.lvwGeneralMembers = new Radegast.ListViewNoFlicker();
             this.chGenMemberName = new System.Windows.Forms.ColumnHeader();
             this.chGenTitle = new System.Windows.Forms.ColumnHeader();
@@ -125,6 +126,7 @@ namespace Radegast
             // tpGeneral
             // 
             this.tpGeneral.BackColor = System.Drawing.SystemColors.Control;
+            this.tpGeneral.Controls.Add(this.btnJoin);
             this.tpGeneral.Controls.Add(this.lvwGeneralMembers);
             this.tpGeneral.Controls.Add(this.lblOwners);
             this.tpGeneral.Controls.Add(this.tbxCharter);
@@ -141,6 +143,17 @@ namespace Radegast
             this.tpGeneral.TabIndex = 0;
             this.tpGeneral.Text = "General";
             // 
+            // btnJoin
+            // 
+            this.btnJoin.Location = new System.Drawing.Point(9, 195);
+            this.btnJoin.Name = "btnJoin";
+            this.btnJoin.Size = new System.Drawing.Size(75, 23);
+            this.btnJoin.TabIndex = 9;
+            this.btnJoin.Text = "Join $L";
+            this.btnJoin.UseVisualStyleBackColor = true;
+            this.btnJoin.Visible = false;
+            this.btnJoin.Click += new System.EventHandler(this.btnJoin_Click);
+            // 
             // lvwGeneralMembers
             // 
             this.lvwGeneralMembers.AllowColumnReorder = true;
@@ -154,11 +167,11 @@ namespace Radegast
             this.lvwGeneralMembers.FullRowSelect = true;
             this.lvwGeneralMembers.GridLines = true;
             this.lvwGeneralMembers.HideSelection = false;
-            this.lvwGeneralMembers.Location = new System.Drawing.Point(9, 232);
+            this.lvwGeneralMembers.Location = new System.Drawing.Point(9, 248);
             this.lvwGeneralMembers.MultiSelect = false;
             this.lvwGeneralMembers.Name = "lvwGeneralMembers";
             this.lvwGeneralMembers.ShowGroups = false;
-            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 131);
+            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 115);
             this.lvwGeneralMembers.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvwGeneralMembers.TabIndex = 8;
             this.lvwGeneralMembers.UseCompatibleStateImageBehavior = false;
@@ -183,7 +196,7 @@ namespace Radegast
             // lblOwners
             // 
             this.lblOwners.AutoSize = true;
-            this.lblOwners.Location = new System.Drawing.Point(6, 213);
+            this.lblOwners.Location = new System.Drawing.Point(6, 232);
             this.lblOwners.Name = "lblOwners";
             this.lblOwners.Size = new System.Drawing.Size(141, 13);
             this.lblOwners.TabIndex = 7;
@@ -636,6 +649,7 @@ namespace Radegast
         public System.Windows.Forms.Label lblTitle;
         public System.Windows.Forms.Label lblSentBy;
         public System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnJoin;
 
     }
 }

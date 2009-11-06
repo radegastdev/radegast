@@ -74,6 +74,8 @@ namespace Radegast
             client.Groups.GroupProfile += new EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
             client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupNoticesListReply += new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
+            client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupJoinedReply);
+            client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
@@ -88,11 +90,30 @@ namespace Radegast
             client.Groups.GroupProfile -= new EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
             client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupNoticesListReply -= new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
+            client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupJoinedReply);
+            client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         #region Network callbacks
+
+        void Groups_GroupLeaveReply(object sender, GroupOperationEventArgs e)
+        {
+            if (e.GroupID == group.ID && e.Success)
+            {
+                BeginInvoke(new MethodInvoker(() => RefreshGroupInfo()));
+            }
+        }
+
+        void Groups_GroupJoinedReply(object sender, GroupOperationEventArgs e)
+        {
+            if (e.GroupID == group.ID && e.Success)
+            {
+                BeginInvoke(new MethodInvoker(() => RefreshGroupInfo()));
+            }
+        }
+
         UUID destinationFolderID;
 
         void Self_IM(object sender, InstantMessageEventArgs e)
@@ -207,13 +228,22 @@ namespace Radegast
                 cbxMaturity.SelectedIndex = 0;
             }
 
-            if (myGroups.ContainsKey(group.ID))
+            btnJoin.Enabled = btnJoin.Visible = false;
+
+            if (myGroups.ContainsKey(group.ID)) // I am in this group
             {
                 cbxReceiveNotices.Checked = myGroups[group.ID].AcceptNotices;
                 cbxListInProfile.Checked = myGroups[group.ID].ListInProfile;
                 cbxReceiveNotices.CheckedChanged += new EventHandler(cbxListInProfile_CheckedChanged);
                 cbxListInProfile.CheckedChanged += new EventHandler(cbxListInProfile_CheckedChanged);
             }
+            else if (group.OpenEnrollment) // I am not in this group, but I could join it
+            {
+                btnJoin.Text = "Join $L" + group.MembershipFee;
+                btnJoin.Enabled = btnJoin.Visible = true;
+            }
+
+            RefreshControlsAvailability();
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
@@ -504,6 +534,12 @@ namespace Radegast
                 btnClose.Focus();
             }
         }
+
+        private void btnJoin_Click(object sender, EventArgs e)
+        {
+            client.Groups.RequestJoinGroup(group.ID);
+        }
+
     }
 
     public class EnhancedGroupMember

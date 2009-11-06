@@ -264,7 +264,14 @@ namespace Radegast
 
         void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            Close();
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(Close));
+            }
+            else
+            {
+                Close();
+            }
         }
 
         void Avatars_AvatarPropertiesReply(object sender, AvatarPropertiesReplyEventArgs e)

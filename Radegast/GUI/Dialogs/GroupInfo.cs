@@ -62,12 +62,12 @@ namespace Radegast
 
         void frmGroupInfo_Disposed(object sender, System.EventArgs e)
         {
-            GroupDetails.Dispose();
-            instance.Netcom.ClientDisconnected -= new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
         }
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
+            instance.Netcom.ClientDisconnected -= new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            GroupDetails.Dispose();
             Close();
         }
     }
