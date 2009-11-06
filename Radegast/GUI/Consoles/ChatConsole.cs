@@ -622,6 +622,21 @@ namespace Radegast
             cms.Show((Control)sender,new Point(e.X,e.Y));
         }
 
+        private void lvwObjects_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListViewItem item = lvwObjects.GetItemAt(e.X, e.Y);
+            if (item != null)
+            {
+                try
+                {
+                    UUID agentID = new UUID(item.Tag.ToString());
+                    instance.MainForm.ShowAgentProfile(instance.getAvatarName(agentID), agentID);
+                }
+                catch (Exception) { }
+            }
+
+        }
+
     }
 }
 
