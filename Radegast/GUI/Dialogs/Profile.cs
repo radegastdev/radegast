@@ -110,6 +110,8 @@ namespace Radegast
 
             lvwGroups.BeginUpdate();
             
+            lvwGroups.Items.Clear();
+
             foreach (AvatarGroup g in e.Groups)
             {
                 ListViewItem item = new ListViewItem();
