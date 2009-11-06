@@ -634,9 +634,7 @@ namespace Radegast
                 }
                 catch (Exception) { }
             }
-
         }
-
     }
 }
 

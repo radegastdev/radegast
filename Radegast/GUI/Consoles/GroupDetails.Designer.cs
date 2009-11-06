@@ -61,10 +61,6 @@ namespace Radegast
             this.tcGroupDetails = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
             this.btnJoin = new System.Windows.Forms.Button();
-            this.lvwGeneralMembers = new Radegast.ListViewNoFlicker();
-            this.chGenMemberName = new System.Windows.Forms.ColumnHeader();
-            this.chGenTitle = new System.Windows.Forms.ColumnHeader();
-            this.chGenLastOn = new System.Windows.Forms.ColumnHeader();
             this.lblOwners = new System.Windows.Forms.Label();
             this.tbxCharter = new System.Windows.Forms.TextBox();
             this.lblCharter = new System.Windows.Forms.Label();
@@ -92,15 +88,19 @@ namespace Radegast
             this.lblSentBy = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblGroupNoticesArchive = new System.Windows.Forms.Label();
+            this.pnlBottomControls = new System.Windows.Forms.Panel();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnApply = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.lvwGeneralMembers = new Radegast.ListViewNoFlicker();
+            this.chGenMemberName = new System.Windows.Forms.ColumnHeader();
+            this.chGenTitle = new System.Windows.Forms.ColumnHeader();
+            this.chGenLastOn = new System.Windows.Forms.ColumnHeader();
             this.lvwNoticeArchive = new Radegast.ListViewNoFlicker();
             this.ntcArchAttachment = new System.Windows.Forms.ColumnHeader();
             this.ntcArchSubject = new System.Windows.Forms.ColumnHeader();
             this.ntcArchFrom = new System.Windows.Forms.ColumnHeader();
             this.ntcArchDate = new System.Windows.Forms.ColumnHeader();
-            this.pnlBottomControls = new System.Windows.Forms.Panel();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.btnApply = new System.Windows.Forms.Button();
-            this.btnRefresh = new System.Windows.Forms.Button();
             this.tcGroupDetails.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.gbPreferences.SuspendLayout();
@@ -153,45 +153,6 @@ namespace Radegast
             this.btnJoin.UseVisualStyleBackColor = true;
             this.btnJoin.Visible = false;
             this.btnJoin.Click += new System.EventHandler(this.btnJoin_Click);
-            // 
-            // lvwGeneralMembers
-            // 
-            this.lvwGeneralMembers.AllowColumnReorder = true;
-            this.lvwGeneralMembers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.lvwGeneralMembers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.chGenMemberName,
-            this.chGenTitle,
-            this.chGenLastOn});
-            this.lvwGeneralMembers.FullRowSelect = true;
-            this.lvwGeneralMembers.GridLines = true;
-            this.lvwGeneralMembers.HideSelection = false;
-            this.lvwGeneralMembers.Location = new System.Drawing.Point(9, 248);
-            this.lvwGeneralMembers.MultiSelect = false;
-            this.lvwGeneralMembers.Name = "lvwGeneralMembers";
-            this.lvwGeneralMembers.ShowGroups = false;
-            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 115);
-            this.lvwGeneralMembers.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lvwGeneralMembers.TabIndex = 8;
-            this.lvwGeneralMembers.UseCompatibleStateImageBehavior = false;
-            this.lvwGeneralMembers.View = System.Windows.Forms.View.Details;
-            this.lvwGeneralMembers.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGeneralMembers_ColumnClick);
-            // 
-            // chGenMemberName
-            // 
-            this.chGenMemberName.Text = "Member name";
-            this.chGenMemberName.Width = 130;
-            // 
-            // chGenTitle
-            // 
-            this.chGenTitle.Text = "Title";
-            this.chGenTitle.Width = 130;
-            // 
-            // chGenLastOn
-            // 
-            this.chGenLastOn.Text = "Last login";
-            this.chGenLastOn.Width = 90;
             // 
             // lblOwners
             // 
@@ -494,6 +455,88 @@ namespace Radegast
             this.lblGroupNoticesArchive.TabIndex = 10;
             this.lblGroupNoticesArchive.Text = "Group Notices Archive";
             // 
+            // pnlBottomControls
+            // 
+            this.pnlBottomControls.Controls.Add(this.btnClose);
+            this.pnlBottomControls.Controls.Add(this.btnApply);
+            this.pnlBottomControls.Controls.Add(this.btnRefresh);
+            this.pnlBottomControls.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBottomControls.Location = new System.Drawing.Point(0, 500);
+            this.pnlBottomControls.Name = "pnlBottomControls";
+            this.pnlBottomControls.Size = new System.Drawing.Size(408, 34);
+            this.pnlBottomControls.TabIndex = 6;
+            // 
+            // btnClose
+            // 
+            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.Location = new System.Drawing.Point(329, 6);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(75, 23);
+            this.btnClose.TabIndex = 0;
+            this.btnClose.Text = "Close";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // btnApply
+            // 
+            this.btnApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnApply.Location = new System.Drawing.Point(248, 6);
+            this.btnApply.Name = "btnApply";
+            this.btnApply.Size = new System.Drawing.Size(75, 23);
+            this.btnApply.TabIndex = 0;
+            this.btnApply.Text = "Apply";
+            this.btnApply.UseVisualStyleBackColor = true;
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(13, 6);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 0;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // lvwGeneralMembers
+            // 
+            this.lvwGeneralMembers.AllowColumnReorder = true;
+            this.lvwGeneralMembers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwGeneralMembers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chGenMemberName,
+            this.chGenTitle,
+            this.chGenLastOn});
+            this.lvwGeneralMembers.FullRowSelect = true;
+            this.lvwGeneralMembers.GridLines = true;
+            this.lvwGeneralMembers.HideSelection = false;
+            this.lvwGeneralMembers.Location = new System.Drawing.Point(9, 248);
+            this.lvwGeneralMembers.MultiSelect = false;
+            this.lvwGeneralMembers.Name = "lvwGeneralMembers";
+            this.lvwGeneralMembers.ShowGroups = false;
+            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 115);
+            this.lvwGeneralMembers.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lvwGeneralMembers.TabIndex = 8;
+            this.lvwGeneralMembers.UseCompatibleStateImageBehavior = false;
+            this.lvwGeneralMembers.View = System.Windows.Forms.View.Details;
+            this.lvwGeneralMembers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwGeneralMembers_MouseDoubleClick);
+            this.lvwGeneralMembers.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGeneralMembers_ColumnClick);
+            // 
+            // chGenMemberName
+            // 
+            this.chGenMemberName.Text = "Member name";
+            this.chGenMemberName.Width = 130;
+            // 
+            // chGenTitle
+            // 
+            this.chGenTitle.Text = "Title";
+            this.chGenTitle.Width = 130;
+            // 
+            // chGenLastOn
+            // 
+            this.chGenLastOn.Text = "Last login";
+            this.chGenLastOn.Width = 90;
+            // 
             // lvwNoticeArchive
             // 
             this.lvwNoticeArchive.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -537,48 +580,6 @@ namespace Radegast
             // 
             this.ntcArchDate.Text = "Date";
             this.ntcArchDate.Width = 72;
-            // 
-            // pnlBottomControls
-            // 
-            this.pnlBottomControls.Controls.Add(this.btnClose);
-            this.pnlBottomControls.Controls.Add(this.btnApply);
-            this.pnlBottomControls.Controls.Add(this.btnRefresh);
-            this.pnlBottomControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBottomControls.Location = new System.Drawing.Point(0, 500);
-            this.pnlBottomControls.Name = "pnlBottomControls";
-            this.pnlBottomControls.Size = new System.Drawing.Size(408, 34);
-            this.pnlBottomControls.TabIndex = 6;
-            // 
-            // btnClose
-            // 
-            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClose.Location = new System.Drawing.Point(329, 6);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 0;
-            this.btnClose.Text = "Close";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // btnApply
-            // 
-            this.btnApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnApply.Location = new System.Drawing.Point(248, 6);
-            this.btnApply.Name = "btnApply";
-            this.btnApply.Size = new System.Drawing.Size(75, 23);
-            this.btnApply.TabIndex = 0;
-            this.btnApply.Text = "Apply";
-            this.btnApply.UseVisualStyleBackColor = true;
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Location = new System.Drawing.Point(13, 6);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 0;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // GroupDetails
             // 

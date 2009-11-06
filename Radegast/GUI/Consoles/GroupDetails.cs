@@ -540,6 +540,19 @@ namespace Radegast
             client.Groups.RequestJoinGroup(group.ID);
         }
 
+        private void lvwGeneralMembers_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListViewItem item = lvwGeneralMembers.GetItemAt(e.X, e.Y);
+            if (item != null)
+            {
+                try
+                {
+                    UUID agentID = new UUID(item.Name);
+                    instance.MainForm.ShowAgentProfile(item.Text, agentID);
+                }
+                catch (Exception) { }
+            }
+        }
     }
 
     public class EnhancedGroupMember
