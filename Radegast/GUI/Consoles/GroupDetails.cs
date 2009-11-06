@@ -301,7 +301,10 @@ namespace Radegast
                 item.Tag = member;
                 item.Name = member.Base.ID.ToString();
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Title));
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
+                if (member.LastOnline != DateTime.MinValue)
+                {
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
+                }
 
                 newItems.Add(item);
             }
@@ -516,7 +519,7 @@ namespace Radegast
             {
                 LastOnline = DateTime.Now;
             }
-            else if (string.IsNullOrEmpty(baseMember.OnlineStatus))
+            else if (string.IsNullOrEmpty(baseMember.OnlineStatus) || baseMember.OnlineStatus == "unknown")
             {
                 LastOnline = DateTime.MinValue;
             }

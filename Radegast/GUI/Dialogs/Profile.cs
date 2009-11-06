@@ -82,6 +82,7 @@ namespace Radegast
             client.Avatars.AvatarPicksReply += new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
             client.Avatars.PickInfoReply += new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
+            client.Avatars.AvatarGroupsReply += new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
 
             InitializeProfile();
@@ -93,7 +94,34 @@ namespace Radegast
             client.Avatars.AvatarPicksReply -= new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
             client.Avatars.PickInfoReply -= new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
+            client.Avatars.AvatarGroupsReply -= new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
             netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
+        }
+
+        void Avatars_AvatarGroupsReply(object sender, AvatarGroupsReplyEventArgs e)
+        {
+            if (e.AvatarID != agentID) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Avatars_AvatarGroupsReply(sender, e)));
+                return;
+            }
+
+            lvwGroups.BeginUpdate();
+            
+            foreach (AvatarGroup g in e.Groups)
+            {
+                ListViewItem item = new ListViewItem();
+                item.Name = g.GroupID.ToString();
+                item.Text = g.GroupName;
+                item.Tag = g;
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, g.GroupTitle));
+                lvwGroups.Items.Add(item);
+            }
+
+            lvwGroups.EndUpdate();
+            
         }
 
         void Avatars_AvatarPicksReply(object sender, AvatarPicksReplyEventArgs e)
@@ -430,6 +458,20 @@ namespace Radegast
                 ((int)currentPick.PosGlobal.Y) % 256,
                 ((int)currentPick.PosGlobal.Z) % 256
             );
+        }
+
+        private void lvwGroups_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListViewItem item = lvwGroups.GetItemAt(e.X, e.Y);
+            
+            if (item != null)
+            {
+                try
+                {
+                    instance.MainForm.ShowGroupProfile((AvatarGroup)item.Tag);
+                }
+                catch (Exception) { }
+            }
         }
     }
 }

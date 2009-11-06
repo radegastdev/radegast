@@ -643,6 +643,17 @@ namespace Radegast
 
         private Dictionary<UUID, frmGroupInfo> shownGroupProfiles = new Dictionary<UUID, frmGroupInfo>();
 
+        public void ShowGroupProfile(AvatarGroup group)
+        {
+            ShowGroupProfile(new OpenMetaverse.Group()
+            {
+                ID = group.GroupID,
+                InsigniaID = group.GroupInsigniaID,
+                Name = group.GroupName
+            }
+            );
+        }
+
         public void ShowGroupProfile(OpenMetaverse.Group group)
         {
             lock (shownGroupProfiles)
