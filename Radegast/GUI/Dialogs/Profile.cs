@@ -60,9 +60,9 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new EventHandler(frmProfile_Disposed);
-            
+
             AutoSavePosition = true;
-            
+
             this.instance = instance;
             netcom = this.instance.Netcom;
             client = this.instance.Client;
@@ -109,21 +109,23 @@ namespace Radegast
             }
 
             lvwGroups.BeginUpdate();
-            
-            lvwGroups.Items.Clear();
 
             foreach (AvatarGroup g in e.Groups)
             {
-                ListViewItem item = new ListViewItem();
-                item.Name = g.GroupID.ToString();
-                item.Text = g.GroupName;
-                item.Tag = g;
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, g.GroupTitle));
-                lvwGroups.Items.Add(item);
+                if (!lvwGroups.Items.ContainsKey(g.GroupID.ToString()))
+                {
+                    ListViewItem item = new ListViewItem();
+                    item.Name = g.GroupID.ToString();
+                    item.Text = g.GroupName;
+                    item.Tag = g;
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, g.GroupTitle));
+
+                    lvwGroups.Items.Add(item);
+                }
             }
 
             lvwGroups.EndUpdate();
-            
+
         }
 
         void Avatars_AvatarPicksReply(object sender, AvatarPicksReplyEventArgs e)
@@ -316,7 +318,7 @@ namespace Radegast
 
             this.BeginInvoke(
                 new OnSetProfileProperties(SetProfileProperties),
-                new object[] { e.Properties});
+                new object[] { e.Properties });
         }
 
         //called on GUI thread
@@ -472,7 +474,7 @@ namespace Radegast
         private void lvwGroups_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             ListViewItem item = lvwGroups.GetItemAt(e.X, e.Y);
-            
+
             if (item != null)
             {
                 try
