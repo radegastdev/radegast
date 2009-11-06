@@ -191,9 +191,7 @@ namespace Radegast
 
         void Groups_GroupProfile(object sender, GroupProfileEventArgs e)
         {
-            Group group = e.Group;
-
-            if (group.ID != this.group.ID) return;
+            if (group.ID != e.Group.ID) return;
 
             if (InvokeRequired)
             {
@@ -201,7 +199,14 @@ namespace Radegast
                 return;
             }
 
-            this.group = group;
+            group = e.Group;
+            if (group.InsigniaID != UUID.Zero && pnlInsignia.Controls.Count == 0)
+            {
+                SLImageHandler insignia = new SLImageHandler(instance, group.InsigniaID, string.Empty);
+                insignia.Dock = DockStyle.Fill;
+                pnlInsignia.Controls.Add(insignia);
+            }
+
 
             tbxCharter.Text = group.Charter;
             lblFounded.Text = "Founded by: " + instance.getAvatarName(group.FounderID);

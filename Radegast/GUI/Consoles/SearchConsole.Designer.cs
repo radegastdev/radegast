@@ -72,18 +72,32 @@ namespace Radegast
             this.btnLink = new System.Windows.Forms.Button();
             this.tpgPlaces = new System.Windows.Forms.TabPage();
             this.pnlPlaceDetail = new System.Windows.Forms.Panel();
-            this.lvwPlaces = new Radegast.ListViewNoFlicker();
-            this.Place = new System.Windows.Forms.ColumnHeader();
-            this.Traffic = new System.Windows.Forms.ColumnHeader();
             this.btnSearchPlace = new System.Windows.Forms.Button();
             this.txtSearchPlace = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnNextPlace = new System.Windows.Forms.Button();
             this.btnPrevPlace = new System.Windows.Forms.Button();
             this.lblNrPlaces = new System.Windows.Forms.Label();
+            this.tpgGroups = new System.Windows.Forms.TabPage();
+            this.pnlGroupDetail = new System.Windows.Forms.Panel();
+            this.btnSearchGroup = new System.Windows.Forms.Button();
+            this.txtSearchGroup = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.btnNextGroup = new System.Windows.Forms.Button();
+            this.btnPrevGroup = new System.Windows.Forms.Button();
+            this.lblNrGroups = new System.Windows.Forms.Label();
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.lvwPlaces = new Radegast.ListViewNoFlicker();
+            this.Place = new System.Windows.Forms.ColumnHeader();
+            this.Traffic = new System.Windows.Forms.ColumnHeader();
+            this.lvwGroups = new Radegast.ListViewNoFlicker();
+            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
             this.tabControl1.SuspendLayout();
             this.tpgPeople.SuspendLayout();
             this.tpgPlaces.SuspendLayout();
+            this.tpgGroups.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlFindPeople
@@ -189,6 +203,7 @@ namespace Radegast
             // 
             this.tabControl1.Controls.Add(this.tpgPeople);
             this.tabControl1.Controls.Add(this.tpgPlaces);
+            this.tabControl1.Controls.Add(this.tpgGroups);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -252,41 +267,6 @@ namespace Radegast
             this.pnlPlaceDetail.Name = "pnlPlaceDetail";
             this.pnlPlaceDetail.Size = new System.Drawing.Size(353, 338);
             this.pnlPlaceDetail.TabIndex = 15;
-            // 
-            // lvwPlaces
-            // 
-            this.lvwPlaces.AllowColumnReorder = true;
-            this.lvwPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
-            this.lvwPlaces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.Place,
-            this.Traffic});
-            this.lvwPlaces.FullRowSelect = true;
-            this.lvwPlaces.GridLines = true;
-            this.lvwPlaces.HideSelection = false;
-            this.lvwPlaces.Location = new System.Drawing.Point(12, 35);
-            this.lvwPlaces.MultiSelect = false;
-            this.lvwPlaces.Name = "lvwPlaces";
-            this.lvwPlaces.ShowGroups = false;
-            this.lvwPlaces.ShowItemToolTips = true;
-            this.lvwPlaces.Size = new System.Drawing.Size(294, 315);
-            this.lvwPlaces.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lvwPlaces.TabIndex = 14;
-            this.lvwPlaces.UseCompatibleStateImageBehavior = false;
-            this.lvwPlaces.View = System.Windows.Forms.View.Details;
-            this.lvwPlaces.SelectedIndexChanged += new System.EventHandler(this.lvwPlaces_SelectedIndexChanged);
-            this.lvwPlaces.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwPlaces_ColumnClick);
-            // 
-            // Place
-            // 
-            this.Place.Text = "Place";
-            this.Place.Width = 200;
-            // 
-            // Traffic
-            // 
-            this.Traffic.Text = "Traffic";
-            this.Traffic.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.Traffic.Width = 50;
             // 
             // btnSearchPlace
             // 
@@ -352,6 +332,180 @@ namespace Radegast
             this.lblNrPlaces.TabIndex = 8;
             this.lblNrPlaces.Text = "0 places found";
             // 
+            // tpgGroups
+            // 
+            this.tpgGroups.Controls.Add(this.pnlGroupDetail);
+            this.tpgGroups.Controls.Add(this.lvwGroups);
+            this.tpgGroups.Controls.Add(this.btnSearchGroup);
+            this.tpgGroups.Controls.Add(this.txtSearchGroup);
+            this.tpgGroups.Controls.Add(this.label3);
+            this.tpgGroups.Controls.Add(this.btnNextGroup);
+            this.tpgGroups.Controls.Add(this.btnPrevGroup);
+            this.tpgGroups.Controls.Add(this.lblNrGroups);
+            this.tpgGroups.Location = new System.Drawing.Point(4, 22);
+            this.tpgGroups.Name = "tpgGroups";
+            this.tpgGroups.Padding = new System.Windows.Forms.Padding(3);
+            this.tpgGroups.Size = new System.Drawing.Size(672, 374);
+            this.tpgGroups.TabIndex = 2;
+            this.tpgGroups.Text = "Groups";
+            this.tpgGroups.UseVisualStyleBackColor = true;
+            // 
+            // pnlGroupDetail
+            // 
+            this.pnlGroupDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlGroupDetail.AutoScroll = true;
+            this.pnlGroupDetail.Location = new System.Drawing.Point(312, 9);
+            this.pnlGroupDetail.Name = "pnlGroupDetail";
+            this.pnlGroupDetail.Size = new System.Drawing.Size(353, 338);
+            this.pnlGroupDetail.TabIndex = 23;
+            // 
+            // btnSearchGroup
+            // 
+            this.btnSearchGroup.Enabled = false;
+            this.btnSearchGroup.Location = new System.Drawing.Point(228, 5);
+            this.btnSearchGroup.Name = "btnSearchGroup";
+            this.btnSearchGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnSearchGroup.TabIndex = 21;
+            this.btnSearchGroup.Text = "Search";
+            this.btnSearchGroup.UseVisualStyleBackColor = true;
+            this.btnSearchGroup.Click += new System.EventHandler(this.btnSearchGroup_Click);
+            // 
+            // txtSearchGroup
+            // 
+            this.txtSearchGroup.Location = new System.Drawing.Point(44, 7);
+            this.txtSearchGroup.Name = "txtSearchGroup";
+            this.txtSearchGroup.Size = new System.Drawing.Size(178, 21);
+            this.txtSearchGroup.TabIndex = 20;
+            this.txtSearchGroup.TextChanged += new System.EventHandler(this.txtSearchGroup_TextChanged);
+            this.txtSearchGroup.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearchGroup_KeyDown);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 10);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(36, 13);
+            this.label3.TabIndex = 19;
+            this.label3.Text = "Group";
+            // 
+            // btnNextGroup
+            // 
+            this.btnNextGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNextGroup.Enabled = false;
+            this.btnNextGroup.Location = new System.Drawing.Point(591, 347);
+            this.btnNextGroup.Name = "btnNextGroup";
+            this.btnNextGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnNextGroup.TabIndex = 18;
+            this.btnNextGroup.Text = "Next >";
+            this.btnNextGroup.UseVisualStyleBackColor = true;
+            this.btnNextGroup.Click += new System.EventHandler(this.btnNextGroup_Click);
+            // 
+            // btnPrevGroup
+            // 
+            this.btnPrevGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrevGroup.Enabled = false;
+            this.btnPrevGroup.Location = new System.Drawing.Point(510, 347);
+            this.btnPrevGroup.Name = "btnPrevGroup";
+            this.btnPrevGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnPrevGroup.TabIndex = 17;
+            this.btnPrevGroup.Text = "< Previous";
+            this.btnPrevGroup.UseVisualStyleBackColor = true;
+            this.btnPrevGroup.Click += new System.EventHandler(this.btnPrevGroup_Click);
+            // 
+            // lblNrGroups
+            // 
+            this.lblNrGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblNrGroups.AutoSize = true;
+            this.lblNrGroups.Location = new System.Drawing.Point(6, 352);
+            this.lblNrGroups.Name = "lblNrGroups";
+            this.lblNrGroups.Size = new System.Drawing.Size(80, 13);
+            this.lblNrGroups.TabIndex = 16;
+            this.lblNrGroups.Text = "0 groups found";
+            this.lblNrGroups.Visible = false;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Place";
+            this.columnHeader1.Width = 200;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Traffic";
+            this.columnHeader2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnHeader2.Width = 50;
+            // 
+            // lvwPlaces
+            // 
+            this.lvwPlaces.AllowColumnReorder = true;
+            this.lvwPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lvwPlaces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Place,
+            this.Traffic});
+            this.lvwPlaces.FullRowSelect = true;
+            this.lvwPlaces.GridLines = true;
+            this.lvwPlaces.HideSelection = false;
+            this.lvwPlaces.Location = new System.Drawing.Point(12, 35);
+            this.lvwPlaces.MultiSelect = false;
+            this.lvwPlaces.Name = "lvwPlaces";
+            this.lvwPlaces.ShowGroups = false;
+            this.lvwPlaces.ShowItemToolTips = true;
+            this.lvwPlaces.Size = new System.Drawing.Size(294, 315);
+            this.lvwPlaces.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lvwPlaces.TabIndex = 14;
+            this.lvwPlaces.UseCompatibleStateImageBehavior = false;
+            this.lvwPlaces.View = System.Windows.Forms.View.Details;
+            this.lvwPlaces.SelectedIndexChanged += new System.EventHandler(this.lvwPlaces_SelectedIndexChanged);
+            this.lvwPlaces.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwPlaces_ColumnClick);
+            // 
+            // Place
+            // 
+            this.Place.Text = "Place";
+            this.Place.Width = 200;
+            // 
+            // Traffic
+            // 
+            this.Traffic.Text = "Traffic";
+            this.Traffic.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.Traffic.Width = 50;
+            // 
+            // lvwGroups
+            // 
+            this.lvwGroups.AllowColumnReorder = true;
+            this.lvwGroups.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lvwGroups.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3,
+            this.columnHeader4});
+            this.lvwGroups.FullRowSelect = true;
+            this.lvwGroups.GridLines = true;
+            this.lvwGroups.HideSelection = false;
+            this.lvwGroups.Location = new System.Drawing.Point(9, 34);
+            this.lvwGroups.MultiSelect = false;
+            this.lvwGroups.Name = "lvwGroups";
+            this.lvwGroups.ShowGroups = false;
+            this.lvwGroups.ShowItemToolTips = true;
+            this.lvwGroups.Size = new System.Drawing.Size(294, 315);
+            this.lvwGroups.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lvwGroups.TabIndex = 22;
+            this.lvwGroups.UseCompatibleStateImageBehavior = false;
+            this.lvwGroups.View = System.Windows.Forms.View.Details;
+            this.lvwGroups.SelectedIndexChanged += new System.EventHandler(this.lvwGroups_SelectedIndexChanged);
+            this.lvwGroups.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGroups_ColumnClick);
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Group";
+            this.columnHeader3.Width = 200;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "Members";
+            this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.columnHeader4.Width = 50;
+            // 
             // SearchConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -366,6 +520,8 @@ namespace Radegast
             this.tpgPeople.PerformLayout();
             this.tpgPlaces.ResumeLayout(false);
             this.tpgPlaces.PerformLayout();
+            this.tpgGroups.ResumeLayout(false);
+            this.tpgGroups.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -395,6 +551,19 @@ namespace Radegast
         public System.Windows.Forms.ColumnHeader Place;
         public System.Windows.Forms.ColumnHeader Traffic;
         public System.Windows.Forms.Panel pnlPlaceDetail;
+        public System.Windows.Forms.TabPage tpgGroups;
+        public System.Windows.Forms.Panel pnlGroupDetail;
+        public ListViewNoFlicker lvwGroups;
+        public System.Windows.Forms.ColumnHeader columnHeader3;
+        public System.Windows.Forms.ColumnHeader columnHeader4;
+        public System.Windows.Forms.Button btnSearchGroup;
+        public System.Windows.Forms.TextBox txtSearchGroup;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Button btnNextGroup;
+        public System.Windows.Forms.Button btnPrevGroup;
+        public System.Windows.Forms.Label lblNrGroups;
+        public System.Windows.Forms.ColumnHeader columnHeader1;
+        public System.Windows.Forms.ColumnHeader columnHeader2;
 
     }
 }

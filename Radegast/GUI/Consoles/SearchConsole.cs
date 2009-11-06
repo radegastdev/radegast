@@ -60,17 +60,20 @@ namespace Radegast
             // Callbacks
             client.Directory.DirPeopleReply += new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
             client.Directory.DirPlacesReply += new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
+            client.Directory.DirGroupsReply += new EventHandler<DirGroupsReplyEventArgs>(Directory_DirGroupsReply);
             console = new FindPeopleConsole(instance, UUID.Random());
             console.Dock = DockStyle.Fill;
             console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
             pnlFindPeople.Controls.Add(console);
             lvwPlaces.ListViewItemSorter = new PlaceSorter();
+            lvwGroups.ListViewItemSorter = new GroupSorter();
         }
 
         void SearchConsole_Disposed(object sender, EventArgs e)
         {
             client.Directory.DirPeopleReply -= new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
             client.Directory.DirPlacesReply -= new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
+            client.Directory.DirGroupsReply -= new EventHandler<DirGroupsReplyEventArgs>(Directory_DirGroupsReply);
         }
 
         #endregion Construction and disposal
@@ -378,5 +381,197 @@ namespace Radegast
             }
         }
         #endregion Places search
+
+        #region Groups search
+        private UUID groupSearch;
+        private int groupMatches = 0;
+        private int groupStart = 0;
+
+        void Directory_DirGroupsReply(object sender, DirGroupsReplyEventArgs e)
+        {
+            if (e.QueryID != groupSearch) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Directory_DirGroupsReply(sender, e)));
+                return;
+            }
+
+            lvwGroups.BeginUpdate();
+
+            if (e.MatchedGroups.Count == 0)
+                lvwGroups.Items.Clear();
+
+            foreach (DirectoryManager.GroupSearchData group in e.MatchedGroups)
+            {
+                if (group.GroupID == UUID.Zero) continue;
+
+                ListViewItem item = new ListViewItem();
+                item.Name = group.GroupID.ToString();
+                item.Text = group.GroupName;
+                item.Tag = group;
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, group.Members.ToString()));
+
+                lvwGroups.Items.Add(item);
+            }
+            lvwGroups.Sort();
+            lvwGroups.EndUpdate();
+
+            groupMatches += e.MatchedGroups.Count;
+            btnNextGroup.Enabled = groupMatches > 100;
+            btnPrevGroup.Enabled = placeStart != 0;
+
+            if (e.MatchedGroups.Count > 0 && e.MatchedGroups[e.MatchedGroups.Count - 1].GroupID == UUID.Zero)
+                groupMatches -= 1;
+
+            lblNrGroups.Visible = true;
+            lblNrGroups.Text = string.Format("{0} groups found", groupMatches > 100 ? "More than " + (groupStart + 100).ToString() : (groupStart + groupMatches).ToString());
+        }
+
+        private void btnSearchGroup_Click(object sender, EventArgs e)
+        {
+            groupMatches = 0;
+            groupStart = 0;
+            lvwGroups.Items.Clear();
+            groupSearch = client.Directory.StartGroupSearch(txtSearchGroup.Text.Trim(), 0);
+        }
+
+        private void txtSearchGroup_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = e.Handled = true;
+                btnSearchGroup.PerformClick();
+            }
+        }
+
+        private void txtSearchGroup_TextChanged(object sender, EventArgs e)
+        {
+            if (txtSearchGroup.Text.Length > 1)
+            {
+                btnSearchGroup.Enabled = true;
+            }
+            else
+            {
+                btnSearchGroup.Enabled = false;
+            }
+        }
+
+        private void btnPrevGroup_Click(object sender, EventArgs e)
+        {
+            groupMatches = 0;
+            groupStart -= 100;
+            lvwGroups.Items.Clear();
+            groupSearch = client.Directory.StartGroupSearch(txtSearchGroup.Text.Trim(), groupStart);
+        }
+
+        private void btnNextGroup_Click(object sender, EventArgs e)
+        {
+            groupMatches = 0;
+            groupStart += 100;
+            lvwGroups.Items.Clear();
+            groupSearch = client.Directory.StartGroupSearch(txtSearchGroup.Text.Trim(), groupStart);
+        }
+
+        private void lvwGroups_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            foreach (Control c in pnlGroupDetail.Controls)
+            {
+                c.Dispose();
+            }
+            pnlGroupDetail.Controls.Clear();
+
+            if (lvwGroups.SelectedItems.Count == 1)
+            {
+                try
+                {
+                    DirectoryManager.GroupSearchData g = (DirectoryManager.GroupSearchData)lvwGroups.SelectedItems[0].Tag;
+                    GroupDetails grpPanel = new GroupDetails(instance, new Group() { ID = g.GroupID, Name = g.GroupName });
+                    grpPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    grpPanel.Region = new System.Drawing.Region(
+                        new System.Drawing.RectangleF(
+                            grpPanel.tpGeneral.Left, grpPanel.tpGeneral.Top, grpPanel.tpGeneral.Width, grpPanel.tpGeneral.Height));
+                    pnlGroupDetail.Controls.Add(grpPanel);
+                }
+                catch { }
+            }
+        }
+
+        private void lvwGroups_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            GroupSorter sorter = (GroupSorter)lvwGroups.ListViewItemSorter;
+            switch (e.Column)
+            {
+                case 0:
+                    sorter.SortBy = GroupSorter.SortByColumn.Name;
+                    break;
+
+                case 1:
+                    sorter.SortBy = GroupSorter.SortByColumn.Members;
+                    break;
+            }
+
+            if (sorter.CurrentOrder == GroupSorter.SortOrder.Ascending)
+                sorter.CurrentOrder = GroupSorter.SortOrder.Descending;
+            else
+                sorter.CurrentOrder = GroupSorter.SortOrder.Ascending;
+
+            lvwGroups.Sort();
+        }
+
+        public class GroupSorter : System.Collections.IComparer
+        {
+            public enum SortByColumn
+            {
+                Name,
+                Members
+            }
+
+            public enum SortOrder
+            {
+                Ascending,
+                Descending
+            }
+
+            public SortOrder CurrentOrder = SortOrder.Ascending;
+            public SortByColumn SortBy = SortByColumn.Name;
+
+            public int Compare(object x, object y)
+            {
+                ListViewItem item1 = (ListViewItem)x;
+                ListViewItem item2 = (ListViewItem)y;
+                DirectoryManager.GroupSearchData group1 = (DirectoryManager.GroupSearchData)item1.Tag;
+                DirectoryManager.GroupSearchData group2 = (DirectoryManager.GroupSearchData)item2.Tag;
+
+                switch (SortBy)
+                {
+                    case SortByColumn.Name:
+                        if (CurrentOrder == SortOrder.Ascending)
+                            return string.Compare(item1.Text, item2.Text);
+                        else
+                            return string.Compare(item2.Text, item1.Text);
+
+                    case SortByColumn.Members:
+                        if (CurrentOrder == SortOrder.Ascending)
+                        {
+                            if (group1.Members > group2.Members)
+                                return 1;
+                            else if (group1.Members < group2.Members)
+                                return -1;
+                        }
+                        else
+                        {
+                            if (group1.Members > group2.Members)
+                                return -1;
+                            else if (group1.Members < group2.Members)
+                                return 1;
+                        }
+                        break;
+                }
+
+                return 0;
+            }
+        }
+        #endregion Groups search
     }
 }
