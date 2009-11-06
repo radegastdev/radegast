@@ -420,7 +420,11 @@ namespace Radegast.Core
                 string Application )
         {
             VoiceSession s = FindSession(sessionHandle, false);
-            if (s == null) return;
+            if (s == null)
+            {
+                Logger.Log("Orphan participant", Helpers.LogLevel.Error);
+                return;
+            }
             s.AddParticipant( ParticipantUri );
         }
 
@@ -450,12 +454,13 @@ namespace Radegast.Core
             VoiceSession s = FindSession(sessionHandle, true);
             s.RegionName = regionName;
 
-            Logger.Log("Added voice session in " + regionName, Helpers.LogLevel.Info);
             spatialSession = s;
 
             // Tell any user-facing code.
             if (OnSessionCreate != null)
                 OnSessionCreate(s, null);
+
+            Logger.Log("Added voice session in " + regionName, Helpers.LogLevel.Info);
         }
 
         /// <summary>

@@ -59,6 +59,7 @@ namespace Radegast
         private OSDMap config;
         public VoiceGateway gateway;
         public VoiceSession session;
+        private VoiceParticipant selected;
 
         public VoiceConsole(RadegastInstance instance)
         {
@@ -96,6 +97,38 @@ namespace Radegast
             RegisterClientEvents();
 
             gateway.Start();
+        }
+
+        void RadegastContextMenuStrip_OnContentMenuOpened(object sender, RadegastContextMenuStrip.ContextMenuEventArgs e)
+        {
+            lock (e.Menu)
+            {
+                // Figure out what this menu applies to.
+                if (e.Menu.Selection is ListViewItem)
+                {
+                    ListViewItem item = e.Menu.Selection as ListViewItem;
+                    if (item.Tag is VoiceParticipant)
+                    {
+                        selected = item.Tag as VoiceParticipant;
+                        ToolStripButton muteButton;
+                        if (selected.IsMuted)
+                            muteButton = new ToolStripButton("Unmute", null, new EventHandler(OnUnMuteClick));
+                        else
+                            muteButton = new ToolStripButton("Mute", null, new EventHandler(OnMuteClick));
+                        e.Menu.Items.Add(muteButton);
+                    }
+                }
+            }
+        }
+
+        void OnMuteClick(object sender, EventArgs e)
+        {
+            selected.IsMuted = true;
+        }
+
+        void OnUnMuteClick(object sender, EventArgs e)
+        {
+            selected.IsMuted = false;
         }
 
         private void Stop()
@@ -183,7 +216,7 @@ namespace Radegast
         void gateway_OnSessionRemove(object sender, EventArgs e)
         {
             VoiceSession s = sender as VoiceSession;
-            if (session != s)
+            if (session != s || session==null)
                 return;
 
             BeginInvoke(new MethodInvoker(delegate()
@@ -392,6 +425,19 @@ namespace Radegast
            gateway.MicMute = micMute.Checked;
        }
 
+        /// <summary>
+        /// Right-clicks on participants beings up Mute, etc menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+       private void participants_MouseUp(object sender, MouseEventArgs e)
+       {
+            if (e.Button!=MouseButtons.Right) return;
+
+            RadegastContextMenuStrip cms = new RadegastContextMenuStrip();
+            instance.ContextActionManager.AddContributions(cms,instance.Client);
+            cms.Show((Control)sender,new Point(e.X,e.Y));
+       }
 
     }
 }

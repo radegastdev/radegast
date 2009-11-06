@@ -88,6 +88,10 @@ namespace Radegast
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.TalkStates = new System.Windows.Forms.ImageList(this.components);
+            this.label1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -106,6 +110,10 @@ namespace Radegast
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.label5);
+            this.splitContainer1.Panel1.Controls.Add(this.label4);
+            this.splitContainer1.Panel1.Controls.Add(this.label3);
+            this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Controls.Add(this.button1);
             this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
             this.splitContainer1.Panel1.Controls.Add(this.spkrMute);
@@ -131,11 +139,11 @@ namespace Radegast
             // 
             this.button1.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.button1.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(92, 228);
+            this.button1.Location = new System.Drawing.Point(81, 281);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(293, 97);
             this.button1.TabIndex = 24;
-            this.button1.Text = "PTT";
+            this.button1.Text = "Push To Talk";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
             this.button1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
@@ -184,7 +192,7 @@ namespace Radegast
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(158, 14);
+            this.progressBar1.Location = new System.Drawing.Point(212, 26);
             this.progressBar1.Maximum = 8;
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(147, 15);
@@ -193,32 +201,35 @@ namespace Radegast
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(240, 161);
+            this.label2.Location = new System.Drawing.Point(11, 381);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(37, 13);
+            this.label2.Size = new System.Drawing.Size(43, 26);
             this.label2.TabIndex = 16;
-            this.label2.Text = "Levels";
+            this.label2.Text = "My Talk\r\nLevel";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // micLevel
             // 
             this.micLevel.BackColor = System.Drawing.SystemColors.Control;
             this.micLevel.LargeChange = 20;
-            this.micLevel.Location = new System.Drawing.Point(92, 161);
+            this.micLevel.Location = new System.Drawing.Point(14, 274);
             this.micLevel.Maximum = 100;
             this.micLevel.Minimum = -100;
             this.micLevel.Name = "micLevel";
-            this.micLevel.Size = new System.Drawing.Size(104, 42);
+            this.micLevel.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.micLevel.Size = new System.Drawing.Size(42, 104);
             this.micLevel.TabIndex = 15;
             this.micLevel.TickFrequency = 20;
             this.micLevel.ValueChanged += new System.EventHandler(this.micLevel_ValueChanged);
             // 
             // spkrLevel
             // 
-            this.spkrLevel.Location = new System.Drawing.Point(330, 161);
+            this.spkrLevel.Location = new System.Drawing.Point(405, 274);
             this.spkrLevel.Maximum = 100;
             this.spkrLevel.Minimum = -100;
             this.spkrLevel.Name = "spkrLevel";
-            this.spkrLevel.Size = new System.Drawing.Size(104, 42);
+            this.spkrLevel.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.spkrLevel.Size = new System.Drawing.Size(42, 104);
             this.spkrLevel.TabIndex = 14;
             this.spkrLevel.TickFrequency = 20;
             this.spkrLevel.ValueChanged += new System.EventHandler(this.spkrLevel_ValueChanged);
@@ -244,7 +255,7 @@ namespace Radegast
             // chkVoiceEnable
             // 
             this.chkVoiceEnable.AutoSize = true;
-            this.chkVoiceEnable.Location = new System.Drawing.Point(13, 12);
+            this.chkVoiceEnable.Location = new System.Drawing.Point(22, 10);
             this.chkVoiceEnable.Name = "chkVoiceEnable";
             this.chkVoiceEnable.Size = new System.Drawing.Size(86, 17);
             this.chkVoiceEnable.TabIndex = 0;
@@ -270,6 +281,7 @@ namespace Radegast
             this.participants.TabIndex = 8;
             this.participants.UseCompatibleStateImageBehavior = false;
             this.participants.View = System.Windows.Forms.View.List;
+            this.participants.MouseUp += new System.Windows.Forms.MouseEventHandler(this.participants_MouseUp);
             // 
             // avatarContext
             // 
@@ -345,6 +357,43 @@ namespace Radegast
             this.TalkStates.Images.SetKeyName(1, "Talking.png");
             this.TalkStates.Images.SetKeyName(2, "TalkMute.png");
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(395, 381);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 26);
+            this.label1.TabIndex = 25;
+            this.label1.Text = "My Listen\r\nLevel";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(230, 10);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(114, 13);
+            this.label3.TabIndex = 26;
+            this.label3.Text = "Voice conection status";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(104, 385);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(225, 13);
+            this.label4.TabIndex = 27;
+            this.label4.Text = "( or uncheck the microphone mute checkbox )";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(245, 91);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(99, 13);
+            this.label5.TabIndex = 28;
+            this.label5.Text = "Audio device select";
+            // 
             // VoiceConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -394,5 +443,9 @@ namespace Radegast
         private PictureBox pictureBox1;
         private Button button1;
         public CheckBox chkVoiceEnable;
+        private Label label1;
+        private Label label5;
+        private Label label4;
+        private Label label3;
     }
 }

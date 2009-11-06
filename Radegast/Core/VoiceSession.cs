@@ -69,6 +69,9 @@ namespace Radegast.Core
             // If this is ME, start sending position updates.
             if (p.ID == connector.Client.Self.AgentID)
                 connector.PosUpdating(true);
+
+
+            Logger.Log("Added Participant " + p.ID.ToString(), Helpers.LogLevel.Info);
         }
 
         internal void RemoveParticipant(string URI)
