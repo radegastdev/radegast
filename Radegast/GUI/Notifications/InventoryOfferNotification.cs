@@ -117,6 +117,11 @@ namespace Radegast
         private void SendReply(InstantMessageDialog dialog, byte[] bucket)
         {
             client.Self.InstantMessage(client.Self.Name, msg.FromAgentID, string.Empty, msg.IMSessionID, dialog, InstantMessageOnline.Offline, client.Self.SimPosition, client.Network.CurrentSim.RegionID, bucket);
+            
+            if (dialog == InstantMessageDialog.InventoryAccepted)
+            {
+                client.Inventory.RequestFetchInventory(objectID, client.Self.AgentID);
+            }
         }
 
         private void btnAccept_Click(object sender, EventArgs e)

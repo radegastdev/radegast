@@ -1597,8 +1597,11 @@ namespace Radegast
                     highlightedNode = null;
                 }
 
-                highlightedNode = destinationNode;
-                highlightedNode.BackColor = Color.LightSlateGray;
+                if (destinationNode != null)
+                {
+                    highlightedNode = destinationNode;
+                    highlightedNode.BackColor = Color.LightSlateGray;
+                }
             }
 
             if (destinationNode == null)
