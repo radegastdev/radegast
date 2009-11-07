@@ -63,6 +63,10 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VoiceConsole));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.spkrMute = new System.Windows.Forms.CheckBox();
@@ -88,10 +92,8 @@ namespace Radegast
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.TalkStates = new System.Windows.Forms.ImageList(this.components);
-            this.label1 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.btnMuteAll = new System.Windows.Forms.Button();
+            this.btnUnmuteAll = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -110,6 +112,8 @@ namespace Radegast
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.btnUnmuteAll);
+            this.splitContainer1.Panel1.Controls.Add(this.btnMuteAll);
             this.splitContainer1.Panel1.Controls.Add(this.label5);
             this.splitContainer1.Panel1.Controls.Add(this.label4);
             this.splitContainer1.Panel1.Controls.Add(this.label3);
@@ -134,6 +138,43 @@ namespace Radegast
             this.splitContainer1.SplitterDistance = 462;
             this.splitContainer1.TabIndex = 7;
             this.splitContainer1.TabStop = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(245, 91);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(99, 13);
+            this.label5.TabIndex = 28;
+            this.label5.Text = "Audio device select";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(104, 385);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(225, 13);
+            this.label4.TabIndex = 27;
+            this.label4.Text = "( or uncheck the microphone mute checkbox )";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(230, 10);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(114, 13);
+            this.label3.TabIndex = 26;
+            this.label3.Text = "Voice conection status";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(395, 381);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(52, 26);
+            this.label1.TabIndex = 25;
+            this.label1.Text = "My Listen\r\nLevel";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // button1
             // 
@@ -357,42 +398,25 @@ namespace Radegast
             this.TalkStates.Images.SetKeyName(1, "Talking.png");
             this.TalkStates.Images.SetKeyName(2, "TalkMute.png");
             // 
-            // label1
+            // btnMuteAll
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(395, 381);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(52, 26);
-            this.label1.TabIndex = 25;
-            this.label1.Text = "My Listen\r\nLevel";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnMuteAll.Location = new System.Drawing.Point(372, 170);
+            this.btnMuteAll.Name = "btnMuteAll";
+            this.btnMuteAll.Size = new System.Drawing.Size(75, 23);
+            this.btnMuteAll.TabIndex = 29;
+            this.btnMuteAll.Text = "Mute All";
+            this.btnMuteAll.UseVisualStyleBackColor = true;
+            this.btnMuteAll.Click += new System.EventHandler(this.btnMuteAll_Click);
             // 
-            // label3
+            // btnUnmuteAll
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(230, 10);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(114, 13);
-            this.label3.TabIndex = 26;
-            this.label3.Text = "Voice conection status";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(104, 385);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(225, 13);
-            this.label4.TabIndex = 27;
-            this.label4.Text = "( or uncheck the microphone mute checkbox )";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(245, 91);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(99, 13);
-            this.label5.TabIndex = 28;
-            this.label5.Text = "Audio device select";
+            this.btnUnmuteAll.Location = new System.Drawing.Point(372, 211);
+            this.btnUnmuteAll.Name = "btnUnmuteAll";
+            this.btnUnmuteAll.Size = new System.Drawing.Size(75, 23);
+            this.btnUnmuteAll.TabIndex = 30;
+            this.btnUnmuteAll.Text = "Unmute All";
+            this.btnUnmuteAll.UseVisualStyleBackColor = true;
+            this.btnUnmuteAll.Click += new System.EventHandler(this.btnUnmuteAll_Click);
             // 
             // VoiceConsole
             // 
@@ -447,5 +471,7 @@ namespace Radegast
         private Label label5;
         private Label label4;
         private Label label3;
+        private Button btnUnmuteAll;
+        private Button btnMuteAll;
     }
 }

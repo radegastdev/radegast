@@ -99,6 +99,11 @@ namespace Radegast
             gateway.Start();
         }
 
+        /// <summary>
+        /// Open context menu for voice items
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void RadegastContextMenuStrip_OnContentMenuOpened(object sender, RadegastContextMenuStrip.ContextMenuEventArgs e)
         {
             lock (e.Menu)
@@ -291,6 +296,56 @@ namespace Radegast
             }));
         }
 
+        /// <summary>
+        /// Right-clicks on participants beings up Mute, etc menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void participants_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+
+            RadegastContextMenuStrip cms = new RadegastContextMenuStrip();
+            instance.ContextActionManager.AddContributions(cms, instance.Client);
+            cms.Show((Control)sender, new Point(e.X, e.Y));
+        }
+
+        /// <summary>
+        /// UnMute all participants
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnUnmuteAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem i in participants.Items)
+            {
+                VoiceParticipant p = i.Tag as VoiceParticipant;
+                if (p.ID != instance.Client.Self.AgentID)
+                {
+                    p.IsMuted = false;
+                    i.StateImageIndex = (int)TalkState.Idle;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Mute all participants
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnMuteAll_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem i in participants.Items)
+            {
+                VoiceParticipant p = i.Tag as VoiceParticipant;
+                if (p.ID != instance.Client.Self.AgentID)
+                {
+                    p.IsMuted = true;
+                    i.StateImageIndex = (int)TalkState.Muted;
+                }
+            }
+        }
+
         ListViewItem FindParticipantItem(VoiceParticipant p)
         {
             foreach (ListViewItem item in participants.Items)
@@ -423,20 +478,6 @@ namespace Radegast
        private void micMute_CheckedChanged(object sender, EventArgs e)
        {
            gateway.MicMute = micMute.Checked;
-       }
-
-        /// <summary>
-        /// Right-clicks on participants beings up Mute, etc menu
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-       private void participants_MouseUp(object sender, MouseEventArgs e)
-       {
-            if (e.Button!=MouseButtons.Right) return;
-
-            RadegastContextMenuStrip cms = new RadegastContextMenuStrip();
-            instance.ContextActionManager.AddContributions(cms,instance.Client);
-            cms.Show((Control)sender,new Point(e.X,e.Y));
        }
 
     }
