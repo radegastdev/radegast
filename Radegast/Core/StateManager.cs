@@ -49,7 +49,7 @@ namespace Radegast
         private bool flying = false;
         private bool alwaysrun = false;
         private bool sitting = false;
-        
+
         private bool following = false;
         private string followName = string.Empty;
         private float followDistance = 3.0f;
@@ -57,6 +57,8 @@ namespace Radegast
         private UUID awayAnimationID = new UUID("fd037134-85d4-f241-72c6-4f42164fedee");
         private UUID busyAnimationID = new UUID("efcf670c2d188128973a034ebc806b67");
         private UUID typingAnimationID = new UUID("c541c47f-e0c0-058b-ad1a-d6ae3a4584d9");
+        internal static Random rnd = new Random();
+        private System.Threading.Timer lookAtTimer;
 
         /// <summary>
         /// Passes walk state
@@ -80,21 +82,27 @@ namespace Radegast
             beamTimer.Elapsed += new ElapsedEventHandler(beamTimer_Elapsed);
 
             // Callbacks
-            netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
+            netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
+            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             RegisterClientEvents(client);
         }
+
 
         private void RegisterClientEvents(GridClient client)
         {
             client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
+            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
             client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
+            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -105,11 +113,18 @@ namespace Radegast
 
         public void Dispose()
         {
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+            netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
+            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
+            netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             UnregisterClientEvents(client);
             beamTimer.Dispose();
             beamTimer = null;
+
+            if (lookAtTimer != null)
+            {
+                lookAtTimer.Dispose();
+                lookAtTimer = null;
+            }
 
             if (walkTimer != null)
             {
@@ -118,17 +133,62 @@ namespace Radegast
             }
         }
 
-        private void netcom_ClientLoggedOut(object sender, EventArgs e)
+        public void SetRandomHeading()
         {
-            typing = away = busy = walking = false;
+            client.Self.Movement.UpdateFromHeading(Utils.TWO_PI * rnd.NextDouble(), true);
+            LookInFront();
         }
 
-        private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
+        void Network_EventQueueRunning(object sender, EventQueueRunningEventArgs e)
         {
-            if (e.Status == LoginStatus.Success) {
-                client.Self.Movement.Camera.Far = 256f;
-                effectSource = client.Self.AgentID;
+            if (e.Simulator == client.Network.CurrentSim)
+            {
+                SetRandomHeading();
             }
+        }
+
+        private UUID teleportEffect = UUID.Random();
+
+        void Self_TeleportProgress(object sender, TeleportEventArgs e)
+        {
+            if (!client.Network.Connected) return;
+
+            if (e.Status == TeleportStatus.Progress)
+            {
+                client.Self.SphereEffect(client.Self.GlobalPosition, Color4.White, 4f, teleportEffect);
+            }
+
+            if (e.Status == TeleportStatus.Finished)
+            {
+                client.Self.SphereEffect(Vector3d.Zero, Color4.White, 0f, teleportEffect);
+                SetRandomHeading();
+            }
+
+            if (e.Status == TeleportStatus.Failed)
+            {
+                client.Self.SphereEffect(Vector3d.Zero, Color4.White, 0f, teleportEffect);
+            }
+        }
+
+        void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
+        {
+            typing = away = busy = walking = false;
+
+            if (lookAtTimer != null)
+            {
+                lookAtTimer.Dispose();
+                lookAtTimer = null;
+            }
+
+        }
+
+        void netcom_ClientConnected(object sender, EventArgs e)
+        {
+            client.Self.Movement.Camera.Far = 256f;
+            effectSource = client.Self.AgentID;
+
+            if (lookAtTimer == null)
+                lookAtTimer = new System.Threading.Timer(new TimerCallback(lookAtTimerTick), null, Timeout.Infinite, Timeout.Infinite);
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
@@ -152,7 +212,7 @@ namespace Radegast
                 {
                     Primitive prim;
                     client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(av.ParentID, out prim);
-                    
+
                     if (prim == null)
                         pos = client.Self.SimPosition;
                     else
@@ -171,6 +231,46 @@ namespace Radegast
                 }
             }
         }
+
+        #region Look at effect
+        private int lastLookAtEffect = 0;
+        private UUID lookAtEffect = UUID.Random();
+
+        /// <summary>
+        /// Set eye focus 3m in front of us
+        /// </summary>
+        public void LookInFront()
+        {
+            if (!client.Network.Connected) return;
+
+            client.Self.LookAtEffect(client.Self.AgentID, client.Self.AgentID,
+                new Vector3d(new Vector3(3, 0, 0) * Quaternion.Identity),
+                LookAtType.Idle, lookAtEffect);
+        }
+
+        void lookAtTimerTick(object state)
+        {
+            LookInFront();
+        }
+
+        void netcom_ChatReceived(object sender, ChatEventArgs e)
+        {
+            if (e.SourceID != client.Self.AgentID && (e.SourceType == ChatSourceType.Agent || e.Type == ChatType.StartTyping))
+            {
+                // change focus max every 4 seconds
+                if (Environment.TickCount - lastLookAtEffect > 4000)
+                {
+                    lastLookAtEffect = Environment.TickCount;
+                    client.Self.LookAtEffect(client.Self.AgentID, e.SourceID, Vector3d.Zero, LookAtType.Respond, lookAtEffect);
+                    // keep looking at the speaker for 10 seconds
+                    if (lookAtTimer != null)
+                    {
+                        lookAtTimer.Change(10000, Timeout.Infinite);
+                    }
+                }
+            }
+        }
+        #endregion Look at effect
 
         public void Follow(string name)
         {
@@ -337,16 +437,20 @@ namespace Radegast
             }
         }
 
-        public Vector3d GlobalPosition(Primitive prim)
+        public Vector3d GlobalPosition(Simulator sim, Vector3 pos)
         {
             uint globalX, globalY;
-            Utils.LongToUInts(client.Network.CurrentSim.Handle, out globalX, out globalY);
-            Vector3 pos = prim.Position;
+            Utils.LongToUInts(sim.Handle, out globalX, out globalY);
 
             return new Vector3d(
                 (double)globalX + (double)pos.X,
                 (double)globalY + (double)pos.Y,
                 (double)pos.Z);
+        }
+
+        public Vector3d GlobalPosition(Primitive prim)
+        {
+            return GlobalPosition(client.Network.CurrentSim, prim.Position);
         }
 
         private System.Timers.Timer beamTimer;
@@ -464,7 +568,7 @@ namespace Radegast
             get { return typingAnimationID; }
             set { typingAnimationID = value; }
         }
-        
+
         public UUID AwayAnimationID
         {
             get { return awayAnimationID; }
