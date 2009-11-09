@@ -33,7 +33,7 @@ using System.Windows.Forms;
 
 namespace Radegast
 {
-    public partial class frmKeyboardShortcuts : Form
+    public partial class frmKeyboardShortcuts : RadegastForm
     {
         private RadegastInstance instance;
 

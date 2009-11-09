@@ -33,7 +33,7 @@ using System.Windows.Forms;
 
 namespace Radegast
 {
-    public partial class frmDetachedTab : Form
+    public partial class frmDetachedTab : RadegastForm
     {
         private RadegastInstance instance;
         private RadegastTab tab;

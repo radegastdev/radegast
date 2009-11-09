@@ -43,6 +43,16 @@ namespace Radegast
 {
     public class RadegastInstance
     {
+        #region OnRadegastFormCreated
+        public event Action<RadegastForm> RadegastFormCreated;
+        /// <summary>
+        /// Triggers the RadegastFormCreated event.
+        /// </summary>
+        public virtual void OnRadegastFormCreated(RadegastForm radForm)
+        {
+            if (RadegastFormCreated != null) RadegastFormCreated(radForm);
+        }
+        #endregion        
         private GridClient client;
         private RadegastNetcom netcom;
 

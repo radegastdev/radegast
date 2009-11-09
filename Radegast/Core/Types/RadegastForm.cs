@@ -98,6 +98,7 @@ namespace Radegast
             : base()
         {
             this.instance = instance;
+            instance.OnRadegastFormCreated(this);
         }
 
         protected override void Dispose(bool disposing)

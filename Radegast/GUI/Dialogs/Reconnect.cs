@@ -34,7 +34,7 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
-    public partial class frmReconnect : Form
+    public partial class frmReconnect : RadegastForm
     {
         private RadegastInstance instance;
         private int reconnectTime;

@@ -36,7 +36,7 @@ using Radegast.Netcom;
 
 namespace Radegast
 {
-    public partial class frmTeleport : Form
+    public partial class frmTeleport : RadegastForm
     {
         private RadegastInstance instance;
         private RadegastNetcom netcom;

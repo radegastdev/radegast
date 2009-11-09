@@ -44,7 +44,7 @@ using OpenMetaverse.Rendering;
 namespace Radegast
 {
 
-    public partial class frmPrimWorkshop : Form
+    public partial class frmPrimWorkshop : RadegastForm
     {
         #region Form Globals
 

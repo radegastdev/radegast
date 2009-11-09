@@ -35,7 +35,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class frmPay : Form
+    public partial class frmPay : RadegastForm
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }

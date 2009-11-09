@@ -41,7 +41,7 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
-    public partial class frmSettings : Form
+    public partial class frmSettings : RadegastForm
     {
         private Settings s;
 
