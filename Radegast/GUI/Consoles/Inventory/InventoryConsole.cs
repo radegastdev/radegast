@@ -188,7 +188,9 @@ namespace Radegast
         {
             Primitive prim = e.Prim;
 
-            if (!e.IsAttachment || prim.ParentID != client.Self.LocalID) return;
+            if (client.Self.LocalID == 0 ||
+                prim.ParentID != client.Self.LocalID ||
+                prim.NameValues == null) return;
 
             for (int i = 0; i < prim.NameValues.Length; i++)
             {
