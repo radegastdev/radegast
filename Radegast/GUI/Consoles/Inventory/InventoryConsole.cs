@@ -396,8 +396,11 @@ namespace Radegast
                 // Did we move to a different folder
                 if (currentNode.Parent != parent)
                 {
+                    TreeNode movedNode = (TreeNode)currentNode.Clone();
+                    movedNode.Tag = newObject;
+                    parent.Nodes.Add(movedNode);
                     removeNode(currentNode);
-                    AddBase(parent, newObject);
+                    cacheNode(movedNode);
                 }
                 else // Update
                 {
@@ -482,10 +485,7 @@ namespace Radegast
             }
             lock (UUID2NodeCache)
             {
-                if (!UUID2NodeCache.ContainsKey(f.UUID))
-                {
-                    UUID2NodeCache.Add(f.UUID, dirNode);
-                }
+                UUID2NodeCache[f.UUID] = dirNode;
             }
             return dirNode;
         }
@@ -512,7 +512,7 @@ namespace Radegast
             parent.Nodes.Add(itemNode);
             lock (UUID2NodeCache)
             {
-                UUID2NodeCache.Add(item.UUID, itemNode);
+                UUID2NodeCache[item.UUID] = itemNode;
             }
             return itemNode;
         }
@@ -529,11 +529,32 @@ namespace Radegast
             return null;
         }
 
+        void cacheNode(TreeNode node)
+        {
+            InventoryBase item = (InventoryBase)node.Tag;
+            if (item != null)
+            {
+                foreach (TreeNode child in node.Nodes)
+                {
+                    cacheNode(child);
+                }
+                lock (UUID2NodeCache)
+                {
+                    UUID2NodeCache[item.UUID] = node;
+                }
+            }
+        }
+
         void removeNode(TreeNode node)
         {
             InventoryBase item = (InventoryBase)node.Tag;
             if (item != null)
             {
+                foreach (TreeNode child in node.Nodes)
+                {
+                    removeNode(child);
+                }
+
                 lock (UUID2NodeCache)
                 {
                     UUID2NodeCache.Remove(item.UUID);
