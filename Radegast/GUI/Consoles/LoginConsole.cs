@@ -52,10 +52,18 @@ namespace Radegast
 
             cbxLocation.SelectedIndex = 0;
             InitializeConfig();
+
+            if (instance.GlobalSettings["hide_login_graphics"].AsBoolean())
+                pnlSplash.BackgroundImage = null;
+            else
+                pnlSplash.BackgroundImage = Properties.Resources.radegast_main_screen2;
+
+            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
         }
 
         void MainConsole_Disposed(object sender, EventArgs e)
         {
+            instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
             RemoveNetcomEvents();
         }
 
@@ -74,6 +82,17 @@ namespace Radegast
             netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggingOut -= new EventHandler<OverrideEventArgs>(netcom_ClientLoggingOut);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+        }
+
+        void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
+        {
+            if (e.Key == "hide_login_graphics")
+            {
+                if (e.Value.AsBoolean())
+                    pnlSplash.BackgroundImage = null;
+                else
+                    pnlSplash.BackgroundImage = Properties.Resources.radegast_main_screen2;
+            }
         }
 
         private void SaveConfig()

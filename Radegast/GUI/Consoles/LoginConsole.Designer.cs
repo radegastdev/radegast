@@ -76,7 +76,7 @@ namespace Radegast
             this.proLogin = new System.Windows.Forms.ProgressBar();
             this.lblLoginStatus = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.pnlSplash = new System.Windows.Forms.Panel();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -278,26 +278,25 @@ namespace Radegast
             this.panel1.Size = new System.Drawing.Size(682, 97);
             this.panel1.TabIndex = 18;
             // 
-            // panel2
+            // pnlSplash
             // 
-            this.panel2.BackgroundImage = global::Radegast.Properties.Resources.radegast_main_screen2;
-            this.panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(682, 335);
-            this.panel2.TabIndex = 19;
+            this.pnlSplash.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pnlSplash.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlSplash.Location = new System.Drawing.Point(0, 0);
+            this.pnlSplash.Name = "pnlSplash";
+            this.pnlSplash.Size = new System.Drawing.Size(682, 335);
+            this.pnlSplash.TabIndex = 19;
             // 
-            // MainConsole
+            // LoginConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.pnlSplash);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "MainConsole";
+            this.Name = "LoginConsole";
             this.Size = new System.Drawing.Size(682, 432);
             this.pnlLoginPrompt.ResumeLayout(false);
             this.pnlLoginPrompt.PerformLayout();
@@ -327,7 +326,7 @@ namespace Radegast
         public System.Windows.Forms.TextBox txtCustomLoginUri;
         public System.Windows.Forms.Label label6;
         public System.Windows.Forms.Panel panel1;
-        public System.Windows.Forms.Panel panel2;
+        public System.Windows.Forms.Panel pnlSplash;
 
     }
 }

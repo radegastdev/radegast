@@ -69,7 +69,14 @@ namespace Radegast
             cbAutoReconnect.Checked = s["auto_reconnect"].AsBoolean();
             cbAutoReconnect.CheckedChanged += new EventHandler(cbAutoReconnect_CheckedChanged);
 
+            cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
+            cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
 
+        }
+
+        void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)
+        {
+            s["hide_login_graphics"] = OSD.FromBoolean(cbHideLoginGraphics.Checked);
         }
 
         void cbAutoReconnect_CheckedChanged(object sender, EventArgs e)

@@ -61,12 +61,13 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.cbAutoReconnect = new System.Windows.Forms.CheckBox();
             this.cbFriendsNotifications = new System.Windows.Forms.CheckBox();
             this.cbTrasactChat = new System.Windows.Forms.CheckBox();
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
-            this.cbAutoReconnect = new System.Windows.Forms.CheckBox();
+            this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -84,6 +85,7 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.cbHideLoginGraphics);
             this.tbpGeneral.Controls.Add(this.cbAutoReconnect);
             this.tbpGeneral.Controls.Add(this.cbFriendsNotifications);
             this.tbpGeneral.Controls.Add(this.cbTrasactChat);
@@ -97,6 +99,17 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // cbAutoReconnect
+            // 
+            this.cbAutoReconnect.AutoSize = true;
+            this.cbAutoReconnect.Location = new System.Drawing.Point(8, 121);
+            this.cbAutoReconnect.Name = "cbAutoReconnect";
+            this.cbAutoReconnect.Size = new System.Drawing.Size(169, 17);
+            this.cbAutoReconnect.TabIndex = 5;
+            this.cbAutoReconnect.Text = "Auto reconnect on disconnect";
+            this.cbAutoReconnect.UseVisualStyleBackColor = true;
+            this.cbAutoReconnect.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // cbFriendsNotifications
             // 
@@ -151,16 +164,16 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbAutoReconnect
+            // cbHideLoginGraphics
             // 
-            this.cbAutoReconnect.AutoSize = true;
-            this.cbAutoReconnect.Location = new System.Drawing.Point(8, 121);
-            this.cbAutoReconnect.Name = "cbAutoReconnect";
-            this.cbAutoReconnect.Size = new System.Drawing.Size(169, 17);
-            this.cbAutoReconnect.TabIndex = 5;
-            this.cbAutoReconnect.Text = "Auto reconnect on disconnect";
-            this.cbAutoReconnect.UseVisualStyleBackColor = true;
-            this.cbAutoReconnect.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            this.cbHideLoginGraphics.AutoSize = true;
+            this.cbHideLoginGraphics.Location = new System.Drawing.Point(8, 144);
+            this.cbHideLoginGraphics.Name = "cbHideLoginGraphics";
+            this.cbHideLoginGraphics.Size = new System.Drawing.Size(141, 17);
+            this.cbHideLoginGraphics.TabIndex = 6;
+            this.cbHideLoginGraphics.Text = "Hide login slpash screen";
+            this.cbHideLoginGraphics.UseVisualStyleBackColor = true;
+            this.cbHideLoginGraphics.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -188,6 +201,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbTrasactDialog;
         public System.Windows.Forms.CheckBox cbFriendsNotifications;
         public System.Windows.Forms.CheckBox cbAutoReconnect;
+        public System.Windows.Forms.CheckBox cbHideLoginGraphics;
 
     }
 }
