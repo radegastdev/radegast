@@ -31,13 +31,24 @@ namespace RadegastSpeech
 
         public void SpeechStop()
         {
-            synth.SpeechStop();
-            recog.Stop();
+            if (synth != null)
+            {
+                synth.SpeechStop();
+                synth = null;
+            }
+
+            if (recog != null)
+            {
+                recog.Stop();
+                recog = null;
+            }
         }
+
         public void SpeechHalt()
         {
             synth.Halt();
         }
+
         public Dictionary<string, AvailableVoice> GetVoices()
         {
             return synth.GetVoices();

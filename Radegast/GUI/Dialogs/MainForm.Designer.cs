@@ -103,7 +103,6 @@ namespace Radegast
             this.cleanCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnFriends = new System.Windows.Forms.ToolStripButton();
@@ -371,8 +370,7 @@ namespace Radegast
             this.autopilotToolStripMenuItem,
             this.cleanCacheToolStripMenuItem,
             this.setAppearanceToolStripMenuItem,
-            this.rebakeTexturesToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.rebakeTexturesToolStripMenuItem});
             this.tbnTools.Enabled = false;
             this.tbnTools.Image = ((System.Drawing.Image)(resources.GetObject("tbnTools.Image")));
             this.tbnTools.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -422,11 +420,6 @@ namespace Radegast
             this.rebakeTexturesToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.rebakeTexturesToolStripMenuItem.Text = "Rebake textures";
             this.rebakeTexturesToolStripMenuItem.Click += new System.EventHandler(this.rebakeTexturesToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(153, 6);
             // 
             // tbnPlugins
             // 
@@ -828,7 +821,6 @@ namespace Radegast
         public System.Windows.Forms.ToolStripButton tbtnGroups;
         public System.Windows.Forms.ToolStripMenuItem scriptEditorToolStripMenuItem;
         public System.Windows.Forms.ToolStripDropDownButton tbnPlugins;
-        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         public System.Windows.Forms.ToolStripSeparator toolStripMenuItem4;
         public System.Windows.Forms.ToolStripMenuItem tmnuCreateLandmark;
         public System.Windows.Forms.ToolStripMenuItem tmnuSetHome;

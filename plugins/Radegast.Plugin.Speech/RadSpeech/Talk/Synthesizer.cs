@@ -54,6 +54,7 @@ namespace RadegastSpeech.Talk
             if (control.osLayer == null) return;
             control.osLayer.Speak(q, outputfile);
         }
+
         internal void Shutdown()
         {
             if (control.osLayer == null) return;

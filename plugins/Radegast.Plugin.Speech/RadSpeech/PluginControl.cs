@@ -54,6 +54,7 @@ namespace RadegastSpeech
         private ToolStripMenuItem SpeechButton;
         internal IRadSpeech osLayer;
         public OSDMap config;
+        private bool started;
 
         /// <summary>
         /// Plugin start-up entry.
@@ -66,6 +67,7 @@ namespace RadegastSpeech
 
             // Get configuration settings, and initialize if not found.
             config = instance.GlobalSettings["plugin.speech"] as OSDMap;
+            
             if (config == null)
             {
                 config = new OSDMap();
@@ -75,23 +77,6 @@ namespace RadegastSpeech
                 config["substitutions"] = new OSDMap();
                 instance.GlobalSettings["plugin.speech"] = config;
                 instance.GlobalSettings.Save();
-            }
-
-            // Do the one-time only initializations.
-            try
-            {
-                LoadOSLayer();
-                env = new Environment.Control(this);
-                talker = new Talk.Control(this);
-                listener = new Listen.Control(this);
-                converse = new Conversation.Control(this);
-                sound = new Sound.FmodSound(this);
-            }
-            catch (Exception e)
-            {
-                System.Windows.Forms.MessageBox.Show("Speech failed initialization: " + e.Message);
-                return;
-
             }
 
             // Add our enable/disable item to the Plugin Menu.
@@ -106,14 +91,63 @@ namespace RadegastSpeech
 
             if (SpeechButton.Checked)
             {
+                Initialize();
+            }
+        }
+
+        /// <summary>
+        /// Startup code (executed only when needed)
+        /// </summary>
+        private void Initialize()
+        {
+            // Never initialize twice
+            if (started) return;
+
+            // Do the one-time only initializations.
+            try
+            {
+                LoadOSLayer();
+                env = new Environment.Control(this);
+                talker = new Talk.Control(this);
+                listener = new Listen.Control(this);
+                converse = new Conversation.Control(this);
+                sound = new Sound.FmodSound(this);
                 StartControls();
                 talker.SayMore("Press enter to connect.");
+                started = true;
             }
+            catch (Exception e)
+            {
+                SpeechButton.Checked = false;
+                config["enabled"] = OSD.FromBoolean(false);
+                SaveSpeechSettings();
+                System.Windows.Forms.MessageBox.Show("Speech failed initialization: " + e.Message);
+                return;
+            }
+        }
 
-            // Announce our version in the main chat window.
-            // TODO remove this once debugging is complete.
-            instance.MainForm.TabConsole.DisplayNotificationInChat(
-                "Speech Plugin version " + VERSION + " loaded");
+        /// <summary>
+        /// Shutdown speech module
+        /// </summary>
+        private void Shutdown()
+        {
+            if (!started) return;
+            try
+            {
+                converse.Shutdown();
+                listener.Shutdown();
+                talker.Shutdown();
+                env.Shutdown();
+                sound.Shutdown();
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Failed to shutdown speech modules: ", Helpers.LogLevel.Warning, e);
+            }
+            finally
+            {
+                started = false;
+            }
         }
 
         /// <summary>
@@ -141,8 +175,6 @@ namespace RadegastSpeech
                 return;
             }
 
-            instance.Client.Settings.MULTIPLE_SIMS = false;
-
             // Register the speech-related actions for context menus.
             // Editing voice assignments to avatars.
             instance.ContextActionManager.RegisterContextAction(
@@ -168,11 +200,7 @@ namespace RadegastSpeech
         /// We use this to release system resources.</remarks>
         public void StopPlugin(RadegastInstance inst)
         {
-            converse.Shutdown();
-            listener.Shutdown();
-            talker.Shutdown();
-            env.Shutdown();
-            sound.Shutdown();
+            Shutdown();
         }
 
         /// <summary>
@@ -184,13 +212,13 @@ namespace RadegastSpeech
         {
             SpeechButton.Checked = !SpeechButton.Checked;
 
-            if (SpeechButton.Enabled)
+            if (SpeechButton.Checked)
             {
-                StartControls();
+                Initialize();
             }
             else
             {
-                StopPlugin(instance);
+                Shutdown();
             }
 
             // Save this into the INI file.

@@ -70,8 +70,9 @@ namespace Radegast.Plugin.Alice
                 Enabled = Instance.GlobalSettings["plugin.alice.enabled"].AsBoolean();
             }
 
-            MenuButton = new ToolStripMenuItem("A.L.I.C.E. chatbot", null, OnALICEMenuButtonClicked);
-            Instance.MainForm.ToolsMenu.DropDownItems.Add(MenuButton);
+            MenuButton = new ToolStripMenuItem("ALICE chatbot", null, OnALICEMenuButtonClicked);
+            Instance.MainForm.PluginsMenu.DropDownItems.Add(MenuButton);
+            Instance.MainForm.PluginsMenu.Visible = true;
             MenuButton.Checked = Enabled;
 
             try
