@@ -977,7 +977,7 @@ namespace Radegast
             else if (e.Button == MouseButtons.Right)
             {
                 invTree.SelectedNode = node;
-                ctxInv.Show(invTree,e.X,e.Y);
+                ctxInv.Show(invTree, e.X, e.Y);
                 Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, client);
             }
         }
@@ -985,7 +985,7 @@ namespace Radegast
         private void ctxInv_Opening(object sender, CancelEventArgs e)
         {
             TreeNode node = invTree.SelectedNode;
-            if (node==null)
+            if (node == null)
             {
                 e.Cancel = true;
             }
@@ -1042,6 +1042,24 @@ namespace Radegast
 
                         ctxInv.Items.Add(new ToolStripSeparator());
 
+                        ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick);
+                        ctxItem.Name = "cut_folder";
+                        ctxInv.Items.Add(ctxItem);
+
+                        ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick);
+                        ctxItem.Name = "copy_folder";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+                    if (instance.InventoryClipboard != null)
+                    {
+                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick);
+                        ctxItem.Name = "paste_folder";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+                    if (folder.PreferredType == AssetType.Unknown)
+                    {
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
                         ctxItem.Name = "delete_folder";
                         ctxInv.Items.Add(ctxItem);
@@ -1111,8 +1129,25 @@ namespace Radegast
                     ctxInv.Items.Add(ctxItem);
 
                     ctxInv.Items.Add(new ToolStripSeparator());
+
+                    ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick);
+                    ctxItem.Name = "cut_item";
+                    ctxInv.Items.Add(ctxItem);
+
+                    ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick);
+                    ctxItem.Name = "copy_item";
+                    ctxInv.Items.Add(ctxItem);
+
+                    if (instance.InventoryClipboard != null)
+                    {
+                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick);
+                        ctxItem.Name = "paste_item";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
                     ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
                     ctxItem.Name = "delete_item";
+
                     if (IsAttached(item) || IsWorn(item))
                     {
                         ctxItem.Enabled = false;
@@ -1237,6 +1272,18 @@ namespace Radegast
                         client.Inventory.CreateFolder(f.UUID, "New folder");
                         break;
 
+                    case "cut_folder":
+                        instance.InventoryClipboard = new InventoryClipboard(ClipboardOperation.Cut, f);
+                        break;
+
+                    case "copy_folder":
+                        instance.InventoryClipboard = new InventoryClipboard(ClipboardOperation.Copy, f);
+                        break;
+
+                    case "paste_folder":
+                        PerformClipboardOperation(invTree.SelectedNode.Tag as InventoryFolder);
+                        break;
+
                     case "delete_folder":
                         client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
                         break;
@@ -1311,6 +1358,18 @@ namespace Radegast
 
                 switch (cmd)
                 {
+                    case "copy_item":
+                        instance.InventoryClipboard = new InventoryClipboard(ClipboardOperation.Copy, item);
+                        break;
+
+                    case "cut_item":
+                        instance.InventoryClipboard = new InventoryClipboard(ClipboardOperation.Cut, item);
+                        break;
+
+                    case "paste_item":
+                        PerformClipboardOperation(invTree.SelectedNode.Parent.Tag as InventoryFolder);
+                        break;
+
                     case "delete_item":
                         client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
                         break;
@@ -1382,6 +1441,71 @@ namespace Radegast
                 #endregion
             }
         }
+
+        void PerformClipboardOperation(InventoryFolder dest)
+        {
+            if (instance.InventoryClipboard == null) return;
+
+            if (dest == null) return;
+
+            if (instance.InventoryClipboard.Operation == ClipboardOperation.Cut)
+            {
+                if (instance.InventoryClipboard.Item is InventoryItem)
+                {
+                    client.Inventory.MoveItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name);
+                }
+                else if (instance.InventoryClipboard.Item is InventoryFolder)
+                {
+                    if (instance.InventoryClipboard.Item.UUID != dest.UUID)
+                    {
+                        client.Inventory.MoveFolder(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name);
+                    }
+                }
+
+                instance.InventoryClipboard = null;
+            }
+            else if (instance.InventoryClipboard.Operation == ClipboardOperation.Copy)
+            {
+                if (instance.InventoryClipboard.Item is InventoryItem)
+                {
+                    client.Inventory.RequestCopyItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name, instance.InventoryClipboard.Item.OwnerID, (InventoryBase target) =>
+                    {
+                    }
+                    );
+                }
+                else if (instance.InventoryClipboard.Item is InventoryFolder)
+                {
+                    ThreadPool.QueueUserWorkItem((object state) =>
+                        {
+                            UUID newFolderID = client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, AssetType.Unknown);
+                            Thread.Sleep(500);
+
+                            // FIXME: for some reason copying a bunch of items in one operation does not work
+
+                            //List<UUID> items = new List<UUID>();
+                            //List<UUID> folders = new List<UUID>();
+                            //List<string> names = new List<string>();
+                            //UUID oldOwner = UUID.Zero;
+
+                            foreach (InventoryBase oldItem in Inventory.GetContents((InventoryFolder)instance.InventoryClipboard.Item))
+                            {
+                                //folders.Add(newFolderID);
+                                //names.Add(oldItem.Name);
+                                //items.Add(oldItem.UUID);
+                                //oldOwner = oldItem.OwnerID;
+                                client.Inventory.RequestCopyItem(oldItem.UUID, newFolderID, oldItem.Name, oldItem.OwnerID, (InventoryBase target) => { });
+                            }
+
+                            //if (folders.Count > 0)
+                            //{
+                            //    client.Inventory.RequestCopyItems(items, folders, names, oldOwner, (InventoryBase target) => { });
+                            //}
+                        }
+                    );
+                }
+            }
+        }
+    
         #endregion
 
         private void UpdateWornLabels()
@@ -1529,7 +1653,8 @@ namespace Radegast
                     InventoryFolder f = invTree.SelectedNode.Tag as InventoryFolder;
                     client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
                 }
-            } else if (e.KeyCode == Keys.Apps && invTree.SelectedNode != null)
+            }
+            else if (e.KeyCode == Keys.Apps && invTree.SelectedNode != null)
             {
                 ctxInv.Show();
             }

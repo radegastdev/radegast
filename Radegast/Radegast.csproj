@@ -253,6 +253,7 @@
     <Compile Include="GUI\Consoles\Inventory\InventoryBackup.Designer.cs">
       <DependentUpon>InventoryBackup.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\Inventory\InventoryClipboard.cs" />
     <Compile Include="GUI\Consoles\Inventory\InventoryConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -153,6 +153,13 @@ namespace Radegast
         /// </summary>
         public RadegastMovement Movement { get { return movement; } }
 
+        /// <summary>
+        /// The last item that was cut or copied in the inventory, used for pasting
+        /// in a different place on the inventory, or other places like profile
+        /// that allow sending copied inventory items
+        /// </summary>
+        public InventoryClipboard InventoryClipboard;
+
         #region Events
         /// <summary>The event subscribers, null of no subscribers</summary>
         private EventHandler<ClientChangedEventArgs> m_ClientChanged;
@@ -183,7 +190,7 @@ namespace Radegast
             // incase something else calls GlobalInstance while we are loading
             globalInstance = this;
 
-#if HANDLE_THREAD_EXCEPTIONS
+#if !DEBUG
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             Application.ThreadException += HandleThreadException;
 #endif
@@ -603,8 +610,9 @@ namespace Radegast
                 + e.Exception.StackTrace + Environment.NewLine,
                 Helpers.LogLevel.Error,
                 client);
-
+#if !DEBUG
             Application.Exit();
+#endif
         }
     }
 
