@@ -77,6 +77,11 @@ namespace Radegast
                 btnFriend.Enabled = false;
             }
 
+            if (instance.InventoryClipboard != null)
+            {
+                btnGive.Enabled = true;
+            }
+
             // Callbacks
             client.Avatars.AvatarPropertiesReply += new EventHandler<AvatarPropertiesReplyEventArgs>(Avatars_AvatarPropertiesReply);
             client.Avatars.AvatarPicksReply += new EventHandler<AvatarPicksReplyEventArgs>(Avatars_AvatarPicksReply);
@@ -84,7 +89,7 @@ namespace Radegast
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply += new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-
+            instance.InventoryClipboardUpdated += new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
             InitializeProfile();
         }
 
@@ -96,6 +101,12 @@ namespace Radegast
             client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply -= new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
             netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
+            instance.InventoryClipboardUpdated -= new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
+        }
+
+        void instance_InventoryClipboardUpdated(object sender, EventArgs e)
+        {
+            btnGive.Enabled = instance.InventoryClipboard != null;
         }
 
         void Avatars_AvatarGroupsReply(object sender, AvatarGroupsReplyEventArgs e)
@@ -139,7 +150,6 @@ namespace Radegast
             }
             gotPicks = true;
             DisplayListOfPicks(e.Picks);
-
         }
 
         private void DisplayListOfPicks(Dictionary<UUID, string> picks)
@@ -483,6 +493,27 @@ namespace Radegast
                 }
                 catch (Exception) { }
             }
+        }
+
+        private void btnGive_Click(object sender, EventArgs e)
+        {
+            if (instance.InventoryClipboard == null) return;
+
+            InventoryBase inv = instance.InventoryClipboard.Item;
+
+            if (inv is InventoryItem)
+            {
+                InventoryItem item = inv as InventoryItem;
+                client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, agentID, true);
+                instance.TabConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + fullName + ".");
+            }
+            else if (inv is InventoryFolder)
+            {
+                InventoryFolder folder = inv as InventoryFolder;
+                client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, agentID, true);
+                instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + fullName + ".");
+            }
+
         }
     }
 }

@@ -153,14 +153,25 @@ namespace Radegast
         /// </summary>
         public RadegastMovement Movement { get { return movement; } }
 
+        private InventoryClipboard inventoryClipboard;
         /// <summary>
         /// The last item that was cut or copied in the inventory, used for pasting
         /// in a different place on the inventory, or other places like profile
         /// that allow sending copied inventory items
         /// </summary>
-        public InventoryClipboard InventoryClipboard;
+        public InventoryClipboard InventoryClipboard
+        {
+            get { return inventoryClipboard; }
+            set
+            {
+                inventoryClipboard = value;
+                OnInventoryClipboardUpdated(EventArgs.Empty);
+            }
+        }
 
         #region Events
+
+        #region ClientChanged event
         /// <summary>The event subscribers, null of no subscribers</summary>
         private EventHandler<ClientChangedEventArgs> m_ClientChanged;
 
@@ -183,6 +194,34 @@ namespace Radegast
             add { lock (m_ClientChangedLock) { m_ClientChanged += value; } }
             remove { lock (m_ClientChangedLock) { m_ClientChanged -= value; } }
         }
+        #endregion ClientChanged event
+
+        #region InventoryClipboardUpdated event
+        /// <summary>The event subscribers, null of no subscribers</summary>
+        private EventHandler<EventArgs> m_InventoryClipboardUpdated;
+
+        ///<summary>Raises the InventoryClipboardUpdated Event</summary>
+        /// <param name="e">A EventArgs object containing
+        /// the old and the new client</param>
+        protected virtual void OnInventoryClipboardUpdated(EventArgs e)
+        {
+            EventHandler<EventArgs> handler = m_InventoryClipboardUpdated;
+            if (handler != null)
+                handler(this, e);
+        }
+
+        /// <summary>Thread sync lock object</summary>
+        private readonly object m_InventoryClipboardUpdatedLock = new object();
+
+        /// <summary>Raised when the GridClient object in the main Radegast instance is changed</summary>
+        public event EventHandler<EventArgs> InventoryClipboardUpdated
+        {
+            add { lock (m_InventoryClipboardUpdatedLock) { m_InventoryClipboardUpdated += value; } }
+            remove { lock (m_InventoryClipboardUpdatedLock) { m_InventoryClipboardUpdated -= value; } }
+        }
+        #endregion InventoryClipboardUpdated event
+
+
         #endregion Events
 
         public RadegastInstance(GridClient client0)

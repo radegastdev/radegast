@@ -104,6 +104,7 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.btnGive = new System.Windows.Forms.Button();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
@@ -131,6 +132,7 @@ namespace Radegast
             // 
             // tpgProfile
             // 
+            this.tpgProfile.Controls.Add(this.btnGive);
             this.tpgProfile.Controls.Add(this.lvwGroups);
             this.tpgProfile.Controls.Add(this.txtFullName);
             this.tpgProfile.Controls.Add(this.anPartner);
@@ -211,9 +213,9 @@ namespace Radegast
             // btnIM
             // 
             this.btnIM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnIM.Location = new System.Drawing.Point(312, 427);
+            this.btnIM.Location = new System.Drawing.Point(269, 427);
             this.btnIM.Name = "btnIM";
-            this.btnIM.Size = new System.Drawing.Size(96, 23);
+            this.btnIM.Size = new System.Drawing.Size(72, 23);
             this.btnIM.TabIndex = 19;
             this.btnIM.Text = "Start IM";
             this.btnIM.UseVisualStyleBackColor = true;
@@ -222,9 +224,9 @@ namespace Radegast
             // btnFriend
             // 
             this.btnFriend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnFriend.Location = new System.Drawing.Point(210, 427);
+            this.btnFriend.Location = new System.Drawing.Point(179, 427);
             this.btnFriend.Name = "btnFriend";
-            this.btnFriend.Size = new System.Drawing.Size(96, 23);
+            this.btnFriend.Size = new System.Drawing.Size(84, 23);
             this.btnFriend.TabIndex = 18;
             this.btnFriend.Text = "Add Friend";
             this.btnFriend.UseVisualStyleBackColor = true;
@@ -254,7 +256,7 @@ namespace Radegast
             this.btnPay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnPay.Location = new System.Drawing.Point(108, 427);
             this.btnPay.Name = "btnPay";
-            this.btnPay.Size = new System.Drawing.Size(96, 23);
+            this.btnPay.Size = new System.Drawing.Size(65, 23);
             this.btnPay.TabIndex = 15;
             this.btnPay.Text = "Pay...";
             this.btnPay.UseVisualStyleBackColor = true;
@@ -607,6 +609,18 @@ namespace Radegast
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
             // 
+            // btnGive
+            // 
+            this.btnGive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGive.Enabled = false;
+            this.btnGive.Location = new System.Drawing.Point(347, 428);
+            this.btnGive.Name = "btnGive";
+            this.btnGive.Size = new System.Drawing.Size(107, 23);
+            this.btnGive.TabIndex = 22;
+            this.btnGive.Text = "&Give Inventory";
+            this.btnGive.UseVisualStyleBackColor = true;
+            this.btnGive.Click += new System.EventHandler(this.btnGive_Click);
+            // 
             // frmProfile
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -683,6 +697,7 @@ namespace Radegast
         public ListViewNoFlicker lvwGroups;
         private System.Windows.Forms.ColumnHeader clGroupName;
         private System.Windows.Forms.ColumnHeader clGroupTitle;
+        public System.Windows.Forms.Button btnGive;
 
     }
 }
