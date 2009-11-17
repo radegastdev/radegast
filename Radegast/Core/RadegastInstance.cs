@@ -649,7 +649,7 @@ namespace Radegast
                 + e.Exception.StackTrace + Environment.NewLine,
                 Helpers.LogLevel.Error,
                 client);
-#if !DEBUG
+#if DEBUG
             Application.Exit();
 #endif
         }

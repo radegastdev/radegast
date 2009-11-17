@@ -124,13 +124,7 @@ namespace RadegastSpeech.Conversation
 
         protected string NiceName(string name)
         {
-            int lparen = name.IndexOf('(');
-            if (lparen >= 0)
-                return name.Substring(0, lparen - 1);
-
-            return name;
+            return Regex.Replace(name, @"\((\d+,? *)+\)", "");
         }
-
-
     }
 }
