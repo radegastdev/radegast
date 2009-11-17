@@ -497,6 +497,24 @@ namespace Radegast
 
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
+            // Ctrl-W: Close tab
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.W)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                RadegastTab tab = tabsConsole.SelectedTab;
+                
+                if (tab.AllowClose)
+                {
+                    tab.Close();
+                }
+                else if (tab.AllowHide)
+                {
+                    tab.Hide();
+                }
+
+                return;
+            }
+
             // Ctl-Shift-H: Teleport Home
             if (e.Modifiers == (Keys.Control | Keys.Shift) && e.KeyCode == Keys.H)
             {

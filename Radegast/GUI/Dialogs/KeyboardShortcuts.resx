@@ -130,6 +130,7 @@ Alt-9: Voice
 
 Ctrl-Tab: Next tab
 Ctrl-Shit-Tab: Previous tab
+Ctrl-W: Close current tab
 
 Ctrl-G: Open map and go to the SLURL in the clipboard
 Ctrl-Shift-H: Teleport Home</value>
