@@ -46,7 +46,8 @@ namespace RadegastSpeech
 
         public void SpeechHalt()
         {
-            synth.Halt();
+            if (synth != null)
+                synth.Halt();
         }
 
         public Dictionary<string, AvailableVoice> GetVoices()
