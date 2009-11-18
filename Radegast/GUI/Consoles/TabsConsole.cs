@@ -41,7 +41,7 @@ namespace Radegast
     public partial class TabsConsole : UserControl
     {
         /// <summary>
-        /// Delegate inviked on tab operations
+        /// Delegate invoked on tab operations
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Event arguments</param>
@@ -51,6 +51,19 @@ namespace Radegast
         /// Fired when a tab is selected
         /// </summary>
         public event TabCallback OnTabSelected;
+
+
+        /// <summary>
+        /// Delegate invoked when chat notification is printed
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Event arguments</param>
+        public delegate void ChatNotificationCallback(object sender, ChatNotificationEventArgs e);
+
+        /// <summary>
+        /// Fired when a tab is selected
+        /// </summary>
+        public event ChatNotificationCallback OnChatNotification;
 
         /// <summary>
         /// Fired when a new tab is added
@@ -295,6 +308,10 @@ namespace Radegast
                     DisplayNotificationInChat(e.IM.FromAgentName + " accepted your inventory offer.");
                     break;
 
+                case InstantMessageDialog.InventoryDeclined:
+                    DisplayNotificationInChat(e.IM.FromAgentName + " declined your inventory offer.");
+                    break;
+
                 case InstantMessageDialog.GroupNotice:
                     instance.MainForm.AddNotification(new ntfGroupNotice(instance, e.IM));
                     break;
@@ -350,6 +367,12 @@ namespace Radegast
                 tabs["chat"].Highlight();
             }
             catch (Exception) { }
+
+            if (OnChatNotification != null)
+            {
+                try { OnChatNotification(this, new ChatNotificationEventArgs(msg, style)); }
+                catch { }
+            }
         }
 
         private void HandleIMFromObject(InstantMessageEventArgs e)
@@ -1002,6 +1025,21 @@ namespace Radegast
             : base()
         {
             Tab = tab;
+        }
+    }
+
+    /// <summary>
+    /// Argument for chat notification events
+    /// </summary>
+    public class ChatNotificationEventArgs : EventArgs
+    {
+        public string Message;
+        public ChatBufferTextStyle Style;
+
+        public ChatNotificationEventArgs(string message, ChatBufferTextStyle style)
+        {
+            Message = message;
+            Style = style;
         }
     }
 }

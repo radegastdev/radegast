@@ -657,6 +657,7 @@ namespace Radegast
             TreeUpdateTimerTick(null);
             TreeUpdateInProgress = false;
             UpdateStatus("OK");
+            instance.TabConsole.DisplayNotificationInChat("Inventory update completed.");
 
             // Updated labels on clothes that we are wearing
             UpdateWornLabels();
@@ -687,7 +688,7 @@ namespace Radegast
             ThreadPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
         }
 
-        private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
+        public void ReloadInventory()
         {
             if (TreeUpdateInProgress)
             {
@@ -711,6 +712,10 @@ namespace Radegast
             invRootNode.Expand();
         }
 
+        private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReloadInventory();
+        }
 
         private void TreeUpdateTimerTick(Object sender)
         {

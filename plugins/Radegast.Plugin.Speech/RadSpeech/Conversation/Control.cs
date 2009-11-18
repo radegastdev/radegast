@@ -98,8 +98,21 @@ namespace RadegastSpeech.Conversation
             // Watch for global keys
             control.instance.MainForm.KeyUp += new KeyEventHandler(MainForm_KeyUp);
 
+            // System messages in chat window
+            control.instance.TabConsole.OnChatNotification += new TabsConsole.ChatNotificationCallback(TabConsole_OnChatNotification);
+
             control.listener.ActivateGrammar(CONVGRAMMAR);
 
+        }
+
+        /// <summary>
+        /// Say various notifications that come in the chat
+        /// </summary>
+        /// <param name="sender">Message sender</param>
+        /// <param name="e">Event args</param>
+        void TabConsole_OnChatNotification(object sender, ChatNotificationEventArgs e)
+        {
+            Talker.Say(e.Message);
         }
 
         /// <summary>
@@ -141,9 +154,9 @@ namespace RadegastSpeech.Conversation
 
                case LoginStatus.Success:
                     LoginName = control.instance.Netcom.LoginOptions.FullName;
-                    Talker.SayMore("Logged in as " + LoginName);
-                    if (friends != null)
-                        friends.Announce = true;
+                    //Talker.SayMore("Logged in as " + LoginName);
+                    //if (friends != null)
+                    //    friends.Announce = true;
                     return;
 
                 case LoginStatus.Failed:
@@ -305,8 +318,10 @@ namespace RadegastSpeech.Conversation
 
             // Handle Instant Messages too
             control.instance.Client.Self.IM +=
-                new EventHandler<InstantMessageEventArgs>(OnInstantMessage);  
+                new EventHandler<InstantMessageEventArgs>(OnInstantMessage);
 
+            // System notifications in chat
+            control.instance.TabConsole.OnChatNotification -= new TabsConsole.ChatNotificationCallback(TabConsole_OnChatNotification);
 
             control.listener.DeactivateGrammar(CONVGRAMMAR);
 

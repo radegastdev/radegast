@@ -135,6 +135,7 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
+            this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -369,6 +370,7 @@ namespace Radegast
             this.homeToolStripMenuItem,
             this.autopilotToolStripMenuItem,
             this.cleanCacheToolStripMenuItem,
+            this.reloadInventoryToolStripMenuItem,
             this.setAppearanceToolStripMenuItem,
             this.rebakeTexturesToolStripMenuItem});
             this.tbnTools.Enabled = false;
@@ -381,44 +383,44 @@ namespace Radegast
             // locationToolStripMenuItem
             // 
             this.locationToolStripMenuItem.Name = "locationToolStripMenuItem";
-            this.locationToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.locationToolStripMenuItem.Text = "Teleport sim";
+            this.locationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.locationToolStripMenuItem.Text = "Teleport Sim";
             this.locationToolStripMenuItem.Click += new System.EventHandler(this.tbtnTeleport_Click);
             // 
             // homeToolStripMenuItem
             // 
             this.homeToolStripMenuItem.Name = "homeToolStripMenuItem";
-            this.homeToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.homeToolStripMenuItem.Text = "Teleport home";
+            this.homeToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.homeToolStripMenuItem.Text = "Teleport Home";
             this.homeToolStripMenuItem.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
             // 
             // autopilotToolStripMenuItem
             // 
             this.autopilotToolStripMenuItem.Enabled = false;
             this.autopilotToolStripMenuItem.Name = "autopilotToolStripMenuItem";
-            this.autopilotToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.autopilotToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.autopilotToolStripMenuItem.Text = "&Autopilot";
             this.autopilotToolStripMenuItem.Click += new System.EventHandler(this.autopilotToolStripMenuItem_Click);
             // 
             // cleanCacheToolStripMenuItem
             // 
             this.cleanCacheToolStripMenuItem.Name = "cleanCacheToolStripMenuItem";
-            this.cleanCacheToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.cleanCacheToolStripMenuItem.Text = "Clean cache";
+            this.cleanCacheToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.cleanCacheToolStripMenuItem.Text = "Clean Cache";
             this.cleanCacheToolStripMenuItem.Click += new System.EventHandler(this.cleanCacheToolStripMenuItem_Click);
             // 
             // setAppearanceToolStripMenuItem
             // 
             this.setAppearanceToolStripMenuItem.Name = "setAppearanceToolStripMenuItem";
-            this.setAppearanceToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.setAppearanceToolStripMenuItem.Text = "Set appearance";
+            this.setAppearanceToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.setAppearanceToolStripMenuItem.Text = "Set Appearance";
             this.setAppearanceToolStripMenuItem.Click += new System.EventHandler(this.tbtnAppearance_Click);
             // 
             // rebakeTexturesToolStripMenuItem
             // 
             this.rebakeTexturesToolStripMenuItem.Name = "rebakeTexturesToolStripMenuItem";
-            this.rebakeTexturesToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.rebakeTexturesToolStripMenuItem.Text = "Rebake textures";
+            this.rebakeTexturesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.rebakeTexturesToolStripMenuItem.Text = "Rebake Textures";
             this.rebakeTexturesToolStripMenuItem.Click += new System.EventHandler(this.rebakeTexturesToolStripMenuItem_Click);
             // 
             // tbnPlugins
@@ -748,6 +750,13 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
+            // reloadInventoryToolStripMenuItem
+            // 
+            this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
+            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.reloadInventoryToolStripMenuItem.Text = "Reload Inventory";
+            this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -845,6 +854,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem keyboardShortcutsToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tbtnVoice;
         public System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
     }
 }
 

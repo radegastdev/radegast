@@ -502,7 +502,7 @@ namespace Radegast
             {
                 e.Handled = e.SuppressKeyPress = true;
                 RadegastTab tab = tabsConsole.SelectedTab;
-                
+
                 if (tab.AllowClose)
                 {
                     tab.Close();
@@ -1296,6 +1296,15 @@ namespace Radegast
                         System.Console.WriteLine("Sound '{0}' download success: {1}", transfer.AssetID, transfer.Success);
                     }
                 );
+            }
+        }
+
+        private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabsConsole.TabExists("inventory"))
+            {
+                ((InventoryConsole)tabsConsole.Tabs["inventory"].Control).ReloadInventory();
+                tabsConsole.Tabs["inventory"].Select();
             }
         }
 
