@@ -298,5 +298,10 @@ namespace Radegast
 
         }
 
+        private void rtbContent_Enter(object sender, EventArgs e)
+        {
+            instance.TabConsole.DisplayNotificationInChat("Editing notecard", ChatBufferTextStyle.Invisible);
+        }
+
     }
 }

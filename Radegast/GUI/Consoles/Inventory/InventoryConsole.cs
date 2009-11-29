@@ -1019,11 +1019,11 @@ namespace Radegast
 
                     ToolStripMenuItem ctxItem;
 
-                    ctxItem = new ToolStripMenuItem("New folder", null, OnInvContextClick);
+                    ctxItem = new ToolStripMenuItem("New Folder", null, OnInvContextClick);
                     ctxItem.Name = "new_folder";
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("New notecard", null, OnInvContextClick);
+                    ctxItem = new ToolStripMenuItem("New Note", null, OnInvContextClick);
                     ctxItem.Name = "new_notecard";
                     ctxInv.Items.Add(ctxItem);
 
@@ -1037,7 +1037,7 @@ namespace Radegast
                     ctxItem.Name = "expand";
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Expand all", null, OnInvContextClick);
+                    ctxItem = new ToolStripMenuItem("Expand All", null, OnInvContextClick);
                     ctxItem.Name = "expand_all";
                     ctxInv.Items.Add(ctxItem);
 
@@ -1047,14 +1047,14 @@ namespace Radegast
 
                     if (folder.PreferredType == AssetType.TrashFolder)
                     {
-                        ctxItem = new ToolStripMenuItem("Empty trash", null, OnInvContextClick);
+                        ctxItem = new ToolStripMenuItem("Empty Trash", null, OnInvContextClick);
                         ctxItem.Name = "empty_trash";
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (folder.PreferredType == AssetType.LostAndFoundFolder)
                     {
-                        ctxItem = new ToolStripMenuItem("Empty lost and found", null, OnInvContextClick);
+                        ctxItem = new ToolStripMenuItem("Empty Lost and Found", null, OnInvContextClick);
                         ctxItem.Name = "empty_lost_found";
                         ctxInv.Items.Add(ctxItem);
                     }

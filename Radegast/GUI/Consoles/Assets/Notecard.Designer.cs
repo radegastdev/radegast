@@ -85,6 +85,7 @@
             this.rtbContent.Text = "";
             this.rtbContent.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtbContent_KeyDown);
             this.rtbContent.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbContent_LinkClicked);
+            this.rtbContent.Enter += new System.EventHandler(this.rtbContent_Enter);
             // 
             // toolStrip1
             // 
