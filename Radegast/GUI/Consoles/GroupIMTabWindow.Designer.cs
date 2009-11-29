@@ -163,6 +163,7 @@ namespace Radegast
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "GroupIMTabWindow";
             this.Size = new System.Drawing.Size(500, 330);
+            this.VisibleChanged += new System.EventHandler(this.cbxInput_VisibleChanged);
             this.chatSplit.Panel1.ResumeLayout(false);
             this.chatSplit.Panel2.ResumeLayout(false);
             this.chatSplit.ResumeLayout(false);

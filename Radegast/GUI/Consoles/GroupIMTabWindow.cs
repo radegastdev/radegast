@@ -374,5 +374,9 @@ namespace Radegast
             }
         }
 
+        private void cbxInput_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible) cbxInput.Focus();
+        }
     }
 }

@@ -197,19 +197,9 @@ namespace Radegast
             set { textManager = value; }
         }
 
-        private void chatInput_TextChanged(object sender, EventArgs e)
+        private void cbxInput_VisibleChanged(object sender, EventArgs e)
         {
-
-        }
-
-        private void chatInput_KeyDown(object sender, KeyEventArgs e)
-        {
-
-        }
-
-        private void chatInput_KeyUp(object sender, KeyEventArgs e)
-        {
-
+            if (Visible) cbxInput.Focus();
         }
     }
 }

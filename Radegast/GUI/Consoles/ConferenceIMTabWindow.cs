@@ -184,5 +184,10 @@ namespace Radegast
             get { return textManager; }
             set { textManager = value; }
         }
+
+        private void cbxInput_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible) cbxInput.Focus();
+        }
     }
 }
