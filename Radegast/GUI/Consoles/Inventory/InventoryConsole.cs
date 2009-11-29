@@ -785,6 +785,19 @@ namespace Radegast
 
         void UpdateItemInfo(InventoryItem item)
         {
+            foreach (Control c in pnlDetail.Controls)
+            {
+                c.Dispose();
+            }
+            pnlDetail.Controls.Clear();
+
+            if (item == null)
+            {
+                pnlItemProperties.Visible = false;
+                return;
+            }
+
+            pnlItemProperties.Visible = true;
             btnProfile.Enabled = true;
             txtItemName.Text = item.Name;
             txtCreator.AgentID = item.CreatorID;
@@ -799,11 +812,6 @@ namespace Radegast
             {
                 txtAssetID.Text = String.Empty;
             }
-            foreach (Control c in pnlDetail.Controls)
-            {
-                c.Dispose();
-            }
-            pnlDetail.Controls.Clear();
 
             switch (item.AssetType)
             {
@@ -816,7 +824,10 @@ namespace Radegast
                 case AssetType.Notecard:
                     Notecard note = new Notecard(instance, (InventoryNotecard)item);
                     note.Dock = DockStyle.Fill;
+                    note.TabIndex = 3;
+                    note.TabStop = true;
                     pnlDetail.Controls.Add(note);
+                    note.rtbContent.Focus();
                     break;
 
                 case AssetType.Landmark:
@@ -828,6 +839,8 @@ namespace Radegast
                 case AssetType.LSLText:
                     ScriptEditor script = new ScriptEditor(instance, (InventoryLSL)item);
                     script.Dock = DockStyle.Fill;
+                    script.TabIndex = 3;
+                    script.TabStop = true;
                     pnlDetail.Controls.Add(script);
                     break;
 
@@ -978,12 +991,15 @@ namespace Radegast
                 {
                     UpdateItemInfo(node.Tag as InventoryItem);
                 }
+                else
+                {
+                    UpdateItemInfo(null);
+                }
             }
             else if (e.Button == MouseButtons.Right)
             {
                 invTree.SelectedNode = node;
                 ctxInv.Show(invTree, e.X, e.Y);
-                Logger.Log("Right click on node: " + node.Name, Helpers.LogLevel.Debug, client);
             }
         }
 
@@ -1005,6 +1021,10 @@ namespace Radegast
 
                     ctxItem = new ToolStripMenuItem("New folder", null, OnInvContextClick);
                     ctxItem.Name = "new_folder";
+                    ctxInv.Items.Add(ctxItem);
+
+                    ctxItem = new ToolStripMenuItem("New notecard", null, OnInvContextClick);
+                    ctxItem.Name = "new_notecard";
                     ctxInv.Items.Add(ctxItem);
 
                     ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
@@ -1257,6 +1277,13 @@ namespace Radegast
                 switch (cmd)
                 {
                     case "refresh":
+                        foreach (TreeNode old in invTree.SelectedNode.Nodes)
+                        {
+                            if (old.Tag is InventoryFolder)
+                            {
+                                removeNode(old);
+                            }
+                        }
                         fetchFolder(f.UUID, f.OwnerID, true);
                         break;
 
@@ -1275,6 +1302,11 @@ namespace Radegast
                     case "new_folder":
                         newItemName = "New folder";
                         client.Inventory.CreateFolder(f.UUID, "New folder");
+                        break;
+
+                    case "new_notecard":
+                        client.Inventory.RequestCreateItem(f.UUID, "New Note", "Radegast note: " + DateTime.Now.ToString(),
+                            AssetType.Notecard, UUID.Zero, InventoryType.Notecard, PermissionMask.All, NotecardCreated);
                         break;
 
                     case "cut_folder":
@@ -1444,6 +1476,31 @@ namespace Radegast
                         break;
                 }
                 #endregion
+            }
+        }
+
+        void NotecardCreated(bool success, InventoryItem item)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => NotecardCreated(success, item)));
+                return;
+            }
+
+            if (!success)
+            {
+                instance.TabConsole.DisplayNotificationInChat("Creation of notecard failed");
+                return;
+            }
+
+            instance.TabConsole.DisplayNotificationInChat("New notecard created, enter notecard name and press enter", ChatBufferTextStyle.Invisible);
+            var node = findNodeForItem(item.ParentUUID);
+            if (node != null) node.Expand();
+            node = findNodeForItem(item.UUID);
+            if (node != null)
+            {
+                invTree.SelectedNode = node;
+                node.BeginEdit();
             }
         }
 
@@ -1628,6 +1685,7 @@ namespace Radegast
                 item.Name = e.Label;
                 e.Node.Text = ItemLabel((InventoryBase)item, false);
                 client.Inventory.MoveItem(item.UUID, item.ParentUUID, item.Name);
+                UpdateItemInfo(item);
             }
 
         }

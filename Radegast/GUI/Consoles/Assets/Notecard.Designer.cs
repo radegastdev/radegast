@@ -83,6 +83,7 @@
             this.rtbContent.Size = new System.Drawing.Size(382, 339);
             this.rtbContent.TabIndex = 3;
             this.rtbContent.Text = "";
+            this.rtbContent.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtbContent_KeyDown);
             this.rtbContent.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbContent_LinkClicked);
             // 
             // toolStrip1
@@ -97,6 +98,7 @@
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(382, 25);
             this.toolStrip1.TabIndex = 4;
+            this.toolStrip1.TabStop = true;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // tbtnFile
@@ -116,27 +118,29 @@
             // tbtnSave
             // 
             this.tbtnSave.Name = "tbtnSave";
-            this.tbtnSave.Size = new System.Drawing.Size(146, 22);
+            this.tbtnSave.ShortcutKeyDisplayString = "Ctrl-S";
+            this.tbtnSave.Size = new System.Drawing.Size(212, 22);
             this.tbtnSave.Text = "Save";
             this.tbtnSave.Click += new System.EventHandler(this.tbtnSave_Click);
             // 
             // tbtnSaveToDisk
             // 
             this.tbtnSaveToDisk.Name = "tbtnSaveToDisk";
-            this.tbtnSaveToDisk.Size = new System.Drawing.Size(146, 22);
+            this.tbtnSaveToDisk.ShortcutKeyDisplayString = "Ctrl-Shift-S";
+            this.tbtnSaveToDisk.Size = new System.Drawing.Size(212, 22);
             this.tbtnSaveToDisk.Text = "Save to Disk...";
             // 
             // sprtExit
             // 
             this.sprtExit.Name = "sprtExit";
-            this.sprtExit.Size = new System.Drawing.Size(143, 6);
+            this.sprtExit.Size = new System.Drawing.Size(209, 6);
             // 
             // tbtnExit
             // 
             this.tbtnExit.Enabled = false;
             this.tbtnExit.Name = "tbtnExit";
-            this.tbtnExit.Size = new System.Drawing.Size(146, 22);
-            this.tbtnExit.Text = "Exit";
+            this.tbtnExit.Size = new System.Drawing.Size(212, 22);
+            this.tbtnExit.Text = "E&xit";
             this.tbtnExit.Click += new System.EventHandler(this.tbtnExit_Click);
             // 
             // tbtnAttachments

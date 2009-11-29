@@ -54,9 +54,17 @@ namespace Radegast
 
             rtbContent.DetectUrls = false;
 
-            rtbContent.Text = " ";
-            UpdateStatus("Loading...");
-            client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
+
+            if (notecard.AssetUUID == UUID.Zero)
+            {
+                UpdateStatus("Blank");
+            }
+            else
+            {
+                rtbContent.Text = " ";
+                UpdateStatus("Loading...");
+                client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
+            }
         }
 
         void Notecard_Disposed(object sender, EventArgs e)
@@ -130,6 +138,7 @@ namespace Radegast
                     }
                 }
                 UpdateStatus("OK");
+                rtbContent.Focus();
             }
             else
             {
@@ -163,6 +172,8 @@ namespace Radegast
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
+            if (notecard.AssetUUID == UUID.Zero) return;
+
             rtbContent.Text = "Loading...";
             client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
         }
@@ -222,12 +233,15 @@ namespace Radegast
             n.BodyText = rtbContent.Text;
             n.EmbeddedItems = new List<InventoryItem>();
 
-            for (int i = 0; i < recievedNotecard.EmbeddedItems.Count; i++)
+            if (recievedNotecard != null)
             {
-                n.EmbeddedItems.Add(recievedNotecard.EmbeddedItems[i]);
-                int indexChar = 0xdc00 + i;
-                n.BodyText += (char)0xdbc0;
-                n.BodyText += (char)indexChar;
+                for (int i = 0; i < recievedNotecard.EmbeddedItems.Count; i++)
+                {
+                    n.EmbeddedItems.Add(recievedNotecard.EmbeddedItems[i]);
+                    int indexChar = 0xdc00 + i;
+                    n.BodyText += (char)0xdbc0;
+                    n.BodyText += (char)indexChar;
+                }
             }
 
             n.Encode();
@@ -264,8 +278,24 @@ namespace Radegast
                 BeginInvoke(new MethodInvoker(delegate() { UpdateStatus(status); }));
                 return;
             }
-
+            instance.TabConsole.DisplayNotificationInChat("Notecard status: " + status, ChatBufferTextStyle.Invisible);
             tlblStatus.Text = status;
+        }
+
+        private void rtbContent_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.S && e.Control)
+            {
+                if (e.Shift)
+                {
+                }
+                else
+                {
+                    tbtnSave_Click(this, EventArgs.Empty);
+                    e.Handled = e.SuppressKeyPress = true;
+                }
+            }
+
         }
 
     }

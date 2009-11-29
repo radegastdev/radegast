@@ -349,24 +349,25 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        DisplayNotificationInChat(msg, style);
-                    }));
+                BeginInvoke(new MethodInvoker(() => DisplayNotificationInChat(msg, style)));
                 return;
             }
 
-            ChatBufferItem line = new ChatBufferItem(
-                DateTime.Now,
-                msg,
-                style
-            );
-            try
+            if (style != ChatBufferTextStyle.Invisible)
             {
-                mainChatManger.ProcessBufferItem(line, true);
-                tabs["chat"].Highlight();
+                ChatBufferItem line = new ChatBufferItem(
+                    DateTime.Now,
+                    msg,
+                    style
+                );
+
+                try
+                {
+                    mainChatManger.ProcessBufferItem(line, true);
+                    tabs["chat"].Highlight();
+                }
+                catch (Exception) { }
             }
-            catch (Exception) { }
 
             if (OnChatNotification != null)
             {

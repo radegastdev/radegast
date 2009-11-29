@@ -95,7 +95,7 @@ namespace Radegast
             this.tbtbFoldersByName = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnSystemFoldersFirst = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlDetail = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.pnlItemProperties = new System.Windows.Forms.Panel();
             this.btnProfile = new System.Windows.Forms.Button();
             this.txtCreator = new Radegast.AgentNameTextBox();
             this.txtCreated = new System.Windows.Forms.TextBox();
@@ -109,7 +109,7 @@ namespace Radegast
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tstripInventory.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.pnlItemProperties.SuspendLayout();
             this.SuspendLayout();
             // 
             // invTree
@@ -155,7 +155,7 @@ namespace Radegast
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.pnlDetail);
-            this.splitContainer1.Panel2.Controls.Add(this.panel1);
+            this.splitContainer1.Panel2.Controls.Add(this.pnlItemProperties);
             this.splitContainer1.Size = new System.Drawing.Size(756, 483);
             this.splitContainer1.SplitterDistance = 331;
             this.splitContainer1.TabIndex = 1;
@@ -172,6 +172,7 @@ namespace Radegast
             this.tstripInventory.Name = "tstripInventory";
             this.tstripInventory.Size = new System.Drawing.Size(331, 25);
             this.tstripInventory.TabIndex = 1;
+            this.tstripInventory.TabStop = true;
             this.tstripInventory.Text = "toolStrip1";
             // 
             // tlabelStatus
@@ -192,13 +193,13 @@ namespace Radegast
             this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnFile.Name = "tbtnFile";
             this.tbtnFile.Size = new System.Drawing.Size(70, 22);
-            this.tbtnFile.Text = "Inventory";
+            this.tbtnFile.Text = "&Inventory";
             // 
             // reloadInventoryToolStripMenuItem
             // 
             this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
             this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.reloadInventoryToolStripMenuItem.Text = "Reload Inventory";
+            this.reloadInventoryToolStripMenuItem.Text = "&Reload Inventory";
             this.reloadInventoryToolStripMenuItem.ToolTipText = "Clears inventory cache, and downloads whole inventory from server again";
             this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
             // 
@@ -207,7 +208,7 @@ namespace Radegast
             this.saveAllTToolStripMenuItem.Enabled = false;
             this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
             this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.saveAllTToolStripMenuItem.Text = "Save all text";
+            this.saveAllTToolStripMenuItem.Text = "&Save all text";
             this.saveAllTToolStripMenuItem.ToolTipText = "Saves all notecards and scripts to folder on local disk";
             this.saveAllTToolStripMenuItem.Click += new System.EventHandler(this.saveAllTToolStripMenuItem_Click);
             // 
@@ -224,7 +225,7 @@ namespace Radegast
             this.tbtbSort.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtbSort.Name = "tbtbSort";
             this.tbtbSort.Size = new System.Drawing.Size(41, 22);
-            this.tbtbSort.Text = "Sort";
+            this.tbtbSort.Text = "S&ort";
             // 
             // tbtbSortByName
             // 
@@ -261,24 +262,24 @@ namespace Radegast
             this.pnlDetail.Location = new System.Drawing.Point(0, 0);
             this.pnlDetail.Name = "pnlDetail";
             this.pnlDetail.Size = new System.Drawing.Size(421, 336);
-            this.pnlDetail.TabIndex = 1;
+            this.pnlDetail.TabIndex = 2;
             // 
-            // panel1
+            // pnlItemProperties
             // 
-            this.panel1.Controls.Add(this.btnProfile);
-            this.panel1.Controls.Add(this.txtCreator);
-            this.panel1.Controls.Add(this.txtCreated);
-            this.panel1.Controls.Add(this.txtAssetID);
-            this.panel1.Controls.Add(this.lblCreated);
-            this.panel1.Controls.Add(this.txtItemName);
-            this.panel1.Controls.Add(this.lblAsset);
-            this.panel1.Controls.Add(this.lblCreator);
-            this.panel1.Controls.Add(this.lblItemName);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 336);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(421, 147);
-            this.panel1.TabIndex = 0;
+            this.pnlItemProperties.Controls.Add(this.btnProfile);
+            this.pnlItemProperties.Controls.Add(this.txtCreator);
+            this.pnlItemProperties.Controls.Add(this.txtCreated);
+            this.pnlItemProperties.Controls.Add(this.txtAssetID);
+            this.pnlItemProperties.Controls.Add(this.lblCreated);
+            this.pnlItemProperties.Controls.Add(this.txtItemName);
+            this.pnlItemProperties.Controls.Add(this.lblAsset);
+            this.pnlItemProperties.Controls.Add(this.lblCreator);
+            this.pnlItemProperties.Controls.Add(this.lblItemName);
+            this.pnlItemProperties.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlItemProperties.Location = new System.Drawing.Point(0, 336);
+            this.pnlItemProperties.Name = "pnlItemProperties";
+            this.pnlItemProperties.Size = new System.Drawing.Size(421, 147);
+            this.pnlItemProperties.TabIndex = 0;
             // 
             // btnProfile
             // 
@@ -288,7 +289,7 @@ namespace Radegast
             this.btnProfile.Location = new System.Drawing.Point(54, 36);
             this.btnProfile.Name = "btnProfile";
             this.btnProfile.Size = new System.Drawing.Size(26, 23);
-            this.btnProfile.TabIndex = 2;
+            this.btnProfile.TabIndex = 12;
             this.btnProfile.UseVisualStyleBackColor = true;
             this.btnProfile.Click += new System.EventHandler(this.btnProfile_Click);
             // 
@@ -300,7 +301,7 @@ namespace Radegast
             this.txtCreator.Name = "txtCreator";
             this.txtCreator.ReadOnly = true;
             this.txtCreator.Size = new System.Drawing.Size(338, 20);
-            this.txtCreator.TabIndex = 1;
+            this.txtCreator.TabIndex = 11;
             // 
             // txtCreated
             // 
@@ -308,7 +309,7 @@ namespace Radegast
             this.txtCreated.Name = "txtCreated";
             this.txtCreated.ReadOnly = true;
             this.txtCreated.Size = new System.Drawing.Size(144, 20);
-            this.txtCreated.TabIndex = 1;
+            this.txtCreated.TabIndex = 13;
             // 
             // txtAssetID
             // 
@@ -316,7 +317,7 @@ namespace Radegast
             this.txtAssetID.Name = "txtAssetID";
             this.txtAssetID.ReadOnly = true;
             this.txtAssetID.Size = new System.Drawing.Size(338, 20);
-            this.txtAssetID.TabIndex = 1;
+            this.txtAssetID.TabIndex = 14;
             // 
             // lblCreated
             // 
@@ -332,7 +333,7 @@ namespace Radegast
             this.txtItemName.Location = new System.Drawing.Point(80, 10);
             this.txtItemName.Name = "txtItemName";
             this.txtItemName.Size = new System.Drawing.Size(338, 20);
-            this.txtItemName.TabIndex = 1;
+            this.txtItemName.TabIndex = 10;
             // 
             // lblAsset
             // 
@@ -374,8 +375,8 @@ namespace Radegast
             this.splitContainer1.ResumeLayout(false);
             this.tstripInventory.ResumeLayout(false);
             this.tstripInventory.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.pnlItemProperties.ResumeLayout(false);
+            this.pnlItemProperties.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -385,7 +386,7 @@ namespace Radegast
         public System.Windows.Forms.TreeView invTree;
         public System.Windows.Forms.SplitContainer splitContainer1;
         public RadegastContextMenuStrip ctxInv;
-        public System.Windows.Forms.Panel panel1;
+        public System.Windows.Forms.Panel pnlItemProperties;
         public System.Windows.Forms.TextBox txtItemName;
         public System.Windows.Forms.Label lblCreator;
         public System.Windows.Forms.Label lblItemName;

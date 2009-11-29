@@ -79,6 +79,7 @@ namespace Radegast
         StartupTitle,
         Error,
         Alert,
-        OwnerSay
+        OwnerSay,
+        Invisible
     }
 }
