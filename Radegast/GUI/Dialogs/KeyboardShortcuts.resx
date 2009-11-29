@@ -118,7 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="rtbShortCuts.Text" xml:space="preserve">
-    <value>Alt-1: Chat
+    <value>In chat input pressing Enter produces normal chat.
+Ctrl-Enter shouts.
+Shift-Enter whispers.
+
+Tabs:
+Alt-1: Chat
 Alt-2: Friends
 Alt-3: Groups
 Alt-4: Inventory
