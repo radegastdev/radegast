@@ -83,6 +83,7 @@ namespace Radegast
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
             lvwObjects.ListViewItemSorter = new SorterClass();
+            cbChatType.SelectedIndex = 1;
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -258,7 +259,7 @@ namespace Radegast
 
             cbxInput.Enabled = true;
             btnSay.Enabled = true;
-            btnShout.Enabled = true;
+            cbChatType.Enabled = true;
             client.Avatars.RequestAvatarProperties(client.Self.AgentID);
             cbxInput.Focus();
          }
@@ -267,15 +268,15 @@ namespace Radegast
         {
             cbxInput.Enabled = false;
             btnSay.Enabled = false;
-            btnShout.Enabled = false;
+            cbChatType.Enabled = false;
 
             lvwObjects.Items.Clear();
         }
 
-        private void cbxInput_KeyUp(object sender, KeyEventArgs e)
+        private void cbxInput_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
-            e.SuppressKeyPress = true;
+            e.Handled = e.SuppressKeyPress = true;
 
             if (e.Shift)
                 ProcessChatInput(cbxInput.Text, ChatType.Whisper);
@@ -324,19 +325,15 @@ namespace Radegast
 
         private void btnSay_Click(object sender, EventArgs e)
         {
-            ProcessChatInput(cbxInput.Text, ChatType.Normal);
-        }
-
-        private void btnShout_Click(object sender, EventArgs e)
-        {
-            ProcessChatInput(cbxInput.Text, ChatType.Shout);
+            ProcessChatInput(cbxInput.Text, (ChatType)cbChatType.SelectedIndex);
+            cbxInput.Focus();
         }
 
         private void cbxInput_TextChanged(object sender, EventArgs e)
         {
             if (cbxInput.Text.Length > 0)
             {
-                btnSay.Enabled = btnShout.Enabled = true;
+                btnSay.Enabled = cbChatType.Enabled = true;
 
                 if (!cbxInput.Text.StartsWith("/"))
                 {
@@ -346,7 +343,7 @@ namespace Radegast
             }
             else
             {
-                btnSay.Enabled = btnShout.Enabled = false;
+                btnSay.Enabled = cbChatType.Enabled = false;
                 instance.State.SetTyping(false);
             }
         }
@@ -445,11 +442,6 @@ namespace Radegast
             string name = instance.getAvatarName(av);
 
             instance.MainForm.ShowAgentProfile(name, av);
-        }
-
-        private void cbxInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter) e.SuppressKeyPress = true;
         }
 
         private void dumpOufitBtn_Click(object sender, EventArgs e)

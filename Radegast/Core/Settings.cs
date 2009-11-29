@@ -77,19 +77,23 @@ namespace Radegast
 
         public static string SerializeLLSDXmlStringFormated(OSD data)
         {
-            StringWriter sw = new StringWriter();
-            XmlTextWriter writer = new XmlTextWriter(sw);
-            writer.Formatting = Formatting.Indented;
-            writer.Indentation = 4;
-            writer.IndentChar = ' ';
+            using (StringWriter sw = new StringWriter())
+            {
+                using (XmlTextWriter writer = new XmlTextWriter(sw))
+                {
+                    writer.Formatting = Formatting.Indented;
+                    writer.Indentation = 4;
+                    writer.IndentChar = ' ';
 
-            writer.WriteStartElement(String.Empty, "llsd", String.Empty);
-            OSDParser.SerializeLLSDXmlElement(writer, data);
-            writer.WriteEndElement();
+                    writer.WriteStartElement(String.Empty, "llsd", String.Empty);
+                    OSDParser.SerializeLLSDXmlElement(writer, data);
+                    writer.WriteEndElement();
 
-            writer.Close();
+                    writer.Close();
 
-            return sw.ToString();
+                    return sw.ToString();
+                }
+            }
         }
 
         private void FireEvent(string key, OSD val)

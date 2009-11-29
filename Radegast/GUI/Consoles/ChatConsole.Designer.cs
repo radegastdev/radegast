@@ -63,9 +63,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatConsole));
             this.rtbChat = new System.Windows.Forms.RichTextBox();
-            this.cbxInput = new Radegast.ChatInputBox();
             this.btnSay = new System.Windows.Forms.Button();
-            this.btnShout = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lvwObjects = new Radegast.ListViewNoFlicker();
             this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
@@ -98,6 +96,8 @@ namespace Radegast
             this.btnTurnRight = new System.Windows.Forms.Button();
             this.btnTurnLeft = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbChatType = new System.Windows.Forms.ComboBox();
+            this.cbxInput = new Radegast.ChatInputBox();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -125,19 +125,6 @@ namespace Radegast
             this.rtbChat.MouseUp += new System.Windows.Forms.MouseEventHandler(this.rtbChat_MouseUp);
             this.rtbChat.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbChat_LinkClicked);
             // 
-            // cbxInput
-            // 
-            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbxInput.Enabled = false;
-            this.cbxInput.Location = new System.Drawing.Point(0, 0);
-            this.cbxInput.Name = "cbxInput";
-            this.cbxInput.Size = new System.Drawing.Size(352, 21);
-            this.cbxInput.TabIndex = 0;
-            this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
-            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
-            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
-            // 
             // btnSay
             // 
             this.btnSay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -149,18 +136,6 @@ namespace Radegast
             this.btnSay.Text = "Say";
             this.btnSay.UseVisualStyleBackColor = true;
             this.btnSay.Click += new System.EventHandler(this.btnSay_Click);
-            // 
-            // btnShout
-            // 
-            this.btnShout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShout.Enabled = false;
-            this.btnShout.Location = new System.Drawing.Point(440, 0);
-            this.btnShout.Name = "btnShout";
-            this.btnShout.Size = new System.Drawing.Size(76, 24);
-            this.btnShout.TabIndex = 2;
-            this.btnShout.Text = "Shout";
-            this.btnShout.UseVisualStyleBackColor = true;
-            this.btnShout.Click += new System.EventHandler(this.btnShout_Click);
             // 
             // splitContainer1
             // 
@@ -489,14 +464,42 @@ namespace Radegast
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.cbChatType);
             this.panel1.Controls.Add(this.cbxInput);
             this.panel1.Controls.Add(this.btnSay);
-            this.panel1.Controls.Add(this.btnShout);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 310);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(516, 24);
             this.panel1.TabIndex = 0;
+            // 
+            // cbChatType
+            // 
+            this.cbChatType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbChatType.BackColor = System.Drawing.SystemColors.Window;
+            this.cbChatType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbChatType.Enabled = false;
+            this.cbChatType.FormattingEnabled = true;
+            this.cbChatType.Items.AddRange(new object[] {
+            "Whisper",
+            "Normal",
+            "Shout"});
+            this.cbChatType.Location = new System.Drawing.Point(438, 1);
+            this.cbChatType.Name = "cbChatType";
+            this.cbChatType.Size = new System.Drawing.Size(73, 21);
+            this.cbChatType.TabIndex = 2;
+            // 
+            // cbxInput
+            // 
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxInput.Enabled = false;
+            this.cbxInput.Location = new System.Drawing.Point(0, 0);
+            this.cbxInput.Name = "cbxInput";
+            this.cbxInput.Size = new System.Drawing.Size(352, 21);
+            this.cbxInput.TabIndex = 0;
+            this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
+            this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             // 
             // ChatConsole
             // 
@@ -528,7 +531,6 @@ namespace Radegast
         public RichTextBox rtbChat;
         public ChatInputBox cbxInput;
         public Button btnSay;
-        public Button btnShout;
         public SplitContainer splitContainer1;
         public Panel panel1;
         public ToolStrip toolStrip1;
@@ -560,5 +562,6 @@ namespace Radegast
         public ToolStripMenuItem ctxPoint;
         public ToolStripMenuItem ctxSource;
         public ToolStripMenuItem ctxPay;
+        public ComboBox cbChatType;
     }
 }
