@@ -36,9 +36,9 @@ using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Radegast.Netcom;
-using Radegast.Core;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using OpenMetaverse.Voice;
 
 namespace Radegast
 {
@@ -99,6 +99,14 @@ namespace Radegast
             gateway.Start();
         }
 
+        private void Stop()
+        {
+            participants.Clear();
+            session = null;
+            SetProgress(VoiceGateway.ConnectionState.None);
+            gateway.Stop();
+        }
+
         /// <summary>
         /// Open context menu for voice items
         /// </summary>
@@ -136,14 +144,6 @@ namespace Radegast
             selected.IsMuted = false;
         }
 
-        private void Stop()
-        {
-            participants.Items.Clear();
-            session = null;
-            SetProgress(VoiceGateway.ConnectionState.None);
-            gateway.Stop();
-        }
-
         private void RegisterClientEvents()
         {
             // Voice hooks
@@ -172,8 +172,8 @@ namespace Radegast
             {
                 if (state == VoiceGateway.ConnectionState.AccountLogin)
                 {
-                    LoadMicDevices( gateway.CaptureDevices );
-                    LoadSpkrDevices( gateway.PlaybackDevices );
+                    LoadMicDevices( gateway.CaptureDevices, gateway.CurrentCaptureDevice );
+                    LoadSpkrDevices( gateway.PlaybackDevices, gateway.PlaybackDevice );
                 }
 
                 SetProgress(state);
@@ -206,7 +206,7 @@ namespace Radegast
                  session.OnParticipantAdded += new EventHandler(session_OnParticipantAdded);
                  session.OnParticipantRemoved += new EventHandler(session_OnParticipantRemoved);
                  session.OnParticipantUpdate += new EventHandler(session_OnParticipantUpdate);
-                 participants.Items.Clear();
+                 participants.Clear();
 
                  // Default Mic off and Spkr on
                  gateway.MicMute = true;
@@ -226,7 +226,7 @@ namespace Radegast
 
             BeginInvoke(new MethodInvoker(delegate()
              {
-                 participants.Items.Clear();
+                 participants.Clear();
                  session.OnParticipantAdded -= new EventHandler(session_OnParticipantAdded);
                  session.OnParticipantRemoved -= new EventHandler(session_OnParticipantRemoved);
                  session.OnParticipantUpdate -= new EventHandler(session_OnParticipantUpdate);
@@ -249,6 +249,9 @@ namespace Radegast
             {
                 // Supply the name based on the UUID.
                 p.Name = instance.getAvatarName(p.ID);
+
+                if (participants.Items.ContainsKey(p.Name))
+                    return;
 
                 ListViewItem item = new ListViewItem(p.Name);
                 item.Tag = p;
@@ -413,20 +416,22 @@ namespace Radegast
 
         #region Audio Settings
  
-        void LoadMicDevices(List<string> available)
+        void LoadMicDevices(List<string> available, string current)
         {
             if (available == null) return;
 
+            micDevice.Items.Clear();
             foreach (string name in available)
                 micDevice.Items.Add(name);
-            micDevice.SelectedItem = config["capture.device"].AsString();
+            micDevice.SelectedItem = current;
         }
 
-        void LoadSpkrDevices(List<string> available)
+        void LoadSpkrDevices(List<string> available, string current)
         {
+            spkrDevice.Items.Clear();
             foreach (string name in available)
                 spkrDevice.Items.Add(name);
-            spkrDevice.SelectedItem = config["playback.device"].AsString();
+            spkrDevice.SelectedItem = current;
         }
 
         private void spkrDevice_SelectedIndexChanged(object sender, EventArgs e)
@@ -438,7 +443,7 @@ namespace Radegast
 
         private void micDevice_SelectedIndexChanged(object sender, EventArgs e)
         {
-            gateway.CaptureDevice = (string)micDevice.SelectedItem;
+            gateway.CurrentCaptureDevice = (string)micDevice.SelectedItem;
             config["capture.device"] = new OSDString((string)micDevice.SelectedItem);
             instance.GlobalSettings.Save();
         }

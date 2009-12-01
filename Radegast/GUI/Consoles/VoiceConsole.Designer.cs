@@ -63,6 +63,8 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VoiceConsole));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.btnUnmuteAll = new System.Windows.Forms.Button();
+            this.btnMuteAll = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -92,8 +94,6 @@ namespace Radegast
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.TalkStates = new System.Windows.Forms.ImageList(this.components);
-            this.btnMuteAll = new System.Windows.Forms.Button();
-            this.btnUnmuteAll = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -138,6 +138,26 @@ namespace Radegast
             this.splitContainer1.SplitterDistance = 462;
             this.splitContainer1.TabIndex = 7;
             this.splitContainer1.TabStop = false;
+            // 
+            // btnUnmuteAll
+            // 
+            this.btnUnmuteAll.Location = new System.Drawing.Point(372, 211);
+            this.btnUnmuteAll.Name = "btnUnmuteAll";
+            this.btnUnmuteAll.Size = new System.Drawing.Size(75, 23);
+            this.btnUnmuteAll.TabIndex = 30;
+            this.btnUnmuteAll.Text = "Unmute All";
+            this.btnUnmuteAll.UseVisualStyleBackColor = true;
+            this.btnUnmuteAll.Click += new System.EventHandler(this.btnUnmuteAll_Click);
+            // 
+            // btnMuteAll
+            // 
+            this.btnMuteAll.Location = new System.Drawing.Point(372, 170);
+            this.btnMuteAll.Name = "btnMuteAll";
+            this.btnMuteAll.Size = new System.Drawing.Size(75, 23);
+            this.btnMuteAll.TabIndex = 29;
+            this.btnMuteAll.Text = "Mute All";
+            this.btnMuteAll.UseVisualStyleBackColor = true;
+            this.btnMuteAll.Click += new System.EventHandler(this.btnMuteAll_Click);
             // 
             // label5
             // 
@@ -296,7 +316,7 @@ namespace Radegast
             // chkVoiceEnable
             // 
             this.chkVoiceEnable.AutoSize = true;
-            this.chkVoiceEnable.Location = new System.Drawing.Point(22, 10);
+            this.chkVoiceEnable.Location = new System.Drawing.Point(14, 10);
             this.chkVoiceEnable.Name = "chkVoiceEnable";
             this.chkVoiceEnable.Size = new System.Drawing.Size(86, 17);
             this.chkVoiceEnable.TabIndex = 0;
@@ -397,26 +417,6 @@ namespace Radegast
             this.TalkStates.Images.SetKeyName(0, "TalkIdle.png");
             this.TalkStates.Images.SetKeyName(1, "Talking.png");
             this.TalkStates.Images.SetKeyName(2, "TalkMute.png");
-            // 
-            // btnMuteAll
-            // 
-            this.btnMuteAll.Location = new System.Drawing.Point(372, 170);
-            this.btnMuteAll.Name = "btnMuteAll";
-            this.btnMuteAll.Size = new System.Drawing.Size(75, 23);
-            this.btnMuteAll.TabIndex = 29;
-            this.btnMuteAll.Text = "Mute All";
-            this.btnMuteAll.UseVisualStyleBackColor = true;
-            this.btnMuteAll.Click += new System.EventHandler(this.btnMuteAll_Click);
-            // 
-            // btnUnmuteAll
-            // 
-            this.btnUnmuteAll.Location = new System.Drawing.Point(372, 211);
-            this.btnUnmuteAll.Name = "btnUnmuteAll";
-            this.btnUnmuteAll.Size = new System.Drawing.Size(75, 23);
-            this.btnUnmuteAll.TabIndex = 30;
-            this.btnUnmuteAll.Text = "Unmute All";
-            this.btnUnmuteAll.UseVisualStyleBackColor = true;
-            this.btnUnmuteAll.Click += new System.EventHandler(this.btnUnmuteAll_Click);
             // 
             // VoiceConsole
             // 
