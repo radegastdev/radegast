@@ -171,9 +171,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Core\Updater\UpdateChecker.cs" />
-    <Compile Include="Core\VoiceGateway.cs" />
-    <Compile Include="Core\VoiceParticipant.cs" />
-    <Compile Include="Core\VoiceSession.cs" />
     <Compile Include="FormFlash.cs" />
     <Compile Include="GUI\Consoles\AnimDetail.cs">
       <SubType>UserControl</SubType>
