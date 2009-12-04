@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Radegast;
-using Radegast.Core;
 using OpenMetaverse;
+using OpenMetaverse.Voice;
 
 namespace RadegastSpeech.Conversation
 {
