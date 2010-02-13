@@ -293,7 +293,15 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.RequestTeleport:
-                    instance.MainForm.AddNotification(new ntfTeleport(instance, e.IM));
+                    if (instance.RLV.AutoAcceptTP(e.IM.FromAgentID))
+                    {
+                        DisplayNotificationInChat("Auto accepting teleprot from " + e.IM.FromAgentName);
+                        instance.Client.Self.TeleportLureRespond(e.IM.FromAgentID, true);
+                    }
+                    else
+                    {
+                        instance.MainForm.AddNotification(new ntfTeleport(instance, e.IM));
+                    }
                     break;
 
                 case InstantMessageDialog.GroupInvitation:

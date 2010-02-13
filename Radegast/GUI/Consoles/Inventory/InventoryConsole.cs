@@ -39,32 +39,9 @@ using OpenMetaverse;
 
 namespace Radegast
 {
+
     public partial class InventoryConsole : UserControl
     {
-        public class AttachmentInfo
-        {
-            public Primitive Prim;
-            public InventoryItem Item;
-            public UUID InventoryID;
-            public UUID PrimID;
-            public bool MarkedAttached = false;
-
-            public AttachmentPoint Point
-            {
-                get
-                {
-                    if (Prim != null)
-                    {
-                        return Prim.PrimData.AttachmentPoint;
-                    }
-                    else
-                    {
-                        return AttachmentPoint.Default;
-                    }
-                }
-            }
-        }
-
         RadegastInstance instance;
         GridClient client { get { return instance.Client; } }
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
@@ -1179,7 +1156,7 @@ namespace Radegast
                     }
                     ctxInv.Items.Add(ctxItem);
 
-                    if (IsAttached(item))
+                    if (IsAttached(item) && instance.RLV.AllowDetach(attachments[item.UUID]))
                     {
                         ctxItem = new ToolStripMenuItem("Detach from yourself", null, OnInvContextClick);
                         ctxItem.Name = "detach";
@@ -1567,7 +1544,7 @@ namespace Radegast
                 }
             }
         }
-    
+
         #endregion
 
         private void UpdateWornLabels()
@@ -1895,4 +1872,30 @@ namespace Radegast
         }
     }
     #endregion
+
+    public class AttachmentInfo
+    {
+        public Primitive Prim;
+        public InventoryItem Item;
+        public UUID InventoryID;
+        public UUID PrimID;
+        public bool MarkedAttached = false;
+
+        public AttachmentPoint Point
+        {
+            get
+            {
+                if (Prim != null)
+                {
+                    return Prim.PrimData.AttachmentPoint;
+                }
+                else
+                {
+                    return AttachmentPoint.Default;
+                }
+            }
+        }
+    }
+
+
 }

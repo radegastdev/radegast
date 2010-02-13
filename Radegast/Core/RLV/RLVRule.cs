@@ -42,5 +42,11 @@ namespace Radegast
         public string Option { set; get; }
         public string Param { set; get; }
         public UUID Sender { set; get; }
+        public string SenderName { set; get; }
+
+        public override string ToString()
+        {
+            return string.Format("{0}: {1}:{2}={3} [{4}]", SenderName, Behaviour, Option, Param, Sender);
+        }
     }
 }

@@ -226,6 +226,14 @@ namespace Radegast
         {
             if (string.IsNullOrEmpty(e.Message)) return;
 
+            if (instance.RLV.Enabled && e.Message.StartsWith("@"))
+            {
+                instance.RLV.TryProcessCMD(e);
+#if !DEBUG
+                return;
+#endif
+            }
+
             StringBuilder sb = new StringBuilder();
             // if (e.SourceType == ChatSourceType.Object) {
             //    sb.Append(e.Position + " ");

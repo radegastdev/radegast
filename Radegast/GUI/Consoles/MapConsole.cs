@@ -187,10 +187,12 @@ namespace Radegast
                 case TeleportStatus.Failed:
                     InTeleport = false;
                     lblStatus.Text = "Failed: " + e.Message;
+                    instance.TabConsole.DisplayNotificationInChat("Teleport failed");
                     break;
 
                 case TeleportStatus.Finished:
                     lblStatus.Text = "Teleport complete";
+                    instance.TabConsole.DisplayNotificationInChat("Teleport complete");
                     InTeleport = false;
                     Network_SimChanged(null, null);
                     break;

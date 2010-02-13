@@ -30,7 +30,7 @@
 //
 using System;
 using System.Windows.Forms;
-
+using System.Text.RegularExpressions;
 namespace Radegast
 {
     static class Program
