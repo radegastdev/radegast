@@ -51,15 +51,12 @@ namespace Radegast.Plugin.Alice
         private Avatar.AvatarProperties MyProfile;
         private AIMLbot.Bot Alice;
         private Hashtable AliceUsers = new Hashtable();
-        private ToolStripMenuItem MenuButton;
+        private ToolStripMenuItem MenuButton, EnabledButton;
 
         public void StartPlugin(RadegastInstance inst)
         {
             Instance = inst;
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
-
-            Alice = new AIMLbot.Bot();
-            Alice.isAcceptingUserInput = false;
 
             if (!Instance.GlobalSettings.Keys.Contains("plugin.alice.enabled"))
             {
@@ -70,13 +67,41 @@ namespace Radegast.Plugin.Alice
                 Enabled = Instance.GlobalSettings["plugin.alice.enabled"].AsBoolean();
             }
 
-            MenuButton = new ToolStripMenuItem("ALICE chatbot", null, OnALICEMenuButtonClicked);
+            EnabledButton = new ToolStripMenuItem("Enabled", null, (object sender, EventArgs e) =>
+            {
+                Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
+                Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
+            });
+
+            MenuButton = new ToolStripMenuItem("ALICE chatbot", null, (object sender, EventArgs e) =>
+            {
+                Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
+                Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
+            });
+
             Instance.MainForm.PluginsMenu.DropDownItems.Add(MenuButton);
             Instance.MainForm.PluginsMenu.Visible = true;
-            MenuButton.Checked = Enabled;
+            MenuButton.DropDownItems.Add(EnabledButton);
+            MenuButton.Checked = EnabledButton.Checked = Enabled;
+            MenuButton.DropDownItems.Add("Reload AIML", null, (object sender, EventArgs e) =>
+            {
+                Alice = null;
+                GC.Collect();
+                LoadALICE();                
+            });
 
+            LoadALICE();                
+
+            // Events
+            RegisterClientEvents(Client);
+        }
+
+        private void LoadALICE()
+        {
             try
             {
+                Alice = new AIMLbot.Bot();
+                Alice.isAcceptingUserInput = false;
                 Alice.loadSettings();
                 AIMLbot.Utils.AIMLLoader loader = new AIMLbot.Utils.AIMLLoader(Alice);
                 Alice.isAcceptingUserInput = false;
@@ -87,9 +112,6 @@ namespace Radegast.Plugin.Alice
             {
                 System.Console.WriteLine("Failed loading ALICE: " + ex.Message);
             }
-
-            // Events
-            RegisterClientEvents(Client);
         }
 
 
@@ -249,12 +271,6 @@ namespace Radegast.Plugin.Alice
         private string FirstName(string name)
         {
             return name.Split(' ')[0];
-        }
-
-        private void OnALICEMenuButtonClicked(object sender, EventArgs e)
-        {
-            Enabled = MenuButton.Checked = !Enabled;
-            Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
         }
     }
 }
