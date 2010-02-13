@@ -169,6 +169,13 @@ namespace Radegast
             }
         }
 
+        private RLVManager rlv;
+
+        /// <summary>
+        /// Manager for RLV functionality
+        /// </summary>
+        public RLVManager RLV { get { return rlv; } }
+
         #region Events
 
         #region ClientChanged event
@@ -245,6 +252,7 @@ namespace Radegast
             commandsManager = new CommandsManager(this);
             ContextActionManager = new ContextActionsManager(this);
             movement = new RadegastMovement(this);
+            rlv = new RLVManager(this);
 
             InitializeLoggingAndConfig();
             InitializeClient(client);
@@ -316,6 +324,12 @@ namespace Radegast
 
         public void CleanUp()
         {
+            if (rlv != null)
+            {
+                rlv.Dispose();
+                rlv = null;
+            }
+
             if (client != null)
             {
                 UnregisterClientEvents(client);

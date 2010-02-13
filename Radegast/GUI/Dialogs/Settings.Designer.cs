@@ -61,13 +61,15 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.cbRLV = new System.Windows.Forms.CheckBox();
+            this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
             this.cbAutoReconnect = new System.Windows.Forms.CheckBox();
             this.cbFriendsNotifications = new System.Windows.Forms.CheckBox();
             this.cbTrasactChat = new System.Windows.Forms.CheckBox();
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
-            this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
+            this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -85,6 +87,8 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.cbMUEmotes);
+            this.tbpGeneral.Controls.Add(this.cbRLV);
             this.tbpGeneral.Controls.Add(this.cbHideLoginGraphics);
             this.tbpGeneral.Controls.Add(this.cbAutoReconnect);
             this.tbpGeneral.Controls.Add(this.cbFriendsNotifications);
@@ -99,6 +103,28 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // cbRLV
+            // 
+            this.cbRLV.AutoSize = true;
+            this.cbRLV.Location = new System.Drawing.Point(8, 167);
+            this.cbRLV.Name = "cbRLV";
+            this.cbRLV.Size = new System.Drawing.Size(85, 17);
+            this.cbRLV.TabIndex = 7;
+            this.cbRLV.Text = "RLV support";
+            this.cbRLV.UseVisualStyleBackColor = true;
+            this.cbRLV.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            // 
+            // cbHideLoginGraphics
+            // 
+            this.cbHideLoginGraphics.AutoSize = true;
+            this.cbHideLoginGraphics.Location = new System.Drawing.Point(8, 144);
+            this.cbHideLoginGraphics.Name = "cbHideLoginGraphics";
+            this.cbHideLoginGraphics.Size = new System.Drawing.Size(141, 17);
+            this.cbHideLoginGraphics.TabIndex = 6;
+            this.cbHideLoginGraphics.Text = "Hide login slpash screen";
+            this.cbHideLoginGraphics.UseVisualStyleBackColor = true;
+            this.cbHideLoginGraphics.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // cbAutoReconnect
             // 
@@ -164,16 +190,16 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbHideLoginGraphics
+            // cbMUEmotes
             // 
-            this.cbHideLoginGraphics.AutoSize = true;
-            this.cbHideLoginGraphics.Location = new System.Drawing.Point(8, 144);
-            this.cbHideLoginGraphics.Name = "cbHideLoginGraphics";
-            this.cbHideLoginGraphics.Size = new System.Drawing.Size(141, 17);
-            this.cbHideLoginGraphics.TabIndex = 6;
-            this.cbHideLoginGraphics.Text = "Hide login slpash screen";
-            this.cbHideLoginGraphics.UseVisualStyleBackColor = true;
-            this.cbHideLoginGraphics.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            this.cbMUEmotes.AutoSize = true;
+            this.cbMUEmotes.Location = new System.Drawing.Point(8, 190);
+            this.cbMUEmotes.Name = "cbMUEmotes";
+            this.cbMUEmotes.Size = new System.Drawing.Size(108, 17);
+            this.cbMUEmotes.TabIndex = 8;
+            this.cbMUEmotes.Text = "MU* style emotes";
+            this.cbMUEmotes.UseVisualStyleBackColor = true;
+            this.cbMUEmotes.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -202,6 +228,8 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbFriendsNotifications;
         public System.Windows.Forms.CheckBox cbAutoReconnect;
         public System.Windows.Forms.CheckBox cbHideLoginGraphics;
+        public System.Windows.Forms.CheckBox cbRLV;
+        public System.Windows.Forms.CheckBox cbMUEmotes;
 
     }
 }

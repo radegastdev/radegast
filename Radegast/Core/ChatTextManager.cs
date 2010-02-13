@@ -48,6 +48,7 @@ namespace Radegast
         private List<ChatBufferItem> textBuffer;
 
         private bool showTimestamps;
+        private bool MUEmotes;
 
         public ChatTextManager(RadegastInstance instance, ITextPrinter textPrinter)
         {
@@ -78,6 +79,11 @@ namespace Radegast
                 s["chat_timestamps"] = OSD.FromBoolean(true);
 
             showTimestamps = s["chat_timestamps"].AsBoolean();
+
+            if (s["mu_emotes"].Type == OSDType.Unknown)
+                s["mu_emotes"] = OSD.FromBoolean(false);
+
+            MUEmotes = s["mu_emotes"].AsBoolean();
 
             s.OnSettingChanged += new Settings.SettingChangedCallback(s_OnSettingChanged);
         }
@@ -242,6 +248,11 @@ namespace Radegast
             {
                 sb.Append(" ");
                 sb.Append(e.Message.Substring(3));
+            }
+            else if (MUEmotes && e.Message.StartsWith(":"))
+            {
+                sb.Append(" ");
+                sb.Append(e.Message.Substring(1));
             }
             else
             {

@@ -72,6 +72,29 @@ namespace Radegast
             cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
             cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
 
+            if (s["rlv_enabled"].Type == OSDType.Unknown)
+            {
+                s["rlv_enabled"] = new OSDBoolean(false);
+            }
+
+            cbRLV.Checked = s["rlv_enabled"].AsBoolean();
+            cbRLV.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["rlv_enabled"] = new OSDBoolean(cbRLV.Checked);
+            };
+
+            if (s["mu_emotes"].Type == OSDType.Unknown)
+            {
+                s["mu_emotes"] = new OSDBoolean(false);
+            }
+
+            cbMUEmotes.Checked = s["mu_emotes"].AsBoolean();
+            cbMUEmotes.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
+            };
+
+
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)
