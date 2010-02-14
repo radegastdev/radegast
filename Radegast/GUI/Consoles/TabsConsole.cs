@@ -339,6 +339,7 @@ namespace Radegast
             if (TabExists("chat"))
                 tabs["chat"].Select();
         }
+
         /// <summary>
         /// Displays notification in the main chat tab
         /// </summary>
@@ -355,9 +356,20 @@ namespace Radegast
         /// <param name="style">Style of the message to be printed, normal, object, etc.</param>
         public void DisplayNotificationInChat(string msg, ChatBufferTextStyle style)
         {
+            DisplayNotificationInChat(msg, style, true);
+        }
+
+        /// <summary>
+        /// Displays notification in the main chat tab
+        /// </summary>
+        /// <param name="msg">Message to be printed in the chat tab</param>
+        /// <param name="style">Style of the message to be printed, normal, object, etc.</param>
+        /// <param name="highlightChatTab">Highligt (and flash in taskbar) chat tab if not selected</param>
+        public void DisplayNotificationInChat(string msg, ChatBufferTextStyle style, bool highlightChatTab)
+        {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => DisplayNotificationInChat(msg, style)));
+                BeginInvoke(new MethodInvoker(() => DisplayNotificationInChat(msg, style, highlightChatTab)));
                 return;
             }
 
@@ -372,7 +384,10 @@ namespace Radegast
                 try
                 {
                     mainChatManger.ProcessBufferItem(line, true);
-                    tabs["chat"].Highlight();
+                    if (highlightChatTab)
+                    {
+                        tabs["chat"].Highlight();
+                    }
                 }
                 catch (Exception) { }
             }

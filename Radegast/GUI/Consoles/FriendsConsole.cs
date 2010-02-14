@@ -45,7 +45,7 @@ namespace Radegast
         private FriendInfo selectedFriend;
 
         private bool settingFriend = false;
-        private bool showNotifications;
+
         readonly object lockOneAtaTime = new object();
 
         public FriendsConsole(RadegastInstance instance)
@@ -57,11 +57,12 @@ namespace Radegast
 
             if (instance.GlobalSettings["show_friends_online_notifications"].Type == OSDType.Unknown)
             {
-                instance.GlobalSettings["show_friends_online_notifications"] = OSD.FromBoolean(showNotifications = true);
+                instance.GlobalSettings["show_friends_online_notifications"] = OSD.FromBoolean(true);
             }
-            else
+
+            if (instance.GlobalSettings["friends_notification_highlight"].Type == OSDType.Unknown)
             {
-                showNotifications = instance.GlobalSettings["show_friends_online_notifications"].AsBoolean();
+                instance.GlobalSettings["friends_notification_highlight"] = new OSDBoolean(true);
             }
 
             // Callbacks
@@ -121,9 +122,9 @@ namespace Radegast
                 return;
             }
 
-            if (showNotifications)
+            if (instance.GlobalSettings["show_friends_online_notifications"].AsBoolean())
             {
-                instance.MainForm.TabConsole.DisplayNotificationInChat(e.Friend.Name + " is offline");
+                instance.MainForm.TabConsole.DisplayNotificationInChat(e.Friend.Name + " is offline", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"].AsBoolean());
             }
             RefreshFriendsList();
         }
@@ -136,7 +137,7 @@ namespace Radegast
                 return;
             }
 
-            if (showNotifications)
+            if (instance.GlobalSettings["show_friends_online_notifications"].AsBoolean())
             {
                 string name = e.Friend.Name;
 
@@ -164,7 +165,7 @@ namespace Radegast
                     }
                 }
 
-                instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online");
+                instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"].AsBoolean());
             }
 
             RefreshFriendsList();
@@ -337,7 +338,7 @@ namespace Radegast
         private void lbxFriends_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right) ShowContextMenu();
-        }                
+        }
 
         private void lbxFriends_KeyUp(object sender, KeyEventArgs e)
         {

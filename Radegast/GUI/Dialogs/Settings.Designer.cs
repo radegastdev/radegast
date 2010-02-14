@@ -61,6 +61,7 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.cbRLV = new System.Windows.Forms.CheckBox();
             this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
             this.cbAutoReconnect = new System.Windows.Forms.CheckBox();
@@ -69,7 +70,7 @@ namespace Radegast
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
-            this.cbMUEmotes = new System.Windows.Forms.CheckBox();
+            this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -91,6 +92,7 @@ namespace Radegast
             this.tbpGeneral.Controls.Add(this.cbRLV);
             this.tbpGeneral.Controls.Add(this.cbHideLoginGraphics);
             this.tbpGeneral.Controls.Add(this.cbAutoReconnect);
+            this.tbpGeneral.Controls.Add(this.cbFriendsHighlight);
             this.tbpGeneral.Controls.Add(this.cbFriendsNotifications);
             this.tbpGeneral.Controls.Add(this.cbTrasactChat);
             this.tbpGeneral.Controls.Add(this.cbTrasactDialog);
@@ -104,13 +106,24 @@ namespace Radegast
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
             // 
+            // cbMUEmotes
+            // 
+            this.cbMUEmotes.AutoSize = true;
+            this.cbMUEmotes.Location = new System.Drawing.Point(8, 213);
+            this.cbMUEmotes.Name = "cbMUEmotes";
+            this.cbMUEmotes.Size = new System.Drawing.Size(108, 17);
+            this.cbMUEmotes.TabIndex = 9;
+            this.cbMUEmotes.Text = "MU* style emotes";
+            this.cbMUEmotes.UseVisualStyleBackColor = true;
+            this.cbMUEmotes.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            // 
             // cbRLV
             // 
             this.cbRLV.AutoSize = true;
-            this.cbRLV.Location = new System.Drawing.Point(8, 167);
+            this.cbRLV.Location = new System.Drawing.Point(8, 190);
             this.cbRLV.Name = "cbRLV";
             this.cbRLV.Size = new System.Drawing.Size(85, 17);
-            this.cbRLV.TabIndex = 7;
+            this.cbRLV.TabIndex = 8;
             this.cbRLV.Text = "RLV support";
             this.cbRLV.UseVisualStyleBackColor = true;
             this.cbRLV.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -118,10 +131,10 @@ namespace Radegast
             // cbHideLoginGraphics
             // 
             this.cbHideLoginGraphics.AutoSize = true;
-            this.cbHideLoginGraphics.Location = new System.Drawing.Point(8, 144);
+            this.cbHideLoginGraphics.Location = new System.Drawing.Point(8, 167);
             this.cbHideLoginGraphics.Name = "cbHideLoginGraphics";
             this.cbHideLoginGraphics.Size = new System.Drawing.Size(141, 17);
-            this.cbHideLoginGraphics.TabIndex = 6;
+            this.cbHideLoginGraphics.TabIndex = 7;
             this.cbHideLoginGraphics.Text = "Hide login slpash screen";
             this.cbHideLoginGraphics.UseVisualStyleBackColor = true;
             this.cbHideLoginGraphics.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -129,10 +142,10 @@ namespace Radegast
             // cbAutoReconnect
             // 
             this.cbAutoReconnect.AutoSize = true;
-            this.cbAutoReconnect.Location = new System.Drawing.Point(8, 121);
+            this.cbAutoReconnect.Location = new System.Drawing.Point(8, 144);
             this.cbAutoReconnect.Name = "cbAutoReconnect";
             this.cbAutoReconnect.Size = new System.Drawing.Size(169, 17);
-            this.cbAutoReconnect.TabIndex = 5;
+            this.cbAutoReconnect.TabIndex = 6;
             this.cbAutoReconnect.Text = "Auto reconnect on disconnect";
             this.cbAutoReconnect.UseVisualStyleBackColor = true;
             this.cbAutoReconnect.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -190,16 +203,16 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbMUEmotes
+            // cbFriendsHighlight
             // 
-            this.cbMUEmotes.AutoSize = true;
-            this.cbMUEmotes.Location = new System.Drawing.Point(8, 190);
-            this.cbMUEmotes.Name = "cbMUEmotes";
-            this.cbMUEmotes.Size = new System.Drawing.Size(108, 17);
-            this.cbMUEmotes.TabIndex = 8;
-            this.cbMUEmotes.Text = "MU* style emotes";
-            this.cbMUEmotes.UseVisualStyleBackColor = true;
-            this.cbMUEmotes.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            this.cbFriendsHighlight.AutoSize = true;
+            this.cbFriendsHighlight.Location = new System.Drawing.Point(8, 121);
+            this.cbFriendsHighlight.Name = "cbFriendsHighlight";
+            this.cbFriendsHighlight.Size = new System.Drawing.Size(248, 17);
+            this.cbFriendsHighlight.TabIndex = 5;
+            this.cbFriendsHighlight.Text = "Highlight chat tab on friends online notifications";
+            this.cbFriendsHighlight.UseVisualStyleBackColor = true;
+            this.cbFriendsHighlight.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -230,6 +243,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbHideLoginGraphics;
         public System.Windows.Forms.CheckBox cbRLV;
         public System.Windows.Forms.CheckBox cbMUEmotes;
+        public System.Windows.Forms.CheckBox cbFriendsHighlight;
 
     }
 }

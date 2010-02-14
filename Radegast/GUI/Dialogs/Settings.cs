@@ -94,6 +94,19 @@ namespace Radegast
                 s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
             };
 
+            
+            if (s["friends_notification_highlight"].Type == OSDType.Unknown)
+            {
+                s["friends_notification_highlight"] = new OSDBoolean(true);
+            }
+
+            cbFriendsHighlight.Checked = s["friends_notification_highlight"].AsBoolean();
+            cbFriendsHighlight.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["friends_notification_highlight"] = new OSDBoolean(cbFriendsHighlight.Checked);
+            };
+
+
 
         }
 

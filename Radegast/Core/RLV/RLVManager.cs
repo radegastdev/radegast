@@ -200,7 +200,10 @@ namespace Radegast
 
         void ProcessClear(UUID id)
         {
-            rules.RemoveAll((RLVRule r) => { return r.Sender == id; });
+            lock (rules)
+            {
+                rules.RemoveAll((RLVRule r) => { return r.Sender == id; });
+            }
         }
 
         public bool AllowDetach(AttachmentInfo a)
