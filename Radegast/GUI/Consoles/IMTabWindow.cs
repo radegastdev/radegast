@@ -142,6 +142,11 @@ namespace Radegast
             if (cbxInput.Text.Length == 0) return;
             string msg = cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n");
 
+            if (instance.GlobalSettings["mu_emotes"].AsBoolean() && msg.StartsWith(":"))
+            {
+                msg = "/me " + msg.Substring(1);
+            }
+
             if (instance.RLV.RestictionActive("sendim", target.ToString()))
                 msg = "*** IM blocked by sender's viewer";
 

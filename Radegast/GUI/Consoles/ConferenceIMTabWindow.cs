@@ -145,6 +145,11 @@ namespace Radegast
 
             string message = msg.Replace(ChatInputBox.NewlineMarker, "\n");
 
+            if (instance.GlobalSettings["mu_emotes"].AsBoolean() && message.StartsWith(":"))
+            {
+                message = "/me " + message.Substring(1);
+            }
+
             if (message.Length > 1023)
             {
                 message = message.Remove(1023);

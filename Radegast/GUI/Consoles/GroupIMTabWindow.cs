@@ -305,6 +305,12 @@ namespace Radegast
             if (cbxInput.Text.Length == 0) return;
 
             string message = cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n");
+
+            if (instance.GlobalSettings["mu_emotes"].AsBoolean() && message.StartsWith(":"))
+            {
+                message = "/me " + message.Substring(1);
+            }
+
             this.ClearIMInput();
 
             if (instance.RLV.RestictionActive("sendim")) return;
