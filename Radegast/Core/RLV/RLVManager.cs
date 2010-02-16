@@ -26,7 +26,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id: ChatConsole.cs 457 2009-11-29 04:59:39Z latifer $
+// $Id$
 //
 using System;
 using System.Collections.Generic;
