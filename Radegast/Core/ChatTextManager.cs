@@ -80,7 +80,8 @@ namespace Radegast
 
             showTimestamps = s["chat_timestamps"].AsBoolean();
 
-            if (s["mu_emotes"].Type == OSDType.Unknown)
+            if (s["mu_emotes"
+                ].Type == OSDType.Unknown)
                 s["mu_emotes"] = OSD.FromBoolean(false);
 
             MUEmotes = s["mu_emotes"].AsBoolean();
@@ -254,13 +255,18 @@ namespace Radegast
 
             if (e.Message.StartsWith("/me "))
             {
-                sb.Append(" ");
-                sb.Append(e.Message.Substring(3));
+                if (e.SourceType == ChatSourceType.Agent && instance.RLV.RestictionActive("recvemote", e.SourceID.ToString()))
+                    sb.Append(" ...");
+                else
+                    sb.Append(e.Message.Substring(3));
             }
             else
             {
                 sb.Append(": ");
-                sb.Append(e.Message);
+                if (e.SourceType == ChatSourceType.Agent && !e.Message.StartsWith("/") && instance.RLV.RestictionActive("recvchat", e.SourceID.ToString()))
+                    sb.Append("...");
+                else
+                    sb.Append(e.Message);
             }
 
             ChatBufferItem item = new ChatBufferItem();
