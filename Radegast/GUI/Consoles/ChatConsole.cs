@@ -51,7 +51,7 @@ namespace Radegast
         private RadegastMovement movement { get { return instance.Movement; } }
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
-        private Dictionary<uint, bool> bots = new Dictionary<uint,bool>();
+        private Dictionary<uint, bool> bots = new Dictionary<uint, bool>();
         private readonly Dictionary<UUID, ulong> agentSimHandle = new Dictionary<UUID, ulong>();
         public ChatInputBox ChatInputText { get { return cbxInput; } }
 
@@ -120,7 +120,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-               
+
                 BeginInvoke(new MethodInvoker(delegate()
                 {
                     Grid_CoarseLocationUpdate(sender, e);
@@ -262,7 +262,7 @@ namespace Radegast
             cbChatType.Enabled = true;
             client.Avatars.RequestAvatarProperties(client.Self.AgentID);
             cbxInput.Focus();
-         }
+        }
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
@@ -289,9 +289,10 @@ namespace Radegast
         private void ProcessChatInput(string input, ChatType type)
         {
             if (string.IsNullOrEmpty(input)) return;
+            ClearChatInput();
 
             string msg;
-            
+
             if (input.Length >= 1000)
             {
                 msg = input.Substring(0, 1000);
@@ -303,6 +304,11 @@ namespace Radegast
 
             msg = msg.Replace(ChatInputBox.NewlineMarker, "\n");
 
+            if (instance.GlobalSettings["mu_emotes"].AsBoolean() && msg.StartsWith(":"))
+            {
+                msg = "/me " + msg.Substring(1);
+            }
+
             int ch = 0;
             Match m = chatRegex.Match(msg);
 
@@ -311,11 +317,74 @@ namespace Radegast
                 ch = int.Parse(m.Groups[1].Value);
                 msg = m.Groups[2].Value;
             }
+
             if (instance.CommandsManager.IsValidCommand(msg))
-              instance.CommandsManager.ExecuteCommand(msg);
-             else 
-            netcom.ChatOut(msg, type, ch);
-            ClearChatInput();
+            {
+                instance.CommandsManager.ExecuteCommand(msg);
+            }
+            else
+            {
+                #region RLV
+                if (instance.RLV.Enabled && ch != 0)
+                {
+                    if (instance.RLV.RestictionActive("sendchannel", ch.ToString()))
+                        return;
+                }
+
+                if (instance.RLV.Enabled && ch == 0)
+                {
+                    // emote
+                    if (msg.StartsWith("/me"))
+                    {
+                        if (instance.RLV.RestictionActive("rediremote"))
+                        {
+                            foreach (var rchanstr in instance.RLV.GetOptions("rediremote"))
+                            {
+                                int rchat = 0;
+                                if (int.TryParse(rchanstr, out rchat) && rchat > 0)
+                                {
+                                    client.Self.Chat(msg, rchat, type);
+                                }
+                            }
+                            return;
+                        }
+                    }
+                    else if (!msg.StartsWith("/"))
+                    {
+                        if (instance.RLV.RestictionActive("redirchat"))
+                        {
+                            foreach (var rchanstr in instance.RLV.GetOptions("redirchat"))
+                            {
+                                int rchat = 0;
+                                if (int.TryParse(rchanstr, out rchat) && rchat > 0)
+                                {
+                                    client.Self.Chat(msg, rchat, type);
+                                }
+                            }
+                            return;
+                        }
+
+                        if (instance.RLV.RestictionActive("sendchat"))
+                        {
+                            msg = "...";
+                        }
+
+                        if (type == ChatType.Whisper && instance.RLV.RestictionActive("chatwhisper"))
+                            type = ChatType.Normal;
+
+                        if (type == ChatType.Shout && instance.RLV.RestictionActive("chatshout"))
+                            type = ChatType.Normal;
+
+                        if (instance.RLV.RestictionActive("chatnormal"))
+                            type = ChatType.Whisper;
+
+                    }
+                }
+                #endregion
+
+                netcom.ChatOut(msg, type, ch);
+            }
+
         }
 
         private void ClearChatInput()
@@ -449,7 +518,8 @@ namespace Radegast
             Avatar av = currentAvatar;
             if (av == null) return;
 
-            if (!instance.TabConsole.TabExists("OT: " + av.Name)) {
+            if (!instance.TabConsole.TabExists("OT: " + av.Name))
+            {
                 instance.TabConsole.AddOTTab(av);
             }
             instance.TabConsole.SelectTab("OT: " + av.Name);
@@ -472,7 +542,8 @@ namespace Radegast
             Avatar av = currentAvatar;
             if (av == null) return;
 
-            if (!instance.TabConsole.TabExists("AT: " + av.Name)) {
+            if (!instance.TabConsole.TabExists("AT: " + av.Name))
+            {
                 instance.TabConsole.AddATTab(av);
             }
             instance.TabConsole.SelectTab("AT: " + av.Name);
@@ -483,7 +554,8 @@ namespace Radegast
             Avatar av = currentAvatar;
             if (av == null) return;
 
-            if (!instance.TabConsole.TabExists("Anim: " + av.Name)) {
+            if (!instance.TabConsole.TabExists("Anim: " + av.Name))
+            {
                 instance.TabConsole.AddAnimTab(av);
             }
             instance.TabConsole.SelectTab("Anim: " + av.Name);
@@ -608,10 +680,10 @@ namespace Radegast
 
         private void rtbChat_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button!=MouseButtons.Right) return;
+            if (e.Button != MouseButtons.Right) return;
             RadegastContextMenuStrip cms = new RadegastContextMenuStrip();
-            instance.ContextActionManager.AddContributions(cms,instance.Client);
-            cms.Show((Control)sender,new Point(e.X,e.Y));
+            instance.ContextActionManager.AddContributions(cms, instance.Client);
+            cms.Show((Control)sender, new Point(e.X, e.Y));
         }
 
         private void lvwObjects_MouseDoubleClick(object sender, MouseEventArgs e)

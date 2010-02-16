@@ -40,6 +40,37 @@ namespace Radegast
 {
     public class RLVManager : IDisposable
     {
+        #region Events
+        /// <summary>The event subscribers. null if no subcribers</summary>
+        private EventHandler<RLVEventArgs> m_RLVRuleChanged;
+
+        /// <summary>Raises the RLVRuleChanged event</summary>
+        /// <param name="e">An RLVRuleChangedEventArgs object containing the
+        /// data returned from the data server</param>
+        protected virtual void OnRLVRuleChanged(RLVEventArgs e)
+        {
+            EventHandler<RLVEventArgs> handler = m_RLVRuleChanged;
+            try
+            {
+                if (handler != null)
+                    handler(this, e);
+            }
+            catch (Exception) { }
+            
+        }
+
+        /// <summary>Thread sync lock object</summary>
+        private readonly object m_RLVRuleChangedLock = new object();
+
+        /// <summary>Triggered when an RLVRuleChangedUpdate packet is received,
+        /// telling us what our avatar is currently wearing
+        /// <see cref="RequestRLVRuleChanged"/> request.</summary>
+        public event EventHandler<RLVEventArgs> RLVRuleChanged
+        {
+            add { lock (m_RLVRuleChangedLock) { m_RLVRuleChanged += value; } }
+            remove { lock (m_RLVRuleChangedLock) { m_RLVRuleChanged -= value; } }
+        }
+        #endregion
 
         RadegastInstance instance;
         Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]+))?=(?<param>\w+)", RegexOptions.Compiled);
@@ -60,7 +91,11 @@ namespace Radegast
 
             set
             {
-                instance.GlobalSettings["rlv_enabled"] = new OSDBoolean(value);
+                if (Enabled != instance.GlobalSettings["rlv_enabled"].AsBoolean())
+                {
+                    instance.GlobalSettings["rlv_enabled"] = new OSDBoolean(value);
+                    OnRLVRuleChanged(new RLVEventArgs(null));
+                }
             }
         }
 
@@ -75,11 +110,11 @@ namespace Radegast
 
         public bool TryProcessCMD(ChatEventArgs e)
         {
-            if (!e.Message.StartsWith("@")) return false;
+            if (!Enabled || !e.Message.StartsWith("@")) return false;
 
             if (e.Message == "@clear")
             {
-                ProcessClear(e.SourceID);
+                Clear(e.SourceID);
                 return true;
             }
 
@@ -103,6 +138,7 @@ namespace Radegast
                 if (rule.Param == "n")
                 {
                     lock (rules) rules.Add(rule);
+                    OnRLVRuleChanged(new RLVEventArgs(rule));
                     continue;
                 }
 
@@ -126,6 +162,7 @@ namespace Radegast
                         }
                     }
 
+                    OnRLVRuleChanged(new RLVEventArgs(rule));
                     continue;
                 }
 
@@ -198,12 +235,52 @@ namespace Radegast
             return true;
         }
 
-        void ProcessClear(UUID id)
+        public void Clear(UUID id)
         {
             lock (rules)
             {
                 rules.RemoveAll((RLVRule r) => { return r.Sender == id; });
             }
+        }
+
+        public bool RestictionActive(string behaviour)
+        {
+            if (!Enabled) return false;
+
+            if (rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour; }).Count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool RestictionActive(string behaviour, string exception)
+        {
+            if (!Enabled) return false;
+            var set = rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour; });
+
+            if (set.Count > 0 && 
+                set.FindAll((RLVRule r) => { return r.Option == exception; }).Count == 0 &&
+                set.FindAll((RLVRule r) => { return string.IsNullOrEmpty(r.Option) ; }).Count > 0
+                )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public List<string> GetOptions(string behaviour)
+        {
+            List<string> ret = new List<string>();
+
+            foreach (var rule in rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour && !string.IsNullOrEmpty(r.Option); }))
+            {
+                if (!ret.Contains(rule.Option)) ret.Add(rule.Option);
+            }
+
+            return ret;
         }
 
         public bool AllowDetach(AttachmentInfo a)

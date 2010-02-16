@@ -257,11 +257,6 @@ namespace Radegast
                 sb.Append(" ");
                 sb.Append(e.Message.Substring(3));
             }
-            else if (MUEmotes && e.Message.StartsWith(":"))
-            {
-                sb.Append(" ");
-                sb.Append(e.Message.Substring(1));
-            }
             else
             {
                 sb.Append(": ");
