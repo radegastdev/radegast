@@ -58,7 +58,7 @@ namespace Radegast
 
             this.session = session;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
+            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Conference, this.session, sessionName);
             
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
@@ -141,6 +141,8 @@ namespace Radegast
 
         private void SendMessage(string msg)
         {
+            if (instance.RLV.RestictionActive("sendim")) return;
+
             string message = msg.Replace(ChatInputBox.NewlineMarker, "\n");
 
             if (message.Length > 1023)

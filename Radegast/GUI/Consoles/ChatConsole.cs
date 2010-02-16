@@ -336,9 +336,10 @@ namespace Radegast
                     // emote
                     if (msg.StartsWith("/me"))
                     {
-                        if (instance.RLV.RestictionActive("rediremote"))
+                        var opt = instance.RLV.GetOptions("rediremote");
+                        if (opt.Count > 0)
                         {
-                            foreach (var rchanstr in instance.RLV.GetOptions("rediremote"))
+                            foreach (var rchanstr in opt)
                             {
                                 int rchat = 0;
                                 if (int.TryParse(rchanstr, out rchat) && rchat > 0)
@@ -351,9 +352,11 @@ namespace Radegast
                     }
                     else if (!msg.StartsWith("/"))
                     {
-                        if (instance.RLV.RestictionActive("redirchat"))
+                        var opt = instance.RLV.GetOptions("redirchat");
+                        
+                        if (opt.Count > 0)
                         {
-                            foreach (var rchanstr in instance.RLV.GetOptions("redirchat"))
+                            foreach (var rchanstr in opt)
                             {
                                 int rchat = 0;
                                 if (int.TryParse(rchanstr, out rchat) && rchat > 0)

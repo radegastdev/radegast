@@ -56,7 +56,7 @@ namespace Radegast
             this.session = session;
             this.toName = toName;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, toName);
+            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Agent, this.session, toName);
 
             AddNetcomEvents();
         }
@@ -100,8 +100,7 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            netcom.SendInstantMessage(cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n"), target, session);
-            this.ClearIMInput();
+            ProcessInput();
         }
 
         private void cbxInput_TextChanged(object sender, EventArgs e)
@@ -138,14 +137,23 @@ namespace Radegast
             }
         }
 
+        private void ProcessInput()
+        {
+            if (cbxInput.Text.Length == 0) return;
+            string msg = cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n");
+
+            if (instance.RLV.RestictionActive("sendim", target.ToString()))
+                msg = "*** IM blocked by sender's viewer";
+
+            netcom.SendInstantMessage(msg, target, session);
+            this.ClearIMInput();
+        }
+
         private void cbxInput_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
             e.SuppressKeyPress = true;
-            if (cbxInput.Text.Length == 0) return;
-
-            netcom.SendInstantMessage(cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n"), target, session);
-            this.ClearIMInput();
+            ProcessInput();
         }
 
         private void ClearIMInput()

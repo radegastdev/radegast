@@ -72,10 +72,6 @@ namespace Radegast
         }
         #endregion
 
-        RadegastInstance instance;
-        Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]+))?=(?<param>\w+)", RegexOptions.Compiled);
-        List<RLVRule> rules = new List<RLVRule>();
-
         public bool Enabled
         {
 
@@ -96,16 +92,75 @@ namespace Radegast
                     instance.GlobalSettings["rlv_enabled"] = new OSDBoolean(value);
                     OnRLVRuleChanged(new RLVEventArgs(null));
                 }
+
+                if (value)
+                    StartTimer();
+                else
+                    StopTimer();
             }
         }
+
+        RadegastInstance instance;
+        Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]+))?=(?<param>\w+)", RegexOptions.Compiled);
+        List<RLVRule> rules = new List<RLVRule>();
+        System.Timers.Timer CleanupTimer;
 
         public RLVManager(RadegastInstance instance)
         {
             this.instance = instance;
+
+            if (Enabled)
+            {
+                StartTimer();
+            }
         }
 
         public void Dispose()
         {
+            StopTimer();
+        }
+
+        void StartTimer()
+        {
+            StopTimer();
+            CleanupTimer = new System.Timers.Timer()
+            {
+                Enabled = true,
+                Interval = 120 * 1000 // two minutes
+            };
+
+            CleanupTimer.Elapsed += new System.Timers.ElapsedEventHandler(CleanupTimer_Elapsed);
+        }
+
+        void CleanupTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            List<UUID> objecs = new List<UUID>();
+            lock (rules)
+            {
+                foreach (var rule in rules)
+                {
+                    if (!objecs.Contains(rule.Sender))
+                        objecs.Add(rule.Sender);
+                }
+            }
+
+            foreach (UUID obj in objecs)
+            {
+                if (instance.Client.Network.CurrentSim.ObjectsPrimitives.Find((Primitive p) => { return p.ID == obj; }) == null)
+                {
+                    Clear(obj);
+                }
+            }
+        }
+
+        void StopTimer()
+        {
+            if (CleanupTimer != null)
+            {
+                CleanupTimer.Enabled = false;
+                CleanupTimer.Dispose();
+                CleanupTimer = null;
+            }
         }
 
         public bool TryProcessCMD(ChatEventArgs e)
@@ -247,7 +302,7 @@ namespace Radegast
         {
             if (!Enabled) return false;
 
-            if (rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour; }).Count > 0)
+            if (rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour && string.IsNullOrEmpty(r.Option); }).Count > 0)
             {
                 return true;
             }

@@ -58,7 +58,7 @@ namespace Radegast
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             this.session = session;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), this.session, sessionName);
+            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Group, this.session, sessionName);
 
             btnShow.Text = "Show";
             chatSplit.Panel2Collapsed = true;
@@ -305,6 +305,9 @@ namespace Radegast
             if (cbxInput.Text.Length == 0) return;
 
             string message = cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n");
+            this.ClearIMInput();
+
+            if (instance.RLV.RestictionActive("sendim")) return;
 
             if (message.Length > 1023) message = message.Remove(1023);
 
@@ -326,7 +329,6 @@ namespace Radegast
             {
                 textManager.TextPrinter.PrintTextLine("Cannot send group IM.", Color.Red);
             }
-            this.ClearIMInput();
         }
 
         private void ClearIMInput()

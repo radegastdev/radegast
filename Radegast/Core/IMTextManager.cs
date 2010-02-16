@@ -43,6 +43,7 @@ namespace Radegast
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private ITextPrinter textPrinter;
+        private IMTextManagerType Type;
         private UUID sessionID;
         private string sessionName;
 
@@ -50,12 +51,13 @@ namespace Radegast
 
         private bool showTimestamps;
 
-        public IMTextManager(RadegastInstance instance, ITextPrinter textPrinter, UUID sessionID, string sessionName)
+        public IMTextManager(RadegastInstance instance, ITextPrinter textPrinter, IMTextManagerType type, UUID sessionID, string sessionName)
         {
             this.sessionID = sessionID;
             this.sessionName = sessionName;
             this.textPrinter = textPrinter;
             this.textBuffer = new ArrayList();
+            this.Type = type;
 
             this.instance = instance;
             AddNetcomEvents();
@@ -129,7 +131,27 @@ namespace Radegast
 
         private void ProcessIncomingIM(InstantMessageEventArgs e)
         {
-            PrintIM(DateTime.Now, e.IM.FromAgentName, e.IM.Message);
+            string msg = e.IM.Message;
+            
+            if (instance.RLV.RestictionActive("recvim", e.IM.FromAgentID.ToString()))
+            {
+                msg = "*** IM blocked by your viewer";
+
+                if (Type == IMTextManagerType.Agent)
+                {
+                    instance.Client.Self.InstantMessage(instance.Client.Self.Name,
+                            e.IM.FromAgentID,
+                            "***  The Resident you messaged is prevented from reading your instant messages at the moment, please try again later.",
+                            e.IM.IMSessionID,
+                            InstantMessageDialog.BusyAutoResponse,
+                            InstantMessageOnline.Offline,
+                            instance.Client.Self.RelativePosition,
+                            instance.Client.Network.CurrentSim.ID,
+                            null);
+                }
+            }
+
+            PrintIM(DateTime.Now, e.IM.FromAgentName, msg);
         }
 
         private void PrintIM(DateTime timestamp, string fromName, string message)
@@ -201,5 +223,12 @@ namespace Radegast
             get { return sessionID; }
             set { sessionID = value; }
         }
+    }
+
+    public enum IMTextManagerType
+    {
+        Agent,
+        Group,
+        Conference
     }
 }

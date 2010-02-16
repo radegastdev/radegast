@@ -252,10 +252,11 @@ namespace Radegast
             commandsManager = new CommandsManager(this);
             ContextActionManager = new ContextActionsManager(this);
             movement = new RadegastMovement(this);
-            rlv = new RLVManager(this);
 
             InitializeLoggingAndConfig();
             InitializeClient(client);
+
+            rlv = new RLVManager(this);
 
             mainForm = new frmMain(this);
             mainForm.InitializeControls();
