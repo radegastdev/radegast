@@ -344,10 +344,10 @@ namespace Radegast
 
             if (rules.FindAll((RLVRule r) => { return r.Behaviour == "detach" && r.Sender == a.Prim.ID; }).Count > 0)
             {
-                return true;
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         public bool AutoAcceptTP(UUID agent)
