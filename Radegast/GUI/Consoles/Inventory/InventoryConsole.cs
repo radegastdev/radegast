@@ -54,7 +54,7 @@ namespace Radegast
         private System.Threading.Timer _EditTimer;
         private TreeNode _EditNode;
         private Dictionary<UUID, AttachmentInfo> attachments = new Dictionary<UUID, AttachmentInfo>();
-        private System.Threading.Timer TreeUpdateTimer;
+        private System.Timers.Timer TreeUpdateTimer;
         private Queue<InventoryBase> ItemsToAdd = new Queue<InventoryBase>();
         private Queue<InventoryBase> ItemsToUpdate = new Queue<InventoryBase>();
         private bool TreeUpdateInProgress = false;
@@ -69,6 +69,14 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new EventHandler(InventoryConsole_Disposed);
+
+            TreeUpdateTimer = new System.Timers.Timer()
+            {
+                Interval = updateInterval,
+                Enabled = false,
+                SynchronizingObject = invTree
+            };
+            TreeUpdateTimer.Elapsed += TreeUpdateTimerTick;
 
             this.instance = instance;
             Manager = client.Inventory;
@@ -108,6 +116,7 @@ namespace Radegast
         {
             if (TreeUpdateTimer != null)
             {
+                TreeUpdateTimer.Stop();
                 TreeUpdateTimer.Dispose();
                 TreeUpdateTimer = null;
             }
@@ -475,15 +484,27 @@ namespace Radegast
             itemNode.Text = ItemLabel(item, false);
             itemNode.Tag = item;
             int img = -1;
-            if (item is InventoryWearable)
+            InventoryItem linkedItem = null;
+
+            if (item.IsLink() && Inventory.Contains(item.AssetUUID) && Inventory[item.AssetUUID] is InventoryItem)
             {
-                InventoryWearable w = item as InventoryWearable;
+                linkedItem = (InventoryItem)Inventory[item.AssetUUID];
+            }
+            else
+            {
+                linkedItem = item;
+            }
+
+            if (linkedItem is InventoryWearable)
+            {
+                InventoryWearable w = linkedItem as InventoryWearable;
                 img = GetItemImageIndex(w.WearableType.ToString().ToLower());
             }
             else
             {
-                img = GetItemImageIndex(item.AssetType.ToString().ToLower());
+                img = GetItemImageIndex(linkedItem.AssetType.ToString().ToLower());
             }
+            
             itemNode.ImageIndex = img;
             itemNode.SelectedImageIndex = img;
             parent.Nodes.Add(itemNode);
@@ -627,11 +648,10 @@ namespace Radegast
         {
             UpdateStatus("Loading...");
             TreeUpdateInProgress = true;
-            TreeUpdateTimer = new System.Threading.Timer(TreeUpdateTimerTick, null, updateInterval, System.Threading.Timeout.Infinite);
+            TreeUpdateTimer.Start();
             TraverseNodes(Inventory.RootNode);
-            TreeUpdateTimer.Dispose();
-            TreeUpdateTimer = null;
-            TreeUpdateTimerTick(null);
+            TreeUpdateTimer.Stop();
+            Invoke(new MethodInvoker(() => TreeUpdateTimerTick(null, null)));
             TreeUpdateInProgress = false;
             UpdateStatus("OK");
             instance.TabConsole.DisplayNotificationInChat("Inventory update completed.");
@@ -669,6 +689,7 @@ namespace Radegast
         {
             if (TreeUpdateInProgress)
             {
+                TreeUpdateTimer.Stop();
                 InventoryUpdate.Abort();
                 InventoryUpdate = null;
             }
@@ -694,22 +715,8 @@ namespace Radegast
             ReloadInventory();
         }
 
-        private void TreeUpdateTimerTick(Object sender)
+        private void TreeUpdateTimerTick(Object sender, EventArgs e)
         {
-            if (InvokeRequired)
-            {
-                try
-                {
-                    Invoke(new MethodInvoker(delegate()
-                    {
-                        TreeUpdateTimerTick(sender);
-                    }
-                    ));
-                }
-                catch (Exception) { }
-                return;
-            }
-
             lock (ItemsToAdd)
             {
                 if (ItemsToAdd.Count > 0)
@@ -743,14 +750,6 @@ namespace Radegast
             }
 
             UpdateStatus("Loading... " + UUID2NodeCache.Count.ToString() + " items");
-            try
-            {
-                if (TreeUpdateTimer != null)
-                {
-                    TreeUpdateTimer.Change(updateInterval, System.Threading.Timeout.Infinite);
-                }
-            }
-            catch (Exception) { }
         }
 
         #endregion
@@ -937,6 +936,15 @@ namespace Radegast
 
             string raw = item.Name;
 
+            if (item.IsLink())
+            {
+                raw += " (link)";
+                if (Inventory.Contains(item.AssetUUID) && Inventory[item.AssetUUID] is InventoryItem)
+                {
+                    item = (InventoryItem)Inventory[item.AssetUUID];
+                }
+            }
+
             if ((item.Permissions.OwnerMask & PermissionMask.Modify) == 0)
                 raw += " (no modify)";
 
@@ -995,6 +1003,15 @@ namespace Radegast
                     ctxInv.Items.Clear();
 
                     ToolStripMenuItem ctxItem;
+
+                    if ((int)folder.PreferredType >= (int)AssetType.EnsembleStart &&
+                        (int)folder.PreferredType <= (int)AssetType.EnsembleEnd)
+                    {
+                        ctxItem = new ToolStripMenuItem("Fix type", null, OnInvContextClick);
+                        ctxItem.Name = "fix_type";
+                        ctxInv.Items.Add(ctxItem);
+                        ctxInv.Items.Add(new ToolStripSeparator());
+                    }
 
                     ctxItem = new ToolStripMenuItem("New Folder", null, OnInvContextClick);
                     ctxItem.Name = "new_folder";
@@ -1058,6 +1075,13 @@ namespace Radegast
                         ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick);
                         ctxItem.Name = "paste_folder";
                         ctxInv.Items.Add(ctxItem);
+
+                        if (instance.InventoryClipboard.Item is InventoryItem)
+                        {
+                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick);
+                            ctxItem.Name = "paste_folder_link";
+                            ctxInv.Items.Add(ctxItem);
+                        }
                     }
 
                     if (folder.PreferredType == AssetType.Unknown)
@@ -1145,6 +1169,13 @@ namespace Radegast
                         ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick);
                         ctxItem.Name = "paste_item";
                         ctxInv.Items.Add(ctxItem);
+
+                        if (instance.InventoryClipboard.Item is InventoryItem)
+                        {
+                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick);
+                            ctxItem.Name = "paste_item_link";
+                            ctxInv.Items.Add(ctxItem);
+                        }
                     }
 
                     ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
@@ -1281,6 +1312,11 @@ namespace Radegast
                         client.Inventory.CreateFolder(f.UUID, "New folder");
                         break;
 
+                    case "fix_type":
+                        client.Inventory.UpdateFolderProperties(f.UUID, f.ParentUUID, f.Name, AssetType.Unknown);
+                        invTree.Sort();
+                        break;
+
                     case "new_notecard":
                         client.Inventory.RequestCreateItem(f.UUID, "New Note", "Radegast note: " + DateTime.Now.ToString(),
                             AssetType.Notecard, UUID.Zero, InventoryType.Notecard, PermissionMask.All, NotecardCreated);
@@ -1297,6 +1333,11 @@ namespace Radegast
                     case "paste_folder":
                         PerformClipboardOperation(invTree.SelectedNode.Tag as InventoryFolder);
                         break;
+
+                    case "paste_folder_link":
+                        PerformLinkOperation(invTree.SelectedNode.Tag as InventoryFolder);
+                        break;
+
 
                     case "delete_folder":
                         client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
@@ -1382,6 +1423,10 @@ namespace Radegast
 
                     case "paste_item":
                         PerformClipboardOperation(invTree.SelectedNode.Parent.Tag as InventoryFolder);
+                        break;
+
+                    case "paste_item_link":
+                        PerformLinkOperation(invTree.SelectedNode.Parent.Tag as InventoryFolder);
                         break;
 
                     case "delete_item":
@@ -1543,6 +1588,15 @@ namespace Radegast
                     );
                 }
             }
+        }
+
+        void PerformLinkOperation(InventoryFolder dest)
+        {
+            if (instance.InventoryClipboard == null) return;
+
+            if (dest == null) return;
+
+            client.Inventory.CreateLink(dest.UUID, instance.InventoryClipboard.Item, (bool success, InventoryItem item) => {});
         }
 
         #endregion
