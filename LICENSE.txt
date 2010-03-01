@@ -36,7 +36,7 @@ The AIMLBot library (Program#) is a .NET implementation of the AIML standard.
 © 2006 Nicholas H.Tollervey (http://ntoll.org)
 http://aimlbot.sourceforge.net/
 
-Uses FMOD Library (FMOD Non-commercial License)
+Uses FMOD Library (FMOD Non Commercial License)
 FMOD Ex SoundSystem Copyright © 2005-2009 Firelight Technologies Pty, Ltd.
 Redistributions in binary form must follow the following rules:
 * The FMOD library cannot be used for resale or other commercial distribution
@@ -50,10 +50,14 @@ Copyright © 2002, Xiph.org Foundation
 Uses log4net (Apache 2.0 License)
 Copyright © Apache Software Foundation
 
-Uses LSL parser from OpenSimulator project (BDS License)
+Uses LSL parser from OpenSimulator project (BSD License)
 Copyright © Contributors, http://opensimulator.org/
 
 Uses TAO OpenGL framework (MIT License)
 Copyright © 2003-2007 Tao Framework Team
 http://www.taoframework.com
 All rights reserved.
+
+Uses artwork files are licenced under the 
+Creative Commons Share and Share Alike 3.0
+Copyright (C) 2002-2009 Linden Research Inc.
