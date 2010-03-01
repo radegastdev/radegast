@@ -88,6 +88,9 @@ namespace Radegast
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.lblLine = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnSave = new System.Windows.Forms.ToolStripButton();
+            this.cbMono = new Radegast.ToolStripCheckBox();
+            this.cbRunning = new Radegast.ToolStripCheckBox();
             this.tsFindReplace = new System.Windows.Forms.ToolStrip();
             this.tfindClose = new System.Windows.Forms.ToolStripButton();
             this.tfindFindText = new System.Windows.Forms.ToolStripTextBox();
@@ -101,6 +104,7 @@ namespace Radegast
             this.tfindReplaceAll = new System.Windows.Forms.ToolStripButton();
             this.rtb = new Radegast.RRichTextBox();
             this.lineNubersForRtb = new Radegast.LineNumberPanel();
+            this.txtStatus = new System.Windows.Forms.TextBox();
             this.tsMenu.SuspendLayout();
             this.tsStatus.SuspendLayout();
             this.tsFindReplace.SuspendLayout();
@@ -137,41 +141,42 @@ namespace Radegast
             // tbtbLoadFromDisk
             // 
             this.tbtbLoadFromDisk.Name = "tbtbLoadFromDisk";
-            this.tbtbLoadFromDisk.Size = new System.Drawing.Size(168, 22);
+            this.tbtbLoadFromDisk.Size = new System.Drawing.Size(165, 22);
             this.tbtbLoadFromDisk.Text = "Open...";
             this.tbtbLoadFromDisk.Click += new System.EventHandler(this.tbtbLoadFromDisk_Click);
             // 
             // tbtbSave
             // 
-            this.tbtbSave.Enabled = false;
             this.tbtbSave.Name = "tbtbSave";
-            this.tbtbSave.Size = new System.Drawing.Size(168, 22);
-            this.tbtbSave.Text = "Save To Inventory";
+            this.tbtbSave.ShortcutKeyDisplayString = "Ctrl-S";
+            this.tbtbSave.Size = new System.Drawing.Size(165, 22);
+            this.tbtbSave.Text = "&Save";
+            this.tbtbSave.Click += new System.EventHandler(this.tbtbSave_Click);
             // 
             // tbtbSaveToDisk
             // 
             this.tbtbSaveToDisk.Name = "tbtbSaveToDisk";
-            this.tbtbSaveToDisk.Size = new System.Drawing.Size(168, 22);
+            this.tbtbSaveToDisk.Size = new System.Drawing.Size(165, 22);
             this.tbtbSaveToDisk.Text = "Save To Disk";
             this.tbtbSaveToDisk.Click += new System.EventHandler(this.tbtbSaveToDisk_Click_1);
             // 
             // tbtbSaveToDiskAs
             // 
             this.tbtbSaveToDiskAs.Name = "tbtbSaveToDiskAs";
-            this.tbtbSaveToDiskAs.Size = new System.Drawing.Size(168, 22);
+            this.tbtbSaveToDiskAs.Size = new System.Drawing.Size(165, 22);
             this.tbtbSaveToDiskAs.Text = "Save To Disk As...";
             this.tbtbSaveToDiskAs.Click += new System.EventHandler(this.tbtbSaveToDisk_Click);
             // 
             // tSeparator1
             // 
             this.tSeparator1.Name = "tSeparator1";
-            this.tSeparator1.Size = new System.Drawing.Size(165, 6);
+            this.tSeparator1.Size = new System.Drawing.Size(162, 6);
             this.tSeparator1.Visible = false;
             // 
             // tbtnExit
             // 
             this.tbtnExit.Name = "tbtnExit";
-            this.tbtnExit.Size = new System.Drawing.Size(168, 22);
+            this.tbtnExit.Size = new System.Drawing.Size(165, 22);
             this.tbtnExit.Text = "Close";
             this.tbtnExit.Visible = false;
             this.tbtnExit.Click += new System.EventHandler(this.tbtnExit_Click);
@@ -299,7 +304,10 @@ namespace Radegast
             this.lblCol,
             this.toolStripSeparator1,
             this.lblLine,
-            this.toolStripSeparator2});
+            this.toolStripSeparator2,
+            this.btnSave,
+            this.cbMono,
+            this.cbRunning});
             this.tsStatus.Location = new System.Drawing.Point(0, 420);
             this.tsStatus.Name = "tsStatus";
             this.tsStatus.Size = new System.Drawing.Size(661, 25);
@@ -342,6 +350,35 @@ namespace Radegast
             this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
+            // btnSave
+            // 
+            this.btnSave.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.btnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnSave.Image = ((System.Drawing.Image)(resources.GetObject("btnSave.Image")));
+            this.btnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(35, 22);
+            this.btnSave.Text = "Save";
+            this.btnSave.Click += new System.EventHandler(this.tbtbSave_Click);
+            // 
+            // cbMono
+            // 
+            this.cbMono.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.cbMono.Checked = true;
+            this.cbMono.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbMono.Name = "cbMono";
+            this.cbMono.Size = new System.Drawing.Size(58, 22);
+            this.cbMono.Text = "Mono";
+            // 
+            // cbRunning
+            // 
+            this.cbRunning.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.cbRunning.Checked = true;
+            this.cbRunning.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbRunning.Name = "cbRunning";
+            this.cbRunning.Size = new System.Drawing.Size(71, 22);
+            this.cbRunning.Text = "Running";
             // 
             // tsFindReplace
             // 
@@ -469,7 +506,7 @@ namespace Radegast
             this.rtb.HideSelection = false;
             this.rtb.Location = new System.Drawing.Point(33, 25);
             this.rtb.Name = "rtb";
-            this.rtb.Size = new System.Drawing.Size(628, 370);
+            this.rtb.Size = new System.Drawing.Size(628, 321);
             this.rtb.SyntaxHighlightEnabled = true;
             this.rtb.TabIndex = 1;
             this.rtb.Text = "";
@@ -487,8 +524,19 @@ namespace Radegast
             this.lineNubersForRtb.Location = new System.Drawing.Point(0, 25);
             this.lineNubersForRtb.Name = "lineNubersForRtb";
             this.lineNubersForRtb.RTB = this.rtb;
-            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 370);
+            this.lineNubersForRtb.Size = new System.Drawing.Size(33, 321);
             this.lineNubersForRtb.TabIndex = 6;
+            // 
+            // txtStatus
+            // 
+            this.txtStatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.txtStatus.Location = new System.Drawing.Point(0, 346);
+            this.txtStatus.Multiline = true;
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.Size = new System.Drawing.Size(661, 74);
+            this.txtStatus.TabIndex = 7;
+            this.txtStatus.Visible = false;
             // 
             // ScriptEditor
             // 
@@ -497,8 +545,9 @@ namespace Radegast
             this.Controls.Add(this.rtb);
             this.Controls.Add(this.lineNubersForRtb);
             this.Controls.Add(this.tsFindReplace);
-            this.Controls.Add(this.tsStatus);
             this.Controls.Add(this.tsMenu);
+            this.Controls.Add(this.txtStatus);
+            this.Controls.Add(this.tsStatus);
             this.Name = "ScriptEditor";
             this.Size = new System.Drawing.Size(661, 445);
             this.tsMenu.ResumeLayout(false);
@@ -555,6 +604,10 @@ namespace Radegast
         public RRichTextBox rtb;
         public LineNumberPanel lineNubersForRtb;
         public System.Windows.Forms.ToolStripMenuItem syntaxHiglightingToolStripMenuItem;
+        private ToolStripCheckBox cbMono;
+        private System.Windows.Forms.ToolStripButton btnSave;
+        private System.Windows.Forms.TextBox txtStatus;
+        private ToolStripCheckBox cbRunning;
 
     }
 }

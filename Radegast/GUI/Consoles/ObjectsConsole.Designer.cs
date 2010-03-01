@@ -61,6 +61,8 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectsConsole));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
+            this.btnContents = new System.Windows.Forms.Button();
+            this.btntake = new System.Windows.Forms.Button();
             this.btnWalkTo = new System.Windows.Forms.Button();
             this.btnTurnTo = new System.Windows.Forms.Button();
             this.btnBuy = new System.Windows.Forms.Button();
@@ -73,9 +75,6 @@ namespace Radegast
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
-            this.lstPrims = new Radegast.ListViewNoFlicker();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.btnRefresh = new System.Windows.Forms.Button();
             this.nudRadius = new System.Windows.Forms.NumericUpDown();
             this.lblDistance = new System.Windows.Forms.Label();
@@ -105,16 +104,28 @@ namespace Radegast
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
+            this.gbxContents = new System.Windows.Forms.GroupBox();
+            this.lstContents = new Radegast.ListViewNoFlicker();
+            this.invIcon = new System.Windows.Forms.ColumnHeader();
+            this.invName = new System.Windows.Forms.ColumnHeader();
+            this.btnCloseContents = new System.Windows.Forms.Button();
+            this.lstPrims = new Radegast.ListViewNoFlicker();
+            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
+            this.ctxopen = new Radegast.RadegastContextMenuStrip(this.components);
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.gbxObjectDetails.SuspendLayout();
+            this.gbxContents.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbxInworld
             // 
             this.gbxInworld.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxInworld.Controls.Add(this.btnContents);
+            this.gbxInworld.Controls.Add(this.btntake);
             this.gbxInworld.Controls.Add(this.btnWalkTo);
             this.gbxInworld.Controls.Add(this.btnTurnTo);
             this.gbxInworld.Controls.Add(this.btnBuy);
@@ -127,10 +138,30 @@ namespace Radegast
             this.gbxInworld.Enabled = false;
             this.gbxInworld.Location = new System.Drawing.Point(384, 15);
             this.gbxInworld.Name = "gbxInworld";
-            this.gbxInworld.Size = new System.Drawing.Size(255, 149);
+            this.gbxInworld.Size = new System.Drawing.Size(255, 133);
             this.gbxInworld.TabIndex = 2;
             this.gbxInworld.TabStop = false;
             this.gbxInworld.Text = "In-world";
+            // 
+            // btnContents
+            // 
+            this.btnContents.Location = new System.Drawing.Point(172, 107);
+            this.btnContents.Name = "btnContents";
+            this.btnContents.Size = new System.Drawing.Size(75, 23);
+            this.btnContents.TabIndex = 14;
+            this.btnContents.Text = "Contents";
+            this.btnContents.UseVisualStyleBackColor = true;
+            this.btnContents.Click += new System.EventHandler(this.btnContents_Click);
+            // 
+            // btntake
+            // 
+            this.btntake.Location = new System.Drawing.Point(6, 107);
+            this.btntake.Name = "btntake";
+            this.btntake.Size = new System.Drawing.Size(77, 23);
+            this.btntake.TabIndex = 13;
+            this.btntake.Text = "Take";
+            this.btntake.UseVisualStyleBackColor = true;
+            this.btntake.Click += new System.EventHandler(this.btntake_Click);
             // 
             // btnWalkTo
             // 
@@ -250,45 +281,10 @@ namespace Radegast
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
-            // lstPrims
-            // 
-            this.lstPrims.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstPrims.AutoArrange = false;
-            this.lstPrims.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
-            this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
-            this.lstPrims.FullRowSelect = true;
-            this.lstPrims.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lstPrims.HideSelection = false;
-            this.lstPrims.LabelWrap = false;
-            this.lstPrims.Location = new System.Drawing.Point(12, 39);
-            this.lstPrims.MultiSelect = false;
-            this.lstPrims.Name = "lstPrims";
-            this.lstPrims.ShowGroups = false;
-            this.lstPrims.Size = new System.Drawing.Size(365, 353);
-            this.lstPrims.TabIndex = 10;
-            this.lstPrims.UseCompatibleStateImageBehavior = false;
-            this.lstPrims.View = System.Windows.Forms.View.Details;
-            this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
-            this.lstPrims.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstPrims_MouseUp);
-            this.lstPrims.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lstPrims_KeyUp);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Width = 340;
-            // 
-            // ctxMenuObjects
-            // 
-            this.ctxMenuObjects.Name = "ctxMenuObjects";
-            this.ctxMenuObjects.Size = new System.Drawing.Size(61, 4);
-            this.ctxMenuObjects.Opening += new System.ComponentModel.CancelEventHandler(this.ctxMenuObjects_Opening);
-            // 
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.Location = new System.Drawing.Point(539, 369);
+            this.btnRefresh.Location = new System.Drawing.Point(539, 408);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 23);
             this.btnRefresh.TabIndex = 11;
@@ -334,7 +330,7 @@ namespace Radegast
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.rbName);
             this.groupBox1.Controls.Add(this.rbDistance);
-            this.groupBox1.Location = new System.Drawing.Point(383, 356);
+            this.groupBox1.Location = new System.Drawing.Point(383, 395);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(149, 37);
             this.groupBox1.TabIndex = 14;
@@ -369,7 +365,7 @@ namespace Radegast
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 395);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 434);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(651, 22);
             this.statusStrip1.TabIndex = 15;
@@ -404,7 +400,7 @@ namespace Radegast
             this.gbxObjectDetails.Controls.Add(this.label3);
             this.gbxObjectDetails.Controls.Add(this.label2);
             this.gbxObjectDetails.Controls.Add(this.lblName);
-            this.gbxObjectDetails.Location = new System.Drawing.Point(384, 167);
+            this.gbxObjectDetails.Location = new System.Drawing.Point(384, 206);
             this.gbxObjectDetails.Name = "gbxObjectDetails";
             this.gbxObjectDetails.Size = new System.Drawing.Size(255, 187);
             this.gbxObjectDetails.TabIndex = 16;
@@ -595,6 +591,103 @@ namespace Radegast
             this.lblName.TabIndex = 0;
             this.lblName.Text = "Name";
             // 
+            // gbxContents
+            // 
+            this.gbxContents.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxContents.Controls.Add(this.lstContents);
+            this.gbxContents.Controls.Add(this.btnCloseContents);
+            this.gbxContents.Location = new System.Drawing.Point(384, 15);
+            this.gbxContents.Name = "gbxContents";
+            this.gbxContents.Size = new System.Drawing.Size(255, 185);
+            this.gbxContents.TabIndex = 18;
+            this.gbxContents.TabStop = false;
+            this.gbxContents.Text = "Contents";
+            this.gbxContents.Visible = false;
+            // 
+            // lstContents
+            // 
+            this.lstContents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstContents.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.invIcon,
+            this.invName});
+            this.lstContents.FullRowSelect = true;
+            this.lstContents.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstContents.HideSelection = false;
+            this.lstContents.Location = new System.Drawing.Point(9, 20);
+            this.lstContents.MultiSelect = false;
+            this.lstContents.Name = "lstContents";
+            this.lstContents.ShowGroups = false;
+            this.lstContents.Size = new System.Drawing.Size(246, 130);
+            this.lstContents.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lstContents.TabIndex = 19;
+            this.lstContents.UseCompatibleStateImageBehavior = false;
+            this.lstContents.View = System.Windows.Forms.View.Details;
+            this.lstContents.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstContents_MouseDoubleClick);
+            this.lstContents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstContents_KeyDown);
+            // 
+            // invIcon
+            // 
+            this.invIcon.Text = "";
+            this.invIcon.Width = 25;
+            // 
+            // invName
+            // 
+            this.invName.Text = "Name";
+            this.invName.Width = 196;
+            // 
+            // btnCloseContents
+            // 
+            this.btnCloseContents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCloseContents.Location = new System.Drawing.Point(180, 156);
+            this.btnCloseContents.Name = "btnCloseContents";
+            this.btnCloseContents.Size = new System.Drawing.Size(75, 23);
+            this.btnCloseContents.TabIndex = 18;
+            this.btnCloseContents.Text = "Back";
+            this.btnCloseContents.UseVisualStyleBackColor = true;
+            this.btnCloseContents.Click += new System.EventHandler(this.btnCloseContents_Click);
+            // 
+            // lstPrims
+            // 
+            this.lstPrims.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstPrims.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
+            this.lstPrims.FullRowSelect = true;
+            this.lstPrims.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstPrims.HideSelection = false;
+            this.lstPrims.LabelWrap = false;
+            this.lstPrims.Location = new System.Drawing.Point(12, 39);
+            this.lstPrims.MultiSelect = false;
+            this.lstPrims.Name = "lstPrims";
+            this.lstPrims.ShowGroups = false;
+            this.lstPrims.Size = new System.Drawing.Size(365, 392);
+            this.lstPrims.TabIndex = 10;
+            this.lstPrims.UseCompatibleStateImageBehavior = false;
+            this.lstPrims.View = System.Windows.Forms.View.Details;
+            this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
+            this.lstPrims.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstPrims_MouseUp);
+            this.lstPrims.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lstPrims_KeyUp);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Width = 340;
+            // 
+            // ctxMenuObjects
+            // 
+            this.ctxMenuObjects.Name = "ctxMenuObjects";
+            this.ctxMenuObjects.Size = new System.Drawing.Size(61, 4);
+            this.ctxMenuObjects.Opening += new System.ComponentModel.CancelEventHandler(this.ctxMenuObjects_Opening);
+            // 
+            // ctxopen
+            // 
+            this.ctxopen.Name = "ctxMenuObjects";
+            this.ctxopen.Size = new System.Drawing.Size(61, 4);
+            // 
             // ObjectsConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -610,10 +703,11 @@ namespace Radegast
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.gbxInworld);
+            this.Controls.Add(this.gbxContents);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(508, 417);
             this.Name = "ObjectsConsole";
-            this.Size = new System.Drawing.Size(651, 417);
+            this.Size = new System.Drawing.Size(651, 456);
             this.gbxInworld.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -622,6 +716,7 @@ namespace Radegast
             this.statusStrip1.PerformLayout();
             this.gbxObjectDetails.ResumeLayout(false);
             this.gbxObjectDetails.PerformLayout();
+            this.gbxContents.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -674,6 +769,14 @@ namespace Radegast
         public System.Windows.Forms.Label label8;
         public System.Windows.Forms.TextBox txtPrims;
         public RadegastContextMenuStrip ctxMenuObjects;
+        public System.Windows.Forms.Button btntake;
+        public RadegastContextMenuStrip ctxopen;
+        private System.Windows.Forms.GroupBox gbxContents;
+        private System.Windows.Forms.Button btnCloseContents;
+        private System.Windows.Forms.Button btnContents;
+        public ListViewNoFlicker lstContents;
+        public System.Windows.Forms.ColumnHeader invIcon;
+        public System.Windows.Forms.ColumnHeader invName;
 
     }
 }

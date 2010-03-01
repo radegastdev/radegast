@@ -42,14 +42,22 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private InventoryNotecard notecard;
         private AssetNotecard recievedNotecard;
+        private Primitive prim;
 
         public Notecard(RadegastInstance instance, InventoryNotecard notecard)
+            : this(instance, notecard, null)
+        {
+        }
+
+        public Notecard(RadegastInstance instance, InventoryNotecard notecard, Primitive prim)
         {
             InitializeComponent();
             Disposed += new EventHandler(Notecard_Disposed);
 
             this.instance = instance;
             this.notecard = notecard;
+            this.prim = prim;
+
             Text = notecard.Name;
 
             rtbContent.DetectUrls = false;
@@ -63,7 +71,15 @@ namespace Radegast
             {
                 rtbContent.Text = " ";
                 UpdateStatus("Loading...");
-                client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
+
+                if (prim == null)
+                {
+                    client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
+                }
+                else
+                {
+                    client.Assets.RequestInventoryAsset(notecard.AssetUUID, notecard.UUID, prim.ID, prim.OwnerID, notecard.AssetType, true, Assets_OnAssetReceived);
+                }
             }
         }
 
@@ -248,27 +264,33 @@ namespace Radegast
 
             UpdateStatus("Saving...");
 
-
-            client.Inventory.RequestUploadNotecardAsset(n.AssetData, notecard.UUID,
-                delegate(bool uploadSuccess, string status, UUID itemID, UUID assetID)
-                {
-                    success = uploadSuccess;
-                    if (itemID == notecard.UUID)
+            InventoryManager.InventoryUploadedAssetCallback handler = delegate(bool uploadSuccess, string status, UUID itemID, UUID assetID)
                     {
-                        if (success)
+                        success = uploadSuccess;
+                        if (itemID == notecard.UUID)
                         {
-                            UpdateStatus("OK");
-                            notecard.AssetUUID = assetID;
-                        }
-                        else
-                        {
-                            UpdateStatus("Failed");
-                        }
+                            if (success)
+                            {
+                                UpdateStatus("OK");
+                                notecard.AssetUUID = assetID;
+                            }
+                            else
+                            {
+                                UpdateStatus("Failed");
+                            }
 
-                    }
-                    message = status ?? "Unknown error uploading notecard asset";
-                }
-            );
+                        }
+                        message = status ?? "Unknown error uploading notecard asset";
+                    };
+
+            if (prim == null)
+            {
+                client.Inventory.RequestUploadNotecardAsset(n.AssetData, notecard.UUID, handler);
+            }
+            else
+            {
+                client.Inventory.RequestUpdateNotecardTask(n.AssetData, notecard.UUID, prim.ID, handler);
+            }
         }
 
         void UpdateStatus(string status)

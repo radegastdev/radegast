@@ -34,18 +34,22 @@ using System.Collections.Generic;
 using System.Text;
 using System.Timers;
 using System.Windows.Forms;
+using System.Threading;
 using OpenMetaverse;
+using OpenMetaverse.Assets;
 
 namespace Radegast
 {
     public partial class ObjectsConsole : UserControl, IContextMenuProvider
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client;} }
+        private GridClient client { get { return instance.Client; } }
         private Primitive currentPrim = new Primitive();
         private ListViewItem currentItem = new ListViewItem();
         private float searchRadius = 40.0f;
+        //public List<InventoryBase> subitems;
         PropertiesQueue propRequester;
+        private Thread ContentsThread;
 
         public ObjectsConsole(RadegastInstance instance)
         {
@@ -59,11 +63,14 @@ namespace Radegast
 
             btnPointAt.Text = (this.instance.State.IsPointing ? "Unpoint" : "Point At");
             btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
-            
+
             nudRadius.Value = (decimal)searchRadius;
             nudRadius.ValueChanged += nudRadius_ValueChanged;
 
             lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
+
+            lstContents.LargeImageList = frmMain.ResourceImages;
+            lstContents.SmallImageList = frmMain.ResourceImages;
 
             if (instance.MonoRuntime)
             {
@@ -82,6 +89,12 @@ namespace Radegast
 
         void frmObjects_Disposed(object sender, EventArgs e)
         {
+            if (ContentsThread != null)
+            {
+                if (ContentsThread.IsAlive) ContentsThread.Abort();
+                ContentsThread = null;
+            }
+
             propRequester.Dispose();
             instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -183,18 +196,77 @@ namespace Radegast
 
             if (e.Properties.ObjectID == currentPrim.ID)
             {
-                UpdateCurrentObject();
+                UpdateCurrentObject(false);
             }
         }
-        
+
+
+        void UpdateObjectContents()
+        {
+            if (ContentsThread != null)
+            {
+                if (ContentsThread.IsAlive) ContentsThread.Abort();
+                ContentsThread = null;
+            }
+
+            lstContents.Items.Clear();
+            ListViewItem entry = new ListViewItem();
+            entry.SubItems.Add("Loading...");
+            lstContents.Items.Add(entry);
+
+            ContentsThread = new Thread(new ThreadStart(() =>
+                {
+                    lstContents.Tag = currentPrim;
+                    List<InventoryBase> items = client.Inventory.GetTaskInventory(currentPrim.ID, currentPrim.LocalID, 1000 * 30);
+                    lstContents.Invoke(new MethodInvoker(() => UpdateContentsList(items)));
+                }));
+
+            ContentsThread.IsBackground = true;
+            ContentsThread.Start();
+
+        }
+
+        void UpdateContentsList(List<InventoryBase> items)
+        {
+            //object inventory in liste reinlesen
+            lstContents.Items.Clear();
+
+            //subitems = items;
+            if (items != null)
+            {
+                for (int i = 0; i < items.Count; i++)
+                {
+                    if (items[i] is InventoryItem)
+                    {
+                        InventoryItem item = (InventoryItem)items[i];
+                        ListViewItem entry = new ListViewItem();
+
+                        entry.ImageIndex = InventoryConsole.GetItemImageIndex(item.AssetType.ToString().ToLower());
+                        entry.Tag = item;
+                        entry.SubItems.Add(new ListViewItem.ListViewSubItem()
+                        {
+                            Name = item.UUID.ToString(),
+                            Text = item.Name
+                        });
+
+                        lstContents.Items.Add(entry);
+                    }
+                }
+            }
+        }
 
         void UpdateCurrentObject()
+        {
+            UpdateCurrentObject(true);
+        }
+
+        void UpdateCurrentObject(bool updateContents)
         {
             if (currentPrim.Properties == null) return;
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate() { UpdateCurrentObject(); }));
+                BeginInvoke(new MethodInvoker(delegate() { UpdateCurrentObject(updateContents); }));
                 return;
             }
 
@@ -238,6 +310,11 @@ namespace Radegast
             {
                 btnBuy.Text = "Buy";
                 btnBuy.Enabled = false;
+            }
+
+            if (gbxContents.Visible && updateContents)
+            {
+                UpdateObjectContents();
             }
         }
 
@@ -339,7 +416,7 @@ namespace Radegast
             {
                 if (currentPrim.Properties != null)
                 {
-                    UpdateCurrentObject();
+                    UpdateCurrentObject(false);
                 }
                 propRequester.RequestProps(e.Prim.LocalID);
             }
@@ -349,23 +426,20 @@ namespace Radegast
         {
             if (e.Simulator.Handle != client.Network.CurrentSim.Handle) return;
 
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate() { Objects_KillObject(sender, e); }));
-                return;
-            }
-
             Primitive prim;
 
             if (client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(e.ObjectLocalID, out prim))
             {
-                lock (lstPrims.Items)
-                {
-                    if (lstPrims.Items.ContainsKey(prim.ID.ToString()))
+                lstPrims.BeginInvoke(new MethodInvoker(() =>
                     {
-                        lstPrims.Items[prim.ID.ToString()].Remove();
-                    }
-                }
+                        lock (lstPrims.Items)
+                        {
+                            if (lstPrims.Items.ContainsKey(prim.ID.ToString()))
+                            {
+                                lstPrims.Items[prim.ID.ToString()].Remove();
+                            }
+                        }
+                    }));
             }
         }
 
@@ -603,10 +677,11 @@ namespace Radegast
                     ctxMenuObjects.Selection = box.SelectedItems[0];
                     ctxMenuObjects.HasSelection = true;
                     ctxMenuObjects.Show(lstPrims, new System.Drawing.Point(e.X, e.Y));
-                } else
+                }
+                else
                 {
                     ctxMenuObjects.Selection = null;
-                    ctxMenuObjects.HasSelection = false;                    
+                    ctxMenuObjects.HasSelection = false;
                 }
             }
         }
@@ -641,6 +716,56 @@ namespace Radegast
                 }
             }
         }
+
+        private void btntake_Click(object sender, EventArgs e)
+        {
+            client.Inventory.RequestDeRezToInventory(currentPrim.LocalID);
+        }
+
+        private void btnCloseContents_Click(object sender, EventArgs e)
+        {
+            gbxContents.Hide();
+            gbxInworld.Show();
+        }
+
+        private void btnContents_Click(object sender, EventArgs e)
+        {
+            gbxInworld.Hide();
+            gbxContents.Show();
+            UpdateObjectContents();
+        }
+
+        private void lstContents_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (lstContents.SelectedItems.Count != 1) return;
+
+            ListViewItem contentItem = lstContents.SelectedItems[0];
+
+            if (contentItem.Tag is InventoryLSL)
+            {
+                InventoryLSL inv = (InventoryLSL)contentItem.Tag;
+                Primitive prim = (Primitive)lstContents.Tag;
+                new ScriptEditor(instance, inv, prim) { Detached = true };
+            }
+            else if (contentItem.Tag is InventoryNotecard)
+            {
+                InventoryNotecard inv = (InventoryNotecard)contentItem.Tag;
+                Primitive prim = (Primitive)lstContents.Tag;
+                new Notecard(instance, inv, prim) { Detached = true };
+            }
+
+        }
+
+        private void lstContents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = e.Handled = true;
+                lstContents_MouseDoubleClick(null, null);
+                return;
+            }
+        }
+
     }
 
     public class ObjectSorter : IComparer
@@ -683,7 +808,7 @@ namespace Radegast
                 }
                 return 1;
             }
-       }
+        }
     }
 
     public class PropertiesQueue : IDisposable

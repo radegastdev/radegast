@@ -46,29 +46,48 @@ namespace Radegast
         private InventoryLSL script;
         private string scriptName;
         private string fileName;
+        private Primitive prim;
 
         public ScriptEditor(RadegastInstance instance)
-            : this(instance, null)
+            : this(instance, null, null)
         {
             scriptName = "New Script";
         }
 
         public ScriptEditor(RadegastInstance instance, InventoryLSL script)
+            : this(instance, script, null)
+        {
+        }
+
+        public ScriptEditor(RadegastInstance instance, InventoryLSL script, Primitive prim)
         {
             InitializeComponent();
             Disposed += new EventHandler(SscriptEditor_Disposed);
 
             this.instance = instance;
             this.script = script;
+            this.prim = prim;
             lblScripStatus.Text = string.Empty;
             Dock = DockStyle.Fill;
             this.TabStop = false;
-            
+
+            if (prim == null)
+            {
+                cbRunning.Visible = false;
+            }
+
             // Download script
             if (script != null)
             {
                 scriptName = script.Name;
-                client.Assets.RequestInventoryAsset(script, true, Assets_OnAssetReceived);
+                if (prim != null)
+                {
+                    client.Assets.RequestInventoryAsset(script.AssetUUID, script.UUID, prim.ID, prim.OwnerID, script.AssetType, true, Assets_OnAssetReceived);
+                }
+                else
+                {
+                    client.Assets.RequestInventoryAsset(script, true, Assets_OnAssetReceived);
+                }
                 rtb.Text = lblScripStatus.Text = "Loading...";
             }
             else
@@ -238,7 +257,7 @@ namespace Radegast
         }
         #endregion
 
- 
+
         #region File I/O
         private void tbtbSaveToDisk_Click_1(object sender, EventArgs e)
         {
@@ -306,7 +325,7 @@ namespace Radegast
         private int lastPos(string s, char c)
         {
             s = s.TrimEnd();
-            
+
             if (s == string.Empty)
                 return -1;
 
@@ -321,6 +340,13 @@ namespace Radegast
 
         private void rtb_KeyUp(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.S && e.Control && !e.Shift)
+            {
+                tbtbSave_Click(this, EventArgs.Empty);
+                e.Handled = e.SuppressKeyPress = true;
+                return;
+            }
+
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.F)
             {
                 findToolStripMenuItem_Click(null, null);
@@ -630,6 +656,55 @@ namespace Radegast
                 rtb.SyntaxHighlightEnabled = true;
             }
             syntaxHiglightingToolStripMenuItem.Checked = rtb.SyntaxHighlightEnabled;
+        }
+
+        private void tbtbSave_Click(object sender, EventArgs e)
+        {
+            InventoryManager.ScriptUpdatedCallback handler = (bool uploadSuccess, string uploadStatus, bool compileSuccess, List<string> compileMessages, UUID itemID, UUID assetID) =>
+                {
+                    BeginInvoke(new MethodInvoker(() =>
+                        {
+                            if (uploadSuccess && compileSuccess)
+                            {
+                                lblScripStatus.Text = "Saved OK";
+                            }
+                            else
+                            {
+                                lblScripStatus.Text = "Failed";
+
+                                if (!compileSuccess)
+                                {
+                                    lblScripStatus.Text = "Compilation failed";
+                                    if (compileMessages != null)
+                                    {
+                                        txtStatus.Show();
+                                        for (int i = 0; i < compileMessages.Count; i++)
+                                        {
+                                            txtStatus.Text += compileMessages[i] + Environment.NewLine;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ));
+                };
+
+
+            lblScripStatus.Text = "Saving...";
+            txtStatus.Hide();
+            txtStatus.Text = string.Empty;
+
+            AssetScriptText n = new AssetScriptText(rtb.Text);
+            n.Encode();
+
+            if (prim != null)
+            {
+                client.Inventory.RequestUpdateScriptTask(n.AssetData, script.UUID, prim.ID, cbMono.Checked, cbRunning.Checked, handler);
+            }
+            else
+            {
+                client.Inventory.RequestUpdateScriptAgentInventory(n.AssetData, script.UUID, cbMono.Checked, handler);
+            }
         }
 
     }
