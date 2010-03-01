@@ -70,6 +70,28 @@ namespace Radegast
         }
         private bool autoSavePosition = false;
 
+        [Browsable(true),
+            Description("Key used for saving this particular windows settings"),
+            Category("Behavior"),
+            DefaultValue(false)
+        ]
+        public virtual string SettingsKeyBase
+        {
+            get
+            {
+                if (settingsKeyBase == string.Empty)
+                    return GetType().ToString();
+                else
+                    return settingsKeyBase;
+            }
+
+            set
+            {
+                settingsKeyBase = value;
+            }
+        }
+        private string settingsKeyBase = string.Empty;
+
         /// <summary>
         /// Instance of Radegast
         /// </summary>
@@ -144,7 +166,7 @@ namespace Radegast
             int left = Left, top = Top, width = Width, height = Height;
 
             if (Instance.GlobalSettings[GetSettingsKey("left")].Type != OSDType.Unknown)
-                 left = Instance.GlobalSettings[GetSettingsKey("left")].AsInteger();
+                left = Instance.GlobalSettings[GetSettingsKey("left")].AsInteger();
 
             if (Instance.GlobalSettings[GetSettingsKey("top")].Type != OSDType.Unknown)
                 top = Instance.GlobalSettings[GetSettingsKey("top")].AsInteger();
@@ -169,15 +191,10 @@ namespace Radegast
             Width = width;
             Height = height;
         }
-        
-        protected virtual string SettingsKeyBase()
-        {
-            return GetType().ToString();
-        }
 
         protected virtual string GetSettingsKey(string arg)
         {
-            return SettingsKeyBase() + "." + arg;
+            return SettingsKeyBase + "." + arg;
         }
 
         protected override void OnLoad(EventArgs e)

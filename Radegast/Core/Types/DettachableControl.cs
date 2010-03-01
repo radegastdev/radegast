@@ -99,22 +99,28 @@ namespace Radegast
         {
             detached = true;
             AttachedSize = Size;
+            
             if (detachedForm != null)
             {
                 detachedForm.Dispose();
             }
 
-            detachedForm = new Form();
+            detachedForm = new RadegastForm(RadegastInstance.GlobalInstance) { SettingsKeyBase = GetType().ToString(), AutoSavePosition = true };
             detachedForm.Icon = Properties.Resources.radegast_icon;
             OriginalParent = Parent;
             Parent = detachedForm;
+            Dock = DockStyle.Fill;
             detachedForm.ClientSize = Size;
             SetTitle();
             detachedForm.ActiveControl = this;
             detachedForm.Show();
             detachedForm.FormClosing += new FormClosingEventHandler(detachedForm_FormClosing);
 
-            if (OriginalParent != null)
+            if (OriginalParent == null)
+            {
+                ControlIsNotRetachable();
+            }
+            else
             {
                 OriginalParent.ControlAdded += new ControlEventHandler(originalParent_ControlAdded);
             }
