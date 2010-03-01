@@ -1150,6 +1150,13 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
+                    if (item.InventoryType == InventoryType.Object)
+                    {
+                        ctxItem = new ToolStripMenuItem("Rez inworld", null, OnInvContextClick);
+                        ctxItem.Name = "rez_inworld";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+                    
                     ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                     ctxItem.Name = "rename_item";
                     ctxInv.Items.Add(ctxItem);
@@ -1495,6 +1502,12 @@ namespace Radegast
 
                     case "gesture_play":
                         client.Self.PlayGesture(item.AssetUUID);
+                        break;
+
+                    case "rez_inworld":
+                        Vector3 rezpos = new Vector3(2, 0, 0);
+                        rezpos = client.Self.SimPosition + rezpos * client.Self.Movement.BodyRotation;
+                        client.Inventory.RequestRezFromInventory(client.Network.CurrentSim, Quaternion.Identity, rezpos, item);
                         break;
                 }
                 #endregion

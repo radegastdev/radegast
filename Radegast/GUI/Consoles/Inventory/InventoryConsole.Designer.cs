@@ -179,7 +179,7 @@ namespace Radegast
             // 
             this.tlabelStatus.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.tlabelStatus.Name = "tlabelStatus";
-            this.tlabelStatus.Size = new System.Drawing.Size(59, 22);
+            this.tlabelStatus.Size = new System.Drawing.Size(56, 22);
             this.tlabelStatus.Text = "Loading...";
             this.tlabelStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -192,13 +192,13 @@ namespace Radegast
             this.tbtnFile.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFile.Image")));
             this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnFile.Name = "tbtnFile";
-            this.tbtnFile.Size = new System.Drawing.Size(70, 22);
+            this.tbtnFile.Size = new System.Drawing.Size(68, 22);
             this.tbtnFile.Text = "&Inventory";
             // 
             // reloadInventoryToolStripMenuItem
             // 
             this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
-            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.reloadInventoryToolStripMenuItem.Text = "&Reload Inventory";
             this.reloadInventoryToolStripMenuItem.ToolTipText = "Clears inventory cache, and downloads whole inventory from server again";
             this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
@@ -207,7 +207,7 @@ namespace Radegast
             // 
             this.saveAllTToolStripMenuItem.Enabled = false;
             this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
-            this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.saveAllTToolStripMenuItem.Text = "&Save all text";
             this.saveAllTToolStripMenuItem.ToolTipText = "Saves all notecards and scripts to folder on local disk";
             this.saveAllTToolStripMenuItem.Click += new System.EventHandler(this.saveAllTToolStripMenuItem_Click);
@@ -224,36 +224,36 @@ namespace Radegast
             this.tbtbSort.Image = ((System.Drawing.Image)(resources.GetObject("tbtbSort.Image")));
             this.tbtbSort.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtbSort.Name = "tbtbSort";
-            this.tbtbSort.Size = new System.Drawing.Size(41, 22);
+            this.tbtbSort.Size = new System.Drawing.Size(40, 22);
             this.tbtbSort.Text = "S&ort";
             // 
             // tbtbSortByName
             // 
             this.tbtbSortByName.Name = "tbtbSortByName";
-            this.tbtbSortByName.Size = new System.Drawing.Size(199, 22);
+            this.tbtbSortByName.Size = new System.Drawing.Size(200, 22);
             this.tbtbSortByName.Text = "By name";
             // 
             // tbtnSortByDate
             // 
             this.tbtnSortByDate.Name = "tbtnSortByDate";
-            this.tbtnSortByDate.Size = new System.Drawing.Size(199, 22);
+            this.tbtnSortByDate.Size = new System.Drawing.Size(200, 22);
             this.tbtnSortByDate.Text = "By date";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(196, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(197, 6);
             // 
             // tbtbFoldersByName
             // 
             this.tbtbFoldersByName.Name = "tbtbFoldersByName";
-            this.tbtbFoldersByName.Size = new System.Drawing.Size(199, 22);
+            this.tbtbFoldersByName.Size = new System.Drawing.Size(200, 22);
             this.tbtbFoldersByName.Text = "Folders always by name";
             // 
             // tbtnSystemFoldersFirst
             // 
             this.tbtnSystemFoldersFirst.Name = "tbtnSystemFoldersFirst";
-            this.tbtnSystemFoldersFirst.Size = new System.Drawing.Size(199, 22);
+            this.tbtnSystemFoldersFirst.Size = new System.Drawing.Size(200, 22);
             this.tbtnSystemFoldersFirst.Text = "System folders on top";
             // 
             // pnlDetail
