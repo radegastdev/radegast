@@ -37,8 +37,8 @@ namespace Radegast.Netcom
         private string lastName;
         private string password;
         private bool isPasswordMD5 = false;
-        private string author = string.Empty;
-        private string userAgent = string.Empty;
+        private string version = string.Empty;
+        private string channel = string.Empty;
 
         private StartLocationType startLocation = StartLocationType.Home;
         private string startLocationCustom = string.Empty;
@@ -98,16 +98,16 @@ namespace Radegast.Netcom
             set { startLocationCustom = value; }
         }
 
-        public string UserAgent
+        public string Channel
         {
-            get { return userAgent; }
-            set { userAgent = value; }
+            get { return channel; }
+            set { channel = value; }
         }
 
-        public string Author
+        public string Version
         {
-            get { return author; }
-            set { author = value; }
+            get { return version; }
+            set { version = value; }
         }
 
         public LoginGrid Grid

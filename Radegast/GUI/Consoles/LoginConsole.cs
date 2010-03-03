@@ -221,8 +221,8 @@ namespace Radegast
             netcom.LoginOptions.FirstName = txtFirstName.Text;
             netcom.LoginOptions.LastName = txtLastName.Text;
             netcom.LoginOptions.Password = txtPassword.Text;
-            netcom.LoginOptions.UserAgent = Properties.Resources.RadegastTitle;
-            netcom.LoginOptions.Author = Properties.Resources.RadegastAuthor;
+            netcom.LoginOptions.Channel = Properties.Resources.ProgramName; // Channel
+            netcom.LoginOptions.Version = Properties.Resources.RadegastTitle; // Version
 
             switch (cbxLocation.SelectedIndex)
             {

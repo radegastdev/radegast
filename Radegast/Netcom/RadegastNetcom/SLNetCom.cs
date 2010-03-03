@@ -276,7 +276,7 @@ namespace Radegast.Netcom
 
             LoginParams loginParams = client.Network.DefaultLoginParams(
                 loginOptions.FirstName, loginOptions.LastName, password,
-                loginOptions.UserAgent, loginOptions.Author);
+                loginOptions.Channel, loginOptions.Version);
 
             loginParams.Start = startLocation;
 
