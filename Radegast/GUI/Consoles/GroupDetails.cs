@@ -33,6 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
+using OpenMetaverse.Packets;
 
 namespace Radegast
 {
@@ -43,9 +44,11 @@ namespace Radegast
         private Group group;
         private Dictionary<UUID, GroupTitle> titles;
         private Dictionary<UUID, Group> myGroups { get { return instance.Groups; } }
+        private List<KeyValuePair<UUID, UUID>> roleMembers;
+        private Dictionary<UUID, GroupRole> roles;
+        private bool isMember;
 
-        private UUID groupTitlesRequest;
-        private UUID groupMembersRequest;
+        private UUID groupTitlesRequest, groupMembersRequest, groupRolesRequest, groupRolesMembersRequest;
 
         public GroupDetails(RadegastInstance instance, Group group)
         {
@@ -64,6 +67,18 @@ namespace Radegast
 
             lblGroupName.Text = group.Name;
             lvwGeneralMembers.ListViewItemSorter = new GroupMemberSorter();
+            lvwMemberDetails.ListViewItemSorter = new GroupMemberSorter();
+
+            isMember = instance.Groups.ContainsKey(group.ID);
+
+            if (isMember)
+            {
+            }
+            else
+            {
+                tcGroupDetails.TabPages.Remove(tpMembersRoles);
+                tcGroupDetails.TabPages.Remove(tpNotices);
+            }
 
             lvwNoticeArchive.SmallImageList = frmMain.ResourceImages;
             lvwNoticeArchive.ListViewItemSorter = new GroupNoticeSorter();
@@ -76,9 +91,11 @@ namespace Radegast
             client.Groups.GroupNoticesListReply += new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupJoinedReply);
             client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
+            client.Groups.GroupRoleDataReply += new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
+            client.Groups.GroupRoleMembersReply += new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-
+            
             RefreshControlsAvailability();
             RefreshGroupInfo();
         }
@@ -92,11 +109,37 @@ namespace Radegast
             client.Groups.GroupNoticesListReply -= new EventHandler<GroupNoticesListReplyEventArgs>(Groups_GroupNoticesListReply);
             client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupJoinedReply);
             client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
+            client.Groups.GroupRoleDataReply -= new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
+            client.Groups.GroupRoleMembersReply -= new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         #region Network callbacks
+
+        void Groups_GroupRoleMembersReply(object sender, GroupRolesMembersReplyEventArgs e)
+        {
+            if (e.GroupID == group.ID && e.RequestID == groupRolesMembersRequest)
+            {
+                roleMembers = e.RolesMembers;
+                BeginInvoke(new MethodInvoker(() =>
+                    {
+                        btnInviteNewMember.Enabled = HasPower(GroupPowers.Invite);
+                        btnEjectMember.Enabled = HasPower(GroupPowers.Eject);
+                        lvwMemberDetails_SelectedIndexChanged(null, null);
+                    }
+                ));
+            }
+        }
+
+        void Groups_GroupRoleDataReply(object sender, GroupRolesDataReplyEventArgs e)
+        {
+            if (e.GroupID == group.ID && e.RequestID == groupRolesRequest)
+            {
+                groupRolesMembersRequest = client.Groups.RequestGroupRolesMembers(group.ID);
+                roles = e.Roles;
+            }
+        }
 
         void Groups_GroupLeaveReply(object sender, GroupOperationEventArgs e)
         {
@@ -264,6 +307,7 @@ namespace Radegast
                 lblFounded.Text = "Founded by: " + e.Names[group.FounderID];
             }
 
+            lvwMemberDetails.BeginUpdate();
             lvwGeneralMembers.BeginUpdate();
             bool modified = false;
             foreach (KeyValuePair<UUID, string> name in e.Names)
@@ -273,10 +317,22 @@ namespace Radegast
                     lvwGeneralMembers.Items[name.Key.ToString()].Text = name.Value;
                     modified = true;
                 }
+
+                if (!isMember)
+                    continue;
+
+                if (lvwMemberDetails.Items.ContainsKey(name.Key.ToString()))
+                {
+                    lvwMemberDetails.Items[name.Key.ToString()].Text = name.Value;
+                }
             }
             if (modified)
+            {
                 lvwGeneralMembers.Sort();
+                if (isMember) lvwMemberDetails.Sort();
+            }
             lvwGeneralMembers.EndUpdate();
+            lvwMemberDetails.EndUpdate();
         }
 
         void Groups_GroupTitlesReply(object sender, GroupTitlesReplyEventArgs e)
@@ -315,13 +371,14 @@ namespace Radegast
 
             lvwGeneralMembers.BeginUpdate();
             List<ListViewItem> newItems = new List<ListViewItem>();
+            List<ListViewItem> memberDetails = new List<ListViewItem>();
             List<UUID> unknownNames = new List<UUID>();
 
             foreach (GroupMember baseMember in e.Members.Values)
             {
                 EnhancedGroupMember member = new EnhancedGroupMember(baseMember);
                 string name;
-                
+
                 if (instance.haveAvatarName(member.Base.ID))
                 {
                     name = instance.getAvatarName(member.Base.ID);
@@ -332,16 +389,33 @@ namespace Radegast
                     unknownNames.Add(member.Base.ID);
                 }
 
-                ListViewItem item = new ListViewItem(name);
-                item.Tag = member;
-                item.Name = member.Base.ID.ToString();
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Title));
-                if (member.LastOnline != DateTime.MinValue)
                 {
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
+                    ListViewItem item = new ListViewItem(name);
+                    item.Tag = member;
+                    item.Name = member.Base.ID.ToString();
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Title));
+                    if (member.LastOnline != DateTime.MinValue)
+                    {
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
+                    }
+
+                    newItems.Add(item);
                 }
 
-                newItems.Add(item);
+                if (isMember)
+                {
+                    ListViewItem item = new ListViewItem(name);
+                    item.Tag = member;
+                    item.Name = member.Base.ID.ToString();
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Contribution.ToString()));
+                    if (member.LastOnline != DateTime.MinValue)
+                    {
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
+                    }
+                    memberDetails.Add(item);
+                }
+
+
             }
 
             if (unknownNames.Count > 0)
@@ -352,6 +426,14 @@ namespace Radegast
             lvwGeneralMembers.Items.AddRange(newItems.ToArray());
             lvwGeneralMembers.Sort();
             lvwGeneralMembers.EndUpdate();
+
+            if (isMember && memberDetails.Count > 0)
+            {
+                lvwMemberDetails.BeginUpdate();
+                lvwMemberDetails.Items.AddRange(memberDetails.ToArray());
+                lvwMemberDetails.Sort();
+                lvwMemberDetails.EndUpdate();
+            }
         }
         #endregion
 
@@ -396,6 +478,8 @@ namespace Radegast
         private void RefreshGroupInfo()
         {
             lvwGeneralMembers.Items.Clear();
+            if (isMember) lvwMemberDetails.Items.Clear();
+
             cbxActiveTitle.SelectedIndexChanged -= cbxActiveTitle_SelectedIndexChanged;
             cbxReceiveNotices.CheckedChanged -= new EventHandler(cbxListInProfile_CheckedChanged);
             cbxListInProfile.CheckedChanged -= new EventHandler(cbxListInProfile_CheckedChanged);
@@ -406,6 +490,17 @@ namespace Radegast
             client.Groups.RequestGroupProfile(group.ID);
             groupTitlesRequest = client.Groups.RequestGroupTitles(group.ID);
             groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
+        }
+
+        private void RefreshMembersRoles()
+        {
+            if (!isMember) return;
+
+            btnApply.Enabled = false;
+            lvwGeneralMembers.Items.Clear();
+            lvwMemberDetails.Items.Clear();
+            groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
+            groupRolesRequest = client.Groups.RequestGroupRoles(group.ID);
         }
         #endregion
 
@@ -439,13 +534,18 @@ namespace Radegast
                 case "tpNotices":
                     RefreshGroupNotices();
                     break;
+
+                case "tpMembersRoles":
+                    RefreshMembersRoles();
+                    break;
             }
         }
         #endregion
 
         void lvwGeneralMembers_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            GroupMemberSorter sorter = (GroupMemberSorter)lvwGeneralMembers.ListViewItemSorter;
+            ListView lb = (ListView)sender;
+            GroupMemberSorter sorter = (GroupMemberSorter)lb.ListViewItemSorter;
             switch (e.Column)
             {
                 case 0:
@@ -453,7 +553,10 @@ namespace Radegast
                     break;
 
                 case 1:
-                    sorter.SortBy = GroupMemberSorter.SortByColumn.Title;
+                    if (lb.Name == "lvwMemberDetails")
+                        sorter.SortBy = GroupMemberSorter.SortByColumn.Contribution;
+                    else
+                        sorter.SortBy = GroupMemberSorter.SortByColumn.Title;
                     break;
 
                 case 2:
@@ -466,7 +569,7 @@ namespace Radegast
             else
                 sorter.CurrentOrder = GroupMemberSorter.SortOrder.Ascending;
 
-            lvwGeneralMembers.Sort();
+            lb.Sort();
         }
 
         private void lvwNoticeArchive_ColumnClick(object sender, ColumnClickEventArgs e)
@@ -509,6 +612,10 @@ namespace Radegast
             {
                 case "tpNotices":
                     RefreshGroupNotices();
+                    break;
+
+                case "tpMembersRoles":
+                    RefreshMembersRoles();
                     break;
             }
         }
@@ -558,6 +665,151 @@ namespace Radegast
                 catch (Exception) { }
             }
         }
+
+        private void lvwMemberDetails_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListViewItem item = lvwMemberDetails.GetItemAt(e.X, e.Y);
+            if (item != null)
+            {
+                try
+                {
+                    UUID agentID = new UUID(item.Name);
+                    instance.MainForm.ShowAgentProfile(item.Text, agentID);
+                }
+                catch (Exception) { }
+            }
+        }
+
+        private void btnEjectMember_Click(object sender, EventArgs e)
+        {
+            if (lvwMemberDetails.SelectedItems.Count != 1) return;
+            EnhancedGroupMember m = (EnhancedGroupMember)lvwMemberDetails.SelectedItems[0].Tag;
+            client.Groups.EjectUser(group.ID, m.Base.ID);
+        }
+
+        private void lvwMemberDetails_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lvwMemberDetails.SelectedItems.Count != 1 || roles == null || roleMembers == null) return;
+            EnhancedGroupMember m = (EnhancedGroupMember)lvwMemberDetails.SelectedItems[0].Tag;
+
+            btnApply.Enabled = false;
+
+            lvwAssignedRoles.BeginUpdate();
+            lvwAssignedRoles.ItemChecked -= lvwAssignedRoles_ItemChecked;
+            lvwAssignedRoles.Items.Clear();
+            lvwAssignedRoles.Tag = m;
+            ListViewItem defaultItem = new ListViewItem();
+            defaultItem.Name = "Everyone";
+            defaultItem.SubItems.Add(defaultItem.Name);
+            defaultItem.Checked = true;
+            lvwAssignedRoles.Items.Add(defaultItem);
+
+            foreach (var r in roles)
+            {
+                GroupRole role = r.Value;
+
+                if (role.ID == UUID.Zero)
+                    continue;
+
+                ListViewItem item = new ListViewItem();
+                item.Name = role.Name;
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, role.Name));
+                item.Tag = role;
+                var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                bool hasRole = foundRole.Value == m.Base.ID;
+                item.Checked = hasRole;
+                lvwAssignedRoles.Items.Add(item);
+            }
+
+            lvwAssignedRoles.ItemChecked += lvwAssignedRoles_ItemChecked;
+            lvwAssignedRoles.EndUpdate();
+        }
+
+        private void UpdateMemberRoles()
+        {
+            EnhancedGroupMember m = (EnhancedGroupMember)lvwAssignedRoles.Tag;
+            GroupRoleChangesPacket p = new GroupRoleChangesPacket();
+            p.AgentData.AgentID = client.Self.AgentID;
+            p.AgentData.SessionID = client.Self.SessionID;
+            p.AgentData.GroupID = group.ID;
+            List<GroupRoleChangesPacket.RoleChangeBlock> changes = new List<GroupRoleChangesPacket.RoleChangeBlock>();
+
+            foreach (ListViewItem item in lvwAssignedRoles.Items)
+            {
+                if (!(item.Tag is GroupRole))
+                    continue;
+
+                GroupRole role = (GroupRole)item.Tag;
+                var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                bool hasRole = foundRole.Value == m.Base.ID;
+
+                if (item.Checked != hasRole)
+                {
+                    var rc = new GroupRoleChangesPacket.RoleChangeBlock();
+                    rc.MemberID = m.Base.ID;
+                    rc.RoleID = role.ID;
+                    rc.Change = item.Checked ? 0u : 1u;
+                    changes.Add(rc);
+                }
+            }
+
+            if (changes.Count > 0)
+            {
+                p.RoleChange = changes.ToArray();
+                client.Network.CurrentSim.SendPacket(p);
+            }
+
+            btnApply.Enabled = false;
+        }
+
+
+        private void lvwAssignedRoles_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            if (e.Item.Tag == null) // click on the default role
+            {
+                if (!e.Item.Checked)
+                    e.Item.Checked = true;
+
+                return;
+            }
+            if (e.Item.Tag is GroupRole)
+            {
+                EnhancedGroupMember m = (EnhancedGroupMember)lvwAssignedRoles.Tag;
+                bool modified = false;
+                
+                foreach (ListViewItem item in lvwAssignedRoles.Items)
+                {
+                    if (!(item.Tag is GroupRole))
+                        continue;
+
+                    GroupRole role = (GroupRole)item.Tag;
+                    var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                    bool hasRole = foundRole.Value == m.Base.ID;
+
+                    if (item.Checked != hasRole)
+                    {
+                        modified = true;
+                    }
+                }
+
+                btnApply.Enabled = modified;
+            }
+        }
+
+        private void tbxCharter_TextChanged(object sender, EventArgs e)
+        {
+            btnApply.Enabled = true;
+        }
+
+        private void btnApply_Click(object sender, EventArgs e)
+        {
+            switch (tcGroupDetails.SelectedTab.Name)
+            {
+                case "tpMembersRoles":
+                    UpdateMemberRoles();
+                    break;
+            }
+        }
     }
 
     public class EnhancedGroupMember
@@ -598,7 +850,8 @@ namespace Radegast
         {
             Name,
             Title,
-            LastOnline
+            LastOnline,
+            Contribution
         }
 
         public enum SortOrder
@@ -636,6 +889,14 @@ namespace Radegast
                         return DateTime.Compare(member1.LastOnline, member2.LastOnline);
                     else
                         return DateTime.Compare(member2.LastOnline, member1.LastOnline);
+
+                case SortByColumn.Contribution:
+                    if (member1.Base.Contribution < member2.Base.Contribution)
+                        return CurrentOrder == SortOrder.Ascending ? - 1 : 1;
+                    else if (member1.Base.Contribution > member2.Base.Contribution)
+                        return CurrentOrder == SortOrder.Ascending ? 1 : -1;
+                    else
+                        return 0;
             }
 
             return 0;
