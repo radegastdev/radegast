@@ -92,6 +92,7 @@ namespace Radegast
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupJoinedReply);
             client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
             client.Groups.GroupRoleDataReply += new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
+            client.Groups.GroupMemberEjected += new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
             client.Groups.GroupRoleMembersReply += new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
@@ -111,11 +112,27 @@ namespace Radegast
             client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupLeaveReply);
             client.Groups.GroupRoleDataReply -= new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
             client.Groups.GroupRoleMembersReply -= new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
+            client.Groups.GroupMemberEjected -= new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         #region Network callbacks
+
+        void Groups_GroupMemberEjected(object sender, GroupOperationEventArgs e)
+        {
+            if (e.GroupID != group.ID) return;
+
+            if (e.Success)
+            {
+                BeginInvoke(new MethodInvoker(() => RefreshMembersRoles()));
+                instance.TabConsole.DisplayNotificationInChat("Group member ejected.");
+            }
+            else
+            {
+                instance.TabConsole.DisplayNotificationInChat("Failed to eject group member.");
+            }
+        }
 
         void Groups_GroupRoleMembersReply(object sender, GroupRolesMembersReplyEventArgs e)
         {
@@ -499,6 +516,8 @@ namespace Radegast
             btnApply.Enabled = false;
             lvwGeneralMembers.Items.Clear();
             lvwMemberDetails.Items.Clear();
+            lvwAllowedAbilities.Items.Clear();
+            lvwAssignedRoles.Items.Clear();
             groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
             groupRolesRequest = client.Groups.RequestGroupRoles(group.ID);
         }

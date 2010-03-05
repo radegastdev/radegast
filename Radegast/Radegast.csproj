@@ -100,6 +100,7 @@
     <Compile Include="Core\Commands\LoadPluginCommand.cs" />
     <Compile Include="Core\Commands\ParcelInfoCommand.cs" />
     <Compile Include="Core\Commands\RadegastCommand.cs" />
+    <Compile Include="Core\Commands\SimInfoCommand.cs" />
     <Compile Include="Core\Commands\ThreadCommand.cs" />
     <Compile Include="Core\Contexts\AvatarProfileAction.cs" />
     <Compile Include="Core\Contexts\ContextAction.cs" />

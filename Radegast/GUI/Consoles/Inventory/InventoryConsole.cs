@@ -358,6 +358,8 @@ namespace Radegast
 
         void Exec_OnInventoryObjectUpdated(InventoryBase oldObject, InventoryBase newObject)
         {
+            if (newObject == null) return;
+
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(() => Exec_OnInventoryObjectUpdated(oldObject, newObject)));
