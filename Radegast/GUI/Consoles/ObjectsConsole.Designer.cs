@@ -105,16 +105,16 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
             this.gbxContents = new System.Windows.Forms.GroupBox();
+            this.btnOpen = new System.Windows.Forms.Button();
             this.lstContents = new Radegast.ListViewNoFlicker();
             this.invIcon = new System.Windows.Forms.ColumnHeader();
             this.invName = new System.Windows.Forms.ColumnHeader();
-            this.ctxContents = new Radegast.RadegastContextMenuStrip(this.components);
             this.btnCloseContents = new System.Windows.Forms.Button();
+            this.ctxContents = new Radegast.RadegastContextMenuStrip(this.components);
             this.lstPrims = new Radegast.ListViewNoFlicker();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.ctxopen = new Radegast.RadegastContextMenuStrip(this.components);
-            this.btnOpen = new System.Windows.Forms.Button();
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -611,6 +611,19 @@ namespace Radegast
             this.gbxContents.Text = "Contents";
             this.gbxContents.Visible = false;
             // 
+            // btnOpen
+            // 
+            this.btnOpen.AccessibleDescription = "Copy object\'s contents to invetory";
+            this.btnOpen.AccessibleName = "Open";
+            this.btnOpen.Enabled = false;
+            this.btnOpen.Location = new System.Drawing.Point(99, 156);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(75, 23);
+            this.btnOpen.TabIndex = 19;
+            this.btnOpen.Text = "Open";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.OpenObject);
+            // 
             // lstContents
             // 
             this.lstContents.AccessibleName = "Contents";
@@ -625,7 +638,6 @@ namespace Radegast
             this.lstContents.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstContents.HideSelection = false;
             this.lstContents.Location = new System.Drawing.Point(9, 20);
-            this.lstContents.MultiSelect = false;
             this.lstContents.Name = "lstContents";
             this.lstContents.ShowGroups = false;
             this.lstContents.Size = new System.Drawing.Size(246, 130);
@@ -646,12 +658,6 @@ namespace Radegast
             this.invName.Text = "";
             this.invName.Width = 196;
             // 
-            // ctxContents
-            // 
-            this.ctxContents.Name = "ctxContents";
-            this.ctxContents.Size = new System.Drawing.Size(61, 4);
-            this.ctxContents.Opening += new System.ComponentModel.CancelEventHandler(this.ctxContents_Opening);
-            // 
             // btnCloseContents
             // 
             this.btnCloseContents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -662,6 +668,12 @@ namespace Radegast
             this.btnCloseContents.Text = "Back";
             this.btnCloseContents.UseVisualStyleBackColor = true;
             this.btnCloseContents.Click += new System.EventHandler(this.btnCloseContents_Click);
+            // 
+            // ctxContents
+            // 
+            this.ctxContents.Name = "ctxContents";
+            this.ctxContents.Size = new System.Drawing.Size(61, 4);
+            this.ctxContents.Opening += new System.ComponentModel.CancelEventHandler(this.ctxContents_Opening);
             // 
             // lstPrims
             // 
@@ -700,19 +712,6 @@ namespace Radegast
             // 
             this.ctxopen.Name = "ctxMenuObjects";
             this.ctxopen.Size = new System.Drawing.Size(61, 4);
-            // 
-            // btnOpen
-            // 
-            this.btnOpen.AccessibleDescription = "Copy object\'s contents to invetory";
-            this.btnOpen.AccessibleName = "Open";
-            this.btnOpen.Enabled = false;
-            this.btnOpen.Location = new System.Drawing.Point(99, 156);
-            this.btnOpen.Name = "btnOpen";
-            this.btnOpen.Size = new System.Drawing.Size(75, 23);
-            this.btnOpen.TabIndex = 19;
-            this.btnOpen.Text = "Open";
-            this.btnOpen.UseVisualStyleBackColor = true;
-            this.btnOpen.Click += new System.EventHandler(this.OpenObject);
             // 
             // ObjectsConsole
             // 

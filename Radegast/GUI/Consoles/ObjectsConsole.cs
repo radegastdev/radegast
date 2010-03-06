@@ -35,6 +35,7 @@ using System.Text;
 using System.Timers;
 using System.Windows.Forms;
 using System.Threading;
+using System.Drawing;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
 
@@ -252,7 +253,7 @@ namespace Radegast
                 }
                 else
                 {
-                    btnOpen.Enabled =  prim.Properties != null && prim.Properties.OwnerID == client.Self.AgentID;
+                    btnOpen.Enabled = prim.Properties != null && prim.Properties.OwnerID == client.Self.AgentID;
 
                     for (int i = 0; i < items.Count; i++)
                     {
@@ -293,59 +294,110 @@ namespace Radegast
 
         private void ctxContents_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (lstContents.SelectedItems.Count != 1 || !(lstContents.Tag is Primitive))
+            if (!(lstContents.Tag is Primitive))
             {
                 e.Cancel = true;
                 return;
             }
 
             ctxContents.Items.Clear();
-            ListViewItem entry = lstContents.SelectedItems[0];
             Primitive prim = (Primitive)lstContents.Tag;
             bool myObject = prim.Properties != null && prim.Properties.OwnerID == client.Self.AgentID;
 
-            if (entry.Tag is InventoryItem)
+
+            if (lstContents.SelectedItems.Count == 1)
             {
-                InventoryItem item = (InventoryItem)entry.Tag;
+                ListViewItem entry = lstContents.SelectedItems[0];
 
-                if (myObject)
+                if (entry.Tag is InventoryItem)
                 {
-                    switch (item.InventoryType)
-                    {
-                        case InventoryType.Notecard:
-                            ctxContents.Items.Add("Edit Notecard", null, (object sd, EventArgs ev) =>
-                                {
-                                    InventoryNotecard inv = (InventoryNotecard)entry.Tag;
-                                    new Notecard(instance, inv, prim) { Detached = true };
-                                }
-                            );
-                            break;
+                    InventoryItem item = (InventoryItem)entry.Tag;
 
-                        case InventoryType.LSL:
-                            ctxContents.Items.Add("Edit Script", null, (object sd, EventArgs ev) =>
-                                {
-                                    InventoryLSL inv = (InventoryLSL)entry.Tag;
-                                    new ScriptEditor(instance, inv, prim) { Detached = true };
-                                }
-                            );
-                            break;
+                    if (myObject)
+                    {
+                        switch (item.InventoryType)
+                        {
+                            case InventoryType.Notecard:
+                                ctxContents.Items.Add("Edit Notecard", null, (object sd, EventArgs ev) =>
+                                    {
+                                        InventoryNotecard inv = (InventoryNotecard)entry.Tag;
+                                        new Notecard(instance, inv, prim) { Detached = true };
+                                    }
+                                );
+                                break;
+
+                            case InventoryType.LSL:
+                                ctxContents.Items.Add("Edit Script", null, (object sd, EventArgs ev) =>
+                                    {
+                                        InventoryLSL inv = (InventoryLSL)entry.Tag;
+                                        new ScriptEditor(instance, inv, prim) { Detached = true };
+                                    }
+                                );
+                                break;
+                        }
+
                     }
                 }
+            }
 
+            if (lstContents.SelectedItems.Count > 0)
+            {
                 ctxContents.Items.Add("Delete", null, (object sd, EventArgs ev) =>
-                    {
-                        client.Inventory.RemoveTaskInventory(prim.LocalID, item.UUID, client.Network.CurrentSim);
-                    }
-                );
+                {
+                    foreach (ListViewItem i in lstContents.SelectedItems)
+                        if (i.Tag is InventoryItem)
+                            client.Inventory.RemoveTaskInventory(prim.LocalID, ((InventoryItem)i.Tag).UUID, client.Network.CurrentSim);
+                });
             }
 
             if (ctxContents.Items.Count != 0)
             {
                 ctxContents.Items.Add(new ToolStripSeparator());
-                if (myObject)
-                    ctxContents.Items.Add("Open (copy all to inventory)", null, OpenObject);
             }
-            
+
+            if (myObject && instance.InventoryClipboard != null)
+            {
+                if (instance.InventoryClipboard.Item is InventoryItem)
+                {
+                    ctxContents.Items.Add("Paste from Inventory", null, (object sd, EventArgs ev) =>
+                    {
+                        if (instance.InventoryClipboard.Item is InventoryLSL)
+                        {
+                            client.Inventory.CopyScriptToTask(prim.LocalID, (InventoryItem)instance.InventoryClipboard.Item, true);
+                        }
+                        else
+                        {
+                            client.Inventory.UpdateTaskInventory(prim.LocalID, (InventoryItem)instance.InventoryClipboard.Item);
+                        }
+                    });
+                }
+                else if (instance.InventoryClipboard.Item is InventoryFolder)
+                {
+                    ctxContents.Items.Add("Paste Folder Contents", null, (object sd, EventArgs ev) =>
+                    {
+                        foreach (InventoryBase oldItem in client.Inventory.Store.GetContents((InventoryFolder)instance.InventoryClipboard.Item))
+                        {
+                            if (oldItem is InventoryItem)
+                            {
+                                if (oldItem is InventoryLSL)
+                                {
+                                    client.Inventory.CopyScriptToTask(prim.LocalID, (InventoryItem)oldItem, true);
+                                }
+                                else
+                                {
+                                    client.Inventory.UpdateTaskInventory(prim.LocalID, (InventoryItem)oldItem);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            if (myObject)
+            {
+                ctxContents.Items.Add("Open (copy all to inventory)", null, OpenObject);
+            }
+
             ctxContents.Items.Add("Close", null, btnCloseContents_Click);
         }
 
@@ -354,7 +406,7 @@ namespace Radegast
             if (!(lstContents.Tag is Primitive)) return;
 
             Primitive prim = (Primitive)lstContents.Tag;
-                        if (prim.Properties == null) return;
+            if (prim.Properties == null) return;
 
             List<InventoryItem> items = new List<InventoryItem>();
 
@@ -820,8 +872,6 @@ namespace Radegast
             ctxMenuObjects.Items.Add("Take", null, btnTake_Click);
             ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);
             ctxMenuObjects.Items.Add("Return", null, btnReturn_Click);
-
-            instance.ContextActionManager.AddContributions(ctxMenuObjects, currentItem);
         }
 
         public RadegastContextMenuStrip GetContextMenu()
@@ -883,17 +933,44 @@ namespace Radegast
 
         }
 
+        //private void lstPrims_KeyDown(object sender, KeyEventArgs e)
+        //{
+        //    if (e.KeyCode == Keys.Apps && lstPrims.SelectedItems.Count == 1)
+        //    {
+        //        Point pos = lstPrims.SelectedItems[0].Position;
+        //        pos.Y += 10;
+        //        pos.X += 120;
+        //        ctxMenuObjects.Show(lstPrims, pos);
+        //        e.SuppressKeyPress = e.Handled = true;
+        //    }
+        //}
+
         private void lstContents_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                e.SuppressKeyPress = e.Handled = true;
                 lstContents_MouseDoubleClick(null, null);
+
+                e.SuppressKeyPress = e.Handled = true;
                 return;
             }
+            //else if (e.KeyCode == Keys.Apps)
+            //{
+            //    Point pos = new Point(50, 30);
+                
+            //    if (lstContents.SelectedItems.Count > 0)
+            //    {
+            //        pos = lstContents.SelectedItems[0].Position;
+            //        pos.Y += 10;
+            //        pos.X += 120;
+            //    }
+
+            //    ctxContents.Show(lstContents, pos);
+
+            //    e.SuppressKeyPress = e.Handled = true;
+            //    return;
+            //}
         }
-
-
     }
 
     public class ObjectSorter : IComparer
