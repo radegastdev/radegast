@@ -95,7 +95,7 @@ namespace Radegast
             this.btnFwd = new System.Windows.Forms.Button();
             this.btnTurnRight = new System.Windows.Forms.Button();
             this.btnTurnLeft = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbChatType = new System.Windows.Forms.ComboBox();
             this.cbxInput = new Radegast.ChatInputBox();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -104,22 +104,20 @@ namespace Radegast
             this.avatarContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlMovement.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.pnlChatInput.SuspendLayout();
             this.SuspendLayout();
             // 
             // rtbChat
             // 
-            this.rtbChat.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbChat.BackColor = System.Drawing.Color.White;
+            this.rtbChat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbChat.HideSelection = false;
-            this.rtbChat.Location = new System.Drawing.Point(3, 0);
+            this.rtbChat.Location = new System.Drawing.Point(0, 0);
             this.rtbChat.Name = "rtbChat";
             this.rtbChat.ReadOnly = true;
             this.rtbChat.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
             this.rtbChat.ShowSelectionMargin = true;
-            this.rtbChat.Size = new System.Drawing.Size(400, 310);
+            this.rtbChat.Size = new System.Drawing.Size(445, 354);
             this.rtbChat.TabIndex = 7;
             this.rtbChat.Text = "";
             this.rtbChat.MouseUp += new System.Windows.Forms.MouseEventHandler(this.rtbChat_MouseUp);
@@ -129,7 +127,7 @@ namespace Radegast
             // 
             this.btnSay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSay.Enabled = false;
-            this.btnSay.Location = new System.Drawing.Point(358, 0);
+            this.btnSay.Location = new System.Drawing.Point(418, 0);
             this.btnSay.Name = "btnSay";
             this.btnSay.Size = new System.Drawing.Size(76, 24);
             this.btnSay.TabIndex = 1;
@@ -146,14 +144,15 @@ namespace Radegast
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.rtbChat);
+            this.splitContainer1.Panel1.SizeChanged += new System.EventHandler(this.splitContainer1_Panel1_SizeChanged);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.lvwObjects);
             this.splitContainer1.Panel2.Controls.Add(this.toolStrip1);
             this.splitContainer1.Panel2.Controls.Add(this.pnlMovement);
-            this.splitContainer1.Size = new System.Drawing.Size(516, 310);
-            this.splitContainer1.SplitterDistance = 400;
+            this.splitContainer1.Size = new System.Drawing.Size(576, 354);
+            this.splitContainer1.SplitterDistance = 445;
             this.splitContainer1.TabIndex = 7;
             this.splitContainer1.TabStop = false;
             // 
@@ -169,7 +168,7 @@ namespace Radegast
             this.lvwObjects.Location = new System.Drawing.Point(0, 0);
             this.lvwObjects.MultiSelect = false;
             this.lvwObjects.Name = "lvwObjects";
-            this.lvwObjects.Size = new System.Drawing.Size(71, 273);
+            this.lvwObjects.Size = new System.Drawing.Size(86, 317);
             this.lvwObjects.TabIndex = 8;
             this.lvwObjects.UseCompatibleStateImageBehavior = false;
             this.lvwObjects.View = System.Windows.Forms.View.List;
@@ -283,9 +282,9 @@ namespace Radegast
             this.tbtnMaster,
             this.toolStripSeparator5,
             this.tbtnAnim});
-            this.toolStrip1.Location = new System.Drawing.Point(71, 0);
+            this.toolStrip1.Location = new System.Drawing.Point(86, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(41, 273);
+            this.toolStrip1.Size = new System.Drawing.Size(41, 317);
             this.toolStrip1.TabIndex = 9;
             this.toolStrip1.TabStop = true;
             this.toolStrip1.Text = "toolStrip1";
@@ -404,9 +403,9 @@ namespace Radegast
             this.pnlMovement.Controls.Add(this.btnTurnRight);
             this.pnlMovement.Controls.Add(this.btnTurnLeft);
             this.pnlMovement.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlMovement.Location = new System.Drawing.Point(0, 273);
+            this.pnlMovement.Location = new System.Drawing.Point(0, 317);
             this.pnlMovement.Name = "pnlMovement";
-            this.pnlMovement.Size = new System.Drawing.Size(112, 37);
+            this.pnlMovement.Size = new System.Drawing.Size(127, 37);
             this.pnlMovement.TabIndex = 11;
             this.pnlMovement.Click += new System.EventHandler(this.pnlMovement_Click);
             // 
@@ -462,16 +461,16 @@ namespace Radegast
             this.btnTurnLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseDown);
             this.btnTurnLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseUp);
             // 
-            // panel1
+            // pnlChatInput
             // 
-            this.panel1.Controls.Add(this.cbChatType);
-            this.panel1.Controls.Add(this.cbxInput);
-            this.panel1.Controls.Add(this.btnSay);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 310);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(516, 24);
-            this.panel1.TabIndex = 0;
+            this.pnlChatInput.Controls.Add(this.cbChatType);
+            this.pnlChatInput.Controls.Add(this.cbxInput);
+            this.pnlChatInput.Controls.Add(this.btnSay);
+            this.pnlChatInput.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlChatInput.Location = new System.Drawing.Point(0, 354);
+            this.pnlChatInput.Name = "pnlChatInput";
+            this.pnlChatInput.Size = new System.Drawing.Size(576, 24);
+            this.pnlChatInput.TabIndex = 0;
             // 
             // cbChatType
             // 
@@ -484,7 +483,7 @@ namespace Radegast
             "Whisper",
             "Normal",
             "Shout"});
-            this.cbChatType.Location = new System.Drawing.Point(438, 1);
+            this.cbChatType.Location = new System.Drawing.Point(498, 1);
             this.cbChatType.Name = "cbChatType";
             this.cbChatType.Size = new System.Drawing.Size(73, 21);
             this.cbChatType.TabIndex = 2;
@@ -496,20 +495,21 @@ namespace Radegast
             this.cbxInput.Enabled = false;
             this.cbxInput.Location = new System.Drawing.Point(0, 0);
             this.cbxInput.Name = "cbxInput";
-            this.cbxInput.Size = new System.Drawing.Size(352, 21);
+            this.cbxInput.Size = new System.Drawing.Size(412, 21);
             this.cbxInput.TabIndex = 0;
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
+            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             // 
             // ChatConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlChatInput);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ChatConsole";
-            this.Size = new System.Drawing.Size(516, 334);
+            this.Size = new System.Drawing.Size(576, 378);
             this.VisibleChanged += new System.EventHandler(this.ChatConsole_VisibleChanged);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -519,8 +519,8 @@ namespace Radegast
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.pnlMovement.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.pnlChatInput.ResumeLayout(false);
+            this.pnlChatInput.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -532,7 +532,7 @@ namespace Radegast
         public ChatInputBox cbxInput;
         public Button btnSay;
         public SplitContainer splitContainer1;
-        public Panel panel1;
+        public Panel pnlChatInput;
         public ToolStrip toolStrip1;
         public ToolStripButton tbtnStartIM;
         public ToolStripButton tbtnFollow;

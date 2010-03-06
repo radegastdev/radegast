@@ -230,29 +230,151 @@ namespace Radegast
         {
             //object inventory in liste reinlesen
             lstContents.Items.Clear();
+            btnOpen.Enabled = false;
+            Primitive prim = (Primitive)lstContents.Tag;
 
             //subitems = items;
-            if (items != null)
+            if (items == null)
             {
-                for (int i = 0; i < items.Count; i++)
+                ListViewItem entry = new ListViewItem();
+                entry.SubItems.Add("(failied to fetch contents)");
+                entry.SubItems[0].Font = new System.Drawing.Font(entry.SubItems[0].Font, System.Drawing.FontStyle.Italic);
+                lstContents.Items.Add(entry);
+            }
+            else
+            {
+                if (items.Count == 0)
                 {
-                    if (items[i] is InventoryItem)
+                    ListViewItem entry = new ListViewItem();
+                    entry.SubItems.Add("(empty object)");
+                    entry.SubItems[0].Font = new System.Drawing.Font(entry.SubItems[0].Font, System.Drawing.FontStyle.Italic);
+                    lstContents.Items.Add(entry);
+                }
+                else
+                {
+                    btnOpen.Enabled =  prim.Properties != null && prim.Properties.OwnerID == client.Self.AgentID;
+
+                    for (int i = 0; i < items.Count; i++)
                     {
-                        InventoryItem item = (InventoryItem)items[i];
-                        ListViewItem entry = new ListViewItem();
-
-                        entry.ImageIndex = InventoryConsole.GetItemImageIndex(item.AssetType.ToString().ToLower());
-                        entry.Tag = item;
-                        entry.SubItems.Add(new ListViewItem.ListViewSubItem()
+                        if (items[i] is InventoryItem)
                         {
-                            Name = item.UUID.ToString(),
-                            Text = item.Name
-                        });
+                            InventoryItem item = (InventoryItem)items[i];
+                            ListViewItem entry = new ListViewItem();
 
-                        lstContents.Items.Add(entry);
+                            entry.ImageIndex = InventoryConsole.GetItemImageIndex(item.AssetType.ToString().ToLower());
+                            entry.Tag = item;
+
+                            ListViewItem.ListViewSubItem sub;
+
+                            entry.SubItems.Add(sub = new ListViewItem.ListViewSubItem()
+                            {
+                                Name = item.UUID.ToString(),
+                                Text = item.Name
+                            });
+
+                            if ((item.Permissions.OwnerMask & PermissionMask.Modify) == 0)
+                                sub.Text += " (no modify)";
+
+                            if ((item.Permissions.OwnerMask & PermissionMask.Copy) == 0)
+                                sub.Text += " (no copy)";
+
+                            if ((item.Permissions.OwnerMask & PermissionMask.Transfer) == 0)
+                                sub.Text += " (no transfer)";
+
+                            sub.Text += " (" + item.InventoryType.ToString() + ")";
+                            entry.ToolTipText = sub.Text;
+
+                            lstContents.Items.Add(entry);
+                        }
                     }
                 }
             }
+        }
+
+        private void ctxContents_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (lstContents.SelectedItems.Count != 1 || !(lstContents.Tag is Primitive))
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            ctxContents.Items.Clear();
+            ListViewItem entry = lstContents.SelectedItems[0];
+            Primitive prim = (Primitive)lstContents.Tag;
+            bool myObject = prim.Properties != null && prim.Properties.OwnerID == client.Self.AgentID;
+
+            if (entry.Tag is InventoryItem)
+            {
+                InventoryItem item = (InventoryItem)entry.Tag;
+
+                if (myObject)
+                {
+                    switch (item.InventoryType)
+                    {
+                        case InventoryType.Notecard:
+                            ctxContents.Items.Add("Edit Notecard", null, (object sd, EventArgs ev) =>
+                                {
+                                    InventoryNotecard inv = (InventoryNotecard)entry.Tag;
+                                    new Notecard(instance, inv, prim) { Detached = true };
+                                }
+                            );
+                            break;
+
+                        case InventoryType.LSL:
+                            ctxContents.Items.Add("Edit Script", null, (object sd, EventArgs ev) =>
+                                {
+                                    InventoryLSL inv = (InventoryLSL)entry.Tag;
+                                    new ScriptEditor(instance, inv, prim) { Detached = true };
+                                }
+                            );
+                            break;
+                    }
+                }
+
+                ctxContents.Items.Add("Delete", null, (object sd, EventArgs ev) =>
+                    {
+                        client.Inventory.RemoveTaskInventory(prim.LocalID, item.UUID, client.Network.CurrentSim);
+                    }
+                );
+            }
+
+            if (ctxContents.Items.Count != 0)
+            {
+                ctxContents.Items.Add(new ToolStripSeparator());
+                if (myObject)
+                    ctxContents.Items.Add("Open (copy all to inventory)", null, OpenObject);
+            }
+            
+            ctxContents.Items.Add("Close", null, btnCloseContents_Click);
+        }
+
+        void OpenObject(object sender, EventArgs e)
+        {
+            if (!(lstContents.Tag is Primitive)) return;
+
+            Primitive prim = (Primitive)lstContents.Tag;
+                        if (prim.Properties == null) return;
+
+            List<InventoryItem> items = new List<InventoryItem>();
+
+            foreach (ListViewItem item in lstContents.Items)
+            {
+                if (item.Tag is InventoryItem)
+                    items.Add(item.Tag as InventoryItem);
+            }
+
+            if (items.Count == 0) return;
+
+            UUID folderID = client.Inventory.CreateFolder(client.Inventory.Store.RootFolder.UUID, prim.Properties.Name);
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                client.Inventory.MoveTaskInventory(prim.LocalID, items[i].UUID, folderID, client.Network.CurrentSim);
+            }
+
+            instance.TabConsole.DisplayNotificationInChat("Items from object contents copied to new inventory folder " + prim.Properties.Name);
+
         }
 
         void UpdateCurrentObject()
@@ -312,7 +434,7 @@ namespace Radegast
                 btnBuy.Enabled = false;
             }
 
-            if (gbxContents.Visible && updateContents)
+            if (gbxContents.Visible /*&& updateContents*/)
             {
                 UpdateObjectContents();
             }
@@ -667,34 +789,39 @@ namespace Radegast
                 e.SuppressKeyPress = true;
             }
         }
-        private void lstPrims_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                ListView box = (ListView)sender;
-                if (box.SelectedItems.Count > 0)
-                {
-                    ctxMenuObjects.Selection = box.SelectedItems[0];
-                    ctxMenuObjects.HasSelection = true;
-                    ctxMenuObjects.Show(lstPrims, new System.Drawing.Point(e.X, e.Y));
-                }
-                else
-                {
-                    ctxMenuObjects.Selection = null;
-                    ctxMenuObjects.HasSelection = false;
-                }
-            }
-        }
+
         private void ctxMenuObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (lstPrims.SelectedItems.Count == 0)
+            if (lstPrims.SelectedItems.Count != 1)
             {
-                ctxMenuObjects.Selection = null;
-                ctxMenuObjects.HasSelection = false;
                 e.Cancel = true;
                 return;
             }
-            instance.ContextActionManager.AddContributions(ctxMenuObjects, typeof(Primitive), lstPrims.SelectedItems[0].Tag, btnWalkTo.Parent);
+
+            ctxMenuObjects.Items.Clear();
+            ctxMenuObjects.Items.Add("Click/Touch", null, btnTouch_Click);
+
+            if ((currentPrim.Flags & PrimFlags.Money) != 0)
+                ctxMenuObjects.Items.Add("Pay", null, btnPay_Click);
+
+            if (currentPrim.Properties.SaleType != SaleType.Not)
+                ctxMenuObjects.Items.Add(string.Format("Buy for ${0}", currentPrim.Properties.SalePrice), null, btnBuy_Click);
+
+            if (gbxInworld.Visible)
+                ctxMenuObjects.Items.Add("Show Contents", null, btnContents_Click);
+            else
+                ctxMenuObjects.Items.Add("Hide Contents", null, btnCloseContents_Click);
+
+            ctxMenuObjects.Items.Add(this.instance.State.IsSitting ? "Stand Up" : "Sit On", null, btnSitOn_Click);
+            ctxMenuObjects.Items.Add("Turn To", null, btnTurnTo_Click);
+            ctxMenuObjects.Items.Add("Walk To", null, btnWalkTo_Click);
+            ctxMenuObjects.Items.Add(this.instance.State.IsPointing ? "Unpoint" : "Point At", null, btnPointAt_Click);
+            ctxMenuObjects.Items.Add("3D View", null, btnView_Click);
+            ctxMenuObjects.Items.Add("Take", null, btnTake_Click);
+            ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);
+            ctxMenuObjects.Items.Add("Return", null, btnReturn_Click);
+
+            instance.ContextActionManager.AddContributions(ctxMenuObjects, currentItem);
         }
 
         public RadegastContextMenuStrip GetContextMenu()
@@ -702,30 +829,29 @@ namespace Radegast
             return ctxMenuObjects;
         }
 
-        private void lstPrims_KeyUp(object sender, KeyEventArgs e)
-        {
-            if (e.KeyData == Keys.Apps)
-            {
-                if (lstPrims.SelectedItems.Count > 0)
-                {
-                    e.SuppressKeyPress = true;
-                    ctxMenuObjects.Selection = lstPrims.SelectedItems[0];
-                    ctxMenuObjects.HasSelection = true;
-
-                    ctxMenuObjects.Show(lstPrims, new System.Drawing.Point(0, 0));
-                }
-            }
-        }
-
-        private void btntake_Click(object sender, EventArgs e)
+        private void btnTake_Click(object sender, EventArgs e)
         {
             client.Inventory.RequestDeRezToInventory(currentPrim.LocalID);
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (currentPrim.Properties != null && currentPrim.Properties.OwnerID != client.Self.AgentID)
+                btnReturn_Click(sender, e);
+            else
+                client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.AgentInventoryTake, client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
+        }
+
+        private void btnReturn_Click(object sender, EventArgs e)
+        {
+            client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.ReturnToOwner, UUID.Zero, UUID.Random());
         }
 
         private void btnCloseContents_Click(object sender, EventArgs e)
         {
             gbxContents.Hide();
             gbxInworld.Show();
+            lstPrims.Focus();
         }
 
         private void btnContents_Click(object sender, EventArgs e)
@@ -733,6 +859,7 @@ namespace Radegast
             gbxInworld.Hide();
             gbxContents.Show();
             UpdateObjectContents();
+            lstContents.Focus();
         }
 
         private void lstContents_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -765,6 +892,7 @@ namespace Radegast
                 return;
             }
         }
+
 
     }
 

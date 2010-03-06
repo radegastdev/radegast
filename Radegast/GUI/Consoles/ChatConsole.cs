@@ -702,6 +702,16 @@ namespace Radegast
                 catch (Exception) { }
             }
         }
+
+        private void cbxInput_SizeChanged(object sender, EventArgs e)
+        {
+            pnlChatInput.Height = cbxInput.Height + 3;
+        }
+
+        private void splitContainer1_Panel1_SizeChanged(object sender, EventArgs e)
+        {
+            rtbChat.Size = splitContainer1.Panel1.ClientSize;
+        }
     }
 }
 

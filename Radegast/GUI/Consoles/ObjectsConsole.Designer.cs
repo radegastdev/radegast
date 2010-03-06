@@ -62,7 +62,7 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectsConsole));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
             this.btnContents = new System.Windows.Forms.Button();
-            this.btntake = new System.Windows.Forms.Button();
+            this.btnTake = new System.Windows.Forms.Button();
             this.btnWalkTo = new System.Windows.Forms.Button();
             this.btnTurnTo = new System.Windows.Forms.Button();
             this.btnBuy = new System.Windows.Forms.Button();
@@ -108,11 +108,13 @@ namespace Radegast
             this.lstContents = new Radegast.ListViewNoFlicker();
             this.invIcon = new System.Windows.Forms.ColumnHeader();
             this.invName = new System.Windows.Forms.ColumnHeader();
+            this.ctxContents = new Radegast.RadegastContextMenuStrip(this.components);
             this.btnCloseContents = new System.Windows.Forms.Button();
             this.lstPrims = new Radegast.ListViewNoFlicker();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.ctxopen = new Radegast.RadegastContextMenuStrip(this.components);
+            this.btnOpen = new System.Windows.Forms.Button();
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -123,9 +125,10 @@ namespace Radegast
             // 
             // gbxInworld
             // 
+            this.gbxInworld.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.gbxInworld.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gbxInworld.Controls.Add(this.btnContents);
-            this.gbxInworld.Controls.Add(this.btntake);
+            this.gbxInworld.Controls.Add(this.btnTake);
             this.gbxInworld.Controls.Add(this.btnWalkTo);
             this.gbxInworld.Controls.Add(this.btnTurnTo);
             this.gbxInworld.Controls.Add(this.btnBuy);
@@ -139,7 +142,7 @@ namespace Radegast
             this.gbxInworld.Location = new System.Drawing.Point(384, 15);
             this.gbxInworld.Name = "gbxInworld";
             this.gbxInworld.Size = new System.Drawing.Size(255, 133);
-            this.gbxInworld.TabIndex = 2;
+            this.gbxInworld.TabIndex = 4;
             this.gbxInworld.TabStop = false;
             this.gbxInworld.Text = "In-world";
             // 
@@ -148,27 +151,27 @@ namespace Radegast
             this.btnContents.Location = new System.Drawing.Point(172, 107);
             this.btnContents.Name = "btnContents";
             this.btnContents.Size = new System.Drawing.Size(75, 23);
-            this.btnContents.TabIndex = 14;
+            this.btnContents.TabIndex = 15;
             this.btnContents.Text = "Contents";
             this.btnContents.UseVisualStyleBackColor = true;
             this.btnContents.Click += new System.EventHandler(this.btnContents_Click);
             // 
-            // btntake
+            // btnTake
             // 
-            this.btntake.Location = new System.Drawing.Point(6, 107);
-            this.btntake.Name = "btntake";
-            this.btntake.Size = new System.Drawing.Size(77, 23);
-            this.btntake.TabIndex = 13;
-            this.btntake.Text = "Take";
-            this.btntake.UseVisualStyleBackColor = true;
-            this.btntake.Click += new System.EventHandler(this.btntake_Click);
+            this.btnTake.Location = new System.Drawing.Point(6, 107);
+            this.btnTake.Name = "btnTake";
+            this.btnTake.Size = new System.Drawing.Size(77, 23);
+            this.btnTake.TabIndex = 14;
+            this.btnTake.Text = "Take";
+            this.btnTake.UseVisualStyleBackColor = true;
+            this.btnTake.Click += new System.EventHandler(this.btnTake_Click);
             // 
             // btnWalkTo
             // 
             this.btnWalkTo.Location = new System.Drawing.Point(89, 78);
             this.btnWalkTo.Name = "btnWalkTo";
             this.btnWalkTo.Size = new System.Drawing.Size(75, 23);
-            this.btnWalkTo.TabIndex = 11;
+            this.btnWalkTo.TabIndex = 12;
             this.btnWalkTo.Text = "Walk to";
             this.btnWalkTo.UseVisualStyleBackColor = true;
             this.btnWalkTo.Click += new System.EventHandler(this.btnWalkTo_Click);
@@ -178,7 +181,7 @@ namespace Radegast
             this.btnTurnTo.Location = new System.Drawing.Point(5, 78);
             this.btnTurnTo.Name = "btnTurnTo";
             this.btnTurnTo.Size = new System.Drawing.Size(78, 23);
-            this.btnTurnTo.TabIndex = 10;
+            this.btnTurnTo.TabIndex = 11;
             this.btnTurnTo.Text = "Turn to";
             this.btnTurnTo.UseVisualStyleBackColor = true;
             this.btnTurnTo.Click += new System.EventHandler(this.btnTurnTo_Click);
@@ -189,7 +192,7 @@ namespace Radegast
             this.btnBuy.Location = new System.Drawing.Point(172, 20);
             this.btnBuy.Name = "btnBuy";
             this.btnBuy.Size = new System.Drawing.Size(77, 23);
-            this.btnBuy.TabIndex = 6;
+            this.btnBuy.TabIndex = 7;
             this.btnBuy.Text = "Buy";
             this.btnBuy.UseVisualStyleBackColor = true;
             this.btnBuy.Click += new System.EventHandler(this.btnBuy_Click);
@@ -199,7 +202,7 @@ namespace Radegast
             this.btnView.Location = new System.Drawing.Point(172, 78);
             this.btnView.Name = "btnView";
             this.btnView.Size = new System.Drawing.Size(77, 23);
-            this.btnView.TabIndex = 12;
+            this.btnView.TabIndex = 13;
             this.btnView.Text = "3D Wireframe";
             this.btnView.UseVisualStyleBackColor = true;
             this.btnView.Click += new System.EventHandler(this.btnView_Click);
@@ -209,7 +212,7 @@ namespace Radegast
             this.btnPay.Location = new System.Drawing.Point(89, 20);
             this.btnPay.Name = "btnPay";
             this.btnPay.Size = new System.Drawing.Size(77, 23);
-            this.btnPay.TabIndex = 5;
+            this.btnPay.TabIndex = 6;
             this.btnPay.Text = "Pay";
             this.btnPay.UseVisualStyleBackColor = true;
             this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
@@ -219,7 +222,7 @@ namespace Radegast
             this.btnSource.Location = new System.Drawing.Point(172, 49);
             this.btnSource.Name = "btnSource";
             this.btnSource.Size = new System.Drawing.Size(77, 23);
-            this.btnSource.TabIndex = 9;
+            this.btnSource.TabIndex = 10;
             this.btnSource.Text = "Set source";
             this.btnSource.UseVisualStyleBackColor = true;
             this.btnSource.Click += new System.EventHandler(this.btnSource_Click);
@@ -229,7 +232,7 @@ namespace Radegast
             this.btnTouch.Location = new System.Drawing.Point(6, 20);
             this.btnTouch.Name = "btnTouch";
             this.btnTouch.Size = new System.Drawing.Size(77, 23);
-            this.btnTouch.TabIndex = 4;
+            this.btnTouch.TabIndex = 5;
             this.btnTouch.Text = "Touch/Click";
             this.btnTouch.UseVisualStyleBackColor = true;
             this.btnTouch.Click += new System.EventHandler(this.btnTouch_Click);
@@ -239,7 +242,7 @@ namespace Radegast
             this.btnSitOn.Location = new System.Drawing.Point(6, 49);
             this.btnSitOn.Name = "btnSitOn";
             this.btnSitOn.Size = new System.Drawing.Size(77, 23);
-            this.btnSitOn.TabIndex = 7;
+            this.btnSitOn.TabIndex = 8;
             this.btnSitOn.Text = "Sit On";
             this.btnSitOn.UseVisualStyleBackColor = true;
             this.btnSitOn.Click += new System.EventHandler(this.btnSitOn_Click);
@@ -249,17 +252,19 @@ namespace Radegast
             this.btnPointAt.Location = new System.Drawing.Point(89, 49);
             this.btnPointAt.Name = "btnPointAt";
             this.btnPointAt.Size = new System.Drawing.Size(75, 23);
-            this.btnPointAt.TabIndex = 8;
+            this.btnPointAt.TabIndex = 9;
             this.btnPointAt.Text = "Point At";
             this.btnPointAt.UseVisualStyleBackColor = true;
             this.btnPointAt.Click += new System.EventHandler(this.btnPointAt_Click);
             // 
             // txtSearch
             // 
+            this.txtSearch.AccessibleDescription = "";
+            this.txtSearch.AccessibleName = "Search filter";
             this.txtSearch.Location = new System.Drawing.Point(62, 12);
             this.txtSearch.Name = "txtSearch";
             this.txtSearch.Size = new System.Drawing.Size(133, 21);
-            this.txtSearch.TabIndex = 0;
+            this.txtSearch.TabIndex = 1;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
             // label1
@@ -287,13 +292,14 @@ namespace Radegast
             this.btnRefresh.Location = new System.Drawing.Point(539, 408);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 23);
-            this.btnRefresh.TabIndex = 11;
+            this.btnRefresh.TabIndex = 73;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // nudRadius
             // 
+            this.nudRadius.AccessibleName = "Search Radius";
             this.nudRadius.Increment = new decimal(new int[] {
             20,
             0,
@@ -333,7 +339,7 @@ namespace Radegast
             this.groupBox1.Location = new System.Drawing.Point(383, 395);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(149, 37);
-            this.groupBox1.TabIndex = 14;
+            this.groupBox1.TabIndex = 70;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Sort by";
             // 
@@ -343,7 +349,7 @@ namespace Radegast
             this.rbName.Location = new System.Drawing.Point(78, 17);
             this.rbName.Name = "rbName";
             this.rbName.Size = new System.Drawing.Size(52, 17);
-            this.rbName.TabIndex = 0;
+            this.rbName.TabIndex = 72;
             this.rbName.Text = "Name";
             this.rbName.UseVisualStyleBackColor = true;
             this.rbName.CheckedChanged += new System.EventHandler(this.rbName_CheckedChanged);
@@ -355,7 +361,7 @@ namespace Radegast
             this.rbDistance.Location = new System.Drawing.Point(6, 17);
             this.rbDistance.Name = "rbDistance";
             this.rbDistance.Size = new System.Drawing.Size(66, 17);
-            this.rbDistance.TabIndex = 0;
+            this.rbDistance.TabIndex = 71;
             this.rbDistance.TabStop = true;
             this.rbDistance.Text = "Distance";
             this.rbDistance.UseVisualStyleBackColor = true;
@@ -403,7 +409,7 @@ namespace Radegast
             this.gbxObjectDetails.Location = new System.Drawing.Point(384, 206);
             this.gbxObjectDetails.Name = "gbxObjectDetails";
             this.gbxObjectDetails.Size = new System.Drawing.Size(255, 187);
-            this.gbxObjectDetails.TabIndex = 16;
+            this.gbxObjectDetails.TabIndex = 49;
             this.gbxObjectDetails.TabStop = false;
             this.gbxObjectDetails.Text = "Object details";
             // 
@@ -413,7 +419,7 @@ namespace Radegast
             this.cbNextOwnTransfer.Location = new System.Drawing.Point(195, 164);
             this.cbNextOwnTransfer.Name = "cbNextOwnTransfer";
             this.cbNextOwnTransfer.Size = new System.Drawing.Size(54, 17);
-            this.cbNextOwnTransfer.TabIndex = 6;
+            this.cbNextOwnTransfer.TabIndex = 61;
             this.cbNextOwnTransfer.Text = "Resell";
             this.cbNextOwnTransfer.UseVisualStyleBackColor = true;
             // 
@@ -423,7 +429,7 @@ namespace Radegast
             this.cbNextOwnCopy.Location = new System.Drawing.Point(140, 164);
             this.cbNextOwnCopy.Name = "cbNextOwnCopy";
             this.cbNextOwnCopy.Size = new System.Drawing.Size(51, 17);
-            this.cbNextOwnCopy.TabIndex = 6;
+            this.cbNextOwnCopy.TabIndex = 60;
             this.cbNextOwnCopy.Text = "Copy";
             this.cbNextOwnCopy.UseVisualStyleBackColor = true;
             // 
@@ -433,7 +439,7 @@ namespace Radegast
             this.cbOwnerTransfer.Location = new System.Drawing.Point(195, 143);
             this.cbOwnerTransfer.Name = "cbOwnerTransfer";
             this.cbOwnerTransfer.Size = new System.Drawing.Size(54, 17);
-            this.cbOwnerTransfer.TabIndex = 6;
+            this.cbOwnerTransfer.TabIndex = 58;
             this.cbOwnerTransfer.Text = "Resell";
             this.cbOwnerTransfer.UseVisualStyleBackColor = true;
             // 
@@ -443,7 +449,7 @@ namespace Radegast
             this.cbNextOwnModify.Location = new System.Drawing.Point(90, 164);
             this.cbNextOwnModify.Name = "cbNextOwnModify";
             this.cbNextOwnModify.Size = new System.Drawing.Size(46, 17);
-            this.cbNextOwnModify.TabIndex = 6;
+            this.cbNextOwnModify.TabIndex = 59;
             this.cbNextOwnModify.Text = "Mod";
             this.cbNextOwnModify.UseVisualStyleBackColor = true;
             // 
@@ -453,7 +459,7 @@ namespace Radegast
             this.cbOwnerCopy.Location = new System.Drawing.Point(140, 143);
             this.cbOwnerCopy.Name = "cbOwnerCopy";
             this.cbOwnerCopy.Size = new System.Drawing.Size(51, 17);
-            this.cbOwnerCopy.TabIndex = 6;
+            this.cbOwnerCopy.TabIndex = 57;
             this.cbOwnerCopy.Text = "Copy";
             this.cbOwnerCopy.UseVisualStyleBackColor = true;
             // 
@@ -463,7 +469,7 @@ namespace Radegast
             this.cbOwnerModify.Location = new System.Drawing.Point(90, 143);
             this.cbOwnerModify.Name = "cbOwnerModify";
             this.cbOwnerModify.Size = new System.Drawing.Size(46, 17);
-            this.cbOwnerModify.TabIndex = 6;
+            this.cbOwnerModify.TabIndex = 56;
             this.cbOwnerModify.Text = "Mod";
             this.cbOwnerModify.UseVisualStyleBackColor = true;
             // 
@@ -474,7 +480,7 @@ namespace Radegast
             this.txtPrims.Name = "txtPrims";
             this.txtPrims.ReadOnly = true;
             this.txtPrims.Size = new System.Drawing.Size(54, 21);
-            this.txtPrims.TabIndex = 5;
+            this.txtPrims.TabIndex = 55;
             // 
             // txtCreator
             // 
@@ -484,7 +490,7 @@ namespace Radegast
             this.txtCreator.Name = "txtCreator";
             this.txtCreator.ReadOnly = true;
             this.txtCreator.Size = new System.Drawing.Size(130, 21);
-            this.txtCreator.TabIndex = 5;
+            this.txtCreator.TabIndex = 54;
             // 
             // txtOwner
             // 
@@ -494,7 +500,7 @@ namespace Radegast
             this.txtOwner.Name = "txtOwner";
             this.txtOwner.ReadOnly = true;
             this.txtOwner.Size = new System.Drawing.Size(130, 21);
-            this.txtOwner.TabIndex = 4;
+            this.txtOwner.TabIndex = 53;
             // 
             // txtHover
             // 
@@ -503,21 +509,21 @@ namespace Radegast
             this.txtHover.Name = "txtHover";
             this.txtHover.ReadOnly = true;
             this.txtHover.Size = new System.Drawing.Size(188, 21);
-            this.txtHover.TabIndex = 3;
+            this.txtHover.TabIndex = 52;
             // 
             // txtDescription
             // 
             this.txtDescription.Location = new System.Drawing.Point(61, 41);
             this.txtDescription.Name = "txtDescription";
             this.txtDescription.Size = new System.Drawing.Size(188, 21);
-            this.txtDescription.TabIndex = 2;
+            this.txtDescription.TabIndex = 51;
             // 
             // txtObjectName
             // 
             this.txtObjectName.Location = new System.Drawing.Point(61, 16);
             this.txtObjectName.Name = "txtObjectName";
             this.txtObjectName.Size = new System.Drawing.Size(188, 21);
-            this.txtObjectName.TabIndex = 1;
+            this.txtObjectName.TabIndex = 50;
             // 
             // label8
             // 
@@ -593,26 +599,28 @@ namespace Radegast
             // 
             // gbxContents
             // 
-            this.gbxContents.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxContents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbxContents.Controls.Add(this.btnOpen);
             this.gbxContents.Controls.Add(this.lstContents);
             this.gbxContents.Controls.Add(this.btnCloseContents);
             this.gbxContents.Location = new System.Drawing.Point(384, 15);
             this.gbxContents.Name = "gbxContents";
             this.gbxContents.Size = new System.Drawing.Size(255, 185);
-            this.gbxContents.TabIndex = 18;
+            this.gbxContents.TabIndex = 16;
             this.gbxContents.TabStop = false;
             this.gbxContents.Text = "Contents";
             this.gbxContents.Visible = false;
             // 
             // lstContents
             // 
+            this.lstContents.AccessibleName = "Contents";
             this.lstContents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.lstContents.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.invIcon,
             this.invName});
+            this.lstContents.ContextMenuStrip = this.ctxContents;
             this.lstContents.FullRowSelect = true;
             this.lstContents.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstContents.HideSelection = false;
@@ -622,7 +630,7 @@ namespace Radegast
             this.lstContents.ShowGroups = false;
             this.lstContents.Size = new System.Drawing.Size(246, 130);
             this.lstContents.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lstContents.TabIndex = 19;
+            this.lstContents.TabIndex = 17;
             this.lstContents.UseCompatibleStateImageBehavior = false;
             this.lstContents.View = System.Windows.Forms.View.Details;
             this.lstContents.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstContents_MouseDoubleClick);
@@ -635,8 +643,14 @@ namespace Radegast
             // 
             // invName
             // 
-            this.invName.Text = "Name";
+            this.invName.Text = "";
             this.invName.Width = 196;
+            // 
+            // ctxContents
+            // 
+            this.ctxContents.Name = "ctxContents";
+            this.ctxContents.Size = new System.Drawing.Size(61, 4);
+            this.ctxContents.Opening += new System.ComponentModel.CancelEventHandler(this.ctxContents_Opening);
             // 
             // btnCloseContents
             // 
@@ -651,6 +665,7 @@ namespace Radegast
             // 
             // lstPrims
             // 
+            this.lstPrims.AccessibleName = "Objects";
             this.lstPrims.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
@@ -666,12 +681,10 @@ namespace Radegast
             this.lstPrims.Name = "lstPrims";
             this.lstPrims.ShowGroups = false;
             this.lstPrims.Size = new System.Drawing.Size(365, 392);
-            this.lstPrims.TabIndex = 10;
+            this.lstPrims.TabIndex = 0;
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
             this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
-            this.lstPrims.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstPrims_MouseUp);
-            this.lstPrims.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lstPrims_KeyUp);
             // 
             // columnHeader1
             // 
@@ -687,6 +700,19 @@ namespace Radegast
             // 
             this.ctxopen.Name = "ctxMenuObjects";
             this.ctxopen.Size = new System.Drawing.Size(61, 4);
+            // 
+            // btnOpen
+            // 
+            this.btnOpen.AccessibleDescription = "Copy object\'s contents to invetory";
+            this.btnOpen.AccessibleName = "Open";
+            this.btnOpen.Enabled = false;
+            this.btnOpen.Location = new System.Drawing.Point(99, 156);
+            this.btnOpen.Name = "btnOpen";
+            this.btnOpen.Size = new System.Drawing.Size(75, 23);
+            this.btnOpen.TabIndex = 19;
+            this.btnOpen.Text = "Open";
+            this.btnOpen.UseVisualStyleBackColor = true;
+            this.btnOpen.Click += new System.EventHandler(this.OpenObject);
             // 
             // ObjectsConsole
             // 
@@ -769,7 +795,7 @@ namespace Radegast
         public System.Windows.Forms.Label label8;
         public System.Windows.Forms.TextBox txtPrims;
         public RadegastContextMenuStrip ctxMenuObjects;
-        public System.Windows.Forms.Button btntake;
+        public System.Windows.Forms.Button btnTake;
         public RadegastContextMenuStrip ctxopen;
         private System.Windows.Forms.GroupBox gbxContents;
         private System.Windows.Forms.Button btnCloseContents;
@@ -777,6 +803,8 @@ namespace Radegast
         public ListViewNoFlicker lstContents;
         public System.Windows.Forms.ColumnHeader invIcon;
         public System.Windows.Forms.ColumnHeader invName;
+        private RadegastContextMenuStrip ctxContents;
+        private System.Windows.Forms.Button btnOpen;
 
     }
 }

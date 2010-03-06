@@ -129,7 +129,7 @@ namespace Radegast
                                     string txt = (o.Text ?? "").ToLower().Trim();
                                     foreach (var i in strip.Items)
                                     {
-                                        ToolStripItem item = (ToolStripItem) i;
+                                        ToolStripItem item = (ToolStripItem)i;
                                         if (txt != (item.Text ?? "").ToLower().Trim()) continue;
                                         txt = null;
                                         break;
@@ -170,7 +170,8 @@ namespace Radegast
             }
             items.Sort(CompareItems);
             AddContributions_Helper(strip, items);
-            if (!instance.advancedDebugging) return;
+            
+#if DEBUG_CONTEXT
             List<ToolStripMenuItem> item1 = new List<ToolStripMenuItem>();
             string newVariable = obj.GetType() == type
                                      ? type.Name
@@ -187,6 +188,7 @@ namespace Radegast
             });
 
             AddContributions_Helper(strip, item1);
+#endif
         }
 
         /// <summary>
@@ -227,10 +229,10 @@ namespace Radegast
         {
             SetCurrentItem(strip, obj);
             List<ToolStripMenuItem> items = new List<ToolStripMenuItem>();
-            foreach (Control control in controls) GleanContributions_Helper(items, type, control, obj);                
+            foreach (Control control in controls) GleanContributions_Helper(items, type, control, obj);
             if (obj is Control)
             {
-                Control control1 = (Control) obj;
+                Control control1 = (Control)obj;
                 GleanContributions_Helper(items, type, control1.Parent, obj);
             }
             if (items.Count == 0) return;
@@ -250,26 +252,26 @@ namespace Radegast
             if (control == null) return;
             if (control is Button)
             {
-                Button button = (Button) control;
+                Button button = (Button)control;
                 string newVariable = obj.GetType() == type
                                          ? type.Name
                                          : string.Format("{0} -> {1}", obj.GetType().Name, type.Name);
                 items.Add(new ToolStripMenuItem(button.Text, null,
                                                 (sender, e) =>
-                                                    {
-                                                        button.PerformClick();
-                                                        Logger.DebugLog(String.Format("Button: {0} {1} {2} {3}",
-                                                                                      newVariable, e, sender, obj));
-                                                    })
+                                                {
+                                                    button.PerformClick();
+                                                    Logger.DebugLog(String.Format("Button: {0} {1} {2} {3}",
+                                                                                  newVariable, e, sender, obj));
+                                                })
                               {
                                   Enabled = button.Enabled,
-                                  Visible = button.Visible,                                  
+                                  Visible = button.Visible,
                                   ToolTipText = "" + obj
                               });
                 return;
             }
             foreach (object v in control.Controls)
-                GleanContributions_Helper(items, type, (Control) v, obj);
+                GleanContributions_Helper(items, type, (Control)v, obj);
         }
 
         static int CompareItems(ToolStripItem i1, ToolStripItem i2)
