@@ -856,7 +856,7 @@ namespace Radegast
             if ((currentPrim.Flags & PrimFlags.Money) != 0)
                 ctxMenuObjects.Items.Add("Pay", null, btnPay_Click);
 
-            if (currentPrim.Properties.SaleType != SaleType.Not)
+            if (currentPrim.Properties != null && currentPrim.Properties.SaleType != SaleType.Not)
                 ctxMenuObjects.Items.Add(string.Format("Buy for ${0}", currentPrim.Properties.SalePrice), null, btnBuy_Click);
 
             if (gbxInworld.Visible)
@@ -872,6 +872,7 @@ namespace Radegast
             ctxMenuObjects.Items.Add("Take", null, btnTake_Click);
             ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);
             ctxMenuObjects.Items.Add("Return", null, btnReturn_Click);
+            instance.ContextActionManager.AddContributions(ctxMenuObjects, currentPrim);
         }
 
         public RadegastContextMenuStrip GetContextMenu()
