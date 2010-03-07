@@ -511,10 +511,9 @@ namespace Radegast
             this.rtb.TabIndex = 1;
             this.rtb.Text = "";
             this.rtb.WordWrap = false;
-            this.rtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtb_KeyUp);
+            this.rtb.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtb_KeyDown);
             this.rtb.SelectionChanged += new System.EventHandler(this.rtb_SelectionChanged);
             this.rtb.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtb_KeyPress);
-            this.rtb.KeyUp += new System.Windows.Forms.KeyEventHandler(this.rtb_KeyUp);
             // 
             // lineNubersForRtb
             // 

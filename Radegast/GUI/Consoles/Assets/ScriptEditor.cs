@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.IO;
 using System.Windows.Forms;
 using OpenMetaverse;
@@ -68,6 +69,8 @@ namespace Radegast
             this.script = script;
             this.prim = prim;
             lblScripStatus.Text = string.Empty;
+            lblScripStatus.TextChanged += (object sender, EventArgs e) =>
+                instance.TabConsole.DisplayNotificationInChat(lblScripStatus.Text, ChatBufferTextStyle.Invisible);
             Dock = DockStyle.Fill;
             this.TabStop = false;
 
@@ -88,7 +91,7 @@ namespace Radegast
                 {
                     client.Assets.RequestInventoryAsset(script, true, Assets_OnAssetReceived);
                 }
-                rtb.Text = lblScripStatus.Text = "Loading...";
+                rtb.Text = lblScripStatus.Text = "Loading script...";
             }
             else
             {
@@ -114,6 +117,8 @@ namespace Radegast
                 lblScripStatus.Text = rtb.Text = "Failed to download.";
                 return;
             }
+            else
+                lblScripStatus.Text = rtb.Text = "OK";
 
             asset.Decode();
             rtb.Text = ((AssetScriptText)asset).Source;
@@ -122,8 +127,6 @@ namespace Radegast
 
         private void SetTitle()
         {
-            lblScripStatus.Text = scriptName;
-
             if (detached)
             {
                 FindForm().Text = scriptName + " - " + Properties.Resources.ProgramName + " script editor";
@@ -338,11 +341,18 @@ namespace Radegast
 
         //private RRichTextBox.CursorLocation prevCursor;
 
-        private void rtb_KeyUp(object sender, KeyEventArgs e)
+        private void rtb_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.S && e.Control && !e.Shift)
             {
                 tbtbSave_Click(this, EventArgs.Empty);
+                e.Handled = e.SuppressKeyPress = true;
+                return;
+            }
+
+            if (e.KeyCode == Keys.L && e.Control && !e.Shift)
+            {
+                ReadCursorPosition();
                 e.Handled = e.SuppressKeyPress = true;
                 return;
             }
@@ -658,6 +668,13 @@ namespace Radegast
             syntaxHiglightingToolStripMenuItem.Checked = rtb.SyntaxHighlightEnabled;
         }
 
+        private void ReadCursorPosition()
+        {
+            instance.TabConsole.DisplayNotificationInChat(
+                string.Format("Cursor at line {0}, column {1}", rtb.CursorPosition.Line + 1, rtb.CursorPosition.Column + 1),
+                ChatBufferTextStyle.Invisible);
+        }
+
         private void tbtbSave_Click(object sender, EventArgs e)
         {
             InventoryManager.ScriptUpdatedCallback handler = (bool uploadSuccess, string uploadStatus, bool compileSuccess, List<string> compileMessages, UUID itemID, UUID assetID) =>
@@ -670,20 +687,48 @@ namespace Radegast
                             }
                             else
                             {
-                                lblScripStatus.Text = "Failed";
-
                                 if (!compileSuccess)
                                 {
                                     lblScripStatus.Text = "Compilation failed";
                                     if (compileMessages != null)
                                     {
                                         txtStatus.Show();
+                                        txtStatus.Text = string.Empty;
                                         for (int i = 0; i < compileMessages.Count; i++)
                                         {
-                                            txtStatus.Text += compileMessages[i] + Environment.NewLine;
+                                            Match m = Regex.Match(compileMessages[i], @"\((?<line>\d+),\s*(?<column>\d+)\s*\)\s*:\s*(?<kind>\w+)\s*:\s*(?<msg>.*)", RegexOptions.IgnoreCase);
+
+                                            if (m.Success)
+                                            {
+                                                int line = 1 + int.Parse(m.Groups["line"].Value, Utils.EnUsCulture);
+                                                int column = 1 + int.Parse(m.Groups["column"].Value, Utils.EnUsCulture);
+                                                string kind = m.Groups["kind"].Value;
+                                                string msg = m.Groups["msg"].Value;
+                                                instance.TabConsole.DisplayNotificationInChat(
+                                                    string.Format("{0} on line {1}, column {2}: {3}", kind, line, column, msg),
+                                                    ChatBufferTextStyle.Invisible);
+                                                txtStatus.Text += string.Format("{0} (Ln {1}, Col {2}): {3}", kind, line, column, msg);
+                                                
+                                                if (i == 0)
+                                                {
+                                                    rtb.CursorPosition = new RRichTextBox.CursorLocation(line - 1, column - 1);
+                                                    ReadCursorPosition();
+                                                    rtb.Focus();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                txtStatus.Text += compileMessages[i] + Environment.NewLine;
+                                                instance.TabConsole.DisplayNotificationInChat(compileMessages[i]);
+                                            }
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    lblScripStatus.Text = rtb.Text = "Failed to download.";
+                                }
+
                             }
                         }
                     ));
