@@ -62,21 +62,21 @@ namespace Radegast
             this.btnSend = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
+            this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbxInput = new Radegast.ChatInputBox();
             this.toolStrip1.SuspendLayout();
+            this.pnlChatInput.SuspendLayout();
             this.SuspendLayout();
             // 
             // rtbIMText
             // 
-            this.rtbIMText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbIMText.BackColor = System.Drawing.Color.White;
+            this.rtbIMText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbIMText.HideSelection = false;
-            this.rtbIMText.Location = new System.Drawing.Point(3, 28);
+            this.rtbIMText.Location = new System.Drawing.Point(0, 25);
             this.rtbIMText.Name = "rtbIMText";
             this.rtbIMText.ReadOnly = true;
-            this.rtbIMText.Size = new System.Drawing.Size(494, 270);
+            this.rtbIMText.Size = new System.Drawing.Size(500, 273);
             this.rtbIMText.TabIndex = 3;
             this.rtbIMText.Text = "";
             this.rtbIMText.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbIMText_LinkClicked);
@@ -85,7 +85,7 @@ namespace Radegast
             // 
             this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSend.Enabled = false;
-            this.btnSend.Location = new System.Drawing.Point(422, 302);
+            this.btnSend.Location = new System.Drawing.Point(425, 5);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 1;
@@ -113,32 +113,44 @@ namespace Radegast
             this.tbtnProfile.Text = "Profile";
             this.tbtnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 
+            // pnlChatInput
+            // 
+            this.pnlChatInput.Controls.Add(this.cbxInput);
+            this.pnlChatInput.Controls.Add(this.btnSend);
+            this.pnlChatInput.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlChatInput.Location = new System.Drawing.Point(0, 298);
+            this.pnlChatInput.Name = "pnlChatInput";
+            this.pnlChatInput.Size = new System.Drawing.Size(500, 32);
+            this.pnlChatInput.TabIndex = 4;
+            // 
             // cbxInput
             // 
-            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbxInput.Location = new System.Drawing.Point(3, 304);
+            this.cbxInput.Location = new System.Drawing.Point(3, 5);
             this.cbxInput.Name = "cbxInput";
-            this.cbxInput.Size = new System.Drawing.Size(413, 21);
+            this.cbxInput.Size = new System.Drawing.Size(419, 21);
             this.cbxInput.TabIndex = 0;
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
+            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             // 
             // IMTabWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.cbxInput);
             this.Controls.Add(this.rtbIMText);
-            this.Controls.Add(this.btnSend);
+            this.Controls.Add(this.pnlChatInput);
+            this.Controls.Add(this.toolStrip1);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "IMTabWindow";
             this.Size = new System.Drawing.Size(500, 330);
             this.VisibleChanged += new System.EventHandler(this.cbxInput_VisibleChanged);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.pnlChatInput.ResumeLayout(false);
+            this.pnlChatInput.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -151,6 +163,7 @@ namespace Radegast
         public System.Windows.Forms.Button btnSend;
         public System.Windows.Forms.ToolStrip toolStrip1;
         public System.Windows.Forms.ToolStripButton tbtnProfile;
+        private System.Windows.Forms.Panel pnlChatInput;
 
     }
 }

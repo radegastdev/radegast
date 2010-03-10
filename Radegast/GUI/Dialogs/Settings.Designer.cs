@@ -61,16 +61,18 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cbFontSize = new System.Windows.Forms.ComboBox();
             this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.cbRLV = new System.Windows.Forms.CheckBox();
             this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
             this.cbAutoReconnect = new System.Windows.Forms.CheckBox();
+            this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
             this.cbFriendsNotifications = new System.Windows.Forms.CheckBox();
             this.cbTrasactChat = new System.Windows.Forms.CheckBox();
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
-            this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -88,6 +90,8 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.label1);
+            this.tbpGeneral.Controls.Add(this.cbFontSize);
             this.tbpGeneral.Controls.Add(this.cbMUEmotes);
             this.tbpGeneral.Controls.Add(this.cbRLV);
             this.tbpGeneral.Controls.Add(this.cbHideLoginGraphics);
@@ -105,6 +109,36 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(8, 239);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(73, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Chat text size:";
+            // 
+            // cbFontSize
+            // 
+            this.cbFontSize.FormatString = "N2";
+            this.cbFontSize.FormattingEnabled = true;
+            this.cbFontSize.Items.AddRange(new object[] {
+            "8.25",
+            "9",
+            "10",
+            "12",
+            "14",
+            "16",
+            "20"});
+            this.cbFontSize.Location = new System.Drawing.Point(87, 236);
+            this.cbFontSize.Name = "cbFontSize";
+            this.cbFontSize.Size = new System.Drawing.Size(54, 21);
+            this.cbFontSize.TabIndex = 10;
+            this.cbFontSize.Text = "8.25";
+            this.cbFontSize.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
+            this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
+            this.cbFontSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
             // 
             // cbMUEmotes
             // 
@@ -149,6 +183,17 @@ namespace Radegast
             this.cbAutoReconnect.Text = "Auto reconnect on disconnect";
             this.cbAutoReconnect.UseVisualStyleBackColor = true;
             this.cbAutoReconnect.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            // 
+            // cbFriendsHighlight
+            // 
+            this.cbFriendsHighlight.AutoSize = true;
+            this.cbFriendsHighlight.Location = new System.Drawing.Point(8, 121);
+            this.cbFriendsHighlight.Name = "cbFriendsHighlight";
+            this.cbFriendsHighlight.Size = new System.Drawing.Size(248, 17);
+            this.cbFriendsHighlight.TabIndex = 5;
+            this.cbFriendsHighlight.Text = "Highlight chat tab on friends online notifications";
+            this.cbFriendsHighlight.UseVisualStyleBackColor = true;
+            this.cbFriendsHighlight.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // cbFriendsNotifications
             // 
@@ -203,17 +248,6 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbFriendsHighlight
-            // 
-            this.cbFriendsHighlight.AutoSize = true;
-            this.cbFriendsHighlight.Location = new System.Drawing.Point(8, 121);
-            this.cbFriendsHighlight.Name = "cbFriendsHighlight";
-            this.cbFriendsHighlight.Size = new System.Drawing.Size(248, 17);
-            this.cbFriendsHighlight.TabIndex = 5;
-            this.cbFriendsHighlight.Text = "Highlight chat tab on friends online notifications";
-            this.cbFriendsHighlight.UseVisualStyleBackColor = true;
-            this.cbFriendsHighlight.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -244,6 +278,8 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbRLV;
         public System.Windows.Forms.CheckBox cbMUEmotes;
         public System.Windows.Forms.CheckBox cbFriendsHighlight;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox cbFontSize;
 
     }
 }

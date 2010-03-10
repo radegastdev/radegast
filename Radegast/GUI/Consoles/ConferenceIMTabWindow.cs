@@ -65,6 +65,9 @@ namespace Radegast
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
 
             this.client.Self.ChatterBoxAcceptInvite(session);
+
+            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            UpdateFontSize();
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
@@ -79,6 +82,20 @@ namespace Radegast
             if (e.Status != LoginStatus.Success) return;
 
             RefreshControls();
+        }
+
+        void UpdateFontSize()
+        {
+            float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
+            cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
+            rtbIMText.Font = ChatConsole.ChangeFontSize(rtbIMText.Font, size);
+            textManager.ReprintAllText();
+        }
+
+        void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
+        {
+            if (e.Key == "chat_font_size")
+                UpdateFontSize();
         }
 
         private void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
@@ -195,6 +212,11 @@ namespace Radegast
         private void cbxInput_VisibleChanged(object sender, EventArgs e)
         {
             if (Visible) cbxInput.Focus();
+        }
+
+        private void cbxInput_SizeChanged(object sender, EventArgs e)
+        {
+            pnlChatInput.Height = cbxInput.Height + 7;
         }
     }
 }

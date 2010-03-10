@@ -37,6 +37,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Radegast.Netcom;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
@@ -72,6 +73,13 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
+            if (instance.GlobalSettings["chat_font_size"].Type != OSDType.Real)
+            {
+                instance.GlobalSettings["chat_font_size"] = OSD.FromReal(cbxInput.Font.Size);
+            }
+
+            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
@@ -84,6 +92,8 @@ namespace Radegast
 
             lvwObjects.ListViewItemSorter = new SorterClass();
             cbChatType.SelectedIndex = 1;
+
+            UpdateFontSize();
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -109,6 +119,35 @@ namespace Radegast
             UnregisterClientEvents(client);
             chatManager.Dispose();
             chatManager = null;
+        }
+
+        static public Font ChangeFontSize(Font font, float fontSize)
+        {
+            if (font != null)
+            {
+                float currentSize = font.Size;
+                if (currentSize != fontSize)
+                {
+                    font = new Font(font.Name, fontSize,
+                        font.Style, font.Unit,
+                        font.GdiCharSet, font.GdiVerticalFont);
+                }
+            }
+            return font;
+        }
+
+        void UpdateFontSize()
+        {
+            float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
+            cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
+            rtbChat.Font = ChatConsole.ChangeFontSize(rtbChat.Font, size);
+            chatManager.ReprintAllText();
+        }
+
+        void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
+        {
+            if (e.Key == "chat_font_size")
+                UpdateFontSize();
         }
 
         void Grid_CoarseLocationUpdate(object sender, CoarseLocationUpdateEventArgs e)

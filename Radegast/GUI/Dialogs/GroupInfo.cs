@@ -68,15 +68,12 @@ namespace Radegast
         {
             ((Radegast.Netcom.RadegastNetcom)sender).ClientDisconnected -= new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
-            if (Handle != System.IntPtr.Zero)
-            {
-                BeginInvoke(new MethodInvoker(() =>
-                    {
-                        GroupDetails.Dispose();
-                        Close();
-                    }
-                ));
-            }
+            BeginInvoke(new MethodInvoker(() =>
+                {
+                    GroupDetails.Dispose();
+                    Close();
+                }
+            ));
         }
     }
 }

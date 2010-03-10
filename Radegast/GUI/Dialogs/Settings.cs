@@ -106,7 +106,12 @@ namespace Radegast
                 s["friends_notification_highlight"] = new OSDBoolean(cbFriendsHighlight.Checked);
             };
 
+            if (s["chat_font_size"].Type != OSDType.Real)
+            {
+                s["chat_font_size"] = OSD.FromReal(((ChatConsole)instance.TabConsole.Tabs["chat"].Control).cbxInput.Font.Size);
+            }
 
+            cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
 
         }
 
@@ -143,6 +148,41 @@ namespace Radegast
         private void cbTrasactChat_CheckedChanged(object sender, EventArgs e)
         {
             s["transaction_notification_chat"] = OSD.FromBoolean(cbTrasactChat.Checked);
+        }
+
+        private void UpdateFontSize()
+        {
+            double f = 8.25;
+            double existing = s["chat_font_size"].AsReal();
+            
+            if (!double.TryParse(cbFontSize.Text, out f))
+            {
+                cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
+                return;
+            }
+
+            if (Math.Abs(existing - f) > 0.0001f)
+                s["chat_font_size"] = OSD.FromReal(f);
+
+        }
+
+        private void cbFontSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateFontSize();
+        }
+
+        private void cbFontSize_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                UpdateFontSize();
+                e.Handled = e.SuppressKeyPress = true;
+            }
+        }
+
+        private void cbFontSize_Leave(object sender, EventArgs e)
+        {
+            UpdateFontSize();
         }
     }
 }

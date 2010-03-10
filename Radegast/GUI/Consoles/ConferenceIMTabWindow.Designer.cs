@@ -61,19 +61,19 @@ namespace Radegast
             this.rtbIMText = new System.Windows.Forms.RichTextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.cbxInput = new Radegast.ChatInputBox();
+            this.pnlChatInput = new System.Windows.Forms.Panel();
+            this.pnlChatInput.SuspendLayout();
             this.SuspendLayout();
             // 
             // rtbIMText
             // 
-            this.rtbIMText.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbIMText.BackColor = System.Drawing.Color.White;
+            this.rtbIMText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbIMText.HideSelection = false;
-            this.rtbIMText.Location = new System.Drawing.Point(3, 3);
+            this.rtbIMText.Location = new System.Drawing.Point(0, 0);
             this.rtbIMText.Name = "rtbIMText";
             this.rtbIMText.ReadOnly = true;
-            this.rtbIMText.Size = new System.Drawing.Size(494, 295);
+            this.rtbIMText.Size = new System.Drawing.Size(500, 302);
             this.rtbIMText.TabIndex = 3;
             this.rtbIMText.Text = "";
             this.rtbIMText.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbIMText_LinkClicked);
@@ -82,7 +82,7 @@ namespace Radegast
             // 
             this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSend.Enabled = false;
-            this.btnSend.Location = new System.Drawing.Point(422, 305);
+            this.btnSend.Location = new System.Drawing.Point(423, 3);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 1;
@@ -92,29 +92,40 @@ namespace Radegast
             // 
             // cbxInput
             // 
-            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbxInput.Location = new System.Drawing.Point(3, 306);
+            this.cbxInput.Location = new System.Drawing.Point(0, 4);
             this.cbxInput.Name = "cbxInput";
-            this.cbxInput.Size = new System.Drawing.Size(413, 21);
+            this.cbxInput.Size = new System.Drawing.Size(417, 21);
             this.cbxInput.TabIndex = 0;
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
+            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
+            // 
+            // pnlChatInput
+            // 
+            this.pnlChatInput.Controls.Add(this.cbxInput);
+            this.pnlChatInput.Controls.Add(this.btnSend);
+            this.pnlChatInput.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlChatInput.Location = new System.Drawing.Point(0, 302);
+            this.pnlChatInput.Name = "pnlChatInput";
+            this.pnlChatInput.Size = new System.Drawing.Size(500, 28);
+            this.pnlChatInput.TabIndex = 4;
             // 
             // ConferenceIMTabWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.cbxInput);
             this.Controls.Add(this.rtbIMText);
-            this.Controls.Add(this.btnSend);
+            this.Controls.Add(this.pnlChatInput);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "ConferenceIMTabWindow";
             this.Size = new System.Drawing.Size(500, 330);
             this.VisibleChanged += new System.EventHandler(this.cbxInput_VisibleChanged);
+            this.pnlChatInput.ResumeLayout(false);
+            this.pnlChatInput.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -123,6 +134,7 @@ namespace Radegast
         public System.Windows.Forms.RichTextBox rtbIMText;
         public ChatInputBox cbxInput;
         public System.Windows.Forms.Button btnSend;
+        private System.Windows.Forms.Panel pnlChatInput;
 
     }
 }

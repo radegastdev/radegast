@@ -66,6 +66,9 @@ namespace Radegast
             // Callbacks
             RegisterClientEvents(client);
             client.Self.RequestJoinGroupChat(session);
+
+            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            UpdateFontSize();
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -103,6 +106,20 @@ namespace Radegast
 
             UnregisterClientEvents(client);
             CleanUp();
+        }
+
+        void UpdateFontSize()
+        {
+            float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
+            cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
+            rtbIMText.Font = ChatConsole.ChangeFontSize(rtbIMText.Font, size);
+            textManager.ReprintAllText();
+        }
+
+        void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
+        {
+            if (e.Key == "chat_font_size")
+                UpdateFontSize();
         }
 
         void Netcom_Disconnected(object sender, DisconnectedEventArgs e)
@@ -385,6 +402,11 @@ namespace Radegast
         private void cbxInput_VisibleChanged(object sender, EventArgs e)
         {
             if (Visible) cbxInput.Focus();
+        }
+
+        private void cbxInput_SizeChanged(object sender, EventArgs e)
+        {
+            pnlChatInput.Height = cbxInput.Height + 7;
         }
     }
 }

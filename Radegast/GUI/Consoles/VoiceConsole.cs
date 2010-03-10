@@ -363,10 +363,13 @@ namespace Radegast
         #region Console control
         void VoiceConsole_Disposed(object sender, EventArgs e)
         {
-
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            UnregisterClientEvents();
-            gateway.Stop();
+            try
+            {
+                netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+                UnregisterClientEvents();
+                gateway.Stop();
+            }
+            catch { }
         }
 
         private void MainForm_Load(object sender, EventArgs e)

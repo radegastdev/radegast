@@ -872,6 +872,20 @@ namespace Radegast
             ctxMenuObjects.Items.Add("Take", null, btnTake_Click);
             ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);
             ctxMenuObjects.Items.Add("Return", null, btnReturn_Click);
+
+            //if (currentPrim.MediaURL != null && currentPrim.MediaURL.StartsWith("x-mv:"))
+            //{
+            //    ctxMenuObjects.Items.Add("Test", null, (object menuSender, EventArgs menuE) =>
+            //        {
+            //            client.Objects.RequestObjectMedia(currentPrim.ID, client.Network.CurrentSim, (bool success, string version, MediaEntry[] faceMedia) =>
+            //                {
+            //                    int foo = 1;
+            //                }
+            //            );
+            //        }
+            //    );
+            //}
+
             instance.ContextActionManager.AddContributions(ctxMenuObjects, currentPrim);
         }
 
