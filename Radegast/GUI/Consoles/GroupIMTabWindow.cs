@@ -55,7 +55,6 @@ namespace Radegast
             Disposed += new EventHandler(IMTabWindow_Disposed);
 
             this.instance = instance;
-            this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             this.session = session;
 
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Group, this.session, sessionName);
@@ -67,7 +66,6 @@ namespace Radegast
             RegisterClientEvents(client);
             client.Self.RequestJoinGroupChat(session);
 
-            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
             UpdateFontSize();
         }
 
@@ -79,6 +77,8 @@ namespace Radegast
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_Connected);
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
+            instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -89,6 +89,8 @@ namespace Radegast
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_Connected);
             instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
+            instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+            instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)

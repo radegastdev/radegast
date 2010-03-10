@@ -114,6 +114,7 @@ namespace Radegast
 
         void ChatConsole_Disposed(object sender, EventArgs e)
         {
+            instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             UnregisterClientEvents(client);
