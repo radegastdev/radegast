@@ -68,8 +68,6 @@ namespace Radegast
             }
         }
 
-        public AvatarPicker() { }
-
         public AvatarPicker(RadegastInstance instance)
         {
             InitializeComponent();
@@ -79,6 +77,12 @@ namespace Radegast
 
             // events
             client.Avatars.AvatarPickerReply += new EventHandler<AvatarPickerReplyEventArgs>(Avatars_AvatarPickerReply);
+
+            List<NearbyAvatar> nearAvatars = instance.TabConsole.NearbyAvatars;
+            for (int i = 0; i < nearAvatars.Count; i++)
+            {
+                lvwNear.Items.Add(new ListViewItem() { Text = nearAvatars[i].Name, Tag = nearAvatars[i].ID });
+            }
         }
 
         void AvatarPicker_Disposed(object sender, EventArgs e)

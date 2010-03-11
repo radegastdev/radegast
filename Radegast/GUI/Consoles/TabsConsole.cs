@@ -40,6 +40,35 @@ namespace Radegast
 {
     public partial class TabsConsole : UserControl
     {
+
+        /// <summary>
+        /// List of nearby avatars (radar data)
+        /// </summary>
+        public List<NearbyAvatar> NearbyAvatars
+        {
+            get
+            {
+                List<NearbyAvatar> res = new List<NearbyAvatar>();
+
+                if (TabExists("chat"))
+                {
+                    ChatConsole c = (ChatConsole)Tabs["chat"].Control;
+                    lock (c.agentSimHandle)
+                    {
+                        foreach (ListViewItem item in c.lvwObjects.Items)
+                        {
+                            if (item.Name != client.Self.AgentID.ToString())
+                            {
+                                res.Add(new NearbyAvatar() { ID = new UUID(item.Name), Name = item.Text });
+                            }
+                        }
+                    }
+                }
+
+                return res;
+            }
+        }
+
         /// <summary>
         /// Delegate invoked on tab operations
         /// </summary>
@@ -1066,4 +1095,14 @@ namespace Radegast
             Style = style;
         }
     }
+
+    /// <summary>
+    /// Element of list of nearby avatars
+    /// </summary>
+    public class NearbyAvatar
+    {
+        public UUID ID { get; set; }
+        public string Name { get; set; }
+    }
+
 }

@@ -53,7 +53,7 @@ namespace Radegast
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
         private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
         private Dictionary<uint, bool> bots = new Dictionary<uint, bool>();
-        private readonly Dictionary<UUID, ulong> agentSimHandle = new Dictionary<UUID, ulong>();
+        public readonly Dictionary<UUID, ulong> agentSimHandle = new Dictionary<UUID, ulong>();
         public ChatInputBox ChatInputText { get { return cbxInput; } }
 
         public ChatConsole(RadegastInstance instance)

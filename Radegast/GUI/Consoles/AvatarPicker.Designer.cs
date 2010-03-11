@@ -61,13 +61,13 @@ namespace Radegast
         {
             this.tcPicker = new System.Windows.Forms.TabControl();
             this.tpSearch = new System.Windows.Forms.TabPage();
-            this.lvwSearch = new System.Windows.Forms.ListView();
+            this.lvwSearch = new ListViewNoFlicker();
             this.pnlSearch = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.tpNear = new System.Windows.Forms.TabPage();
-            this.lvwNear = new System.Windows.Forms.ListView();
+            this.lvwNear = new ListViewNoFlicker();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.tcPicker.SuspendLayout();
@@ -207,8 +207,8 @@ namespace Radegast
         public System.Windows.Forms.TabControl tcPicker;
         public System.Windows.Forms.TabPage tpSearch;
         public System.Windows.Forms.TabPage tpNear;
-        public System.Windows.Forms.ListView lvwSearch;
-        public System.Windows.Forms.ListView lvwNear;
+        public ListViewNoFlicker lvwSearch;
+        public ListViewNoFlicker lvwNear;
         public System.Windows.Forms.Panel pnlSearch;
         public System.Windows.Forms.Label label1;
         public System.Windows.Forms.Button btnSearch;
