@@ -829,6 +829,11 @@ namespace Radegast
                     break;
             }
         }
+
+        private void btnInviteNewMember_Click(object sender, EventArgs e)
+        {
+            (new GroupInvite(instance, group, roles)).Show();
+        }
     }
 
     public class EnhancedGroupMember

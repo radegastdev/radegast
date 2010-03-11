@@ -515,6 +515,7 @@ namespace Radegast
             this.btnInviteNewMember.TabIndex = 11;
             this.btnInviteNewMember.Text = "Invite New Member...";
             this.btnInviteNewMember.UseVisualStyleBackColor = true;
+            this.btnInviteNewMember.Click += new System.EventHandler(this.btnInviteNewMember_Click);
             // 
             // btnEjectMember
             // 

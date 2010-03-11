@@ -218,6 +218,12 @@
     <Compile Include="GUI\Consoles\AttachmentTab.Designer.cs">
       <DependentUpon>AttachmentTab.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\AvatarPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\AvatarPicker.Designer.cs">
+      <DependentUpon>AvatarPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\ConferenceIMTabWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -344,6 +350,12 @@
     </Compile>
     <Compile Include="GUI\Dialogs\GroupInfo.Designer.cs">
       <DependentUpon>GroupInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupInvite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\GroupInvite.Designer.cs">
+      <DependentUpon>GroupInvite.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\KeyboardShortcuts.cs">
       <SubType>Form</SubType>
@@ -505,6 +517,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>AttachmentTab.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\AvatarPicker.resx">
+      <DependentUpon>AvatarPicker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\ChatConsole.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ChatConsole.cs</DependentUpon>
@@ -588,6 +603,9 @@
     <EmbeddedResource Include="GUI\Dialogs\GroupInfo.resx">
       <DependentUpon>GroupInfo.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\GroupInvite.resx">
+      <DependentUpon>GroupInvite.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\KeyboardShortcuts.resx">
       <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
