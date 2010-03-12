@@ -139,7 +139,8 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
                 return;
             }
 
@@ -175,7 +176,8 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(UpdateParticipantList));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(UpdateParticipantList));
                 return;
             }
 
@@ -234,7 +236,8 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(() => Self_GroupChatJoined(sender, e)));
+                if (IsHandleCreated)
+                    Invoke(new MethodInvoker(() => Self_GroupChatJoined(sender, e)));
                 return;
             }
 
@@ -253,6 +256,7 @@ namespace Radegast
         {
             textManager.CleanUp();
             textManager = null;
+            instance = null;
         }
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -284,7 +288,8 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(RefreshControls));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(RefreshControls));
                 return;
             }
 
