@@ -86,10 +86,9 @@ namespace Radegast
             this.tcMembersRoles = new System.Windows.Forms.TabControl();
             this.tpMembers = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.lvwAllowedAbilities = new System.Windows.Forms.ListView();
+            this.lvwAllowedAbilities = new Radegast.ListViewNoFlicker();
             this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
-            this.lvwAssignedRoles = new System.Windows.Forms.ListView();
+            this.lvwAssignedRoles = new Radegast.ListViewNoFlicker();
             this.chHasRole = new System.Windows.Forms.ColumnHeader();
             this.chRoleName = new System.Windows.Forms.ColumnHeader();
             this.btnInviteNewMember = new System.Windows.Forms.Button();
@@ -457,10 +456,8 @@ namespace Radegast
             // 
             // lvwAllowedAbilities
             // 
-            this.lvwAllowedAbilities.CheckBoxes = true;
             this.lvwAllowedAbilities.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader4,
-            this.columnHeader5});
+            this.columnHeader4});
             this.lvwAllowedAbilities.FullRowSelect = true;
             this.lvwAllowedAbilities.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lvwAllowedAbilities.Location = new System.Drawing.Point(185, 45);
@@ -469,16 +466,12 @@ namespace Radegast
             this.lvwAllowedAbilities.TabIndex = 12;
             this.lvwAllowedAbilities.UseCompatibleStateImageBehavior = false;
             this.lvwAllowedAbilities.View = System.Windows.Forms.View.Details;
+            this.lvwAllowedAbilities.SizeChanged += new System.EventHandler(this.lvwAllowedAbilities_SizeChanged);
             // 
             // columnHeader4
             // 
             this.columnHeader4.Text = "";
-            this.columnHeader4.Width = 30;
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "";
-            this.columnHeader5.Width = 108;
+            this.columnHeader4.Width = 167;
             // 
             // lvwAssignedRoles
             // 
@@ -892,27 +885,26 @@ namespace Radegast
         public System.Windows.Forms.Label lblTitle;
         public System.Windows.Forms.Label lblSentBy;
         public System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnJoin;
         public System.Windows.Forms.TabPage tpMembersRoles;
-        private System.Windows.Forms.TabControl tcMembersRoles;
-        private System.Windows.Forms.TabPage tpMembers;
-        private System.Windows.Forms.TabPage tpRoles;
         public System.Windows.Forms.Label label2;
         public ListViewNoFlicker lvwMemberDetails;
         public System.Windows.Forms.ColumnHeader columnHeader1;
         public System.Windows.Forms.ColumnHeader columnHeader2;
         public System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.Label lblAssignedRoles;
-        private System.Windows.Forms.Button btnInviteNewMember;
-        private System.Windows.Forms.Button btnEjectMember;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.ListView lvwAssignedRoles;
-        private System.Windows.Forms.ColumnHeader chHasRole;
-        private System.Windows.Forms.ColumnHeader chRoleName;
-        private System.Windows.Forms.ListView lvwAllowedAbilities;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
-        private System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Button btnJoin;
+        public System.Windows.Forms.TabControl tcMembersRoles;
+        public System.Windows.Forms.TabPage tpMembers;
+        public System.Windows.Forms.TabPage tpRoles;
+        public System.Windows.Forms.Label lblAssignedRoles;
+        public System.Windows.Forms.Button btnInviteNewMember;
+        public System.Windows.Forms.Button btnEjectMember;
+        public System.Windows.Forms.Panel panel1;
+        public ListViewNoFlicker lvwAssignedRoles;
+        public System.Windows.Forms.ColumnHeader chHasRole;
+        public System.Windows.Forms.ColumnHeader chRoleName;
+        public ListViewNoFlicker lvwAllowedAbilities;
+        public System.Windows.Forms.ColumnHeader columnHeader4;
+        public System.Windows.Forms.Label label3;
 
     }
 }

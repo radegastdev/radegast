@@ -717,18 +717,24 @@ namespace Radegast
             lvwAssignedRoles.ItemChecked -= lvwAssignedRoles_ItemChecked;
             lvwAssignedRoles.Items.Clear();
             lvwAssignedRoles.Tag = m;
+            
             ListViewItem defaultItem = new ListViewItem();
             defaultItem.Name = "Everyone";
             defaultItem.SubItems.Add(defaultItem.Name);
             defaultItem.Checked = true;
             lvwAssignedRoles.Items.Add(defaultItem);
 
+            GroupPowers abilities = GroupPowers.None;
+
             foreach (var r in roles)
             {
                 GroupRole role = r.Value;
 
                 if (role.ID == UUID.Zero)
+                {
+                    abilities |= role.Powers;
                     continue;
+                }
 
                 ListViewItem item = new ListViewItem();
                 item.Name = role.Name;
@@ -738,10 +744,28 @@ namespace Radegast
                 bool hasRole = foundRole.Value == m.Base.ID;
                 item.Checked = hasRole;
                 lvwAssignedRoles.Items.Add(item);
+
+                if (hasRole)
+                    abilities |= role.Powers;
             }
 
             lvwAssignedRoles.ItemChecked += lvwAssignedRoles_ItemChecked;
             lvwAssignedRoles.EndUpdate();
+
+            lvwAllowedAbilities.BeginUpdate();
+            lvwAllowedAbilities.Items.Clear();
+
+            foreach (GroupPowers p in Enum.GetValues(typeof(GroupPowers)))
+            {
+                if (p != GroupPowers.None && (abilities & p) == p)
+                {
+                    lvwAllowedAbilities.Items.Add(p.ToString());
+                }
+            }
+
+
+            lvwAllowedAbilities.EndUpdate();
+
         }
 
         private void UpdateMemberRoles()
@@ -764,6 +788,11 @@ namespace Radegast
 
                 if (item.Checked != hasRole)
                 {
+                    if (item.Checked)
+                        roleMembers.Add(new KeyValuePair<UUID, UUID>(role.ID, m.Base.ID));
+                    else
+                        roleMembers.Remove(foundRole);
+
                     var rc = new GroupRoleChangesPacket.RoleChangeBlock();
                     rc.MemberID = m.Base.ID;
                     rc.RoleID = role.ID;
@@ -779,6 +808,7 @@ namespace Radegast
             }
 
             btnApply.Enabled = false;
+            lvwMemberDetails_SelectedIndexChanged(lvwMemberDetails, EventArgs.Empty);
         }
 
 
@@ -833,6 +863,11 @@ namespace Radegast
         private void btnInviteNewMember_Click(object sender, EventArgs e)
         {
             (new GroupInvite(instance, group, roles)).Show();
+        }
+
+        private void lvwAllowedAbilities_SizeChanged(object sender, EventArgs e)
+        {
+            lvwAllowedAbilities.Columns[0].Width = lvwAllowedAbilities.Width - 30;
         }
     }
 
