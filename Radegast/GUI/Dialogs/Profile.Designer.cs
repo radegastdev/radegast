@@ -441,8 +441,10 @@ namespace Radegast
             this.pickDetail.BackColor = System.Drawing.SystemColors.Window;
             this.pickDetail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pickDetail.Location = new System.Drawing.Point(0, 259);
+            this.pickDetail.Multiline = true;
             this.pickDetail.Name = "pickDetail";
             this.pickDetail.ReadOnly = true;
+            this.pickDetail.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.pickDetail.Size = new System.Drawing.Size(315, 130);
             this.pickDetail.TabIndex = 2;
             this.pickDetail.Text = "";
