@@ -278,7 +278,6 @@ namespace Radegast
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPrimWorkshop";
             this.Text = "Prim Workshop";
-            this.Shown += new System.EventHandler(this.frmPrimWorkshop_Shown);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel2.ResumeLayout(false);
             this.splitContainer.ResumeLayout(false);

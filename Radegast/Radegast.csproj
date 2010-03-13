@@ -77,6 +77,8 @@
   <ItemGroup>
     <Reference Include="fmodex-dotnet, Version=4.26.7.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
+    <Reference Include="OpenMetaverse.Rendering.Meshmerizer, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86" />
+    <Reference Include="PrimMesher, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -1023,9 +1025,6 @@
     <None Include="Resources\inv_folder_notecard.png" />
     <None Include="assemblies\Tao.OpenGl.dll" />
     <None Include="assemblies\Tao.Platform.Windows.dll" />
-    <None Include="OpenMetaverse.Rendering.Meshmerizer.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="assemblies\log4net.dll" />
     <None Include="assemblies\Tools.dll" />
     <None Include="openjpeg-dotnet-x86_64.dll">
@@ -1039,6 +1038,8 @@
     </None>
     <None Include="assemblies\fmodex-dotnet.dll">
     </None>
+    <None Include="assemblies\OpenMetaverse.Rendering.Meshmerizer.dll" />
+    <None Include="assemblies\PrimMesher.dll" />
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

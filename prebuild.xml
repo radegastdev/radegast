@@ -200,6 +200,9 @@
       <Reference name="assemblies/Tools.dll" localCopy="true" />
       <Reference name="assemblies/log4net.dll" localCopy="true" />
 
+      <Reference name="assemblies/PrimMesher.dll" localCopy="true" />
+      <Reference name="assemblies/OpenMetaverse.Rendering.Meshmerizer.dll" localCopy="true" />
+
       <Reference name="../../libopenmetaverse/bin/XMLRPC.dll" localCopy="true" />
 
       <Files>

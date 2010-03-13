@@ -35,9 +35,12 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Text;
+using System.Threading;
 using Tao.OpenGl;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
+using OpenMetaverse.Assets;
+using OpenMetaverse.Imaging;
 
 // NOTE: Batches are divided by texture, fullbright, shiny, transparent, and glow
 
@@ -53,10 +56,11 @@ namespace Radegast
         ProfileFace? CurrentFace = null;
 
         bool DraggingTexture = false;
-        bool Wireframe = true;
+        bool Wireframe = false;
         int[] TexturePointers = new int[1];
         Dictionary<UUID, Image> Textures = new Dictionary<UUID, Image>();
         RadegastInstance instance;
+        MeshmerizerR renderer;
 
         #endregion Form Globals
 
@@ -74,6 +78,7 @@ namespace Radegast
 
             Gl.glClearDepth(1.0f);
             Gl.glEnable(Gl.GL_DEPTH_TEST);
+            Gl.glEnable(Gl.GL_COLOR_MATERIAL);
             Gl.glDepthMask(Gl.GL_TRUE);
             Gl.glDepthFunc(Gl.GL_LEQUAL);
             Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
@@ -85,17 +90,8 @@ namespace Radegast
             // and will also invalidate the GL control
             glControl_Resize(null, null);
 
-            Render.Plugin = RenderingLoader.LoadRenderer("OpenMetaverse.Rendering.Meshmerizer.dll");
-
-        }
-
-        private void frmPrimWorkshop_Shown(object sender, EventArgs e)
-        {
-            if (Render.Plugin == null)
-            {
-                MessageBox.Show("No valid rendering plugin loaded, exiting...");
-                Close();
-            }
+            renderer = new MeshmerizerR();
+            renderer.ShouldScaleMesh = false;
         }
 
         #region GLControl Callbacks
@@ -135,11 +131,6 @@ namespace Radegast
                 {
                     Primitive prim = Prims[i].Prim;
 
-                    if (i == cboPrim.SelectedIndex)
-                        Gl.glColor3f(1f, 0f, 0f);
-                    else
-                        Gl.glColor3f(1f, 1f, 1f);
-
                     // Individual prim matrix
                     Gl.glPushMatrix();
 
@@ -159,27 +150,37 @@ namespace Radegast
                     // Draw the prim faces
                     for (int j = 0; j < Prims[i].Faces.Count; j++)
                     {
-                        if (i == cboPrim.SelectedIndex)
-                        {
-                            // This prim is currently selected in the dropdown
-                            //Gl.glColor3f(0f, 1f, 0f);
-                            Gl.glColor3f(1f, 1f, 1f);
+                        Primitive.TextureEntryFace teFace = Prims[i].Prim.Textures.FaceTextures[j];
+                        if (teFace == null)
+                            teFace = Prims[i].Prim.Textures.DefaultTexture;
 
-                            if (j == cboFace.SelectedIndex)
-                            {
-                                // This face is currently selected in the dropdown
-                            }
-                            else
-                            {
-                                // This face is not currently selected in the dropdown
-                            }
-                        }
-                        else
-                        {
-                            // This prim is not currently selected in the dropdown
-                            Gl.glColor3f(1f, 1f, 1f);
-                        }
+                        //switch (teFace.Shiny)
+                        //{
+                        //    case Shininess.High:
+                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 128f);
+                        //        break;
 
+                        //    case Shininess.Medium:
+                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 70f);
+                        //        break;
+
+                        //    case Shininess.Low:
+                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 20f);
+                        //        break;
+
+
+                        //    case Shininess.None:
+                        //    default:
+                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 0f);
+                        //        break;
+                        //}
+
+                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_AMBIENT, new float[4] { 0.7f, 0.7f, 0.7f, 1.0f });
+                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_DIFFUSE, new float[4] { 0.1f, 0.5f, 0.8f, 1.0f });
+                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_SPECULAR, new float[4] {1.0f, 1.0f, 1.0f, 1.0f});
+                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_EMISSION, new float[4] { 0.0f, 0.0f, 0.0f, 1.0f });
+
+                        Gl.glColor4f(teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A);
                         #region Texturing
 
                         Face face = Prims[i].Faces[j];
@@ -252,18 +253,42 @@ namespace Radegast
 
         public void loadPrims(List<Primitive> primList)
         {
+            ThreadPool.QueueUserWorkItem((object sync) =>
+                {
+                    loadPrimsBlocking(primList);
+                }
+            );
+        }
+
+        private void loadPrimsBlocking(List<Primitive> primList)
+        {
             Prims = null;
             Prims = new List<FacetedMesh>(primList.Count);
 
             for (int i = 0; i < primList.Count; i++)
             {
-                // TODO: Can't render sculpted prims without the textures
-                if (primList[i].Sculpt != null && primList[i].Sculpt.SculptTexture != UUID.Zero)
-                    continue;
-
+                FacetedMesh mesh = null;
                 Primitive prim = primList[i];
-                FacetedMesh mesh = Render.Plugin.GenerateFacetedMesh(prim, DetailLevel.Highest);
-                
+
+                try
+                {
+                    if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
+                    {
+                        Image img = null;
+                        if (!LoadTexture(primList[i].Sculpt.SculptTexture, ref img))
+                            continue;
+                        mesh = renderer.GenerateSculptMesh(new Bitmap(img), prim, DetailLevel.Highest);
+                    }
+                    else
+                    {
+                        mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.Highest);
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+
                 // Create a FaceData struct for each face that stores the 3D data
                 // in a Tao.OpenGL friendly format
                 for (int j = 0; j < mesh.Faces.Count; j++)
@@ -285,7 +310,7 @@ namespace Radegast
 
                     // Texture transform for this face
                     Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
-                    Render.Plugin.TransformTexCoords(face.Vertices, face.Center, teFace);
+                    renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
 
                     // Texcoords for this face
                     data.TexCoords = new float[face.Vertices.Count * 2];
@@ -298,24 +323,30 @@ namespace Radegast
                     // Texture for this face
                     if (LoadTexture(teFace.TextureID, ref data.Texture))
                     {
-                        Bitmap bitmap = new Bitmap(data.Texture);
-                        bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                        Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-                        BitmapData bitmapData = bitmap.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+                        if (IsHandleCreated)
+                        {
+                            Invoke(new MethodInvoker(() =>
+                            {
+                                Bitmap bitmap = new Bitmap(data.Texture);
+                                bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                                Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+                                BitmapData bitmapData = bitmap.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 
-                        Gl.glGenTextures(1, out data.TexturePointer);
-                        Gl.glBindTexture(Gl.GL_TEXTURE_2D, data.TexturePointer);
+                                Gl.glGenTextures(1, out data.TexturePointer);
+                                Gl.glBindTexture(Gl.GL_TEXTURE_2D, data.TexturePointer);
 
-                        Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_LINEAR);
-                        Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
-                        Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_S, Gl.GL_REPEAT);
-                        Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_T, Gl.GL_REPEAT);
-                        Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_GENERATE_MIPMAP, Gl.GL_TRUE);
+                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_LINEAR);
+                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
+                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_S, Gl.GL_REPEAT);
+                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_T, Gl.GL_REPEAT);
+                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_GENERATE_MIPMAP, Gl.GL_TRUE);
+                                Glu.gluBuild2DMipmaps(Gl.GL_TEXTURE_2D, Gl.GL_RGB8, bitmap.Width, bitmap.Height, Gl.GL_BGR, Gl.GL_UNSIGNED_BYTE, bitmapData.Scan0);
 
-                        Glu.gluBuild2DMipmaps(Gl.GL_TEXTURE_2D, Gl.GL_RGB8, bitmap.Width, bitmap.Height, Gl.GL_BGR, Gl.GL_UNSIGNED_BYTE, bitmapData.Scan0);
-
-                        bitmap.UnlockBits(bitmapData);
-                        bitmap.Dispose();
+                                bitmap.UnlockBits(bitmapData);
+                                bitmap.Dispose();
+                            }
+                            ));
+                        }
                     }
 
                     // Set the UserData for this face to our FaceData struct
@@ -324,56 +355,57 @@ namespace Radegast
                 }
 
                 Prims.Add(mesh);
+
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() =>
+                    {
+                        glControl.Invalidate();
+                    }));
+                }
+
             }
-
-            // Setup the dropdown list of prims
-            PopulatePrimCombobox();
-
-            glControl.Invalidate();
         }
 
-        private bool LoadTexture(UUID textureID, ref System.Drawing.Image texture)
+        private bool LoadTexture(UUID textureID, ref Image texture)
         {
-            return false;
-            //AutoResetEvent gotImage = new AutoResetEvent(false);
-            //System.Drawing.Image img = null;
+            ManualResetEvent gotImage = new ManualResetEvent(false);
+            Image img = null;
 
-            //if (Textures.ContainsKey(textureID))
-            //{
-            //    texture = Textures[textureID];
-            //    return true;
-            //}
+            if (Textures.ContainsKey(textureID))
+            {
+                texture = Textures[textureID];
+                return true;
+            }
 
-            //try
-            //{
-            //    instance.Client.Assets.RequestImage(textureID, delegate(TextureRequestState state, AssetTexture assetTexture)
-            //    {
-            //        if (state == TextureRequestState.Finished)
-            //        {
-            //            ManagedImage mi;
-            //            OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
-            //            gotImage.Set();
-            //        }
-            //        else
-            //        {
-            //            throw new Exception("Download failed");
-            //        }
-            //    });
-            //    gotImage.WaitOne(10 * 1000);
-            //    if (img != null)
-            //    {
-            //        Textures.Add(textureID, img);
-            //        texture = img;
-            //        Wireframe = false;
-            //        return true;
-            //    }
-            //    return false;
-            //}
-            //catch (Exception e)
-            //{
-            //    Logger.Log(e.Message, Helpers.LogLevel.Error, instance.Client, e);
-            //    return false;
-            //}
+            try
+            {
+                gotImage.Reset();
+                instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
+                    {
+                        if (state == TextureRequestState.Finished)
+                        {
+                            ManagedImage mi;
+                            OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
+                        }
+                        gotImage.Set();
+                    }
+                );
+                gotImage.WaitOne(30 * 1000);
+                if (img != null)
+                {
+                    Textures.Add(textureID, img);
+                    texture = img;
+                    Wireframe = false;
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                Logger.Log(e.Message, Helpers.LogLevel.Error, instance.Client, e);
+                return false;
+            }
         }
 
         private void oBJToolStripMenuItem_Click(object sender, EventArgs e)
