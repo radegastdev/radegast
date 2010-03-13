@@ -77,8 +77,6 @@
   <ItemGroup>
     <Reference Include="fmodex-dotnet, Version=4.26.7.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" />
-    <Reference Include="OpenMetaverse.Rendering.Meshmerizer, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86" />
-    <Reference Include="PrimMesher, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -1038,7 +1036,6 @@
     </None>
     <None Include="assemblies\fmodex-dotnet.dll">
     </None>
-    <None Include="assemblies\OpenMetaverse.Rendering.Meshmerizer.dll" />
     <None Include="assemblies\PrimMesher.dll" />
     <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1074,6 +1071,10 @@
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.Http\OpenMetaverse.Http.csproj">
       <Project>{A195EB92-3AC5-4443-8D65-8052480A21DA}</Project>
       <Name>OpenMetaverse.Http</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.Rendering.Meshmerizer\OpenMetaverse.Rendering.Meshmerizer.csproj">
+      <Project>{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}</Project>
+      <Name>OpenMetaverse.Rendering.Meshmerizer</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
       <Project>{18015F8B-CE5A-4BE0-88C4-6EF8AA7743CE}</Project>

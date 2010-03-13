@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechLin", "plugins\Rad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechMac", "plugins\Radegast.Plugin.Speech\RadSpeechMac\RadSpeechMac.csproj", "{DDFA3357-938D-41A3-881E-152105641A3D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMetaverse.Rendering.Meshmerizer", "..\libopenmetaverse\OpenMetaverse.Rendering.Meshmerizer\OpenMetaverse.Rendering.Meshmerizer.csproj", "{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +128,14 @@ Global
 		{DDFA3357-938D-41A3-881E-152105641A3D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DDFA3357-938D-41A3-881E-152105641A3D}.Release|x86.ActiveCfg = Release|x86
 		{DDFA3357-938D-41A3-881E-152105641A3D}.Release|x86.Build.0 = Release|x86
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Debug|x86.ActiveCfg = Debug|x86
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Debug|x86.Build.0 = Debug|x86
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Release|x86.ActiveCfg = Release|x86
+		{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

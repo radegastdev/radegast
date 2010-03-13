@@ -163,6 +163,32 @@
       </Files>
     </Project>
 
+    <Project name="OpenMetaverse.Rendering.Meshmerizer" path="../libopenmetaverse/OpenMetaverse.Rendering.Meshmerizer" type="Library" rootNamespace="OpenMetaverse.Http" frameworkVersion="v3_5">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../radegast/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../radegast/bin/</OutputPath>
+          <XmlDocFile>OpenMetaverse.Rendering.Meshmerizer.XML</XmlDocFile>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Xml"/>
+      <Reference name="System.Data"/>
+      <Reference name="System.Drawing"/>
+      <Reference name="OpenMetaverse"/>
+      <Reference name="OpenMetaverseTypes"/>
+      <Reference name="PrimMesher" />
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+
     <!-- Main App -->
 
     <Project name="Radegast" path="Radegast" type="WinExe" frameworkVersion="v3_5">
@@ -193,15 +219,13 @@
       <Reference name="OpenMetaverseTypes" localCopy="false"/>
       <Reference name="OpenMetaverse.StructuredData" localCopy="false"/>
       <Reference name="OpenMetaverse.Http" localCopy="false"/>
+      <Reference name="OpenMetaverse.Rendering.Meshmerizer" localCopy="false" />
 
       <Reference name="assemblies/fmodex-dotnet.dll" localCopy="true"/>
       <Reference name="assemblies/Tao.OpenGl.dll" localCopy="true"/>
       <Reference name="assemblies/Tao.Platform.Windows.dll" localCopy="true" />
       <Reference name="assemblies/Tools.dll" localCopy="true" />
       <Reference name="assemblies/log4net.dll" localCopy="true" />
-
-      <Reference name="assemblies/PrimMesher.dll" localCopy="true" />
-      <Reference name="assemblies/OpenMetaverse.Rendering.Meshmerizer.dll" localCopy="true" />
 
       <Reference name="../../libopenmetaverse/bin/XMLRPC.dll" localCopy="true" />
 
@@ -211,11 +235,12 @@
         </Match>
         <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
         <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
-        <Match path="." pattern="*.config" recurse="true" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.so" recurse="true" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.dylib" recurse="true" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="fmodex.*" recurse="true" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.html" recurse="true" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="openjpeg-dotnet*" recurse="false" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="*.config" recurse="false" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="*.so" recurse="false" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="*.dylib" recurse="false" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="fmodex.*" recurse="false" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="*.html" recurse="false" buildAction="Content" copyToOutput="Always"/>
       </Files>
     </Project>
 
@@ -313,7 +338,7 @@
       <Reference name="OpenMetaverseTypes" localCopy="false"/>
       <Reference name="OpenMetaverse.StructuredData"/>
 
-      <Reference name="Radegast.exe" />
+      <Reference name="Radegast.exe" localCopy="false" />
       <Reference name="fmodex-dotnet.dll" />
       <Reference name="System" />
       <Reference name="System.Core"/>
@@ -347,7 +372,7 @@
       <Reference name="OpenMetaverseTypes" localCopy="false"/>\
       <Reference name="OpenMetaverse.StructuredData"/>
 
-      <Reference name="Radegast" />
+      <Reference name="Radegast.exe" localCopy="false" />
       <Reference name="Radegast.Plugin.Speech" />
       <Reference name="System" />
       <Reference name="System.Core"/>
@@ -377,7 +402,7 @@
       <Reference name="OpenMetaverseTypes" localCopy="false"/>
       <Reference name="OpenMetaverse.StructuredData"/>
 
-      <Reference name="Radegast" />
+      <Reference name="Radegast.exe" localCopy="false" />
       <Reference name="Radegast.Plugin.Speech" />
       <Reference name="Radegast.exe" />
       <Reference name="System" />
@@ -410,7 +435,7 @@
       <Reference name="OpenMetaverseTypes" localCopy="false"/>
       <Reference name="OpenMetaverse.StructuredData"/>
 
-      <Reference name="Radegast" />
+      <Reference name="Radegast.exe" localCopy="false" />
       <Reference name="Radegast.Plugin.Speech" />
       <Reference name="Assemblies/Monobjc.dll" />
       <Reference name="Assemblies/Monobjc.Cocoa.dll" />

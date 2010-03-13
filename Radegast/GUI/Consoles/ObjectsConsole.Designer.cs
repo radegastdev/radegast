@@ -109,8 +109,8 @@ namespace Radegast
             this.lstContents = new Radegast.ListViewNoFlicker();
             this.invIcon = new System.Windows.Forms.ColumnHeader();
             this.invName = new System.Windows.Forms.ColumnHeader();
-            this.btnCloseContents = new System.Windows.Forms.Button();
             this.ctxContents = new Radegast.RadegastContextMenuStrip(this.components);
+            this.btnCloseContents = new System.Windows.Forms.Button();
             this.lstPrims = new Radegast.ListViewNoFlicker();
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
@@ -203,7 +203,7 @@ namespace Radegast
             this.btnView.Name = "btnView";
             this.btnView.Size = new System.Drawing.Size(77, 23);
             this.btnView.TabIndex = 13;
-            this.btnView.Text = "3D Wireframe";
+            this.btnView.Text = "3D View";
             this.btnView.UseVisualStyleBackColor = true;
             this.btnView.Click += new System.EventHandler(this.btnView_Click);
             // 
@@ -658,6 +658,12 @@ namespace Radegast
             this.invName.Text = "";
             this.invName.Width = 196;
             // 
+            // ctxContents
+            // 
+            this.ctxContents.Name = "ctxContents";
+            this.ctxContents.Size = new System.Drawing.Size(61, 4);
+            this.ctxContents.Opening += new System.ComponentModel.CancelEventHandler(this.ctxContents_Opening);
+            // 
             // btnCloseContents
             // 
             this.btnCloseContents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -668,12 +674,6 @@ namespace Radegast
             this.btnCloseContents.Text = "Back";
             this.btnCloseContents.UseVisualStyleBackColor = true;
             this.btnCloseContents.Click += new System.EventHandler(this.btnCloseContents_Click);
-            // 
-            // ctxContents
-            // 
-            this.ctxContents.Name = "ctxContents";
-            this.ctxContents.Size = new System.Drawing.Size(61, 4);
-            this.ctxContents.Opening += new System.ComponentModel.CancelEventHandler(this.ctxContents_Opening);
             // 
             // lstPrims
             // 
