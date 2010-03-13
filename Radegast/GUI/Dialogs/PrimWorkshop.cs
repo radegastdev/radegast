@@ -269,6 +269,8 @@ namespace Radegast
             {
                 FacetedMesh mesh = null;
                 Primitive prim = primList[i];
+                if (prim.Textures == null)
+                    continue;
 
                 try
                 {
@@ -277,7 +279,8 @@ namespace Radegast
                         Image img = null;
                         if (!LoadTexture(primList[i].Sculpt.SculptTexture, ref img))
                             continue;
-                        mesh = renderer.GenerateSculptMesh(new Bitmap(img), prim, DetailLevel.Highest);
+                        mesh = renderer.GenerateSculptMesh((Bitmap)img, prim, DetailLevel.Highest);
+                        img.Dispose();
                     }
                     else
                     {
