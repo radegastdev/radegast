@@ -28,7 +28,7 @@
 //
 // $Id$
 //
-﻿namespace Radegast
+namespace Radegast
 {
     partial class Notecard
     {

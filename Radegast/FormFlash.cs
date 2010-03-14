@@ -28,7 +28,7 @@
 //
 // $Id$
 //
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
