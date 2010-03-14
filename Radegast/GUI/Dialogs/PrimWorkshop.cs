@@ -277,7 +277,7 @@ namespace Radegast
                     if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
                     {
                         Image img = null;
-                        if (!LoadTexture(primList[i].Sculpt.SculptTexture, ref img))
+                        if (!LoadTexture(primList[i].Sculpt.SculptTexture, ref img, true))
                             continue;
                         mesh = renderer.GenerateSculptMesh((Bitmap)img, prim, DetailLevel.Highest);
                         img.Dispose();
@@ -324,7 +324,7 @@ namespace Radegast
                     }
 
                     // Texture for this face
-                    if (LoadTexture(teFace.TextureID, ref data.Texture))
+                    if (LoadTexture(teFace.TextureID, ref data.Texture, false))
                     {
                         if (IsHandleCreated)
                         {
@@ -370,7 +370,7 @@ namespace Radegast
             }
         }
 
-        private bool LoadTexture(UUID textureID, ref Image texture)
+        private bool LoadTexture(UUID textureID, ref Image texture, bool removeAlpha)
         {
             ManualResetEvent gotImage = new ManualResetEvent(false);
             Image img = null;
@@ -389,7 +389,17 @@ namespace Radegast
                         if (state == TextureRequestState.Finished)
                         {
                             ManagedImage mi;
-                            OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
+                            OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
+                            
+                            if (removeAlpha)
+                            {
+                                if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                {
+                                    mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                }
+                            }
+
+                            img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
                         }
                         gotImage.Set();
                     }
