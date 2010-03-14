@@ -54,7 +54,7 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new EventHandler(GroupDetails_Disposed);
-            
+
             this.instance = instance;
             this.group = group;
 
@@ -96,7 +96,7 @@ namespace Radegast
             client.Groups.GroupRoleMembersReply += new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            
+
             RefreshControlsAvailability();
             RefreshGroupInfo();
         }
@@ -125,7 +125,7 @@ namespace Radegast
 
             if (e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => RefreshMembersRoles()));
+                BeginInvoke(new MethodInvoker(() => { RefreshMembersRoles(); }));
                 instance.TabConsole.DisplayNotificationInChat("Group member ejected.");
             }
             else
@@ -154,7 +154,9 @@ namespace Radegast
             if (e.GroupID == group.ID && e.RequestID == groupRolesRequest)
             {
                 groupRolesMembersRequest = client.Groups.RequestGroupRolesMembers(group.ID);
-                roles = e.Roles;
+                if (roles == null) roles = e.Roles;
+                else lock (roles) roles = e.Roles;
+                BeginInvoke(new MethodInvoker(() => DisplayGroupRoles()));
             }
         }
 
@@ -188,7 +190,7 @@ namespace Radegast
 
             InstantMessage msg = e.IM;
             AssetType type;
-           
+
 
             if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
             {
@@ -222,7 +224,7 @@ namespace Radegast
                 BeginInvoke(new MethodInvoker(() => Groups_GroupNoticesListReply(sender, e)));
                 return;
             }
-            
+
             lvwNoticeArchive.BeginUpdate();
 
             foreach (GroupNoticesListEntry notice in e.Notices)
@@ -455,6 +457,27 @@ namespace Radegast
         #endregion
 
         #region Privatate methods
+
+        private void DisplayGroupRoles()
+        {
+            lvwRoles.Items.Clear();
+
+            lock (roles)
+            {
+                foreach (GroupRole role in roles.Values)
+                {
+                    ListViewItem item = new ListViewItem();
+                    item.Name = role.ID.ToString();
+                    item.Text = role.Name;
+                    item.SubItems.Add(role.Title);
+                    item.Tag = role;
+                    lvwRoles.Items.Add(item);
+                }
+            }
+
+        }
+
+
         private bool HasPower(GroupPowers power)
         {
             if (!instance.Groups.ContainsKey(group.ID))
@@ -507,6 +530,19 @@ namespace Radegast
             client.Groups.RequestGroupProfile(group.ID);
             groupTitlesRequest = client.Groups.RequestGroupTitles(group.ID);
             groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
+        }
+
+        private void RefreshRoles()
+        {
+            if (!isMember) return;
+
+            lvwRoles.SelectedItems.Clear();
+            lvwRoles.Items.Clear();
+            btnApply.Enabled = false;
+            btnCreateNewRole.Enabled = HasPower(GroupPowers.CreateRole);
+            btnDeleteRole.Enabled = HasPower(GroupPowers.DeleteRole);
+            txtRoleDescription.Enabled = txtRoleName.Enabled = txtRoleTitle.Enabled = lvwRoleAbilitis.Enabled = btnSaveRole.Enabled = false;
+            groupRolesRequest = client.Groups.RequestGroupRoles(group.ID);
         }
 
         private void RefreshMembersRoles()
@@ -593,9 +629,9 @@ namespace Radegast
 
         private void lvwNoticeArchive_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            
+
             GroupNoticeSorter sorter = (GroupNoticeSorter)lvwNoticeArchive.ListViewItemSorter;
-            
+
             switch (e.Column)
             {
                 case 1:
@@ -717,7 +753,7 @@ namespace Radegast
             lvwAssignedRoles.ItemChecked -= lvwAssignedRoles_ItemChecked;
             lvwAssignedRoles.Items.Clear();
             lvwAssignedRoles.Tag = m;
-            
+
             ListViewItem defaultItem = new ListViewItem();
             defaultItem.Name = "Everyone";
             defaultItem.SubItems.Add(defaultItem.Name);
@@ -726,27 +762,30 @@ namespace Radegast
 
             GroupPowers abilities = GroupPowers.None;
 
-            foreach (var r in roles)
+            lock (roles)
             {
-                GroupRole role = r.Value;
-
-                if (role.ID == UUID.Zero)
+                foreach (var r in roles)
                 {
-                    abilities |= role.Powers;
-                    continue;
+                    GroupRole role = r.Value;
+
+                    if (role.ID == UUID.Zero)
+                    {
+                        abilities |= role.Powers;
+                        continue;
+                    }
+
+                    ListViewItem item = new ListViewItem();
+                    item.Name = role.Name;
+                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, role.Name));
+                    item.Tag = role;
+                    var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                    bool hasRole = foundRole.Value == m.Base.ID;
+                    item.Checked = hasRole;
+                    lvwAssignedRoles.Items.Add(item);
+
+                    if (hasRole)
+                        abilities |= role.Powers;
                 }
-
-                ListViewItem item = new ListViewItem();
-                item.Name = role.Name;
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, role.Name));
-                item.Tag = role;
-                var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
-                bool hasRole = foundRole.Value == m.Base.ID;
-                item.Checked = hasRole;
-                lvwAssignedRoles.Items.Add(item);
-
-                if (hasRole)
-                    abilities |= role.Powers;
             }
 
             lvwAssignedRoles.ItemChecked += lvwAssignedRoles_ItemChecked;
@@ -825,7 +864,7 @@ namespace Radegast
             {
                 EnhancedGroupMember m = (EnhancedGroupMember)lvwAssignedRoles.Tag;
                 bool modified = false;
-                
+
                 foreach (ListViewItem item in lvwAssignedRoles.Items)
                 {
                     if (!(item.Tag is GroupRole))
@@ -868,6 +907,135 @@ namespace Radegast
         private void lvwAllowedAbilities_SizeChanged(object sender, EventArgs e)
         {
             lvwAllowedAbilities.Columns[0].Width = lvwAllowedAbilities.Width - 30;
+        }
+
+        private void tcMembersRoles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (tcMembersRoles.SelectedTab.Name)
+            {
+                case "tpMembers":
+                    RefreshMembersRoles();
+                    break;
+
+                case "tpRoles":
+                    RefreshRoles();
+                    break;
+
+            }
+
+        }
+
+        private void lvwRoles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtRoleDescription.Text = txtRoleName.Text = txtRoleTitle.Text = string.Empty;
+            txtRoleDescription.Enabled = txtRoleName.Enabled = txtRoleTitle.Enabled = lvwRoleAbilitis.Enabled = btnSaveRole.Enabled = false;
+            lvwAssignedMembers.Items.Clear();
+            lvwRoleAbilitis.Items.Clear();
+
+            if (lvwRoles.SelectedItems.Count != 1) return;
+
+            GroupRole role = (GroupRole)lvwRoles.SelectedItems[0].Tag;
+            txtRoleName.Text = role.Name;
+            txtRoleTitle.Text = role.Title;
+            txtRoleDescription.Text = role.Description;
+
+            if (HasPower(GroupPowers.RoleProperties))
+            {
+                txtRoleDescription.Enabled = txtRoleName.Enabled = txtRoleTitle.Enabled = btnSaveRole.Enabled = true;
+            }
+
+            if (HasPower(GroupPowers.ChangeActions))
+            {
+                lvwRoleAbilitis.Enabled = btnSaveRole.Enabled = true;
+            }
+
+            btnSaveRole.Tag = role;
+
+            if (role.ID == UUID.Zero)
+            {
+                foreach (ListViewItem item in lvwMemberDetails.Items)
+                    lvwAssignedMembers.Items.Add(item.Text);
+            }
+            else if (roleMembers != null)
+            {
+                var mmb = roleMembers.FindAll((KeyValuePair<UUID, UUID> kvp) => { return kvp.Key == role.ID; });
+                foreach (var m in mmb)
+                {
+                    lvwAssignedMembers.Items.Add(instance.getAvatarName(m.Value));
+                }
+            }
+            
+            lvwRoleAbilitis.Tag = role;
+
+            foreach (GroupPowers p in Enum.GetValues(typeof(GroupPowers)))
+            {
+                if (p != GroupPowers.None)
+                {
+                    ListViewItem item = new ListViewItem();
+                    item.Tag = p;
+                    item.SubItems.Add(p.ToString());
+                    item.Checked = (p & role.Powers) != 0;
+                    lvwRoleAbilitis.Items.Add(item);
+                }
+            }
+        }
+
+        private void btnCreateNewRole_Click(object sender, EventArgs e)
+        {
+            lvwRoles.SelectedItems.Clear();
+            txtRoleDescription.Enabled = txtRoleName.Enabled = txtRoleTitle.Enabled = btnSaveRole.Enabled = true;
+            btnSaveRole.Tag = null;
+            txtRoleName.Focus();
+        }
+
+        private void btnSaveRole_Click(object sender, EventArgs e)
+        {
+            if (btnSaveRole.Tag == null) // new role
+            {
+                GroupRole role = new GroupRole();
+                role.Name = txtRoleName.Text;
+                role.Title = txtRoleTitle.Text;
+                role.Description = txtRoleDescription.Text;
+                client.Groups.CreateRole(group.ID, role);
+                System.Threading.Thread.Sleep(100);
+                RefreshRoles();
+            }
+            else if (btnSaveRole.Tag is GroupRole) // update role
+            {
+                GroupRole role = (GroupRole)btnSaveRole.Tag;
+
+                if (HasPower(GroupPowers.ChangeActions))
+                {
+                    role.Powers = GroupPowers.None;
+
+                    foreach (ListViewItem item in lvwRoleAbilitis.Items)
+                    {
+                        if (item.Checked)
+                            role.Powers |= (GroupPowers)item.Tag;
+                    }
+                }
+
+                if (HasPower(GroupPowers.RoleProperties))
+                {
+                    role.Name = txtRoleName.Text;
+                    role.Title = txtRoleTitle.Text;
+                    role.Description = txtRoleDescription.Text;
+                }
+
+                client.Groups.UpdateRole(role);
+                System.Threading.Thread.Sleep(100);
+                RefreshRoles();
+            }
+        }
+
+        private void btnDeleteRole_Click(object sender, EventArgs e)
+        {
+            if (lvwRoles.SelectedItems.Count == 1)
+            {
+                client.Groups.DeleteRole(group.ID, ((GroupRole)lvwRoles.SelectedItems[0].Tag).ID);
+                System.Threading.Thread.Sleep(100);
+                RefreshRoles();
+            }
         }
     }
 
@@ -951,7 +1119,7 @@ namespace Radegast
 
                 case SortByColumn.Contribution:
                     if (member1.Base.Contribution < member2.Base.Contribution)
-                        return CurrentOrder == SortOrder.Ascending ? - 1 : 1;
+                        return CurrentOrder == SortOrder.Ascending ? -1 : 1;
                     else if (member1.Base.Contribution > member2.Base.Contribution)
                         return CurrentOrder == SortOrder.Ascending ? 1 : -1;
                     else

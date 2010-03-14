@@ -100,6 +100,26 @@ namespace Radegast
             this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
             this.tpRoles = new System.Windows.Forms.TabPage();
+            this.pnlRoleDetaiils = new System.Windows.Forms.Panel();
+            this.btnSaveRole = new System.Windows.Forms.Button();
+            this.lvwRoleAbilitis = new Radegast.ListViewNoFlicker();
+            this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
+            this.lvwAssignedMembers = new Radegast.ListViewNoFlicker();
+            this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+            this.btnDeleteRole = new System.Windows.Forms.Button();
+            this.btnCreateNewRole = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.txtRoleTitle = new System.Windows.Forms.TextBox();
+            this.txtRoleDescription = new System.Windows.Forms.TextBox();
+            this.txtRoleName = new System.Windows.Forms.TextBox();
+            this.lvwRoles = new Radegast.ListViewNoFlicker();
+            this.chRoleListName = new System.Windows.Forms.ColumnHeader();
+            this.chRoleTitle = new System.Windows.Forms.ColumnHeader();
             this.label2 = new System.Windows.Forms.Label();
             this.tpNotices = new System.Windows.Forms.TabPage();
             this.pnlArchivedNotice = new System.Windows.Forms.Panel();
@@ -128,6 +148,8 @@ namespace Radegast
             this.tcMembersRoles.SuspendLayout();
             this.tpMembers.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.tpRoles.SuspendLayout();
+            this.pnlRoleDetaiils.SuspendLayout();
             this.tpNotices.SuspendLayout();
             this.pnlArchivedNotice.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).BeginInit();
@@ -426,6 +448,7 @@ namespace Radegast
             this.tcMembersRoles.SelectedIndex = 0;
             this.tcMembersRoles.Size = new System.Drawing.Size(385, 445);
             this.tcMembersRoles.TabIndex = 2;
+            this.tcMembersRoles.SelectedIndexChanged += new System.EventHandler(this.tcMembersRoles_SelectedIndexChanged);
             // 
             // tpMembers
             // 
@@ -582,6 +605,8 @@ namespace Radegast
             // 
             // tpRoles
             // 
+            this.tpRoles.Controls.Add(this.pnlRoleDetaiils);
+            this.tpRoles.Controls.Add(this.lvwRoles);
             this.tpRoles.Location = new System.Drawing.Point(4, 22);
             this.tpRoles.Name = "tpRoles";
             this.tpRoles.Padding = new System.Windows.Forms.Padding(3);
@@ -589,6 +614,213 @@ namespace Radegast
             this.tpRoles.TabIndex = 1;
             this.tpRoles.Text = "Roles";
             this.tpRoles.UseVisualStyleBackColor = true;
+            // 
+            // pnlRoleDetaiils
+            // 
+            this.pnlRoleDetaiils.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlRoleDetaiils.Controls.Add(this.btnSaveRole);
+            this.pnlRoleDetaiils.Controls.Add(this.lvwRoleAbilitis);
+            this.pnlRoleDetaiils.Controls.Add(this.lvwAssignedMembers);
+            this.pnlRoleDetaiils.Controls.Add(this.btnDeleteRole);
+            this.pnlRoleDetaiils.Controls.Add(this.btnCreateNewRole);
+            this.pnlRoleDetaiils.Controls.Add(this.label8);
+            this.pnlRoleDetaiils.Controls.Add(this.label7);
+            this.pnlRoleDetaiils.Controls.Add(this.label5);
+            this.pnlRoleDetaiils.Controls.Add(this.label6);
+            this.pnlRoleDetaiils.Controls.Add(this.label4);
+            this.pnlRoleDetaiils.Controls.Add(this.txtRoleTitle);
+            this.pnlRoleDetaiils.Controls.Add(this.txtRoleDescription);
+            this.pnlRoleDetaiils.Controls.Add(this.txtRoleName);
+            this.pnlRoleDetaiils.Location = new System.Drawing.Point(-4, 171);
+            this.pnlRoleDetaiils.Name = "pnlRoleDetaiils";
+            this.pnlRoleDetaiils.Size = new System.Drawing.Size(384, 252);
+            this.pnlRoleDetaiils.TabIndex = 11;
+            // 
+            // btnSaveRole
+            // 
+            this.btnSaveRole.Location = new System.Drawing.Point(303, 81);
+            this.btnSaveRole.Name = "btnSaveRole";
+            this.btnSaveRole.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveRole.TabIndex = 5;
+            this.btnSaveRole.Text = "Save Role";
+            this.btnSaveRole.UseVisualStyleBackColor = true;
+            this.btnSaveRole.Click += new System.EventHandler(this.btnSaveRole_Click);
+            // 
+            // lvwRoleAbilitis
+            // 
+            this.lvwRoleAbilitis.AccessibleName = "Allowed Members";
+            this.lvwRoleAbilitis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwRoleAbilitis.CheckBoxes = true;
+            this.lvwRoleAbilitis.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader6,
+            this.columnHeader7});
+            this.lvwRoleAbilitis.FullRowSelect = true;
+            this.lvwRoleAbilitis.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lvwRoleAbilitis.Location = new System.Drawing.Point(182, 123);
+            this.lvwRoleAbilitis.Name = "lvwRoleAbilitis";
+            this.lvwRoleAbilitis.Size = new System.Drawing.Size(199, 125);
+            this.lvwRoleAbilitis.TabIndex = 7;
+            this.lvwRoleAbilitis.UseCompatibleStateImageBehavior = false;
+            this.lvwRoleAbilitis.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "";
+            this.columnHeader6.Width = 20;
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "";
+            this.columnHeader7.Width = 115;
+            // 
+            // lvwAssignedMembers
+            // 
+            this.lvwAssignedMembers.AccessibleName = "Assigned Members";
+            this.lvwAssignedMembers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader5});
+            this.lvwAssignedMembers.FullRowSelect = true;
+            this.lvwAssignedMembers.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lvwAssignedMembers.Location = new System.Drawing.Point(7, 123);
+            this.lvwAssignedMembers.Name = "lvwAssignedMembers";
+            this.lvwAssignedMembers.Size = new System.Drawing.Size(160, 125);
+            this.lvwAssignedMembers.TabIndex = 6;
+            this.lvwAssignedMembers.UseCompatibleStateImageBehavior = false;
+            this.lvwAssignedMembers.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "";
+            this.columnHeader5.Width = 130;
+            // 
+            // btnDeleteRole
+            // 
+            this.btnDeleteRole.AccessibleName = "";
+            this.btnDeleteRole.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDeleteRole.Location = new System.Drawing.Point(239, 3);
+            this.btnDeleteRole.Name = "btnDeleteRole";
+            this.btnDeleteRole.Size = new System.Drawing.Size(142, 23);
+            this.btnDeleteRole.TabIndex = 1;
+            this.btnDeleteRole.Text = "Delete Role";
+            this.btnDeleteRole.UseVisualStyleBackColor = true;
+            this.btnDeleteRole.Click += new System.EventHandler(this.btnDeleteRole_Click);
+            // 
+            // btnCreateNewRole
+            // 
+            this.btnCreateNewRole.AccessibleName = "";
+            this.btnCreateNewRole.Location = new System.Drawing.Point(7, 3);
+            this.btnCreateNewRole.Name = "btnCreateNewRole";
+            this.btnCreateNewRole.Size = new System.Drawing.Size(142, 23);
+            this.btnCreateNewRole.TabIndex = 0;
+            this.btnCreateNewRole.Text = "New Role";
+            this.btnCreateNewRole.UseVisualStyleBackColor = true;
+            this.btnCreateNewRole.Click += new System.EventHandler(this.btnCreateNewRole_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(182, 107);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(82, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "Allowed Abilities";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(7, 107);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(96, 13);
+            this.label7.TabIndex = 1;
+            this.label7.Text = "Assigned Members";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 68);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(27, 13);
+            this.label5.TabIndex = 1;
+            this.label5.Text = "Title";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(182, 29);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(60, 13);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "Description";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 29);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 13);
+            this.label4.TabIndex = 1;
+            this.label4.Text = "Name";
+            // 
+            // txtRoleTitle
+            // 
+            this.txtRoleTitle.AccessibleName = "Role Title";
+            this.txtRoleTitle.Location = new System.Drawing.Point(7, 84);
+            this.txtRoleTitle.Name = "txtRoleTitle";
+            this.txtRoleTitle.Size = new System.Drawing.Size(160, 20);
+            this.txtRoleTitle.TabIndex = 3;
+            // 
+            // txtRoleDescription
+            // 
+            this.txtRoleDescription.AccessibleName = "Role Description";
+            this.txtRoleDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtRoleDescription.Location = new System.Drawing.Point(182, 45);
+            this.txtRoleDescription.Name = "txtRoleDescription";
+            this.txtRoleDescription.Size = new System.Drawing.Size(196, 20);
+            this.txtRoleDescription.TabIndex = 4;
+            // 
+            // txtRoleName
+            // 
+            this.txtRoleName.AccessibleName = "Role Name";
+            this.txtRoleName.Location = new System.Drawing.Point(7, 45);
+            this.txtRoleName.Name = "txtRoleName";
+            this.txtRoleName.Size = new System.Drawing.Size(160, 20);
+            this.txtRoleName.TabIndex = 2;
+            // 
+            // lvwRoles
+            // 
+            this.lvwRoles.AccessibleName = "Roles";
+            this.lvwRoles.AllowColumnReorder = true;
+            this.lvwRoles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwRoles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chRoleListName,
+            this.chRoleTitle});
+            this.lvwRoles.FullRowSelect = true;
+            this.lvwRoles.GridLines = true;
+            this.lvwRoles.HideSelection = false;
+            this.lvwRoles.Location = new System.Drawing.Point(0, 0);
+            this.lvwRoles.MultiSelect = false;
+            this.lvwRoles.Name = "lvwRoles";
+            this.lvwRoles.ShowGroups = false;
+            this.lvwRoles.Size = new System.Drawing.Size(377, 165);
+            this.lvwRoles.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lvwRoles.TabIndex = 10;
+            this.lvwRoles.UseCompatibleStateImageBehavior = false;
+            this.lvwRoles.View = System.Windows.Forms.View.Details;
+            this.lvwRoles.SelectedIndexChanged += new System.EventHandler(this.lvwRoles_SelectedIndexChanged);
+            // 
+            // chRoleListName
+            // 
+            this.chRoleListName.Text = "Role Name";
+            this.chRoleListName.Width = 130;
+            // 
+            // chRoleTitle
+            // 
+            this.chRoleTitle.Text = "Role Title";
+            this.chRoleTitle.Width = 198;
             // 
             // label2
             // 
@@ -831,6 +1063,9 @@ namespace Radegast
             this.tpMembers.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.tpRoles.ResumeLayout(false);
+            this.pnlRoleDetaiils.ResumeLayout(false);
+            this.pnlRoleDetaiils.PerformLayout();
             this.tpNotices.ResumeLayout(false);
             this.tpNotices.PerformLayout();
             this.pnlArchivedNotice.ResumeLayout(false);
@@ -905,6 +1140,26 @@ namespace Radegast
         public ListViewNoFlicker lvwAllowedAbilities;
         public System.Windows.Forms.ColumnHeader columnHeader4;
         public System.Windows.Forms.Label label3;
+        public ListViewNoFlicker lvwRoles;
+        public System.Windows.Forms.ColumnHeader chRoleListName;
+        public System.Windows.Forms.ColumnHeader chRoleTitle;
+        private System.Windows.Forms.Panel pnlRoleDetaiils;
+        private System.Windows.Forms.Button btnDeleteRole;
+        private System.Windows.Forms.Button btnCreateNewRole;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtRoleName;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox txtRoleTitle;
+        private System.Windows.Forms.TextBox txtRoleDescription;
+        public ListViewNoFlicker lvwAssignedMembers;
+        public System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        public ListViewNoFlicker lvwRoleAbilitis;
+        public System.Windows.Forms.ColumnHeader columnHeader6;
+        public System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.Button btnSaveRole;
 
     }
 }
