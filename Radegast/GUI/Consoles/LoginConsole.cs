@@ -174,13 +174,22 @@ namespace Radegast
                     break;
 
                 case LoginStatus.Failed:
-                    lblLoginStatus.Text = e.Message;
                     lblLoginStatus.ForeColor = Color.Red;
-
+                    if (e.FailReason == "tos")
+                    {
+                        lblLoginStatus.Text = "Must agree to Terms of Service before logging in";
+                        pnlTos.Visible = true;
+                        txtTOS.Text = e.Message.Replace("\n", "\r\n");
+                        btnLogin.Enabled = false;
+                    }
+                    else
+                    {
+                        lblLoginStatus.Text = e.Message;
+                        btnLogin.Enabled = true;
+                    }
                     proLogin.Visible = false;
 
                     btnLogin.Text = "Retry";
-                    btnLogin.Enabled = true;
                     break;
             }
         }
@@ -223,6 +232,7 @@ namespace Radegast
             netcom.LoginOptions.Password = txtPassword.Text;
             netcom.LoginOptions.Channel = Properties.Resources.ProgramName; // Channel
             netcom.LoginOptions.Version = Properties.Resources.RadegastTitle; // Version
+            netcom.AgreeToTos = cbTOS.Checked;
 
             switch (cbxLocation.SelectedIndex)
             {
@@ -314,6 +324,11 @@ namespace Radegast
         private void txtPassword_TextChanged(object sender, EventArgs e)
         {
             netcom.LoginOptions.IsPasswordMD5 = false;
+        }
+
+        private void cbTOS_CheckedChanged(object sender, EventArgs e)
+        {
+            btnLogin.Enabled = cbTOS.Checked;
         }
 
     }

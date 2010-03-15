@@ -51,6 +51,8 @@ namespace Radegast.Netcom
         private bool loggingIn = false;
         private bool loggedIn = false;
         private bool teleporting = false;
+        private bool agreeToTos = false;
+        public bool AgreeToTos { get { return agreeToTos; } set { agreeToTos = value; } }
 
         private const string MainGridLogin = @"https://login.agni.lindenlab.com/cgi-bin/login.cgi";
         private const string BetaGridLogin = @"https://login.aditi.lindenlab.com/cgi-bin/login.cgi";
@@ -167,7 +169,7 @@ namespace Radegast.Netcom
                 }
             }
 
-            LoginProgressEventArgs ea = new LoginProgressEventArgs(e.Status, e.Message);
+            LoginProgressEventArgs ea = new LoginProgressEventArgs(e.Status, e.Message, string.Empty);
 
             if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnClientLoginRaise(OnClientLoginStatus), new object[] { e });
@@ -248,7 +250,7 @@ namespace Radegast.Netcom
                 string.IsNullOrEmpty(loginOptions.Password))
             {
                 OnClientLoginStatus(
-                    new LoginProgressEventArgs(LoginStatus.Failed, "One or more fields are blank."));
+                    new LoginProgressEventArgs(LoginStatus.Failed, "One or more fields are blank.", string.Empty));
             }
 
             string startLocation = string.Empty;
@@ -279,6 +281,7 @@ namespace Radegast.Netcom
                 loginOptions.Channel, loginOptions.Version);
 
             loginParams.Start = startLocation;
+            loginParams.AgreeToTos = AgreeToTos;
 
             switch (loginOptions.Grid)
             {

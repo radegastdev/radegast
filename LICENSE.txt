@@ -31,6 +31,10 @@ Based on SLeek (BSD License)
 Copyright © 2006-2008, Paul Clement (a.k.a. Delta)
 All rights reserved.
 
+Uses PrimMesher (BSD License)
+© 2010 Dahlia Trimble
+http://forge.opensimulator.org/gf/project/primmesher/
+
 Uses AIMLBot (LGPL License)
 The AIMLBot library (Program#) is a .NET implementation of the AIML standard.
 © 2006 Nicholas H.Tollervey (http://ntoll.org)
@@ -60,4 +64,4 @@ All rights reserved.
 
 Uses artwork files are licenced under the 
 Creative Commons Share and Share Alike 3.0
-Copyright (C) 2002-2009 Linden Research Inc.
+Copyright © 2002-2009 Linden Research Inc.

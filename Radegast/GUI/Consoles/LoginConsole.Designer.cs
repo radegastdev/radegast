@@ -77,9 +77,14 @@ namespace Radegast
             this.lblLoginStatus = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pnlSplash = new System.Windows.Forms.Panel();
+            this.pnlTos = new System.Windows.Forms.Panel();
+            this.txtTOS = new System.Windows.Forms.TextBox();
+            this.cbTOS = new System.Windows.Forms.CheckBox();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.pnlSplash.SuspendLayout();
+            this.pnlTos.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlLoginPrompt
@@ -281,11 +286,47 @@ namespace Radegast
             // pnlSplash
             // 
             this.pnlSplash.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pnlSplash.Controls.Add(this.pnlTos);
             this.pnlSplash.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlSplash.Location = new System.Drawing.Point(0, 0);
             this.pnlSplash.Name = "pnlSplash";
             this.pnlSplash.Size = new System.Drawing.Size(682, 335);
             this.pnlSplash.TabIndex = 19;
+            // 
+            // pnlTos
+            // 
+            this.pnlTos.Controls.Add(this.cbTOS);
+            this.pnlTos.Controls.Add(this.txtTOS);
+            this.pnlTos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTos.Location = new System.Drawing.Point(0, 0);
+            this.pnlTos.Name = "pnlTos";
+            this.pnlTos.Size = new System.Drawing.Size(682, 335);
+            this.pnlTos.TabIndex = 0;
+            this.pnlTos.Visible = false;
+            // 
+            // txtTOS
+            // 
+            this.txtTOS.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTOS.Location = new System.Drawing.Point(0, 0);
+            this.txtTOS.Multiline = true;
+            this.txtTOS.Name = "txtTOS";
+            this.txtTOS.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtTOS.Size = new System.Drawing.Size(682, 302);
+            this.txtTOS.TabIndex = 0;
+            // 
+            // cbTOS
+            // 
+            this.cbTOS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cbTOS.AutoSize = true;
+            this.cbTOS.Location = new System.Drawing.Point(6, 308);
+            this.cbTOS.Name = "cbTOS";
+            this.cbTOS.Size = new System.Drawing.Size(176, 17);
+            this.cbTOS.TabIndex = 1;
+            this.cbTOS.Text = "I agree to the Terms of Service";
+            this.cbTOS.UseVisualStyleBackColor = true;
+            this.cbTOS.CheckedChanged += new System.EventHandler(this.cbTOS_CheckedChanged);
             // 
             // LoginConsole
             // 
@@ -302,6 +343,9 @@ namespace Radegast
             this.pnlLoginPrompt.PerformLayout();
             this.pnlLoggingIn.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.pnlSplash.ResumeLayout(false);
+            this.pnlTos.ResumeLayout(false);
+            this.pnlTos.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -327,6 +371,9 @@ namespace Radegast
         public System.Windows.Forms.Label label6;
         public System.Windows.Forms.Panel panel1;
         public System.Windows.Forms.Panel pnlSplash;
+        private System.Windows.Forms.Panel pnlTos;
+        private System.Windows.Forms.TextBox txtTOS;
+        private System.Windows.Forms.CheckBox cbTOS;
 
     }
 }
