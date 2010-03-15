@@ -39,7 +39,8 @@ namespace Radegast
     {
         GridClient client;
         RadegastInstance instance;
- 
+        UUID newGrpID;
+
         public GroupsConsole(RadegastInstance instance)
         {
             InitializeComponent();
@@ -47,6 +48,7 @@ namespace Radegast
             this.client = instance.Client;
             this.instance = instance;
             client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
+            client.Groups.GroupCreatedReply += new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
             client.Groups.RequestCurrentGroups();
             UpdateDisplay();
         }
@@ -54,6 +56,25 @@ namespace Radegast
         void GroupsDialog_Disposed(object sender, EventArgs e)
         {
             client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
+            client.Groups.GroupCreatedReply -= new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
+        }
+
+        void Groups_GroupCreatedReply(object sender, GroupCreatedReplyEventArgs e)
+        {
+            if (e.Success)
+            {
+                newGrpID = e.GroupID;
+                client.Groups.ActivateGroup(newGrpID);
+                client.Groups.RequestCurrentGroups();
+            }
+            else
+            {
+                BeginInvoke(new MethodInvoker(() =>
+                {
+                    lblCreateStatus.Text = string.Format("Group creation failed: {0}", e.Message);
+                }
+                ));
+            }
         }
 
         void Groups_CurrentGroups(object sender, CurrentGroupsEventArgs e)
@@ -88,7 +109,16 @@ namespace Radegast
                         break;
                     }
                 }
+
+                lblGroupNr.Text = string.Format("{0} groups", instance.Groups.Count);
+                if (newGrpID != UUID.Zero)
+                {
+                    lblCreateStatus.Text = "Group created successfully";
+                    btnCancel.PerformClick();
+                    instance.MainForm.ShowGroupProfile(instance.Groups[newGrpID]);
+                }
             }
+            newGrpID = UUID.Zero;
         }
 
         private void activateBtn_Click(object sender, EventArgs e)
@@ -140,6 +170,52 @@ namespace Radegast
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             client.Groups.RequestCurrentGroups();
+        }
+
+        private void listBox1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            btnInfo.PerformClick();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            txtNewGroupCharter.Text = txtNewGroupName.Text = lblCreateStatus.Text = string.Empty;
+            pnlNewGroup.Visible = false;
+        }
+
+        private void btnNewGroup_Click(object sender, EventArgs e)
+        {
+            pnlNewGroup.Visible = true;
+            txtNewGroupName.Focus();
+        }
+
+        private void txtNewGroupName_TextChanged(object sender, EventArgs e)
+        {
+            btnCreateGroup.Enabled = txtNewGroupName.Text.Length >= 4 && txtNewGroupName.Text.Length <= 35;
+        }
+
+        private void txtNewGroupName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                if (btnCreateGroup.Enabled) btnCreateGroup.PerformClick();
+            }
+        }
+
+        private void btnCreateGroup_Click(object sender, EventArgs e)
+        {
+            Group g = new Group();
+            g.Name = txtNewGroupName.Text;
+            g.Charter = txtNewGroupCharter.Text;
+            g.FounderID = client.Self.AgentID;
+            lblCreateStatus.Text = "Creating group...";
+            client.Groups.RequestCreateGroup(g);
+        }
+
+        private void lblCreateStatus_TextChanged(object sender, EventArgs e)
+        {
+            instance.TabConsole.DisplayNotificationInChat(lblCreateStatus.Text, ChatBufferTextStyle.Invisible);
         }
     }
 }
