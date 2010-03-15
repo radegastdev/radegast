@@ -7,7 +7,7 @@ cp Radegast/assemblies/* bin
 mono Radegast/Prebuild.exe /target nant
 mono Radegast/Prebuild.exe /target monodev
 cp -f NullBuild.txt plugins/Radegast.Plugin.Speech/RadSpeechWin/RadSpeechWin.dll.build
-
+cp -f NullBuild.txt plugins/Radegast.Plugin.Demo/Radegast.Plugin.Demo.dll.build
 
 if [ x$1 == xnant ]; then
     nant -buildfile:Radegast.build
