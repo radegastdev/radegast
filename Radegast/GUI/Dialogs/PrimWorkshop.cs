@@ -84,6 +84,8 @@ namespace Radegast
             Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
             Gl.glMatrixMode(Gl.GL_PROJECTION);
 
+            Gl.glEnable(Gl.GL_BLEND);
+            Gl.glBlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE_MINUS_SRC_ALPHA);
             TexturePointers[0] = 0;
 
             // Call the resizing function which sets up the GL drawing window
