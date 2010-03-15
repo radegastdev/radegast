@@ -59,6 +59,8 @@ namespace Radegast
                 pnlSplash.BackgroundImage = Properties.Resources.radegast_main_screen2;
 
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
+
+            lblVersion.Text = Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev;
         }
 
         void MainConsole_Disposed(object sender, EventArgs e)

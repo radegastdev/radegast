@@ -40,7 +40,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Radegast Development Team")]
 [assembly: AssemblyProduct("Radegast Metaverse Client")]
-[assembly: AssemblyCopyright("Copyright ©  2009 Radegast Development Team")]
+[assembly: AssemblyCopyright("Copyright ©  2009-2010 Radegast Development Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -59,5 +59,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.13.0.0")]
-[assembly: AssemblyFileVersion("1.13.0.0")]
+[assembly: AssemblyVersion("1.14.507.0")]
+[assembly: AssemblyFileVersion("1.14.507.0")]

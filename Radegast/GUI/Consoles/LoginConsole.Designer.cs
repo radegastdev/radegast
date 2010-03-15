@@ -78,8 +78,9 @@ namespace Radegast
             this.panel1 = new System.Windows.Forms.Panel();
             this.pnlSplash = new System.Windows.Forms.Panel();
             this.pnlTos = new System.Windows.Forms.Panel();
-            this.txtTOS = new System.Windows.Forms.TextBox();
             this.cbTOS = new System.Windows.Forms.CheckBox();
+            this.txtTOS = new System.Windows.Forms.TextBox();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -273,6 +274,7 @@ namespace Radegast
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
+            this.panel1.Controls.Add(this.lblVersion);
             this.panel1.Controls.Add(this.pnlLoginPrompt);
             this.panel1.Controls.Add(this.btnLogin);
             this.panel1.Controls.Add(this.pnlLoggingIn);
@@ -304,6 +306,18 @@ namespace Radegast
             this.pnlTos.TabIndex = 0;
             this.pnlTos.Visible = false;
             // 
+            // cbTOS
+            // 
+            this.cbTOS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.cbTOS.AutoSize = true;
+            this.cbTOS.Location = new System.Drawing.Point(6, 308);
+            this.cbTOS.Name = "cbTOS";
+            this.cbTOS.Size = new System.Drawing.Size(176, 17);
+            this.cbTOS.TabIndex = 1;
+            this.cbTOS.Text = "I agree to the Terms of Service";
+            this.cbTOS.UseVisualStyleBackColor = true;
+            this.cbTOS.CheckedChanged += new System.EventHandler(this.cbTOS_CheckedChanged);
+            // 
             // txtTOS
             // 
             this.txtTOS.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -316,17 +330,15 @@ namespace Radegast
             this.txtTOS.Size = new System.Drawing.Size(682, 302);
             this.txtTOS.TabIndex = 0;
             // 
-            // cbTOS
+            // lblVersion
             // 
-            this.cbTOS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.cbTOS.AutoSize = true;
-            this.cbTOS.Location = new System.Drawing.Point(6, 308);
-            this.cbTOS.Name = "cbTOS";
-            this.cbTOS.Size = new System.Drawing.Size(176, 17);
-            this.cbTOS.TabIndex = 1;
-            this.cbTOS.Text = "I agree to the Terms of Service";
-            this.cbTOS.UseVisualStyleBackColor = true;
-            this.cbTOS.CheckedChanged += new System.EventHandler(this.cbTOS_CheckedChanged);
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.ForeColor = System.Drawing.Color.Black;
+            this.lblVersion.Location = new System.Drawing.Point(3, 3);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(100, 13);
+            this.lblVersion.TabIndex = 18;
+            this.lblVersion.Text = "Radegast 1.24.500";
             // 
             // LoginConsole
             // 
@@ -343,6 +355,7 @@ namespace Radegast
             this.pnlLoginPrompt.PerformLayout();
             this.pnlLoggingIn.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.pnlSplash.ResumeLayout(false);
             this.pnlTos.ResumeLayout(false);
             this.pnlTos.PerformLayout();
@@ -374,6 +387,7 @@ namespace Radegast
         private System.Windows.Forms.Panel pnlTos;
         private System.Windows.Forms.TextBox txtTOS;
         private System.Windows.Forms.CheckBox cbTOS;
+        private System.Windows.Forms.Label lblVersion;
 
     }
 }
