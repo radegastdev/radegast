@@ -34,30 +34,6 @@
       </Options>
     </Configuration>
 
-
-    <!-- External Libraries -->
-
-    <Project name="HttpServer" path="../libopenmetaverse/HttpServer" type="Library" frameworkVersion="v3_5" gid="455E7D70-1C85-4D7F-9F01-DC801B8B8C34">
-      <Configuration name="Debug">
-        <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
-        </Options>
-      </Configuration>
-      <Configuration name="Release">
-        <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
-        </Options>
-      </Configuration>
-
-      <ReferencePath>../../radegast/bin/</ReferencePath>
-      <Reference name="System"/>
-      <Reference name="System.Core"/>
-      <Reference name="System.Web"/>
-      <Files>
-        <Match pattern="*.cs" recurse="true"/>
-      </Files>
-    </Project>
-
     <!-- Libraries -->
 
     <Project name="OpenMetaverseTypes" path="../libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5">
@@ -125,7 +101,6 @@
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes"/>
       <Reference name="OpenMetaverse.StructuredData"/>
-      <Reference name="HttpServer"/>
       <Reference name="log4net"/>
       <Reference name="Mono.Security"/>
       <Files>
