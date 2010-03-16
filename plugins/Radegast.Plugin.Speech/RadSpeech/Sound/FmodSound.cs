@@ -253,8 +253,8 @@ namespace RadegastSpeech.Sound
 
 			// Set attenuation limits.
             result = sound1.set3DMinMaxDistance(
-                2.0f,       // Any closer than this gets no louder
-                100.0f);     // Further than this gets no softer.
+                1.2f,       // Any closer than this gets no louder
+                8.0f);     // Further than this gets no softer.
             ERRCHECK(result);
 
 //            result = sound1.setMode(FMOD.MODE.LOOP_NORMAL);
