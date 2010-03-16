@@ -111,6 +111,7 @@
     <Compile Include="Core\Media\MediaManager.cs" />
     <Compile Include="Core\Media\MediaObject.cs" />
     <Compile Include="Core\Media\Sound.cs" />
+    <Compile Include="Core\PluginManager.cs" />
     <Compile Include="Core\RLV\RLVEventArgs.cs" />
     <Compile Include="Core\RLV\RLVManager.cs" />
     <Compile Include="Core\RLV\RLVRule.cs" />

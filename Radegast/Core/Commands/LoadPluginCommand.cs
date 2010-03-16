@@ -68,7 +68,7 @@ namespace Radegast.Commands
             try
             {
                 Assembly assembly = Assembly.LoadFile(loadfilename);
-                instance.LoadAssembly(loadfilename, assembly);
+                instance.PluginManager.LoadAssembly(loadfilename, assembly);
             }
             catch (Exception ex)
             {

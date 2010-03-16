@@ -52,7 +52,7 @@ namespace Radegast
         {
             if (RadegastFormCreated != null) RadegastFormCreated(radForm);
         }
-        #endregion        
+        #endregion
         private GridClient client;
         private RadegastNetcom netcom;
 
@@ -127,7 +127,9 @@ namespace Radegast
 
         public readonly bool advancedDebugging = false;
 
-        public readonly List<IRadegastPlugin> PluginsLoaded = new List<IRadegastPlugin>();
+        private PluginManager pluginManager;
+        /// <summary> Handles loading plugins and scripts</summary>
+        public PluginManager PluginManager { get { return pluginManager; } }
 
         private MediaManager mediaManager;
         /// <summary>
@@ -262,7 +264,8 @@ namespace Radegast
             mainForm.InitializeControls();
 
             mainForm.Load += new EventHandler(mainForm_Load);
-            ScanAndLoadPlugins();
+            pluginManager = new PluginManager(this);
+            pluginManager.ScanAndLoadPlugins();
         }
 
         private void InitializeClient(GridClient client)
@@ -299,7 +302,7 @@ namespace Radegast
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
-       }
+        }
 
         private void UnregisterClientEvents(GridClient client)
         {
@@ -336,21 +339,10 @@ namespace Radegast
                 UnregisterClientEvents(client);
             }
 
-            lock (PluginsLoaded)
+            if (pluginManager != null)
             {
-                List<IRadegastPlugin> unload = new List<IRadegastPlugin>(PluginsLoaded);
-                unload.ForEach(plug =>
-               {
-                   PluginsLoaded.Remove(plug);
-                   try
-                   {
-                       plug.StopPlugin(this);
-                   }
-                   catch (Exception ex)
-                   {
-                       Logger.Log("ERROR in Shutdown Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug, ex);
-                   }
-               });
+                pluginManager.Dispose();
+                pluginManager = null;
             }
 
             if (movement != null)
@@ -392,107 +384,7 @@ namespace Radegast
 
         void mainForm_Load(object sender, EventArgs e)
         {
-            StartPlugins();
-        }
-
-        private void StartPlugins()
-        {
-            lock (PluginsLoaded)
-            {
-                foreach (IRadegastPlugin plug in PluginsLoaded)
-                {
-                    try
-                    {
-                        plug.StartPlugin(this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR in Starting Radegast Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug);
-                    }
-                }
-            }
-        }
-
-        private void ScanAndLoadPlugins()
-        {
-            string dirName = Application.StartupPath;
-
-            if (!Directory.Exists(dirName)) return;
-
-            foreach (string loadfilename in Directory.GetFiles(dirName))
-            {
-                if (loadfilename.ToLower().EndsWith(".dll") || loadfilename.ToLower().EndsWith(".exe"))
-                {
-                    try
-                    {
-                        Assembly assembly = Assembly.LoadFile(loadfilename);
-                        LoadAssembly(loadfilename, assembly);
-                    }
-                    catch (BadImageFormatException)
-                    {
-                        // non .NET .dlls
-                    }
-                    catch (ReflectionTypeLoadException)
-                    {
-                        // Out of date or dlls missing sub dependencies
-                    }
-                    catch (TypeLoadException)
-                    {
-                        // Another version of: Out of date or dlls missing sub dependencies
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " because " + ex, Helpers.LogLevel.Debug);
-                    }
-                }
-            }
-        }
-
-        public void LoadAssembly(string loadfilename, Assembly assembly)
-        {
-            foreach (Type type in assembly.GetTypes())
-            {
-                if (typeof(IRadegastPlugin).IsAssignableFrom(type))
-                {
-                    if  (type.IsInterface) continue;
-                    try
-                    {
-                        IRadegastPlugin plug;
-                        ConstructorInfo constructorInfo = type.GetConstructor(new Type[] {typeof (RadegastInstance)});
-                        if (constructorInfo != null)
-                            plug = (IRadegastPlugin) constructorInfo.Invoke(new[] {this});
-                        else
-                        {
-                            constructorInfo = type.GetConstructor(new Type[] {});
-                            if (constructorInfo != null)
-                                plug = (IRadegastPlugin) constructorInfo.Invoke(new object[0]);
-                            else
-                            {
-                                Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because "+type+ " has no usable constructor.",Helpers.LogLevel.Debug);
-                                continue;
-                            }
-                        }
-                        lock (PluginsLoaded) PluginsLoaded.Add(plug);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because " + ex,
-                                   Helpers.LogLevel.Debug);
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        commandsManager.LoadType(type);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " Command: " + type +
-                                   " because " + ex.Message + " " + ex.StackTrace, Helpers.LogLevel.Debug);
-                    }
-                }
-            }
+            pluginManager.StartPlugins();
         }
 
         void netcom_ClientConnected(object sender, EventArgs e)
@@ -659,7 +551,7 @@ namespace Radegast
 
         public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            Logger.Log("Unhandled Thread Exception: " 
+            Logger.Log("Unhandled Thread Exception: "
                 + e.Exception.Message + Environment.NewLine
                 + e.Exception.StackTrace + Environment.NewLine,
                 Helpers.LogLevel.Error,
