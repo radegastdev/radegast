@@ -52,6 +52,7 @@ namespace Radegast.Plugin.Alice
         private AIMLbot.Bot Alice;
         private Hashtable AliceUsers = new Hashtable();
         private ToolStripMenuItem MenuButton, EnabledButton;
+        private TalkToAvatar talkToAvatar;
 
         public void StartPlugin(RadegastInstance inst)
         {
@@ -90,8 +91,12 @@ namespace Radegast.Plugin.Alice
                 LoadALICE();                
             });
 
-            LoadALICE();                
-
+            LoadALICE();
+            if (Alice!=null)
+            {
+                talkToAvatar = new TalkToAvatar(Instance, Alice);
+                Instance.ContextActionManager.RegisterContextAction(talkToAvatar);
+            }
             // Events
             RegisterClientEvents(Client);
         }
@@ -120,6 +125,10 @@ namespace Radegast.Plugin.Alice
             // Remove the menu button
             Instance.MainForm.ToolsMenu.DropDownItems.Remove(MenuButton);
 
+            if (talkToAvatar!=null)
+            {
+                Instance.ContextActionManager.DeregisterContextAction(talkToAvatar);
+            }
             // Unregister events
             UnregisterClientEvents(Client);
         }
