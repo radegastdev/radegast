@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Alice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TalkToAvatar.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="aiml_config\DefaultPredicates.xml">
