@@ -33,9 +33,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 using System.Reflection;
+using System.CodeDom.Compiler;
 using System.Windows.Forms;
 using OpenMetaverse;
+using Microsoft.CSharp;
 
 namespace Radegast
 {
@@ -125,7 +128,77 @@ namespace Radegast
             }
         }
 
+        public void LoadCSharpScriptFile(string filename)
+        {
+            try { LoadCSharpScript(File.ReadAllText(filename)); }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed loading C# script " + filename + ": ", Helpers.LogLevel.Warning, ex);
+            }
+        }
+
+        public void LoadCSharpScript(string code)
+        {
+            ThreadPool.QueueUserWorkItem(sender =>
+            {
+                try
+                {
+                    // *** Generate dynamic compiler
+                    Dictionary<string, string> loCompilerOptions = new Dictionary<string, string>();
+                    loCompilerOptions.Add("CompilerVersion", "v3.5");
+                    CSharpCodeProvider loCompiler = new CSharpCodeProvider(loCompilerOptions);
+                    CompilerParameters loParameters = new CompilerParameters();
+
+                    // *** Start by adding any referenced assemblies
+                    loParameters.ReferencedAssemblies.Add("OpenMetaverse.StructuredData.dll");
+                    loParameters.ReferencedAssemblies.Add("OpenMetaverseTypes.dll");
+                    loParameters.ReferencedAssemblies.Add("OpenMetaverse.dll");
+                    loParameters.ReferencedAssemblies.Add("Radegast.exe");
+                    loParameters.ReferencedAssemblies.Add("System.dll");
+                    loParameters.ReferencedAssemblies.Add("System.Core.dll");
+                    loParameters.ReferencedAssemblies.Add("System.Drawing.dll");
+                    loParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+
+                    // *** Load the resulting assembly into memory
+                    loParameters.GenerateInMemory = true;
+                    loParameters.GenerateExecutable = false;
+
+                    // *** Now compile the whole thing
+                    CompilerResults loCompiled =
+                            loCompiler.CompileAssemblyFromSource(loParameters, code);
+
+                    // *** Check for compilation erros
+                    if (loCompiled.Errors.HasErrors)
+                    {
+                        string lcErrorMsg = "";
+                        lcErrorMsg = "Compilation failed: " + loCompiled.Errors.Count.ToString() + " errors:";
+
+                        for (int x = 0; x < loCompiled.Errors.Count; x++)
+                            lcErrorMsg += "\r\nLine: " +
+                                         loCompiled.Errors[x].Line.ToString() + " - " +
+                                         loCompiled.Errors[x].ErrorText;
+
+                        instance.TabConsole.DisplayNotificationInChat(lcErrorMsg, ChatBufferTextStyle.Alert);
+                        return;
+                    }
+
+                    instance.TabConsole.DisplayNotificationInChat("Compilation successful.");
+                    Assembly loAssembly = loCompiled.CompiledAssembly;
+                    instance.MainForm.Invoke(new MethodInvoker(() => LoadAssembly("Dynamically compiled", loAssembly, true)));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failed loading C# script: ", Helpers.LogLevel.Warning, ex);
+                }
+            });
+        }
+
         public void LoadAssembly(string loadfilename, Assembly assembly)
+        {
+            LoadAssembly(loadfilename, assembly, false);
+        }
+
+        public void LoadAssembly(string loadfilename, Assembly assembly, bool startPlugins)
         {
             foreach (Type type in assembly.GetTypes())
             {
@@ -134,10 +207,10 @@ namespace Radegast
                     if (type.IsInterface) continue;
                     try
                     {
-                        IRadegastPlugin plug;
+                        IRadegastPlugin plug = null;
                         ConstructorInfo constructorInfo = type.GetConstructor(new Type[] { typeof(RadegastInstance) });
                         if (constructorInfo != null)
-                            plug = (IRadegastPlugin)constructorInfo.Invoke(new[] { this });
+                            plug = (IRadegastPlugin)constructorInfo.Invoke(new[] { instance });
                         else
                         {
                             constructorInfo = type.GetConstructor(new Type[] { });
@@ -150,6 +223,10 @@ namespace Radegast
                             }
                         }
                         lock (PluginsLoaded) PluginsLoaded.Add(plug);
+                        if (startPlugins && plug != null)
+                        {
+                            plug.StartPlugin(instance);
+                        }
                     }
                     catch (Exception ex)
                     {

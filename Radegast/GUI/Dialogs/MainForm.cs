@@ -199,11 +199,17 @@ namespace Radegast
 
         void frmMain_Disposed(object sender, EventArgs e)
         {
-            netcom.NetcomSync = null;
-            netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-            netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
-            netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            UnregisterClientEvents(client);
+            if (netcom != null)
+            {
+                netcom.NetcomSync = null;
+                netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
+                netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
+                netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
+            }
+            if (client != null)
+            {
+                UnregisterClientEvents(client);
+            }
             this.instance.CleanUp();
         }
         #endregion
@@ -1308,6 +1314,10 @@ namespace Radegast
             }
         }
 
+        private void btnLoadScript_Click(object sender, EventArgs e)
+        {
+            //instance.PluginManager.LoadCSharpScriptFile("DemoPlugin.cs");
+        }
         #endregion
     }
 }

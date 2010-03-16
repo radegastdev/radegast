@@ -101,9 +101,11 @@ namespace Radegast
             this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autopilotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
+            this.btnLoadScript = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnFriends = new System.Windows.Forms.ToolStripButton();
             this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
@@ -135,7 +137,6 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
-            this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -409,6 +410,13 @@ namespace Radegast
             this.cleanCacheToolStripMenuItem.Text = "Clean Cache";
             this.cleanCacheToolStripMenuItem.Click += new System.EventHandler(this.cleanCacheToolStripMenuItem_Click);
             // 
+            // reloadInventoryToolStripMenuItem
+            // 
+            this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
+            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.reloadInventoryToolStripMenuItem.Text = "Reload Inventory";
+            this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
+            // 
             // setAppearanceToolStripMenuItem
             // 
             this.setAppearanceToolStripMenuItem.Name = "setAppearanceToolStripMenuItem";
@@ -426,12 +434,21 @@ namespace Radegast
             // tbnPlugins
             // 
             this.tbnPlugins.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbnPlugins.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.btnLoadScript});
             this.tbnPlugins.Image = ((System.Drawing.Image)(resources.GetObject("tbnPlugins.Image")));
             this.tbnPlugins.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbnPlugins.Name = "tbnPlugins";
             this.tbnPlugins.Size = new System.Drawing.Size(59, 22);
             this.tbnPlugins.Text = "&Plugins";
-            this.tbnPlugins.Visible = false;
+            // 
+            // btnLoadScript
+            // 
+            this.btnLoadScript.Name = "btnLoadScript";
+            this.btnLoadScript.Size = new System.Drawing.Size(160, 22);
+            this.btnLoadScript.Text = "Load C# Script...";
+            this.btnLoadScript.Visible = false;
+            this.btnLoadScript.Click += new System.EventHandler(this.btnLoadScript_Click);
             // 
             // toolStripSeparator1
             // 
@@ -750,13 +767,6 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
-            // reloadInventoryToolStripMenuItem
-            // 
-            this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
-            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.reloadInventoryToolStripMenuItem.Text = "Reload Inventory";
-            this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -855,6 +865,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripButton tbtnVoice;
         public System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem btnLoadScript;
     }
 }
 
