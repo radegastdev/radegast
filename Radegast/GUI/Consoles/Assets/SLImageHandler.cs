@@ -115,7 +115,7 @@ namespace Radegast
             }
 
             // Callbacks
-            client.Assets.OnImageRecieveProgress += new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
+            client.Assets.ImageReceiveProgress += new EventHandler<ImageReceiveProgressEventArgs>(Assets_ImageReceiveProgress);
             progressBar1.Visible = true;
             client.Assets.RequestImage(imageID, ImageType.Normal, delegate(TextureRequestState state, AssetTexture assetTexture)
             {
@@ -132,32 +132,32 @@ namespace Radegast
 
         void SLImageHandler_Disposed(object sender, EventArgs e)
         {
-            client.Assets.OnImageRecieveProgress -= new AssetManager.ImageReceiveProgressCallback(Assets_OnImageProgress);
+            client.Assets.ImageReceiveProgress -= new EventHandler<ImageReceiveProgressEventArgs>(Assets_ImageReceiveProgress);
         }
 
-        private void Assets_OnImageProgress(UUID imageID, int recieved, int total)
+        void Assets_ImageReceiveProgress(object sender, ImageReceiveProgressEventArgs e)
         {
-            if (this.imageID != imageID)
+            if (this.imageID != e.ImageID)
             {
                 return;
             }
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Assets_OnImageProgress(imageID, recieved, total)));
+                BeginInvoke(new MethodInvoker(() => Assets_ImageReceiveProgress(sender, e)));
                 return;
             }
 
             int pct = 0;
-            if (total > 0)
+            if (e.Total> 0)
             {
-                pct = (recieved * 100) / total;
+                pct = (e.Received * 100) / e.Total;
             }
             if (pct < 0 || pct > 100)
             {
                 return;
             }
-            lblProgress.Text = String.Format("{0} of {1}KB ({2}%)", (int)recieved / 1024, (int)total / 1024, pct);
+            lblProgress.Text = String.Format("{0} of {1}KB ({2}%)", (int)e.Received / 1024, (int)e.Total / 1024, pct);
             progressBar1.Value = pct;
         }
 
