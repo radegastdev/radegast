@@ -513,7 +513,32 @@ namespace Radegast
             else
             {
                 name = prim.Properties.Name;
-                ownerName = instance.getAvatarName(prim.Properties.OwnerID);
+                // prim.Properties.GroupID is the actual group when group owned, not prim.GroupID
+                if (UUID.Zero == prim.Properties.OwnerID && 
+                    PrimFlags.ObjectGroupOwned == (prim.Flags & PrimFlags.ObjectGroupOwned) &&
+                    UUID.Zero != prim.Properties.GroupID)
+                {
+                    System.Threading.AutoResetEvent nameReceivedSignal = new System.Threading.AutoResetEvent(false);
+                    EventHandler<GroupNamesEventArgs> cbGroupName = new EventHandler<GroupNamesEventArgs>(
+                        delegate(object sender, GroupNamesEventArgs e)
+                        {
+                            if (e.GroupNames.ContainsKey(prim.Properties.GroupID))
+                            {
+                                e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
+                                if (string.IsNullOrEmpty(ownerName))
+                                    ownerName = "Loading...";
+                                if (null != nameReceivedSignal)
+                                    nameReceivedSignal.Set();
+                            }
+                        });
+                    client.Groups.GroupNamesReply += cbGroupName;
+                    client.Groups.RequestGroupName(prim.Properties.GroupID);
+                    nameReceivedSignal.WaitOne(5000);
+                    nameReceivedSignal.Close();
+                    client.Groups.GroupNamesReply -= cbGroupName;
+                }
+                else
+                    ownerName = instance.getAvatarName(prim.Properties.OwnerID);
             }
             return String.Format("{0} ({1}m) owned by {2}", name, distance, ownerName);
 
