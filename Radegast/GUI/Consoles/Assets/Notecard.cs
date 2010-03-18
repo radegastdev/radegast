@@ -41,7 +41,7 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private InventoryNotecard notecard;
-        private AssetNotecard recievedNotecard;
+        private AssetNotecard receivedNotecard;
         private Primitive prim;
 
         public Notecard(RadegastInstance instance, InventoryNotecard notecard)
@@ -103,7 +103,7 @@ namespace Radegast
             {
                 AssetNotecard n = (AssetNotecard)asset;
                 n.Decode();
-                recievedNotecard = n;
+                receivedNotecard = n;
 
                 string noteText = string.Empty;
                 rtbContent.Clear();
@@ -159,7 +159,29 @@ namespace Radegast
             else
             {
                 UpdateStatus("Failed");
-                rtbContent.Text = "Failed to download notecard.";
+                rtbContent.Text = "Failed to download notecard. " + transfer.Status;
+            }
+        }
+
+        private void Inventory_OnInventoryItemCopied(InventoryBase item)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    Inventory_OnInventoryItemCopied(item);
+                }
+                ));
+                return;
+            }
+
+            if (null == item) return;
+
+            if (item is InventoryNotecard)
+            {
+                Notecard nc = new Notecard(instance, (InventoryNotecard)item);
+                nc.pnlKeepDiscard.Visible = true;
+                nc.ShowDetached();
             }
         }
 
@@ -181,6 +203,14 @@ namespace Radegast
                     case AssetType.Landmark:
                         Landmark ln = new Landmark(instance, (InventoryLandmark)item);
                         ln.ShowDetached();
+                        break;
+
+                    case AssetType.Notecard:
+                        client.Inventory.RequestCopyItemFromNotecard(UUID.Zero,
+                            notecard.UUID,
+                            notecard.ParentUUID,
+                            item.UUID,
+                            Inventory_OnInventoryItemCopied);
                         break;
                 }
             }
@@ -249,11 +279,11 @@ namespace Radegast
             n.BodyText = rtbContent.Text;
             n.EmbeddedItems = new List<InventoryItem>();
 
-            if (recievedNotecard != null)
+            if (receivedNotecard != null)
             {
-                for (int i = 0; i < recievedNotecard.EmbeddedItems.Count; i++)
+                for (int i = 0; i < receivedNotecard.EmbeddedItems.Count; i++)
                 {
-                    n.EmbeddedItems.Add(recievedNotecard.EmbeddedItems[i]);
+                    n.EmbeddedItems.Add(receivedNotecard.EmbeddedItems[i]);
                     int indexChar = 0xdc00 + i;
                     n.BodyText += (char)0xdbc0;
                     n.BodyText += (char)indexChar;
@@ -325,5 +355,15 @@ namespace Radegast
             instance.TabConsole.DisplayNotificationInChat("Editing notecard", ChatBufferTextStyle.Invisible);
         }
 
+        private void btnKeep_Click(object sender, EventArgs e)
+        {
+            Retach();
+        }
+
+        private void btnDiscard_Click(object sender, EventArgs e)
+        {
+            client.Inventory.MoveItem(notecard.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), notecard.Name);
+            Retach();
+        }
     }
 }

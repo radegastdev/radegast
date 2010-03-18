@@ -69,7 +69,11 @@ namespace Radegast
             this.tbtnAttachments = new System.Windows.Forms.ToolStripDropDownButton();
             this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
             this.tlblStatus = new System.Windows.Forms.ToolStripLabel();
+            this.btnKeep = new System.Windows.Forms.Button();
+            this.btnDiscard = new System.Windows.Forms.Button();
+            this.pnlKeepDiscard = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
+            this.pnlKeepDiscard.SuspendLayout();
             this.SuspendLayout();
             // 
             // rtbContent
@@ -80,7 +84,7 @@ namespace Radegast
             this.rtbContent.HideSelection = false;
             this.rtbContent.Location = new System.Drawing.Point(0, 25);
             this.rtbContent.Name = "rtbContent";
-            this.rtbContent.Size = new System.Drawing.Size(382, 339);
+            this.rtbContent.Size = new System.Drawing.Size(382, 309);
             this.rtbContent.TabIndex = 3;
             this.rtbContent.Text = "";
             this.rtbContent.KeyDown += new System.Windows.Forms.KeyEventHandler(this.rtbContent_KeyDown);
@@ -172,16 +176,49 @@ namespace Radegast
             this.tlblStatus.Size = new System.Drawing.Size(38, 22);
             this.tlblStatus.Text = "status";
             // 
+            // btnKeep
+            // 
+            this.btnKeep.Location = new System.Drawing.Point(3, 3);
+            this.btnKeep.Name = "btnKeep";
+            this.btnKeep.Size = new System.Drawing.Size(75, 23);
+            this.btnKeep.TabIndex = 4;
+            this.btnKeep.Text = "Keep";
+            this.btnKeep.UseVisualStyleBackColor = true;
+            this.btnKeep.Click += new System.EventHandler(this.btnKeep_Click);
+            // 
+            // btnDiscard
+            // 
+            this.btnDiscard.Location = new System.Drawing.Point(84, 3);
+            this.btnDiscard.Name = "btnDiscard";
+            this.btnDiscard.Size = new System.Drawing.Size(75, 23);
+            this.btnDiscard.TabIndex = 5;
+            this.btnDiscard.Text = "Discard";
+            this.btnDiscard.UseVisualStyleBackColor = true;
+            this.btnDiscard.Click += new System.EventHandler(this.btnDiscard_Click);
+            // 
+            // pnlKeepDiscard
+            // 
+            this.pnlKeepDiscard.Controls.Add(this.btnKeep);
+            this.pnlKeepDiscard.Controls.Add(this.btnDiscard);
+            this.pnlKeepDiscard.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlKeepDiscard.Location = new System.Drawing.Point(0, 334);
+            this.pnlKeepDiscard.Name = "pnlKeepDiscard";
+            this.pnlKeepDiscard.Size = new System.Drawing.Size(382, 30);
+            this.pnlKeepDiscard.TabIndex = 6;
+            this.pnlKeepDiscard.Visible = false;
+            // 
             // Notecard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.rtbContent);
+            this.Controls.Add(this.pnlKeepDiscard);
             this.Controls.Add(this.toolStrip1);
             this.Name = "Notecard";
             this.Size = new System.Drawing.Size(382, 364);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.pnlKeepDiscard.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -199,6 +236,9 @@ namespace Radegast
         public System.Windows.Forms.ToolStripDropDownButton tbtnAttachments;
         public System.Windows.Forms.ToolStripButton tbtnAttach;
         public System.Windows.Forms.ToolStripLabel tlblStatus;
+        public System.Windows.Forms.Button btnKeep;
+        public System.Windows.Forms.Button btnDiscard;
+        public System.Windows.Forms.Panel pnlKeepDiscard;
 
     }
 }
