@@ -1337,7 +1337,7 @@ namespace Radegast
 
                     case "new_script":
                         client.Inventory.RequestCreateItem(f.UUID, "New script", "Radegast script: " + DateTime.Now.ToString(),
-                            AssetType.LSLText, UUID.Zero, InventoryType.LSL, PermissionMask.All, NotecardCreated);
+                            AssetType.LSLText, UUID.Zero, InventoryType.LSL, PermissionMask.All, ScriptCreated);
                         break;
 
                     case "cut_folder":
