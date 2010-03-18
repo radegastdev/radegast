@@ -1023,6 +1023,10 @@ namespace Radegast
                     ctxItem.Name = "new_notecard";
                     ctxInv.Items.Add(ctxItem);
 
+                    ctxItem = new ToolStripMenuItem("New Script", null, OnInvContextClick);
+                    ctxItem.Name = "new_script";
+                    ctxInv.Items.Add(ctxItem);
+                    
                     ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
                     ctxItem.Name = "refresh";
                     ctxInv.Items.Add(ctxItem);
@@ -1331,6 +1335,11 @@ namespace Radegast
                             AssetType.Notecard, UUID.Zero, InventoryType.Notecard, PermissionMask.All, NotecardCreated);
                         break;
 
+                    case "new_script":
+                        client.Inventory.RequestCreateItem(f.UUID, "New script", "Radegast script: " + DateTime.Now.ToString(),
+                            AssetType.LSLText, UUID.Zero, InventoryType.LSL, PermissionMask.All, NotecardCreated);
+                        break;
+
                     case "cut_folder":
                         instance.InventoryClipboard = new InventoryClipboard(ClipboardOperation.Cut, f);
                         break;
@@ -1531,6 +1540,31 @@ namespace Radegast
             }
 
             instance.TabConsole.DisplayNotificationInChat("New notecard created, enter notecard name and press enter", ChatBufferTextStyle.Invisible);
+            var node = findNodeForItem(item.ParentUUID);
+            if (node != null) node.Expand();
+            node = findNodeForItem(item.UUID);
+            if (node != null)
+            {
+                invTree.SelectedNode = node;
+                node.BeginEdit();
+            }
+        }
+
+        void ScriptCreated(bool success, InventoryItem item)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => ScriptCreated(success, item)));
+                return;
+            }
+
+            if (!success)
+            {
+                instance.TabConsole.DisplayNotificationInChat("Creation of script failed");
+                return;
+            }
+
+            instance.TabConsole.DisplayNotificationInChat("New script created, enter script name and press enter", ChatBufferTextStyle.Invisible);
             var node = findNodeForItem(item.ParentUUID);
             if (node != null) node.Expand();
             node = findNodeForItem(item.UUID);
