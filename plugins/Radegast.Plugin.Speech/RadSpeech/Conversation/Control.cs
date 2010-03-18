@@ -7,6 +7,7 @@ using Radegast;
 using System.Text.RegularExpressions;
 using System.Net;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace RadegastSpeech.Conversation
 {
@@ -283,13 +284,15 @@ namespace RadegastSpeech.Conversation
         {
             System.Windows.Forms.Control sTabControl = e.Tab.Control;
             if (sTabControl is InventoryConsole)
-                RemoveConversation( inventory.Title );
+                RemoveConversation(inventory.Title);
             else if (sTabControl is ChatConsole)
                 RemoveConversation(chat.Title);
             else if (sTabControl is FriendsConsole)
                 RemoveConversation(friends.Title);
             else if (sTabControl is VoiceConsole)
                 RemoveConversation(voice.Title);
+            else if (sTabControl is ConferenceIMTabWindow)
+                RemoveConversation(((ConferenceIMTabWindow)e.Tab.Control).SessionName);
             else if (sTabControl is GroupIMTabWindow ||
                      sTabControl is IMTabWindow)
                 RemoveConversation(sTabControl.Name);  // TODO wrong name
@@ -636,68 +639,78 @@ namespace RadegastSpeech.Conversation
         /// <param name="simulator"></param>
         void OnInstantMessage(object sender, InstantMessageEventArgs e)
         {
-            Conversation.IMSession sess = null;
-            string groupName;
+            ThreadPool.QueueUserWorkItem(sync =>
+                {
+                    Thread.Sleep(100); // Give tab a chance to show up
+                    Conversation.IMSession sess = null;
+                    string groupName;
 
-            // All sorts of things come in as a instant messages. For actual messages
-            // we need to match them up with an existing Conversation.  IM Conversations
-            // are keyed by the name of the group or individual involved.
-            switch (e.IM.Dialog)
-            {
-                case InstantMessageDialog.MessageFromAgent:
-                    if (control.instance.Groups.ContainsKey(e.IM.IMSessionID))
+                    // All sorts of things come in as a instant messages. For actual messages
+                    // we need to match them up with an existing Conversation.  IM Conversations
+                    // are keyed by the name of the group or individual involved.
+                    switch (e.IM.Dialog)
                     {
-                        // Message from a group member
-                        groupName = control.instance.Groups[e.IM.IMSessionID].Name;
-                        sess = (IMSession)control.converse.GetConversation(groupName);
-                        if (sess!=null)
-                            sess.OnMessage( e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message );
-                    }
-                    else if (e.IM.BinaryBucket.Length >= 2)
-                    {
-                        // Ad-hoc friend conference
-                        sess = (IMSession)control.converse.GetConversation(Utils.BytesToString(e.IM.BinaryBucket));
-                        if (sess != null)
-                            sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
-                    }
-                    else if (e.IM.FromAgentName == "Second Life")
-                    {
-                        Talker.Say("Second Life says "+ e.IM.Message);
-                    }
-                    else
-                    {
-                        // Message from an individual
-                        sess = (IMSession)control.converse.GetConversation(e.IM.FromAgentName); 
-                        if (sess != null)
-                            sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
-                    }
-                    break;
+                        case InstantMessageDialog.MessageFromAgent:
+                            if (control.instance.Groups.ContainsKey(e.IM.IMSessionID))
+                            {
+                                // Message from a group member
+                                groupName = control.instance.Groups[e.IM.IMSessionID].Name;
+                                sess = (IMSession)control.converse.GetConversation(groupName);
+                                if (sess != null)
+                                    sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
+                                else
+                                    Talker.Say(e.IM.FromAgentName + ", " + e.IM.Message);
+                            }
+                            else if (e.IM.BinaryBucket.Length >= 2)
+                            {
+                                // Ad-hoc friend conference
+                                sess = (IMSession)control.converse.GetConversation(Utils.BytesToString(e.IM.BinaryBucket));
+                                if (sess != null)
+                                    sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
+                                else
+                                    Talker.Say(e.IM.FromAgentName + ", " + e.IM.Message);
+                            }
+                            else if (e.IM.FromAgentName == "Second Life")
+                            {
+                                Talker.Say("Second Life says " + e.IM.Message);
+                            }
+                            else
+                            {
+                                // Message from an individual
+                                sess = (IMSession)control.converse.GetConversation(e.IM.FromAgentName);
+                                if (sess != null)
+                                    sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
+                                else
+                                    Talker.Say(e.IM.FromAgentName + ", " + e.IM.Message);
+                            }
+                            break;
 
-                case InstantMessageDialog.SessionSend:
-                    if (control.instance.Groups.ContainsKey(e.IM.IMSessionID))
-                    {
-                        // Message from a group member
-                        groupName = control.instance.Groups[e.IM.IMSessionID].Name;
-                        sess = (IMSession)control.converse.GetConversation(groupName);
+                        case InstantMessageDialog.SessionSend:
+                            if (control.instance.Groups.ContainsKey(e.IM.IMSessionID))
+                            {
+                                // Message from a group member
+                                groupName = control.instance.Groups[e.IM.IMSessionID].Name;
+                                sess = (IMSession)control.converse.GetConversation(groupName);
+                            }
+                            else if (e.IM.BinaryBucket.Length >= 2) // ad hoc friends conference
+                            {
+                                sess = (IMSession)control.converse.GetConversation(Utils.BytesToString(e.IM.BinaryBucket));
+                            }
+
+                            if (sess != null)
+                                sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
+                            break;
+
+                        case InstantMessageDialog.FriendshipOffered:
+                            Talker.Say(e.IM.FromAgentName + " is offering friendship.");
+                            break;
+
+                        default:
+                            break;
                     }
-                    else if (e.IM.BinaryBucket.Length >= 2) // ad hoc friends conference
-                    {
-                        sess = (IMSession)control.converse.GetConversation(Utils.BytesToString(e.IM.BinaryBucket));
-                    }
-
-                    if (sess != null)
-                        sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
-                    break;
-
-                case InstantMessageDialog.FriendshipOffered:
-                    Talker.Say(e.IM.FromAgentName + " is offering friendship.");
-                    break;
-
-                default:
-                    break;
-            }
+                }
+            );
 
         }
     }
 }
-
