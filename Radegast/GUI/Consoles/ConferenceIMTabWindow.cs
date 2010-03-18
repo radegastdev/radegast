@@ -47,6 +47,8 @@ namespace Radegast
         private List<UUID> participants = new List<UUID>();
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);
 
+        public string SessionName { get; set; }
+
         public ConferenceIMTabWindow(RadegastInstance instance, UUID session, string sessionName)
         {
             InitializeComponent();
@@ -54,6 +56,7 @@ namespace Radegast
 
             this.instance = instance;
             this.client = instance.Client;
+            this.SessionName = sessionName;
             netcom = this.instance.Netcom;
 
             this.session = session;

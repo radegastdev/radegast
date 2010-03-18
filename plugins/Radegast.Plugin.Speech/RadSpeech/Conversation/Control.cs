@@ -200,6 +200,11 @@ namespace RadegastSpeech.Conversation
                 SelectConversation(
                     control.instance.Groups[tab.SessionId].Name);
             }
+            else if (sTabControl is ConferenceIMTabWindow)
+            {
+                ConferenceIMTabWindow tab = (ConferenceIMTabWindow)sTabControl;
+                SelectConversation(tab.SessionName);
+            }
             else if (sTabControl is IMTabWindow)
             {
                 IMTabWindow tab = (IMTabWindow)sTabControl;
@@ -241,6 +246,12 @@ namespace RadegastSpeech.Conversation
                 AddConversation(new GroupIMSession(control, tab.SessionId));
                 return;
             }
+            else if (sTabControl is ConferenceIMTabWindow)
+            {
+                ConferenceIMTabWindow tab = (ConferenceIMTabWindow)sTabControl;
+                AddConversation(new ConferenceIMSession(control, tab.SessionId, tab.SessionName));
+                return;
+            }
             else if (sTabControl is IMTabWindow)
             {
                 IMTabWindow tab = (IMTabWindow)sTabControl;
@@ -249,8 +260,8 @@ namespace RadegastSpeech.Conversation
             }
             else if (sTabControl is ObjectsConsole)
             {
-                surroundings = new Surroundings( control );
-                AddConversation( surroundings );
+                surroundings = new Surroundings(control);
+                AddConversation(surroundings);
             }
 
             // If a conversation was created, switch to it.
@@ -625,7 +636,7 @@ namespace RadegastSpeech.Conversation
         /// <param name="simulator"></param>
         void OnInstantMessage(object sender, InstantMessageEventArgs e)
         {
-            Conversation.IMSession sess;
+            Conversation.IMSession sess = null;
             string groupName;
 
             // All sorts of things come in as a instant messages. For actual messages
@@ -645,8 +656,7 @@ namespace RadegastSpeech.Conversation
                     else if (e.IM.BinaryBucket.Length >= 2)
                     {
                         // Ad-hoc friend conference
-                        // TODO this is probably the wrong name
-                        sess = (IMSession)control.converse.GetConversation(e.IM.FromAgentName);
+                        sess = (IMSession)control.converse.GetConversation(Utils.BytesToString(e.IM.BinaryBucket));
                         if (sess != null)
                             sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
                     }
@@ -664,9 +674,17 @@ namespace RadegastSpeech.Conversation
                     break;
 
                 case InstantMessageDialog.SessionSend:
-                    // Message from a group member
-                    groupName = control.instance.Groups[e.IM.IMSessionID].Name;
-                    sess = (IMSession)control.converse.GetConversation(groupName);
+                    if (control.instance.Groups.ContainsKey(e.IM.IMSessionID))
+                    {
+                        // Message from a group member
+                        groupName = control.instance.Groups[e.IM.IMSessionID].Name;
+                        sess = (IMSession)control.converse.GetConversation(groupName);
+                    }
+                    else if (e.IM.BinaryBucket.Length >= 2) // ad hoc friends conference
+                    {
+                        sess = (IMSession)control.converse.GetConversation(Utils.BytesToString(e.IM.BinaryBucket));
+                    }
+
                     if (sess != null)
                         sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
                     break;

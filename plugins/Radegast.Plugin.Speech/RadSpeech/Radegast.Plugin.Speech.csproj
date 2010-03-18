@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="AreaControl.cs" />
     <Compile Include="Conversation\Chat.cs" />
+    <Compile Include="Conversation\ConferenceIMSession.cs" />
     <Compile Include="Conversation\Control.cs" />
     <Compile Include="Conversation\BlueMenu.cs" />
     <Compile Include="Conversation\Friends.cs" />
