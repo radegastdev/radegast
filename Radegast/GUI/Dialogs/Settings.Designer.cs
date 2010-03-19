@@ -279,21 +279,22 @@ namespace Radegast
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox cbFontSize;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tbpGeneral;
-        private System.Windows.Forms.CheckBox cbIMTimeStamps;
-        private System.Windows.Forms.CheckBox cbChatTimestamps;
-        private System.Windows.Forms.CheckBox cbTrasactChat;
-        private System.Windows.Forms.CheckBox cbTrasactDialog;
-        private System.Windows.Forms.CheckBox cbFriendsNotifications;
-        private System.Windows.Forms.CheckBox cbAutoReconnect;
-        private System.Windows.Forms.CheckBox cbHideLoginGraphics;
-        private System.Windows.Forms.CheckBox cbRLV;
-        private System.Windows.Forms.CheckBox cbMUEmotes;
-        private System.Windows.Forms.CheckBox cbFriendsHighlight;
-        private System.Windows.Forms.CheckBox cbMinToTrey;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.ComboBox cbFontSize;
+        public System.Windows.Forms.TabControl tabControl1;
+        public System.Windows.Forms.TabPage tbpGeneral;
+        public System.Windows.Forms.CheckBox cbIMTimeStamps;
+        public System.Windows.Forms.CheckBox cbChatTimestamps;
+        public System.Windows.Forms.CheckBox cbTrasactChat;
+        public System.Windows.Forms.CheckBox cbTrasactDialog;
+        public System.Windows.Forms.CheckBox cbFriendsNotifications;
+        public System.Windows.Forms.CheckBox cbAutoReconnect;
+        public System.Windows.Forms.CheckBox cbHideLoginGraphics;
+        public System.Windows.Forms.CheckBox cbRLV;
+        public System.Windows.Forms.CheckBox cbMUEmotes;
+        public System.Windows.Forms.CheckBox cbFriendsHighlight;
+        public System.Windows.Forms.CheckBox cbMinToTrey;
+
 
     }
 }
