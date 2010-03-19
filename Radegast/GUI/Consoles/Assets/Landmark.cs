@@ -85,7 +85,8 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Parcels_ParcelInfoReply(sender, e)));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Parcels_ParcelInfoReply(sender, e)));
                 return;
             }
 
@@ -129,7 +130,7 @@ namespace Radegast
 
         void Grid_RegionHandleReply(object sender, RegionHandleReplyEventArgs e)
         {
-            if (decodedLandmark != null && decodedLandmark.RegionID != e.RegionID) return;
+            if (decodedLandmark == null || decodedLandmark.RegionID != e.RegionID) return;
 
             parcelID = client.Parcels.RequestRemoteParcelID(decodedLandmark.Position, e.RegionHandle, e.RegionID);
             if (parcelID != UUID.Zero)

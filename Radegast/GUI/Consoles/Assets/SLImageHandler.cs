@@ -144,7 +144,8 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Assets_ImageReceiveProgress(sender, e)));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Assets_ImageReceiveProgress(sender, e)));
                 return;
             }
 
@@ -165,7 +166,8 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => DisplayPartialImage(assetTexture)));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => DisplayPartialImage(assetTexture)));
                 return;
             }
 
@@ -191,7 +193,8 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Assets_OnImageReceived(assetTexture)));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Assets_OnImageReceived(assetTexture)));
                 return;
             }
 
