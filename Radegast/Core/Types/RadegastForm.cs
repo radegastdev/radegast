@@ -208,14 +208,14 @@ namespace Radegast
         protected override void OnMove(EventArgs e)
         {
             base.OnMove(e);
-            if (AutoSavePosition)
+            if (AutoSavePosition && WindowState != FormWindowState.Minimized)
                 TriggerSavePosition();
         }
 
         protected override void OnResizeEnd(EventArgs e)
         {
             base.OnResizeEnd(e);
-            if (AutoSavePosition)
+            if (AutoSavePosition && WindowState != FormWindowState.Minimized)
                 TriggerSavePosition();
         }
 

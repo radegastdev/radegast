@@ -63,6 +63,7 @@ namespace Radegast
             this.tbpGeneral = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.cbFontSize = new System.Windows.Forms.ComboBox();
+            this.cbMinToTrey = new System.Windows.Forms.CheckBox();
             this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.cbRLV = new System.Windows.Forms.CheckBox();
             this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
@@ -92,6 +93,7 @@ namespace Radegast
             // 
             this.tbpGeneral.Controls.Add(this.label1);
             this.tbpGeneral.Controls.Add(this.cbFontSize);
+            this.tbpGeneral.Controls.Add(this.cbMinToTrey);
             this.tbpGeneral.Controls.Add(this.cbMUEmotes);
             this.tbpGeneral.Controls.Add(this.cbRLV);
             this.tbpGeneral.Controls.Add(this.cbHideLoginGraphics);
@@ -116,7 +118,7 @@ namespace Radegast
             this.label1.Location = new System.Drawing.Point(8, 239);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(73, 13);
-            this.label1.TabIndex = 11;
+            this.label1.TabIndex = 10;
             this.label1.Text = "Chat text size:";
             // 
             // cbFontSize
@@ -134,11 +136,22 @@ namespace Radegast
             this.cbFontSize.Location = new System.Drawing.Point(87, 236);
             this.cbFontSize.Name = "cbFontSize";
             this.cbFontSize.Size = new System.Drawing.Size(54, 21);
-            this.cbFontSize.TabIndex = 10;
+            this.cbFontSize.TabIndex = 11;
             this.cbFontSize.Text = "8.25";
             this.cbFontSize.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
             this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
             this.cbFontSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
+            // 
+            // cbMinToTrey
+            // 
+            this.cbMinToTrey.AutoSize = true;
+            this.cbMinToTrey.Location = new System.Drawing.Point(8, 263);
+            this.cbMinToTrey.Name = "cbMinToTrey";
+            this.cbMinToTrey.Size = new System.Drawing.Size(133, 17);
+            this.cbMinToTrey.TabIndex = 12;
+            this.cbMinToTrey.Text = "Minimize to system trey";
+            this.cbMinToTrey.UseVisualStyleBackColor = true;
+            this.cbMinToTrey.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // cbMUEmotes
             // 
@@ -266,20 +279,21 @@ namespace Radegast
 
         #endregion
 
-        public System.Windows.Forms.TabControl tabControl1;
-        public System.Windows.Forms.TabPage tbpGeneral;
-        public System.Windows.Forms.CheckBox cbIMTimeStamps;
-        public System.Windows.Forms.CheckBox cbChatTimestamps;
-        public System.Windows.Forms.CheckBox cbTrasactChat;
-        public System.Windows.Forms.CheckBox cbTrasactDialog;
-        public System.Windows.Forms.CheckBox cbFriendsNotifications;
-        public System.Windows.Forms.CheckBox cbAutoReconnect;
-        public System.Windows.Forms.CheckBox cbHideLoginGraphics;
-        public System.Windows.Forms.CheckBox cbRLV;
-        public System.Windows.Forms.CheckBox cbMUEmotes;
-        public System.Windows.Forms.CheckBox cbFriendsHighlight;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cbFontSize;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tbpGeneral;
+        private System.Windows.Forms.CheckBox cbIMTimeStamps;
+        private System.Windows.Forms.CheckBox cbChatTimestamps;
+        private System.Windows.Forms.CheckBox cbTrasactChat;
+        private System.Windows.Forms.CheckBox cbTrasactDialog;
+        private System.Windows.Forms.CheckBox cbFriendsNotifications;
+        private System.Windows.Forms.CheckBox cbAutoReconnect;
+        private System.Windows.Forms.CheckBox cbHideLoginGraphics;
+        private System.Windows.Forms.CheckBox cbRLV;
+        private System.Windows.Forms.CheckBox cbMUEmotes;
+        private System.Windows.Forms.CheckBox cbFriendsHighlight;
+        private System.Windows.Forms.CheckBox cbMinToTrey;
 
     }
 }

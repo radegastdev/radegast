@@ -169,6 +169,9 @@ namespace Radegast
             if (instance.GlobalSettings["transaction_notification_dialog"].Type == OSDType.Unknown)
                 instance.GlobalSettings["transaction_notification_dialog"] = OSD.FromBoolean(true);
 
+            if (!instance.GlobalSettings.ContainsKey("minimize_to_trey"))
+                instance.GlobalSettings["minimize_to_trey"] = OSD.FromBoolean(false);
+
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
@@ -1317,6 +1320,32 @@ namespace Radegast
         private void btnLoadScript_Click(object sender, EventArgs e)
         {
             //instance.PluginManager.LoadCSharpScriptFile("DemoPlugin.cs");
+        }
+
+        private void frmMain_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_trey"].AsBoolean())
+            {
+                ShowInTaskbar = false;
+                treyIcon.Visible = true;
+            }
+        }
+
+        private void treyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            WindowState = FormWindowState.Normal;
+            ShowInTaskbar = true;
+            treyIcon.Visible = false;
+        }
+
+        private void ctxTreyRestore_Click(object sender, EventArgs e)
+        {
+            treyIcon_MouseDoubleClick(this, null);
+        }
+
+        private void ctxTreyExit_Click(object sender, EventArgs e)
+        {
+            tmnuExit_Click(this, EventArgs.Empty);
         }
         #endregion
     }

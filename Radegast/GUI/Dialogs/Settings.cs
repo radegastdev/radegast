@@ -113,6 +113,13 @@ namespace Radegast
 
             cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
 
+            if (!s.ContainsKey("minimize_to_trey")) s["minimize_to_trey"] = OSD.FromBoolean(false);
+            cbMinToTrey.Checked = s["minimize_to_trey"].AsBoolean();
+            cbMinToTrey.CheckedChanged += (object sender, EventArgs e) =>
+                {
+                    s["minimize_to_trey"] = OSD.FromBoolean(cbMinToTrey.Checked);
+                };
+
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)
