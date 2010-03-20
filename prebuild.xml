@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Prebuild xmlns="prebuild-1.7.xsd" version="1.7">
-  <Solution name="Radegast" activeConfig="Debug" version="0.6.0-$Rev: 5161 $">
+  <Solution name="Radegast" activeConfig="Debug" version="$Id$">
     <Configuration name="Debug">
       <Options>
         <CompilerDefines>TRACE;DEBUG</CompilerDefines>
@@ -209,12 +209,13 @@
         </Match>
         <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
         <Match pattern="*.resx" buildAction="EmbeddedResource" recurse="true"/>
-        <Match path="." pattern="openjpeg-dotnet*" recurse="false" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.config" recurse="false" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.so" recurse="false" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.dylib" recurse="false" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="fmodex.*" recurse="false" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.html" recurse="false" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="openjpeg-dotnet*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="*.config" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="*.so" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="*.dylib" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="fmodex.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="*.html" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="openmetaverse_data" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
 
@@ -253,8 +254,8 @@
           <Exclude name="AssemblyInfo.cs"/>
         </Match>
         <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
-        <Match path="." pattern="*.aiml" recurse="true" buildAction="Content" copyToOutput="Always"/>
-        <Match path="." pattern="*.xml" recurse="true" buildAction="Content" copyToOutput="Always"/>
+        <Match path="aiml" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="aiml_config" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
 
@@ -291,7 +292,7 @@
           <Exclude name="AssemblyInfo.cs"/>
         </Match>
         <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
-        <Match path="assemblies" pattern="*.*" buildAction="Content" copyToOutput="Always"/>
+        <Match path="assemblies" pattern="*.*" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
 
@@ -325,23 +326,23 @@
       <Files>
         <Match path="." pattern="*.cs"  recurse="true"  subType="Form"/>
         <Match path="." pattern="*.resx"  recurse="true" subType="Settings"  buildAction="EmbeddedResource"/>
-        <Match path="." pattern="*.wav" buildAction="Content" copyToOutput="Always"/>
+        <Match path="." pattern="*.wav" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
 
     <Project name="RadSpeechLin" path="plugins/Radegast.Plugin.Speech/RadSpeechLin" type="Library" frameworkVersion="v3_5">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../../bin/</OutputPath>
+          <OutputPath>../../../../bin/</OutputPath>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../bin/</OutputPath>
+          <OutputPath>../../../../bin/</OutputPath>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../../bin/</ReferencePath>
+      <ReferencePath>../../../../bin/</ReferencePath>
       <Reference name="OpenMetaverse" localCopy="false"/>
       <Reference name="OpenMetaverseTypes" localCopy="false"/>\
       <Reference name="OpenMetaverse.StructuredData"/>
@@ -362,16 +363,16 @@
     <Project name="RadSpeechWin" path="plugins/Radegast.Plugin.Speech/RadSpeechWin" type="Library" frameworkVersion="v3_5">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../../bin/</OutputPath>
+          <OutputPath>../../../../bin/</OutputPath>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../bin/</OutputPath>
+          <OutputPath>../../../../bin/</OutputPath>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../../bin/</ReferencePath>
+      <ReferencePath>../../../../bin/</ReferencePath>
       <Reference name="OpenMetaverse" localCopy="false"/>
       <Reference name="OpenMetaverseTypes" localCopy="false"/>
       <Reference name="OpenMetaverse.StructuredData"/>
@@ -395,16 +396,16 @@
     <Project name="RadSpeechMac" path="plugins/Radegast.Plugin.Speech/RadSpeechMac" type="Library" frameworkVersion="v3_5">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../../bin/</OutputPath>
+          <OutputPath>../../../../bin/</OutputPath>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../bin/</OutputPath>
+          <OutputPath>../../../../bin/</OutputPath>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../../bin/</ReferencePath>
+      <ReferencePath>../../../../bin/</ReferencePath>
       <Reference name="OpenMetaverse" localCopy="false"/>
       <Reference name="OpenMetaverseTypes" localCopy="false"/>
       <Reference name="OpenMetaverse.StructuredData"/>
@@ -424,7 +425,7 @@
       <Reference name="System.Xml" />
       <Files>
         <Match path="." pattern="*.cs"  recurse="true"  subType="Form"/>
-        <Match path="Assemblies" pattern="*.*" buildAction="Content" copyToOutput="Always"/>
+        <Match path="Assemblies" pattern="*.*" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
 
