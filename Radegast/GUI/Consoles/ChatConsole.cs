@@ -59,6 +59,10 @@ namespace Radegast
         public ChatConsole(RadegastInstance instance)
         {
             InitializeComponent();
+            splitContainer1.Panel1.TabIndex = 0;
+            splitContainer1.Panel1.TabStop = true;
+            splitContainer1.Panel2.TabIndex = 1;
+            splitContainer1.Panel2.TabStop = true;
             Disposed += new EventHandler(ChatConsole_Disposed);
 
             if (!instance.advancedDebugging)

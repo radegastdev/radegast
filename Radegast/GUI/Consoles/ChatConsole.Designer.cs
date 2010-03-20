@@ -62,21 +62,8 @@ namespace Radegast
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatConsole));
-            this.rtbChat = new System.Windows.Forms.RichTextBox();
             this.btnSay = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.lvwObjects = new Radegast.ListViewNoFlicker();
-            this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
-            this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxStartIM = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxFollow = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxTextures = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxAttach = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxMaster = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnStartIM = new System.Windows.Forms.ToolStripButton();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
@@ -97,31 +84,28 @@ namespace Radegast
             this.btnTurnLeft = new System.Windows.Forms.Button();
             this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbChatType = new System.Windows.Forms.ComboBox();
+            this.rtbChat = new System.Windows.Forms.RichTextBox();
+            this.lvwObjects = new Radegast.ListViewNoFlicker();
+            this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
+            this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxStartIM = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxFollow = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxTextures = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxAttach = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMaster = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.cbxInput = new Radegast.ChatInputBox();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.avatarContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlMovement.SuspendLayout();
             this.pnlChatInput.SuspendLayout();
+            this.avatarContext.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // rtbChat
-            // 
-            this.rtbChat.BackColor = System.Drawing.Color.White;
-            this.rtbChat.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbChat.HideSelection = false;
-            this.rtbChat.Location = new System.Drawing.Point(0, 0);
-            this.rtbChat.Name = "rtbChat";
-            this.rtbChat.ReadOnly = true;
-            this.rtbChat.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedBoth;
-            this.rtbChat.ShowSelectionMargin = true;
-            this.rtbChat.Size = new System.Drawing.Size(445, 354);
-            this.rtbChat.TabIndex = 7;
-            this.rtbChat.Text = "";
-            this.rtbChat.MouseUp += new System.Windows.Forms.MouseEventHandler(this.rtbChat_MouseUp);
-            this.rtbChat.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbChat_LinkClicked);
             // 
             // btnSay
             // 
@@ -130,7 +114,7 @@ namespace Radegast
             this.btnSay.Location = new System.Drawing.Point(418, 0);
             this.btnSay.Name = "btnSay";
             this.btnSay.Size = new System.Drawing.Size(76, 24);
-            this.btnSay.TabIndex = 1;
+            this.btnSay.TabIndex = 10;
             this.btnSay.Text = "Say";
             this.btnSay.UseVisualStyleBackColor = true;
             this.btnSay.Click += new System.EventHandler(this.btnSay_Click);
@@ -153,11 +137,260 @@ namespace Radegast
             this.splitContainer1.Panel2.Controls.Add(this.pnlMovement);
             this.splitContainer1.Size = new System.Drawing.Size(576, 354);
             this.splitContainer1.SplitterDistance = 445;
-            this.splitContainer1.TabIndex = 7;
+            this.splitContainer1.TabIndex = 1;
             this.splitContainer1.TabStop = false;
+            // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbtnStartIM,
+            this.tbtnProfile,
+            this.toolStripSeparator1,
+            this.tbtnFollow,
+            this.toolStripSeparator2,
+            this.tbtnTextures,
+            this.toolStripSeparator3,
+            this.tbtnAttach,
+            this.toolStripSeparator4,
+            this.tbtnMaster,
+            this.toolStripSeparator5,
+            this.tbtnAnim});
+            this.toolStrip1.Location = new System.Drawing.Point(86, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(41, 317);
+            this.toolStrip1.TabIndex = 20;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // tbtnStartIM
+            // 
+            this.tbtnStartIM.AccessibleName = "Start IM";
+            this.tbtnStartIM.AutoToolTip = false;
+            this.tbtnStartIM.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnStartIM.Enabled = false;
+            this.tbtnStartIM.Image = global::Radegast.Properties.Resources.computer_16;
+            this.tbtnStartIM.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnStartIM.Name = "tbtnStartIM";
+            this.tbtnStartIM.Size = new System.Drawing.Size(38, 20);
+            this.tbtnStartIM.ToolTipText = "Start IM";
+            this.tbtnStartIM.Click += new System.EventHandler(this.tbtnStartIM_Click);
+            // 
+            // tbtnProfile
+            // 
+            this.tbtnProfile.AccessibleName = "View profile";
+            this.tbtnProfile.AutoToolTip = false;
+            this.tbtnProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnProfile.Enabled = false;
+            this.tbtnProfile.Image = global::Radegast.Properties.Resources.applications_16;
+            this.tbtnProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnProfile.Name = "tbtnProfile";
+            this.tbtnProfile.Size = new System.Drawing.Size(38, 20);
+            this.tbtnProfile.ToolTipText = "View Profile";
+            this.tbtnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(38, 6);
+            // 
+            // tbtnFollow
+            // 
+            this.tbtnFollow.AccessibleName = "Follow";
+            this.tbtnFollow.AutoToolTip = false;
+            this.tbtnFollow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbtnFollow.Enabled = false;
+            this.tbtnFollow.Image = global::Radegast.Properties.Resources.arrow_forward_16;
+            this.tbtnFollow.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnFollow.Name = "tbtnFollow";
+            this.tbtnFollow.Size = new System.Drawing.Size(38, 20);
+            this.tbtnFollow.ToolTipText = "Follow";
+            this.tbtnFollow.Click += new System.EventHandler(this.tbtnFollow_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(38, 6);
+            // 
+            // tbtnTextures
+            // 
+            this.tbtnTextures.AccessibleName = "Textures";
+            this.tbtnTextures.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnTextures.Enabled = false;
+            this.tbtnTextures.Image = ((System.Drawing.Image)(resources.GetObject("tbtnTextures.Image")));
+            this.tbtnTextures.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnTextures.Name = "tbtnTextures";
+            this.tbtnTextures.Size = new System.Drawing.Size(38, 19);
+            this.tbtnTextures.Text = "Txtr";
+            this.tbtnTextures.Click += new System.EventHandler(this.dumpOufitBtn_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(38, 6);
+            // 
+            // tbtnAttach
+            // 
+            this.tbtnAttach.AccessibleName = "Attachments";
+            this.tbtnAttach.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnAttach.Enabled = false;
+            this.tbtnAttach.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAttach.Image")));
+            this.tbtnAttach.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnAttach.Name = "tbtnAttach";
+            this.tbtnAttach.Size = new System.Drawing.Size(38, 19);
+            this.tbtnAttach.Text = "Attn";
+            this.tbtnAttach.ToolTipText = "List avatar attachments";
+            this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(38, 6);
+            // 
+            // tbtnMaster
+            // 
+            this.tbtnMaster.AccessibleName = "Master";
+            this.tbtnMaster.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnMaster.Enabled = false;
+            this.tbtnMaster.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMaster.Image")));
+            this.tbtnMaster.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnMaster.Name = "tbtnMaster";
+            this.tbtnMaster.Size = new System.Drawing.Size(38, 19);
+            this.tbtnMaster.Text = "Mstr";
+            this.tbtnMaster.Click += new System.EventHandler(this.tbtnMaster_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(38, 6);
+            // 
+            // tbtnAnim
+            // 
+            this.tbtnAnim.AccessibleName = "Animations";
+            this.tbtnAnim.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbtnAnim.Enabled = false;
+            this.tbtnAnim.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAnim.Image")));
+            this.tbtnAnim.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbtnAnim.Name = "tbtnAnim";
+            this.tbtnAnim.Size = new System.Drawing.Size(38, 19);
+            this.tbtnAnim.Text = "Anim";
+            this.tbtnAnim.ToolTipText = "List Avatar Animatoions";
+            this.tbtnAnim.Click += new System.EventHandler(this.tbtnAnim_Click);
+            // 
+            // pnlMovement
+            // 
+            this.pnlMovement.Controls.Add(this.btnMoveBack);
+            this.pnlMovement.Controls.Add(this.btnFwd);
+            this.pnlMovement.Controls.Add(this.btnTurnRight);
+            this.pnlMovement.Controls.Add(this.btnTurnLeft);
+            this.pnlMovement.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlMovement.Location = new System.Drawing.Point(0, 317);
+            this.pnlMovement.Name = "pnlMovement";
+            this.pnlMovement.Size = new System.Drawing.Size(127, 37);
+            this.pnlMovement.TabIndex = 11;
+            this.pnlMovement.Click += new System.EventHandler(this.pnlMovement_Click);
+            // 
+            // btnMoveBack
+            // 
+            this.btnMoveBack.AccessibleName = "Walk backwards";
+            this.btnMoveBack.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnMoveBack.Location = new System.Drawing.Point(36, 15);
+            this.btnMoveBack.Margin = new System.Windows.Forms.Padding(0);
+            this.btnMoveBack.Name = "btnMoveBack";
+            this.btnMoveBack.Size = new System.Drawing.Size(31, 19);
+            this.btnMoveBack.TabIndex = 2;
+            this.btnMoveBack.Text = "R";
+            this.btnMoveBack.UseVisualStyleBackColor = true;
+            this.btnMoveBack.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseDown);
+            this.btnMoveBack.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseUp);
+            // 
+            // btnFwd
+            // 
+            this.btnFwd.AccessibleName = "Walk forward";
+            this.btnFwd.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnFwd.Location = new System.Drawing.Point(36, 0);
+            this.btnFwd.Margin = new System.Windows.Forms.Padding(0);
+            this.btnFwd.Name = "btnFwd";
+            this.btnFwd.Size = new System.Drawing.Size(31, 19);
+            this.btnFwd.TabIndex = 1;
+            this.btnFwd.Text = "^";
+            this.btnFwd.UseVisualStyleBackColor = true;
+            this.btnFwd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseDown);
+            this.btnFwd.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseUp);
+            // 
+            // btnTurnRight
+            // 
+            this.btnTurnRight.AccessibleName = "Turn right";
+            this.btnTurnRight.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTurnRight.Location = new System.Drawing.Point(67, 15);
+            this.btnTurnRight.Margin = new System.Windows.Forms.Padding(0);
+            this.btnTurnRight.Name = "btnTurnRight";
+            this.btnTurnRight.Size = new System.Drawing.Size(31, 19);
+            this.btnTurnRight.TabIndex = 4;
+            this.btnTurnRight.Text = ">>";
+            this.btnTurnRight.UseVisualStyleBackColor = true;
+            this.btnTurnRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseDown);
+            this.btnTurnRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseUp);
+            // 
+            // btnTurnLeft
+            // 
+            this.btnTurnLeft.AccessibleName = "Turn left";
+            this.btnTurnLeft.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnTurnLeft.Location = new System.Drawing.Point(5, 15);
+            this.btnTurnLeft.Margin = new System.Windows.Forms.Padding(0);
+            this.btnTurnLeft.Name = "btnTurnLeft";
+            this.btnTurnLeft.Size = new System.Drawing.Size(31, 19);
+            this.btnTurnLeft.TabIndex = 3;
+            this.btnTurnLeft.Text = "<<";
+            this.btnTurnLeft.UseVisualStyleBackColor = true;
+            this.btnTurnLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseDown);
+            this.btnTurnLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseUp);
+            // 
+            // pnlChatInput
+            // 
+            this.pnlChatInput.Controls.Add(this.cbChatType);
+            this.pnlChatInput.Controls.Add(this.cbxInput);
+            this.pnlChatInput.Controls.Add(this.btnSay);
+            this.pnlChatInput.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlChatInput.Location = new System.Drawing.Point(0, 354);
+            this.pnlChatInput.Name = "pnlChatInput";
+            this.pnlChatInput.Size = new System.Drawing.Size(576, 24);
+            this.pnlChatInput.TabIndex = 0;
+            // 
+            // cbChatType
+            // 
+            this.cbChatType.AccessibleName = "Chat type";
+            this.cbChatType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbChatType.BackColor = System.Drawing.SystemColors.Window;
+            this.cbChatType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbChatType.Enabled = false;
+            this.cbChatType.FormattingEnabled = true;
+            this.cbChatType.Items.AddRange(new object[] {
+            "Whisper",
+            "Normal",
+            "Shout"});
+            this.cbChatType.Location = new System.Drawing.Point(498, 1);
+            this.cbChatType.Name = "cbChatType";
+            this.cbChatType.Size = new System.Drawing.Size(73, 21);
+            this.cbChatType.TabIndex = 11;
+            // 
+            // rtbChat
+            // 
+            this.rtbChat.AccessibleName = "Chat history";
+            this.rtbChat.BackColor = System.Drawing.Color.White;
+            this.rtbChat.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbChat.HideSelection = false;
+            this.rtbChat.Location = new System.Drawing.Point(0, 0);
+            this.rtbChat.Name = "rtbChat";
+            this.rtbChat.ReadOnly = true;
+            this.rtbChat.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtbChat.Size = new System.Drawing.Size(445, 354);
+            this.rtbChat.TabIndex = 4;
+            this.rtbChat.Text = "";
             // 
             // lvwObjects
             // 
+            this.lvwObjects.AccessibleName = "Nearby people";
             this.lvwObjects.AllowDrop = true;
             this.lvwObjects.ContextMenuStrip = this.avatarContext;
             this.lvwObjects.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -169,7 +402,7 @@ namespace Radegast
             this.lvwObjects.MultiSelect = false;
             this.lvwObjects.Name = "lvwObjects";
             this.lvwObjects.Size = new System.Drawing.Size(86, 317);
-            this.lvwObjects.TabIndex = 8;
+            this.lvwObjects.TabIndex = 0;
             this.lvwObjects.UseCompatibleStateImageBehavior = false;
             this.lvwObjects.View = System.Windows.Forms.View.List;
             this.lvwObjects.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwObjects_MouseDoubleClick);
@@ -265,231 +498,9 @@ namespace Radegast
             this.ctxSource.Text = "Set as source";
             this.ctxSource.Click += new System.EventHandler(this.ctxSource_Click);
             // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tbtnStartIM,
-            this.tbtnProfile,
-            this.toolStripSeparator1,
-            this.tbtnFollow,
-            this.toolStripSeparator2,
-            this.tbtnTextures,
-            this.toolStripSeparator3,
-            this.tbtnAttach,
-            this.toolStripSeparator4,
-            this.tbtnMaster,
-            this.toolStripSeparator5,
-            this.tbtnAnim});
-            this.toolStrip1.Location = new System.Drawing.Point(86, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(41, 317);
-            this.toolStrip1.TabIndex = 9;
-            this.toolStrip1.TabStop = true;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // tbtnStartIM
-            // 
-            this.tbtnStartIM.AutoToolTip = false;
-            this.tbtnStartIM.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnStartIM.Enabled = false;
-            this.tbtnStartIM.Image = global::Radegast.Properties.Resources.computer_16;
-            this.tbtnStartIM.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnStartIM.Name = "tbtnStartIM";
-            this.tbtnStartIM.Size = new System.Drawing.Size(38, 20);
-            this.tbtnStartIM.ToolTipText = "Start IM";
-            this.tbtnStartIM.Click += new System.EventHandler(this.tbtnStartIM_Click);
-            // 
-            // tbtnProfile
-            // 
-            this.tbtnProfile.AutoToolTip = false;
-            this.tbtnProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnProfile.Enabled = false;
-            this.tbtnProfile.Image = global::Radegast.Properties.Resources.applications_16;
-            this.tbtnProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnProfile.Name = "tbtnProfile";
-            this.tbtnProfile.Size = new System.Drawing.Size(38, 20);
-            this.tbtnProfile.ToolTipText = "View Profile";
-            this.tbtnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnFollow
-            // 
-            this.tbtnFollow.AutoToolTip = false;
-            this.tbtnFollow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnFollow.Enabled = false;
-            this.tbtnFollow.Image = global::Radegast.Properties.Resources.arrow_forward_16;
-            this.tbtnFollow.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnFollow.Name = "tbtnFollow";
-            this.tbtnFollow.Size = new System.Drawing.Size(38, 20);
-            this.tbtnFollow.ToolTipText = "Follow";
-            this.tbtnFollow.Click += new System.EventHandler(this.tbtnFollow_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnTextures
-            // 
-            this.tbtnTextures.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnTextures.Enabled = false;
-            this.tbtnTextures.Image = ((System.Drawing.Image)(resources.GetObject("tbtnTextures.Image")));
-            this.tbtnTextures.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnTextures.Name = "tbtnTextures";
-            this.tbtnTextures.Size = new System.Drawing.Size(38, 19);
-            this.tbtnTextures.Text = "Txtr";
-            this.tbtnTextures.Click += new System.EventHandler(this.dumpOufitBtn_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnAttach
-            // 
-            this.tbtnAttach.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnAttach.Enabled = false;
-            this.tbtnAttach.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAttach.Image")));
-            this.tbtnAttach.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnAttach.Name = "tbtnAttach";
-            this.tbtnAttach.Size = new System.Drawing.Size(38, 19);
-            this.tbtnAttach.Text = "Attn";
-            this.tbtnAttach.ToolTipText = "List avatar attachments";
-            this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnMaster
-            // 
-            this.tbtnMaster.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnMaster.Enabled = false;
-            this.tbtnMaster.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMaster.Image")));
-            this.tbtnMaster.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnMaster.Name = "tbtnMaster";
-            this.tbtnMaster.Size = new System.Drawing.Size(38, 19);
-            this.tbtnMaster.Text = "Mstr";
-            this.tbtnMaster.Click += new System.EventHandler(this.tbtnMaster_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnAnim
-            // 
-            this.tbtnAnim.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnAnim.Enabled = false;
-            this.tbtnAnim.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAnim.Image")));
-            this.tbtnAnim.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnAnim.Name = "tbtnAnim";
-            this.tbtnAnim.Size = new System.Drawing.Size(38, 19);
-            this.tbtnAnim.Text = "Anim";
-            this.tbtnAnim.ToolTipText = "List Avatar Animatoions";
-            this.tbtnAnim.Click += new System.EventHandler(this.tbtnAnim_Click);
-            // 
-            // pnlMovement
-            // 
-            this.pnlMovement.Controls.Add(this.btnMoveBack);
-            this.pnlMovement.Controls.Add(this.btnFwd);
-            this.pnlMovement.Controls.Add(this.btnTurnRight);
-            this.pnlMovement.Controls.Add(this.btnTurnLeft);
-            this.pnlMovement.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlMovement.Location = new System.Drawing.Point(0, 317);
-            this.pnlMovement.Name = "pnlMovement";
-            this.pnlMovement.Size = new System.Drawing.Size(127, 37);
-            this.pnlMovement.TabIndex = 11;
-            this.pnlMovement.Click += new System.EventHandler(this.pnlMovement_Click);
-            // 
-            // btnMoveBack
-            // 
-            this.btnMoveBack.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMoveBack.Location = new System.Drawing.Point(36, 15);
-            this.btnMoveBack.Margin = new System.Windows.Forms.Padding(0);
-            this.btnMoveBack.Name = "btnMoveBack";
-            this.btnMoveBack.Size = new System.Drawing.Size(31, 19);
-            this.btnMoveBack.TabIndex = 4;
-            this.btnMoveBack.Text = "R";
-            this.btnMoveBack.UseVisualStyleBackColor = true;
-            this.btnMoveBack.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseDown);
-            this.btnMoveBack.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseUp);
-            // 
-            // btnFwd
-            // 
-            this.btnFwd.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnFwd.Location = new System.Drawing.Point(36, 0);
-            this.btnFwd.Margin = new System.Windows.Forms.Padding(0);
-            this.btnFwd.Name = "btnFwd";
-            this.btnFwd.Size = new System.Drawing.Size(31, 19);
-            this.btnFwd.TabIndex = 6;
-            this.btnFwd.Text = "^";
-            this.btnFwd.UseVisualStyleBackColor = true;
-            this.btnFwd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseDown);
-            this.btnFwd.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseUp);
-            // 
-            // btnTurnRight
-            // 
-            this.btnTurnRight.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTurnRight.Location = new System.Drawing.Point(67, 15);
-            this.btnTurnRight.Margin = new System.Windows.Forms.Padding(0);
-            this.btnTurnRight.Name = "btnTurnRight";
-            this.btnTurnRight.Size = new System.Drawing.Size(31, 19);
-            this.btnTurnRight.TabIndex = 5;
-            this.btnTurnRight.Text = ">>";
-            this.btnTurnRight.UseVisualStyleBackColor = true;
-            this.btnTurnRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseDown);
-            this.btnTurnRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseUp);
-            // 
-            // btnTurnLeft
-            // 
-            this.btnTurnLeft.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTurnLeft.Location = new System.Drawing.Point(5, 15);
-            this.btnTurnLeft.Margin = new System.Windows.Forms.Padding(0);
-            this.btnTurnLeft.Name = "btnTurnLeft";
-            this.btnTurnLeft.Size = new System.Drawing.Size(31, 19);
-            this.btnTurnLeft.TabIndex = 3;
-            this.btnTurnLeft.Text = "<<";
-            this.btnTurnLeft.UseVisualStyleBackColor = true;
-            this.btnTurnLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseDown);
-            this.btnTurnLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseUp);
-            // 
-            // pnlChatInput
-            // 
-            this.pnlChatInput.Controls.Add(this.cbChatType);
-            this.pnlChatInput.Controls.Add(this.cbxInput);
-            this.pnlChatInput.Controls.Add(this.btnSay);
-            this.pnlChatInput.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlChatInput.Location = new System.Drawing.Point(0, 354);
-            this.pnlChatInput.Name = "pnlChatInput";
-            this.pnlChatInput.Size = new System.Drawing.Size(576, 24);
-            this.pnlChatInput.TabIndex = 0;
-            // 
-            // cbChatType
-            // 
-            this.cbChatType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbChatType.BackColor = System.Drawing.SystemColors.Window;
-            this.cbChatType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbChatType.Enabled = false;
-            this.cbChatType.FormattingEnabled = true;
-            this.cbChatType.Items.AddRange(new object[] {
-            "Whisper",
-            "Normal",
-            "Shout"});
-            this.cbChatType.Location = new System.Drawing.Point(498, 1);
-            this.cbChatType.Name = "cbChatType";
-            this.cbChatType.Size = new System.Drawing.Size(73, 21);
-            this.cbChatType.TabIndex = 2;
-            // 
             // cbxInput
             // 
+            this.cbxInput.AccessibleName = "Chat input";
             this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxInput.Enabled = false;
@@ -515,12 +526,12 @@ namespace Radegast
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
-            this.avatarContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.pnlMovement.ResumeLayout(false);
             this.pnlChatInput.ResumeLayout(false);
             this.pnlChatInput.PerformLayout();
+            this.avatarContext.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -528,7 +539,6 @@ namespace Radegast
         #endregion
 
         public ListViewNoFlicker lvwObjects;
-        public RichTextBox rtbChat;
         public ChatInputBox cbxInput;
         public Button btnSay;
         public SplitContainer splitContainer1;
@@ -563,5 +573,6 @@ namespace Radegast
         public ToolStripMenuItem ctxSource;
         public ToolStripMenuItem ctxPay;
         public ComboBox cbChatType;
+        public RichTextBox rtbChat;
     }
 }
