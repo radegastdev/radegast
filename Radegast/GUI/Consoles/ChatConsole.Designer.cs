@@ -64,6 +64,19 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatConsole));
             this.btnSay = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.rtbChat = new System.Windows.Forms.RichTextBox();
+            this.lvwObjects = new Radegast.ListViewNoFlicker();
+            this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
+            this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxStartIM = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxFollow = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxTextures = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxAttach = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMaster = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnStartIM = new System.Windows.Forms.ToolStripButton();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
@@ -84,27 +97,14 @@ namespace Radegast
             this.btnTurnLeft = new System.Windows.Forms.Button();
             this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbChatType = new System.Windows.Forms.ComboBox();
-            this.rtbChat = new System.Windows.Forms.RichTextBox();
-            this.lvwObjects = new Radegast.ListViewNoFlicker();
-            this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
-            this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxStartIM = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxFollow = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxTextures = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxAttach = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxMaster = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.cbxInput = new Radegast.ChatInputBox();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.avatarContext.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.pnlMovement.SuspendLayout();
             this.pnlChatInput.SuspendLayout();
-            this.avatarContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSay
@@ -139,6 +139,130 @@ namespace Radegast
             this.splitContainer1.SplitterDistance = 445;
             this.splitContainer1.TabIndex = 1;
             this.splitContainer1.TabStop = false;
+            // 
+            // rtbChat
+            // 
+            this.rtbChat.AccessibleName = "Chat history";
+            this.rtbChat.BackColor = System.Drawing.Color.White;
+            this.rtbChat.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbChat.HideSelection = false;
+            this.rtbChat.Location = new System.Drawing.Point(0, 0);
+            this.rtbChat.Name = "rtbChat";
+            this.rtbChat.ReadOnly = true;
+            this.rtbChat.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtbChat.Size = new System.Drawing.Size(445, 354);
+            this.rtbChat.TabIndex = 4;
+            this.rtbChat.Text = "";
+            // 
+            // lvwObjects
+            // 
+            this.lvwObjects.AccessibleName = "Nearby people";
+            this.lvwObjects.AllowDrop = true;
+            this.lvwObjects.ContextMenuStrip = this.avatarContext;
+            this.lvwObjects.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvwObjects.FullRowSelect = true;
+            this.lvwObjects.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lvwObjects.HideSelection = false;
+            this.lvwObjects.LabelWrap = false;
+            this.lvwObjects.Location = new System.Drawing.Point(0, 0);
+            this.lvwObjects.MultiSelect = false;
+            this.lvwObjects.Name = "lvwObjects";
+            this.lvwObjects.Size = new System.Drawing.Size(86, 317);
+            this.lvwObjects.TabIndex = 0;
+            this.lvwObjects.UseCompatibleStateImageBehavior = false;
+            this.lvwObjects.View = System.Windows.Forms.View.List;
+            this.lvwObjects.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwObjects_MouseDoubleClick);
+            this.lvwObjects.SelectedIndexChanged += new System.EventHandler(this.lvwObjects_SelectedIndexChanged);
+            this.lvwObjects.DragDrop += new System.Windows.Forms.DragEventHandler(this.lvwObjects_DragDrop);
+            this.lvwObjects.DragOver += new System.Windows.Forms.DragEventHandler(this.lvwObjects_DragOver);
+            // 
+            // avatarContext
+            // 
+            this.avatarContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxProfile,
+            this.ctxPay,
+            this.ctxStartIM,
+            this.ctxFollow,
+            this.ctxTextures,
+            this.ctxAttach,
+            this.ctxMaster,
+            this.ctxAnim,
+            this.ctxPoint,
+            this.ctxSource});
+            this.avatarContext.Name = "avatarContext";
+            this.avatarContext.Size = new System.Drawing.Size(157, 224);
+            this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
+            // 
+            // ctxProfile
+            // 
+            this.ctxProfile.Name = "ctxProfile";
+            this.ctxProfile.Size = new System.Drawing.Size(156, 22);
+            this.ctxProfile.Text = "Profile";
+            this.ctxProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
+            // 
+            // ctxPay
+            // 
+            this.ctxPay.Enabled = false;
+            this.ctxPay.Name = "ctxPay";
+            this.ctxPay.Size = new System.Drawing.Size(156, 22);
+            this.ctxPay.Text = "Pay";
+            this.ctxPay.Click += new System.EventHandler(this.ctxPay_Click);
+            // 
+            // ctxStartIM
+            // 
+            this.ctxStartIM.Name = "ctxStartIM";
+            this.ctxStartIM.Size = new System.Drawing.Size(156, 22);
+            this.ctxStartIM.Text = "Start IM";
+            this.ctxStartIM.Click += new System.EventHandler(this.tbtnStartIM_Click);
+            // 
+            // ctxFollow
+            // 
+            this.ctxFollow.Name = "ctxFollow";
+            this.ctxFollow.Size = new System.Drawing.Size(156, 22);
+            this.ctxFollow.Text = "Follow";
+            this.ctxFollow.Click += new System.EventHandler(this.tbtnFollow_Click);
+            // 
+            // ctxTextures
+            // 
+            this.ctxTextures.Name = "ctxTextures";
+            this.ctxTextures.Size = new System.Drawing.Size(156, 22);
+            this.ctxTextures.Text = "Textures";
+            this.ctxTextures.Click += new System.EventHandler(this.dumpOufitBtn_Click);
+            // 
+            // ctxAttach
+            // 
+            this.ctxAttach.Name = "ctxAttach";
+            this.ctxAttach.Size = new System.Drawing.Size(156, 22);
+            this.ctxAttach.Text = "Attachments";
+            this.ctxAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
+            // 
+            // ctxMaster
+            // 
+            this.ctxMaster.Name = "ctxMaster";
+            this.ctxMaster.Size = new System.Drawing.Size(156, 22);
+            this.ctxMaster.Text = "Master controls";
+            this.ctxMaster.Click += new System.EventHandler(this.tbtnMaster_Click);
+            // 
+            // ctxAnim
+            // 
+            this.ctxAnim.Name = "ctxAnim";
+            this.ctxAnim.Size = new System.Drawing.Size(156, 22);
+            this.ctxAnim.Text = "Animations";
+            this.ctxAnim.Click += new System.EventHandler(this.tbtnAnim_Click);
+            // 
+            // ctxPoint
+            // 
+            this.ctxPoint.Name = "ctxPoint";
+            this.ctxPoint.Size = new System.Drawing.Size(156, 22);
+            this.ctxPoint.Text = "Point at";
+            this.ctxPoint.Click += new System.EventHandler(this.ctxPoint_Click);
+            // 
+            // ctxSource
+            // 
+            this.ctxSource.Name = "ctxSource";
+            this.ctxSource.Size = new System.Drawing.Size(156, 22);
+            this.ctxSource.Text = "Set as source";
+            this.ctxSource.Click += new System.EventHandler(this.ctxSource_Click);
             // 
             // toolStrip1
             // 
@@ -299,6 +423,7 @@ namespace Radegast
             this.btnMoveBack.Name = "btnMoveBack";
             this.btnMoveBack.Size = new System.Drawing.Size(31, 19);
             this.btnMoveBack.TabIndex = 2;
+            this.btnMoveBack.TabStop = false;
             this.btnMoveBack.Text = "R";
             this.btnMoveBack.UseVisualStyleBackColor = true;
             this.btnMoveBack.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseDown);
@@ -313,6 +438,7 @@ namespace Radegast
             this.btnFwd.Name = "btnFwd";
             this.btnFwd.Size = new System.Drawing.Size(31, 19);
             this.btnFwd.TabIndex = 1;
+            this.btnFwd.TabStop = false;
             this.btnFwd.Text = "^";
             this.btnFwd.UseVisualStyleBackColor = true;
             this.btnFwd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseDown);
@@ -327,6 +453,7 @@ namespace Radegast
             this.btnTurnRight.Name = "btnTurnRight";
             this.btnTurnRight.Size = new System.Drawing.Size(31, 19);
             this.btnTurnRight.TabIndex = 4;
+            this.btnTurnRight.TabStop = false;
             this.btnTurnRight.Text = ">>";
             this.btnTurnRight.UseVisualStyleBackColor = true;
             this.btnTurnRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseDown);
@@ -341,6 +468,7 @@ namespace Radegast
             this.btnTurnLeft.Name = "btnTurnLeft";
             this.btnTurnLeft.Size = new System.Drawing.Size(31, 19);
             this.btnTurnLeft.TabIndex = 3;
+            this.btnTurnLeft.TabStop = false;
             this.btnTurnLeft.Text = "<<";
             this.btnTurnLeft.UseVisualStyleBackColor = true;
             this.btnTurnLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseDown);
@@ -374,130 +502,6 @@ namespace Radegast
             this.cbChatType.Size = new System.Drawing.Size(73, 21);
             this.cbChatType.TabIndex = 11;
             // 
-            // rtbChat
-            // 
-            this.rtbChat.AccessibleName = "Chat history";
-            this.rtbChat.BackColor = System.Drawing.Color.White;
-            this.rtbChat.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbChat.HideSelection = false;
-            this.rtbChat.Location = new System.Drawing.Point(0, 0);
-            this.rtbChat.Name = "rtbChat";
-            this.rtbChat.ReadOnly = true;
-            this.rtbChat.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.rtbChat.Size = new System.Drawing.Size(445, 354);
-            this.rtbChat.TabIndex = 4;
-            this.rtbChat.Text = "";
-            // 
-            // lvwObjects
-            // 
-            this.lvwObjects.AccessibleName = "Nearby people";
-            this.lvwObjects.AllowDrop = true;
-            this.lvwObjects.ContextMenuStrip = this.avatarContext;
-            this.lvwObjects.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvwObjects.FullRowSelect = true;
-            this.lvwObjects.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lvwObjects.HideSelection = false;
-            this.lvwObjects.LabelWrap = false;
-            this.lvwObjects.Location = new System.Drawing.Point(0, 0);
-            this.lvwObjects.MultiSelect = false;
-            this.lvwObjects.Name = "lvwObjects";
-            this.lvwObjects.Size = new System.Drawing.Size(86, 317);
-            this.lvwObjects.TabIndex = 0;
-            this.lvwObjects.UseCompatibleStateImageBehavior = false;
-            this.lvwObjects.View = System.Windows.Forms.View.List;
-            this.lvwObjects.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwObjects_MouseDoubleClick);
-            this.lvwObjects.SelectedIndexChanged += new System.EventHandler(this.lvwObjects_SelectedIndexChanged);
-            this.lvwObjects.DragDrop += new System.Windows.Forms.DragEventHandler(this.lvwObjects_DragDrop);
-            this.lvwObjects.DragOver += new System.Windows.Forms.DragEventHandler(this.lvwObjects_DragOver);
-            // 
-            // avatarContext
-            // 
-            this.avatarContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ctxProfile,
-            this.ctxPay,
-            this.ctxStartIM,
-            this.ctxFollow,
-            this.ctxTextures,
-            this.ctxAttach,
-            this.ctxMaster,
-            this.ctxAnim,
-            this.ctxPoint,
-            this.ctxSource});
-            this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(157, 224);
-            this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
-            // 
-            // ctxProfile
-            // 
-            this.ctxProfile.Name = "ctxProfile";
-            this.ctxProfile.Size = new System.Drawing.Size(156, 22);
-            this.ctxProfile.Text = "Profile";
-            this.ctxProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
-            // 
-            // ctxPay
-            // 
-            this.ctxPay.Enabled = false;
-            this.ctxPay.Name = "ctxPay";
-            this.ctxPay.Size = new System.Drawing.Size(156, 22);
-            this.ctxPay.Text = "Pay";
-            this.ctxPay.Click += new System.EventHandler(this.ctxPay_Click);
-            // 
-            // ctxStartIM
-            // 
-            this.ctxStartIM.Name = "ctxStartIM";
-            this.ctxStartIM.Size = new System.Drawing.Size(156, 22);
-            this.ctxStartIM.Text = "Start IM";
-            this.ctxStartIM.Click += new System.EventHandler(this.tbtnStartIM_Click);
-            // 
-            // ctxFollow
-            // 
-            this.ctxFollow.Name = "ctxFollow";
-            this.ctxFollow.Size = new System.Drawing.Size(156, 22);
-            this.ctxFollow.Text = "Follow";
-            this.ctxFollow.Click += new System.EventHandler(this.tbtnFollow_Click);
-            // 
-            // ctxTextures
-            // 
-            this.ctxTextures.Name = "ctxTextures";
-            this.ctxTextures.Size = new System.Drawing.Size(156, 22);
-            this.ctxTextures.Text = "Textures";
-            this.ctxTextures.Click += new System.EventHandler(this.dumpOufitBtn_Click);
-            // 
-            // ctxAttach
-            // 
-            this.ctxAttach.Name = "ctxAttach";
-            this.ctxAttach.Size = new System.Drawing.Size(156, 22);
-            this.ctxAttach.Text = "Attachments";
-            this.ctxAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
-            // 
-            // ctxMaster
-            // 
-            this.ctxMaster.Name = "ctxMaster";
-            this.ctxMaster.Size = new System.Drawing.Size(156, 22);
-            this.ctxMaster.Text = "Master controls";
-            this.ctxMaster.Click += new System.EventHandler(this.tbtnMaster_Click);
-            // 
-            // ctxAnim
-            // 
-            this.ctxAnim.Name = "ctxAnim";
-            this.ctxAnim.Size = new System.Drawing.Size(156, 22);
-            this.ctxAnim.Text = "Animations";
-            this.ctxAnim.Click += new System.EventHandler(this.tbtnAnim_Click);
-            // 
-            // ctxPoint
-            // 
-            this.ctxPoint.Name = "ctxPoint";
-            this.ctxPoint.Size = new System.Drawing.Size(156, 22);
-            this.ctxPoint.Text = "Point at";
-            this.ctxPoint.Click += new System.EventHandler(this.ctxPoint_Click);
-            // 
-            // ctxSource
-            // 
-            this.ctxSource.Name = "ctxSource";
-            this.ctxSource.Size = new System.Drawing.Size(156, 22);
-            this.ctxSource.Text = "Set as source";
-            this.ctxSource.Click += new System.EventHandler(this.ctxSource_Click);
-            // 
             // cbxInput
             // 
             this.cbxInput.AccessibleName = "Chat input";
@@ -526,12 +530,12 @@ namespace Radegast
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
+            this.avatarContext.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.pnlMovement.ResumeLayout(false);
             this.pnlChatInput.ResumeLayout(false);
             this.pnlChatInput.PerformLayout();
-            this.avatarContext.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

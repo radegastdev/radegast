@@ -137,8 +137,8 @@ namespace Radegast
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.pnlDialog = new System.Windows.Forms.Panel();
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
-            this.treyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.ctxTreyIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.ctxTrayIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -146,7 +146,7 @@ namespace Radegast
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
-            this.ctxTreyIcon.SuspendLayout();
+            this.ctxTrayIcon.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -773,21 +773,21 @@ namespace Radegast
             this.timerWorldClock.Interval = 1000;
             this.timerWorldClock.Tick += new System.EventHandler(this.timerWorldClock_Tick);
             // 
-            // treyIcon
+            // trayIcon
             // 
-            this.treyIcon.ContextMenuStrip = this.ctxTreyIcon;
-            this.treyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("treyIcon.Icon")));
-            this.treyIcon.Text = "Radegast";
-            this.treyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treyIcon_MouseDoubleClick);
+            this.trayIcon.ContextMenuStrip = this.ctxTrayIcon;
+            this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
+            this.trayIcon.Text = "Radegast";
+            this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treyIcon_MouseDoubleClick);
             // 
-            // ctxTreyIcon
+            // ctxTrayIcon
             // 
-            this.ctxTreyIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxTrayIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ctxTreyRestore,
             this.toolStripSeparator3,
             this.ctxTreyExit});
-            this.ctxTreyIcon.Name = "ctxTreyIcon";
-            this.ctxTreyIcon.Size = new System.Drawing.Size(114, 54);
+            this.ctxTrayIcon.Name = "ctxTreyIcon";
+            this.ctxTrayIcon.Size = new System.Drawing.Size(114, 54);
             // 
             // ctxTreyRestore
             // 
@@ -838,7 +838,7 @@ namespace Radegast
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
-            this.ctxTreyIcon.ResumeLayout(false);
+            this.ctxTrayIcon.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -846,7 +846,7 @@ namespace Radegast
 
         #endregion
 
-        public System.Windows.Forms.ContextMenuStrip ctxTreyIcon;
+        public System.Windows.Forms.ContextMenuStrip ctxTrayIcon;
         public System.Windows.Forms.ToolStripMenuItem ctxTreyRestore;
         public System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         public System.Windows.Forms.ToolStripMenuItem ctxTreyExit;
@@ -854,7 +854,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripButton tbtnVoice;
         public System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem btnLoadScript;
-        public System.Windows.Forms.NotifyIcon treyIcon;
+        public System.Windows.Forms.NotifyIcon trayIcon;
         public System.Windows.Forms.ToolStrip toolStrip1;
         public System.Windows.Forms.ToolStripContainer toolStripContainer1;
         public System.Windows.Forms.Panel pnlDialog;

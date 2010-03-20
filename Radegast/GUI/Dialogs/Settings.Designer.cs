@@ -149,7 +149,7 @@ namespace Radegast
             this.cbMinToTrey.Name = "cbMinToTrey";
             this.cbMinToTrey.Size = new System.Drawing.Size(133, 17);
             this.cbMinToTrey.TabIndex = 12;
-            this.cbMinToTrey.Text = "Minimize to system trey";
+            this.cbMinToTrey.Text = "Minimize to system tray";
             this.cbMinToTrey.UseVisualStyleBackColor = true;
             this.cbMinToTrey.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 

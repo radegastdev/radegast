@@ -113,11 +113,11 @@ namespace Radegast
 
             cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
 
-            if (!s.ContainsKey("minimize_to_trey")) s["minimize_to_trey"] = OSD.FromBoolean(false);
-            cbMinToTrey.Checked = s["minimize_to_trey"].AsBoolean();
+            if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
+            cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
             cbMinToTrey.CheckedChanged += (object sender, EventArgs e) =>
                 {
-                    s["minimize_to_trey"] = OSD.FromBoolean(cbMinToTrey.Checked);
+                    s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
                 };
 
         }

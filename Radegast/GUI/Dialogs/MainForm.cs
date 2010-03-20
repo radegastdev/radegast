@@ -169,8 +169,8 @@ namespace Radegast
             if (instance.GlobalSettings["transaction_notification_dialog"].Type == OSDType.Unknown)
                 instance.GlobalSettings["transaction_notification_dialog"] = OSD.FromBoolean(true);
 
-            if (!instance.GlobalSettings.ContainsKey("minimize_to_trey"))
-                instance.GlobalSettings["minimize_to_trey"] = OSD.FromBoolean(false);
+            if (!instance.GlobalSettings.ContainsKey("minimize_to_tray"))
+                instance.GlobalSettings["minimize_to_tray"] = OSD.FromBoolean(false);
 
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
@@ -614,22 +614,28 @@ namespace Radegast
         {
         }
 
+        bool firstLoad = true;
+
         private void frmMain_Load(object sender, EventArgs e)
         {
-            tabsConsole.SelectTab("login");
-            ResourceManager rm = Properties.Resources.ResourceManager;
-            ResourceSet set = rm.GetResourceSet(System.Globalization.CultureInfo.CurrentCulture, true, true);
-            System.Collections.IDictionaryEnumerator de = set.GetEnumerator();
-            while (de.MoveNext() == true)
+            if (firstLoad)
             {
-                if (de.Entry.Value is Image)
+                firstLoad = false;
+                tabsConsole.SelectTab("login");
+                ResourceManager rm = Properties.Resources.ResourceManager;
+                ResourceSet set = rm.GetResourceSet(System.Globalization.CultureInfo.CurrentCulture, true, true);
+                System.Collections.IDictionaryEnumerator de = set.GetEnumerator();
+                while (de.MoveNext() == true)
                 {
-                    Bitmap bitMap = de.Entry.Value as Bitmap;
-                    ResourceImages.Images.Add(bitMap);
-                    ImageNames.Add(de.Entry.Key.ToString());
+                    if (de.Entry.Value is Image)
+                    {
+                        Bitmap bitMap = de.Entry.Value as Bitmap;
+                        ResourceImages.Images.Add(bitMap);
+                        ImageNames.Add(de.Entry.Key.ToString());
+                    }
                 }
+                StartUpdateCheck(false);
             }
-            StartUpdateCheck(false);
         }
         #endregion
 
@@ -1324,10 +1330,10 @@ namespace Radegast
 
         private void frmMain_Resize(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_trey"].AsBoolean())
+            if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_tray"].AsBoolean())
             {
                 ShowInTaskbar = false;
-                treyIcon.Visible = true;
+                trayIcon.Visible = true;
             }
         }
 
@@ -1335,7 +1341,7 @@ namespace Radegast
         {
             WindowState = FormWindowState.Normal;
             ShowInTaskbar = true;
-            treyIcon.Visible = false;
+            trayIcon.Visible = false;
         }
 
         private void ctxTreyRestore_Click(object sender, EventArgs e)

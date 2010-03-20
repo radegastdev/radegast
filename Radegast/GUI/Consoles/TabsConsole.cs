@@ -735,7 +735,8 @@ namespace Radegast
         //Used for outside classes that have a reference to TabsConsole
         public void SelectTab(string name)
         {
-            tabs[name.ToLower()].Select();
+            if (TabExists(name.ToLower()))
+                tabs[name.ToLower()].Select();
         }
 
         public bool TabExists(string name)
@@ -745,7 +746,10 @@ namespace Radegast
 
         public RadegastTab GetTab(string name)
         {
-            return tabs[name.ToLower()];
+            if (TabExists(name.ToLower()))
+                return tabs[name.ToLower()];
+            else
+                return null;
         }
 
         public List<RadegastTab> GetOtherTabs()

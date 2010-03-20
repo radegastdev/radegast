@@ -59,10 +59,6 @@ namespace Radegast
         public ChatConsole(RadegastInstance instance)
         {
             InitializeComponent();
-            splitContainer1.Panel1.TabIndex = 0;
-            splitContainer1.Panel1.TabStop = true;
-            splitContainer1.Panel2.TabIndex = 1;
-            splitContainer1.Panel2.TabStop = true;
             Disposed += new EventHandler(ChatConsole_Disposed);
 
             if (!instance.advancedDebugging)
@@ -302,8 +298,6 @@ namespace Radegast
             if (e.Status != LoginStatus.Success) return;
 
             cbxInput.Enabled = true;
-            btnSay.Enabled = true;
-            cbChatType.Enabled = true;
             client.Avatars.RequestAvatarProperties(client.Self.AgentID);
             cbxInput.Focus();
         }
