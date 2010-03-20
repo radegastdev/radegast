@@ -111,12 +111,12 @@
     <Compile Include="Core\Media\MediaManager.cs" />
     <Compile Include="Core\Media\MediaObject.cs" />
     <Compile Include="Core\Media\Sound.cs" />
-    <Compile Include="Core\PluginManager.cs" />
+    <Compile Include="Core\PluginInterface\IRadegastPlugin.cs" />
+    <Compile Include="Core\PluginInterface\PluginManager.cs" />
     <Compile Include="Core\RLV\RLVEventArgs.cs" />
     <Compile Include="Core\RLV\RLVManager.cs" />
     <Compile Include="Core\RLV\RLVRule.cs" />
     <Compile Include="Core\Settings.cs" />
-    <Compile Include="Core\IRadegastPlugin.cs" />
     <Compile Include="Core\ListItems\PreferencePaneListItem.cs" />
     <Compile Include="Core\DebugLogMessage.cs" />
     <Compile Include="Core\ListItems\FriendsListItem.cs" />
