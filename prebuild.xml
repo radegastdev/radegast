@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Prebuild xmlns="prebuild-1.7.xsd" version="1.7">
-  <Solution name="Radegast" activeConfig="Debug" version="$Id$">
+  <Solution name="Radegast" activeConfig="Debug" version="$Rev$">
     <Configuration name="Debug">
       <Options>
         <CompilerDefines>TRACE;DEBUG</CompilerDefines>
