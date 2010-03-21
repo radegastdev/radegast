@@ -42,7 +42,8 @@ using AIMLbot;
 
 namespace Radegast.Plugin.Alice
 {
-    public class DemoPlugin : IRadegastPlugin
+    [Radegast.Plugin(Name = "ALICE Chatbot", Description = "A.L.I.C.E. based AI chat bot", Version = "1.0")]
+    public class AliceAI : IRadegastPlugin
     {
         private RadegastInstance Instance;
         private GridClient Client { get { return Instance.Client; } }

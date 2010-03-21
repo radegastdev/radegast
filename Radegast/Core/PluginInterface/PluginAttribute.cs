@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009, Radegast Development Team
 // All rights reserved.
@@ -28,23 +28,22 @@
 //
 // $Id$
 //
+using System;
+
 namespace Radegast
 {
     /// <summary>
-    /// Interface of Radegast plugins
+    /// Metadata about Radegast Plugins
     /// </summary>
-    public interface IRadegastPlugin
+    public class PluginAttribute : Attribute
     {
-        /// <summary>
-        /// Called in plugin initialization
-        /// </summary>
-        /// <param name="inst">RadegastInstance plugin is loaded into</param>
-        void StartPlugin(RadegastInstance inst);
+        /// <summary>Plugin short name</summary>
+        public string Name = string.Empty;
 
-        /// <summary>
-        /// Called on plugin shutdown
-        /// </summary>
-        /// <param name="inst">RadegastInstance plugin is unloaded from</param>
-        void StopPlugin(RadegastInstance inst);
+        /// <summary>Plugin description</summary>
+        public string Description = string.Empty;
+
+        /// <summary>Plugin version</summary>
+        public string Version = string.Empty;
     }
 }

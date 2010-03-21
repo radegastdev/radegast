@@ -75,6 +75,25 @@ namespace Radegast
             }
         }
 
+        public static PluginAttribute GetAttributes(IRadegastPlugin plug)
+        {
+            PluginAttribute a = null;
+
+            foreach(Attribute attr in Attribute.GetCustomAttributes(plug.GetType()))
+            {
+                if (attr is PluginAttribute)
+                    a = (PluginAttribute)attr;
+            }
+
+            if (a == null)
+            {
+                a = new PluginAttribute();
+                a.Name = plug.GetType().FullName;
+            }
+
+            return a;
+        }
+
         public void StartPlugins()
         {
             lock (PluginsLoaded)
@@ -225,7 +244,8 @@ namespace Radegast
                         lock (PluginsLoaded) PluginsLoaded.Add(plug);
                         if (startPlugins && plug != null)
                         {
-                            plug.StartPlugin(instance);
+                            try { plug.StartPlugin(instance); }
+                            catch (Exception ex) { Logger.Log(string.Format("Failed starting plugin {0}:", type), Helpers.LogLevel.Error, ex); }
                         }
                     }
                     catch (Exception ex)

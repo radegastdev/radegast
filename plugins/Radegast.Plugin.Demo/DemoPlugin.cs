@@ -38,6 +38,7 @@ using OpenMetaverse;
 
 namespace Radegast.Plugin.Demo
 {
+    [Radegast.Plugin(Name="Demo Plugin", Description="Demontration of plugin capabilites", Version="1.0")]
     public class DemoPlugin : IRadegastPlugin
     {
         private RadegastInstance Instance;

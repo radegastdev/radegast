@@ -41,6 +41,7 @@ using OpenMetaverse.StructuredData;
 
 namespace RadegastSpeech
 {
+    [Radegast.Plugin(Name = "Speech", Description = "Adds TTS and STT accesibility capabilities to Radegast", Version = "0.3")]
     public class PluginControl : IRadegastPlugin
     {
         private const string VERSION = "0.3";
