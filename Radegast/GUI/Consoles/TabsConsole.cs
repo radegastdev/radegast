@@ -622,6 +622,8 @@ namespace Radegast
             button.Click += new EventHandler(TabButtonClick);
 
             RadegastTab tab = new RadegastTab(instance, button, control, name.ToLower(), label);
+            if (control is RadegastTabControl)
+                ((RadegastTabControl)control).RadegastTab = tab;
             tab.TabAttached += new EventHandler(tab_TabAttached);
             tab.TabDetached += new EventHandler(tab_TabDetached);
             tab.TabSelected += new EventHandler(tab_TabSelected);

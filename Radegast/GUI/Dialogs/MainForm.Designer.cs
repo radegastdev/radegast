@@ -105,7 +105,7 @@ namespace Radegast
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
-            this.btnLoadScript = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnPluginsTab = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnFriends = new System.Windows.Forms.ToolStripButton();
             this.tbtnGroups = new System.Windows.Forms.ToolStripButton();
@@ -441,20 +441,19 @@ namespace Radegast
             // 
             this.tbnPlugins.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbnPlugins.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnLoadScript});
+            this.btnPluginsTab});
             this.tbnPlugins.Image = ((System.Drawing.Image)(resources.GetObject("tbnPlugins.Image")));
             this.tbnPlugins.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbnPlugins.Name = "tbnPlugins";
             this.tbnPlugins.Size = new System.Drawing.Size(59, 22);
             this.tbnPlugins.Text = "&Plugins";
             // 
-            // btnLoadScript
+            // btnPluginsTab
             // 
-            this.btnLoadScript.Name = "btnLoadScript";
-            this.btnLoadScript.Size = new System.Drawing.Size(160, 22);
-            this.btnLoadScript.Text = "Load C# Script...";
-            this.btnLoadScript.Visible = false;
-            this.btnLoadScript.Click += new System.EventHandler(this.btnLoadScript_Click);
+            this.btnPluginsTab.Name = "btnPluginsTab";
+            this.btnPluginsTab.Size = new System.Drawing.Size(152, 22);
+            this.btnPluginsTab.Text = "Manage...";
+            this.btnPluginsTab.Click += new System.EventHandler(this.btnLoadScript_Click);
             // 
             // toolStripSeparator1
             // 
@@ -853,7 +852,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem keyboardShortcutsToolStripMenuItem;
         public System.Windows.Forms.ToolStripButton tbtnVoice;
         public System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
-        public System.Windows.Forms.ToolStripMenuItem btnLoadScript;
+        public System.Windows.Forms.ToolStripMenuItem btnPluginsTab;
         public System.Windows.Forms.NotifyIcon trayIcon;
         public System.Windows.Forms.ToolStrip toolStrip1;
         public System.Windows.Forms.ToolStripContainer toolStripContainer1;

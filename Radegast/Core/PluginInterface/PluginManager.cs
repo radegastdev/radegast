@@ -50,6 +50,17 @@ namespace Radegast
         List<IRadegastPlugin> PluginsLoaded = new List<IRadegastPlugin>();
         RadegastInstance instance;
 
+        public List<IRadegastPlugin> Plugins
+        {
+            get
+            {
+                List<IRadegastPlugin> ret = null;
+                lock (PluginsLoaded)
+                    ret = new List<IRadegastPlugin>(PluginsLoaded);
+                return ret;
+            }
+        }
+
         public PluginManager(RadegastInstance instance)
         {
             this.instance = instance;

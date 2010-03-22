@@ -1325,7 +1325,11 @@ namespace Radegast
 
         private void btnLoadScript_Click(object sender, EventArgs e)
         {
-            //instance.PluginManager.LoadCSharpScriptFile("DemoPlugin.cs");
+            if (!TabConsole.TabExists("plugin_manager"))
+            {
+                TabConsole.AddTab("plugin_manager", "Plugins", new PluginsTab(instance));
+            }
+            TabConsole.Tabs["plugin_manager"].Select();
         }
 
         private void frmMain_Resize(object sender, EventArgs e)

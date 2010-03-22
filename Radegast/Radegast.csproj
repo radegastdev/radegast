@@ -167,6 +167,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Core\Types\StringTokenizer.cs" />
+    <Compile Include="Core\Types\RadegastTabControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Core\Types\ToolStripCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -304,6 +307,12 @@
     </Compile>
     <Compile Include="GUI\Consoles\Assets\SLImageHandler.Designer.cs">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Consoles\PluginsTab.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\PluginsTab.Designer.cs">
+      <DependentUpon>PluginsTab.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Consoles\VoiceConsole.cs">
       <SubType>UserControl</SubType>
@@ -574,6 +583,9 @@
     <EmbeddedResource Include="GUI\Consoles\Assets\SLImageHandler.resx">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\PluginsTab.resx">
+      <DependentUpon>PluginsTab.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\VoiceConsole.resx">
       <DependentUpon>VoiceConsole.cs</DependentUpon>
