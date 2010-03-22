@@ -43,6 +43,7 @@ namespace Radegast
         private Panel container;
 
         public frmDetachedTab(RadegastInstance instance, RadegastTab tab)
+            :base(instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmDetachedTab_Disposed);
@@ -55,6 +56,8 @@ namespace Radegast
             tab.Control.BringToFront();
 
             this.Text = tab.Label + " - " + Properties.Resources.ProgramName;
+            SettingsKeyBase = "tab_window_" + tab.Control.GetType().Name;
+            AutoSavePosition = true;
         }
 
         void frmDetachedTab_Disposed(object sender, EventArgs e)
