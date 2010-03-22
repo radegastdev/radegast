@@ -32,6 +32,9 @@
             this.chName = new System.Windows.Forms.ColumnHeader();
             this.chDesciption = new System.Windows.Forms.ColumnHeader();
             this.chVersion = new System.Windows.Forms.ColumnHeader();
+            this.btnLoad = new System.Windows.Forms.Button();
+            this.btnUnload = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lvwPlugins
@@ -67,10 +70,46 @@
             // 
             this.chVersion.Text = "Version";
             // 
+            // btnLoad
+            // 
+            this.btnLoad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLoad.Location = new System.Drawing.Point(470, 20);
+            this.btnLoad.Name = "btnLoad";
+            this.btnLoad.Size = new System.Drawing.Size(93, 23);
+            this.btnLoad.TabIndex = 1;
+            this.btnLoad.Text = "&Load...";
+            this.btnLoad.UseVisualStyleBackColor = true;
+            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            // 
+            // btnUnload
+            // 
+            this.btnUnload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUnload.Location = new System.Drawing.Point(470, 49);
+            this.btnUnload.Name = "btnUnload";
+            this.btnUnload.Size = new System.Drawing.Size(93, 23);
+            this.btnUnload.TabIndex = 2;
+            this.btnUnload.Text = "&Unload";
+            this.btnUnload.UseVisualStyleBackColor = true;
+            this.btnUnload.Click += new System.EventHandler(this.btnUnload_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(470, 78);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(93, 23);
+            this.btnRefresh.TabIndex = 3;
+            this.btnRefresh.Text = "&Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
             // PluginsTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btnRefresh);
+            this.Controls.Add(this.btnUnload);
+            this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.lvwPlugins);
             this.Name = "PluginsTab";
             this.Size = new System.Drawing.Size(576, 385);
@@ -85,5 +124,8 @@
         private System.Windows.Forms.ColumnHeader chName;
         private System.Windows.Forms.ColumnHeader chDesciption;
         private System.Windows.Forms.ColumnHeader chVersion;
+        private System.Windows.Forms.Button btnLoad;
+        private System.Windows.Forms.Button btnUnload;
+        private System.Windows.Forms.Button btnRefresh;
     }
 }

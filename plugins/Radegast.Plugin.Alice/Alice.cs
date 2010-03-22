@@ -123,8 +123,9 @@ namespace Radegast.Plugin.Alice
 
         public void StopPlugin(RadegastInstance Instance)
         {
-            // Remove the menu button
-            Instance.MainForm.ToolsMenu.DropDownItems.Remove(MenuButton);
+            // Remove the menu buttons
+            EnabledButton.Dispose();
+            MenuButton.Dispose();
 
             if (talkToAvatar!=null)
             {

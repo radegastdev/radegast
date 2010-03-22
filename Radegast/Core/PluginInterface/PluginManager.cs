@@ -73,16 +73,22 @@ namespace Radegast
                 List<IRadegastPlugin> unload = new List<IRadegastPlugin>(PluginsLoaded);
                 unload.ForEach(plug =>
                 {
-                    PluginsLoaded.Remove(plug);
-                    try
-                    {
-                        plug.StopPlugin(instance);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR in Shutdown Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug, ex);
-                    }
+                    UnloadPlugin(plug);
                 });
+            }
+        }
+
+        public void UnloadPlugin(IRadegastPlugin plug)
+        {
+            try
+            {
+                plug.StopPlugin(instance);
+                lock (PluginsLoaded)
+                    PluginsLoaded.Remove(plug);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("ERROR in Shutdown Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug, ex);
             }
         }
 

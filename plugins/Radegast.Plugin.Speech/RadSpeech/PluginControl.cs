@@ -201,6 +201,7 @@ namespace RadegastSpeech
         /// We use this to release system resources.</remarks>
         public void StopPlugin(RadegastInstance inst)
         {
+            SpeechButton.Dispose();
             Shutdown();
         }
 
