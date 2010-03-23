@@ -396,6 +396,8 @@ namespace Radegast
         /// <param name="highlightChatTab">Highligt (and flash in taskbar) chat tab if not selected</param>
         public void DisplayNotificationInChat(string msg, ChatBufferTextStyle style, bool highlightChatTab)
         {
+            if (!instance.MainForm.IsHandleCreated) return;
+
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(() => DisplayNotificationInChat(msg, style, highlightChatTab)));
@@ -527,7 +529,17 @@ namespace Radegast
                 tab = AddTab("map", "Map", new MapConsole(instance));
                 tab.AllowClose = false;
                 tab.AllowDetach = true;
-                tab.Visible = false;
+                if (instance.MonoRuntime)
+                {
+                    tab.Visible = true;
+                    SelectTab("map");
+                    SelectTab("chat");
+                    tab.Visible = false;
+                }
+                else
+                {
+                    tab.Visible = false;
+                }
             }
 
             tab = AddTab("voice", "Voice", new VoiceConsole(instance));
