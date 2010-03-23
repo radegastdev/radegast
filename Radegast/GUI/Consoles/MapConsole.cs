@@ -111,9 +111,16 @@ namespace Radegast
             // Unregister callbacks
             UnregisterClientEvents(client);
 
-            if (map != null && !instance.MonoRuntime)
+            if (map != null)
             {
-                map.Dispose();
+                if (instance.MonoRuntime)
+                {
+                    map.Navigating -= new WebBrowserNavigatingEventHandler(map_Navigating);
+                }
+                else
+                {
+                    map.Dispose();
+                }
                 map = null;
             }
         }
