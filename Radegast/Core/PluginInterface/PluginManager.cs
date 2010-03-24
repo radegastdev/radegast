@@ -43,34 +43,63 @@ using Microsoft.CSharp;
 namespace Radegast
 {
     /// <summary>
+    /// Information about loaded plugin
+    /// </summary>
+    public class PluginInfo
+    {
+        /// <summary>File name from which the plugin was loaded, cannot load plugin twice from the same file</summary>
+        public string FileName { get; set; }
+        /// <summary>Plugin class</summary>
+        public IRadegastPlugin Plugin { get; set; }
+        /// <summary>Is plugin started</summary>
+        public bool Started { get; set; }
+        /// <summary>Plugin class</summary>
+        public PluginAttribute Attribures
+        {
+            get
+            {
+                if (Plugin == null) return null;
+                return PluginManager.GetAttributes(Plugin);
+            }
+        }
+    }
+
+    /// <summary>
     /// Handles loading Radegast plugins
     /// </summary>
     public class PluginManager : IDisposable
     {
-        List<IRadegastPlugin> PluginsLoaded = new List<IRadegastPlugin>();
+        List<PluginInfo> PluginsLoaded = new List<PluginInfo>();
         RadegastInstance instance;
 
-        public List<IRadegastPlugin> Plugins
+        /// <summary>
+        /// Gets the list of currently loaded plugins
+        /// </summary>
+        public List<PluginInfo> Plugins
         {
             get
             {
-                List<IRadegastPlugin> ret = null;
-                lock (PluginsLoaded)
-                    ret = new List<IRadegastPlugin>(PluginsLoaded);
-                return ret;
+                return PluginsLoaded;
             }
         }
 
+        /// <summary>
+        /// Creates new PluginManager
+        /// </summary>
+        /// <param name="instance">Radegast instance PluginManager is associated with</param>
         public PluginManager(RadegastInstance instance)
         {
             this.instance = instance;
         }
 
+        /// <summary>
+        /// Unloads all plugins
+        /// </summary>
         public void Dispose()
         {
             lock (PluginsLoaded)
             {
-                List<IRadegastPlugin> unload = new List<IRadegastPlugin>(PluginsLoaded);
+                List<PluginInfo> unload = new List<PluginInfo>(PluginsLoaded);
                 unload.ForEach(plug =>
                 {
                     UnloadPlugin(plug);
@@ -78,13 +107,17 @@ namespace Radegast
             }
         }
 
-        public void UnloadPlugin(IRadegastPlugin plug)
+        /// <summary>
+        /// Unloads a plugin
+        /// </summary>
+        /// <param name="plug">Plugin to unload</param>
+        public void UnloadPlugin(PluginInfo plug)
         {
             try
             {
-                plug.StopPlugin(instance);
                 lock (PluginsLoaded)
-                    PluginsLoaded.Remove(plug);
+                    PluginsLoaded.RemoveAll((PluginInfo info) => { return plug.FileName == info.FileName; });
+                plug.Plugin.StopPlugin(instance);
             }
             catch (Exception ex)
             {
@@ -92,11 +125,16 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Gets extended atributes for plugin
+        /// </summary>
+        /// <param name="plug">Plugin to lookup extra attributes</param>
+        /// <returns>Extended atributes for plugin</returns>
         public static PluginAttribute GetAttributes(IRadegastPlugin plug)
         {
             PluginAttribute a = null;
 
-            foreach(Attribute attr in Attribute.GetCustomAttributes(plug.GetType()))
+            foreach (Attribute attr in Attribute.GetCustomAttributes(plug.GetType()))
             {
                 if (attr is PluginAttribute)
                     a = (PluginAttribute)attr;
@@ -111,15 +149,20 @@ namespace Radegast
             return a;
         }
 
+        /// <summary>
+        /// Starts all loaded plugins
+        /// </summary>
         public void StartPlugins()
         {
             lock (PluginsLoaded)
             {
-                foreach (IRadegastPlugin plug in PluginsLoaded)
+                foreach (PluginInfo plug in PluginsLoaded)
                 {
+                    Logger.DebugLog("Starting " + plug.Plugin.GetType().FullName);
                     try
                     {
-                        plug.StartPlugin(instance);
+                        plug.Plugin.StartPlugin(instance);
+                        plug.Started = true;
                     }
                     catch (Exception ex)
                     {
@@ -129,113 +172,149 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Loads a plugin for a precompiled assembly or source file
+        /// </summary>
+        /// <param name="loadFileName">File to load</param>
+        /// <param name="stratPlugins">Start plugins that are found in the assembly</param>
+        public void LoadPluginFile(string loadFileName, bool stratPlugins)
+        {
+            if (loadFileName.ToLower().EndsWith(@".cs"))
+            {
+                LoadCSharpScriptFile(loadFileName, stratPlugins);
+            }
+            else if (loadFileName.ToLower().EndsWith(".dll") || loadFileName.ToLower().EndsWith(".exe"))
+            {
+                try
+                {
+                    Assembly assembly = Assembly.LoadFile(loadFileName);
+                    LoadAssembly(loadFileName, assembly, stratPlugins);
+                }
+                catch (BadImageFormatException)
+                {
+                    // non .NET .dlls
+                }
+                catch (ReflectionTypeLoadException)
+                {
+                    // Out of date or dlls missing sub dependencies
+                }
+                catch (TypeLoadException)
+                {
+                    // Another version of: Out of date or dlls missing sub dependencies
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("ERROR in Radegast Plugin: " + loadFileName + " because " + ex, Helpers.LogLevel.Debug);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Scans and load plugins from Radegast application folder without starting them
+        /// </summary>
         public void ScanAndLoadPlugins()
         {
             string dirName = Application.StartupPath;
 
             if (!Directory.Exists(dirName)) return;
 
-            foreach (string loadfilename in Directory.GetFiles(dirName))
+            foreach (string loadFileName in Directory.GetFiles(dirName))
             {
-                if (loadfilename.ToLower().EndsWith(".dll") || loadfilename.ToLower().EndsWith(".exe"))
-                {
-                    try
-                    {
-                        Assembly assembly = Assembly.LoadFile(loadfilename);
-                        LoadAssembly(loadfilename, assembly);
-                    }
-                    catch (BadImageFormatException)
-                    {
-                        // non .NET .dlls
-                    }
-                    catch (ReflectionTypeLoadException)
-                    {
-                        // Out of date or dlls missing sub dependencies
-                    }
-                    catch (TypeLoadException)
-                    {
-                        // Another version of: Out of date or dlls missing sub dependencies
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("ERROR in Radegast Plugin: " + loadfilename + " because " + ex, Helpers.LogLevel.Debug);
-                    }
-                }
+                LoadPluginFile(loadFileName, false);
             }
         }
 
-        public void LoadCSharpScriptFile(string filename)
+        /// <summary>
+        /// Loads and compiles a plugin from a C# source file
+        /// </summary>
+        /// <param name="fileName">Load plugin from this filename</param>
+        /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
+        public void LoadCSharpScriptFile(string fileName, bool startPlugins)
         {
-            try { LoadCSharpScript(File.ReadAllText(filename)); }
+            try { LoadCSharpScript(fileName, File.ReadAllText(fileName), startPlugins); }
             catch (Exception ex)
             {
-                Logger.Log("Failed loading C# script " + filename + ": ", Helpers.LogLevel.Warning, ex);
+                Logger.Log("Failed loading C# script " + fileName + ": ", Helpers.LogLevel.Warning, ex);
             }
         }
 
-        public void LoadCSharpScript(string code)
+        /// <summary>
+        /// Compiles plugin from string source code
+        /// </summary>
+        /// <param name="fileName">File name from which source was loaded</param>
+        /// <param name="code">Source code</param>
+        /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
+        public void LoadCSharpScript(string fileName, string code, bool startPlugins)
         {
-            ThreadPool.QueueUserWorkItem(sender =>
+            try
             {
-                try
+                // *** Generate dynamic compiler
+                Dictionary<string, string> loCompilerOptions = new Dictionary<string, string>();
+                loCompilerOptions.Add("CompilerVersion", "v3.5");
+                CSharpCodeProvider loCompiler = new CSharpCodeProvider(loCompilerOptions);
+                CompilerParameters loParameters = new CompilerParameters();
+
+                // *** Start by adding any referenced assemblies
+                loParameters.ReferencedAssemblies.Add("OpenMetaverse.StructuredData.dll");
+                loParameters.ReferencedAssemblies.Add("OpenMetaverseTypes.dll");
+                loParameters.ReferencedAssemblies.Add("OpenMetaverse.dll");
+                loParameters.ReferencedAssemblies.Add("Radegast.exe");
+                loParameters.ReferencedAssemblies.Add("System.dll");
+                loParameters.ReferencedAssemblies.Add("System.Core.dll");
+                loParameters.ReferencedAssemblies.Add("System.Drawing.dll");
+                loParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+
+                // *** Load the resulting assembly into memory
+                loParameters.GenerateInMemory = true;
+                loParameters.GenerateExecutable = false;
+
+                // *** Now compile the whole thing
+                CompilerResults loCompiled =
+                        loCompiler.CompileAssemblyFromSource(loParameters, code);
+
+                // *** Check for compilation erros
+                if (loCompiled.Errors.HasErrors)
                 {
-                    // *** Generate dynamic compiler
-                    Dictionary<string, string> loCompilerOptions = new Dictionary<string, string>();
-                    loCompilerOptions.Add("CompilerVersion", "v3.5");
-                    CSharpCodeProvider loCompiler = new CSharpCodeProvider(loCompilerOptions);
-                    CompilerParameters loParameters = new CompilerParameters();
+                    string lcErrorMsg = "";
+                    lcErrorMsg = "Compilation failed: " + loCompiled.Errors.Count.ToString() + " errors:";
 
-                    // *** Start by adding any referenced assemblies
-                    loParameters.ReferencedAssemblies.Add("OpenMetaverse.StructuredData.dll");
-                    loParameters.ReferencedAssemblies.Add("OpenMetaverseTypes.dll");
-                    loParameters.ReferencedAssemblies.Add("OpenMetaverse.dll");
-                    loParameters.ReferencedAssemblies.Add("Radegast.exe");
-                    loParameters.ReferencedAssemblies.Add("System.dll");
-                    loParameters.ReferencedAssemblies.Add("System.Core.dll");
-                    loParameters.ReferencedAssemblies.Add("System.Drawing.dll");
-                    loParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+                    for (int x = 0; x < loCompiled.Errors.Count; x++)
+                        lcErrorMsg += "\r\nLine: " +
+                                     loCompiled.Errors[x].Line.ToString() + " - " +
+                                     loCompiled.Errors[x].ErrorText;
 
-                    // *** Load the resulting assembly into memory
-                    loParameters.GenerateInMemory = true;
-                    loParameters.GenerateExecutable = false;
-
-                    // *** Now compile the whole thing
-                    CompilerResults loCompiled =
-                            loCompiler.CompileAssemblyFromSource(loParameters, code);
-
-                    // *** Check for compilation erros
-                    if (loCompiled.Errors.HasErrors)
-                    {
-                        string lcErrorMsg = "";
-                        lcErrorMsg = "Compilation failed: " + loCompiled.Errors.Count.ToString() + " errors:";
-
-                        for (int x = 0; x < loCompiled.Errors.Count; x++)
-                            lcErrorMsg += "\r\nLine: " +
-                                         loCompiled.Errors[x].Line.ToString() + " - " +
-                                         loCompiled.Errors[x].ErrorText;
-
-                        instance.TabConsole.DisplayNotificationInChat(lcErrorMsg, ChatBufferTextStyle.Alert);
-                        return;
-                    }
-
-                    instance.TabConsole.DisplayNotificationInChat("Compilation successful.");
-                    Assembly loAssembly = loCompiled.CompiledAssembly;
-                    instance.MainForm.Invoke(new MethodInvoker(() => LoadAssembly("Dynamically compiled", loAssembly, true)));
+                    instance.TabConsole.DisplayNotificationInChat(lcErrorMsg, ChatBufferTextStyle.Alert);
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    Logger.Log("Failed loading C# script: ", Helpers.LogLevel.Warning, ex);
-                }
-            });
+
+                instance.TabConsole.DisplayNotificationInChat("Compilation successful.");
+                Assembly loAssembly = loCompiled.CompiledAssembly;
+                LoadAssembly(fileName, loAssembly, startPlugins);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed loading C# script: ", Helpers.LogLevel.Warning, ex);
+            }
         }
 
-        public void LoadAssembly(string loadfilename, Assembly assembly)
-        {
-            LoadAssembly(loadfilename, assembly, false);
-        }
-
+        /// <summary>
+        /// Scans assembly for supported types
+        /// </summary>
+        /// <param name="loadfilename">File name from which assembly was loaded</param>
+        /// <param name="assembly">Assembly to scan for supported types</param>
+        /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
         public void LoadAssembly(string loadfilename, Assembly assembly, bool startPlugins)
         {
+            if (null != PluginsLoaded.Find((PluginInfo info) => { return info.FileName == loadfilename; }))
+            {
+                Logger.Log("Plugin already loaded, skipping: " + loadfilename, Helpers.LogLevel.Info);
+                if (startPlugins)
+                {
+                    instance.TabConsole.DisplayNotificationInChat("Plugin already loaded, skipping: " + loadfilename);
+                }
+                return;
+            }
+
             foreach (Type type in assembly.GetTypes())
             {
                 if (typeof(IRadegastPlugin).IsAssignableFrom(type))
@@ -258,10 +337,17 @@ namespace Radegast
                                 continue;
                             }
                         }
-                        lock (PluginsLoaded) PluginsLoaded.Add(plug);
+                        PluginInfo info = new PluginInfo()
+                        {
+                            FileName = loadfilename,
+                            Plugin = plug,
+                            Started = false
+                        };
+
+                        lock (PluginsLoaded) PluginsLoaded.Add(info);
                         if (startPlugins && plug != null)
                         {
-                            try { plug.StartPlugin(instance); }
+                            try { plug.StartPlugin(instance); info.Started = true; }
                             catch (Exception ex) { Logger.Log(string.Format("Failed starting plugin {0}:", type), Helpers.LogLevel.Error, ex); }
                         }
                     }

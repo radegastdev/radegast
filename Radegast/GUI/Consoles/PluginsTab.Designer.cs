@@ -35,6 +35,7 @@
             this.btnLoad = new System.Windows.Forms.Button();
             this.btnUnload = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnReload = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lvwPlugins
@@ -95,18 +96,30 @@
             // btnRefresh
             // 
             this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRefresh.Location = new System.Drawing.Point(470, 78);
+            this.btnRefresh.Location = new System.Drawing.Point(470, 107);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(93, 23);
-            this.btnRefresh.TabIndex = 3;
-            this.btnRefresh.Text = "&Refresh";
+            this.btnRefresh.TabIndex = 4;
+            this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // btnReload
+            // 
+            this.btnReload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnReload.Location = new System.Drawing.Point(470, 78);
+            this.btnReload.Name = "btnReload";
+            this.btnReload.Size = new System.Drawing.Size(93, 23);
+            this.btnReload.TabIndex = 3;
+            this.btnReload.Text = "&Reload";
+            this.btnReload.UseVisualStyleBackColor = true;
+            this.btnReload.Click += new System.EventHandler(this.btnReload_Click);
             // 
             // PluginsTab
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btnReload);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnUnload);
             this.Controls.Add(this.btnLoad);
@@ -127,5 +140,6 @@
         private System.Windows.Forms.Button btnLoad;
         private System.Windows.Forms.Button btnUnload;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnReload;
     }
 }

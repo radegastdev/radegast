@@ -14,7 +14,7 @@ namespace Radegast
     public partial class PluginsTab : RadegastTabControl
     {
         public PluginsTab(RadegastInstance instance)
-            :base(instance)
+            : base(instance)
         {
             InitializeComponent();
             ListPlugins();
@@ -23,17 +23,16 @@ namespace Radegast
 
         void ListPlugins()
         {
-            List<IRadegastPlugin> plugins = instance.PluginManager.Plugins;
+            List<PluginInfo> plugins = instance.PluginManager.Plugins;
             lvwPlugins.Items.Clear();
 
-            foreach (IRadegastPlugin plugin in plugins)
+            foreach (PluginInfo plugin in plugins)
             {
-                PluginAttribute attr = PluginManager.GetAttributes(plugin);
                 ListViewItem item = new ListViewItem();
-                item.Text = attr.Name;
+                item.Text = plugin.Attribures.Name;
                 item.Tag = plugin;
-                item.SubItems.Add(attr.Description);
-                item.SubItems.Add(attr.Version);
+                item.SubItems.Add(plugin.Attribures.Description);
+                item.SubItems.Add(plugin.Attribures.Version);
                 lvwPlugins.Items.Add(item);
             }
 
@@ -56,7 +55,7 @@ namespace Radegast
         {
             foreach (ListViewItem item in lvwPlugins.SelectedItems)
             {
-                instance.PluginManager.UnloadPlugin((IRadegastPlugin)item.Tag);
+                instance.PluginManager.UnloadPlugin((PluginInfo)item.Tag);
             }
             ListPlugins();
         }
@@ -74,39 +73,20 @@ namespace Radegast
                 {
                     for (int i = 0; i < dlg.FileNames.Length; i++)
                     {
-                        if (dlg.FileNames[i].ToLower().EndsWith(@".dll"))
-                        {
-                            try
-                            {
-                                Assembly assembly = Assembly.LoadFile(dlg.FileNames[i]);
-                                instance.PluginManager.LoadAssembly(dlg.FileNames[i], assembly, true);
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Log("Error loading " + dlg.FileNames[i], Helpers.LogLevel.Error, ex);
-                            }
-                        }
-                        else
-                        {
-                            try
-                            {
-                                instance.PluginManager.LoadCSharpScript(File.ReadAllText(dlg.FileNames[i]));
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Log("Error loading " + dlg.FileNames[i], Helpers.LogLevel.Error, ex);
-                            }
-                        }
+                        instance.PluginManager.LoadPluginFile(dlg.FileNames[i], true);
                     }
-
-                    ThreadPool.QueueUserWorkItem(sync =>
-                        {
-                            Thread.Sleep(2000);
-                            if (IsHandleCreated)
-                                Invoke(new MethodInvoker(() => ListPlugins()));
-                        }
-                    );
+                    ListPlugins();
                 }
+            }
+        }
+
+        private void btnReload_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in lvwPlugins.SelectedItems)
+            {
+                PluginInfo info = (PluginInfo)item.Tag;
+                instance.PluginManager.UnloadPlugin((PluginInfo)item.Tag);
+                instance.PluginManager.LoadPluginFile(info.FileName, true);
             }
         }
     }
