@@ -36,6 +36,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Threading;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
@@ -63,6 +64,7 @@ namespace Radegast
         private Thread InventoryUpdate;
         private List<UUID> WornItems = new List<UUID>();
         private bool appearnceWasBusy;
+        private InvNodeSorter sorter;
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -88,7 +90,21 @@ namespace Radegast
             Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
             AddFolderFromStore(invRootNode, Inventory.RootFolder);
 
-            invTree.TreeViewNodeSorter = new InvNodeSorter();
+            sorter = new InvNodeSorter();
+
+            if (!instance.GlobalSettings.ContainsKey("inv_sort_bydate"))
+                instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(true);
+            if (!instance.GlobalSettings.ContainsKey("inv_sort_sysfirst"))
+                instance.GlobalSettings["inv_sort_sysfirst"] = OSD.FromBoolean(true);
+
+            sorter.ByDate = instance.GlobalSettings["inv_sort_bydate"].AsBoolean();
+            sorter.SystemFoldersFirst = instance.GlobalSettings["inv_sort_sysfirst"].AsBoolean();
+
+            tbtnSortByDate.Checked = sorter.ByDate;
+            tbtbSortByName.Checked = !sorter.ByDate;
+            tbtnSystemFoldersFirst.Checked = sorter.SystemFoldersFirst;
+
+            invTree.TreeViewNodeSorter = sorter;
 
             if (instance.MonoRuntime)
             {
@@ -1940,6 +1956,34 @@ namespace Radegast
             (new InventoryBackup(instance)).Show();
         }
 
+        private void tbtnSystemFoldersFirst_Click(object sender, EventArgs e)
+        {
+            sorter.SystemFoldersFirst = tbtnSystemFoldersFirst.Checked = !sorter.SystemFoldersFirst;
+            instance.GlobalSettings["inv_sort_sysfirst"] = OSD.FromBoolean(sorter.SystemFoldersFirst);
+            invTree.Sort();
+        }
+
+        private void tbtbSortByName_Click(object sender, EventArgs e)
+        {
+            if (tbtbSortByName.Checked) return;
+
+            tbtbSortByName.Checked = true;
+            tbtnSortByDate.Checked = sorter.ByDate = false;
+            instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(sorter.ByDate);
+
+            invTree.Sort();
+        }
+
+        private void tbtnSortByDate_Click(object sender, EventArgs e)
+        {
+            if (tbtnSortByDate.Checked) return;
+
+            tbtbSortByName.Checked = false;
+            tbtnSortByDate.Checked = sorter.ByDate = true;
+            instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(sorter.ByDate);
+
+            invTree.Sort();
+        }
 
     }
 
@@ -1948,6 +1992,7 @@ namespace Radegast
     public class InvNodeSorter : System.Collections.IComparer
     {
         bool _sysfirst = true;
+        bool _bydate = true;
 
         int CompareFolders(InventoryFolder x, InventoryFolder y)
         {
@@ -1966,6 +2011,7 @@ namespace Radegast
         }
 
         public bool SystemFoldersFirst { set { _sysfirst = value; } get { return _sysfirst; } }
+        public bool ByDate { set { _bydate = value; } get { return _bydate; } }
 
         public int Compare(object x, object y)
         {
@@ -1990,15 +2036,20 @@ namespace Radegast
             {
                 return 0;
             }
+            
             InventoryItem item1 = (InventoryItem)tx.Tag;
             InventoryItem item2 = (InventoryItem)ty.Tag;
-            if (item1.CreationDate < item2.CreationDate)
+            
+            if (_bydate)
             {
-                return 1;
-            }
-            else if (item1.CreationDate > item2.CreationDate)
-            {
-                return -1;
+                if (item1.CreationDate < item2.CreationDate)
+                {
+                    return 1;
+                }
+                else if (item1.CreationDate > item2.CreationDate)
+                {
+                    return -1;
+                }
             }
             return string.Compare(item1.Name, item2.Name);
         }
