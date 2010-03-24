@@ -160,11 +160,8 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Grid_CoarseLocationUpdate(sender, e);
-                }));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Grid_CoarseLocationUpdate(sender, e)));
                 return;
             }
 

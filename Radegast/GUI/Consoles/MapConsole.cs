@@ -49,37 +49,18 @@ namespace Radegast
         WebBrowser map;
         Regex slscheme = new Regex("^secondlife://(.+)/([0-9]+)/([0-9]+)");
         bool InTeleport = false;
+        bool mapCreated = false;
 
-        public MapConsole(RadegastInstance i)
+        public MapConsole(RadegastInstance inst)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmMap_Disposed);
 
-            instance = i;
+            this.instance = inst;
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
-            try
-            {
-                map = new WebBrowser();
-                map.Dock = DockStyle.Fill;
-                map.AllowWebBrowserDrop = false;
-                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
-                map.WebBrowserShortcutsEnabled = false;
-                map.ScriptErrorsSuppressed = true;
-                map.ObjectForScripting = this;
-                map.AllowNavigation = false;
-                if (instance.MonoRuntime)
-                {
-                    map.Navigating += new WebBrowserNavigatingEventHandler(map_Navigating);
-                }
-                pnlMap.Controls.Add(map);
-            }
-            catch (Exception e)
-            {
-                Logger.Log(e.Message, Helpers.LogLevel.Warning, client, e);
-                pnlMap.Visible = false;
-                map = null;
-            }
+            Visible = false;
+            VisibleChanged += new EventHandler(MapConsole_VisibleChanged);
 
             // Register callbacks
             RegisterClientEvents(client);
@@ -105,6 +86,57 @@ namespace Radegast
             RegisterClientEvents(client);
         }
 
+        void createMap()
+        {
+            try
+            {
+                map = new WebBrowser();
+                map.Dock = DockStyle.Fill;
+                map.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(map_DocumentCompleted);
+                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
+                pnlMap.Controls.Add(map);
+            }
+            catch (Exception e)
+            {
+                Logger.Log(e.Message, Helpers.LogLevel.Warning, client, e);
+                pnlMap.Visible = false;
+                map = null;
+            }
+        }
+
+        void map_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            map.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(map_DocumentCompleted);
+            map.AllowWebBrowserDrop = false;
+            map.WebBrowserShortcutsEnabled = false;
+            map.ScriptErrorsSuppressed = true;
+            map.ObjectForScripting = this;
+            map.AllowNavigation = false;
+            
+            if (instance.MonoRuntime)
+            {
+                map.Navigating += new WebBrowserNavigatingEventHandler(map_Navigating);
+            }
+
+            ThreadPool.QueueUserWorkItem(sync =>
+                {
+                    Thread.Sleep(1000);
+                    if (InvokeRequired && IsHandleCreated)
+                        BeginInvoke(new MethodInvoker(() =>
+                            {
+                                if (savedRegion != null)
+                                {
+                                    gotoRegion(savedRegion, savedX, savedY);
+                                }
+                                else if (Active)
+                                {
+                                    gotoRegion(client.Network.CurrentSim.Name, 128, 128);
+                                }
+                            }
+                    ));
+                }
+            );
+        }
 
         void frmMap_Disposed(object sender, EventArgs e)
         {
@@ -261,7 +293,7 @@ namespace Radegast
         {
             if (!Active) return;
 
-            if (instance.MonoRuntime)
+            if (instance.MonoRuntime && map != null)
             {
                 map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
             }
@@ -281,8 +313,15 @@ namespace Radegast
         }
 
         #region JavascriptHooks
+        string savedRegion = null;
+        int savedX, savedY;
+
         void gotoRegion(string regionName, int simX, int simY)
         {
+            savedRegion = regionName;
+            savedX = simX;
+            savedY = simY;
+
             if (!Visible || map == null || map.Document == null) return;
             if (instance.MonoRuntime)
             {
@@ -367,6 +406,20 @@ namespace Radegast
             }
         }
 
+        private void MapConsole_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!mapCreated && Visible)
+            {
+                createMap();
+                mapCreated = true;
+            }
+            else if (Visible && instance.MonoRuntime && savedRegion != null)
+            {
+                gotoRegion(savedRegion, savedX, savedY);
+            }
+        }
+
         #endregion GUIEvents
+
     }
 }

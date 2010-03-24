@@ -529,17 +529,7 @@ namespace Radegast
                 tab = AddTab("map", "Map", new MapConsole(instance));
                 tab.AllowClose = false;
                 tab.AllowDetach = true;
-                if (instance.MonoRuntime)
-                {
-                    tab.Visible = true;
-                    SelectTab("map");
-                    SelectTab("chat");
-                    tab.Visible = false;
-                }
-                else
-                {
-                    tab.Visible = false;
-                }
+                tab.Visible = false;
             }
 
             tab = AddTab("voice", "Voice", new VoiceConsole(instance));

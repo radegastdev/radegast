@@ -91,11 +91,8 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        Assets_OnAssetReceived(transfer, asset);
-                    }
-                ));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Assets_OnAssetReceived(transfer, asset)));
                 return;
             }
 
@@ -167,11 +164,8 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                {
-                    Inventory_OnInventoryItemCopied(item);
-                }
-                ));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Inventory_OnInventoryItemCopied(item)));
                 return;
             }
 
@@ -327,7 +321,8 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(delegate() { UpdateStatus(status); }));
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => UpdateStatus(status)));
                 return;
             }
             instance.TabConsole.DisplayNotificationInChat("Notecard status: " + status, ChatBufferTextStyle.Invisible);
