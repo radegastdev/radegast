@@ -87,6 +87,27 @@ namespace Radegast
             Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
             Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
             AddFolderFromStore(invRootNode, Inventory.RootFolder);
+
+            invTree.TreeViewNodeSorter = new InvNodeSorter();
+
+            if (instance.MonoRuntime)
+            {
+                invTree.BackColor = Color.FromKnownColor(KnownColor.Window);
+                invTree.ForeColor = invTree.LineColor = Color.FromKnownColor(KnownColor.WindowText);
+                InventoryFolder f = new InventoryFolder(UUID.Random());
+                f.Name = "";
+                f.ParentUUID = UUID.Zero;
+                f.PreferredType = AssetType.Unknown;
+                TreeNode dirNode = new TreeNode();
+                dirNode.Name = f.UUID.ToString();
+                dirNode.Text = f.Name;
+                dirNode.Tag = f;
+                dirNode.ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower());
+                dirNode.SelectedImageIndex = dirNode.ImageIndex;
+                invTree.Nodes.Add(dirNode);
+                invTree.Sort();
+            }
+
             saveAllTToolStripMenuItem.Enabled = false;
             InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
             InventoryUpdate.Name = "InventoryUpdate";
@@ -95,7 +116,6 @@ namespace Radegast
 
             invRootNode.Expand();
 
-            invTree.TreeViewNodeSorter = new InvNodeSorter();
             invTree.AfterExpand += new TreeViewEventHandler(TreeView_AfterExpand);
             invTree.NodeMouseClick += new TreeNodeMouseClickEventHandler(invTree_MouseClick);
             invTree.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(invTree_NodeMouseDoubleClick);
@@ -506,7 +526,7 @@ namespace Radegast
             {
                 img = GetItemImageIndex(linkedItem.AssetType.ToString().ToLower());
             }
-            
+
             itemNode.ImageIndex = img;
             itemNode.SelectedImageIndex = img;
             parent.Nodes.Add(itemNode);
@@ -685,6 +705,15 @@ namespace Radegast
 
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
             ThreadPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
+
+            if (instance.MonoRuntime && IsHandleCreated)
+                Invoke(new MethodInvoker(() =>
+                    {
+                        invTree.Sort();
+                    }
+            ));
+
+
         }
 
         public void ReloadInventory()
@@ -1026,7 +1055,7 @@ namespace Radegast
                     ctxItem = new ToolStripMenuItem("New Script", null, OnInvContextClick);
                     ctxItem.Name = "new_script";
                     ctxInv.Items.Add(ctxItem);
-                    
+
                     ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
                     ctxItem.Name = "refresh";
                     ctxInv.Items.Add(ctxItem);
@@ -1162,7 +1191,7 @@ namespace Radegast
                         ctxItem.Name = "rez_inworld";
                         ctxInv.Items.Add(ctxItem);
                     }
-                    
+
                     ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                     ctxItem.Name = "rename_item";
                     ctxInv.Items.Add(ctxItem);
@@ -1645,7 +1674,7 @@ namespace Radegast
 
             if (dest == null) return;
 
-            client.Inventory.CreateLink(dest.UUID, instance.InventoryClipboard.Item, (bool success, InventoryItem item) => {});
+            client.Inventory.CreateLink(dest.UUID, instance.InventoryClipboard.Item, (bool success, InventoryItem item) => { });
         }
 
         #endregion

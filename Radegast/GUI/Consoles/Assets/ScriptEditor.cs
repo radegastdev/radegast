@@ -123,6 +123,7 @@ namespace Radegast
 
             asset.Decode();
             rtb.Text = ((AssetScriptText)asset).Source;
+            lineNubersForRtb.Invalidate();
             SetTitle();
         }
 
@@ -305,6 +306,7 @@ namespace Radegast
                 scriptName = Path.GetFileName(fileName);
                 SetTitle();
                 rtb.Text = File.ReadAllText(fileName);
+                lineNubersForRtb.Invalidate();
             }
         }
         #endregion
