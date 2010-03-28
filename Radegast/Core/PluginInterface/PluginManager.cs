@@ -110,15 +110,17 @@ namespace Radegast
         /// <param name="plug">Plugin to unload</param>
         public void UnloadPlugin(PluginInfo plug)
         {
-            try
+            lock (PluginsLoaded)
             {
-                lock (PluginsLoaded)
-                    PluginsLoaded.RemoveAll((PluginInfo info) => { return plug.FileName == info.FileName; });
-                plug.Plugin.StopPlugin(instance);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("ERROR in Shutdown Plugin: " + plug + " because " + ex, Helpers.LogLevel.Debug, ex);
+                PluginsLoaded.ForEach((PluginInfo info) =>
+                    {
+                        if (info.FileName == plug.FileName || info.Plugin == plug.Plugin)
+                        {
+                            try { info.Plugin.StopPlugin(instance); }
+                            catch (Exception ex) { Logger.Log("ERROR in unloading plugin: " + info.Plugin.GetType().Name + " because " + ex, Helpers.LogLevel.Debug, ex); }
+                        }
+                    });
+                PluginsLoaded.RemoveAll((PluginInfo info) => { return plug.FileName == info.FileName || info.Plugin == plug.Plugin; });
             }
         }
 
