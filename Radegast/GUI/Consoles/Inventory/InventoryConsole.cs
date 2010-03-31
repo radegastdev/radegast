@@ -1264,7 +1264,7 @@ namespace Radegast
                         {
                             if (!pt.ToString().StartsWith("HUD"))
                             {
-                                string name = pt.ToString();
+                                string name = Utils.EnumToText(pt);
 
                                 InventoryItem alreadyAttached = null;
                                 if ((alreadyAttached = AttachmentAt(pt)) != null)
@@ -1280,7 +1280,7 @@ namespace Radegast
                             }
                             else
                             {
-                                string name = pt.ToString().Substring(3);
+                                string name = Utils.EnumToText(pt).Substring(3);
 
                                 InventoryItem alreadyAttached = null;
                                 if ((alreadyAttached = AttachmentAt(pt)) != null)
