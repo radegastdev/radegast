@@ -1083,10 +1083,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.Http\OpenMetaverse.Http.csproj">
-      <Project>{A195EB92-3AC5-4443-8D65-8052480A21DA}</Project>
-      <Name>OpenMetaverse.Http</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.Rendering.Meshmerizer\OpenMetaverse.Rendering.Meshmerizer.csproj">
       <Project>{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}</Project>
       <Name>OpenMetaverse.Rendering.Meshmerizer</Name>
