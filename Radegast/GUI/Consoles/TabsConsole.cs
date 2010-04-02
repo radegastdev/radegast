@@ -150,12 +150,14 @@ namespace Radegast
         {
             client.Self.ScriptQuestion += new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
             client.Self.ScriptDialog += new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
+            client.Self.LoadURL += new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
             client.Self.ScriptQuestion -= new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
             client.Self.ScriptDialog -= new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
+            client.Self.LoadURL -= new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -259,6 +261,11 @@ namespace Radegast
             if (string.IsNullOrEmpty(e.Message)) return;
 
             tabs["chat"].Highlight();
+        }
+
+        void Self_LoadURL(object sender, LoadUrlEventArgs e)
+        {
+            instance.MainForm.AddNotification(new ntfLoadURL(instance, e));
         }
 
         private void netcom_InstantMessageReceived(object sender, InstantMessageEventArgs e)
