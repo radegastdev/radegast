@@ -69,7 +69,9 @@ namespace RadegastSpeech
         {
             if (rec == null) return;
 
-            // Avoid exceptions from deactiovating what is not active
+            // Avoid exceptions from deactivating what is not active
+            if (!cGrammars.ContainsKey(name))
+                return;
             Grammar v = cGrammars[name];
             if (!rec.Grammars.Contains(v))
                 return;

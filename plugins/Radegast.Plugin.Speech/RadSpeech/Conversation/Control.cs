@@ -177,7 +177,12 @@ namespace RadegastSpeech.Conversation
         /// <param name="e"></param>
         void OnTabChange(object sender, TabEventArgs e)
         {
-            System.Windows.Forms.Control sTabControl = e.Tab.Control;
+            ActivateConversationFromTab(e.Tab);
+        }
+
+        public void ActivateConversationFromTab(RadegastTab Tab)
+        {
+            System.Windows.Forms.Control sTabControl = Tab.Control;
 
             if (sTabControl is InventoryConsole)
                 SelectConversation(inventory);
@@ -225,7 +230,12 @@ namespace RadegastSpeech.Conversation
         /// <param name="e"></param>
         void TabConsole_OnTabAdded(object sender, TabEventArgs e)
         {
-            System.Windows.Forms.Control sTabControl = e.Tab.Control;
+            CreateConversationFromTab(e.Tab, true);
+        }
+
+        public void CreateConversationFromTab(RadegastTab Tab, bool selectConversation)
+        {
+            System.Windows.Forms.Control sTabControl = Tab.Control;
 
             Mode newConv = null;
 

@@ -114,7 +114,21 @@ namespace RadegastSpeech
                 converse = new Conversation.Control(this);
                 sound = new Sound.FmodSound(this);
                 StartControls();
-                talker.SayMore("Press enter to connect.");
+                if (!instance.Netcom.IsLoggedIn)
+                {
+                    talker.SayMore("Press enter to connect.");
+                }
+                else
+                {
+                    // Create conversations and pick active one if we are activating
+                    // the speech plugin mid-session
+                    foreach (RadegastTab tab in instance.TabConsole.Tabs.Values)
+                    {
+                        converse.CreateConversationFromTab(tab, false);
+                    }
+                    converse.ActivateConversationFromTab(instance.TabConsole.SelectedTab);
+
+                }
                 started = true;
             }
             catch (Exception e)
