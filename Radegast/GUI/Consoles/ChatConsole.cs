@@ -337,7 +337,7 @@ namespace Radegast
                 msg = input;
             }
 
-            msg = msg.Replace(ChatInputBox.NewlineMarker, "\n");
+            msg = msg.Replace(ChatInputBox.NewlineMarker, Environment.NewLine);
 
             if (instance.GlobalSettings["mu_emotes"].AsBoolean() && msg.StartsWith(":"))
             {

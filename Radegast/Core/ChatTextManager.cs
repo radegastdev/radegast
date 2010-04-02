@@ -234,19 +234,24 @@ namespace Radegast
             // }
             sb.Append(e.FromName);
 
-            switch (e.Type)
+            bool isEmote = e.Message.StartsWith("/me ");
+
+            if (!isEmote)
             {
+                switch (e.Type)
+                {
 
-                case ChatType.Whisper:
-                    sb.Append(" whispers");
-                    break;
+                    case ChatType.Whisper:
+                        sb.Append(" whispers");
+                        break;
 
-                case ChatType.Shout:
-                    sb.Append(" shouts");
-                    break;
+                    case ChatType.Shout:
+                        sb.Append(" shouts");
+                        break;
+                }
             }
 
-            if (e.Message.StartsWith("/me "))
+            if (isEmote)
             {
                 if (e.SourceType == ChatSourceType.Agent && instance.RLV.RestictionActive("recvemote", e.SourceID.ToString()))
                     sb.Append(" ...");
