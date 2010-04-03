@@ -419,6 +419,50 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Fetches avatar name
+        /// </summary>
+        /// <param name="key">Avatar UUID</param>
+        /// <param name="blocking">Should we wait until the name is retrieved</param>
+        /// <returns>Avatar name</returns>
+        public string getAvatarName(UUID key, bool blocking)
+        {
+            if (!blocking)
+                return getAvatarName(key);
+
+            string name = null;
+
+            using (ManualResetEvent gotName = new ManualResetEvent(false))
+            {
+
+                EventHandler<UUIDNameReplyEventArgs> handler = (object sender, UUIDNameReplyEventArgs e) =>
+                    {
+                        if (e.Names.ContainsKey(key))
+                        {
+                            name = e.Names[key];
+                            gotName.Set();
+                        }
+                    };
+
+                client.Avatars.UUIDNameReply += handler;
+                name = getAvatarName(key);
+
+                if (name == INCOMPLETE_NAME)
+                {
+                    gotName.WaitOne(10 * 1000);
+                }
+
+                client.Avatars.UUIDNameReply -= handler;
+            }
+            return name;
+
+        }
+
+        /// <summary>
+        /// Fetches avatar name from cache, if not in cache will requst name from the server
+        /// </summary>
+        /// <param name="key">Avatar UUID</param>
+        /// <returns>Avatar name</returns>
         public string getAvatarName(UUID key)
         {
             lock (nameCache)

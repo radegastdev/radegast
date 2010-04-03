@@ -56,7 +56,7 @@ namespace RadegastSpeech
         {
             if (rec == null) return;
 
-            if (rec.Grammars.Contains(cGrammars[name]))
+            if (!cGrammars.ContainsKey(name) || rec.Grammars.Contains(cGrammars[name]))
                 return;
             rec.LoadGrammar(cGrammars[name]);
         }

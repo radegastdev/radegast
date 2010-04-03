@@ -11,7 +11,7 @@ namespace RadegastSpeech.Conversation
     /// <summary>
     /// Conversation mode for chatting with other avatars.
     /// </summary>
-    internal class Chat : Mode
+    internal class Chat : Mode, IDisposable
     {
         private bool muteObjects = false;
         private const string MUTE_OBJECTS = "mute objects";
@@ -44,6 +44,28 @@ namespace RadegastSpeech.Conversation
                     MUTE_OBJECTS,
                     UNMUTE_OBJECTS });
        }
+
+        public void Dispose()
+        {
+            control.instance.Client.Self.ChatFromSimulator -=
+                new EventHandler<ChatEventArgs>(OnChat);
+            control.instance.Client.Self.AlertMessage -=
+                new EventHandler<AlertMessageEventArgs>(OnAlertMessage);
+            
+            if (control.instance.TabConsole != null && control.instance.TabConsole.TabExists("chat"))
+            {
+                Radegast.RadegastTab chatTab = control.instance.TabConsole.Tabs["chat"];
+                Radegast.ChatConsole chatscreen = (Radegast.ChatConsole)chatTab.Control;
+
+                nearby = chatscreen.lvwObjects;
+                nearby.SelectedIndexChanged -= new EventHandler(nearby_SelectedIndexChanged);
+
+                nearby.GotFocus -= new EventHandler(nearby_GotFocus);
+                chatscreen.ChatInputText.GotFocus -= new EventHandler(cbxInput_GotFocus);
+            }
+
+            nearby = null;
+        }
 
         void cbxInput_GotFocus(object sender, EventArgs e)
         {

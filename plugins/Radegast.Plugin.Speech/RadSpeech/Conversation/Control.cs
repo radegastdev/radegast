@@ -96,6 +96,9 @@ namespace RadegastSpeech.Conversation
             control.instance.Client.Self.IM +=
                 new EventHandler<InstantMessageEventArgs>(OnInstantMessage);
 
+            // Outgoing IMs
+            control.instance.Netcom.InstantMessageSent += new EventHandler<Radegast.Netcom.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
+
             // Watch for global keys
             control.instance.MainForm.KeyUp += new KeyEventHandler(MainForm_KeyUp);
 
@@ -280,7 +283,7 @@ namespace RadegastSpeech.Conversation
             {
                 AddConversation(newConv);
                 // Select CHAT as soon as it is created.
-                if (sTabControl is ChatConsole)
+                if (selectConversation && sTabControl is ChatConsole)
                     SelectConversation(newConv);
             }
         }
@@ -311,6 +314,12 @@ namespace RadegastSpeech.Conversation
 
         internal override void Shutdown()
         {
+            if (chat != null)
+            {
+                chat.Dispose();
+                chat = null;
+            }
+
             // Automatically handle notifications (blue dialogs)
             Notification.OnNotificationDisplayed -=
                 new Notification.NotificationCallback(OnNotificationDisplayed);
@@ -341,8 +350,11 @@ namespace RadegastSpeech.Conversation
                 new TabsConsole.TabCallback(OnTabChange);
 
             // Handle Instant Messages too
-            control.instance.Client.Self.IM +=
+            control.instance.Client.Self.IM -=
                 new EventHandler<InstantMessageEventArgs>(OnInstantMessage);
+
+            // Outgoing IMs
+            control.instance.Netcom.InstantMessageSent -= new EventHandler<Radegast.Netcom.InstantMessageSentEventArgs>(Netcom_InstantMessageSent);
 
             // System notifications in chat
             control.instance.TabConsole.OnChatNotification -= new TabsConsole.ChatNotificationCallback(TabConsole_OnChatNotification);
@@ -641,6 +653,20 @@ namespace RadegastSpeech.Conversation
         {
             AddInterruption(new Conversation.BlueMenu(control,e));
         }
+
+        /// <summary>
+        /// Event handler for outgoing IMs
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Netcom_InstantMessageSent(object sender, Radegast.Netcom.InstantMessageSentEventArgs e)
+        {
+            // Message to an individual
+            Conversation.IMSession sess = (IMSession)control.converse.GetConversation(control.instance.getAvatarName(e.TargetID, true));
+            if (sess != null)
+                sess.OnMessage(Client.Self.AgentID, Client.Self.Name, e.Message);
+        }
+
 
         /// <summary>
         /// Handle Instant Messages
