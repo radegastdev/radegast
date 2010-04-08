@@ -153,6 +153,7 @@ namespace Radegast
             this.rtbChat.Size = new System.Drawing.Size(445, 354);
             this.rtbChat.TabIndex = 4;
             this.rtbChat.Text = "";
+            this.rtbChat.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbChat_LinkClicked);
             // 
             // lvwObjects
             // 
