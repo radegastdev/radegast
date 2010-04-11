@@ -60,7 +60,7 @@
             this.btnIgnore.Name = "btnIgnore";
             this.btnIgnore.Size = new System.Drawing.Size(75, 23);
             this.btnIgnore.TabIndex = 2;
-            this.btnIgnore.Text = "Igonre";
+            this.btnIgnore.Text = "Ignore";
             this.btnIgnore.UseVisualStyleBackColor = true;
             this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
             // 

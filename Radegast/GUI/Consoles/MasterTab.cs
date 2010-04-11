@@ -44,8 +44,8 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private Avatar avatar;
-        private UUID selectedID;
-        private Primitive selectedPrim;
+        public UUID selectedID;
+        public Primitive selectedPrim;
 
         public MasterTab(RadegastInstance instance, Avatar avatar)
         {
