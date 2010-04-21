@@ -41,6 +41,7 @@
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
           <XmlDocFile>OpenMetaverseTypes.XML</XmlDocFile>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
@@ -65,12 +66,14 @@
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
           <XmlDocFile>OpenMetaverse.StructuredData.XML</XmlDocFile>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
           <XmlDocFile>OpenMetaverse.StructuredData.XML</XmlDocFile>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
@@ -88,12 +91,14 @@
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
           <XmlDocFile>OpenMetaverse.XML</XmlDocFile>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
           <XmlDocFile>OpenMetaverse.XML</XmlDocFile>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
@@ -116,12 +121,14 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
           <XmlDocFile>OpenMetaverse.Rendering.Meshmerizer.XML</XmlDocFile>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
@@ -144,6 +151,7 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
@@ -200,6 +208,7 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
@@ -239,6 +248,7 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
@@ -274,11 +284,13 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
@@ -308,11 +320,13 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
@@ -338,11 +352,13 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
@@ -371,11 +387,13 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
