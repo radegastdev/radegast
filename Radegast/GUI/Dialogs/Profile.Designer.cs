@@ -202,7 +202,6 @@ namespace Radegast
             // 
             // anPartner
             // 
-            this.anPartner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("anPartner.AgentID")));
             this.anPartner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.anPartner.Location = new System.Drawing.Point(306, 34);
             this.anPartner.Name = "anPartner";

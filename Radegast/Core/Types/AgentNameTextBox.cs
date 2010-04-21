@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.ComponentModel;
 using OpenMetaverse;
 
 namespace Radegast
@@ -41,7 +42,7 @@ namespace Radegast
         private GridClient client { get { return RadegastInstance.GlobalInstance.Client; } }
         private RadegastInstance instance { get { return RadegastInstance.GlobalInstance; } }
 
-        [System.ComponentModel.Browsable(false)]
+        [Browsable(false), DesignOnly(true)]
         public UUID AgentID
         {
             get { return agentID; }
