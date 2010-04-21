@@ -521,7 +521,11 @@ namespace Radegast
             tab.AllowDetach = true;
             tab.Visible = false;
 
-            tab = AddTab("inventory", "Inventory", new InventoryConsole(instance));
+            // Ugly workaround for a mono bug
+            InventoryConsole inv = new InventoryConsole(instance);
+            if (instance.MonoRuntime) inv.invTree.Scrollable = false;
+            tab = AddTab("inventory", "Inventory", inv);
+            if (instance.MonoRuntime) inv.invTree.Scrollable = true;
             tab.AllowClose = false;
             tab.AllowDetach = true;
             tab.Visible = false;
