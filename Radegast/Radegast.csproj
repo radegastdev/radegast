@@ -1094,19 +1094,19 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.Rendering.Meshmerizer\OpenMetaverse.Rendering.Meshmerizer.csproj">
-      <Project>{EC71F06F-6DA9-4E4C-92BA-D2D52A4A14FF}</Project>
+      <Project>{E864770D-770B-4048-A20C-592AC9FA2A34}</Project>
       <Name>OpenMetaverse.Rendering.Meshmerizer</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Project>{18015F8B-CE5A-4BE0-88C4-6EF8AA7743CE}</Project>
+      <Project>{9532352B-BB4D-463A-A8DE-6B678009CD51}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
-      <Project>{FA1077AE-9D37-4097-8F07-897C3531115B}</Project>
+      <Project>{6EFD681C-F4F1-459F-A059-664A28F234EF}</Project>
       <Name>OpenMetaverseTypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Project>{6B306F2F-3F4F-4C2B-B60A-F1D6B935D9A4}</Project>
+      <Project>{58072E17-F662-47D2-A2BE-001D026009EA}</Project>
       <Name>OpenMetaverse</Name>
     </ProjectReference>
   </ItemGroup>

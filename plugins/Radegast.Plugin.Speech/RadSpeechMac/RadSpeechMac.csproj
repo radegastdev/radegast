@@ -82,11 +82,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Project>{18015F8B-CE5A-4BE0-88C4-6EF8AA7743CE}</Project>
+      <Project>{9532352B-BB4D-463A-A8DE-6B678009CD51}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
+      <Project>{6EFD681C-F4F1-459F-A059-664A28F234EF}</Project>
+      <Name>OpenMetaverseTypes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Project>{6B306F2F-3F4F-4C2B-B60A-F1D6B935D9A4}</Project>
+      <Project>{58072E17-F662-47D2-A2BE-001D026009EA}</Project>
       <Name>OpenMetaverse</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Radegast\Radegast.csproj">
