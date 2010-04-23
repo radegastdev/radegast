@@ -90,7 +90,7 @@ namespace Radegast
 
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
-            lvwObjects.ListViewItemSorter = new SorterClass();
+            lvwObjects.ListViewItemSorter = new SorterClass(instance);
             cbChatType.SelectedIndex = 1;
 
             UpdateFontSize();
@@ -176,10 +176,10 @@ namespace Radegast
                                         : client.Self.GlobalPosition;
 
                     // CoarseLocationUpdate gives us hight of 0 when actual height is
-                    // between 1024-4096m. Hard code somewhere in the middle (2000m)
+                    // between 1024-4096m.
                     if (mypos.Z < 0.1)
                     {
-                        mypos.Z = 2000f;
+                        mypos.Z = client.Self.GlobalPosition.Z;
                     }
 
                     List<UUID> existing = new List<UUID>();
@@ -229,11 +229,26 @@ namespace Radegast
                             continue;
                         }
 
+                        Avatar foundAvi = e.Simulator.ObjectsAvatars.Find((Avatar av) => { return av.ID == key; });
+
                         // CoarseLocationUpdate gives us hight of 0 when actual height is
-                        // between 1024-4096m. Hard code somewhere in the middle (2000m)
+                        // between 1024-4096m.
                         if (pos.Z < 0.1)
                         {
-                            pos.Z = 2000f;
+                            if (foundAvi != null)
+                            {
+                                if (foundAvi.ParentID == 0)
+                                {
+                                    pos.Z = foundAvi.Position.Z;
+                                }
+                                else
+                                {
+                                    if (e.Simulator.ObjectsPrimitives.ContainsKey(foundAvi.ParentID))
+                                    {
+                                        pos.Z = e.Simulator.ObjectsPrimitives[foundAvi.ParentID].Position.Z;
+                                    }
+                                }
+                            }
                         }
 
                         int d = (int)Vector3d.Distance(ToVector3D(e.Simulator, pos), mypos);
@@ -244,9 +259,16 @@ namespace Radegast
                             continue;
                         }
 
-                        item.Text = instance.getAvatarName(key) + " (" + d + "m)";
+                        if (pos.Z < 0.1)
+                        {
+                            item.Text = instance.getAvatarName(key) + " (?m)";
+                        }
+                        else
+                        {
+                            item.Text = instance.getAvatarName(key) + " (" + d + "m)";
+                        }
 
-                        if (e.Simulator.ObjectsAvatars.Find((Avatar av) => { return av.ID == key; }) != null)
+                        if (foundAvi != null)
                         {
                             item.Text += "*";
                         }
@@ -388,7 +410,7 @@ namespace Radegast
                     else if (!msg.StartsWith("/"))
                     {
                         var opt = instance.RLV.GetOptions("redirchat");
-                        
+
                         if (opt.Count > 0)
                         {
                             foreach (var rchanstr in opt)
@@ -748,19 +770,16 @@ namespace Radegast
             rtbChat.Size = splitContainer1.Panel1.ClientSize;
         }
     }
-}
-
-namespace System.Windows.Forms
-{
 
     public class SorterClass : System.Collections.IComparer
     {
         private static Regex distanceRegex = new Regex(@"\((?<dist>\d+)\s*m\)", RegexOptions.Compiled);
         private Match match;
+        RadegastInstance instance;
 
-        public SorterClass()
+        public SorterClass(RadegastInstance instance)
         {
-
+            this.instance = instance;
         }
 
         //this routine should return -1 if xy and 0 if x==y.
@@ -771,7 +790,13 @@ namespace System.Windows.Forms
             System.Windows.Forms.ListViewItem item1 = (System.Windows.Forms.ListViewItem)x;
             System.Windows.Forms.ListViewItem item2 = (System.Windows.Forms.ListViewItem)y;
 
-            int distance1 = 0, distance2 = 0;
+            if (item1.Text == instance.Client.Self.Name)
+                return -1;
+
+            if (item2.Text == instance.Client.Self.Name)
+                return 1;
+
+            int distance1 = int.MaxValue, distance2 = int.MaxValue;
 
             if ((match = distanceRegex.Match(item1.Text)).Success)
                 distance1 = int.Parse(match.Groups["dist"].Value);
