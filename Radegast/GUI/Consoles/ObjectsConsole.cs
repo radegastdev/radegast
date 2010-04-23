@@ -111,6 +111,20 @@ namespace Radegast
             btnRefresh_Click(this, EventArgs.Empty);
         }
 
+        public List<Primitive> GetObjectList()
+        {
+            lock (lstPrims.Items)
+            {
+                List<Primitive> ret = new List<Primitive>(lstPrims.Items.Count);
+                foreach (ListViewItem item in lstPrims.Items)
+                {
+                    if (item.Tag is Primitive)
+                        ret.Add(item.Tag as Primitive);
+                }
+                return ret;
+            }
+        }
+
         void propRequester_OnTick(int remaining)
         {
             if (InvokeRequired)
