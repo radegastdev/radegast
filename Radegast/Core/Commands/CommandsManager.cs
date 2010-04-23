@@ -37,7 +37,7 @@ namespace Radegast.Commands
 {
     public class CommandsManager : ICommandInterpreter, IDisposable
     {
-        const string CmdPrefix = "//";
+        public static string CmdPrefix = "//";
         public readonly List<IRadegastCommand> CommandsLoaded = new List<IRadegastCommand>();
         public readonly Dictionary<string, IRadegastCommand> CommandsByName = new Dictionary<string, IRadegastCommand>();
         public readonly List<ICommandInterpreter> InterpretersLoaded = new List<ICommandInterpreter>();
