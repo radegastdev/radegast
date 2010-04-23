@@ -202,6 +202,8 @@ namespace Radegast
             lblStatus.Text = "Now in " + client.Network.CurrentSim.Name;
         }
 
+        int lastTick = 0;
+
         void Self_TeleportProgress(object sender, TeleportEventArgs e)
         {
             if (InvokeRequired)
@@ -226,12 +228,16 @@ namespace Radegast
                 case TeleportStatus.Failed:
                     InTeleport = false;
                     lblStatus.Text = "Failed: " + e.Message;
-                    instance.TabConsole.DisplayNotificationInChat("Teleport failed");
+                    if (Environment.TickCount - lastTick > 500)
+                        instance.TabConsole.DisplayNotificationInChat("Teleport failed");
+                    lastTick = Environment.TickCount;
                     break;
 
                 case TeleportStatus.Finished:
                     lblStatus.Text = "Teleport complete";
-                    instance.TabConsole.DisplayNotificationInChat("Teleport complete");
+                    if (Environment.TickCount - lastTick > 500)
+                        instance.TabConsole.DisplayNotificationInChat("Teleport complete");
+                    lastTick = Environment.TickCount;
                     InTeleport = false;
                     Network_SimChanged(null, null);
                     break;
