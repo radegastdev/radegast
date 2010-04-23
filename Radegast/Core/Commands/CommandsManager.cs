@@ -106,7 +106,7 @@ namespace Radegast.Commands
                 CommandQueue.Clear();
                 try
                 {
-                    if (CommandQueued!=null) CommandQueued.Close();
+                    if (CommandQueued != null) CommandQueued.Close();
                 }
                 catch (Exception)
                 {
@@ -129,7 +129,7 @@ namespace Radegast.Commands
                                            Description = name,
                                            Usage = usage
                                        };
-            
+
             LoadCommand(cmd);
             return cmd;
         }
@@ -152,21 +152,21 @@ namespace Radegast.Commands
 
         public void LoadType(Type type)
         {
-            if (typeof(IRadegastCommand).IsAssignableFrom(type) && type!=typeof(RadegastCommand))
+            if (typeof(IRadegastCommand).IsAssignableFrom(type) && type != typeof(RadegastCommand))
             {
                 try
                 {
-                    var c = type.GetConstructor(new Type[] {typeof (RadegastInstance)});
+                    var c = type.GetConstructor(new Type[] { typeof(RadegastInstance) });
                     if (c != null)
                     {
-                        IRadegastCommand plug = (IRadegastCommand) c.Invoke(new object[] {instance});
+                        IRadegastCommand plug = (IRadegastCommand)c.Invoke(new object[] { instance });
                         LoadCommand(plug);
                         return;
                     }
                     c = type.GetConstructor(Type.EmptyTypes);
                     if (c != null)
                     {
-                        IRadegastCommand plug = (IRadegastCommand) c.Invoke(new object[0]);
+                        IRadegastCommand plug = (IRadegastCommand)c.Invoke(new object[0]);
                         LoadCommand(plug);
                         return;
                     }
@@ -276,7 +276,7 @@ namespace Radegast.Commands
                 catch (Exception ex)
                 {
                     WriteLine("Command error: {0} \n{1} {2} ", cmdline, ex.Message, ex.StackTrace);
-                } 
+                }
                 return;
             }
             WriteLine("Command not found {0}", cmd);

@@ -86,6 +86,7 @@ namespace Radegast.Commands
         // maybe we shoould make this class abstract to force people to implement
         virtual public void Dispose()
         {
+            _instance = null;
         }
 
         virtual public void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)

@@ -37,6 +37,19 @@ using Radegast.Netcom;
 
 namespace Radegast
 {
+    public class KnownHeading
+    {
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public Quaternion Heading { get; set; }
+        public KnownHeading(string id, string name, Quaternion heading)
+        {
+            this.ID = id;
+            this.Name = name;
+            this.Heading = heading;
+        }
+    }
+
     public class StateManager : IDisposable
     {
         private RadegastInstance instance;
@@ -71,6 +84,34 @@ namespace Radegast
         /// </summary>
         public event WalkStateCanged OnWalkStateCanged;
 
+        List<KnownHeading> m_Headings;
+        public List<KnownHeading> KnownHeadings
+        {
+            get
+            {
+                if (m_Headings == null)
+                {
+                    m_Headings = new List<KnownHeading>(16);
+                    m_Headings.Add(new KnownHeading("E", "East", new Quaternion(0.00000f, 0.00000f, 0.00000f, 1.00000f)));
+                    m_Headings.Add(new KnownHeading("ENE", "East by Northeast", new Quaternion(0.00000f, 0.00000f, 0.19509f, 0.98079f)));
+                    m_Headings.Add(new KnownHeading("NE", "Northeast", new Quaternion(0.00000f, 0.00000f, 0.38268f, 0.92388f)));
+                    m_Headings.Add(new KnownHeading("NNE", "North by Northeast", new Quaternion(0.00000f, 0.00000f, 0.55557f, 0.83147f)));
+                    m_Headings.Add(new KnownHeading("N", "North", new Quaternion(0.00000f, 0.00000f, 0.70711f, 0.70711f)));
+                    m_Headings.Add(new KnownHeading("NNW", "North by Northwest", new Quaternion(0.00000f, 0.00000f, 0.83147f, 0.55557f)));
+                    m_Headings.Add(new KnownHeading("NW", "Nortwest", new Quaternion(0.00000f, 0.00000f, 0.92388f, 0.38268f)));
+                    m_Headings.Add(new KnownHeading("WNW", "West by Northwest", new Quaternion(0.00000f, 0.00000f, 0.98079f, 0.19509f)));
+                    m_Headings.Add(new KnownHeading("W", "West", new Quaternion(0.00000f, 0.00000f, 1.00000f, -0.00000f)));
+                    m_Headings.Add(new KnownHeading("WSW", "West by Southwest", new Quaternion(0.00000f, 0.00000f, 0.98078f, -0.19509f)));
+                    m_Headings.Add(new KnownHeading("SW", "Southwest", new Quaternion(0.00000f, 0.00000f, 0.92388f, -0.38268f)));
+                    m_Headings.Add(new KnownHeading("SSW", "South by Southwest", new Quaternion(0.00000f, 0.00000f, 0.83147f, -0.55557f)));
+                    m_Headings.Add(new KnownHeading("S", "South", new Quaternion(0.00000f, 0.00000f, 0.70711f, -0.70711f)));
+                    m_Headings.Add(new KnownHeading("SSE", "South by Southeast", new Quaternion(0.00000f, 0.00000f, 0.55557f, -0.83147f)));
+                    m_Headings.Add(new KnownHeading("SE", "Southeast", new Quaternion(0.00000f, 0.00000f, 0.38268f, -0.92388f)));
+                    m_Headings.Add(new KnownHeading("ESE", "East by Southeast", new Quaternion(0.00000f, 0.00000f, 0.19509f, -0.98078f)));
+                }
+                return m_Headings;
+            }
+        }
 
         public StateManager(RadegastInstance instance)
         {

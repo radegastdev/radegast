@@ -178,11 +178,12 @@ namespace Radegast
         /// <param name="stratPlugins">Start plugins that are found in the assembly</param>
         public void LoadPluginFile(string loadFileName, bool stratPlugins)
         {
-            if (loadFileName.ToLower().EndsWith(@".cs"))
+            string ext = Path.GetExtension(loadFileName).ToLower();
+            if (ext == ".cs")
             {
                 LoadCSharpScriptFile(loadFileName, stratPlugins);
             }
-            else if (loadFileName.ToLower().EndsWith(".dll") || loadFileName.ToLower().EndsWith(".exe"))
+            else if (ext == ".dll" || ext == ".exe")
             {
                 try
                 {
