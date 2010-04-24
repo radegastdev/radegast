@@ -43,7 +43,6 @@ namespace Radegast.Commands
         TabsConsole TC { get { return Instance.TabConsole; } }
         ObjectsConsole Objects;
         ChatConsole Chat;
-        bool displayEndWalk = false;
         Vector3 targetPos = Vector3.Zero;
         RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase;
 
@@ -72,17 +71,16 @@ namespace Radegast.Commands
         void PrintFullUsage()
         {
             TC.DisplayNotificationInChat(string.Format(@"Usage:
-
 {0}face (direction|heading|object|person|help) [additional args]
 
 Direction (in degrees) mode:
-Specifies heading in degrees which we sould be oriented in
+Specifies heading in degrees which we should be oriented in
 Examples:
 {0}face 0 -- face east
 {0}face 180 -- face west
 
 Heading mode:
-Specifies compas heading we should be facing
+Specifies compass heading we should be facing
 Examples:
 {0}face n -- face east
 {0}face sw -- face southwest
