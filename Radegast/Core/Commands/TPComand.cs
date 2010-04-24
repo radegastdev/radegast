@@ -41,7 +41,7 @@ namespace Radegast.Commands
     public class TPCommand : RadegastCommand
     {
         TabsConsole TC { get { return Instance.TabConsole; } }
-        public static string FolderName = "Radegast Landmars";
+        public static string FolderName = "Radegast Landmarks";
         Inventory Inv { get { return Client.Inventory.Store; } }
 
         public TPCommand(RadegastInstance instance)
@@ -69,7 +69,7 @@ namespace Radegast.Commands
 {0}tp (list|landmark name|landmark number|help)
 
 List mode:
-Lists landmarks in ""{1}"" floder
+Lists landmarks in ""{1}"" folder
 Example:
 {0}tp list
 
