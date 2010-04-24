@@ -53,7 +53,7 @@ namespace Radegast.Commands
         {
             Name = "go";
             Description = "Moves avatar";
-            Usage = Name;
+            Usage = "go [tp] (distance|xyz|object|name|help) [additional args] (type \"" + CommandsManager.CmdPrefix + "go help\" for full usage)";
 
             subCommand = new Regex(@"(?<subcmd>.*)\s*=\s*(?<subarg>.*)", regexOptions);
             Chat = (ChatConsole)TC.Tabs["chat"].Control;
@@ -88,6 +88,18 @@ namespace Radegast.Commands
 
         void PrintUsage()
         {
+            TC.DisplayNotificationInChat("Wrong arguments for \"go\" command. For detailed description type: " + CommandsManager.CmdPrefix + "go help");
+        }
+
+        void PrintFullUsage()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Usage:");
+            sb.AppendLine(CommandsManager.CmdPrefix + "go [tp] (distance|xyz|object|person|help) [additional args]");
+            sb.AppendLine("- tp is an optional parameter after go command. If speciefied use teleport instead of");
+            sb.AppendLine("walking to reach the destination.");
+            sb.AppendLine();
+            TC.DisplayNotificationInChat(sb.ToString());
         }
 
         void MoveTo(Vector3 target, bool useTP)
@@ -108,7 +120,6 @@ namespace Radegast.Commands
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
         {
-            Client.Self.Movement.UpdateFromHeading(0.0, true);
             if (Chat.InvokeRequired)
             {
                 if (Chat.IsHandleCreated)
@@ -158,14 +169,75 @@ namespace Radegast.Commands
                 return;
             }
 
+            if (subcmd == "help")
+            {
+                PrintFullUsage();
+                return;
+            }
+
             if (args.Count == 0) { PrintUsage(); return; }
             subarg = string.Join(" ", args.ToArray());
 
             // Move towards
             switch (subcmd)
             {
-                case "name":
-                    break;
+                case "xyz":
+                    string[] coords = Regex.Split(subarg, @"\D+");
+                    if (coords.Length < 2) { PrintUsage(); return; }
+                    int x = int.Parse(coords[0]);
+                    int y = int.Parse(coords[1]);
+                    int z = coords.Length > 2 ? int.Parse(coords[2]) : (int)Client.Self.SimPosition.Z;
+                    targetPos = new Vector3(x, y, z);
+                    WriteLine("Going to {0:0},{1:0},{2:0}", targetPos.X, targetPos.Y, targetPos.Z);
+                    MoveTo(targetPos, useTP);
+                    return;
+                
+                case "person":
+                    List<UUID> people = Chat.GetAvatarList();
+                    UUID person = people.Find((UUID id) => { return Instance.getAvatarName(id).ToLower().StartsWith(subarg.ToLower()); });
+                    if (person == UUID.Zero)
+                    {
+                        WriteLine("Could not find {0}", subarg);
+                        return;
+                    }
+                    string pname = Instance.getAvatarName(person);
+
+                    targetPos = Vector3.Zero;
+
+                    // try to find where they are
+                    Avatar avi = Client.Network.CurrentSim.ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
+                    
+                    if (avi != null)
+                    {
+                        if (avi.ParentID == 0)
+                        {
+                            targetPos = avi.Position;
+                        }
+                        else
+                        {
+                            Primitive seat;
+                            if (Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(avi.ParentID, out seat))
+                            {
+                                targetPos = seat.Position + avi.Position;
+                            }
+                            else
+                            {
+                                if (Client.Network.CurrentSim.AvatarPositions.ContainsKey(person))
+                                    targetPos = Client.Network.CurrentSim.AvatarPositions[person];
+                            }
+                        }
+                    }
+
+                    if (targetPos.Z < 0.01f)
+                    {
+                        WriteLine("Could not locate {0}", pname);
+                        return;
+                    }
+
+                    WriteLine("Going to {3} at {0:0},{1:0},{2:0}", targetPos.X, targetPos.Y, targetPos.Z, pname);
+                    MoveTo(targetPos, useTP);
+
+                    return;
 
                 case "object":
 

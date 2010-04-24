@@ -151,6 +151,20 @@ namespace Radegast
                 UpdateFontSize();
         }
 
+        public List<UUID> GetAvatarList()
+        {
+            lock (agentSimHandle)
+            {
+                List<UUID> ret = new List<UUID>();
+                foreach (ListViewItem item in lvwObjects.Items)
+                {
+                    if (item.Tag is UUID)
+                        ret.Add((UUID)item.Tag);
+                }
+                return ret;
+            }
+        }
+
         void Grid_CoarseLocationUpdate(object sender, CoarseLocationUpdateEventArgs e)
         {
             if (client.Network.CurrentSim == null /*|| client.Network.CurrentSim.Handle != sim.Handle*/)

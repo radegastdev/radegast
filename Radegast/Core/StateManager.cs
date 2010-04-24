@@ -422,6 +422,8 @@ namespace Radegast
 
         public void SetTyping(bool typing)
         {
+            if (!client.Network.Connected) return;
+
             Dictionary<UUID, bool> typingAnim = new Dictionary<UUID, bool>();
             typingAnim.Add(typingAnimationID, typing);
 
