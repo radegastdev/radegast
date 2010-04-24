@@ -106,6 +106,7 @@
     <Compile Include="Core\Commands\SimInfoCommand.cs" />
     <Compile Include="Core\Commands\StatusCommand.cs" />
     <Compile Include="Core\Commands\ThreadCommand.cs" />
+    <Compile Include="Core\Commands\TPComand.cs" />
     <Compile Include="Core\Contexts\AvatarProfileAction.cs" />
     <Compile Include="Core\Contexts\ContextAction.cs" />
     <Compile Include="Core\Contexts\ContextActionsManager.cs" />
