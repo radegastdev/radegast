@@ -38,107 +38,64 @@ using OpenMetaverse;
 
 namespace Radegast.Commands
 {
-    public class GoCommand : RadegastCommand
+    public class FaceCommand : RadegastCommand
     {
-        Regex subCommand;
-        RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase;
         TabsConsole TC { get { return Instance.TabConsole; } }
         ObjectsConsole Objects;
         ChatConsole Chat;
         bool displayEndWalk = false;
         Vector3 targetPos = Vector3.Zero;
+        RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase;
 
-        public GoCommand(RadegastInstance instance)
+        public FaceCommand(RadegastInstance instance)
             : base(instance)
         {
-            Name = "go";
-            Description = "Moves avatar";
-            Usage = "go [tp] (distance|xyz|object|person|help) [additional args] (type \"" + CommandsManager.CmdPrefix + "go help\" for full usage)";
+            Name = "face";
+            Description = "Changes the direction";
+            Usage = "face (direction|heading|object|person|help) [additional args] (type \"" + CommandsManager.CmdPrefix + "face help\" for full usage)";
 
-            subCommand = new Regex(@"(?<subcmd>.*)\s*=\s*(?<subarg>.*)", regexOptions);
             Chat = (ChatConsole)TC.Tabs["chat"].Control;
-            Instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
         public override void Dispose()
         {
-            Instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
             Objects = null;
             Chat = null;
             base.Dispose();
         }
 
-        void State_OnWalkStateCanged(bool walking)
-        {
-            if (!walking && displayEndWalk)
-            {
-                displayEndWalk = false;
-                Vector3 p = Client.Self.SimPosition;
-                string msg = "Finished walking";
-
-                if (targetPos != Vector3.Zero)
-                {
-                    System.Threading.Thread.Sleep(1000);
-                    msg += string.Format(" {0:0} meters from destination", Vector3.Distance(Client.Self.SimPosition, targetPos));
-                    targetPos = Vector3.Zero;
-                }
-
-                TC.DisplayNotificationInChat(msg);
-            }
-        }
-
         void PrintUsage()
         {
-            TC.DisplayNotificationInChat("Wrong arguments for \"go\" command. For detailed description type: " + CommandsManager.CmdPrefix + "go help");
+            TC.DisplayNotificationInChat("Wrong arguments for \"face\" command. For detailed description type: " + CommandsManager.CmdPrefix + "face help");
         }
 
         void PrintFullUsage()
         {
             TC.DisplayNotificationInChat(string.Format(@"Usage:
 
-{0}go [tp] (distance|xyz|object|person|help) [additional args]
-- tp is an optional parameter after go command. If speciefied use teleport instead of walking to reach the destination when parcel permits it.
+{0}face (direction|heading|object|person|help) [additional args]
 
-Distance mode:
-Specifies distance in meters to move with optional direction. If direction is not specified we move forward.
+Direction (in degrees) mode:
+Specifies heading in degrees which we sould be oriented in
 Examples:
-{0}go 10 -- moves 10m forward
-{0}go 15 e -- moves 15m to the east
-{0}go tp 20 se -- teleports 20m to the southeast of our current position
+{0}face 0 -- face east
+{0}face 180 -- face west
 
-XYZ mode:
-Moves to X, Y and optionally Z coordinate
+Heading mode:
+Specifies compas heading we should be facing
 Examples:
-{0}go xyz 128,128  -- walks toward the center of the sim, using our current elevation (Z)
-{0}go tp xyz 32,32,128 -- teleports to postion 32,32,128 within our current region
+{0}face n -- face east
+{0}face sw -- face southwest
 
 Object mode:
-Moves towards a named object
-Examples:
-{0}go object desk chair -- walk toward the closest object whose name begins with ""desk chair""
-{0}go tp object dance floor -- teleports to the closest object whose name beings with ""dance floor""
+Turns toward a named object
+Example:
+{0}face object desk chair -- turn toward object whose names begins with ""desk chair""
 
 Person mode:
-Moves toward a person
+Turns toward a person
 Examples:
-{0}go person Latif -- walk toward the closest person whose name begins with Latif
-{0}go tp person John -- teleports to the closest person whose name begins with John", CommandsManager.CmdPrefix));
-        }
-
-        void MoveTo(Vector3 target, bool useTP)
-        {
-            Instance.State.SetSitting(false, UUID.Zero);
-
-            if (useTP)
-            {
-                Client.Self.RequestTeleport(Client.Network.CurrentSim.Handle, targetPos);
-            }
-            else
-            {
-                displayEndWalk = true;
-                Client.Self.Movement.TurnToward(targetPos);
-                Instance.State.WalkTo(Instance.State.GlobalPosition(Client.Network.CurrentSim, target));
-            }
+{0}face person Latif -- turn toward the closest person whose name begins with Latif", CommandsManager.CmdPrefix));
         }
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
@@ -155,40 +112,17 @@ Examples:
 
             if (args.Count == 0) { PrintUsage(); return; }
 
-            bool useTP = false;
-            if (args[0] == "tp")
-            {
-                useTP = true;
-                args.RemoveAt(0);
-            }
-
-            if (args.Count == 0) { PrintUsage(); return; }
-
             string subcmd = args[0];
             args.RemoveAt(0);
             string subarg = string.Empty;
 
-            // Move certain distance
-            int distance = 0;
-            if (int.TryParse(subcmd, out distance))
+            // Face certain direction
+            int heading = 0;
+            if (int.TryParse(subcmd, out heading))
             {
-                if (distance < 1) return;
-                Quaternion heading = Client.Self.Movement.BodyRotation;
-                KnownHeading kh = null;
-
-                if (args.Count > 0)
-                {
-                    kh = Instance.State.KnownHeadings.Find((KnownHeading h) => { return h.ID == args[0].ToUpper(); });
-                    if (kh != null)
-                        heading = kh.Heading;
-                }
-
-                targetPos = Client.Self.SimPosition + new Vector3((float)distance, 0f, 0f) * heading;
-                Client.Self.Movement.BodyRotation = Client.Self.Movement.HeadRotation = heading;
-                Client.Self.Movement.Camera.LookAt(Client.Self.SimPosition, targetPos);
-                Client.Self.Movement.SendUpdate(true);
-                WriteLine("Going {0} to {1:0},{2:0},{3:0}", kh == null ? string.Empty : kh.Name, targetPos.X, targetPos.Y, targetPos.Z);
-                MoveTo(targetPos, useTP);
+                double rad = 0.0174532925d * heading;
+                Client.Self.Movement.UpdateFromHeading(rad, true);
+                WriteLine("Facing {0} degrees", heading % 360);
                 return;
             }
 
@@ -198,23 +132,21 @@ Examples:
                 return;
             }
 
+            KnownHeading kh = null;
+            kh = Instance.State.KnownHeadings.Find((KnownHeading h) => { return h.ID == subcmd.ToUpper(); });
+            if (kh != null)
+            {
+                Client.Self.Movement.BodyRotation = Client.Self.Movement.HeadRotation = kh.Heading;
+                WriteLine("Facing {0}", kh.Name);
+                return;
+            }
+
             if (args.Count == 0) { PrintUsage(); return; }
             subarg = string.Join(" ", args.ToArray());
 
             // Move towards
             switch (subcmd)
             {
-                case "xyz":
-                    string[] coords = Regex.Split(subarg, @"\D+");
-                    if (coords.Length < 2) { PrintUsage(); return; }
-                    int x = int.Parse(coords[0]);
-                    int y = int.Parse(coords[1]);
-                    int z = coords.Length > 2 ? int.Parse(coords[2]) : (int)Client.Self.SimPosition.Z;
-                    targetPos = new Vector3(x, y, z);
-                    WriteLine("Going to {0:0},{1:0},{2:0}", targetPos.X, targetPos.Y, targetPos.Z);
-                    MoveTo(targetPos, useTP);
-                    return;
-                
                 case "person":
                     List<UUID> people = Chat.GetAvatarList();
                     UUID person = people.Find((UUID id) => { return Instance.getAvatarName(id).ToLower().StartsWith(subarg.ToLower()); });
@@ -229,7 +161,7 @@ Examples:
 
                     // try to find where they are
                     Avatar avi = Client.Network.CurrentSim.ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
-                    
+
                     if (avi != null)
                     {
                         if (avi.ParentID == 0)
@@ -257,8 +189,8 @@ Examples:
                         return;
                     }
 
-                    WriteLine("Going to {3} at {0:0},{1:0},{2:0}", targetPos.X, targetPos.Y, targetPos.Z, pname);
-                    MoveTo(targetPos, useTP);
+                    WriteLine("Facing {0}", pname);
+                    Client.Self.Movement.TurnToward(targetPos);
 
                     return;
 
@@ -272,8 +204,9 @@ Examples:
                         tab.Visible = true;
                         tab.AllowHide = false;
                         ((ObjectsConsole)tab.Control).RefreshObjectList();
-                        WriteLine("Objects list was not active. Started getting object names, please try again in a minute.");
                         TC.Tabs["chat"].Select();
+
+                        WriteLine("Objects list was not active. Started getting object names, please try again in a minute.");
                         return;
                     }
 
@@ -281,10 +214,10 @@ Examples:
                     List<Primitive> prims = Objects.GetObjectList();
 
                     Primitive target = prims.Find((Primitive prim) =>
-                        {
-                            return prim.Properties != null
-                                && prim.Properties.Name.ToLower().StartsWith(subarg.ToLower());
-                        });
+                    {
+                        return prim.Properties != null
+                            && prim.Properties.Name.ToLower().StartsWith(subarg.ToLower());
+                    });
 
                     if (target == null)
                     {
@@ -294,15 +227,14 @@ Examples:
 
                     targetPos = target.Position;
 
-                    WriteLine("Going to object '{0}' at {1:0},{2:0},{3:0}", target.Properties.Name, targetPos.X, targetPos.Y, targetPos.Z);
-                    MoveTo(targetPos, useTP);
+                    WriteLine("Facing object '{0}'", target.Properties.Name);
+                    Client.Self.Movement.TurnToward(targetPos);
                     return;
 
                 default:
-                    WriteLine("Unrecognized go command {0}", subcmd);
+                    WriteLine("Unrecognized face command {0}", subcmd);
                     return;
             }
-
         }
     }
 }

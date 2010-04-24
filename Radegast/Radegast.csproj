@@ -95,6 +95,7 @@
     <Compile Include="Core\ChatBufferItem.cs" />
     <Compile Include="Core\ClientSignatures.cs" />
     <Compile Include="Core\Commands\CommandsManager.cs" />
+    <Compile Include="Core\Commands\FaceCommand.cs" />
     <Compile Include="Core\Commands\GoCommand.cs" />
     <Compile Include="Core\Commands\ICommandInterpreter.cs" />
     <Compile Include="Core\Commands\IRadegastCommand.cs" />
