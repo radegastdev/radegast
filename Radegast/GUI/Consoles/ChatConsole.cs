@@ -51,8 +51,9 @@ namespace Radegast
         private Avatar currentAvatar;
         private RadegastMovement movement { get { return instance.Movement; } }
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
-        private Dictionary<uint, Avatar> avatars = new Dictionary<uint, Avatar>();
-        private Dictionary<uint, bool> bots = new Dictionary<uint, bool>();
+        private List<string> chatHistory = new List<string>();
+        private int chatPointer;
+
         public readonly Dictionary<UUID, ulong> agentSimHandle = new Dictionary<UUID, ulong>();
         public ChatInputBox ChatInputText { get { return cbxInput; } }
 
@@ -344,8 +345,48 @@ namespace Radegast
             lvwObjects.Items.Clear();
         }
 
+        void ChatHistoryPrev()
+        {
+            if (chatPointer == 0) return;
+            chatPointer--;
+            if (chatHistory.Count > chatPointer)
+            {
+                cbxInput.Text = chatHistory[chatPointer];
+                cbxInput.SelectionStart = cbxInput.Text.Length;
+                cbxInput.SelectionLength = 0;
+            }
+        }
+
+        void ChatHistoryNext()
+        {
+            if (chatPointer == chatHistory.Count) return;
+            chatPointer++;
+            if (chatPointer == chatHistory.Count)
+            {
+                cbxInput.Text = string.Empty;
+                return;
+            }
+            cbxInput.Text = chatHistory[chatPointer];
+            cbxInput.SelectionStart = cbxInput.Text.Length;
+            cbxInput.SelectionLength = 0;
+        }
+
         private void cbxInput_KeyDown(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.Up && e.Modifiers == Keys.Control)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                ChatHistoryPrev();
+                return;
+            }
+
+            if (e.KeyCode == Keys.Down && e.Modifiers == Keys.Control)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                ChatHistoryNext();
+                return;
+            }
+
             if (e.KeyCode != Keys.Enter) return;
             e.Handled = e.SuppressKeyPress = true;
 
@@ -360,6 +401,8 @@ namespace Radegast
         private void ProcessChatInput(string input, ChatType type)
         {
             if (string.IsNullOrEmpty(input)) return;
+            chatHistory.Add(input);
+            chatPointer = chatHistory.Count;
             ClearChatInput();
 
             string msg;

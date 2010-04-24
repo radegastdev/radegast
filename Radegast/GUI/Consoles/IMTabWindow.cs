@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Radegast.Netcom;
 using OpenMetaverse;
@@ -44,6 +45,8 @@ namespace Radegast
         private string toName;
         private IMTextManager textManager;
         private bool typing = false;
+        private List<string> chatHistory = new List<string>();
+        private int chatPointer;
 
         public IMTabWindow(RadegastInstance instance, UUID target, UUID session, string toName)
         {
@@ -158,6 +161,10 @@ namespace Radegast
         private void ProcessInput()
         {
             if (cbxInput.Text.Length == 0) return;
+
+            chatHistory.Add(cbxInput.Text);
+            chatPointer = chatHistory.Count;
+
             string msg = cbxInput.Text.Replace(ChatInputBox.NewlineMarker, "\n");
 
             if (instance.GlobalSettings["mu_emotes"].AsBoolean() && msg.StartsWith(":"))
@@ -172,10 +179,50 @@ namespace Radegast
             this.ClearIMInput();
         }
 
-        private void cbxInput_KeyUp(object sender, KeyEventArgs e)
+        void ChatHistoryPrev()
         {
+            if (chatPointer == 0) return;
+            chatPointer--;
+            if (chatHistory.Count > chatPointer)
+            {
+                cbxInput.Text = chatHistory[chatPointer];
+                cbxInput.SelectionStart = cbxInput.Text.Length;
+                cbxInput.SelectionLength = 0;
+            }
+        }
+
+        void ChatHistoryNext()
+        {
+            if (chatPointer == chatHistory.Count) return;
+            chatPointer++;
+            if (chatPointer == chatHistory.Count)
+            {
+                cbxInput.Text = string.Empty;
+                return;
+            }
+            cbxInput.Text = chatHistory[chatPointer];
+            cbxInput.SelectionStart = cbxInput.Text.Length;
+            cbxInput.SelectionLength = 0;
+        }
+
+        private void cbxInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up && e.Modifiers == Keys.Control)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                ChatHistoryPrev();
+                return;
+            }
+
+            if (e.KeyCode == Keys.Down && e.Modifiers == Keys.Control)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                ChatHistoryNext();
+                return;
+            }
+
             if (e.KeyCode != Keys.Enter) return;
-            e.SuppressKeyPress = true;
+            e.Handled = e.SuppressKeyPress = true;
             ProcessInput();
         }
 
@@ -197,11 +244,6 @@ namespace Radegast
         private void tbtnProfile_Click(object sender, EventArgs e)
         {
             instance.MainForm.ShowAgentProfile(toName, target);
-        }
-
-        private void cbxInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter) e.SuppressKeyPress = true;
         }
 
         public UUID TargetId

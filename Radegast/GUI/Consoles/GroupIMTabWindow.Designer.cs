@@ -161,7 +161,6 @@ namespace Radegast
             this.cbxInput.TabIndex = 0;
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
-            this.cbxInput.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyUp);
             this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             // 
             // GroupIMTabWindow

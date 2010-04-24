@@ -46,6 +46,8 @@ namespace Radegast
         private GridClient client;
         private List<UUID> participants = new List<UUID>();
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);
+        private List<string> chatHistory = new List<string>();
+        private int chatPointer;
 
         public string SessionName { get; set; }
 
@@ -147,10 +149,50 @@ namespace Radegast
             }
         }
 
-        private void cbxInput_KeyUp(object sender, KeyEventArgs e)
+        void ChatHistoryPrev()
         {
+            if (chatPointer == 0) return;
+            chatPointer--;
+            if (chatHistory.Count > chatPointer)
+            {
+                cbxInput.Text = chatHistory[chatPointer];
+                cbxInput.SelectionStart = cbxInput.Text.Length;
+                cbxInput.SelectionLength = 0;
+            }
+        }
+
+        void ChatHistoryNext()
+        {
+            if (chatPointer == chatHistory.Count) return;
+            chatPointer++;
+            if (chatPointer == chatHistory.Count)
+            {
+                cbxInput.Text = string.Empty;
+                return;
+            }
+            cbxInput.Text = chatHistory[chatPointer];
+            cbxInput.SelectionStart = cbxInput.Text.Length;
+            cbxInput.SelectionLength = 0;
+        }
+
+        private void cbxInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up && e.Modifiers == Keys.Control)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                ChatHistoryPrev();
+                return;
+            }
+
+            if (e.KeyCode == Keys.Down && e.Modifiers == Keys.Control)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                ChatHistoryNext();
+                return;
+            }
+
             if (e.KeyCode != Keys.Enter) return;
-            e.SuppressKeyPress = true;
+            e.Handled = e.SuppressKeyPress = true;
             if (cbxInput.Text.Length == 0) return;
 
             string message = cbxInput.Text;
@@ -162,6 +204,11 @@ namespace Radegast
 
         private void SendMessage(string msg)
         {
+            if (msg == string.Empty) return;
+
+            chatHistory.Add(msg);
+            chatPointer = chatHistory.Count;
+
             if (instance.RLV.RestictionActive("sendim")) return;
 
             string message = msg.Replace(ChatInputBox.NewlineMarker, "\n");
@@ -194,11 +241,6 @@ namespace Radegast
         private void rtbIMText_LinkClicked(object sender, LinkClickedEventArgs e)
         {
             instance.MainForm.ProcessLink(e.LinkText);
-        }
-
-        private void cbxInput_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter) e.SuppressKeyPress = true;
         }
 
         public UUID SessionId
