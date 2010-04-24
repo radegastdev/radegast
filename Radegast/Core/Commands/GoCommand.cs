@@ -53,7 +53,7 @@ namespace Radegast.Commands
         {
             Name = "go";
             Description = "Moves avatar";
-            Usage = "go [tp] (distance|xyz|object|name|help) [additional args] (type \"" + CommandsManager.CmdPrefix + "go help\" for full usage)";
+            Usage = "go [tp] (distance|xyz|object|person|help) [additional args] (type \"" + CommandsManager.CmdPrefix + "go help\" for full usage)";
 
             subCommand = new Regex(@"(?<subcmd>.*)\s*=\s*(?<subarg>.*)", regexOptions);
             Chat = (ChatConsole)TC.Tabs["chat"].Control;
@@ -93,13 +93,35 @@ namespace Radegast.Commands
 
         void PrintFullUsage()
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Usage:");
-            sb.AppendLine(CommandsManager.CmdPrefix + "go [tp] (distance|xyz|object|person|help) [additional args]");
-            sb.AppendLine("- tp is an optional parameter after go command. If speciefied use teleport instead of");
-            sb.AppendLine("walking to reach the destination.");
-            sb.AppendLine();
-            TC.DisplayNotificationInChat(sb.ToString());
+            TC.DisplayNotificationInChat(string.Format(@"Usage:
+
+{0}go [tp] (distance|xyz|object|person|help) [additional args]
+- tp is an optional parameter after go command. If speciefied use teleport instead of walking to reach the destination when parcel permits it.
+
+Distance mode:
+Specifies distance in meters to move with optional direction. If direction is not specified we move forward.
+Examples:
+{0}go 10 -- moves 10m forward
+{0}go 15 e -- moves 15m to the east
+{0}go tp 20 se -- teleports 20m to the southeast of our current position
+
+XYZ mode:
+Moves to X, Y and optionally Z coordinate
+Examples:
+{0}go xyz 128,128  -- walks toward the center of the sim, using our current elevation (Z)
+{0}go tp xyz 32,32,128 -- teleports to postion 32,32,128 within our current region
+
+Object mode:
+Moves towards a named object
+Examples:
+{0}go object desk chair -- walk toward the closest object whose name begins with ""desk chair""
+{0}go tp object dance floor -- teleports to the closest object whose name beings with ""dance floor""
+
+Person mode:
+Moves toward a person
+Examples:
+{0}go person Latif -- walk towrds the closest person whose name begins with Latif
+{0}go tp person John -- teleports to the closest person whose name begins with John", CommandsManager.CmdPrefix));
         }
 
         void MoveTo(Vector3 target, bool useTP)
