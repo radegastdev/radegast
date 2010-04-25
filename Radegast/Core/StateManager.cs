@@ -52,6 +52,8 @@ namespace Radegast
 
     public class StateManager : IDisposable
     {
+        public Parcel Parcel { get; set; }
+
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private RadegastNetcom netcom { get { return instance.Netcom; } }
@@ -85,8 +87,8 @@ namespace Radegast
         /// </summary>
         public event WalkStateCanged OnWalkStateCanged;
 
-        List<KnownHeading> m_Headings;
-        public List<KnownHeading> KnownHeadings
+        static List<KnownHeading> m_Headings;
+        public static List<KnownHeading> KnownHeadings
         {
             get
             {
@@ -112,6 +114,58 @@ namespace Radegast
                 }
                 return m_Headings;
             }
+        }
+
+        public static Vector3 RotToEuler(Quaternion r)
+        {
+            Quaternion t = new Quaternion(r.X * r.X, r.Y * r.Y, r.Z * r.Z, r.W * r.W);
+
+            float m = (t.X + t.Y + t.Z + t.W);
+            if (Math.Abs(m) < 0.001) return Vector3.Zero;
+            float n = 2 * (r.Y * r.W + r.X * r.Z);
+            float p = m * m - n * n;
+
+            if (p > 0)
+                return new Vector3(
+                    (float)Math.Atan2(2.0 * (r.X * r.W - r.Y * r.Z), (-t.X - t.Y + t.Z + t.W)),
+                    (float)Math.Atan2(n, Math.Sqrt(p)),
+                    (float)Math.Atan2(2.0 * (r.Z * r.W - r.X * r.Y), t.X - t.Y - t.Z + t.W)
+                    );
+            else if (n > 0)
+                return new Vector3(
+                    0f,
+                    (float)(Math.PI / 2d),
+                    (float)Math.Atan2((r.Z * r.W + r.X * r.Y), 0.5 - t.X - t.Y)
+                    );
+            else
+                return new Vector3(
+                    0f,
+                    -(float)(Math.PI / 2d),
+                    (float)Math.Atan2((r.Z * r.W + r.X * r.Y), 0.5 - t.X - t.Z)
+                    );
+        }
+
+        public static KnownHeading ClosestKnownHeading(int degrees)
+        {
+            KnownHeading ret = KnownHeadings[0];
+            int facing = (int)(57.2957795d * RotToEuler(KnownHeadings[0].Heading).Z);
+            if (facing < 0) facing += 360;
+            int minDistance = Math.Abs(degrees - facing);
+
+            for (int i = 1; i < KnownHeadings.Count; i++)
+            {
+                facing = (int)(57.2957795d * RotToEuler(KnownHeadings[i].Heading).Z);
+                if (facing < 0) facing += 360;
+
+                int distance = Math.Abs(degrees - facing);
+                if (distance < minDistance)
+                {
+                    ret = KnownHeadings[i];
+                    minDistance = distance;
+                }
+            }
+
+            return ret;
         }
 
         public StateManager(RadegastInstance instance)
@@ -266,6 +320,31 @@ namespace Radegast
             }
         }
 
+        public Quaternion AvatarRotation(Simulator sim, UUID avID)
+        {
+            Quaternion rot = Quaternion.Identity;
+            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => { return a.ID == avID; });
+
+            if (av == null)
+                return rot;
+
+            if (av.ParentID == 0)
+            {
+                rot = av.Rotation;
+            }
+            else
+            {
+                Primitive prim;
+                if (sim.ObjectsPrimitives.TryGetValue(av.ParentID, out prim))
+                {
+                    rot = prim.Rotation + av.Rotation;
+                }
+            }
+
+            return rot;
+        }
+
+
         public Vector3 AvatarPosition(Simulator sim, UUID avID)
         {
             Vector3 pos = Vector3.Zero;
@@ -304,6 +383,26 @@ namespace Radegast
             }
 
             return pos;
+        }
+
+        public void Follow(string name, UUID id)
+        {
+            followName = name;
+            followID = id;
+            following = followID != UUID.Zero;
+
+            if (following)
+            {
+                walking = false;
+
+                Vector3 target = AvatarPosition(client.Network.CurrentSim, id);
+                if (Vector3.Zero != target)
+                {
+                    client.Self.Movement.TurnToward(target);
+                    FollowUpdate(target);
+                }
+
+            }
         }
 
         #region Look at effect
@@ -345,26 +444,6 @@ namespace Radegast
             }
         }
         #endregion Look at effect
-
-        public void Follow(string name, UUID id)
-        {
-            followName = name;
-            followID = id;
-            following = followID != UUID.Zero;
-
-            if (following)
-            {
-                walking = false;
-
-                Vector3 target = AvatarPosition(client.Network.CurrentSim, id);
-                if (Vector3.Zero != target)
-                {
-                    client.Self.Movement.TurnToward(target);
-                    FollowUpdate(target);
-                }
-
-            }
-        }
 
         #region Walking (move to)
         private bool walking = false;

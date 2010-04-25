@@ -376,7 +376,7 @@ namespace Radegast
                 return;
             }
 
-            Parcel parcel = e.Parcel;
+            Parcel parcel = instance.State.Parcel = e.Parcel;
 
             tlblParcel.Text = parcel.Name;
             tlblParcel.ToolTipText = parcel.Desc;

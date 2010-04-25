@@ -178,7 +178,7 @@ Examples:
 
                 if (args.Count > 0)
                 {
-                    kh = Instance.State.KnownHeadings.Find((KnownHeading h) => { return h.ID == args[0].ToUpper(); });
+                    kh = StateManager.KnownHeadings.Find((KnownHeading h) => { return h.ID == args[0].ToUpper(); });
                     if (kh != null)
                         heading = kh.Heading;
                 }

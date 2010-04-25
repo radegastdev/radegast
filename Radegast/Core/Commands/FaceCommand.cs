@@ -131,7 +131,7 @@ Examples:
             }
 
             KnownHeading kh = null;
-            kh = Instance.State.KnownHeadings.Find((KnownHeading h) => { return h.ID == subcmd.ToUpper(); });
+            kh = StateManager.KnownHeadings.Find((KnownHeading h) => { return h.ID == subcmd.ToUpper(); });
             if (kh != null)
             {
                 Client.Self.Movement.BodyRotation = Client.Self.Movement.HeadRotation = kh.Heading;
