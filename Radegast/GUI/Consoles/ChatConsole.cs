@@ -562,12 +562,12 @@ namespace Radegast
 
             if (instance.State.FollowName == string.Empty)
             {
-                instance.State.Follow(av.Name);
+                instance.State.Follow(av.Name, av.ID);
                 ctxFollow.Text = "Unfollow " + av.Name;
             }
             else
             {
-                instance.State.Follow(string.Empty);
+                instance.State.Follow(string.Empty, UUID.Zero);
                 ctxFollow.Text = "Follow";
             }
         }

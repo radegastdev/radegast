@@ -66,6 +66,7 @@ namespace Radegast
         private bool following = false;
         private string followName = string.Empty;
         private float followDistance = 3.0f;
+        private UUID followID;
 
         private UUID awayAnimationID = new UUID("fd037134-85d4-f241-72c6-4f42164fedee");
         private UUID busyAnimationID = new UUID("efcf670c2d188128973a034ebc806b67");
@@ -243,34 +244,66 @@ namespace Radegast
 
             if (av.Name == followName)
             {
-                Vector3 pos;
+                Vector3 pos = AvatarPosition(client.Network.CurrentSim, av);
 
-                if (av.ParentID == 0)
+                FollowUpdate(pos);
+            }
+        }
+
+        void FollowUpdate(Vector3 pos)
+        {
+            if (Vector3.Distance(pos, client.Self.SimPosition) > followDistance)
+            {
+                Vector3 target = pos + Vector3.Normalize(client.Self.SimPosition - pos) * (followDistance - 1f);
+                client.Self.AutoPilotCancel();
+                Vector3d glb = GlobalPosition(client.Network.CurrentSim, target);
+                client.Self.AutoPilot(glb.X, glb.Y, glb.Z);
+            }
+            else
+            {
+                client.Self.AutoPilotCancel();
+                client.Self.Movement.TurnToward(pos);
+            }
+        }
+
+        public Vector3 AvatarPosition(Simulator sim, UUID avID)
+        {
+            Vector3 pos = Vector3.Zero;
+            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => { return a.ID == avID; });
+            if (av != null)
+            {
+                return AvatarPosition(sim, av);
+            }
+            else
+            {
+                Vector3 coarse;
+                if (sim.AvatarPositions.TryGetValue(avID, out coarse))
                 {
-                    pos = av.Position;
-                }
-                else
-                {
-                    Primitive prim;
-                    client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(av.ParentID, out prim);
-
-                    if (prim == null)
-                        pos = client.Self.SimPosition;
-                    else
-                        pos = prim.Position + av.Position;
-                }
-
-                if (Vector3.Distance(pos, client.Self.SimPosition) > followDistance)
-                {
-                    int followRegionX = (int)(e.Simulator.Handle >> 32);
-                    int followRegionY = (int)(e.Simulator.Handle & 0xFFFFFFFF);
-                    ulong x = (ulong)(pos.X + followRegionX);
-                    ulong y = (ulong)(pos.Y + followRegionY);
-
-                    client.Self.AutoPilotCancel();
-                    client.Self.AutoPilot(x, y, pos.Z);
+                    if (coarse.Z > 0.01)
+                        return coarse;
                 }
             }
+            return pos;
+        }
+
+        public Vector3 AvatarPosition(Simulator sim, Avatar av)
+        {
+            Vector3 pos = Vector3.Zero;
+
+            if (av.ParentID == 0)
+            {
+                pos = av.Position;
+            }
+            else
+            {
+                Primitive prim;
+                if (sim.ObjectsPrimitives.TryGetValue(av.ParentID, out prim))
+                {
+                    pos = prim.Position + av.Position;
+                }
+            }
+
+            return pos;
         }
 
         #region Look at effect
@@ -313,14 +346,23 @@ namespace Radegast
         }
         #endregion Look at effect
 
-        public void Follow(string name)
+        public void Follow(string name, UUID id)
         {
             followName = name;
-            following = !string.IsNullOrEmpty(followName);
+            followID = id;
+            following = followID != UUID.Zero;
 
             if (following)
             {
                 walking = false;
+
+                Vector3 target = AvatarPosition(client.Network.CurrentSim, id);
+                if (Vector3.Zero != target)
+                {
+                    client.Self.Movement.TurnToward(target);
+                    FollowUpdate(target);
+                }
+
             }
         }
 
