@@ -560,10 +560,16 @@ namespace Radegast
             Avatar av = currentAvatar;
             if (av == null) return;
 
-            if (instance.State.FollowName != av.Name)
+            if (instance.State.FollowName == string.Empty)
+            {
                 instance.State.Follow(av.Name);
+                ctxFollow.Text = "Unfollow " + av.Name;
+            }
             else
+            {
                 instance.State.Follow(string.Empty);
+                ctxFollow.Text = "Follow";
+            }
         }
 
         private void ctxPoint_Click(object sender, EventArgs e)
