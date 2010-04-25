@@ -47,7 +47,7 @@ namespace Radegast.Commands
         {
             Name = "status";
             Description = "Prints various status infromation";
-            Usage = "status (sit|region|parcel|money|location|time)";
+            Usage = "status (doing|region|parcel|money|location|time)";
 
             this.instance = instance;
             args = new List<string>();
@@ -69,7 +69,7 @@ namespace Radegast.Commands
             args.AddRange(cmdArgs);
             StringBuilder sb = new StringBuilder();
 
-            if (arg("sit"))
+            if (arg("doing"))
             {
                 if (Client.Self.SittingOn != 0)
                 {
@@ -110,6 +110,10 @@ namespace Radegast.Commands
                     if (Client.Self.Movement.AlwaysRun)
                         sb.Append(", always running when moving");
                 }
+                
+                if (Instance.State.FollowName != string.Empty)
+                    sb.AppendFormat(", following {0}", Instance.State.FollowName);
+
                 sb.AppendLine();
             }
 
