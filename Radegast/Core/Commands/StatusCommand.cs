@@ -103,7 +103,9 @@ namespace Radegast.Commands
                 }
                 else
                 {
-                    if (Client.Self.Movement.Fly)
+                    if (Client.Self.Movement.SitOnGround)
+                        sb.Append("Sitting on the ground");
+                    else if (Client.Self.Movement.Fly)
                         sb.Append("Flying");
                     else
                         sb.Append("Standing");

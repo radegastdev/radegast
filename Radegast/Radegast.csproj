@@ -105,6 +105,7 @@
     <Compile Include="Core\Commands\RadegastCommand.cs" />
     <Compile Include="Core\Commands\ScriptInfoCommand.cs" />
     <Compile Include="Core\Commands\SimInfoCommand.cs" />
+    <Compile Include="Core\Commands\SitCommand.cs" />
     <Compile Include="Core\Commands\StatusCommand.cs" />
     <Compile Include="Core\Commands\ThreadCommand.cs" />
     <Compile Include="Core\Commands\TPComand.cs" />
