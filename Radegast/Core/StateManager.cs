@@ -405,6 +405,13 @@ namespace Radegast
             }
         }
 
+        public void StopFollowing()
+        {
+            following = false;
+            followName = string.Empty;
+            followID = UUID.Zero;
+        }
+
         #region Look at effect
         private int lastLookAtEffect = 0;
         private UUID lookAtEffect = UUID.Random();
