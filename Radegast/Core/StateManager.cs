@@ -48,6 +48,11 @@ namespace Radegast
             this.Name = name;
             this.Heading = heading;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class StateManager : IDisposable

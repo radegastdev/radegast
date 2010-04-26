@@ -283,7 +283,7 @@ Examples:
                     Primitive target = prims.Find((Primitive prim) =>
                         {
                             return prim.Properties != null
-                                && prim.Properties.Name.ToLower().StartsWith(subarg.ToLower());
+                                && prim.Properties.Name.ToLower().Contains(subarg.ToLower());
                         });
 
                     if (target == null)
