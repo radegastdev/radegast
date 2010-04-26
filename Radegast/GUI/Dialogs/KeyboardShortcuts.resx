@@ -134,11 +134,15 @@ Alt-8: Media
 Alt-9: Voice
 
 Ctrl-Tab: Next tab
-Ctrl-Shit-Tab: Previous tab
+Ctrl-Shift-Tab: Previous tab
 Ctrl-W: Close current tab
 
 Ctrl-G: Open map and go to the SLURL in the clipboard
-Ctrl-Shift-H: Teleport Home</value>
+Ctrl-Shift-H: Teleport Home
+
+Chat History (when a chat input field is focused)
+Ctrl-Up Arrow:   bring up the previous line from chat history
+Ctrl-Down Arrow: bring up the nexe line from chat history</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
