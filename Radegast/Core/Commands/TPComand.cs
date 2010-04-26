@@ -43,6 +43,7 @@ namespace Radegast.Commands
         TabsConsole TC { get { return Instance.TabConsole; } }
         public static string FolderName = "Radegast Landmarks";
         Inventory Inv { get { return Client.Inventory.Store; } }
+        ConsoleWriteLine wl;
 
         public TPCommand(RadegastInstance instance)
             : base(instance)
@@ -60,12 +61,12 @@ namespace Radegast.Commands
 
         void PrintUsage()
         {
-            TC.DisplayNotificationInChat("Wrong arguments for \"tp\" command. For detailed description type: " + CommandsManager.CmdPrefix + "tp help");
+            wl("Wrong arguments for \"tp\" command. For detailed description type: " + CommandsManager.CmdPrefix + "tp help");
         }
 
         void PrintFullUsage()
         {
-            TC.DisplayNotificationInChat(string.Format(@"Usage:
+            wl(@"Usage:
 {0}tp (list|landmark name|landmark number|help)
 
 List mode:
@@ -81,7 +82,7 @@ Example:
 Landmark number mode:
 Teleport to landmark number specified
 Example:
-{0}tp 3 -- teleports to landmark number 3 as printed in {0}tp list output", CommandsManager.CmdPrefix, FolderName));
+{0}tp 3 -- teleports to landmark number 3 as printed in {0}tp list output", CommandsManager.CmdPrefix, FolderName);
         }
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
@@ -93,7 +94,7 @@ Example:
                 WriteLine(@"Could not find ""{0}"" folder in the inventory, creating one.", FolderName);
                 return;
             }
-
+            wl = WriteLine;
             if (cmdArgs.Length == 0) { PrintUsage(); return; }
 
             List<InventoryLandmark> landmarks = new List<InventoryLandmark>();

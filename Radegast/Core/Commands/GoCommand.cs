@@ -47,6 +47,7 @@ namespace Radegast.Commands
         ChatConsole Chat;
         bool displayEndWalk = false;
         Vector3 targetPos = Vector3.Zero;
+        ConsoleWriteLine wl;
 
         public GoCommand(RadegastInstance instance)
             : base(instance)
@@ -83,18 +84,18 @@ namespace Radegast.Commands
                     targetPos = Vector3.Zero;
                 }
 
-                TC.DisplayNotificationInChat(msg);
+                wl(msg);
             }
         }
 
         void PrintUsage()
         {
-            TC.DisplayNotificationInChat("Wrong arguments for \"go\" command. For detailed description type: " + CommandsManager.CmdPrefix + "go help");
+            wl("Wrong arguments for \"go\" command. For detailed description type: " + CommandsManager.CmdPrefix + "go help");
         }
 
         void PrintFullUsage()
         {
-            TC.DisplayNotificationInChat(string.Format(@"Usage:
+            wl(@"Usage:
 
 {0}go [tp] (distance|xyz|object|person|help) [additional args]
 - tp is an optional parameter after go command. If speciefied use teleport instead of walking to reach the destination when parcel permits it.
@@ -122,7 +123,7 @@ Person mode:
 Moves toward a person
 Examples:
 {0}go person Latif -- walk toward the closest person whose name begins with Latif
-{0}go tp person John -- teleports to the closest person whose name begins with John", CommandsManager.CmdPrefix));
+{0}go tp person John -- teleports to the closest person whose name begins with John", CommandsManager.CmdPrefix);
         }
 
         void MoveTo(Vector3 target, bool useTP)
@@ -149,6 +150,7 @@ Examples:
                     Chat.Invoke(new MethodInvoker(() => Execute(name, cmdArgs, WriteLine)));
                 return;
             }
+            wl = WriteLine;
 
             string cmd = string.Join(" ", cmdArgs);
             List<string> args = new List<string>(Regex.Split(cmd, @"\s", regexOptions));

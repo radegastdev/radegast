@@ -45,6 +45,7 @@ namespace Radegast.Commands
         ChatConsole Chat;
         Vector3 targetPos = Vector3.Zero;
         RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase;
+        ConsoleWriteLine wl;
 
         public FaceCommand(RadegastInstance instance)
             : base(instance)
@@ -65,12 +66,12 @@ namespace Radegast.Commands
 
         void PrintUsage()
         {
-            TC.DisplayNotificationInChat("Wrong arguments for \"face\" command. For detailed description type: " + CommandsManager.CmdPrefix + "face help");
+            wl("Wrong arguments for \"face\" command. For detailed description type: " + CommandsManager.CmdPrefix + "face help");
         }
 
         void PrintFullUsage()
         {
-            TC.DisplayNotificationInChat(string.Format(@"Usage:
+            wl(@"Usage:
 {0}face (direction|heading|object|person|help) [additional args]
 
 Direction (in degrees) mode:
@@ -93,7 +94,7 @@ Example:
 Person mode:
 Turns toward a person
 Examples:
-{0}face person Latif -- turn toward the closest person whose name begins with Latif", CommandsManager.CmdPrefix));
+{0}face person Latif -- turn toward the closest person whose name begins with Latif", CommandsManager.CmdPrefix);
         }
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
@@ -104,6 +105,7 @@ Examples:
                     Chat.Invoke(new MethodInvoker(() => Execute(name, cmdArgs, WriteLine)));
                 return;
             }
+            wl = WriteLine;
 
             string cmd = string.Join(" ", cmdArgs);
             List<string> args = new List<string>(Regex.Split(cmd, @"\s", regexOptions));
