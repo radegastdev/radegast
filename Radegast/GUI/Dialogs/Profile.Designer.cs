@@ -61,6 +61,7 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProfile));
             this.tabProfile = new System.Windows.Forms.TabControl();
             this.tpgProfile = new System.Windows.Forms.TabPage();
+            this.btnGive = new System.Windows.Forms.Button();
             this.lvwGroups = new Radegast.ListViewNoFlicker();
             this.clGroupName = new System.Windows.Forms.ColumnHeader();
             this.clGroupTitle = new System.Windows.Forms.ColumnHeader();
@@ -90,11 +91,13 @@ namespace Radegast
             this.pickDetail = new System.Windows.Forms.RichTextBox();
             this.pickLocation = new System.Windows.Forms.TextBox();
             this.picksLowerPanel = new System.Windows.Forms.Panel();
+            this.btnDeletePick = new System.Windows.Forms.Button();
             this.btnShowOnMap = new System.Windows.Forms.Button();
             this.btnTeleport = new System.Windows.Forms.Button();
             this.pickTitle = new System.Windows.Forms.TextBox();
             this.pickPicturePanel = new System.Windows.Forms.Panel();
             this.pickListPanel = new System.Windows.Forms.Panel();
+            this.btnNewPick = new System.Windows.Forms.Button();
             this.tpgFirstLife = new System.Windows.Forms.TabPage();
             this.txtUUID = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -104,13 +107,13 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.btnGive = new System.Windows.Forms.Button();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
             this.tbpPicks.SuspendLayout();
             this.pickDetailPanel.SuspendLayout();
             this.picksLowerPanel.SuspendLayout();
+            this.pickListPanel.SuspendLayout();
             this.tpgFirstLife.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -157,6 +160,18 @@ namespace Radegast
             this.tpgProfile.Text = "Profile";
             this.tpgProfile.UseVisualStyleBackColor = true;
             // 
+            // btnGive
+            // 
+            this.btnGive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGive.Enabled = false;
+            this.btnGive.Location = new System.Drawing.Point(347, 428);
+            this.btnGive.Name = "btnGive";
+            this.btnGive.Size = new System.Drawing.Size(107, 23);
+            this.btnGive.TabIndex = 24;
+            this.btnGive.Text = "&Give Inventory";
+            this.btnGive.UseVisualStyleBackColor = true;
+            this.btnGive.Click += new System.EventHandler(this.btnGive_Click);
+            // 
             // lvwGroups
             // 
             this.lvwGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -177,7 +192,7 @@ namespace Radegast
             this.lvwGroups.ShowGroups = false;
             this.lvwGroups.Size = new System.Drawing.Size(445, 82);
             this.lvwGroups.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lvwGroups.TabIndex = 21;
+            this.lvwGroups.TabIndex = 5;
             this.lvwGroups.UseCompatibleStateImageBehavior = false;
             this.lvwGroups.View = System.Windows.Forms.View.Details;
             this.lvwGroups.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwGroups_MouseDoubleClick);
@@ -194,20 +209,22 @@ namespace Radegast
             // 
             // txtFullName
             // 
+            this.txtFullName.AccessibleName = "Name";
             this.txtFullName.Location = new System.Drawing.Point(50, 6);
             this.txtFullName.Name = "txtFullName";
             this.txtFullName.ReadOnly = true;
             this.txtFullName.Size = new System.Drawing.Size(172, 21);
-            this.txtFullName.TabIndex = 4;
+            this.txtFullName.TabIndex = 1;
             // 
             // anPartner
             // 
+            this.anPartner.AccessibleName = "Partner";
             this.anPartner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.anPartner.Location = new System.Drawing.Point(306, 34);
             this.anPartner.Name = "anPartner";
             this.anPartner.ReadOnly = true;
             this.anPartner.Size = new System.Drawing.Size(148, 21);
-            this.anPartner.TabIndex = 20;
+            this.anPartner.TabIndex = 3;
             // 
             // btnIM
             // 
@@ -215,7 +232,7 @@ namespace Radegast
             this.btnIM.Location = new System.Drawing.Point(269, 427);
             this.btnIM.Name = "btnIM";
             this.btnIM.Size = new System.Drawing.Size(72, 23);
-            this.btnIM.TabIndex = 19;
+            this.btnIM.TabIndex = 23;
             this.btnIM.Text = "Start IM";
             this.btnIM.UseVisualStyleBackColor = true;
             this.btnIM.Click += new System.EventHandler(this.btnIM_Click);
@@ -226,7 +243,7 @@ namespace Radegast
             this.btnFriend.Location = new System.Drawing.Point(179, 427);
             this.btnFriend.Name = "btnFriend";
             this.btnFriend.Size = new System.Drawing.Size(84, 23);
-            this.btnFriend.TabIndex = 18;
+            this.btnFriend.TabIndex = 22;
             this.btnFriend.Text = "Add Friend";
             this.btnFriend.UseVisualStyleBackColor = true;
             this.btnFriend.Click += new System.EventHandler(this.btnFriend_Click);
@@ -245,7 +262,7 @@ namespace Radegast
             this.btnOfferTeleport.Location = new System.Drawing.Point(6, 427);
             this.btnOfferTeleport.Name = "btnOfferTeleport";
             this.btnOfferTeleport.Size = new System.Drawing.Size(96, 23);
-            this.btnOfferTeleport.TabIndex = 16;
+            this.btnOfferTeleport.TabIndex = 20;
             this.btnOfferTeleport.Text = "Offer Teleport";
             this.btnOfferTeleport.UseVisualStyleBackColor = true;
             this.btnOfferTeleport.Click += new System.EventHandler(this.btnOfferTeleport_Click);
@@ -256,32 +273,35 @@ namespace Radegast
             this.btnPay.Location = new System.Drawing.Point(108, 427);
             this.btnPay.Name = "btnPay";
             this.btnPay.Size = new System.Drawing.Size(65, 23);
-            this.btnPay.TabIndex = 15;
+            this.btnPay.TabIndex = 21;
             this.btnPay.Text = "Pay...";
             this.btnPay.UseVisualStyleBackColor = true;
             this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
             // 
             // rtbAccountInfo
             // 
+            this.rtbAccountInfo.AccessibleName = "Info";
             this.rtbAccountInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbAccountInfo.Location = new System.Drawing.Point(306, 60);
             this.rtbAccountInfo.Name = "rtbAccountInfo";
             this.rtbAccountInfo.ReadOnly = true;
             this.rtbAccountInfo.Size = new System.Drawing.Size(148, 133);
-            this.rtbAccountInfo.TabIndex = 14;
+            this.rtbAccountInfo.TabIndex = 4;
             this.rtbAccountInfo.Text = "";
             // 
             // rtbAbout
             // 
+            this.rtbAbout.AccessibleName = "Profile details";
             this.rtbAbout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbAbout.Location = new System.Drawing.Point(6, 300);
             this.rtbAbout.Name = "rtbAbout";
             this.rtbAbout.ReadOnly = true;
             this.rtbAbout.Size = new System.Drawing.Size(448, 121);
-            this.rtbAbout.TabIndex = 13;
+            this.rtbAbout.TabIndex = 0;
             this.rtbAbout.Text = "";
             this.rtbAbout.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAbout_LinkClicked);
+            this.rtbAbout.Leave += new System.EventHandler(this.rtbAbout_Leave);
             // 
             // label5
             // 
@@ -315,12 +335,13 @@ namespace Radegast
             // 
             // txtBornOn
             // 
+            this.txtBornOn.AccessibleName = "Date of birth";
             this.txtBornOn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtBornOn.Location = new System.Drawing.Point(306, 6);
             this.txtBornOn.Name = "txtBornOn";
             this.txtBornOn.ReadOnly = true;
             this.txtBornOn.Size = new System.Drawing.Size(148, 21);
-            this.txtBornOn.TabIndex = 5;
+            this.txtBornOn.TabIndex = 2;
             // 
             // label2
             // 
@@ -392,6 +413,7 @@ namespace Radegast
             // 
             // txtWebURL
             // 
+            this.txtWebURL.AccessibleName = "Web profile link";
             this.txtWebURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.txtWebURL.Location = new System.Drawing.Point(42, 6);
@@ -399,6 +421,7 @@ namespace Radegast
             this.txtWebURL.ReadOnly = true;
             this.txtWebURL.Size = new System.Drawing.Size(250, 21);
             this.txtWebURL.TabIndex = 1;
+            this.txtWebURL.Leave += new System.EventHandler(this.txtWebURL_Leave);
             // 
             // label6
             // 
@@ -437,10 +460,10 @@ namespace Radegast
             // 
             // pickDetail
             // 
+            this.pickDetail.AccessibleName = "Pick detail";
             this.pickDetail.BackColor = System.Drawing.SystemColors.Window;
             this.pickDetail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pickDetail.Location = new System.Drawing.Point(0, 259);
-            this.pickDetail.Multiline = true;
             this.pickDetail.Name = "pickDetail";
             this.pickDetail.ReadOnly = true;
             this.pickDetail.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
@@ -448,9 +471,11 @@ namespace Radegast
             this.pickDetail.TabIndex = 2;
             this.pickDetail.Text = "";
             this.pickDetail.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAbout_LinkClicked);
+            this.pickDetail.Leave += new System.EventHandler(this.pickTitle_Leave);
             // 
             // pickLocation
             // 
+            this.pickLocation.AccessibleName = "Pick parcel";
             this.pickLocation.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pickLocation.Location = new System.Drawing.Point(0, 389);
             this.pickLocation.Name = "pickLocation";
@@ -459,6 +484,7 @@ namespace Radegast
             // 
             // picksLowerPanel
             // 
+            this.picksLowerPanel.Controls.Add(this.btnDeletePick);
             this.picksLowerPanel.Controls.Add(this.btnShowOnMap);
             this.picksLowerPanel.Controls.Add(this.btnTeleport);
             this.picksLowerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -467,12 +493,23 @@ namespace Radegast
             this.picksLowerPanel.Size = new System.Drawing.Size(315, 41);
             this.picksLowerPanel.TabIndex = 3;
             // 
+            // btnDeletePick
+            // 
+            this.btnDeletePick.Location = new System.Drawing.Point(191, 10);
+            this.btnDeletePick.Name = "btnDeletePick";
+            this.btnDeletePick.Size = new System.Drawing.Size(75, 23);
+            this.btnDeletePick.TabIndex = 5;
+            this.btnDeletePick.Text = "Delete";
+            this.btnDeletePick.UseVisualStyleBackColor = true;
+            this.btnDeletePick.Visible = false;
+            this.btnDeletePick.Click += new System.EventHandler(this.btnDeletePick_Click);
+            // 
             // btnShowOnMap
             // 
             this.btnShowOnMap.Location = new System.Drawing.Point(87, 10);
             this.btnShowOnMap.Name = "btnShowOnMap";
             this.btnShowOnMap.Size = new System.Drawing.Size(98, 23);
-            this.btnShowOnMap.TabIndex = 0;
+            this.btnShowOnMap.TabIndex = 4;
             this.btnShowOnMap.Text = "Show on Map";
             this.btnShowOnMap.UseVisualStyleBackColor = true;
             this.btnShowOnMap.Click += new System.EventHandler(this.btnShowOnMap_Click);
@@ -482,18 +519,22 @@ namespace Radegast
             this.btnTeleport.Location = new System.Drawing.Point(6, 10);
             this.btnTeleport.Name = "btnTeleport";
             this.btnTeleport.Size = new System.Drawing.Size(75, 23);
-            this.btnTeleport.TabIndex = 0;
+            this.btnTeleport.TabIndex = 3;
             this.btnTeleport.Text = "Teleport";
             this.btnTeleport.UseVisualStyleBackColor = true;
             this.btnTeleport.Click += new System.EventHandler(this.btnTeleport_Click);
             // 
             // pickTitle
             // 
+            this.pickTitle.AccessibleName = "Pick title";
+            this.pickTitle.BackColor = System.Drawing.SystemColors.Window;
             this.pickTitle.Dock = System.Windows.Forms.DockStyle.Top;
             this.pickTitle.Location = new System.Drawing.Point(0, 238);
             this.pickTitle.Name = "pickTitle";
+            this.pickTitle.ReadOnly = true;
             this.pickTitle.Size = new System.Drawing.Size(315, 21);
             this.pickTitle.TabIndex = 1;
+            this.pickTitle.Leave += new System.EventHandler(this.pickTitle_Leave);
             // 
             // pickPicturePanel
             // 
@@ -501,15 +542,28 @@ namespace Radegast
             this.pickPicturePanel.Location = new System.Drawing.Point(0, 0);
             this.pickPicturePanel.Name = "pickPicturePanel";
             this.pickPicturePanel.Size = new System.Drawing.Size(315, 238);
-            this.pickPicturePanel.TabIndex = 0;
+            this.pickPicturePanel.TabIndex = 99;
             // 
             // pickListPanel
             // 
+            this.pickListPanel.Controls.Add(this.btnNewPick);
             this.pickListPanel.Dock = System.Windows.Forms.DockStyle.Left;
             this.pickListPanel.Location = new System.Drawing.Point(3, 3);
             this.pickListPanel.Name = "pickListPanel";
             this.pickListPanel.Size = new System.Drawing.Size(139, 451);
             this.pickListPanel.TabIndex = 0;
+            // 
+            // btnNewPick
+            // 
+            this.btnNewPick.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnNewPick.Location = new System.Drawing.Point(33, 420);
+            this.btnNewPick.Name = "btnNewPick";
+            this.btnNewPick.Size = new System.Drawing.Size(75, 23);
+            this.btnNewPick.TabIndex = 0;
+            this.btnNewPick.Text = "New Pick";
+            this.btnNewPick.UseVisualStyleBackColor = true;
+            this.btnNewPick.Visible = false;
+            this.btnNewPick.Click += new System.EventHandler(this.btnNewPick_Click);
             // 
             // tpgFirstLife
             // 
@@ -551,19 +605,21 @@ namespace Radegast
             this.rlPicPanel.Location = new System.Drawing.Point(6, 22);
             this.rlPicPanel.Name = "rlPicPanel";
             this.rlPicPanel.Size = new System.Drawing.Size(245, 163);
-            this.rlPicPanel.TabIndex = 15;
+            this.rlPicPanel.TabIndex = 1;
             // 
             // rtbAboutFL
             // 
+            this.rtbAboutFL.AccessibleName = "About first life";
             this.rtbAboutFL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbAboutFL.Location = new System.Drawing.Point(6, 201);
             this.rtbAboutFL.Name = "rtbAboutFL";
             this.rtbAboutFL.ReadOnly = true;
             this.rtbAboutFL.Size = new System.Drawing.Size(448, 150);
-            this.rtbAboutFL.TabIndex = 14;
+            this.rtbAboutFL.TabIndex = 0;
             this.rtbAboutFL.Text = "";
             this.rtbAboutFL.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAboutFL_LinkClicked);
+            this.rtbAboutFL.Leave += new System.EventHandler(this.rtbAboutFL_Leave);
             // 
             // label8
             // 
@@ -590,7 +646,7 @@ namespace Radegast
             this.btnClose.Location = new System.Drawing.Point(405, 501);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 1;
+            this.btnClose.TabIndex = 25;
             this.btnClose.Text = "Close";
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -605,22 +661,11 @@ namespace Radegast
             this.textBox1.ReadOnly = true;
             this.textBox1.Size = new System.Drawing.Size(360, 21);
             this.textBox1.TabIndex = 2;
+            this.textBox1.TabStop = false;
             this.textBox1.Text = "Drop items from inventory here";
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
-            // 
-            // btnGive
-            // 
-            this.btnGive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGive.Enabled = false;
-            this.btnGive.Location = new System.Drawing.Point(347, 428);
-            this.btnGive.Name = "btnGive";
-            this.btnGive.Size = new System.Drawing.Size(107, 23);
-            this.btnGive.TabIndex = 22;
-            this.btnGive.Text = "&Give Inventory";
-            this.btnGive.UseVisualStyleBackColor = true;
-            this.btnGive.Click += new System.EventHandler(this.btnGive_Click);
             // 
             // frmProfile
             // 
@@ -644,6 +689,7 @@ namespace Radegast
             this.pickDetailPanel.ResumeLayout(false);
             this.pickDetailPanel.PerformLayout();
             this.picksLowerPanel.ResumeLayout(false);
+            this.pickListPanel.ResumeLayout(false);
             this.tpgFirstLife.ResumeLayout(false);
             this.tpgFirstLife.PerformLayout();
             this.ResumeLayout(false);
@@ -699,6 +745,8 @@ namespace Radegast
         private System.Windows.Forms.ColumnHeader clGroupName;
         private System.Windows.Forms.ColumnHeader clGroupTitle;
         public System.Windows.Forms.Button btnGive;
+        private System.Windows.Forms.Button btnDeletePick;
+        private System.Windows.Forms.Button btnNewPick;
 
     }
 }

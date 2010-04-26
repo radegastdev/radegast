@@ -45,6 +45,9 @@ namespace Radegast
 
         private UUID agentID;
         public UUID AgentID { get { return agentID; } }
+        private Avatar.AvatarProperties Profile;
+        bool myProfile = false;
+        UUID newPickID = UUID.Zero;
 
         private UUID FLImageID;
         private UUID SLImageID;
@@ -80,6 +83,18 @@ namespace Radegast
             if (instance.InventoryClipboard != null)
             {
                 btnGive.Enabled = true;
+            }
+
+            if (agentID == client.Self.AgentID)
+            {
+                myProfile = true;
+                rtbAbout.ReadOnly = false;
+                rtbAboutFL.ReadOnly = false;
+                txtWebURL.ReadOnly = false;
+                pickTitle.ReadOnly = false;
+                pickDetail.ReadOnly = false;
+                btnDeletePick.Visible = true;
+                btnNewPick.Visible = true;
             }
 
             // Callbacks
@@ -152,9 +167,20 @@ namespace Radegast
             DisplayListOfPicks(e.Picks);
         }
 
+        private void ClearPicks()
+        {
+            List<Control> controls = new List<Control>();
+            foreach (Control c in pickListPanel.Controls)
+                if (c != btnNewPick)
+                    controls.Add(c);
+            foreach (Control c in controls)
+                c.Dispose();
+            pickDetailPanel.Visible = false;
+        }
+
         private void DisplayListOfPicks(Dictionary<UUID, string> picks)
         {
-            pickListPanel.Controls.Clear();
+            ClearPicks();
 
             int i = 0;
             Button firstButton = null;
@@ -176,18 +202,22 @@ namespace Radegast
 
                 if (firstButton == null)
                     firstButton = b;
+
+                if (newPickID == PickInfo.Key)
+                    firstButton = b;
             }
+
+            newPickID = UUID.Zero;
 
             if (firstButton != null)
             {
                 firstButton.PerformClick();
-                pickDetailPanel.Visible = true;
             }
-
         }
 
         void PickButtonClick(object sender, EventArgs e)
         {
+            pickDetailPanel.Visible = true;
             Button b = (Button)sender;
             requestedPick = (UUID)b.Tag;
 
@@ -297,6 +327,7 @@ namespace Radegast
                 Invoke(new MethodInvoker(() => Avatars_AvatarPropertiesReply(sender, e)));
                 return;
             }
+            Profile = e.Properties;
 
             FLImageID = e.Properties.FirstLifeImage;
             SLImageID = e.Properties.ProfileImage;
@@ -372,27 +403,19 @@ namespace Radegast
             pnlWeb.Controls.Add(web);
         }
 
-        private void ProcessWebURL(string url)
-        {
-            if (url.StartsWith("http://") || url.StartsWith("ftp://"))
-                System.Diagnostics.Process.Start(url);
-            else
-                System.Diagnostics.Process.Start("http://" + url);
-        }
-
         private void btnWebOpen_Click(object sender, EventArgs e)
         {
-            ProcessWebURL(txtWebURL.Text);
+            instance.MainForm.ProcessLink(txtWebURL.Text);
         }
 
         private void rtbAbout_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            ProcessWebURL(e.LinkText);
+            instance.MainForm.ProcessLink(e.LinkText);
         }
 
         private void rtbAboutFL_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            ProcessWebURL(e.LinkText);
+            instance.MainForm.ProcessLink(e.LinkText);
         }
 
         private void btnOfferTeleport_Click(object sender, EventArgs e)
@@ -514,6 +537,75 @@ namespace Radegast
                 instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + fullName + ".");
             }
 
+        }
+
+        private void rtbAbout_Leave(object sender, EventArgs e)
+        {
+            if (!myProfile) return;
+            Profile.AboutText = rtbAbout.Text;
+            client.Self.UpdateProfile(Profile);
+        }
+
+        private void rtbAboutFL_Leave(object sender, EventArgs e)
+        {
+            if (!myProfile) return;
+            Profile.FirstLifeText = rtbAboutFL.Text;
+            client.Self.UpdateProfile(Profile);
+        }
+
+        private void txtWebURL_Leave(object sender, EventArgs e)
+        {
+            if (!myProfile) return;
+            btnWebView.Enabled = btnWebOpen.Enabled = (txtWebURL.TextLength > 0);
+            Profile.ProfileURL = txtWebURL.Text;
+            client.Self.UpdateProfile(Profile);
+        }
+
+        private void pickTitle_Leave(object sender, EventArgs e)
+        {
+            if (!myProfile) return;
+            currentPick.Name = pickTitle.Text;
+            currentPick.Desc = pickDetail.Text;
+
+            client.Self.PickInfoUpdate(currentPick.PickID,
+                currentPick.TopPick,
+                currentPick.ParcelID,
+                currentPick.Name,
+                currentPick.PosGlobal,
+                currentPick.SnapshotID,
+                currentPick.Desc);
+
+            pickCache[currentPick.PickID] = currentPick;
+        }
+
+        private void btnDeletePick_Click(object sender, EventArgs e)
+        {
+            if (!myProfile) return;
+            client.Self.PickDelete(currentPick.PickID);
+            ClearPicks();
+            client.Avatars.RequestAvatarPicks(agentID);
+        }
+
+        private void btnNewPick_Click(object sender, EventArgs e)
+        {
+            System.Threading.ThreadPool.QueueUserWorkItem(sync =>
+                {
+                    UUID parcelID = client.Parcels.RequestRemoteParcelID(client.Self.SimPosition, client.Network.CurrentSim.Handle, client.Network.CurrentSim.ID);
+                    newPickID = UUID.Random();
+
+                    client.Self.PickInfoUpdate(
+                        newPickID,
+                        false,
+                        parcelID,
+                        Instance.State.Parcel.Name,
+                        client.Self.GlobalPosition,
+                        Instance.State.Parcel.SnapshotID,
+                        Instance.State.Parcel.Desc
+                        );
+
+                    Invoke(new MethodInvoker(() => ClearPicks()));
+                    client.Avatars.RequestAvatarPicks(agentID);
+                });
         }
     }
 }
