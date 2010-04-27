@@ -730,19 +730,23 @@ namespace Radegast
                 link = "http://" + link;
             }
 
-            Regex r = new Regex(@"^(http://slurl.com/secondlife/|secondlife://)([^/]+)/(\d+)/(\d+)(/(\d+))?");
+            // http://maps.secondlife.com/secondlife/JADED/203/108/26
+
+            Regex r = new Regex(@"^(http://(slurl\.com|maps\.secondlife\.com)/secondlife/|secondlife://)(?<region>[^/]+)/(?<x>\d+)/(?<y>\d+)(/(?<z>\d+))?",
+                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase
+                );
             Match m = r.Match(link);
 
             if (m.Success)
             {
-                string region = HttpUtility.UrlDecode(m.Groups[2].Value);
-                int x = int.Parse(m.Groups[3].Value);
-                int y = int.Parse(m.Groups[4].Value);
+                string region = HttpUtility.UrlDecode(m.Groups["region"].Value);
+                int x = int.Parse(m.Groups["x"].Value);
+                int y = int.Parse(m.Groups["y"].Value);
                 int z = 0;
 
-                if (m.Groups.Count > 5 && m.Groups[6].Value != String.Empty)
+                if (!string.IsNullOrEmpty(m.Groups["z"].Value))
                 {
-                    z = int.Parse(m.Groups[6].Value);
+                    z = int.Parse(m.Groups["z"].Value);
                 }
 
                 MapTab.Select();
