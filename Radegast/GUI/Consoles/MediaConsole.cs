@@ -34,7 +34,8 @@ namespace Radegast
         private const int saveConfigTimeout = 3000;
         private bool playing;
         private string currentURL;
-        private MediaManager mngr;
+        //private MediaManager mngr;
+        private Media.Stream parcelStream;
         private readonly object parcelMusicLock = new object();
 
 
@@ -47,7 +48,7 @@ namespace Radegast
             Disposed += new EventHandler(MediaConsole_Disposed);
 
             this.instance = instance;
-            this.mngr = instance.MediaManager;
+            this.parcelStream = new Media.Stream();
 
             s = instance.GlobalSettings;
 
@@ -128,9 +129,9 @@ namespace Radegast
             lock (parcelMusicLock)
             {
                 playing = false;
-                if (mngr.ParcelMusic != null)
-                    mngr.ParcelMusic.Dispose();
-                mngr.ParcelMusic = null;
+                if (parcelStream != null)
+                    parcelStream.Dispose();
+                parcelStream = null;
                 lblStation.Tag = lblStation.Text = string.Empty;
                 txtSongTitle.Text = string.Empty;
             }
@@ -142,10 +143,10 @@ namespace Radegast
             {
                 Stop();
                 playing = true;
-                mngr.ParcelMusic = new Sound(mngr.FMODSystem);
-                mngr.ParcelMusic.Volume = audioVolume;
-                mngr.ParcelMusic.PlayStream(currentURL);
-                mngr.ParcelMusic.OnStreamInfo += new Sound.StreamInfoCallback(ParcelMusic_OnStreamInfo);
+                parcelStream = new Media.Stream();
+                parcelStream.Volume = audioVolume;
+                parcelStream.PlayStream(currentURL);
+                parcelStream.OnStreamInfo += new Media.Stream.StreamInfoCallback(ParcelMusic_OnStreamInfo);
             }
         }
 
@@ -204,8 +205,8 @@ namespace Radegast
         {
             configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
             lock (parcelMusicLock)
-                if (mngr.ParcelMusic != null)
-                    mngr.ParcelMusic.Volume = volAudioStream.Value/50f;
+                if (parcelStream != null)
+                    parcelStream.Volume = volAudioStream.Value/50f;
         }
 
         private void txtAudioURL_TextChanged(object sender, EventArgs e)

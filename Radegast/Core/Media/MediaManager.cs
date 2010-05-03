@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using FMOD;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast.Media
@@ -43,17 +44,56 @@ namespace Radegast.Media
         /// </summary>
         public bool SoundSystemAvailable { get { return soundSystemAvailable; } }
         private bool soundSystemAvailable = false;
+        private Thread soundThread;
 
         private List<MediaObject> sounds = new List<MediaObject>();
 
-        /// <summary>
-        /// Parcel music stream player
-        /// </summary>
-        public Sound ParcelMusic { get { return parcelMusic; } set { parcelMusic = value; } }
-        private Sound parcelMusic;
-
         public MediaManager(RadegastInstance instance)
-            : base(null)
+            : base()
+        {
+            // Start the background thread that does all the FMOD calls.
+            soundThread = new Thread(new ThreadStart(CommandLoop));
+            soundThread.IsBackground = true;
+            soundThread.Name = "SoundThread";
+            soundThread.Start();
+        }
+
+        private void CommandLoop()
+        {
+            SoundDelegate action;
+
+            InitFMOD();
+            if (!this.soundSystemAvailable) return;
+
+            // Initialize the command queue.
+            queue = new Queue<SoundDelegate>();
+
+            try
+            {
+                while (true)
+                {
+                    // Wait for something to show up in the queue.
+                    lock (queue)
+                    {
+                        while (queue.Count == 0)
+                        {
+                            Monitor.Wait(queue);
+                        }
+
+                        action = queue.Dequeue();
+                    }
+
+                    // We have an action, so call it.
+                    action();
+                }
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine("Sound shutdown " + e.Message);
+            }
+        }
+
+        private void InitFMOD()
         {
             try
             {
@@ -62,7 +102,10 @@ namespace Radegast.Media
                 FMODExec(system.getVersion(ref version));
 
                 if (version < FMOD.VERSION.number)
-                    throw new MediaException("You are using an old version of FMOD " + version.ToString("X") + ".  This program requires " + FMOD.VERSION.number.ToString("X") + ".");
+                    throw new MediaException("You are using an old version of FMOD " +
+                        version.ToString("X") +
+                        ".  This program requires " +
+                        FMOD.VERSION.number.ToString("X") + ".");
 
                 // Assume no special hardware capabilities except 5.1 surround sound.
                 FMOD.CAPS caps = FMOD.CAPS.NONE;
@@ -140,16 +183,9 @@ namespace Radegast.Media
 
         public override void Dispose()
         {
-            if (parcelMusic != null)
+            lock (sounds)
             {
-                if (!parcelMusic.Disposed)
-                    parcelMusic.Dispose();
-                parcelMusic = null;
-            }
-
-            lock(sounds)
-            {
-                for (int i=0; i<sounds.Count; i++)
+                for (int i = 0; i < sounds.Count; i++)
                 {
                     if (!sounds[i].Disposed)
                         sounds[i].Dispose();

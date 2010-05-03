@@ -31,6 +31,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using FMOD;
 
 namespace Radegast.Media
 {
@@ -41,21 +43,86 @@ namespace Radegast.Media
         /// </summary>
         public bool Disposed { get { return disposed; } }
         private bool disposed = false;
+ 
+        /// All commands are made through queued delegate calls, so they
+        /// are guaranteed to take place in the same thread.  FMOD requires this.
+        public delegate void SoundDelegate();
+
+        /// Queue of sound commands
+        /// 
+        /// </summary>
+        protected static Queue<SoundDelegate> queue;
+
+        /// <summary>
+        /// FMOD channel controller, should not be used directly, add methods to Radegast.Media.Sound
+        /// </summary>
+        public Channel FMODChannel { get { return channel; } }
+        protected Channel channel = null;
+
+        /// <summary>
+        /// FMOD sound object, should not be used directly, add methods to Radegast.Media.Sound
+        /// </summary>
+        public FMOD.Sound FMODSound { get { return sound; } }
+        protected FMOD.Sound sound = null;
 
         public FMOD.System FMODSystem { get { return system; } }
         /// <summary>
-        /// Base FMOD system object
+        /// Base FMOD system object, of which there is only one.
         /// </summary>
-        protected FMOD.System system = null;
+        protected static FMOD.System system = null;
 
-        public MediaObject(FMOD.System system)
+        public MediaObject()
         {
-            this.system = system;
         }
 
         public virtual void Dispose()
         {
+            if (sound != null)
+            {
+                sound.release();
+                sound = null;
+            }
+
             disposed = true;
+        }
+
+        public bool Active { get { return (sound != null); } }
+
+        /// <summary>
+        /// Put a delegate call on the command queue.
+        /// </summary>
+        /// <param name="action"></param>
+        protected void invoke(SoundDelegate action)
+        {
+            // Do nothing if queue not ready yet.
+            if (queue == null) return;
+
+            // Put that on the queue and wake up the background thread.
+            lock (queue)
+            {
+                queue.Enqueue( action );
+                Monitor.Pulse(queue);
+            }
+
+        }
+
+        /// <summary>
+        ///  Common actgions for all sound types.
+        /// </summary>
+        protected float volume = 0.5f;
+        public float Volume {
+            get
+            {
+                return volume;
+            }
+            set
+            {
+                invoke(new SoundDelegate(delegate
+                {
+                    MediaManager.FMODExec(channel.setVolume(value));
+                    volume = value;
+                }));
+            }
         }
     }
 }
