@@ -220,24 +220,37 @@ namespace Radegast.Media
             base.Dispose();
         }
 
-        private void OnListenerUpdate()
+        /// <summary>
+        /// Thread to update listener position and generally keep
+        /// FMOD up to date.
+        /// </summary>
+        private void ListenerUpdate()
         {
             Vector3 lastpos = new Vector3(0.0f, 0.0f, 0.0f );
             float lastface = 0.0f;
 
             while (true)
             {
-                // TODO would be nice if there was an event for this.
                 Thread.Sleep(500);
 
                 if (system == null) continue;
 
                 AgentManager my = instance.Client.Self;
 
-                // If we are standing still, nothing to update.
-                if (my.SimPosition.Equals( lastpos ) &&
+                // If we are standing still, nothing to update now, but
+                // FMOD needs a 'tick' anyway for callbacks, etc.  In looping
+                // 'game' programs, the loop is the 'tick'.   Since Radegast
+                // uses events and has no loop, we use this position update
+                // thread to drive the tick.
+                if (my.SimPosition.Equals(lastpos) &&
                     my.Movement.BodyRotation.W == lastface)
+                {
+                    invoke(new SoundDelegate(delegate
+                    {
+                        system.update();
+                    }));
                     continue;
+                }
 
                 lastpos = my.SimPosition;
                 lastface = my.Movement.BodyRotation.W;
@@ -258,7 +271,7 @@ namespace Radegast.Media
                 // Tell FMOD the new orientation.
                 invoke( new SoundDelegate( delegate
                 {
-                    MediaManager.FMODExec( system.set3DListenerAttributes(
+                    FMODExec( system.set3DListenerAttributes(
                         0,
                         ref listenerpos,	// Position
                         ref ZeroVector,		// Velocity

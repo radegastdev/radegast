@@ -127,10 +127,27 @@ namespace Radegast.Media
             }
             set
             {
+                volume = value;
                 invoke(new SoundDelegate(delegate
                 {
-                    MediaManager.FMODExec(channel.setVolume(value));
-                    volume = value;
+                    FMODExec(channel.setVolume(volume));
+                    system.update();
+                }));
+            }
+        }
+
+        protected FMOD.VECTOR position = new FMOD.VECTOR();
+        public OpenMetaverse.Vector3 Position
+        {
+            set
+            {
+                position = FromOMVSpace(value);
+                invoke(new SoundDelegate(delegate
+                {
+                    FMODExec(channel.set3DAttributes(
+                        ref position,
+                        ref ZeroVector));
+                    system.update();
                 }));
             }
         }

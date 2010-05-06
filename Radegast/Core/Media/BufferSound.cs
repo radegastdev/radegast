@@ -39,7 +39,6 @@ namespace Radegast.Media
     public class BufferSound : MediaObject
     {
         private FMOD.CREATESOUNDEXINFO extendedInfo;
-        private FMOD.VECTOR position;
 
         public Sound Sound { get { return sound; } }
 
