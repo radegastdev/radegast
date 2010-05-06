@@ -70,7 +70,10 @@ namespace Radegast
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
 
-            this.client.Self.ChatterBoxAcceptInvite(session);
+            if (!client.Self.GroupChatSessions.ContainsKey(session))
+            {
+                client.Self.ChatterBoxAcceptInvite(session);
+            }
 
             UpdateFontSize();
         }

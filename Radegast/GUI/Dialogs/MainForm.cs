@@ -730,8 +730,6 @@ namespace Radegast
                 link = "http://" + link;
             }
 
-            // http://maps.secondlife.com/secondlife/JADED/203/108/26
-
             Regex r = new Regex(@"^(http://(slurl\.com|maps\.secondlife\.com)/secondlife/|secondlife://)(?<region>[^/]+)/(?<x>\d+)/(?<y>\d+)(/(?<z>\d+))?",
                 RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase
                 );

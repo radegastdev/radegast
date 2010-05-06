@@ -66,9 +66,12 @@ namespace Radegast
 
             // Callbacks
             RegisterClientEvents(client);
-            client.Self.RequestJoinGroupChat(session);
-
+            if (!client.Self.GroupChatSessions.ContainsKey(session))
+            {
+                client.Self.RequestJoinGroupChat(session);
+            }
             UpdateFontSize();
+            Load += new EventHandler(GroupIMTabWindow_Load);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -99,6 +102,11 @@ namespace Radegast
         {
             UnregisterClientEvents(e.OldClient);
             RegisterClientEvents(client);
+        }
+
+        void GroupIMTabWindow_Load(object sender, EventArgs e)
+        {
+            UpdateParticipantList();
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
