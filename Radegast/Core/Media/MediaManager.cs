@@ -45,12 +45,15 @@ namespace Radegast.Media
         public bool SoundSystemAvailable { get { return soundSystemAvailable; } }
         private bool soundSystemAvailable = false;
         private Thread soundThread;
+        RadegastInstance instance;
 
         private List<MediaObject> sounds = new List<MediaObject>();
 
         public MediaManager(RadegastInstance instance)
             : base()
         {
+            this.instance = instance;
+
             // Start the background thread that does all the FMOD calls.
             soundThread = new Thread(new ThreadStart(CommandLoop));
             soundThread.IsBackground = true;
@@ -61,6 +64,16 @@ namespace Radegast.Media
         private void CommandLoop()
         {
             SoundDelegate action;
+
+            UpVector.x = 0.0f;
+            UpVector.y = 1.0f;
+            UpVector.z = 0.0f;
+            ZeroVector.x = 0.0f;
+            ZeroVector.y = 0.0f;
+            ZeroVector.z = 0.0f;
+
+            allSounds = new Dictionary<IntPtr,MediaObject>();
+            allChannels = new Dictionary<IntPtr, MediaObject>();
 
             InitFMOD();
             if (!this.soundSystemAvailable) return;
@@ -93,6 +106,9 @@ namespace Radegast.Media
             }
         }
 
+        /// <summary>
+        /// Initialize the FMOD sound system.
+        /// </summary>
         private void InitFMOD()
         {
             try
@@ -204,13 +220,56 @@ namespace Radegast.Media
             base.Dispose();
         }
 
-        public static void FMODExec(FMOD.RESULT result)
+        private void OnListenerUpdate()
         {
-            if (result != FMOD.RESULT.OK)
+            Vector3 lastpos = new Vector3(0.0f, 0.0f, 0.0f );
+            float lastface = 0.0f;
+
+            while (true)
             {
-                throw new MediaException("FMOD error! " + result + " - " + FMOD.Error.String(result));
+                // TODO would be nice if there was an event for this.
+                Thread.Sleep(500);
+
+                if (system == null) continue;
+
+                AgentManager my = instance.Client.Self;
+
+                // If we are standing still, nothing to update.
+                if (my.SimPosition.Equals( lastpos ) &&
+                    my.Movement.BodyRotation.W == lastface)
+                    continue;
+
+                lastpos = my.SimPosition;
+                lastface = my.Movement.BodyRotation.W;
+
+                // Convert coordinate spaces.
+                FMOD.VECTOR listenerpos = FromOMVSpace(my.SimPosition);
+
+                // Get azimuth from the facing Quaternion.  Note we assume the
+                // avatar is standing upright.  Avatars in unusual positions
+                // hear things from unpredictable directions.
+                // By definition, facing.W = Cos( angle/2 )
+                double angle = 2.0 * Math.Acos(my.Movement.BodyRotation.W);
+                FMOD.VECTOR forward = new FMOD.VECTOR();
+                forward.x = (float)Math.Asin(angle);
+                forward.y = 0.0f;
+                forward.z = (float)Math.Acos(angle);
+
+                // Tell FMOD the new orientation.
+                invoke( new SoundDelegate( delegate
+                {
+                    MediaManager.FMODExec( system.set3DListenerAttributes(
+                        0,
+                        ref listenerpos,	// Position
+                        ref ZeroVector,		// Velocity
+                        ref forward,		// Facing direction
+                        ref UpVector ));	// Top of head
+
+                    system.update();
+                }));
             }
         }
+
     }
 
     public class MediaException : Exception

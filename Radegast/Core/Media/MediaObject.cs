@@ -59,11 +59,16 @@ namespace Radegast.Media
         public Channel FMODChannel { get { return channel; } }
         protected Channel channel = null;
 
+        protected FMOD.CREATESOUNDEXINFO extraInfo;
+
         /// <summary>
         /// FMOD sound object, should not be used directly, add methods to Radegast.Media.Sound
         /// </summary>
         public FMOD.Sound FMODSound { get { return sound; } }
         protected FMOD.Sound sound = null;
+
+        protected static FMOD.VECTOR UpVector;
+        protected static FMOD.VECTOR ZeroVector;
 
         public FMOD.System FMODSystem { get { return system; } }
         /// <summary>
@@ -73,11 +78,15 @@ namespace Radegast.Media
 
         public MediaObject()
         {
+            extraInfo = new FMOD.CREATESOUNDEXINFO();
+            extraInfo.cbsize = 10;
+
         }
 
+        protected bool Cloned = false;
         public virtual void Dispose()
         {
-            if (sound != null)
+            if (!Cloned && sound != null)
             {
                 sound.release();
                 sound = null;
@@ -110,7 +119,8 @@ namespace Radegast.Media
         ///  Common actgions for all sound types.
         /// </summary>
         protected float volume = 0.5f;
-        public float Volume {
+        public float Volume
+        {
             get
             {
                 return volume;
@@ -124,5 +134,110 @@ namespace Radegast.Media
                 }));
             }
         }
+
+        public void Stop()
+        {
+            if (channel != null)
+            {
+                invoke(new SoundDelegate(delegate
+                {
+                    MediaManager.FMODExec(channel.stop());
+                }));
+            }
+        }
+
+        /// <summary>
+        /// Convert OpenMetaVerse to FMOD coordinate space.
+        /// </summary>
+        /// <param name="omvV"></param>
+        /// <returns></returns>
+        protected FMOD.VECTOR FromOMVSpace(OpenMetaverse.Vector3 omvV)
+        {
+            // OMV  X is forward, Y is left, Z is up.
+            // FMOD Z is forward, X is right, Y is up.
+            FMOD.VECTOR v = new FMOD.VECTOR();
+            v.x = -omvV.Y;
+            v.y = omvV.Z;
+            v.z = omvV.X;
+            return v;
+        }
+
+        protected static Dictionary<IntPtr,MediaObject> allSounds;
+        protected static Dictionary<IntPtr, MediaObject> allChannels;
+        protected void RegisterSound(FMOD.Sound sound)
+        {
+            allSounds.Add(sound.getRaw(), this);
+        }
+        protected void RegisterChannel(FMOD.Channel channel)
+        {
+            allSounds.Add(channel.getRaw(), this);
+        }
+        protected void UnRegisterSound()
+        {
+            if (sound == null) return;
+            IntPtr raw = sound.getRaw();
+            if (allSounds.ContainsKey( raw ))
+            {
+                allSounds.Remove( raw );
+            }
+        }
+        protected void UnRegisterChannel()
+        {
+            if (channel == null) return;
+            IntPtr raw = channel.getRaw();
+            if (allChannels.ContainsKey(raw))
+            {
+                allChannels.Remove(raw);
+            }
+        }
+
+        /// <summary>
+        /// A callback for asynchronous FMOD calls.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual FMOD.RESULT NonBlockCallbackHandler( RESULT result ) { return RESULT.OK; }
+        protected virtual FMOD.RESULT EndCallbackHandler() { return RESULT.OK; }
+
+        protected RESULT DispatchNonBlockCallback(IntPtr soundraw, RESULT result)
+        {
+            if (allSounds.ContainsKey(soundraw))
+            {
+                MediaObject sndobj = allSounds[soundraw];
+                return sndobj.NonBlockCallbackHandler( result );
+            }
+
+            return FMOD.RESULT.OK;
+        }
+
+        protected RESULT DispatchEndCallback(
+            IntPtr channelraw,
+            CHANNEL_CALLBACKTYPE type,
+            IntPtr commanddata1,
+            IntPtr commanddata2)
+        {
+            // Ignore other callback types.
+            if (type != CHANNEL_CALLBACKTYPE.END) return RESULT.OK;
+
+            if (allChannels.ContainsKey(channelraw))
+            {
+                MediaObject sndobj = allSounds[channelraw];
+                return sndobj.EndCallbackHandler();
+            }
+
+            return RESULT.OK;
+        }
+
+        public delegate RESULT SOUND_NONBLOCKCALLBACK(IntPtr soundraw, RESULT result);
+
+        protected static void FMODExec(FMOD.RESULT result)
+        {
+            if (result != FMOD.RESULT.OK)
+            {
+                throw new MediaException("FMOD error! " + result + " - " + FMOD.Error.String(result));
+            }
+        }
+
+
+ 
     }
 }

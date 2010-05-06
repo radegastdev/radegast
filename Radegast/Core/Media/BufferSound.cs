@@ -38,116 +38,133 @@ namespace Radegast.Media
 
     public class BufferSound : MediaObject
     {
-       /// <summary>
-        /// Is sound currently playing
-        /// </summary>
-        public bool Playing { get { return playing; } }
-        private bool playing = false;
-
-        /// <summary>
-        /// Is sound currently paused
-        /// </summary>
-        public bool Paused { get { return paused; } }
-        private bool paused = false;
-
-        private bool soundcreated = false;
-        private System.Timers.Timer timer;
-
         private FMOD.CREATESOUNDEXINFO extendedInfo;
+        private FMOD.VECTOR position;
+
+        public Sound Sound { get { return sound; } }
 
         /// <summary>
         /// Creates a new sound object
         /// </summary>
         /// <param name="system">Sound system</param>
-        public BufferSound()
+        public BufferSound(byte[] buffer, bool loop, bool global, Vector3 worldpos )
             :base()
         {
-            timer = new System.Timers.Timer();
-            timer.Interval = 50d;
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
-            timer.Enabled = false;
+            position = FromOMVSpace(worldpos);
+
+            extendedInfo.format = SOUND_FORMAT.PCM16;
+            extendedInfo.nonblockcallback += DispatchNonBlockCallback;
+
+            // Set flags to determine how it will be played.
+            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D;
+            position = FromOMVSpace(worldpos);
+
+            // Set coordinate space interpretation.
+            if (global)
+                mode |= FMOD.MODE._3D_WORLDRELATIVE;
+            else
+                mode |= FMOD.MODE._3D_HEADRELATIVE;
+
+            invoke(new SoundDelegate(delegate
+            {
+                FMODExec(system.createSound(buffer,
+                    mode,
+                    ref extendedInfo,
+                    ref sound));
+
+                // Register for callbacks.
+                RegisterSound(sound);
+
+                if (loop)
+                    FMODExec(sound.setLoopCount(-1));
+            }));
         }
 
+        public BufferSound( BufferSound shared, bool loop, Vector3 worldpos)
+            : base()
+        {
+            position = FromOMVSpace(worldpos);
+
+            // Share a previously loaded sound.
+            Cloned = true;
+            sound = shared.Sound;
+
+            NonBlockCallbackHandler(RESULT.OK );
+        }
 
         /// <summary>
         /// Releases resources of this sound object
         /// </summary>
         public override void Dispose()
         {
-            if (timer != null)
+            base.Dispose();
+        }
+
+        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
+        {
+            if (instatus != RESULT.OK)
             {
-                timer.Enabled = false;
-                timer.Dispose();
-                timer = null;
+                Logger.Log("Error opening stream: ", Helpers.LogLevel.Debug);
+                return RESULT.OK;
             }
 
-            if (sound != null)
+            try
+            {
+                // Allocate a channel and set initial volume.  Initially paused.
+                FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                volume = 0.5f;
+                FMODExec(channel.setVolume(volume));
+
+                // Take note of when the sound is finished playing.
+                FMODExec(channel.setCallback(EndCallback));
+
+                // Set speech attenuation limits.
+                FMODExec(sound.set3DMinMaxDistance(
+                    1.2f,       // Any closer than this gets no louder
+                    8.0f));     // Further than this gets no softer.
+
+                // Set the sound point of origin.
+                FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
+
+                // Turn off pause mode.  The sound will start playing now.
+                FMODExec(channel.setPaused(false));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Error starting stream: ", Helpers.LogLevel.Debug, ex);
+            }
+
+            return RESULT.OK;
+        }
+
+        /// <summary>
+        /// Callback handler for reaching the end of a sound.
+        /// </summary>
+        /// <param name="channelraw"></param>
+        /// <param name="type"></param>
+        /// <param name="commanddata1"></param>
+        /// <param name="commanddata2"></param>
+        /// <returns></returns>
+        private RESULT EndCallback(
+            IntPtr channelraw,
+            CHANNEL_CALLBACKTYPE type,
+            IntPtr commanddata1,
+            IntPtr commanddata2)
+        {
+            // Ignore other callback types.
+            if (type != CHANNEL_CALLBACKTYPE.END) return RESULT.OK;
+
+            // Release the buffer to avoid a big memory leak.
+            //TODO Should be a reference count on cloned sound buffers.
+            if (!Cloned && sound != null)
             {
                 sound.release();
                 sound = null;
             }
-            base.Dispose();
+            channel = null;
+
+            return RESULT.OK;
         }
 
-        /// <summary>
-        /// Plays audio buffer
-        /// </summary>
-        /// <param name="url">URL of the stream</param>
-        public void Play( byte[] buffer, bool loop)
-        {
-            extendedInfo.format = SOUND_FORMAT.PCM16;
-
-            invoke(new SoundDelegate(delegate
-            {
-                MediaManager.FMODExec(system.createSound(buffer,
-                    (MODE.HARDWARE | MODE._3D | MODE.NONBLOCKING),
-                    ref extendedInfo,
-                    ref sound));
-            }));
-        }
-
-        /// <summary>
-        /// Toggles sound pause
-        /// </summary>
-        public void TogglePaused()
-        {
-            if (channel != null)
-            {
-                channel.getPaused(ref paused);
-                channel.setPaused(!paused);
-            }
-        }
-
-        void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            OPENSTATE openstate = 0;
-            uint percentbuffered = 0;
-            bool starving = false;
-
-            try
-            {
-                if (soundcreated)
-                {
-                    MediaManager.FMODExec(sound.getOpenState(ref openstate, ref percentbuffered, ref starving));
-
-                    if (openstate == OPENSTATE.READY && channel == null)
-                    {
-                        MediaManager.FMODExec(system.playSound(CHANNELINDEX.FREE, sound, false, ref channel));
-                        MediaManager.FMODExec(channel.setVolume(volume));
-                    }
-                }
-
-                if (system != null)
-                {
-                    system.update();
-                }
-            }
-            catch (Exception ex)
-            {
-                playing = paused = false;
-                timer.Enabled = false;
-                Logger.Log("Error playing sound: ", Helpers.LogLevel.Debug, ex);
-            }
-        }
     }
 }

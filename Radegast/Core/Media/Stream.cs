@@ -50,25 +50,6 @@ namespace Radegast.Media
     public class Stream : MediaObject
     {
         /// <summary>
-        /// Returns current position of the sound played in ms
-        /// Do not confuse with the spatial Position on other suonds.
-        /// </summary>
-        public uint Position { get { return position; } }
-        private uint position = 0;
-
-        /// <summary>
-        /// Is sound currently playing
-        /// </summary>
-        public bool Playing { get { return playing; } }
-        private bool playing = false;
-
-        /// <summary>
-        /// Is sound currently paused
-        /// </summary>
-        public bool Paused { get { return paused; } }
-        private bool paused = false;
-
-        /// <summary>
         /// Fired when a stream meta data is received
         /// </summary>
         /// <param name="sender">Sender</param>
@@ -80,8 +61,6 @@ namespace Radegast.Media
         /// </summary>
         public event StreamInfoCallback OnStreamInfo;
 
-        private System.Timers.Timer timer;
-
         /// <summary>
         /// Creates a new sound object
         /// </summary>
@@ -89,10 +68,6 @@ namespace Radegast.Media
         public Stream()
             :base()
         {
-            timer = new System.Timers.Timer();
-            timer.Interval = 50d;
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
-            timer.Enabled = false;
         }
 
 
@@ -101,13 +76,6 @@ namespace Radegast.Media
         /// </summary>
         public override void Dispose()
         {
-            if (timer != null)
-            {
-                timer.Enabled = false;
-                timer.Dispose();
-                timer = null;
-            }
-
             base.Dispose();
         }
 
@@ -117,99 +85,87 @@ namespace Radegast.Media
         /// <param name="url">URL of the stream</param>
         public void PlayStream(string url)
         {
-            if (!Active)
+            // Stop old stream first.
+            if (channel != null)
             {
-                invoke( new SoundDelegate(
-                    delegate {
-                        MediaManager.FMODExec(system.createSound(url,
-                            (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING), ref sound));
-  
-                        timer.Enabled = true;
-                        timer_Elapsed(null, null);
+                invoke(new SoundDelegate(
+                    delegate
+                    {
+                        FMODExec(channel.stop());
+                        channel = null;
+                        UnRegisterSound();
+                        FMODExec(sound.release());
+                        sound = null;
                     }));
             }
+
+            extraInfo.nonblockcallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
+
+            invoke( new SoundDelegate(
+                delegate {
+                    FMODExec(
+                        system.createSound(url,
+                        (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING),
+                        ref extraInfo,
+                        ref sound));
+                    // Register for callbacks.
+                    RegisterSound(sound);
+                }));
         }
 
         /// <summary>
-        /// Toggles sound pause
+        /// Callback when a stream has been loaded
         /// </summary>
-        public void TogglePaused()
+        /// <param name="instatus"></param>
+        /// <returns></returns>
+        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
         {
-            invoke(new SoundDelegate(delegate
-              {
-                  if (channel != null)
-                  {
-                      channel.getPaused(ref paused);
-                      channel.setPaused(!paused);
-                  }
-              }));
-        }
-
-         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            OPENSTATE openstate = 0;
-            uint percentbuffered = 0;
-            bool starving = false;
-
-            try
+            if (instatus != RESULT.OK)
             {
-                if (Active)
-                {
-                    // Query what the sound is doing.
-                    MediaManager.FMODExec(sound.getOpenState(ref openstate, ref percentbuffered, ref starving));
+                Logger.Log("Error opening stream: ", Helpers.LogLevel.Debug);
+                return RESULT.OK;
+            }
 
-                    // If a channel is not allocated yet, ask for one.
-                    if (openstate == OPENSTATE.READY && channel == null)
+            invoke(new SoundDelegate(
+                delegate
+                {
+                    try
                     {
                         // Allocate a channel and set initial volume.
-                        MediaManager.FMODExec(system.playSound( CHANNELINDEX.FREE, sound, false, ref channel));
+                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, false, ref channel));
                         volume = 0.5f;
-                        MediaManager.FMODExec(channel.setVolume(volume));
-                    }
-                }
+                        FMODExec(channel.setVolume(volume));
 
-                if (channel != null)
-                {
-                    // Do not try to get MP3 tags om Unix.  It breaks.
-                    if (Environment.OSVersion.Platform != PlatformID.Unix)
-                    {
-                        for (; ; )
+                        // If this is not Unix, try to get MP3 tags.
+                        // getTag seems to break on Unix.
+                        if (Environment.OSVersion.Platform != PlatformID.Unix)
                         {
                             TAG tag = new TAG();
-                            if (sound.getTag(null, -1, ref tag) != RESULT.OK)
+
+                            while (sound.getTag(null, -1, ref tag) == RESULT.OK)
                             {
-                                break;
-                            }
-                            if (tag.datatype != TAGDATATYPE.STRING)
-                            {
-                                break;
-                            }
-                            else
-                            {
+                                if (tag.datatype != TAGDATATYPE.STRING) continue;
+
+                                // Tell listeners about the Stream tag.  This can be
+                                // displayed to the user.
                                 if (OnStreamInfo != null)
-                                    try { OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data))); }
+                                    try
+                                    {
+                                        OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
+                                    }
                                     catch (Exception) { }
                             }
                         }
+
+                        system.update();
                     }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("Error playing stream: ", Helpers.LogLevel.Debug, ex);
+                    }
+                }));
 
-                    // Get pause/play status
-                    MediaManager.FMODExec(channel.getPaused(ref paused));
-                    MediaManager.FMODExec(channel.isPlaying(ref playing));
-                    MediaManager.FMODExec(channel.getPosition(ref position, TIMEUNIT.MS));
-                }
-
-                if (system != null)
-                {
-                    system.update();
-                }
-            }
-            catch (Exception ex)
-            {
-                playing = paused = false;
-                timer.Enabled = false;
-                Logger.Log("Error playing stream: ", Helpers.LogLevel.Debug, ex);
-            }
+            return RESULT.OK;
         }
     }
 }

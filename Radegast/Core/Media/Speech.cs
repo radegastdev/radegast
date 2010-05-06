@@ -101,7 +101,7 @@ namespace Radegast.Media
         {
             if (!soundcreated)
             {
-                MediaManager.FMODExec(system.createSound(filename,
+                FMODExec(system.createSound(filename,
                     (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING),
                     ref sound));
                 soundcreated = true;
@@ -132,12 +132,12 @@ namespace Radegast.Media
             {
                 if (soundcreated)
                 {
-                    MediaManager.FMODExec(sound.getOpenState(ref openstate, ref percentbuffered, ref starving));
+                    FMODExec(sound.getOpenState(ref openstate, ref percentbuffered, ref starving));
 
                     if (openstate == OPENSTATE.READY && channel == null)
                     {
-                        MediaManager.FMODExec(system.playSound(CHANNELINDEX.FREE, sound, false, ref channel));
-                        MediaManager.FMODExec(channel.setVolume(volume));
+                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, false, ref channel));
+                        FMODExec(channel.setVolume(volume));
                     }
                 }
 
