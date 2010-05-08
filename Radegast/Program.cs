@@ -31,6 +31,9 @@
 using System;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Reflection;
+
 namespace Radegast
 {
     static class Program
@@ -41,6 +44,9 @@ namespace Radegast
         [STAThread]
         static void Main()
         {
+            // Change current working directory to Radegast install dir
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
