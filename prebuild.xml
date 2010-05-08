@@ -197,6 +197,7 @@
         <Match path="." pattern="*.dylib" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="fmodex.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.html" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="*.txt" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="openmetaverse_data" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
