@@ -451,7 +451,7 @@ namespace Radegast
             // btnPluginsTab
             // 
             this.btnPluginsTab.Name = "btnPluginsTab";
-            this.btnPluginsTab.Size = new System.Drawing.Size(152, 22);
+            this.btnPluginsTab.Size = new System.Drawing.Size(126, 22);
             this.btnPluginsTab.Text = "Manage...";
             this.btnPluginsTab.Click += new System.EventHandler(this.btnLoadScript_Click);
             // 
