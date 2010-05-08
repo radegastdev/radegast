@@ -255,7 +255,9 @@ namespace Radegast.Plugin.IRC
             Thread IRCConnection = new Thread(new ParameterizedThreadStart(IrcThread));
             IRCConnection.Name = "IRC Thread";
             IRCConnection.IsBackground = true;
-            IRCConnection.Start(new object[] { txtServer.Text, int.Parse(txtPort.Text), txtNick.Text, txtChan.Text });
+            int port = 6667;
+            int.TryParse(txtPort.Text, out port);
+            IRCConnection.Start(new object[] { txtServer.Text, port, txtNick.Text, txtChan.Text });
         }
 
         void irc_OnRawMessage(object sender, IrcEventArgs e)

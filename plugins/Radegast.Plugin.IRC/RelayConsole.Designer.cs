@@ -125,7 +125,6 @@
             this.txtChan.Name = "txtChan";
             this.txtChan.Size = new System.Drawing.Size(80, 20);
             this.txtChan.TabIndex = 4;
-            this.txtChan.Text = "#awg";
             // 
             // txtNick
             // 
@@ -133,7 +132,6 @@
             this.txtNick.Name = "txtNick";
             this.txtNick.Size = new System.Drawing.Size(61, 20);
             this.txtNick.TabIndex = 3;
-            this.txtNick.Text = "LolaBot";
             // 
             // txtPort
             // 
