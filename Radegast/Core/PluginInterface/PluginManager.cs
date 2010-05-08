@@ -66,6 +66,40 @@ namespace Radegast
     /// </summary>
     public class PluginManager : IDisposable
     {
+        /// <summary>List of files that should not be scanned for plugins</summary>
+        public static readonly List<string> PluginBlackList = new List<string>(new string[]
+            {
+                "AIMLbot.dll",
+                "Meebey.SmartIrc4net.dll",
+                "Monobjc.Cocoa.dll",
+                "Monobjc.dll",
+                "OpenMetaverse.Rendering.Meshmerizer.dll",
+                "OpenMetaverse.StructuredData.dll",
+                "OpenMetaverse.dll",
+                "OpenMetaverseTypes.dll",
+                "PrimMesher.dll",
+                "RadSpeechLin.dll",
+                "RadSpeechMac.dll",
+                "RadSpeechWin.dll",
+                "Tao.OpenGl.dll",
+                "Tao.Platform.Windows.dll",
+                "Tools.dll",
+                "XMLRPC.dll",
+                "fmodex-dotnet.dll",
+                "fmodex.dll",
+                "log4net.dll",
+                "openjpeg-dotnet-x86_64.dll",
+                "openjpeg-dotnet.dll"
+            });
+
+        /// <summary>List of file extensions that could potentially hold plugins</summary>
+        public static readonly List<string> AllowedPluginExtensions = new List<string>(new string[]
+            {
+                ".cs",
+                ".dll",
+                ".exe"
+            });
+
         List<PluginInfo> PluginsLoaded = new List<PluginInfo>();
         RadegastInstance instance;
 
@@ -214,12 +248,18 @@ namespace Radegast
         /// </summary>
         public void ScanAndLoadPlugins()
         {
-            string dirName = Application.StartupPath;
+            string dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             if (!Directory.Exists(dirName)) return;
 
             foreach (string loadFileName in Directory.GetFiles(dirName))
             {
+                if (!AllowedPluginExtensions.Contains(Path.GetExtension(loadFileName).ToLower())
+                    || PluginBlackList.Contains(Path.GetFileName(loadFileName)))
+                {
+                    continue;
+                }
+
                 LoadPluginFile(loadFileName, false);
             }
         }
