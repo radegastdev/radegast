@@ -77,6 +77,10 @@ namespace Radegast
             this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxOfferTP = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxTeleportTo = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxEject = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxBan = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnStartIM = new System.Windows.Forms.ToolStripButton();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
@@ -189,9 +193,13 @@ namespace Radegast
             this.ctxMaster,
             this.ctxAnim,
             this.ctxPoint,
-            this.ctxSource});
+            this.ctxSource,
+            this.ctxOfferTP,
+            this.ctxTeleportTo,
+            this.ctxEject,
+            this.ctxBan});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(157, 224);
+            this.avatarContext.Size = new System.Drawing.Size(157, 334);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
@@ -263,7 +271,38 @@ namespace Radegast
             this.ctxSource.Name = "ctxSource";
             this.ctxSource.Size = new System.Drawing.Size(156, 22);
             this.ctxSource.Text = "Set as source";
+            this.ctxSource.ToolTipText = " Set as source ";
             this.ctxSource.Click += new System.EventHandler(this.ctxSource_Click);
+            // 
+            // ctxOfferTP
+            // 
+            this.ctxOfferTP.Name = "ctxOfferTP";
+            this.ctxOfferTP.Size = new System.Drawing.Size(156, 22);
+            this.ctxOfferTP.Text = "Offer Teleport";
+            this.ctxOfferTP.ToolTipText = " Offer Teleport ";
+            this.ctxOfferTP.Click += new System.EventHandler(this.ctxOfferTP_Click);
+            // 
+            // ctxTeleportTo
+            // 
+            this.ctxTeleportTo.Name = "ctxTeleportTo";
+            this.ctxTeleportTo.Size = new System.Drawing.Size(156, 22);
+            this.ctxTeleportTo.Text = "Teleport To";
+            this.ctxTeleportTo.ToolTipText = " Teleport To ";
+            this.ctxTeleportTo.Click += new System.EventHandler(this.ctxTeleportTo_Click);
+            // 
+            // ctxEject
+            // 
+            this.ctxEject.Name = "ctxEject";
+            this.ctxEject.Size = new System.Drawing.Size(156, 22);
+            this.ctxEject.Text = "Eject";
+            this.ctxEject.ToolTipText = " Eject ";
+            // 
+            // ctxBan
+            // 
+            this.ctxBan.Name = "ctxBan";
+            this.ctxBan.Size = new System.Drawing.Size(156, 22);
+            this.ctxBan.Text = "Ban";
+            this.ctxBan.ToolTipText = " Ban ";
             // 
             // toolStrip1
             // 
@@ -579,5 +618,9 @@ namespace Radegast
         public ToolStripMenuItem ctxPay;
         public ComboBox cbChatType;
         public RichTextBox rtbChat;
+        private ToolStripMenuItem ctxOfferTP;
+        private ToolStripMenuItem ctxTeleportTo;
+        private ToolStripMenuItem ctxEject;
+        private ToolStripMenuItem ctxBan;
     }
 }

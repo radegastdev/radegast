@@ -832,6 +832,32 @@ namespace Radegast
         {
             rtbChat.Size = splitContainer1.Panel1.ClientSize;
         }
+
+        private void ctxOfferTP_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
+            client.Self.SendTeleportLure(av, "Join me in " + client.Network.CurrentSim.Name + "!");
+        }
+
+        private void ctxTeleportTo_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID person = (UUID)lvwObjects.SelectedItems[0].Tag;
+            string pname = instance.getAvatarName(person);
+            Simulator sim = null;
+            Vector3 pos;
+
+            if (instance.State.TryFindAvatar(person, out sim, out pos))
+            {
+                tabConsole.DisplayNotificationInChat(string.Format("Teleporting to {0}", pname));
+                client.Self.RequestTeleport(sim.Handle, pos);
+            }
+            else
+            {
+                tabConsole.DisplayNotificationInChat(string.Format("Could not locate {0}", pname));
+            }
+        }
     }
 
     public class SorterClass : System.Collections.IComparer

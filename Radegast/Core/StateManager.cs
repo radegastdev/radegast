@@ -234,6 +234,65 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Locates avatar in the current sim, or adjacents sims
+        /// </summary>
+        /// <param name="person">Avatar UUID</param>
+        /// <param name="sim">Simulator avatar is in</param>
+        /// <param name="position">Position within sim</param>
+        /// <returns>True if managed to find the avatar</returns>
+        public bool TryFindAvatar(UUID person, out Simulator sim, out Vector3 position)
+        {
+            sim = null;
+            position = Vector3.Zero;
+
+            Avatar avi = null;
+            
+            // First try the objecct tracker
+            for (int i = 0; i < client.Network.Simulators.Count; i++)
+            {
+                avi = client.Network.Simulators[i].ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
+                if (avi != null)
+                {
+                    sim = client.Network.Simulators[i];
+                    break;
+                }
+            }
+
+            if (avi != null)
+            {
+                if (avi.ParentID == 0)
+                {
+                    position = avi.Position;
+                }
+                else
+                {
+                    Primitive seat;
+                    if (sim.ObjectsPrimitives.TryGetValue(avi.ParentID, out seat))
+                    {
+                        position = seat.Position + avi.Position;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < client.Network.Simulators.Count; i++)
+                {
+                    if (client.Network.Simulators[i].AvatarPositions.ContainsKey(person))
+                    {
+                        sim = client.Network.Simulators[i];
+                        position = sim.AvatarPositions[person];
+                        break;
+                    }
+                }
+            }
+
+            if (position.Z > 0.1f)
+                return true;
+            else
+                return false;
+        }
+
         public void SetRandomHeading()
         {
             client.Self.Movement.UpdateFromHeading(Utils.TWO_PI * rnd.NextDouble(), true);
