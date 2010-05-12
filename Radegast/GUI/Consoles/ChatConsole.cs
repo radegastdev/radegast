@@ -858,6 +858,27 @@ namespace Radegast
                 tabConsole.DisplayNotificationInChat(string.Format("Could not locate {0}", pname));
             }
         }
+
+        private void ctxEject_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
+            client.Parcels.EjectUser(av, false);
+        }
+
+        private void ctxBan_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
+            client.Parcels.EjectUser(av, true);
+        }
+
+        private void ctxEstateEject_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
+            client.Estate.KickUser(av);
+        }
     }
 
     public class SorterClass : System.Collections.IComparer
