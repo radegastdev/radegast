@@ -56,7 +56,7 @@ namespace Radegast
                     handler(this, e);
             }
             catch (Exception) { }
-            
+
         }
 
         /// <summary>Thread sync lock object</summary>
@@ -177,7 +177,7 @@ namespace Radegast
             {
                 var m = rlv_regex.Match(cmd);
                 if (!m.Success) continue;
-                
+
                 var rule = new RLVRule();
                 rule.Behaviour = m.Groups["behaviour"].ToString().ToLower(); ;
                 rule.Option = m.Groups["option"].ToString().ToLower();
@@ -261,13 +261,13 @@ namespace Radegast
 
                         if (rule.Param == "force" && double.TryParse(rule.Option, System.Globalization.NumberStyles.Float, Utils.EnUsCulture, out rot))
                         {
-                            instance.Client.Self.Movement.UpdateFromHeading(rot, true);
+                            instance.Client.Self.Movement.UpdateFromHeading(Math.PI / 2d - rot, true);
                         }
                         break;
 
                     case "tpto":
                         var coord = rule.Option.Split('/');
-                        
+
                         try
                         {
                             float gx = float.Parse(coord[0], Utils.EnUsCulture);
@@ -315,9 +315,9 @@ namespace Radegast
             if (!Enabled) return false;
             var set = rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour; });
 
-            if (set.Count > 0 && 
+            if (set.Count > 0 &&
                 set.FindAll((RLVRule r) => { return r.Option == exception; }).Count == 0 &&
-                set.FindAll((RLVRule r) => { return string.IsNullOrEmpty(r.Option) ; }).Count > 0
+                set.FindAll((RLVRule r) => { return string.IsNullOrEmpty(r.Option); }).Count > 0
                 )
             {
                 return true;
