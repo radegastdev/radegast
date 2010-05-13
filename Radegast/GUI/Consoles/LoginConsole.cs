@@ -50,6 +50,8 @@ namespace Radegast
             this.instance = instance;
             AddNetcomEvents();
 
+            UpdateGrids();
+
             cbxLocation.SelectedIndex = 0;
             InitializeConfig();
 
@@ -61,9 +63,20 @@ namespace Radegast
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
 
             lblVersion.Text = Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev;
+
         }
 
-        void MainConsole_Disposed(object sender, EventArgs e)
+        public void UpdateGrids()
+        {
+            cbxGrid.Items.Clear();
+            for (int i = 0; i < instance.GridManger.Count; i++)
+            {
+                cbxGrid.Items.Add(instance.GridManger[i]);
+            }
+            cbxGrid.Items.Add("Custom");
+        }
+
+        private void MainConsole_Disposed(object sender, EventArgs e)
         {
             instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
             RemoveNetcomEvents();
@@ -252,27 +265,20 @@ namespace Radegast
                     break;
             }
 
-            switch (cbxGrid.SelectedIndex)
+            if (cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1) // custom login uri
             {
-                case 0: //Main grid
-                    netcom.LoginOptions.Grid = LoginGrid.MainGrid;
-                    break;
+                if (txtCustomLoginUri.TextLength == 0 || txtCustomLoginUri.Text.Trim().Length == 0)
+                {
+                    MessageBox.Show("You must specify the Login Uri to connect to a custom grid.", Properties.Resources.ProgramName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-                case 1: //Beta grid
-                    netcom.LoginOptions.Grid = LoginGrid.BetaGrid;
-                    break;
-
-                case 2: //Custom
-                    if (txtCustomLoginUri.TextLength == 0 ||
-                        txtCustomLoginUri.Text.Trim().Length == 0)
-                    {
-                        MessageBox.Show("You must specify the Login Uri to connect to a custom grid.", "SLeek", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    netcom.LoginOptions.Grid = LoginGrid.Custom;
-                    netcom.LoginOptions.GridCustomLoginUri = txtCustomLoginUri.Text;
-                    break;
+                netcom.LoginOptions.Grid = new Grid("custom", "Custom", txtCustomLoginUri.Text);
+                netcom.LoginOptions.GridCustomLoginUri = txtCustomLoginUri.Text;
+            }
+            else
+            {
+                netcom.LoginOptions.Grid = cbxGrid.SelectedItem as Grid;
             }
 
             netcom.Login();
@@ -290,14 +296,6 @@ namespace Radegast
                     pnlLoggingIn.Visible = false;
                     btnLogin.Text = "Login";
                     break;
-
-                case "Logout": 
-                    netcom.Logout();
-                    break;
-
-                case "Exit":
-                    Application.Exit();
-                    break;
             }
         }
 
@@ -312,7 +310,7 @@ namespace Radegast
 
         private void cbxGrid_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cbxGrid.SelectedIndex == 2) //Custom option is selected
+            if (cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1) //Custom option is selected
             {
                 txtCustomLoginUri.Enabled = true;
                 txtCustomLoginUri.Select();

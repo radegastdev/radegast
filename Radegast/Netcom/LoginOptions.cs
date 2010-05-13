@@ -43,7 +43,7 @@ namespace Radegast.Netcom
         private StartLocationType startLocation = StartLocationType.Home;
         private string startLocationCustom = string.Empty;
 
-        private LoginGrid grid = LoginGrid.MainGrid;
+        private Grid grid;
         private string gridCustomLoginUri = string.Empty;
 
         public LoginOptions()
@@ -110,7 +110,7 @@ namespace Radegast.Netcom
             set { version = value; }
         }
 
-        public LoginGrid Grid
+        public Grid Grid
         {
             get { return grid; }
             set { grid = value; }

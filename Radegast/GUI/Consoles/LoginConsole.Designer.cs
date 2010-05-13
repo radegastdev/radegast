@@ -76,11 +76,12 @@ namespace Radegast
             this.proLogin = new System.Windows.Forms.ProgressBar();
             this.lblLoginStatus = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.pnlSplash = new System.Windows.Forms.Panel();
             this.pnlTos = new System.Windows.Forms.Panel();
             this.cbTOS = new System.Windows.Forms.CheckBox();
             this.txtTOS = new System.Windows.Forms.TextBox();
-            this.lblVersion = new System.Windows.Forms.Label();
+            this.btnGridManager = new System.Windows.Forms.Button();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -120,6 +121,7 @@ namespace Radegast
             // 
             // txtCustomLoginUri
             // 
+            this.txtCustomLoginUri.AccessibleName = "Login URL";
             this.txtCustomLoginUri.Enabled = false;
             this.txtCustomLoginUri.Location = new System.Drawing.Point(326, 70);
             this.txtCustomLoginUri.Name = "txtCustomLoginUri";
@@ -128,12 +130,9 @@ namespace Radegast
             // 
             // cbxGrid
             // 
+            this.cbxGrid.AccessibleName = "Grid";
             this.cbxGrid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbxGrid.ForeColor = System.Drawing.Color.Black;
-            this.cbxGrid.Items.AddRange(new object[] {
-            "Main Grid or Teen Grid (Agni)",
-            "Beta Grid (Aditi)",
-            "Custom"});
             this.cbxGrid.Location = new System.Drawing.Point(56, 70);
             this.cbxGrid.Name = "cbxGrid";
             this.cbxGrid.Size = new System.Drawing.Size(210, 21);
@@ -162,6 +161,7 @@ namespace Radegast
             // 
             // txtFirstName
             // 
+            this.txtFirstName.AccessibleName = "First Name";
             this.txtFirstName.Location = new System.Drawing.Point(3, 16);
             this.txtFirstName.Name = "txtFirstName";
             this.txtFirstName.Size = new System.Drawing.Size(164, 21);
@@ -179,6 +179,7 @@ namespace Radegast
             // 
             // txtLastName
             // 
+            this.txtLastName.AccessibleName = "Last Name";
             this.txtLastName.Location = new System.Drawing.Point(173, 16);
             this.txtLastName.Name = "txtLastName";
             this.txtLastName.Size = new System.Drawing.Size(164, 21);
@@ -196,6 +197,7 @@ namespace Radegast
             // 
             // txtPassword
             // 
+            this.txtPassword.AccessibleName = "Password";
             this.txtPassword.Location = new System.Drawing.Point(343, 16);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(207, 21);
@@ -205,6 +207,7 @@ namespace Radegast
             // 
             // cbxLocation
             // 
+            this.cbxLocation.AccessibleName = "Start Location";
             this.cbxLocation.ForeColor = System.Drawing.Color.Black;
             this.cbxLocation.Items.AddRange(new object[] {
             "My Home",
@@ -228,7 +231,7 @@ namespace Radegast
             // 
             this.btnLogin.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLogin.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnLogin.Location = new System.Drawing.Point(6, 66);
+            this.btnLogin.Location = new System.Drawing.Point(6, 71);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(116, 23);
             this.btnLogin.TabIndex = 15;
@@ -274,6 +277,7 @@ namespace Radegast
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
+            this.panel1.Controls.Add(this.btnGridManager);
             this.panel1.Controls.Add(this.lblVersion);
             this.panel1.Controls.Add(this.pnlLoginPrompt);
             this.panel1.Controls.Add(this.btnLogin);
@@ -284,6 +288,16 @@ namespace Radegast
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(682, 97);
             this.panel1.TabIndex = 18;
+            // 
+            // lblVersion
+            // 
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.ForeColor = System.Drawing.Color.Black;
+            this.lblVersion.Location = new System.Drawing.Point(3, 3);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(100, 13);
+            this.lblVersion.TabIndex = 18;
+            this.lblVersion.Text = "Radegast 1.24.500";
             // 
             // pnlSplash
             // 
@@ -330,15 +344,16 @@ namespace Radegast
             this.txtTOS.Size = new System.Drawing.Size(682, 302);
             this.txtTOS.TabIndex = 0;
             // 
-            // lblVersion
+            // btnGridManager
             // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.ForeColor = System.Drawing.Color.Black;
-            this.lblVersion.Location = new System.Drawing.Point(3, 3);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(100, 13);
-            this.lblVersion.TabIndex = 18;
-            this.lblVersion.Text = "Radegast 1.24.500";
+            this.btnGridManager.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnGridManager.Location = new System.Drawing.Point(6, 44);
+            this.btnGridManager.Name = "btnGridManager";
+            this.btnGridManager.Size = new System.Drawing.Size(116, 23);
+            this.btnGridManager.TabIndex = 16;
+            this.btnGridManager.Text = "Grid Manager";
+            this.btnGridManager.UseVisualStyleBackColor = true;
+            this.btnGridManager.Visible = false;
             // 
             // LoginConsole
             // 
@@ -384,10 +399,11 @@ namespace Radegast
         public System.Windows.Forms.Label label6;
         public System.Windows.Forms.Panel panel1;
         public System.Windows.Forms.Panel pnlSplash;
-        private System.Windows.Forms.Panel pnlTos;
-        private System.Windows.Forms.TextBox txtTOS;
-        private System.Windows.Forms.CheckBox cbTOS;
-        private System.Windows.Forms.Label lblVersion;
+        public System.Windows.Forms.Button btnGridManager;
+        public System.Windows.Forms.Panel pnlTos;
+        public System.Windows.Forms.TextBox txtTOS;
+        public System.Windows.Forms.CheckBox cbTOS;
+        public System.Windows.Forms.Label lblVersion;
 
     }
 }

@@ -31,13 +31,6 @@
 
 namespace Radegast.Netcom
 {
-    public enum LoginGrid
-    {
-        MainGrid,
-        BetaGrid,
-        Custom
-    };
-
     public enum StartLocationType
     {
         Home,

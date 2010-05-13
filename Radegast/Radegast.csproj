@@ -117,6 +117,7 @@
     <Compile Include="Core\Contexts\DeRezObjectAction.cs" />
     <Compile Include="Core\Contexts\IContextAction.cs" />
     <Compile Include="Core\Contexts\RezInventoryObjectAction.cs" />
+    <Compile Include="Core\GridManager.cs" />
     <Compile Include="Core\Media\MediaManager.cs" />
     <Compile Include="Core\Media\MediaObject.cs" />
     <Compile Include="Core\Media\Sound.cs" />
@@ -1069,6 +1070,9 @@
     <None Include="assemblies\fmodex-dotnet.dll">
     </None>
     <None Include="assemblies\PrimMesher.dll" />
+    <Content Include="grids.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="license.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

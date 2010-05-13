@@ -54,9 +54,6 @@ namespace Radegast.Netcom
         private bool agreeToTos = false;
         public bool AgreeToTos { get { return agreeToTos; } set { agreeToTos = value; } }
 
-        private const string MainGridLogin = @"https://login.agni.lindenlab.com/cgi-bin/login.cgi";
-        private const string BetaGridLogin = @"https://login.aditi.lindenlab.com/cgi-bin/login.cgi";
-
         // NetcomSync is used for raising certain events on the
         // GUI/main thread. Useful if you're modifying GUI controls
         // in the client app when responding to those events.
@@ -282,14 +279,7 @@ namespace Radegast.Netcom
 
             loginParams.Start = startLocation;
             loginParams.AgreeToTos = AgreeToTos;
-
-            switch (loginOptions.Grid)
-            {
-                case LoginGrid.MainGrid: loginParams.URI = MainGridLogin; break;
-                case LoginGrid.BetaGrid: loginParams.URI = BetaGridLogin; break;
-                case LoginGrid.Custom: loginParams.URI = loginOptions.GridCustomLoginUri; break;
-            }
-
+            loginParams.URI = loginOptions.Grid.LoginURI;
             client.Network.BeginLogin(loginParams);
         }
 

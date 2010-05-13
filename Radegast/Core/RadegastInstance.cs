@@ -178,6 +178,10 @@ namespace Radegast
         /// </summary>
         public RLVManager RLV { get { return rlv; } }
 
+        private GridManager gridManager;
+        /// <summary>Manages default params for different grids</summary>
+        public GridManager GridManger { get { return gridManager; } }
+
         #region Events
 
         #region ClientChanged event
@@ -259,6 +263,8 @@ namespace Radegast
             InitializeClient(client);
 
             rlv = new RLVManager(this);
+            gridManager = new GridManager(this);
+            gridManager.LoadGrids();
 
             mainForm = new frmMain(this);
             mainForm.InitializeControls();
@@ -330,6 +336,12 @@ namespace Radegast
 
         public void CleanUp()
         {
+            if (gridManager != null)
+            {
+                gridManager.Dispose();
+                gridManager = null;
+            }
+
             if (rlv != null)
             {
                 rlv.Dispose();
