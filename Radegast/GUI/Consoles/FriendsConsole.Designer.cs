@@ -60,19 +60,24 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FriendsConsole));
             this.lblFriendName = new System.Windows.Forms.Label();
             this.btnIM = new System.Windows.Forms.Button();
             this.btnProfile = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.pnlActions = new System.Windows.Forms.GroupBox();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnPay = new System.Windows.Forms.Button();
             this.btnOfferTeleport = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.chkSeeMeOnline = new System.Windows.Forms.CheckBox();
             this.chkSeeMeOnMap = new System.Windows.Forms.CheckBox();
             this.chkModifyMyObjects = new System.Windows.Forms.CheckBox();
-            this.lbxFriends = new Radegast.ListBoxCustomSort();
-            this.groupBox1.SuspendLayout();
+            this.pnlFriendsRights = new System.Windows.Forms.GroupBox();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.lvwFriends = new Radegast.ListViewNoFlicker();
+            this.chName = new System.Windows.Forms.ColumnHeader();
+            this.pnlActions.SuspendLayout();
+            this.pnlFriendsRights.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblFriendName
@@ -86,7 +91,6 @@ namespace Radegast
             // 
             // btnIM
             // 
-            this.btnIM.Enabled = false;
             this.btnIM.Location = new System.Drawing.Point(6, 47);
             this.btnIM.Name = "btnIM";
             this.btnIM.Size = new System.Drawing.Size(75, 23);
@@ -97,7 +101,6 @@ namespace Radegast
             // 
             // btnProfile
             // 
-            this.btnProfile.Enabled = false;
             this.btnProfile.Location = new System.Drawing.Point(87, 46);
             this.btnProfile.Name = "btnProfile";
             this.btnProfile.Size = new System.Drawing.Size(75, 23);
@@ -106,25 +109,24 @@ namespace Radegast
             this.btnProfile.UseVisualStyleBackColor = true;
             this.btnProfile.Click += new System.EventHandler(this.btnProfile_Click);
             // 
-            // groupBox1
+            // pnlActions
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.pnlActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.btnRemove);
-            this.groupBox1.Controls.Add(this.btnPay);
-            this.groupBox1.Controls.Add(this.btnOfferTeleport);
-            this.groupBox1.Controls.Add(this.lblFriendName);
-            this.groupBox1.Controls.Add(this.btnProfile);
-            this.groupBox1.Controls.Add(this.btnIM);
-            this.groupBox1.Location = new System.Drawing.Point(209, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(470, 76);
-            this.groupBox1.TabIndex = 4;
-            this.groupBox1.TabStop = false;
+            this.pnlActions.Controls.Add(this.btnRemove);
+            this.pnlActions.Controls.Add(this.btnPay);
+            this.pnlActions.Controls.Add(this.btnOfferTeleport);
+            this.pnlActions.Controls.Add(this.lblFriendName);
+            this.pnlActions.Controls.Add(this.btnProfile);
+            this.pnlActions.Controls.Add(this.btnIM);
+            this.pnlActions.Location = new System.Drawing.Point(209, 3);
+            this.pnlActions.Name = "pnlActions";
+            this.pnlActions.Size = new System.Drawing.Size(470, 76);
+            this.pnlActions.TabIndex = 1;
+            this.pnlActions.TabStop = false;
             // 
             // btnRemove
             // 
-            this.btnRemove.Enabled = false;
             this.btnRemove.Location = new System.Drawing.Point(367, 46);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(75, 23);
@@ -135,7 +137,6 @@ namespace Radegast
             // 
             // btnPay
             // 
-            this.btnPay.Enabled = false;
             this.btnPay.Location = new System.Drawing.Point(286, 46);
             this.btnPay.Name = "btnPay";
             this.btnPay.Size = new System.Drawing.Size(75, 23);
@@ -146,7 +147,6 @@ namespace Radegast
             // 
             // btnOfferTeleport
             // 
-            this.btnOfferTeleport.Enabled = false;
             this.btnOfferTeleport.Location = new System.Drawing.Point(168, 46);
             this.btnOfferTeleport.Name = "btnOfferTeleport";
             this.btnOfferTeleport.Size = new System.Drawing.Size(112, 23);
@@ -155,20 +155,10 @@ namespace Radegast
             this.btnOfferTeleport.UseVisualStyleBackColor = true;
             this.btnOfferTeleport.Click += new System.EventHandler(this.btnOfferTeleport_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(209, 92);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(81, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "This friend can:";
-            // 
             // chkSeeMeOnline
             // 
             this.chkSeeMeOnline.AutoSize = true;
-            this.chkSeeMeOnline.Enabled = false;
-            this.chkSeeMeOnline.Location = new System.Drawing.Point(218, 117);
+            this.chkSeeMeOnline.Location = new System.Drawing.Point(6, 20);
             this.chkSeeMeOnline.Name = "chkSeeMeOnline";
             this.chkSeeMeOnline.Size = new System.Drawing.Size(125, 17);
             this.chkSeeMeOnline.TabIndex = 6;
@@ -179,8 +169,7 @@ namespace Radegast
             // chkSeeMeOnMap
             // 
             this.chkSeeMeOnMap.AutoSize = true;
-            this.chkSeeMeOnMap.Enabled = false;
-            this.chkSeeMeOnMap.Location = new System.Drawing.Point(218, 140);
+            this.chkSeeMeOnMap.Location = new System.Drawing.Point(6, 43);
             this.chkSeeMeOnMap.Name = "chkSeeMeOnMap";
             this.chkSeeMeOnMap.Size = new System.Drawing.Size(118, 17);
             this.chkSeeMeOnMap.TabIndex = 7;
@@ -191,8 +180,7 @@ namespace Radegast
             // chkModifyMyObjects
             // 
             this.chkModifyMyObjects.AutoSize = true;
-            this.chkModifyMyObjects.Enabled = false;
-            this.chkModifyMyObjects.Location = new System.Drawing.Point(218, 163);
+            this.chkModifyMyObjects.Location = new System.Drawing.Point(6, 66);
             this.chkModifyMyObjects.Name = "chkModifyMyObjects";
             this.chkModifyMyObjects.Size = new System.Drawing.Size(113, 17);
             this.chkModifyMyObjects.TabIndex = 8;
@@ -200,54 +188,85 @@ namespace Radegast
             this.chkModifyMyObjects.UseVisualStyleBackColor = true;
             this.chkModifyMyObjects.CheckedChanged += new System.EventHandler(this.chkModifyMyObjects_CheckedChanged);
             // 
-            // lbxFriends
+            // pnlFriendsRights
             // 
-            this.lbxFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.pnlFriendsRights.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlFriendsRights.Controls.Add(this.chkModifyMyObjects);
+            this.pnlFriendsRights.Controls.Add(this.chkSeeMeOnline);
+            this.pnlFriendsRights.Controls.Add(this.chkSeeMeOnMap);
+            this.pnlFriendsRights.Enabled = false;
+            this.pnlFriendsRights.Location = new System.Drawing.Point(218, 85);
+            this.pnlFriendsRights.Name = "pnlFriendsRights";
+            this.pnlFriendsRights.Size = new System.Drawing.Size(461, 92);
+            this.pnlFriendsRights.TabIndex = 2;
+            this.pnlFriendsRights.TabStop = false;
+            this.pnlFriendsRights.Text = "This friend can";
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "GreenOrbFaded_16.png");
+            this.imageList1.Images.SetKeyName(1, "GreenOrb_16.png");
+            // 
+            // lvwFriends
+            // 
+            this.lvwFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
-            this.lbxFriends.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.lbxFriends.IntegralHeight = false;
-            this.lbxFriends.ItemHeight = 20;
-            this.lbxFriends.Location = new System.Drawing.Point(3, 3);
-            this.lbxFriends.Name = "lbxFriends";
-            this.lbxFriends.Size = new System.Drawing.Size(200, 460);
-            this.lbxFriends.TabIndex = 0;
-            this.lbxFriends.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseUp);
-            this.lbxFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lbxFriends_DrawItem);
-            this.lbxFriends.SelectedIndexChanged += new System.EventHandler(this.lbxFriends_SelectedIndexChanged);
-            this.lbxFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbxFriends_MouseDown);
-            this.lbxFriends.KeyUp += new System.Windows.Forms.KeyEventHandler(this.lbxFriends_KeyUp);
+            this.lvwFriends.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chName});
+            this.lvwFriends.FullRowSelect = true;
+            this.lvwFriends.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lvwFriends.HideSelection = false;
+            this.lvwFriends.LargeImageList = this.imageList1;
+            this.lvwFriends.Location = new System.Drawing.Point(0, 0);
+            this.lvwFriends.Name = "lvwFriends";
+            this.lvwFriends.Size = new System.Drawing.Size(203, 466);
+            this.lvwFriends.SmallImageList = this.imageList1;
+            this.lvwFriends.TabIndex = 0;
+            this.lvwFriends.UseCompatibleStateImageBehavior = false;
+            this.lvwFriends.View = System.Windows.Forms.View.Details;
+            this.lvwFriends.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lvwFriends_MouseClick);
+            this.lvwFriends.SelectedIndexChanged += new System.EventHandler(this.lvwFriends_SelectedIndexChanged);
+            this.lvwFriends.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lvwFriends_KeyDown);
+            // 
+            // chName
+            // 
+            this.chName.Text = "";
+            this.chName.Width = 195;
             // 
             // FriendsConsole
             // 
-            this.Controls.Add(this.chkModifyMyObjects);
-            this.Controls.Add(this.chkSeeMeOnMap);
-            this.Controls.Add(this.chkSeeMeOnline);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.lbxFriends);
+            this.Controls.Add(this.pnlFriendsRights);
+            this.Controls.Add(this.lvwFriends);
+            this.Controls.Add(this.pnlActions);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FriendsConsole";
             this.Size = new System.Drawing.Size(682, 466);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.pnlActions.ResumeLayout(false);
+            this.pnlActions.PerformLayout();
+            this.pnlFriendsRights.ResumeLayout(false);
+            this.pnlFriendsRights.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        public Radegast.ListBoxCustomSort lbxFriends;
         public Label lblFriendName;
         public Button btnIM;
         public Button btnProfile;
-        public GroupBox groupBox1;
-        public Label label1;
+        public GroupBox pnlActions;
         public CheckBox chkSeeMeOnline;
         public CheckBox chkSeeMeOnMap;
         public CheckBox chkModifyMyObjects;
         public Button btnOfferTeleport;
         public Button btnPay;
         public Button btnRemove;
+        public GroupBox pnlFriendsRights;
+        public ListViewNoFlicker lvwFriends;
+        public ColumnHeader chName;
+        public ImageList imageList1;
     }
 }

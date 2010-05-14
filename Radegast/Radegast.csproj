@@ -128,9 +128,7 @@
     <Compile Include="Core\RLV\RLVManager.cs" />
     <Compile Include="Core\RLV\RLVRule.cs" />
     <Compile Include="Core\Settings.cs" />
-    <Compile Include="Core\ListItems\PreferencePaneListItem.cs" />
     <Compile Include="Core\DebugLogMessage.cs" />
-    <Compile Include="Core\ListItems\FriendsListItem.cs" />
     <Compile Include="Core\ListItems\RegionSearchResultItem.cs" />
     <Compile Include="Core\LSLKeywordParser.cs" />
     <Compile Include="Core\LSL\lsl.lexer.cs" />

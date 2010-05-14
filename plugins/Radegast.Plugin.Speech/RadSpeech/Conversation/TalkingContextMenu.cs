@@ -88,11 +88,15 @@ namespace RadegastSpeech.Conversation
             lock (e.Menu)
             {
                 menuStrip = e.Menu;
-                menuFor = "unknown";
+                menuFor = string.Empty;
                 id = OpenMetaverse.UUID.Zero;
 
                 // Figure out what this menu applies to.
-                if (menuStrip.Selection is ListViewItem)
+                if (menuStrip.Selection is string)
+                {
+                    menuFor = (string)menuStrip.Selection;
+                }
+                else if (menuStrip.Selection is ListViewItem)
                 {
                     ListViewItem lv = menuStrip.Selection as ListViewItem;
                     menuFor = lv.Text;

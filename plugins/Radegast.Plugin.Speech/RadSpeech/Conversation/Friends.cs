@@ -41,7 +41,7 @@ namespace RadegastSpeech.Conversation
     {
         private FriendsConsole frTab;
         public bool Announce { get; set; }
-        private System.Windows.Forms.ListBox friends;
+        private System.Windows.Forms.ListView friends;
 
         #region statechange
         internal Friends(PluginControl pc)
@@ -50,7 +50,7 @@ namespace RadegastSpeech.Conversation
             Title = "friends";
             Announce = false;
             frTab = (FriendsConsole)control.instance.TabConsole.Tabs["friends"].Control;
-            friends = frTab.lbxFriends;
+            friends = frTab.lvwFriends;
 
             control.instance.Client.Friends.FriendOffline +=
                 new EventHandler<FriendInfoEventArgs>(Friends_OnFriendOffline);
@@ -64,9 +64,8 @@ namespace RadegastSpeech.Conversation
         internal override void Start()
         {
             base.Start();
-            friends.SelectedIndexChanged += Friends_SelectedIndexChanged;
+            friends.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(friends_ItemSelectionChanged);
             Talker.SayMore("Friends");
-            Friends_SelectedIndexChanged(null, null);
         }
 
         /// <summary>
@@ -74,7 +73,7 @@ namespace RadegastSpeech.Conversation
         /// </summary>
         internal override void Stop()
         {
-            friends.SelectedIndexChanged -= Friends_SelectedIndexChanged;
+            friends.ItemSelectionChanged -= new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(friends_ItemSelectionChanged);
             base.Stop();
         }
         #endregion
@@ -114,21 +113,33 @@ namespace RadegastSpeech.Conversation
         #endregion
 
         /// <summary>
+        /// Was previous selection multiple
+        /// </summary>
+        bool prevMultiple = false;
+        /// <summary>
         /// Announce which friend has been selected in the list.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Friends_SelectedIndexChanged(object sender, EventArgs e)
+        void friends_ItemSelectionChanged(object sender, System.Windows.Forms.ListViewItemSelectionChangedEventArgs e)
         {
-            if (friends.SelectedItem == null) return;
+            FriendInfo f = (FriendInfo)e.Item.Tag;
+            bool multiple = friends.SelectedItems.Count > 1;
+            string desc = f.Name;
+            
+            if (multiple || prevMultiple)
+            {
+                desc += e.IsSelected ? " selected" : " deselected";
+                Talker.SayMore(desc);
+            }
+            else if (e.IsSelected)
+            {
+                if (!f.IsOnline)
+                    desc += " is off line.";
+                Talker.SayMore(desc);
+            }
 
-            FriendsListItem item = (FriendsListItem)friends.SelectedItem;
-            FriendInfo f = item.Friend;
-
-            string description = f.Name;
-            if (!f.IsOnline)
-                description += " is off line.";
-            Talker.SayMore(description);
+            prevMultiple = multiple;
         }
 
         /// <summary>
