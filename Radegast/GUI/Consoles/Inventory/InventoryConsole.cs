@@ -1201,6 +1201,22 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
+                    if (item.InventoryType == InventoryType.Animation)
+                    {
+                        if (!client.Self.SignaledAnimations.ContainsKey(item.AssetUUID))
+                        {
+                            ctxItem = new ToolStripMenuItem("Play", null, OnInvContextClick);
+                            ctxItem.Name = "animation_play";
+                            ctxInv.Items.Add(ctxItem);
+                        }
+                        else
+                        {
+                            ctxItem = new ToolStripMenuItem("Stop", null, OnInvContextClick);
+                            ctxItem.Name = "animation_stop";
+                            ctxInv.Items.Add(ctxItem);
+                        }
+                    }
+
                     if (item.InventoryType == InventoryType.Object)
                     {
                         ctxItem = new ToolStripMenuItem("Rez inworld", null, OnInvContextClick);
@@ -1558,6 +1574,18 @@ namespace Radegast
 
                     case "gesture_play":
                         client.Self.PlayGesture(item.AssetUUID);
+                        break;
+
+                    case "animation_play":
+                        Dictionary<UUID, bool> anim = new Dictionary<UUID,bool>();
+                        anim.Add(item.AssetUUID, true);
+                        client.Self.Animate(anim, true);
+                        break;
+
+                    case "animation_stop":
+                        Dictionary<UUID, bool> animStop = new Dictionary<UUID, bool>();
+                        animStop.Add(item.AssetUUID, false);
+                        client.Self.Animate(animStop, true);
                         break;
 
                     case "rez_inworld":
