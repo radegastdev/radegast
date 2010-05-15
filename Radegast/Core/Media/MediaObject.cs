@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Runtime.InteropServices;
 using FMOD;
 
 namespace Radegast.Media
@@ -79,7 +80,7 @@ namespace Radegast.Media
         public MediaObject()
         {
             extraInfo = new FMOD.CREATESOUNDEXINFO();
-            extraInfo.cbsize = 10;
+            extraInfo.cbsize = Marshal.SizeOf(extraInfo);
 
         }
 
@@ -128,6 +129,8 @@ namespace Radegast.Media
             set
             {
                 volume = value;
+                if (channel == null) return;
+
                 invoke(new SoundDelegate(delegate
                 {
                     FMODExec(channel.setVolume(volume));
@@ -183,11 +186,17 @@ namespace Radegast.Media
         protected static Dictionary<IntPtr, MediaObject> allChannels;
         protected void RegisterSound(FMOD.Sound sound)
         {
+            IntPtr raw = sound.getRaw();
+            if (allSounds.ContainsKey(raw))
+                allSounds.Remove(raw);
             allSounds.Add(sound.getRaw(), this);
         }
         protected void RegisterChannel(FMOD.Channel channel)
         {
-            allSounds.Add(channel.getRaw(), this);
+            IntPtr raw = channel.getRaw();
+            if (allChannels.ContainsKey(raw))
+                allChannels.Remove(raw);
+            allChannels.Add(channel.getRaw(), this);
         }
         protected void UnRegisterSound()
         {

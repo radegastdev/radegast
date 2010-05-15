@@ -100,6 +100,7 @@ namespace Radegast.Media
             }
 
             extraInfo.nonblockcallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
+            extraInfo.format = SOUND_FORMAT.PCM16;
 
             invoke( new SoundDelegate(
                 delegate {
@@ -122,7 +123,8 @@ namespace Radegast.Media
         {
             if (instatus != RESULT.OK)
             {
-                Logger.Log("Error opening stream: ", Helpers.LogLevel.Debug);
+                Logger.Log("Error opening audio stream: " + instatus,
+                    Helpers.LogLevel.Debug);
                 return RESULT.OK;
             }
 
