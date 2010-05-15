@@ -296,7 +296,7 @@ namespace Radegast
 
         private void btnIM_Click(object sender, EventArgs e)
         {
-            if (lvwFriends.Items.Count == 1)
+            if (lvwFriends.SelectedItems.Count == 1)
             {
                 selectedFriend = (FriendInfo)lvwFriends.SelectedItems[0].Tag;
 
@@ -309,7 +309,7 @@ namespace Radegast
                 instance.TabConsole.AddIMTab(selectedFriend.UUID, client.Self.AgentID ^ selectedFriend.UUID, selectedFriend.Name);
                 instance.TabConsole.SelectTab((client.Self.AgentID ^ selectedFriend.UUID).ToString());
             }
-            else if (lvwFriends.Items.Count > 1)
+            else if (lvwFriends.SelectedItems.Count > 1)
             {
                 List<UUID> participants = new List<UUID>();
                 foreach(ListViewItem item in lvwFriends.SelectedItems)
