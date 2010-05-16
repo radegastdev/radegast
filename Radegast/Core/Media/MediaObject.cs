@@ -146,12 +146,13 @@ namespace Radegast.Media
             {
                 position = FromOMVSpace(value);
                 invoke(new SoundDelegate(delegate
-                {
-                    FMODExec(channel.set3DAttributes(
-                        ref position,
-                        ref ZeroVector));
-                    system.update();
-                }));
+                    {
+                        if (channel != null)
+                            FMODExec(channel.set3DAttributes(
+                                ref position,
+                                ref ZeroVector));
+                        system.update();
+                    }));
             }
         }
 
@@ -189,14 +190,14 @@ namespace Radegast.Media
             IntPtr raw = sound.getRaw();
             if (allSounds.ContainsKey(raw))
                 allSounds.Remove(raw);
-            allSounds.Add(sound.getRaw(), this);
+            allSounds.Add(raw, this);
         }
         protected void RegisterChannel(FMOD.Channel channel)
         {
             IntPtr raw = channel.getRaw();
             if (allChannels.ContainsKey(raw))
                 allChannels.Remove(raw);
-            allChannels.Add(channel.getRaw(), this);
+            allChannels.Add(raw, this);
         }
         protected void UnRegisterSound()
         {
@@ -246,7 +247,7 @@ namespace Radegast.Media
 
             if (allChannels.ContainsKey(channelraw))
             {
-                MediaObject sndobj = allSounds[channelraw];
+                MediaObject sndobj = allChannels[channelraw];
                 return sndobj.EndCallbackHandler();
             }
 

@@ -45,6 +45,7 @@ namespace Radegast.Media
         public bool SoundSystemAvailable { get { return soundSystemAvailable; } }
         private bool soundSystemAvailable = false;
         private Thread soundThread;
+        private Thread listenerThread;
         RadegastInstance instance;
 
         private List<MediaObject> sounds = new List<MediaObject>();
@@ -59,11 +60,17 @@ namespace Radegast.Media
             soundThread.IsBackground = true;
             soundThread.Name = "SoundThread";
             soundThread.Start();
+
+            // Start the background thread that updates listerner position.
+            listenerThread = new Thread(new ThreadStart(ListenerUpdate));
+            listenerThread.IsBackground = true;
+            listenerThread.Name = "ListenerThread";
+            listenerThread.Start();
         }
 
         private void CommandLoop()
         {
-            SoundDelegate action;
+            SoundDelegate action = null;
 
             UpVector.x = 0.0f;
             UpVector.y = 1.0f;
@@ -98,6 +105,7 @@ namespace Radegast.Media
 
                     // We have an action, so call it.
                     action();
+                    action = null;
                 }
             }
             catch (Exception e)
@@ -131,7 +139,8 @@ namespace Radegast.Media
                 int minfrequency = 0, maxfrequency = 0;
                 StringBuilder name = new StringBuilder(128);
                 FMODExec(system.getDriverCaps(0, ref caps,
-                    ref minfrequency, ref maxfrequency,
+                    ref minfrequency,
+                    ref maxfrequency,
                     ref speakermode)
                 );
 

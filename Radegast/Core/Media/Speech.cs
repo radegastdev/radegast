@@ -38,26 +38,17 @@ namespace Radegast.Media
     public class Speech : MediaObject
     {
         /// <summary>
-        /// Is sound currently playing
-        /// </summary>
-        public bool Playing { get { return playing; } }
-        private bool playing = false;
-
-        /// <summary>
-        /// Is sound currently paused
-        /// </summary>
-        public bool Paused { get { return paused; } }
-        private bool paused = false;
-
-        /// <summary>
         /// Fired when a stream meta data is received
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Key, value are sent in e</param>
-        public delegate void StreamInfoCallback(object sender, StreamInfoArgs e);
-
-        private bool soundcreated = false;
-        private System.Timers.Timer timer;
+        public delegate void SpeechDoneCallback(object sender, EventArgs e);
+        /// <summary>
+        /// Fired when a stream meta data is received
+        /// </summary>
+        public event SpeechDoneCallback OnSpeechDone;
+        private String filename;
+        private Vector3 speakerPos;
 
         /// <summary>
         /// Creates a new sound object
@@ -65,12 +56,10 @@ namespace Radegast.Media
         /// <param name="system">Sound system</param>
         public Speech()
             :base()
-        {
-            timer = new System.Timers.Timer();
-            timer.Interval = 50d;
-            timer.Elapsed += new System.Timers.ElapsedEventHandler(timer_Elapsed);
-            timer.Enabled = false;
-        }
+       {
+           extraInfo.nonblockcallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
+           extraInfo.format = SOUND_FORMAT.PCM16;
+       }
 
 
         /// <summary>
@@ -78,13 +67,6 @@ namespace Radegast.Media
         /// </summary>
         public override void Dispose()
         {
-            if (timer != null)
-            {
-                timer.Enabled = false;
-                timer.Dispose();
-                timer = null;
-            }
-
             if (sound != null)
             {
                 sound.release();
@@ -97,61 +79,111 @@ namespace Radegast.Media
         /// Plays audio stream
         /// </summary>
         /// <param name="filename">Name of a WAV file created by the synthesizer</param>
-        public void Play(string filename)
+        public void Play(string speakfile, bool global, Vector3 pos)
         {
-            if (!soundcreated)
-            {
-                FMODExec(system.createSound(filename,
-                    (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING),
-                    ref sound));
-                soundcreated = true;
-                timer.Enabled = true;
-                timer_Elapsed(null, null);
-            }
-        }
+            speakerPos = pos;
+            filename = speakfile;
+
+            // Set flags to determine how it will be played.
+            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D | MODE.NONBLOCKING;
+
+            // Set coordinate space interpretation.
+            if (global)
+                mode |= FMOD.MODE._3D_WORLDRELATIVE;
+            else
+                mode |= FMOD.MODE._3D_HEADRELATIVE;
+
+            invoke( new SoundDelegate(
+                delegate {
+                    FMODExec(
+                        system.createSound(filename,
+                        mode,
+                        ref extraInfo,
+                        ref sound));
+
+                    // Register for callbacks.
+                    RegisterSound(sound);
+                }));
+         }
 
         /// <summary>
-        /// Toggles sound pause
+        /// Callback when a stream has been loaded
         /// </summary>
-        public void TogglePaused()
+        /// <param name="instatus"></param>
+        /// <returns></returns>
+        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
         {
-            if (channel != null)
+            if (instatus != RESULT.OK)
             {
-                channel.getPaused(ref paused);
-                channel.setPaused(!paused);
+                Logger.Log("Error opening speech file " +
+                        filename +
+                        ": " + instatus,
+                    Helpers.LogLevel.Error);
+                return RESULT.OK;
             }
-        }
 
-        void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            OPENSTATE openstate = 0;
-            uint percentbuffered = 0;
-            bool starving = false;
-
-            try
-            {
-                if (soundcreated)
+            invoke(new SoundDelegate(
+                delegate
                 {
-                    FMODExec(sound.getOpenState(ref openstate, ref percentbuffered, ref starving));
-
-                    if (openstate == OPENSTATE.READY && channel == null)
+                    try
                     {
-                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, false, ref channel));
-                        FMODExec(channel.setVolume(volume));
-                    }
-                }
+                        // Allocate a channel, initially paused.
+                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
 
-                if (system != null)
-                {
-                    system.update();
-                }
-            }
-            catch (Exception ex)
-            {
-                playing = paused = false;
-                timer.Enabled = false;
-                Logger.Log("Error playing speech: ", Helpers.LogLevel.Debug, ex);
-            }
+                        // Set general Speech volume.
+                        //TODO Set this in the GUI
+                        volume = 0.5f;
+                        FMODExec(channel.setVolume(volume));
+
+                        // Set speaker position.
+                        position = FromOMVSpace(speakerPos);
+                        FMODExec(channel.set3DAttributes(
+                           ref position,
+                           ref ZeroVector));
+
+                        // SET a handler for when it finishes.
+                        FMODExec(channel.setCallback(DispatchEndCallback));
+                        RegisterChannel( channel );
+
+                        // Un-pause the sound.
+                        FMODExec(channel.setPaused(false));
+
+                        system.update();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("Error playing speech: ", Helpers.LogLevel.Error, ex);
+                    }
+                }));
+
+            return RESULT.OK;
         }
-    }
+
+        protected override RESULT EndCallbackHandler()
+        {
+            invoke(new SoundDelegate(
+                 delegate
+                 {
+                     UnRegisterChannel();
+                     channel = null;
+                     UnRegisterSound();
+                     FMODExec(sound.release());
+                     sound = null;
+
+                     // Tell speech control the file has been played.  Note
+                     // the event is dispatched on FMOD's thread, to make sure
+                     // the event handler does not start a new sound before the
+                     // old one is cleaned up.
+                     if (OnSpeechDone != null)
+                         try
+                         {
+                             OnSpeechDone(this, new EventArgs());
+                         }
+                         catch (Exception) { }
+                 }));
+
+
+            return RESULT.OK;
+        }
+   }
 }

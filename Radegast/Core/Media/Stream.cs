@@ -159,7 +159,7 @@ namespace Radegast.Media
                             }
                         }
 
-                        system.update();
+//                      system.update();
                     }
                     catch (Exception ex)
                     {
