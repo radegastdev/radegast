@@ -30,8 +30,10 @@
 //
 using System;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using FMOD;
 using OpenMetaverse;
+using OpenMetaverse.Assets;
 
 namespace Radegast.Media
 {
@@ -39,24 +41,24 @@ namespace Radegast.Media
     public class BufferSound : MediaObject
     {
         private FMOD.CREATESOUNDEXINFO extendedInfo;
-
+        private UUID Id;
+        private Boolean prefetchOnly = false;
+        private FMOD.MODE mode;
         public Sound Sound { get { return sound; } }
 
         /// <summary>
         /// Creates a new sound object
         /// </summary>
         /// <param name="system">Sound system</param>
-        public BufferSound(byte[] buffer, bool loop, bool global, Vector3 worldpos )
+        public BufferSound( UUID soundId, bool loop, bool global, Vector3 worldpos, float vol )
             :base()
         {
+            allBuffers.AddLast(this);
             position = FromOMVSpace(worldpos);
-
-            extendedInfo.format = SOUND_FORMAT.PCM16;
-            extendedInfo.nonblockcallback += DispatchNonBlockCallback;
+            volume = vol;
 
             // Set flags to determine how it will be played.
-            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D;
-            position = FromOMVSpace(worldpos);
+            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D | FMOD.MODE.NONBLOCKING;
 
             // Set coordinate space interpretation.
             if (global)
@@ -64,31 +66,25 @@ namespace Radegast.Media
             else
                 mode |= FMOD.MODE._3D_HEADRELATIVE;
 
-            invoke(new SoundDelegate(delegate
-            {
-                FMODExec(system.createSound(buffer,
-                    mode,
-                    ref extendedInfo,
-                    ref sound));
-
-                // Register for callbacks.
-                RegisterSound(sound);
-
-                if (loop)
-                    FMODExec(sound.setLoopCount(-1));
-            }));
+            manager.Instance.Client.Assets.RequestAsset(
+                Id,
+                AssetType.Sound,
+                false,
+                new AssetManager.AssetReceivedCallback(Assets_OnSoundReceived));
         }
 
-        public BufferSound( BufferSound shared, bool loop, Vector3 worldpos)
+        public BufferSound( UUID soundId )
             : base()
         {
-            position = FromOMVSpace(worldpos);
+            allBuffers.AddLast(this);
+            prefetchOnly = true;
+            Id = soundId;
 
-            // Share a previously loaded sound.
-            Cloned = true;
-            sound = shared.Sound;
-
-            NonBlockCallbackHandler(RESULT.OK );
+            manager.Instance.Client.Assets.RequestAsset(
+                Id,
+                AssetType.Sound,
+                false,
+                new AssetManager.AssetReceivedCallback(Assets_OnSoundReceived));
         }
 
         /// <summary>
@@ -99,11 +95,49 @@ namespace Radegast.Media
             base.Dispose();
         }
 
+        /**
+         * Handle arrival of a sound resource.
+         */
+        void Assets_OnSoundReceived(AssetDownload transfer, Asset asset)
+        {
+            if (transfer.Success)
+            {
+                // If this was a Prefetch, just stop here.
+                if (prefetchOnly)
+                {
+                    allBuffers.Remove(this);
+                    return;
+                }
+
+                AssetSound s = asset as AssetSound;
+                s.Decode();
+
+                invoke(new SoundDelegate(delegate
+                {
+                    FMODExec(system.createSound(
+                        s.AssetData,
+                        mode,
+                        ref extendedInfo,
+                        ref sound));
+
+                    // Register for callbacks.
+                    RegisterSound(sound);
+
+//                    if (loop)
+//                        FMODExec(sound.setLoopCount(-1));
+                }));
+            }
+            else
+            {
+                Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
+                    Helpers.LogLevel.Error);
+            }
+        }
         protected override RESULT NonBlockCallbackHandler(RESULT instatus)
         {
             if (instatus != RESULT.OK)
             {
-                Logger.Log("Error opening stream: ", Helpers.LogLevel.Debug);
+                Logger.Log("Error opening sound: ", Helpers.LogLevel.Error);
                 return RESULT.OK;
             }
 
@@ -111,16 +145,15 @@ namespace Radegast.Media
             {
                 // Allocate a channel and set initial volume.  Initially paused.
                 FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
-                volume = 0.5f;
                 FMODExec(channel.setVolume(volume));
 
                 // Take note of when the sound is finished playing.
                 FMODExec(channel.setCallback(EndCallback));
 
-                // Set speech attenuation limits.
+                // Set attenuation limits.
                 FMODExec(sound.set3DMinMaxDistance(
                     1.2f,       // Any closer than this gets no louder
-                    8.0f));     // Further than this gets no softer.
+                    20.0f));     // Further than this gets no softer.
 
                 // Set the sound point of origin.
                 FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
@@ -130,7 +163,7 @@ namespace Radegast.Media
             }
             catch (Exception ex)
             {
-                Logger.Log("Error starting stream: ", Helpers.LogLevel.Debug, ex);
+                Logger.Log("Error starting sound: ", Helpers.LogLevel.Debug, ex);
             }
 
             return RESULT.OK;
@@ -154,13 +187,15 @@ namespace Radegast.Media
             if (type != CHANNEL_CALLBACKTYPE.END) return RESULT.OK;
 
             // Release the buffer to avoid a big memory leak.
-            //TODO Should be a reference count on cloned sound buffers.
-            if (!Cloned && sound != null)
+
+            if (sound != null)
             {
                 sound.release();
                 sound = null;
             }
             channel = null;
+
+            allBuffers.Remove(this);
 
             return RESULT.OK;
         }

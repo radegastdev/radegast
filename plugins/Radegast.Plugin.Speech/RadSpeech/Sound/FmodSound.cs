@@ -99,6 +99,7 @@ namespace RadegastSpeech.Sound
         // Handler for event when speech is done playing.
         private void SpeechDoneHandler(object sender, EventArgs e)
         {
+            // Poke the semaphore
             playing.Release();
         }
 

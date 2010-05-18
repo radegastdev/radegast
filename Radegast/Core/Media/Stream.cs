@@ -144,6 +144,8 @@ namespace Radegast.Media
 
                         // If this is not Unix, try to get MP3 tags.
                         // getTag seems to break on Unix.
+#if NOT
+                        // Seems to break on Windows too now
                         if (false) //Environment.OSVersion.Platform != PlatformID.Unix)
                         {
                             TAG tag = new TAG();
@@ -162,8 +164,8 @@ namespace Radegast.Media
                                     catch (Exception) { }
                             }
                         }
+#endif
 
-//                      system.update();
                     }
                     catch (Exception ex)
                     {

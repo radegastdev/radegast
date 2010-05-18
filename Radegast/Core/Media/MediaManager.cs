@@ -34,6 +34,7 @@ using System.Text;
 using FMOD;
 using System.Threading;
 using OpenMetaverse;
+using OpenMetaverse.Assets;
 
 namespace Radegast.Media
 {
@@ -46,18 +47,19 @@ namespace Radegast.Media
         private bool soundSystemAvailable = false;
         private Thread soundThread;
         private Thread listenerThread;
-        RadegastInstance instance;
+        public RadegastInstance Instance;
 
         private List<MediaObject> sounds = new List<MediaObject>();
 
         public MediaManager(RadegastInstance instance)
             : base()
         {
-            this.instance = instance;
+            this.Instance = instance;
             manager = this;
 
             loadCallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
             endCallback = new FMOD.CHANNEL_CALLBACK(DispatchEndCallback);
+            allBuffers = new LinkedList<BufferSound>();
 
             // Start the background thread that does all the FMOD calls.
             soundThread = new Thread(new ThreadStart(CommandLoop));
@@ -70,6 +72,11 @@ namespace Radegast.Media
             listenerThread.IsBackground = true;
             listenerThread.Name = "ListenerThread";
             listenerThread.Start();
+
+            // Subscribe to events about inworld sounds
+            instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
+            instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
+            instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
         }
 
         private void CommandLoop()
@@ -249,7 +256,7 @@ namespace Radegast.Media
 
                 if (system == null) continue;
 
-                AgentManager my = instance.Client.Self;
+                AgentManager my = Instance.Client.Self;
 
                 // If we are standing still, nothing to update now, but
                 // FMOD needs a 'tick' anyway for callbacks, etc.  In looping
@@ -297,6 +304,45 @@ namespace Radegast.Media
             }
         }
 
+        /**
+         * Handle triggering a sound to play
+         */
+        private void Sound_SoundTrigger(object sender, SoundTriggerEventArgs e)
+        {
+            new BufferSound(
+                e.SoundID,
+                false,
+                true,
+                e.Position,
+                e.Gain);
+        }
+
+        private void Sound_AttachedSound(object sender, AttachedSoundEventArgs e)
+        {
+          
+        }
+
+        /**
+         * Handle request to preload a sound resource.
+         */
+        private void Sound_PreloadSound(object sender, PreloadSoundEventArgs e)
+        {
+            new BufferSound( e.SoundID );
+        }
+
+
+    }
+
+    public class PlayingSound
+    {
+        private UUID Id;
+        private Vector3 position;
+        private float volume;
+
+        public PlayingSound( UUID soundId )
+        {
+            Id = soundId;
+        }
     }
 
     public class MediaException : Exception

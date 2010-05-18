@@ -57,6 +57,7 @@ namespace Radegast.Media
         protected static MediaManager manager;
         protected static FMOD.CHANNEL_CALLBACK endCallback;
         protected static FMOD.SOUND_NONBLOCKCALLBACK loadCallback;
+        protected static LinkedList<BufferSound> allBuffers;
 
         /// <summary>
         /// FMOD channel controller, should not be used directly, add methods to Radegast.Media.Sound
