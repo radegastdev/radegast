@@ -54,6 +54,7 @@ namespace Radegast.Media
             : base()
         {
             this.instance = instance;
+            manager = this;
 
             // Start the background thread that does all the FMOD calls.
             soundThread = new Thread(new ThreadStart(CommandLoop));
@@ -88,29 +89,29 @@ namespace Radegast.Media
             // Initialize the command queue.
             queue = new Queue<SoundDelegate>();
 
-            try
+            while (true)
             {
-                while (true)
+                // Wait for something to show up in the queue.
+                lock (queue)
                 {
-                    // Wait for something to show up in the queue.
-                    lock (queue)
+                    while (queue.Count == 0)
                     {
-                        while (queue.Count == 0)
-                        {
-                            Monitor.Wait(queue);
-                        }
-
-                        action = queue.Dequeue();
+                        Monitor.Wait(queue);
                     }
+                    action = queue.Dequeue();
+                }
 
-                    // We have an action, so call it.
+                // We have an action, so call it.
+                try
+                {
                     action();
                     action = null;
                 }
-            }
-            catch (Exception e)
-            {
-                System.Console.WriteLine("Sound shutdown " + e.Message);
+                catch (Exception e)
+                {
+                    Logger.Log("Error in sound action: " + e.Message,
+                        Helpers.LogLevel.Error);
+                }
             }
         }
 
@@ -222,6 +223,7 @@ namespace Radegast.Media
 
             if (system != null)
             {
+                Logger.Log("FMOD interface stopping", Helpers.LogLevel.Info);
                 system.release();
                 system = null;
             }
@@ -256,7 +258,7 @@ namespace Radegast.Media
                 {
                     invoke(new SoundDelegate(delegate
                     {
-                        system.update();
+                        FMODExec(system.update());
                     }));
                     continue;
                 }
@@ -287,7 +289,7 @@ namespace Radegast.Media
                         ref forward,		// Facing direction
                         ref UpVector ));	// Top of head
 
-                    system.update();
+                    FMODExec(system.update());
                 }));
             }
         }

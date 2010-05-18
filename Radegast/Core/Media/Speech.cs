@@ -57,7 +57,6 @@ namespace Radegast.Media
         public Speech()
             :base()
        {
-           extraInfo.nonblockcallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
            extraInfo.format = SOUND_FORMAT.PCM16;
        }
 
@@ -93,7 +92,9 @@ namespace Radegast.Media
             else
                 mode |= FMOD.MODE._3D_HEADRELATIVE;
 
-            invoke( new SoundDelegate(
+            extraInfo.nonblockcallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
+
+            invoke(new SoundDelegate(
                 delegate {
                     FMODExec(
                         system.createSound(filename,
@@ -113,6 +114,8 @@ namespace Radegast.Media
         /// <returns></returns>
         protected override RESULT NonBlockCallbackHandler(RESULT instatus)
         {
+            extraInfo.nonblockcallback = null;
+
             if (instatus != RESULT.OK)
             {
                 Logger.Log("Error opening speech file " +
@@ -148,7 +151,7 @@ namespace Radegast.Media
                         // Un-pause the sound.
                         FMODExec(channel.setPaused(false));
 
-                        system.update();
+//                        system.update();
                     }
                     catch (Exception ex)
                     {
@@ -164,6 +167,7 @@ namespace Radegast.Media
             invoke(new SoundDelegate(
                  delegate
                  {
+ //                    FMODExec(channel.setCallback(null));
                      UnRegisterChannel();
                      channel = null;
                      UnRegisterSound();

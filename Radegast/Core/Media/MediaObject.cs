@@ -53,6 +53,7 @@ namespace Radegast.Media
         /// 
         /// </summary>
         protected static Queue<SoundDelegate> queue;
+        protected static MediaManager manager;
 
         /// <summary>
         /// FMOD channel controller, should not be used directly, add methods to Radegast.Media.Sound
@@ -81,7 +82,6 @@ namespace Radegast.Media
         {
             extraInfo = new FMOD.CREATESOUNDEXINFO();
             extraInfo.cbsize = Marshal.SizeOf(extraInfo);
-
         }
 
         protected bool Cloned = false;
@@ -134,11 +134,14 @@ namespace Radegast.Media
                 invoke(new SoundDelegate(delegate
                 {
                     FMODExec(channel.setVolume(volume));
-                    system.update();
+//                    system.update();
                 }));
             }
         }
 
+        /// <summary>
+        /// Update the 3D position of a sound source.
+        /// </summary>
         protected FMOD.VECTOR position = new FMOD.VECTOR();
         public OpenMetaverse.Vector3 Position
         {
@@ -151,7 +154,7 @@ namespace Radegast.Media
                             FMODExec(channel.set3DAttributes(
                                 ref position,
                                 ref ZeroVector));
-                        system.update();
+//                        system.update();
                     }));
             }
         }
@@ -225,7 +228,7 @@ namespace Radegast.Media
         protected virtual FMOD.RESULT NonBlockCallbackHandler( RESULT result ) { return RESULT.OK; }
         protected virtual FMOD.RESULT EndCallbackHandler() { return RESULT.OK; }
 
-        protected RESULT DispatchNonBlockCallback(IntPtr soundraw, RESULT result)
+        public RESULT DispatchNonBlockCallback(IntPtr soundraw, RESULT result)
         {
             if (allSounds.ContainsKey(soundraw))
             {
@@ -242,13 +245,16 @@ namespace Radegast.Media
             IntPtr commanddata1,
             IntPtr commanddata2)
         {
-            // Ignore other callback types.
-            if (type != CHANNEL_CALLBACKTYPE.END) return RESULT.OK;
-
-            if (allChannels.ContainsKey(channelraw))
+            // There are several callback types
+            switch (type)
             {
-                MediaObject sndobj = allChannels[channelraw];
-                return sndobj.EndCallbackHandler();
+                case CHANNEL_CALLBACKTYPE.END:
+                    if (allChannels.ContainsKey(channelraw))
+                    {
+                        MediaObject sndobj = allChannels[channelraw];
+                        return sndobj.EndCallbackHandler();
+                    }
+                    break;
             }
 
             return RESULT.OK;
