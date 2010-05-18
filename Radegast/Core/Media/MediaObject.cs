@@ -34,6 +34,7 @@ using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
 using FMOD;
+using OpenMetaverse;
 
 namespace Radegast.Media
 {
@@ -54,6 +55,8 @@ namespace Radegast.Media
         /// </summary>
         protected static Queue<SoundDelegate> queue;
         protected static MediaManager manager;
+        protected static FMOD.CHANNEL_CALLBACK endCallback;
+        protected static FMOD.SOUND_NONBLOCKCALLBACK loadCallback;
 
         /// <summary>
         /// FMOD channel controller, should not be used directly, add methods to Radegast.Media.Sound
@@ -270,6 +273,14 @@ namespace Radegast.Media
             }
         }
 
+        protected static void FMODExec(FMOD.RESULT result, string trace)
+        {
+            Logger.Log("FMOD call " + trace + " returned " + result.ToString(), Helpers.LogLevel.Info);
+            if (result != FMOD.RESULT.OK)
+            {
+                throw new MediaException("FMOD error! " + result + " - " + FMOD.Error.String(result));
+            }
+        }
 
  
     }

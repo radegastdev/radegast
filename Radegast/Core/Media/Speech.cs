@@ -92,7 +92,7 @@ namespace Radegast.Media
             else
                 mode |= FMOD.MODE._3D_HEADRELATIVE;
 
-            extraInfo.nonblockcallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
+            extraInfo.nonblockcallback = loadCallback;
 
             invoke(new SoundDelegate(
                 delegate {
@@ -118,7 +118,7 @@ namespace Radegast.Media
 
             if (instatus != RESULT.OK)
             {
-                Logger.Log("Error opening speech file " +
+                Logger.Log("FMOD error opening speech file " +
                         filename +
                         ": " + instatus,
                     Helpers.LogLevel.Error);
@@ -145,7 +145,7 @@ namespace Radegast.Media
                            ref ZeroVector));
 
                         // SET a handler for when it finishes.
-                        FMODExec(channel.setCallback(DispatchEndCallback));
+                        FMODExec(channel.setCallback(endCallback));
                         RegisterChannel( channel );
 
                         // Un-pause the sound.
@@ -167,7 +167,6 @@ namespace Radegast.Media
             invoke(new SoundDelegate(
                  delegate
                  {
- //                    FMODExec(channel.setCallback(null));
                      UnRegisterChannel();
                      channel = null;
                      UnRegisterSound();

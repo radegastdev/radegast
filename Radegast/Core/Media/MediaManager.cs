@@ -56,6 +56,9 @@ namespace Radegast.Media
             this.instance = instance;
             manager = this;
 
+            loadCallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
+            endCallback = new FMOD.CHANNEL_CALLBACK(DispatchEndCallback);
+
             // Start the background thread that does all the FMOD calls.
             soundThread = new Thread(new ThreadStart(CommandLoop));
             soundThread.IsBackground = true;
@@ -252,7 +255,7 @@ namespace Radegast.Media
                 // FMOD needs a 'tick' anyway for callbacks, etc.  In looping
                 // 'game' programs, the loop is the 'tick'.   Since Radegast
                 // uses events and has no loop, we use this position update
-                // thread to drive the tick.
+                // thread to drive the FMOD tick.
                 if (my.SimPosition.Equals(lastpos) &&
                     my.Movement.BodyRotation.W == lastface)
                 {

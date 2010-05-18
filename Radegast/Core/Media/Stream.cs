@@ -99,7 +99,7 @@ namespace Radegast.Media
                     }));
             }
 
-            extraInfo.nonblockcallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
+            extraInfo.nonblockcallback = loadCallback;
             extraInfo.format = SOUND_FORMAT.PCM16;
 
             invoke( new SoundDelegate(
@@ -108,7 +108,7 @@ namespace Radegast.Media
                         system.createSound(url,
                         (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING),
                         ref extraInfo,
-                        ref sound));
+                        ref sound), "Stream load");
                     // Register for callbacks.
                     RegisterSound(sound);
                 }));
@@ -134,13 +134,17 @@ namespace Radegast.Media
                     try
                     {
                         // Allocate a channel and set initial volume.
-                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, false, ref channel));
+                        FMODExec(system.playSound(
+                            CHANNELINDEX.FREE,
+                            sound,
+                            false,
+                            ref channel), "Stream channel");
                         volume = 0.5f;
-                        FMODExec(channel.setVolume(volume));
+//                        FMODExec(channel.setVolume(volume), "Stream volume");
 
                         // If this is not Unix, try to get MP3 tags.
                         // getTag seems to break on Unix.
-                        if (Environment.OSVersion.Platform != PlatformID.Unix)
+                        if (false) //Environment.OSVersion.Platform != PlatformID.Unix)
                         {
                             TAG tag = new TAG();
 
@@ -167,6 +171,7 @@ namespace Radegast.Media
                     }
                 }));
 
+            Logger.Log("Stream playing", Helpers.LogLevel.Info);
             return RESULT.OK;
         }
     }
