@@ -532,6 +532,13 @@ namespace Radegast
                 return;
             }
 
+            // Alt-Ctrl-D Open debug console
+            if (e.Modifiers == (Keys.Control | Keys.Alt) && e.KeyCode == Keys.D)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                debugConsoleToolStripMenuItem.PerformClick();
+            }
+
             // Alt 1-8: Toggle various tabs
             if (e.Modifiers == Keys.Alt)
             {
@@ -608,10 +615,6 @@ namespace Radegast
                 e.Handled = e.SuppressKeyPress = true;
                 return;
             }
-        }
-
-        private void frmMain_KeyUp(object sender, KeyEventArgs e)
-        {
         }
 
         bool firstLoad = true;
@@ -1227,6 +1230,21 @@ namespace Radegast
             }
         }
 
+        private void debugConsoleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabsConsole.TabExists("debug"))
+            {
+                ToggleHidden("debug");
+            }
+            else
+            {
+                RadegastTab tab = tabsConsole.AddTab("debug", "Debug", new DebugConsole(instance));
+                tab.AllowClose = false;
+                tab.AllowHide = true;
+                tab.Select();
+            }
+        }
+
         private void tbnObjects_Click(object sender, EventArgs e)
         {
             if (tabsConsole.TabExists("objects"))
@@ -1359,6 +1377,7 @@ namespace Radegast
         {
             tmnuExit_Click(this, EventArgs.Empty);
         }
+
         #endregion
     }
 }

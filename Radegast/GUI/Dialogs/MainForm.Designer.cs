@@ -116,13 +116,14 @@ namespace Radegast
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
             this.tbtnVoice = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugConsoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutRadegastToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tlblLoginName = new System.Windows.Forms.ToolStripStatusLabel();
             this.tlblMoneyBalance = new System.Windows.Forms.ToolStripStatusLabel();
@@ -168,8 +169,8 @@ namespace Radegast
             this.lblTime,
             this.tbtnMedia,
             this.tbtnVoice,
-            this.toolStripSeparator2,
-            this.tbtnHelp});
+            this.tbtnHelp,
+            this.toolStripSeparator2});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(738, 25);
@@ -563,11 +564,6 @@ namespace Radegast
             this.tbtnVoice.Text = "Voice";
             this.tbtnVoice.Click += new System.EventHandler(this.tbtnVoice_Click);
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
             // tbtnHelp
             // 
             this.tbtnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -575,6 +571,7 @@ namespace Radegast
             this.keyboardShortcutsToolStripMenuItem,
             this.reportBugsToolStripMenuItem,
             this.checkForUpdatesToolStripMenuItem,
+            this.debugConsoleToolStripMenuItem,
             this.toolStripMenuItem6,
             this.aboutRadegastToolStripMenuItem});
             this.tbtnHelp.Image = ((System.Drawing.Image)(resources.GetObject("tbtnHelp.Image")));
@@ -586,35 +583,48 @@ namespace Radegast
             // keyboardShortcutsToolStripMenuItem
             // 
             this.keyboardShortcutsToolStripMenuItem.Name = "keyboardShortcutsToolStripMenuItem";
-            this.keyboardShortcutsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.keyboardShortcutsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.keyboardShortcutsToolStripMenuItem.Text = "Keyboard Shortcuts";
             this.keyboardShortcutsToolStripMenuItem.Click += new System.EventHandler(this.keyboardShortcutsToolStripMenuItem_Click);
             // 
             // reportBugsToolStripMenuItem
             // 
             this.reportBugsToolStripMenuItem.Name = "reportBugsToolStripMenuItem";
-            this.reportBugsToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.reportBugsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.reportBugsToolStripMenuItem.Text = "Bugs/Feature Requests...";
             this.reportBugsToolStripMenuItem.Click += new System.EventHandler(this.reportBugsToolStripMenuItem_Click);
             // 
             // checkForUpdatesToolStripMenuItem
             // 
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
-            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for Updates...";
             this.checkForUpdatesToolStripMenuItem.Click += new System.EventHandler(this.checkForUpdatesToolStripMenuItem_Click);
+            // 
+            // debugConsoleToolStripMenuItem
+            // 
+            this.debugConsoleToolStripMenuItem.Name = "debugConsoleToolStripMenuItem";
+            this.debugConsoleToolStripMenuItem.ShortcutKeyDisplayString = "Alt-Ctrl-D";
+            this.debugConsoleToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.debugConsoleToolStripMenuItem.Text = "Debug Console...";
+            this.debugConsoleToolStripMenuItem.Click += new System.EventHandler(this.debugConsoleToolStripMenuItem_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(200, 6);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(220, 6);
             // 
             // aboutRadegastToolStripMenuItem
             // 
             this.aboutRadegastToolStripMenuItem.Name = "aboutRadegastToolStripMenuItem";
-            this.aboutRadegastToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
+            this.aboutRadegastToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.aboutRadegastToolStripMenuItem.Text = "About Radegast...";
             this.aboutRadegastToolStripMenuItem.Click += new System.EventHandler(this.aboutRadegastToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // statusStrip1
             // 
@@ -825,7 +835,6 @@ namespace Radegast
             this.Name = "frmMain";
             this.Text = "Radegast";
             this.Load += new System.EventHandler(this.frmMain_Load);
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyUp);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
@@ -915,6 +924,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem disconnectToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem reconnectToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem debugConsoleToolStripMenuItem;
     }
 }
 

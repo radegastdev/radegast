@@ -242,6 +242,12 @@
     <Compile Include="GUI\Consoles\ConferenceIMTabWindow.Designer.cs">
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\DebugConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\DebugConsole.Designer.cs">
+      <DependentUpon>DebugConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\GroupDetails.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -551,6 +557,9 @@
     <EmbeddedResource Include="GUI\Consoles\ConferenceIMTabWindow.resx">
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\DebugConsole.resx">
+      <DependentUpon>DebugConsole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\GroupDetails.resx">
       <DependentUpon>GroupDetails.cs</DependentUpon>
