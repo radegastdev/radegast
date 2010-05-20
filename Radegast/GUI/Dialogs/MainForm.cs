@@ -537,6 +537,7 @@ namespace Radegast
             {
                 e.Handled = e.SuppressKeyPress = true;
                 debugConsoleToolStripMenuItem.PerformClick();
+                return;
             }
 
             // Alt 1-8: Toggle various tabs
@@ -547,47 +548,47 @@ namespace Radegast
                     case Keys.D1:
                         e.Handled = e.SuppressKeyPress = true;
                         tabsConsole.Tabs["chat"].Select();
-                        break;
+                        return;
 
                     case Keys.D2:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnFriends.PerformClick();
-                        break;
+                        return;
 
                     case Keys.D3:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnGroups.PerformClick();
-                        break;
+                        return;
 
                     case Keys.D4:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnInventory.PerformClick();
-                        break;
+                        return;
 
                     case Keys.D5:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnSearch.PerformClick();
-                        break;
+                        return;
 
                     case Keys.D6:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnMap.PerformClick();
-                        break;
+                        return;
 
                     case Keys.D7:
                         e.Handled = e.SuppressKeyPress = true;
                         tbnObjects.PerformClick();
-                        break;
+                        return;
 
                     case Keys.D8:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnMedia.PerformClick();
-                        break;
+                        return;
 
                     case Keys.D9:
                         e.Handled = e.SuppressKeyPress = true;
                         tbtnVoice.PerformClick();
-                        break;
+                        return;
                 }
             }
 
