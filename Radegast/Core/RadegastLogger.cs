@@ -30,7 +30,6 @@
 //
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
 using log4net.Appender;
 using log4net.Core;
 
@@ -41,47 +40,54 @@ namespace Radegast
     /// </summary>
     public class RadegastAppender : AnsiColorTerminalAppender
     {
-        override protected void Append(LoggingEvent le)
+        #region Events
+        private static EventHandler<LogEventArgs> m_Log;
+
+        protected static void OnLog(object sender, LogEventArgs e)
+        {
+            EventHandler<LogEventArgs> handler = m_Log;
+            if (handler != null)
+                try { handler(sender, e); }
+                catch { }
+        }
+
+        private static readonly object m_LogLock = new object();
+
+        /// <summary>Raised when the GridClient object in the main Radegast instance is changed</summary>
+        public static event EventHandler<LogEventArgs> Log
+        {
+            add { lock (m_LogLock) { m_Log += value; } }
+            remove { lock (m_LogLock) { m_Log -= value; } }
+        }
+        #endregion Events
+
+        protected override void Append(LoggingEvent le)
         {
             try
             {
-                string loggingMessage = RenderLoggingEvent(le);
+                if (m_Log != null)
+                    OnLog(this, new LogEventArgs(le));
+                
+                Console.Write("{0} [", le.TimeStamp.ToString("HH:mm:ss"));
+                WriteColorText(DeriveColor(le.Level.Name), le.Level.Name);
+                Console.Write("]: - ");
 
-                string regex = @"^(?<Front>.*?)\[(?<Category>[^\]]+)\]:?(?<End>.*)";
-
-                Regex RE = new Regex(regex, RegexOptions.Multiline);
-                MatchCollection matches = RE.Matches(loggingMessage);
-
-                // Get some direct matches $1 $4 is a
-                if (matches.Count == 1)
+                if (le.Level == Level.Error)
                 {
-                    System.Console.Write(matches[0].Groups["Front"].Value);
-                    System.Console.Write("[");
-
-                    WriteColorText(DeriveColor(matches[0].Groups["Category"].Value), matches[0].Groups["Category"].Value);
-                    System.Console.Write("]:");
-
-                    if (le.Level == Level.Error)
-                    {
-                        WriteColorText(ConsoleColor.Red, matches[0].Groups["End"].Value);
-                    }
-                    else if (le.Level == Level.Warn)
-                    {
-                        WriteColorText(ConsoleColor.Yellow, matches[0].Groups["End"].Value);
-                    }
-                    else
-                    {
-                        System.Console.Write(matches[0].Groups["End"].Value);
-                    }
-                    System.Console.WriteLine();
+                    WriteColorText(ConsoleColor.Red, le.MessageObject.ToString());
+                }
+                else if (le.Level == Level.Warn)
+                {
+                    WriteColorText(ConsoleColor.Yellow, le.MessageObject.ToString());
                 }
                 else
                 {
-                    System.Console.WriteLine(loggingMessage);
+                    Console.Write(le.MessageObject.ToString());
                 }
+                Console.WriteLine();
 
                 if (RadegastInstance.GlobalInstance.GlobalLogFile != null)
-                    File.AppendAllText(RadegastInstance.GlobalInstance.GlobalLogFile, loggingMessage + Environment.NewLine);
+                    File.AppendAllText(RadegastInstance.GlobalInstance.GlobalLogFile, RenderLoggingEvent(le) + Environment.NewLine);
             }
             catch (Exception) { }
         }
@@ -94,14 +100,14 @@ namespace Radegast
                 {
                     try
                     {
-                        System.Console.ForegroundColor = color;
-                        System.Console.Write(sender);
-                        System.Console.ResetColor();
+                        Console.ForegroundColor = color;
+                        Console.Write(sender);
+                        Console.ResetColor();
                     }
                     catch (ArgumentNullException)
                     {
                         // Some older systems dont support coloured text.
-                        System.Console.WriteLine(sender);
+                        Console.WriteLine(sender);
                     }
                 }
             }
@@ -114,6 +120,16 @@ namespace Radegast
         {
             int colIdx = (input.ToUpper().GetHashCode() % 6) + 9;
             return (ConsoleColor)colIdx;
+        }
+    }
+
+    public class LogEventArgs : EventArgs
+    {
+        public LoggingEvent LogEntry;
+
+        public LogEventArgs(LoggingEvent e)
+        {
+            LogEntry = e;
         }
     }
 }
