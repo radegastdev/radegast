@@ -33,6 +33,7 @@ namespace Radegast
         bool centered = false;
         int PixRegS;
         float maxZoom = 6f, minZoom = 0.5f;
+        string targetParcelName = null;
 
         public bool UseExternalTiles = false;
         public event EventHandler<MapTargetChangedEventArgs> MapTargetChanged;
@@ -42,7 +43,7 @@ namespace Radegast
 
         public MapControl(RadegastInstance instance)
         {
-            Zoom = 1.25f;
+            Zoom = 1.0f;
             InitializeComponent();
             Disposed += new EventHandler(MapControl_Disposed);
             this.Instance = instance;
@@ -161,7 +162,6 @@ namespace Radegast
             uint regionX, regionY;
             Utils.LongToUInts(regionHandle, out regionX, out regionY);
             CenterMap(regionX, regionY, localX, localY);
-            Logger.DebugLog(string.Format("{0} {1},{2}", regionHandle, localX, localY));
         }
 
         public void CenterMap(uint regionX, uint regionY, uint localX, uint localY)
@@ -252,7 +252,6 @@ namespace Radegast
                     null,
                     (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
                     {
-                        Logger.DebugLog(string.Format("{0} - {1}", error, request.RequestUri.ToString()));
                         if (error == null && responseData != null)
                         {
                             try
@@ -445,6 +444,10 @@ namespace Radegast
                 if (!string.IsNullOrEmpty(targetRegion.Name))
                 {
                     string label = string.Format("{0} ({1:0}, {2:0})", targetRegion.Name, targetX % regionSize, targetY % regionSize);
+                    if (!string.IsNullOrEmpty(targetParcelName))
+                    {
+                        label += Environment.NewLine + targetParcelName;
+                    }
                     Print(g, pixTargetX - 8, pixTargetY + 14, label, new SolidBrush(Color.White));
                 }
             }
@@ -468,7 +471,7 @@ namespace Radegast
                 Zoom += 0.25f;
             else
                 Zoom -= 0.25f;
-            
+
             if (ZoomChanged != null)
                 ZoomChanged(this, EventArgs.Empty);
         }
@@ -486,6 +489,34 @@ namespace Radegast
             }
         }
 
+        void GetTargetParcel()
+        {
+            ThreadPool.QueueUserWorkItem(sync =>
+            {
+                UUID parcelID = Client.Parcels.RequestRemoteParcelID(
+                    new Vector3((float)(targetX % regionSize), (float)(targetY % regionSize), 20f),
+                    targetRegion.RegionHandle, UUID.Zero);
+                if (parcelID != UUID.Zero)
+                {
+                    ManualResetEvent done = new ManualResetEvent(false);
+                    EventHandler<ParcelInfoReplyEventArgs> handler = (object sender, ParcelInfoReplyEventArgs e) =>
+                    {
+                        if (e.Parcel.ID == parcelID)
+                        {
+                            targetParcelName = e.Parcel.Name;
+                            done.Set();
+                            SafeInvalidate();
+                        }
+                    };
+                    Client.Parcels.ParcelInfoReply += handler;
+                    Client.Parcels.RequestParcelInfo(parcelID);
+                    done.WaitOne(30 * 1000);
+                    Client.Parcels.ParcelInfoReply -= handler;
+                }
+                int foo = 1;
+            });
+        }
+
         private void MapControl_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -493,6 +524,7 @@ namespace Radegast
                 dragging = false;
                 if (e.X == downX && e.Y == downY) // click
                 {
+                    targetParcelName = null;
                     double ratio = (float)PixRegS / (float)regionSize;
                     targetX = centerX + (double)(e.X - Width / 2) / ratio;
                     targetY = centerY - (double)(e.Y - Height / 2) / ratio;
@@ -503,6 +535,7 @@ namespace Radegast
                     if (regions.ContainsKey(handle))
                     {
                         targetRegion = regions[handle];
+                        GetTargetParcel();
                         if (MapTargetChanged != null)
                         {
                             MapTargetChanged(this, new MapTargetChangedEventArgs(targetRegion, (int)localX, (int)localY));
@@ -601,8 +634,6 @@ namespace Radegast
 
         private void Worker()
         {
-            Logger.DebugLog("Parallel dowloader starting");
-
             while (!done)
             {
                 lock (queue)
@@ -635,8 +666,6 @@ namespace Radegast
 
                 queueHold.WaitOne();
             }
-
-            Logger.DebugLog("Parallel dowloader exiting");
         }
 
         public void QueueDownlad(Uri address, X509Certificate2 clientCert, int millisecondsTimeout,
