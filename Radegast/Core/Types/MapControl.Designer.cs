@@ -38,7 +38,6 @@
             this.Name = "MapControl";
             this.Size = new System.Drawing.Size(589, 409);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.MapControl_Paint);
-            this.Click += new System.EventHandler(this.MapControl_Click);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.MapControl_MouseMove);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MapControl_MouseDown);
             this.Resize += new System.EventHandler(this.MapControl_Resize);
