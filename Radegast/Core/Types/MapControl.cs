@@ -12,11 +12,14 @@ using System.IO;
 using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.Http;
+using OpenMetaverse.Assets;
 
 namespace Radegast
 {
     public partial class MapControl : UserControl
     {
+        public bool UseExternalTiles = false;
+
         RadegastInstance Instance;
         GridClient Client { get { return Instance.Client; } }
         ParallelDownloader downloader;
@@ -45,11 +48,15 @@ namespace Radegast
             textFont = new Font(FontFamily.GenericSansSerif, 8.0f, FontStyle.Bold);
             textBrush = new SolidBrush(Color.FromArgb(255, 200, 200, 200));
             textBackgroudBrush = new SolidBrush(Color.Black);
-            CenterMap(1130, 1071, 128, 128);
+
+            Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
+            RegisterClientEvents();
         }
 
         void MapControl_Disposed(object sender, EventArgs e)
         {
+            UnregisterClientEvents(Client);
+
             downloader.Dispose();
 
             lock (regionTiles)
@@ -59,6 +66,47 @@ namespace Radegast
                         img.Dispose();
                 regionTiles.Clear();
             }
+        }
+
+        void RegisterClientEvents()
+        {
+            Client.Grid.GridItems += new EventHandler<GridItemsEventArgs>(Grid_GridItems);
+            Client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+        }
+
+        void UnregisterClientEvents(GridClient Client)
+        {
+            if (Client == null) return;
+            Client.Grid.GridItems -= new EventHandler<GridItemsEventArgs>(Grid_GridItems);
+            Client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+        }
+
+        Dictionary<ulong, MapItem> regionMapItems = new Dictionary<ulong, MapItem>();
+        Dictionary<ulong, GridRegion> regions = new Dictionary<ulong, GridRegion>();
+
+        void Grid_GridItems(object sender, GridItemsEventArgs e)
+        {
+            foreach (MapItem item in e.Items)
+            {
+                regionMapItems[item.RegionHandle] = item;
+            }
+
+        }
+
+        void Grid_GridRegion(object sender, GridRegionEventArgs e)
+        {
+            regions[e.Region.RegionHandle] = e.Region;
+            if (!UseExternalTiles
+                && e.Region.Access != SimAccess.NonExistent
+                && e.Region.MapImageID != UUID.Zero
+                && !tileRequests.Contains(e.Region.RegionHandle))
+                DownloadRegionTile(e.Region.RegionHandle, e.Region.MapImageID);
+        }
+
+        void Instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents();
         }
 
         public float Zoom
@@ -76,7 +124,21 @@ namespace Radegast
             }
         }
 
-        public void CenterMap(uint regionHandle, uint localX, uint localY)
+        public void SafeInvalidate()
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Invalidate()));
+            }
+            else
+            {
+                if (IsHandleCreated)
+                    Invalidate();
+            }
+        }
+
+        public void CenterMap(ulong regionHandle, uint localX, uint localY)
         {
             uint regionX, regionY;
             Utils.LongToUInts(regionHandle, out regionX, out regionY);
@@ -88,6 +150,7 @@ namespace Radegast
             centerX = (double)regionX * 256 + (double)localX;
             centerY = (double)regionY * 256 + (double)localY;
             centered = true;
+            SafeInvalidate();
         }
 
         public static ulong GlobalPosToRegionHandle(double globalX, double globalY, out float localX, out float localY)
@@ -106,75 +169,100 @@ namespace Radegast
             g.DrawString(text, textFont, textBrush, x, y);
         }
 
-        Dictionary<ulong, string> regionNames = new Dictionary<ulong, string>();
-        Regex regName = new Regex("\"(?<regName>[^\"]+)", RegexOptions.Compiled);
-        List<ulong> nameRequests = new List<ulong>();
-
         string GetRegionName(ulong handle)
         {
-            if (regionNames.ContainsKey(handle))
-            {
-                return regionNames[handle];
-            }
+            if (regions.ContainsKey(handle))
+                return regions[handle].Name;
             else
-            {
-                lock (nameRequests)
-                {
-                    if (nameRequests.Contains(handle)) return RadegastInstance.INCOMPLETE_NAME;
-                    nameRequests.Add(handle);
-                }
-
-                uint regX, regY;
-                Utils.LongToUInts(handle, out regX, out regY);
-                regX /= regionSize;
-                regY /= regionSize;
-                WebClient req = new WebClient();
-                req.DownloadStringCompleted += (object sender, DownloadStringCompletedEventArgs e) =>
-                    {
-                        lock (nameRequests)
-                        {
-                            nameRequests.Remove(handle);
-                        }
-
-                        if (e.Error == null)
-                        {
-                            if (e.Result.Contains("error:"))
-                            {
-                                lock (regionNames)
-                                {
-                                    regionNames[handle] = string.Empty;
-                                    if (IsHandleCreated) BeginInvoke(new MethodInvoker(() => Invalidate()));
-                                }
-                            }
-                            else
-                            {
-                                Match m = regName.Match(e.Result);
-                                if (m.Success)
-                                {
-                                    lock (regionNames)
-                                    {
-                                        regionNames[handle] = m.Groups["regName"].Value;
-                                        if (IsHandleCreated) BeginInvoke(new MethodInvoker(() => Invalidate()));
-                                    }
-                                }
-                            }
-                        }
-                    };
-                req.DownloadStringAsync(new Uri(string.Format("http://slurl.com/get-region-name-by-coords?var=slRegionName&grid_x={0}&grid_y={1}", regX, regY)));
-
-                lock (regionNames)
-                {
-                    regionNames[handle] = RadegastInstance.INCOMPLETE_NAME;
-                }
-
-                return RadegastInstance.INCOMPLETE_NAME;
-            }
+                return string.Empty;
         }
 
         Dictionary<ulong, Image> regionTiles = new Dictionary<ulong, Image>();
         List<ulong> tileRequests = new List<ulong>();
 
+        void DownloadRegionTile(ulong handle, UUID imageID)
+        {
+            lock (tileRequests)
+                if (!tileRequests.Contains(handle))
+                    tileRequests.Add(handle);
+
+            Client.Assets.RequestImage(imageID, (TextureRequestState state, AssetTexture assetTexture) =>
+                {
+                    switch (state)
+                    {
+                        case TextureRequestState.Pending:
+                        case TextureRequestState.Progress:
+                        case TextureRequestState.Started:
+                            return;
+
+                        case TextureRequestState.Finished:
+                            if (assetTexture != null && assetTexture.AssetData != null)
+                            {
+                                Image img;
+                                OpenMetaverse.Imaging.ManagedImage mi;
+                                if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img))
+                                {
+                                    regionTiles[handle] = img;
+                                    SafeInvalidate();
+                                }
+                            }
+                            goto default;
+
+                        default:
+                            lock (tileRequests)
+                                if (!tileRequests.Contains(handle))
+                                    tileRequests.Add(handle);
+                            break;
+                    }
+                }
+            );
+
+            return;
+
+            Uri url = Client.Network.CurrentSim.Caps.CapabilityURI("GetTexture");
+            if (url != null)
+            {
+                downloader.QueueDownlad(
+                    new Uri(string.Format("{0}/?texture_id={1}", url.ToString(), imageID.ToString())),
+                    null,
+                    30 * 1000,
+                    null,
+                    (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
+                    {
+                        Logger.DebugLog(string.Format("{0} - {1}", error, request.RequestUri.ToString()));
+                        if (error == null && responseData != null)
+                        {
+                            try
+                            {
+                                using (MemoryStream s = new MemoryStream(responseData))
+                                {
+                                    lock (regionTiles)
+                                    {
+                                        regionTiles[handle] = Image.FromStream(s);
+                                        SafeInvalidate();
+                                    }
+                                }
+                            }
+                            catch { }
+                            lock (tileRequests)
+                                if (tileRequests.Contains(handle))
+                                    tileRequests.Remove(handle);
+
+                        }
+                    });
+            }
+        }
+
         Image GetRegionTile(ulong handle)
+        {
+            if (regionTiles.ContainsKey(handle))
+            {
+                return regionTiles[handle];
+            }
+            return null;
+        }
+
+        Image GetRegionTileExternal(ulong handle)
         {
             if (regionTiles.ContainsKey(handle))
             {
@@ -209,7 +297,7 @@ namespace Radegast
                                     lock (regionTiles)
                                     {
                                         regionTiles[handle] = Image.FromStream(s);
-                                        if (IsHandleCreated) BeginInvoke(new MethodInvoker(() => Invalidate()));
+                                        SafeInvalidate();
                                     }
                                 }
                             }
@@ -233,15 +321,24 @@ namespace Radegast
             Utils.LongToUInts(handle, out regX, out regY);
             regX /= regionSize;
             regY /= regionSize;
+
             string name = GetRegionName(handle);
-            Image tile = GetRegionTile(handle);
+            Image tile = null;
+
+            if (UseExternalTiles)
+                tile = GetRegionTileExternal(handle);
+            else
+                tile = GetRegionTile(handle);
 
             if (tile != null)
                 g.DrawImage(tile, new Rectangle(x, y - PixRegS, PixRegS, PixRegS));
 
-            //if (!string.IsNullOrEmpty(name))
-            //    Print(g, x + 2, y - 16, name);
+            if (!string.IsNullOrEmpty(name) && zoom < 3f)
+                Print(g, x + 2, y - 16, name);
+
         }
+
+        List<string> requestedBlocks = new List<string>();
 
         private void MapControl_Paint(object sender, PaintEventArgs e)
         {
@@ -267,15 +364,56 @@ namespace Radegast
             if (regLeft < 0) regLeft = 0;
             int regBottom = (int)regY - ((int)((e.ClipRectangle.Height - pixCenterRegionY) / PixRegS) + 1);
             if (regBottom < 0) regBottom = 0;
+            int regXMax = 0, regYMax = 0;
+
+            bool foundMyPos = false;
+            int myRegX = 0, myRegY = 0;
 
             for (int ry = regBottom; pixCenterRegionY - (ry - (int)regY) * PixRegS > 0; ry++)
             {
+                regYMax = ry;
                 for (int rx = regLeft; pixCenterRegionX - ((int)regX - rx) * PixRegS < e.ClipRectangle.Width; rx++)
                 {
+                    regXMax = rx;
+                    int pixX = pixCenterRegionX - ((int)regX - rx) * PixRegS;
+                    int pixY = pixCenterRegionY - (ry - (int)regY) * PixRegS;
+                    ulong handle = Utils.UIntsToLong((uint)rx * regionSize, (uint)ry * regionSize);
+
                     DrawRegion(g,
-                        pixCenterRegionX - ((int)regX - rx) * PixRegS,
-                        pixCenterRegionY - (ry - (int)regY) * PixRegS,
-                        Utils.UIntsToLong((uint)rx * regionSize, (uint)ry * regionSize));
+                        pixX,
+                        pixY,
+                        handle);
+
+                    if (Client.Network.CurrentSim.Handle == handle)
+                    {
+                        foundMyPos = true;
+                        myRegX = pixX;
+                        myRegY = pixY;
+                    }
+
+                }
+            }
+
+            if (foundMyPos)
+            {
+                float ratio = (float)PixRegS / (float)regionSize;
+                int myPosX = (int)(myRegX + Client.Self.SimPosition.X * ratio);
+                int myPosY = (int)(myRegY - Client.Self.SimPosition.Y * ratio);
+
+                Bitmap icn = Properties.Resources.my_map_pos;
+                g.DrawImageUnscaled(icn,
+                    myPosX - icn.Width / 2,
+                    myPosY - icn.Height / 2
+                    );
+            }
+
+            string block = string.Format("{0},{1},{2},{3}", (ushort)regLeft, (ushort)regBottom, (ushort)regXMax, (ushort)regYMax);
+            lock (requestedBlocks)
+            {
+                if (!requestedBlocks.Contains(block))
+                {
+                    requestedBlocks.Add(block);
+                    Client.Grid.RequestMapBlocks(GridLayerType.Objects, (ushort)regLeft, (ushort)regBottom, (ushort)regXMax, (ushort)regYMax, true);
                 }
             }
         }
@@ -420,7 +558,7 @@ namespace Radegast
 
                 queueHold.WaitOne();
             }
-            
+
             Logger.DebugLog("Parallel dowloader exiting");
         }
 

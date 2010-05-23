@@ -575,6 +575,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap my_map_pos {
+            get {
+                object obj = ResourceManager.GetObject("my_map_pos", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap paste_16 {
             get {
                 object obj = ResourceManager.GetObject("paste_16", resourceCulture);
