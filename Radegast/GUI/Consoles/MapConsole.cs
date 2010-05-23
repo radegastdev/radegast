@@ -52,7 +52,7 @@ namespace Radegast
         Regex slscheme = new Regex("^secondlife://(.+)/([0-9]+)/([0-9]+)");
         bool InTeleport = false;
         bool mapCreated = false;
-        Dictionary<string, ulong> regionHandles = new Dictionary<string,ulong>();
+        Dictionary<string, ulong> regionHandles = new Dictionary<string, ulong>();
 
         public MapConsole(RadegastInstance inst)
         {
@@ -112,12 +112,36 @@ namespace Radegast
             if (map == null)
             {
                 mmap = new MapControl(instance);
+                mmap.MapTargetChanged += (object sender, MapTargetChangedEventArgs e) =>
+                {
+                    txtRegion.Text = e.Region.Name;
+                    nudX.Value = e.LocalX;
+                    nudY.Value = e.LocalY;
+                    lblStatus.Text = "Ready for " + e.Region.Name;
+                };
+
+                mmap.ZoomChanged += new EventHandler<EventArgs>(mmap_ZoomChaged);
+
                 if (instance.Netcom.Grid.ID == "secondlife")
                     mmap.UseExternalTiles = true;
                 mmap.Dock = DockStyle.Fill;
                 pnlMap.Controls.Add(mmap);
+                mmap_ZoomChaged(null, null);
+                zoomTracker.Visible = true;
             }
 
+        }
+
+        void mmap_ZoomChaged(object sender, EventArgs e)
+        {
+            int newval = (int)(100f * (mmap.Zoom - mmap.MinZoom) / (mmap.MaxZoom - mmap.MinZoom));
+            if (newval >= zoomTracker.Minimum && newval <= zoomTracker.Maximum)
+                zoomTracker.Value = newval;
+        }
+
+        void mmap_MapTargetChanged(object sender, MapTargetChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         void map_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
@@ -128,7 +152,7 @@ namespace Radegast
             map.ScriptErrorsSuppressed = true;
             map.ObjectForScripting = this;
             map.AllowNavigation = false;
-            
+
             if (instance.MonoRuntime)
             {
                 map.Navigating += new WebBrowserNavigatingEventHandler(map_Navigating);
@@ -262,6 +286,10 @@ namespace Radegast
                     lastTick = Environment.TickCount;
                     InTeleport = false;
                     Network_SimChanged(null, null);
+                    if (mmap != null)
+                    {
+                        mmap.ClearTarget();
+                    }
                     break;
 
                 default:
@@ -293,7 +321,7 @@ namespace Radegast
             }
 
             regionHandles[e.Region.Name] = Utils.UIntsToLong((uint)e.Region.X, (uint)e.Region.Y);
-            
+
         }
         #endregion NetworkEvents
 
@@ -360,7 +388,7 @@ namespace Radegast
             savedY = simY;
 
             if (!Visible) return;
-            
+
             if (mmap != null)
             {
                 if (!regionHandles.ContainsKey(regionName))
@@ -389,7 +417,7 @@ namespace Radegast
                 mmap.CenterMap(regionHandles[regionName], (uint)simX, (uint)simY);
                 return;
             }
-            
+
             if (map == null || map.Document == null) return;
 
             if (instance.MonoRuntime)
@@ -488,7 +516,14 @@ namespace Radegast
             }
         }
 
-        #endregion GUIEvents
+        private void zoomTracker_Scroll(object sender, EventArgs e)
+        {
+            if (mmap != null)
+            {
+                mmap.Zoom = mmap.MinZoom + (mmap.MaxZoom - mmap.MinZoom) * (float)((float)zoomTracker.Value / 100f);
+            }
+        }
 
+        #endregion GUIEvents
     }
 }

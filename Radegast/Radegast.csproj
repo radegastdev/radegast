@@ -1118,6 +1118,7 @@
     <None Include="Resources\mic.png" />
     <None Include="Resources\my_map_pos.png" />
     <Content Include="Resources\radegast_large.png" />
+    <None Include="Resources\target_map_pos.png" />
     <Content Include="worldmap.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

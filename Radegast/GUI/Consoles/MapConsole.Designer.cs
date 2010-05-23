@@ -76,11 +76,13 @@ namespace Radegast
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.pnlMap = new System.Windows.Forms.Panel();
+            this.zoomTracker = new System.Windows.Forms.TrackBar();
             this.pnlSearch.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudZ)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomTracker)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlSearch
@@ -100,6 +102,7 @@ namespace Radegast
             this.pnlSearch.Controls.Add(this.lstRegions);
             this.pnlSearch.Controls.Add(this.btnSearch);
             this.pnlSearch.Controls.Add(this.txtRegion);
+            this.pnlSearch.Controls.Add(this.zoomTracker);
             this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlSearch.Location = new System.Drawing.Point(560, 0);
             this.pnlSearch.Name = "pnlSearch";
@@ -290,6 +293,17 @@ namespace Radegast
             this.pnlMap.Size = new System.Drawing.Size(560, 412);
             this.pnlMap.TabIndex = 1;
             // 
+            // zoomTracker
+            // 
+            this.zoomTracker.Location = new System.Drawing.Point(6, 331);
+            this.zoomTracker.Maximum = 100;
+            this.zoomTracker.Name = "zoomTracker";
+            this.zoomTracker.Size = new System.Drawing.Size(181, 45);
+            this.zoomTracker.TabIndex = 23;
+            this.zoomTracker.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.zoomTracker.Visible = false;
+            this.zoomTracker.Scroll += new System.EventHandler(this.zoomTracker_Scroll);
+            // 
             // MapConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -304,6 +318,7 @@ namespace Radegast
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudZ)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zoomTracker)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -328,6 +343,7 @@ namespace Radegast
         public System.Windows.Forms.Button btnDestination;
         public System.Windows.Forms.Button btnMyPos;
         public System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.TrackBar zoomTracker;
 
     }
 }

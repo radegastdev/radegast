@@ -18,8 +18,6 @@ namespace Radegast
 {
     public partial class MapControl : UserControl
     {
-        public bool UseExternalTiles = false;
-
         RadegastInstance Instance;
         GridClient Client { get { return Instance.Client; } }
         ParallelDownloader downloader;
@@ -30,10 +28,17 @@ namespace Radegast
         Brush textBackgroudBrush;
         uint regionSize = 256;
         float pixelsPerMeter;
-        double centerX;
-        double centerY;
+        double centerX, centerY, targetX, targetY;
+        GridRegion targetRegion, nullRegion;
         bool centered = false;
         int PixRegS;
+        float maxZoom = 6f, minZoom = 0.5f;
+
+        public bool UseExternalTiles = false;
+        public event EventHandler<MapTargetChangedEventArgs> MapTargetChanged;
+        public event EventHandler<EventArgs> ZoomChanged;
+        public float MaxZoom { get { return maxZoom; } }
+        public float MinZoom { get { return minZoom; } }
 
         public MapControl(RadegastInstance instance)
         {
@@ -114,7 +119,7 @@ namespace Radegast
             get { return zoom; }
             set
             {
-                if (value >= 1f && value <= 6f)
+                if (value >= minZoom && value <= maxZoom)
                 {
                     zoom = value;
                     pixelsPerMeter = 1f / zoom;
@@ -122,6 +127,19 @@ namespace Radegast
                     Invalidate();
                 }
             }
+        }
+
+        public void ClearTarget()
+        {
+            targetRegion = nullRegion;
+            targetX = targetY = -5000000000d;
+            SafeInvalidate();
+            ThreadPool.QueueUserWorkItem(sync =>
+                {
+                    Thread.Sleep(500);
+                    SafeInvalidate();
+                }
+            );
         }
 
         public void SafeInvalidate()
@@ -143,6 +161,7 @@ namespace Radegast
             uint regionX, regionY;
             Utils.LongToUInts(regionHandle, out regionX, out regionY);
             CenterMap(regionX, regionY, localX, localY);
+            Logger.DebugLog(string.Format("{0} {1},{2}", regionHandle, localX, localY));
         }
 
         public void CenterMap(uint regionX, uint regionY, uint localX, uint localY)
@@ -162,11 +181,15 @@ namespace Radegast
             return Utils.UIntsToLong(x, y);
         }
 
-
         void Print(Graphics g, float x, float y, string text)
         {
+            Print(g, x, y, text, textBrush);
+        }
+
+        void Print(Graphics g, float x, float y, string text, Brush brush)
+        {
             g.DrawString(text, textFont, textBackgroudBrush, x + 1, y + 1);
-            g.DrawString(text, textFont, textBrush, x, y);
+            g.DrawString(text, textFont, brush, x, y);
         }
 
         string GetRegionName(ulong handle)
@@ -345,7 +368,7 @@ namespace Radegast
             Graphics g = e.Graphics;
             g.Clear(background);
             if (!centered) return;
-            int h = e.ClipRectangle.Height, w = e.ClipRectangle.Width;
+            int h = Height, w = Width;
 
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
@@ -362,7 +385,7 @@ namespace Radegast
 
             int regLeft = (int)regX - ((int)(pixCenterRegionX / PixRegS) + 1);
             if (regLeft < 0) regLeft = 0;
-            int regBottom = (int)regY - ((int)((e.ClipRectangle.Height - pixCenterRegionY) / PixRegS) + 1);
+            int regBottom = (int)regY - ((int)((Height - pixCenterRegionY) / PixRegS) + 1);
             if (regBottom < 0) regBottom = 0;
             int regXMax = 0, regYMax = 0;
 
@@ -372,7 +395,7 @@ namespace Radegast
             for (int ry = regBottom; pixCenterRegionY - (ry - (int)regY) * PixRegS > 0; ry++)
             {
                 regYMax = ry;
-                for (int rx = regLeft; pixCenterRegionX - ((int)regX - rx) * PixRegS < e.ClipRectangle.Width; rx++)
+                for (int rx = regLeft; pixCenterRegionX - ((int)regX - rx) * PixRegS < Width; rx++)
                 {
                     regXMax = rx;
                     int pixX = pixCenterRegionX - ((int)regX - rx) * PixRegS;
@@ -394,9 +417,10 @@ namespace Radegast
                 }
             }
 
+            float ratio = (float)PixRegS / (float)regionSize;
+
             if (foundMyPos)
             {
-                float ratio = (float)PixRegS / (float)regionSize;
                 int myPosX = (int)(myRegX + Client.Self.SimPosition.X * ratio);
                 int myPosY = (int)(myRegY - Client.Self.SimPosition.Y * ratio);
 
@@ -405,6 +429,24 @@ namespace Radegast
                     myPosX - icn.Width / 2,
                     myPosY - icn.Height / 2
                     );
+            }
+
+            int pixTargetX = (int)(Width / 2 + (targetX - centerX) * ratio);
+            int pixTargetY = (int)(Height / 2 - (targetY - centerY) * ratio);
+
+            if (pixTargetX >= 0 && pixTargetY < Width &&
+                pixTargetY >= 0 && pixTargetY < Height)
+            {
+                Bitmap icn = Properties.Resources.target_map_pos;
+                g.DrawImageUnscaled(icn,
+                    pixTargetX - icn.Width / 2,
+                    pixTargetY - icn.Height / 2
+                    );
+                if (!string.IsNullOrEmpty(targetRegion.Name))
+                {
+                    string label = string.Format("{0} ({1:0}, {2:0})", targetRegion.Name, targetX % regionSize, targetY % regionSize);
+                    Print(g, pixTargetX - 8, pixTargetY + 14, label, new SolidBrush(Color.White));
+                }
             }
 
             string block = string.Format("{0},{1},{2},{3}", (ushort)regLeft, (ushort)regBottom, (ushort)regXMax, (ushort)regYMax);
@@ -426,6 +468,9 @@ namespace Radegast
                 Zoom += 0.25f;
             else
                 Zoom -= 0.25f;
+            
+            if (ZoomChanged != null)
+                ZoomChanged(this, EventArgs.Empty);
         }
 
         bool dragging = false;
@@ -448,8 +493,26 @@ namespace Radegast
                 dragging = false;
                 if (e.X == downX && e.Y == downY) // click
                 {
-                    CenterMap(1130, 1071, 128, 128);
-                    Zoom = 1.25f;
+                    double ratio = (float)PixRegS / (float)regionSize;
+                    targetX = centerX + (double)(e.X - Width / 2) / ratio;
+                    targetY = centerY - (double)(e.Y - Height / 2) / ratio;
+                    float localX, localY;
+                    ulong handle = Helpers.GlobalPosToRegionHandle((float)targetX, (float)targetY, out localX, out localY);
+                    uint regX, regY;
+                    Utils.LongToUInts(handle, out regX, out regY);
+                    if (regions.ContainsKey(handle))
+                    {
+                        targetRegion = regions[handle];
+                        if (MapTargetChanged != null)
+                        {
+                            MapTargetChanged(this, new MapTargetChangedEventArgs(targetRegion, (int)localX, (int)localY));
+                        }
+                    }
+                    else
+                    {
+                        targetRegion = new GridRegion();
+                    }
+                    SafeInvalidate();
                 }
             }
 
@@ -472,6 +535,20 @@ namespace Radegast
             Invalidate();
         }
         #endregion Mouse handling
+    }
+
+    public class MapTargetChangedEventArgs : EventArgs
+    {
+        public GridRegion Region;
+        public int LocalX;
+        public int LocalY;
+
+        public MapTargetChangedEventArgs(GridRegion region, int x, int y)
+        {
+            Region = region;
+            LocalX = x;
+            LocalY = y;
+        }
     }
 
     public class ParallelDownloader : IDisposable

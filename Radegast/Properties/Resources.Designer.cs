@@ -700,6 +700,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap target_map_pos {
+            get {
+                object obj = ResourceManager.GetObject("target_map_pos", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to http://update.radegastclient.org/svc/get_latest.
         /// </summary>
