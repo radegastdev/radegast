@@ -123,7 +123,9 @@ namespace Radegast
                 mmap.ZoomChanged += new EventHandler<EventArgs>(mmap_ZoomChaged);
 
                 if (instance.Netcom.Grid.ID == "secondlife")
+                {
                     mmap.UseExternalTiles = true;
+                }
                 mmap.Dock = DockStyle.Fill;
                 pnlMap.Controls.Add(mmap);
                 mmap_ZoomChaged(null, null);

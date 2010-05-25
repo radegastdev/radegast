@@ -105,7 +105,8 @@ namespace Radegast
             if (!UseExternalTiles
                 && e.Region.Access != SimAccess.NonExistent
                 && e.Region.MapImageID != UUID.Zero
-                && !tileRequests.Contains(e.Region.RegionHandle))
+                && !tileRequests.Contains(e.Region.RegionHandle)
+                && !regionTiles.ContainsKey(e.Region.RegionHandle))
                 DownloadRegionTile(e.Region.RegionHandle, e.Region.MapImageID);
         }
 
@@ -125,6 +126,7 @@ namespace Radegast
                     zoom = value;
                     pixelsPerMeter = 1f / zoom;
                     PixRegS = (int)(regionSize / zoom);
+                    Logger.DebugLog("Region tile size = " + PixRegS.ToString());
                     Invalidate();
                 }
             }
@@ -205,11 +207,61 @@ namespace Radegast
 
         void DownloadRegionTile(ulong handle, UUID imageID)
         {
+            if (regionTiles.ContainsKey(handle)) return;
+
             lock (tileRequests)
                 if (!tileRequests.Contains(handle))
                     tileRequests.Add(handle);
 
-            Client.Assets.RequestImage(imageID, (TextureRequestState state, AssetTexture assetTexture) =>
+
+            Uri url = Client.Network.CurrentSim.Caps.CapabilityURI("GetTexture");
+
+            if (url != null)
+            {
+                if (Client.Assets.Cache.HasAsset(imageID))
+                {
+                    Image img;
+                    OpenMetaverse.Imaging.ManagedImage mi;
+                    if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(Client.Assets.Cache.GetCachedAssetBytes(imageID), out mi, out img))
+                    {
+                        regionTiles[handle] = img;
+                        SafeInvalidate();
+                    }
+                    lock (tileRequests)
+                        if (tileRequests.Contains(handle))
+                            tileRequests.Remove(handle);
+                }
+                else
+                {
+                    downloader.QueueDownlad(
+                        new Uri(string.Format("{0}/?texture_id={1}", url.ToString(), imageID.ToString())),
+                        30 * 1000,
+                        "image/x-j2c",
+                        null,
+                        (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
+                        {
+                            if (error == null && responseData != null)
+                            {
+                                Image img;
+                                OpenMetaverse.Imaging.ManagedImage mi;
+                                if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(responseData, out mi, out img))
+                                {
+                                    regionTiles[handle] = img;
+                                    SafeInvalidate();
+                                    Client.Assets.Cache.SaveAssetToCache(imageID, responseData);
+                                }
+                            }
+
+                            lock (tileRequests)
+                                if (tileRequests.Contains(handle))
+                                    tileRequests.Remove(handle);
+
+                        });
+                }
+            }
+            else
+            {
+                Client.Assets.RequestImage(imageID, (TextureRequestState state, AssetTexture assetTexture) =>
                 {
                     switch (state)
                     {
@@ -233,45 +285,11 @@ namespace Radegast
 
                         default:
                             lock (tileRequests)
-                                if (!tileRequests.Contains(handle))
-                                    tileRequests.Add(handle);
-                            break;
-                    }
-                }
-            );
-
-            return;
-
-            Uri url = Client.Network.CurrentSim.Caps.CapabilityURI("GetTexture");
-            if (url != null)
-            {
-                downloader.QueueDownlad(
-                    new Uri(string.Format("{0}/?texture_id={1}", url.ToString(), imageID.ToString())),
-                    null,
-                    30 * 1000,
-                    null,
-                    (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
-                    {
-                        if (error == null && responseData != null)
-                        {
-                            try
-                            {
-                                using (MemoryStream s = new MemoryStream(responseData))
-                                {
-                                    lock (regionTiles)
-                                    {
-                                        regionTiles[handle] = Image.FromStream(s);
-                                        SafeInvalidate();
-                                    }
-                                }
-                            }
-                            catch { }
-                            lock (tileRequests)
                                 if (tileRequests.Contains(handle))
                                     tileRequests.Remove(handle);
-
-                        }
-                    });
+                            break;
+                    }
+                });
             }
         }
 
@@ -305,8 +323,8 @@ namespace Radegast
 
                 downloader.QueueDownlad(
                     new Uri(string.Format("http://map.secondlife.com/map-1-{0}-{1}-objects.jpg", regX, regY)),
-                    null,
                     20 * 1000,
+                    null,
                     null,
                     (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
                     {
@@ -452,13 +470,16 @@ namespace Radegast
                 }
             }
 
-            string block = string.Format("{0},{1},{2},{3}", (ushort)regLeft, (ushort)regBottom, (ushort)regXMax, (ushort)regYMax);
-            lock (requestedBlocks)
+            if (!dragging)
             {
-                if (!requestedBlocks.Contains(block))
+                string block = string.Format("{0},{1},{2},{3}", (ushort)regLeft, (ushort)regBottom, (ushort)regXMax, (ushort)regYMax);
+                lock (requestedBlocks)
                 {
-                    requestedBlocks.Add(block);
-                    Client.Grid.RequestMapBlocks(GridLayerType.Objects, (ushort)regLeft, (ushort)regBottom, (ushort)regXMax, (ushort)regYMax, true);
+                    if (!requestedBlocks.Contains(block))
+                    {
+                        requestedBlocks.Add(block);
+                        Client.Grid.RequestMapBlocks(GridLayerType.Objects, (ushort)regLeft, (ushort)regBottom, (ushort)regXMax, (ushort)regYMax, true);
+                    }
                 }
             }
         }
@@ -513,7 +534,6 @@ namespace Radegast
                     done.WaitOne(30 * 1000);
                     Client.Parcels.ParcelInfoReply -= handler;
                 }
-                int foo = 1;
             });
         }
 
@@ -545,8 +565,8 @@ namespace Radegast
                     {
                         targetRegion = new GridRegion();
                     }
-                    SafeInvalidate();
                 }
+                SafeInvalidate();
             }
 
         }
@@ -587,19 +607,24 @@ namespace Radegast
     public class ParallelDownloader : IDisposable
     {
         Thread worker;
-        int m_ParallelDownloads = 10;
         bool done = false;
         AutoResetEvent queueHold = new AutoResetEvent(false);
         Queue<QueuedItem> queue = new Queue<QueuedItem>();
         List<HttpWebRequest> activeDownloads = new List<HttpWebRequest>();
 
+        int m_ParallelDownloads = 20;
+        X509Certificate2 m_ClientCert;
+
         public int ParallelDownloads
         {
             get { return m_ParallelDownloads; }
-            set
-            {
-                m_ParallelDownloads = value;
-            }
+            set { m_ParallelDownloads = value; }
+        }
+
+        public X509Certificate2 ClientCert
+        {
+            get { return m_ClientCert; }
+            set { m_ClientCert = value; }
         }
 
         public ParallelDownloader()
@@ -610,7 +635,7 @@ namespace Radegast
             worker.Start();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             done = true;
             queueHold.Set();
@@ -632,6 +657,31 @@ namespace Radegast
                 worker.Abort();
         }
 
+        protected virtual HttpWebRequest SetupRequest(Uri address, string acceptHeader)
+        {
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(address);
+            request.Method = "GET";
+
+            if (!string.IsNullOrEmpty(acceptHeader))
+                request.Accept = acceptHeader;
+
+            // Add the client certificate to the request if one was given
+            if (m_ClientCert != null)
+                request.ClientCertificates.Add(m_ClientCert);
+
+            // Leave idle connections to this endpoint open for up to 60 seconds
+            request.ServicePoint.MaxIdleTime = 0;
+            // Disable stupid Expect-100: Continue header
+            request.ServicePoint.Expect100Continue = false;
+            // Crank up the max number of connections per endpoint (default is 2!)
+            request.ServicePoint.ConnectionLimit = 60;
+            // Caps requests are never sent as trickles of data, so Nagle's
+            // coalescing algorithm won't help us
+            request.ServicePoint.UseNagleAlgorithm = false;
+
+            return request;
+        }
+
         private void Worker()
         {
             while (!done)
@@ -646,9 +696,10 @@ namespace Radegast
                         for (int i = nr; i < ParallelDownloads && queue.Count > 0; i++)
                         {
                             QueuedItem item = queue.Dequeue();
-                            HttpWebRequest req = CapsBase.DownloadStringAsync(
-                                item.address,
-                                item.clientCert,
+                            Logger.DebugLog("Requesting " + item.address.ToString());
+                            HttpWebRequest req = SetupRequest(item.address, item.contentType);
+                            CapsBase.DownloadDataAsync(
+                                req,
                                 item.millisecondsTimeout,
                                 item.downloadProgressCallback,
                                 (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
@@ -668,15 +719,17 @@ namespace Radegast
             }
         }
 
-        public void QueueDownlad(Uri address, X509Certificate2 clientCert, int millisecondsTimeout,
-            CapsBase.DownloadProgressEventHandler downloadProgressCallback, CapsBase.RequestCompletedEventHandler completedCallback)
+        public void QueueDownlad(Uri address, int millisecondsTimeout,
+            string contentType,
+            CapsBase.DownloadProgressEventHandler downloadProgressCallback,
+            CapsBase.RequestCompletedEventHandler completedCallback)
         {
             lock (queue)
             {
                 queue.Enqueue(new QueuedItem(
                     address,
-                    clientCert,
                     millisecondsTimeout,
+                    contentType,
                     downloadProgressCallback,
                     completedCallback
                     ));
@@ -687,19 +740,21 @@ namespace Radegast
         public class QueuedItem
         {
             public Uri address;
-            public X509Certificate2 clientCert;
             public int millisecondsTimeout;
             public CapsBase.DownloadProgressEventHandler downloadProgressCallback;
             public CapsBase.RequestCompletedEventHandler completedCallback;
+            public string contentType;
 
-            public QueuedItem(Uri address, X509Certificate2 clientCert, int millisecondsTimeout,
-            CapsBase.DownloadProgressEventHandler downloadProgressCallback, CapsBase.RequestCompletedEventHandler completedCallback)
+            public QueuedItem(Uri address, int millisecondsTimeout,
+                string contentType,
+                CapsBase.DownloadProgressEventHandler downloadProgressCallback,
+                CapsBase.RequestCompletedEventHandler completedCallback)
             {
                 this.address = address;
-                this.clientCert = clientCert;
                 this.millisecondsTimeout = millisecondsTimeout;
                 this.downloadProgressCallback = downloadProgressCallback;
                 this.completedCallback = completedCallback;
+                this.contentType = contentType;
             }
         }
 
