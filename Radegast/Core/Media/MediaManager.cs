@@ -77,6 +77,7 @@ namespace Radegast.Media
             instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
             instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
             instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
+            instance.Client.Objects.ObjectUpdate +=new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
         }
 
         private void CommandLoop()
@@ -319,7 +320,7 @@ namespace Radegast.Media
 
         private void Sound_AttachedSound(object sender, AttachedSoundEventArgs e)
         {
-          
+         
         }
 
         /**
@@ -330,7 +331,42 @@ namespace Radegast.Media
             new BufferSound( e.SoundID );
         }
 
+        private void Objects_ObjectUpdate(object sender, PrimEventArgs e)
+        {
+            // Objects without sounds are not interesting.
+            if (e.Prim.Sound == null) return;
+            if (e.Prim.Sound == UUID.Zero) return;
+           
+            if ((e.Prim.SoundFlags & SoundFlags.Stop) == SoundFlags.Stop)
+            {
+            }
 
+            Vector3 fullPosition = e.Prim.Position;
+            if (e.Prim.ParentID != 0)
+            {
+                Primitive parent;
+                e.Simulator.ObjectsPrimitives.TryGetValue(e.Prim.ParentID, out parent);
+                if (parent == null) return;
+                fullPosition += parent.Position;
+            }
+  
+            // Create a sound object for this.
+            new BufferSound(
+                e.Prim.Sound,
+                (e.Prim.SoundFlags & SoundFlags.Loop) == SoundFlags.Loop,
+                true,
+                Instance.State.GlobalPosition(e.Simulator, fullPosition),
+                e.Prim.SoundGain);
+/*
+        None = 0,
+        Loop = 0x01,
+        SyncMaster = 0x02,
+        SyncSlave = 0x04,
+        SyncPending = 0x08,
+        Queue = 0x10,
+        Stop = 0x20
+*/
+        }
     }
 
     public class PlayingSound

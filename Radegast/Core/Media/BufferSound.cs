@@ -45,6 +45,7 @@ namespace Radegast.Media
         private Boolean prefetchOnly = false;
         private FMOD.MODE mode;
         public Sound Sound { get { return sound; } }
+        private Boolean loopSound = false;
 
         /// <summary>
         /// Creates a new sound object
@@ -53,12 +54,27 @@ namespace Radegast.Media
         public BufferSound( UUID soundId, bool loop, bool global, Vector3 worldpos, float vol )
             :base()
         {
+            InitBuffer(soundId, loop, global, worldpos, vol);
+        }
+
+        public BufferSound(UUID soundId, bool loop, bool global, Vector3d worldpos, float vol)
+            : base()
+        {
+            InitBuffer(soundId, loop, global, new Vector3(worldpos), vol);
+        }
+
+        private void InitBuffer(UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
+        {
+            // Do not let this get garbage-collected.
             allBuffers.AddLast(this);
+
+            Id = soundId;
             position = FromOMVSpace(worldpos);
             volume = vol;
+            loopSound = loop;
 
             // Set flags to determine how it will be played.
-            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D | FMOD.MODE.NONBLOCKING;
+            mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D | FMOD.MODE.NONBLOCKING;
 
             // Set coordinate space interpretation.
             if (global)
@@ -111,11 +127,13 @@ namespace Radegast.Media
 
                 AssetSound s = asset as AssetSound;
                 s.Decode();
+                extraInfo.nonblockcallback = loadCallback;
+                byte[] data = s.AssetData;
 
                 invoke(new SoundDelegate(delegate
                 {
                     FMODExec(system.createSound(
-                        s.AssetData,
+                        data,
                         mode,
                         ref extendedInfo,
                         ref sound));
@@ -123,50 +141,51 @@ namespace Radegast.Media
                     // Register for callbacks.
                     RegisterSound(sound);
 
-//                    if (loop)
-//                        FMODExec(sound.setLoopCount(-1));
+                    if (loopSound)
+                        FMODExec(sound.setLoopCount(-1));
+                    /*                }));
+                                }
+                                else
+                                {
+                                    Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
+                                        Helpers.LogLevel.Error);
+                                }
+                            }
+                            protected override RESULT NonBlockCallbackHandler(RESULT instatus)
+                            {
+                                if (instatus != RESULT.OK)
+                                {
+                                    Logger.Log("Error opening sound: ", Helpers.LogLevel.Error);
+                                    return RESULT.OK;
+                                }
+                    */
+                    try
+                    {
+                        // Allocate a channel and set initial volume.  Initially paused.
+                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                        FMODExec(channel.setVolume(volume));
+
+                        // Take note of when the sound is finished playing.
+                        FMODExec(channel.setCallback(endCallback));
+
+                        // Set attenuation limits.
+                        FMODExec(sound.set3DMinMaxDistance(
+                            1.2f,       // Any closer than this gets no louder
+                            20.0f));     // Further than this gets no softer.
+
+                        // Set the sound point of origin.
+                        FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
+
+                        // Turn off pause mode.  The sound will start playing now.
+                        FMODExec(channel.setPaused(false));
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("Error starting sound: ", Helpers.LogLevel.Debug, ex);
+                    }
                 }));
+                //           return RESULT.OK;
             }
-            else
-            {
-                Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
-                    Helpers.LogLevel.Error);
-            }
-        }
-        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
-        {
-            if (instatus != RESULT.OK)
-            {
-                Logger.Log("Error opening sound: ", Helpers.LogLevel.Error);
-                return RESULT.OK;
-            }
-
-            try
-            {
-                // Allocate a channel and set initial volume.  Initially paused.
-                FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
-                FMODExec(channel.setVolume(volume));
-
-                // Take note of when the sound is finished playing.
-                FMODExec(channel.setCallback(EndCallback));
-
-                // Set attenuation limits.
-                FMODExec(sound.set3DMinMaxDistance(
-                    1.2f,       // Any closer than this gets no louder
-                    20.0f));     // Further than this gets no softer.
-
-                // Set the sound point of origin.
-                FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
-
-                // Turn off pause mode.  The sound will start playing now.
-                FMODExec(channel.setPaused(false));
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Error starting sound: ", Helpers.LogLevel.Debug, ex);
-            }
-
-            return RESULT.OK;
         }
 
         /// <summary>
