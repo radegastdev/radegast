@@ -135,9 +135,7 @@ namespace Radegast.Media
                 byte[] data = s.AssetData;
 
                 // Describe the data to FMOD
-                extraInfo.suggestedsoundtype = SOUND_TYPE.OGGVORBIS;
                 extraInfo.length = (uint)data.Length;
-                extraInfo.numchannels = 1;
                 extraInfo.nonblockcallback = loadCallback;
 
                 invoke(new SoundDelegate(delegate
