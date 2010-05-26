@@ -51,39 +51,37 @@ namespace Radegast.Media
         public delegate void SoundDelegate();
 
         /// Queue of sound commands
-        /// 
-        /// </summary>
+        ///
         protected static Queue<SoundDelegate> queue;
         protected static MediaManager manager;
-        protected static FMOD.CHANNEL_CALLBACK endCallback;
-        protected static FMOD.SOUND_NONBLOCKCALLBACK loadCallback;
         protected static LinkedList<BufferSound> allBuffers;
 
-        /// <summary>
-        /// FMOD channel controller, should not be used directly, add methods to Radegast.Media.Sound
-        /// </summary>
-        public Channel FMODChannel { get { return channel; } }
-        protected Channel channel = null;
-
-        protected FMOD.CREATESOUNDEXINFO extraInfo;
-
-        /// <summary>
-        /// FMOD sound object, should not be used directly, add methods to Radegast.Media.Sound
-        /// </summary>
+        // A SOUND represents the data (buffer or stream)
         public FMOD.Sound FMODSound { get { return sound; } }
         protected FMOD.Sound sound = null;
 
+        // A CHANNEL represents a playback instance of a sound.
+        public Channel FMODChannel { get { return channel; } }
+        protected Channel channel = null;
+
+        // Additional info for callbacks goes here.
+        protected FMOD.CREATESOUNDEXINFO extraInfo;
+        protected static FMOD.CHANNEL_CALLBACK endCallback;
+        protected static FMOD.SOUND_NONBLOCKCALLBACK loadCallback;
+
+        // Vectors used for orienting spatial axes.
         protected static FMOD.VECTOR UpVector;
         protected static FMOD.VECTOR ZeroVector;
 
-        public FMOD.System FMODSystem { get { return system; } }
         /// <summary>
         /// Base FMOD system object, of which there is only one.
         /// </summary>
         protected static FMOD.System system = null;
+        public FMOD.System FMODSystem { get { return system; } }
 
         public MediaObject()
         {
+            // Zero out the extra info structure.
             extraInfo = new FMOD.CREATESOUNDEXINFO();
             extraInfo.cbsize = Marshal.SizeOf(extraInfo);
         }
@@ -121,7 +119,7 @@ namespace Radegast.Media
         }
 
         /// <summary>
-        ///  Common actgions for all sound types.
+        ///  Change a playback volume
         /// </summary>
         protected float volume = 0.5f;
         public float Volume
@@ -229,9 +227,17 @@ namespace Radegast.Media
         /// A callback for asynchronous FMOD calls.
         /// </summary>
         /// <returns></returns>
+
+        // Subclasses override these methods to handle callbacks.
         protected virtual FMOD.RESULT NonBlockCallbackHandler( RESULT result ) { return RESULT.OK; }
         protected virtual FMOD.RESULT EndCallbackHandler() { return RESULT.OK; }
 
+        /// <summary>
+        /// Main handler for sound-loading callback.
+        /// </summary>
+        /// <param name="soundraw"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public RESULT DispatchNonBlockCallback(IntPtr soundraw, RESULT result)
         {
             if (allSounds.ContainsKey(soundraw))
@@ -243,6 +249,14 @@ namespace Radegast.Media
             return FMOD.RESULT.OK;
         }
 
+        /// <summary>
+        /// Main handler for playback-end callback.
+        /// </summary>
+        /// <param name="channelraw"></param>
+        /// <param name="type"></param>
+        /// <param name="commanddata1"></param>
+        /// <param name="commanddata2"></param>
+        /// <returns></returns>
         protected RESULT DispatchEndCallback(
             IntPtr channelraw,
             CHANNEL_CALLBACKTYPE type,

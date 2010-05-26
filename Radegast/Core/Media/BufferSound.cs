@@ -34,13 +34,13 @@ using System.Collections.Generic;
 using FMOD;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
+using System.Threading;
 
 namespace Radegast.Media
 {
 
     public class BufferSound : MediaObject
     {
-        private FMOD.CREATESOUNDEXINFO extendedInfo;
         private UUID Id;
         private Boolean prefetchOnly = false;
         private FMOD.MODE mode;
@@ -74,7 +74,10 @@ namespace Radegast.Media
             loopSound = loop;
 
             // Set flags to determine how it will be played.
-            mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D | FMOD.MODE.NONBLOCKING;
+            mode = FMOD.MODE.SOFTWARE | // Need software processing for all the features
+                FMOD.MODE._3D |         // Need 3D effects for placement
+                FMOD.MODE.OPENMEMORY |  // Use sound data in memory
+                FMOD.MODE.NONBLOCKING;
 
             // Set coordinate space interpretation.
             if (global)
@@ -82,6 +85,7 @@ namespace Radegast.Media
             else
                 mode |= FMOD.MODE._3D_HEADRELATIVE;
 
+            // Fetch the sound data.
             manager.Instance.Client.Assets.RequestAsset(
                 Id,
                 AssetType.Sound,
@@ -125,67 +129,76 @@ namespace Radegast.Media
                     return;
                 }
 
+                // Decode the Ogg Vorbis buffer.
                 AssetSound s = asset as AssetSound;
                 s.Decode();
-                extraInfo.nonblockcallback = loadCallback;
                 byte[] data = s.AssetData;
+
+                // Describe the data to FMOD
+                extraInfo.suggestedsoundtype = SOUND_TYPE.OGGVORBIS;
+                extraInfo.length = (uint)data.Length;
+                extraInfo.numchannels = 1;
+                extraInfo.nonblockcallback = loadCallback;
 
                 invoke(new SoundDelegate(delegate
                 {
-                    FMODExec(system.createSound(
+                    // Create an FMOD sound of this Ogg data.
+                    RESULT status = system.createSound(
                         data,
                         mode,
-                        ref extendedInfo,
-                        ref sound));
+                        ref extraInfo,
+                        ref sound);
 
                     // Register for callbacks.
                     RegisterSound(sound);
 
                     if (loopSound)
-                        FMODExec(sound.setLoopCount(-1));
-                    /*                }));
-                                }
-                                else
-                                {
-                                    Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
+                       FMODExec(sound.setLoopCount(-1));
+                    }));
+            }
+            else
+            {
+                Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
                                         Helpers.LogLevel.Error);
-                                }
-                            }
-                            protected override RESULT NonBlockCallbackHandler(RESULT instatus)
-                            {
-                                if (instatus != RESULT.OK)
-                                {
-                                    Logger.Log("Error opening sound: ", Helpers.LogLevel.Error);
-                                    return RESULT.OK;
-                                }
-                    */
-                    try
-                    {
-                        // Allocate a channel and set initial volume.  Initially paused.
-                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
-                        FMODExec(channel.setVolume(volume));
+            }
+        }
 
-                        // Take note of when the sound is finished playing.
-                        FMODExec(channel.setCallback(endCallback));
+        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
+        {
+            if (instatus != RESULT.OK)
+            {
+                Logger.Log("Error opening sound: " + instatus, Helpers.LogLevel.Error);
+                return RESULT.OK;
+            }
+            
+            try
+            {
+                // Allocate a channel and set initial volume.  Initially paused.
+                uint soundlen = 0;
+                FMODExec( sound.getLength( ref soundlen, TIMEUNIT.MS ));
+                FMODExec( system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                FMODExec( channel.setVolume(volume));
 
-                        // Set attenuation limits.
-                        FMODExec(sound.set3DMinMaxDistance(
+                // Take note of when the sound is finished playing.
+                FMODExec( channel.setCallback(endCallback));
+
+                // Set attenuation limits.
+                FMODExec( sound.set3DMinMaxDistance(
                             1.2f,       // Any closer than this gets no louder
                             20.0f));     // Further than this gets no softer.
 
-                        // Set the sound point of origin.
-                        FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
+                // Set the sound point of origin.
+                FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
 
-                        // Turn off pause mode.  The sound will start playing now.
-                        FMODExec(channel.setPaused(false));
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("Error starting sound: ", Helpers.LogLevel.Debug, ex);
-                    }
-                }));
-                //           return RESULT.OK;
+                // Turn off pause mode.  The sound will start playing now.
+                FMODExec(channel.setPaused(false));
             }
+            catch (Exception ex)
+            {
+                Logger.Log("Error starting sound: ", Helpers.LogLevel.Debug, ex);
+            }
+
+            return RESULT.OK;
         }
 
         /// <summary>
