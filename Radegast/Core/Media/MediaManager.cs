@@ -59,7 +59,7 @@ namespace Radegast.Media
 
             loadCallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
             endCallback = new FMOD.CHANNEL_CALLBACK(DispatchEndCallback);
-            allBuffers = new LinkedList<BufferSound>();
+            allBuffers = new Dictionary<UUID,BufferSound>();
 
             // Start the background thread that does all the FMOD calls.
             soundThread = new Thread(new ThreadStart(CommandLoop));
@@ -253,18 +253,21 @@ namespace Radegast.Media
 
             while (true)
             {
+                // Two updates per second.
                 Thread.Sleep(500);
 
                 if (system == null) continue;
 
                 AgentManager my = Instance.Client.Self;
 
+                Vector3 newPosition = new Vector3(my.GlobalPosition);
+
                 // If we are standing still, nothing to update now, but
                 // FMOD needs a 'tick' anyway for callbacks, etc.  In looping
                 // 'game' programs, the loop is the 'tick'.   Since Radegast
                 // uses events and has no loop, we use this position update
                 // thread to drive the FMOD tick.
-                if (my.SimPosition.Equals(lastpos) &&
+                if (newPosition.Equals(lastpos) &&
                     my.Movement.BodyRotation.W == lastface)
                 {
                     invoke(new SoundDelegate(delegate
@@ -274,7 +277,8 @@ namespace Radegast.Media
                     continue;
                 }
 
-                lastpos = my.SimPosition;
+                // We have moved or turned.  Remember new position.
+                lastpos = newPosition;
                 lastface = my.Movement.BodyRotation.W;
 
                 // Convert coordinate spaces.
@@ -286,9 +290,11 @@ namespace Radegast.Media
                 // By definition, facing.W = Cos( angle/2 )
                 double angle = 2.0 * Math.Acos(my.Movement.BodyRotation.W);
                 FMOD.VECTOR forward = new FMOD.VECTOR();
-                forward.x = (float)Math.Asin(angle);
+                forward.x = (float)Math.Sin(angle);
                 forward.y = 0.0f;
-                forward.z = (float)Math.Acos(angle);
+                forward.z = (float)Math.Cos(angle);
+                int facing = (int)(angle * 180.0 / 3.141592);
+                Logger.Log("Facing "+facing.ToString(), Helpers.LogLevel.Debug);
 
                 // Tell FMOD the new orientation.
                 invoke( new SoundDelegate( delegate
@@ -305,11 +311,17 @@ namespace Radegast.Media
             }
         }
 
-        /**
-         * Handle triggering a sound to play
-         */
+        /// <summary>
+        /// Handle request to play a sound, which might (or mioght not) have been preloaded.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Sound_SoundTrigger(object sender, SoundTriggerEventArgs e)
         {
+            Logger.Log("Trigger sound " + e.SoundID.ToString() +
+                " in object " + e.ObjectID.ToString(),
+                Helpers.LogLevel.Debug);
+
             new BufferSound(
                 e.SoundID,
                 false,
@@ -323,14 +335,26 @@ namespace Radegast.Media
          
         }
 
-        /**
-         * Handle request to preload a sound resource.
-         */
+        
+        /// <summary>
+        /// Handle request to preload a sound for playing later.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Sound_PreloadSound(object sender, PreloadSoundEventArgs e)
         {
+            Logger.Log("Prefetch sound " + e.SoundID.ToString() +
+                " in object " + e.ObjectID.ToString(),
+                Helpers.LogLevel.Debug);
+
             new BufferSound( e.SoundID );
         }
 
+        /// <summary>
+        /// Handle object updates, looking for sound events
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
             // Objects without sounds are not interesting.
@@ -339,7 +363,13 @@ namespace Radegast.Media
            
             if ((e.Prim.SoundFlags & SoundFlags.Stop) == SoundFlags.Stop)
             {
+                BufferSound.Kill(e.Prim.Sound);
+                return;
             }
+
+            Logger.Log("Object sound " + e.Prim.Sound.ToString() +
+                " in object " + e.Prim.ID.ToString(),
+                Helpers.LogLevel.Debug);
 
             Vector3 fullPosition = e.Prim.Position;
             if (e.Prim.ParentID != 0)
@@ -366,18 +396,6 @@ namespace Radegast.Media
         Queue = 0x10,
         Stop = 0x20
 */
-        }
-    }
-
-    public class PlayingSound
-    {
-        private UUID Id;
-        private Vector3 position;
-        private float volume;
-
-        public PlayingSound( UUID soundId )
-        {
-            Id = soundId;
         }
     }
 

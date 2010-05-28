@@ -54,7 +54,8 @@ namespace Radegast.Media
         ///
         protected static Queue<SoundDelegate> queue;
         protected static MediaManager manager;
-        protected static LinkedList<BufferSound> allBuffers;
+        protected static Dictionary<UUID,BufferSound> allBuffers;
+
 
         // A SOUND represents the data (buffer or stream)
         public FMOD.Sound FMODSound { get { return sound; } }

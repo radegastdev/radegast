@@ -66,7 +66,8 @@ namespace Radegast.Media
         private void InitBuffer(UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
         {
             // Do not let this get garbage-collected.
-            allBuffers.AddLast(this);
+            lock (allBuffers)
+                allBuffers.Add(soundId,this);
 
             Id = soundId;
             position = FromOMVSpace(worldpos);
@@ -93,10 +94,20 @@ namespace Radegast.Media
                 new AssetManager.AssetReceivedCallback(Assets_OnSoundReceived));
         }
 
+        public static void Kill( UUID id )
+        {
+            if (allBuffers.ContainsKey(id))
+            {
+                BufferSound bs = allBuffers[id];
+                bs.StopSound();
+            }
+        }
+
         public BufferSound( UUID soundId )
             : base()
         {
-            allBuffers.AddLast(this);
+            lock (allBuffers)
+                allBuffers.Add(soundId,this);
             prefetchOnly = true;
             Id = soundId;
 
@@ -125,9 +136,11 @@ namespace Radegast.Media
                 // If this was a Prefetch, just stop here.
                 if (prefetchOnly)
                 {
-                    allBuffers.Remove(this);
+                    allBuffers.Remove(Id);
                     return;
                 }
+
+                Logger.Log("Opening sound " + Id.ToString(), Helpers.LogLevel.Debug);
 
                 // Decode the Ogg Vorbis buffer.
                 AssetSound s = asset as AssetSound;
@@ -185,7 +198,7 @@ namespace Radegast.Media
                             1.2f,       // Any closer than this gets no louder
                             20.0f));     // Further than this gets no softer.
 
-                // Set the sound point of origin.
+                // Set the sound point of origin.  This is in GLOBAL coordinates.
                 FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
 
                 // Turn off pause mode.  The sound will start playing now.
@@ -193,7 +206,7 @@ namespace Radegast.Media
             }
             catch (Exception ex)
             {
-                Logger.Log("Error starting sound: ", Helpers.LogLevel.Debug, ex);
+                Logger.Log("Error starting sound: ", Helpers.LogLevel.Error, ex);
             }
 
             return RESULT.OK;
@@ -216,8 +229,21 @@ namespace Radegast.Media
             // Ignore other callback types.
             if (type != CHANNEL_CALLBACKTYPE.END) return RESULT.OK;
 
-            // Release the buffer to avoid a big memory leak.
+            StopSound();
 
+            return RESULT.OK;
+        }
+
+        protected void StopSound()
+        {
+            Logger.Log("Removing sound " + Id.ToString(), Helpers.LogLevel.Debug);
+
+            // Release the buffer to avoid a big memory leak.
+            if (channel != null)
+            {
+                channel.stop();
+                channel = null;
+            }
             if (sound != null)
             {
                 sound.release();
@@ -225,9 +251,8 @@ namespace Radegast.Media
             }
             channel = null;
 
-            allBuffers.Remove(this);
-
-            return RESULT.OK;
+            lock (allBuffers)
+                allBuffers.Remove(Id);
         }
 
     }
