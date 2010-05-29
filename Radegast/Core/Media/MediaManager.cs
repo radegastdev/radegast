@@ -74,10 +74,12 @@ namespace Radegast.Media
             listenerThread.Start();
 
             // Subscribe to events about inworld sounds
+            instance.Client.Objects.ObjectPropertiesUpdated +=new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
             instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
             instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
             instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
             instance.Client.Objects.ObjectUpdate +=new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
         }
 
         private void CommandLoop()
@@ -260,15 +262,15 @@ namespace Radegast.Media
 
                 AgentManager my = Instance.Client.Self;
 
-                Vector3 newPosition = new Vector3(my.GlobalPosition);
+                Vector3 newPosition = new Vector3(my.SimPosition);
 
                 // If we are standing still, nothing to update now, but
                 // FMOD needs a 'tick' anyway for callbacks, etc.  In looping
                 // 'game' programs, the loop is the 'tick'.   Since Radegast
                 // uses events and has no loop, we use this position update
                 // thread to drive the FMOD tick.
-                if (newPosition.Equals(lastpos) &&
-                    my.Movement.BodyRotation.W == lastface)
+                if (newPosition.ApproxEquals(lastpos, 0.5f) &&
+                    Math.Abs(my.Movement.BodyRotation.W - lastface) < 0.2)
                 {
                     invoke(new SoundDelegate(delegate
                     {
@@ -282,7 +284,7 @@ namespace Radegast.Media
                 lastface = my.Movement.BodyRotation.W;
 
                 // Convert coordinate spaces.
-                FMOD.VECTOR listenerpos = FromOMVSpace(my.SimPosition);
+                FMOD.VECTOR listenerpos = FromOMVSpace(newPosition);
 
                 // Get azimuth from the facing Quaternion.  Note we assume the
                 // avatar is standing upright.  Avatars in unusual positions
@@ -318,6 +320,8 @@ namespace Radegast.Media
         /// <param name="e"></param>
         private void Sound_SoundTrigger(object sender, SoundTriggerEventArgs e)
         {
+            if (e.SoundID == UUID.Zero) return;
+
             Logger.Log("Trigger sound " + e.SoundID.ToString() +
                 " in object " + e.ObjectID.ToString(),
                 Helpers.LogLevel.Debug);
@@ -330,9 +334,47 @@ namespace Radegast.Media
                 e.Gain);
         }
 
+        /// <summary>
+        /// Handle sound attached to an object
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Sound_AttachedSound(object sender, AttachedSoundEventArgs e)
         {
-         
+            // We seem to get a lot of these zero sounds.
+            if (e.SoundID == UUID.Zero) return;
+
+            if ((e.Flags & SoundFlags.Stop) == SoundFlags.Stop)
+            {
+                BufferSound.Kill(e.SoundID);
+                return;
+            }
+
+            // This event tells us the Object ID, but not the Prim info directly.
+            // So we look it up in our internal Object memory.
+            Simulator sim = Instance.Client.Network.CurrentSim;
+            Primitive p = sim.ObjectsPrimitives.Find((Primitive p2) => { return p2.ID == e.ObjectID; });
+            if (p==null) return;
+
+            // If this is a child prim, its position is relative to the root.
+            Vector3 fullPosition = p.Position;
+            if (p.ParentID != 0)
+            {
+                Primitive parentP;
+                sim.ObjectsPrimitives.TryGetValue(p.ParentID, out parentP);
+                if (parentP == null) return;
+                fullPosition += parentP.Position;
+            }
+
+            Logger.Log("Attached sound " + e.SoundID.ToString(),
+                Helpers.LogLevel.Debug);
+
+            new BufferSound(
+                e.SoundID,
+                (e.Flags & SoundFlags.Loop) == SoundFlags.Loop,
+                true,
+                fullPosition,
+                e.Gain);
         }
 
         
@@ -343,6 +385,8 @@ namespace Radegast.Media
         /// <param name="e"></param>
         private void Sound_PreloadSound(object sender, PreloadSoundEventArgs e)
         {
+            if (e.SoundID == UUID.Zero) return;
+
             Logger.Log("Prefetch sound " + e.SoundID.ToString() +
                 " in object " + e.ObjectID.ToString(),
                 Helpers.LogLevel.Debug);
@@ -350,52 +394,75 @@ namespace Radegast.Media
             new BufferSound( e.SoundID );
         }
 
-        /// <summary>
+        private void Objects_ObjectPropertiesUpdated(object sender, ObjectPropertiesUpdatedEventArgs e)
+        {
+            HandleObjectSound(e.Prim, e.Simulator );
+        }
+     
+     /// <summary>
         /// Handle object updates, looking for sound events
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
+            HandleObjectSound(e.Prim, e.Simulator );
+        }
+
+        /// <summary>
+        /// Handle deletion of a noise-making object
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Objects_KillObject(object sender, KillObjectEventArgs e)
+        {
+            Primitive p = null;
+            if (!e.Simulator.ObjectsPrimitives.TryGetValue(e.ObjectLocalID, out  p)) return;
+
             // Objects without sounds are not interesting.
-            if (e.Prim.Sound == null) return;
-            if (e.Prim.Sound == UUID.Zero) return;
+            if (p.Sound == null) return;
+            if (p.Sound == UUID.Zero) return;
+
+            BufferSound.Kill(p.Sound);
+        }
+
+        /// <summary>
+        /// Command object sound processing for various Update events
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="s"></param>
+        private void HandleObjectSound(Primitive p, Simulator s)
+        {
+            // Objects without sounds are not interesting.
+            if (p.Sound == null) return;
+            if (p.Sound == UUID.Zero) return;
            
-            if ((e.Prim.SoundFlags & SoundFlags.Stop) == SoundFlags.Stop)
+            if ((p.SoundFlags & SoundFlags.Stop) == SoundFlags.Stop)
             {
-                BufferSound.Kill(e.Prim.Sound);
+                BufferSound.Kill(p.Sound);
                 return;
             }
 
-            Logger.Log("Object sound " + e.Prim.Sound.ToString() +
-                " in object " + e.Prim.ID.ToString(),
+            Logger.Log("Object sound " + p.Sound.ToString() +
+                " in object " + p.ID.ToString(),
                 Helpers.LogLevel.Debug);
 
-            Vector3 fullPosition = e.Prim.Position;
-            if (e.Prim.ParentID != 0)
+            // If this is a child prim, its position is relative to the root prim.
+            Vector3 fullPosition = p.Position;
+            if (p.ParentID != 0)
             {
-                Primitive parent;
-                e.Simulator.ObjectsPrimitives.TryGetValue(e.Prim.ParentID, out parent);
-                if (parent == null) return;
-                fullPosition += parent.Position;
+                Primitive parentP;
+                if (!s.ObjectsPrimitives.TryGetValue(p.ParentID, out parentP)) return;
+                fullPosition += parentP.Position;
             }
   
             // Create a sound object for this.
             new BufferSound(
-                e.Prim.Sound,
-                (e.Prim.SoundFlags & SoundFlags.Loop) == SoundFlags.Loop,
+                p.Sound,
+                (p.SoundFlags & SoundFlags.Loop) == SoundFlags.Loop,
                 true,
-                Instance.State.GlobalPosition(e.Simulator, fullPosition),
-                e.Prim.SoundGain);
-/*
-        None = 0,
-        Loop = 0x01,
-        SyncMaster = 0x02,
-        SyncSlave = 0x04,
-        SyncPending = 0x08,
-        Queue = 0x10,
-        Stop = 0x20
-*/
+                fullPosition, //Instance.State.GlobalPosition(e.Simulator, fullPosition),
+                p.SoundGain);
         }
     }
 

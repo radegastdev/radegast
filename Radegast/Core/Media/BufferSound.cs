@@ -67,7 +67,7 @@ namespace Radegast.Media
         {
             // Do not let this get garbage-collected.
             lock (allBuffers)
-                allBuffers.Add(soundId,this);
+                allBuffers[soundId] =this;
 
             Id = soundId;
             position = FromOMVSpace(worldpos);
@@ -103,11 +103,13 @@ namespace Radegast.Media
             }
         }
 
+        // A simpler constructor used by PreFetchSound.
         public BufferSound( UUID soundId )
             : base()
         {
             lock (allBuffers)
-                allBuffers.Add(soundId,this);
+                allBuffers[soundId] = this;
+
             prefetchOnly = true;
             Id = soundId;
 
@@ -136,7 +138,8 @@ namespace Radegast.Media
                 // If this was a Prefetch, just stop here.
                 if (prefetchOnly)
                 {
-                    allBuffers.Remove(Id);
+                    lock (allBuffers)
+                        allBuffers.Remove(Id);
                     return;
                 }
 
@@ -181,33 +184,36 @@ namespace Radegast.Media
                 Logger.Log("Error opening sound: " + instatus, Helpers.LogLevel.Error);
                 return RESULT.OK;
             }
-            
-            try
+
+            invoke(new SoundDelegate(delegate
             {
-                // Allocate a channel and set initial volume.  Initially paused.
-                uint soundlen = 0;
-                FMODExec( sound.getLength( ref soundlen, TIMEUNIT.MS ));
-                FMODExec( system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
-                FMODExec( channel.setVolume(volume));
+                try
+                {
+                    // Allocate a channel and set initial volume.  Initially paused.
+                    uint soundlen = 0;
+                    FMODExec(sound.getLength(ref soundlen, TIMEUNIT.MS));
+                    FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                    FMODExec(channel.setVolume(volume));
 
-                // Take note of when the sound is finished playing.
-                FMODExec( channel.setCallback(endCallback));
+                    // Take note of when the sound is finished playing.
+                    FMODExec(channel.setCallback(endCallback));
 
-                // Set attenuation limits.
-                FMODExec( sound.set3DMinMaxDistance(
-                            1.2f,       // Any closer than this gets no louder
-                            20.0f));     // Further than this gets no softer.
+                    // Set attenuation limits.
+                    FMODExec(sound.set3DMinMaxDistance(
+                                1.2f,       // Any closer than this gets no louder
+                                100.0f));     // Further than this gets no softer.
 
-                // Set the sound point of origin.  This is in GLOBAL coordinates.
-                FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
+                    // Set the sound point of origin.  This is in GLOBAL coordinates.
+                    FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
 
-                // Turn off pause mode.  The sound will start playing now.
-                FMODExec(channel.setPaused(false));
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Error starting sound: ", Helpers.LogLevel.Error, ex);
-            }
+                    // Turn off pause mode.  The sound will start playing now.
+                    FMODExec(channel.setPaused(false));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Error starting sound: ", Helpers.LogLevel.Error, ex);
+                }
+            }));
 
             return RESULT.OK;
         }
