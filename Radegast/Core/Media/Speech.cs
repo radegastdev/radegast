@@ -75,9 +75,9 @@ namespace Radegast.Media
         }
 
         /// <summary>
-        /// Plays audio stream
+        /// Plays audio from a file, as created by an external speech synthesizer.
         /// </summary>
-        /// <param name="filename">Name of a WAV file created by the synthesizer</param>
+        /// <param name="filename">Name of a WAV file</param>
         public void Play(string speakfile, bool global, Vector3 pos)
         {
             speakerPos = pos;

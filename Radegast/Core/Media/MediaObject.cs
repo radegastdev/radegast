@@ -180,8 +180,8 @@ namespace Radegast.Media
         /// <returns></returns>
         protected FMOD.VECTOR FromOMVSpace(OpenMetaverse.Vector3 omvV)
         {
-            // OMV  X is forward, Y is left, Z is up.
-            // FMOD Z is forward, X is right, Y is up.
+            // OMV  X is forward/East, Y is left/North, Z is up.
+            // FMOD Z is forward/East, X is right/South, Y is up.
             FMOD.VECTOR v = new FMOD.VECTOR();
             v.x = -omvV.Y;
             v.y = omvV.Z;

@@ -256,6 +256,7 @@ namespace Radegast.Media
         /// </summary>
         private void ListenerUpdate()
         {
+            // Notice changes in position or direction.
             Vector3 lastpos = new Vector3(0.0f, 0.0f, 0.0f );
             float lastface = 0.0f;
 
@@ -267,14 +268,15 @@ namespace Radegast.Media
                 if (system == null) continue;
 
                 AgentManager my = Instance.Client.Self;
-
                 Vector3 newPosition = new Vector3(my.SimPosition);
 
                 // If we are standing still, nothing to update now, but
                 // FMOD needs a 'tick' anyway for callbacks, etc.  In looping
                 // 'game' programs, the loop is the 'tick'.   Since Radegast
                 // uses events and has no loop, we use this position update
-                // thread to drive the FMOD tick.
+                // thread to drive the FMOD tick.  Have to move more than
+                // 500mm or turn more than 10 desgrees to bother with.
+                //
                 if (newPosition.ApproxEquals(lastpos, 0.5f) &&
                     Math.Abs(my.Movement.BodyRotation.W - lastface) < 0.2)
                 {
@@ -296,11 +298,15 @@ namespace Radegast.Media
                 // avatar is standing upright.  Avatars in unusual positions
                 // hear things from unpredictable directions.
                 // By definition, facing.W = Cos( angle/2 )
+                // With angle=0 meaning East.
                 double angle = 2.0 * Math.Acos(my.Movement.BodyRotation.W);
+
+                // Construct facing unit vector in FMOD coordinates.
                 FMOD.VECTOR forward = new FMOD.VECTOR();
-                forward.x = (float)Math.Sin(angle);
+                forward.x = (float)Math.Sin(-angle); // South
                 forward.y = 0.0f;
-                forward.z = (float)Math.Cos(angle);
+                forward.z = (float)Math.Cos(angle); // East
+
                 int facing = (int)(angle * 180.0 / 3.141592);
                 Logger.Log("Facing "+facing.ToString(), Helpers.LogLevel.Debug);
 
