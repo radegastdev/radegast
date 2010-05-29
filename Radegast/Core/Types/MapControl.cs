@@ -29,10 +29,11 @@ namespace Radegast
         uint regionSize = 256;
         float pixelsPerMeter;
         double centerX, centerY, targetX, targetY;
+        #pragma warning disable 0649
         GridRegion targetRegion, nullRegion;
         bool centered = false;
         int PixRegS;
-        float maxZoom = 6f, minZoom = 0.5f;
+        float maxZoom = 8f, minZoom = 0.5f;
         string targetParcelName = null;
 
         public bool UseExternalTiles = false;
@@ -78,13 +79,21 @@ namespace Radegast
         {
             Client.Grid.GridItems += new EventHandler<GridItemsEventArgs>(Grid_GridItems);
             Client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+            Client.Grid.GridLayer += new EventHandler<GridLayerEventArgs>(Grid_GridLayer);
         }
+
 
         void UnregisterClientEvents(GridClient Client)
         {
             if (Client == null) return;
             Client.Grid.GridItems -= new EventHandler<GridItemsEventArgs>(Grid_GridItems);
             Client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+            Client.Grid.GridLayer -= new EventHandler<GridLayerEventArgs>(Grid_GridLayer);
+        }
+
+        void Grid_GridLayer(object sender, GridLayerEventArgs e)
+        {
+            // int foo = 1;
         }
 
         Dictionary<ulong, MapItem> regionMapItems = new Dictionary<ulong, MapItem>();
@@ -320,9 +329,10 @@ namespace Radegast
                 Utils.LongToUInts(handle, out regX, out regY);
                 regX /= regionSize;
                 regY /= regionSize;
+                int zoom = 1;
 
                 downloader.QueueDownlad(
-                    new Uri(string.Format("http://map.secondlife.com/map-1-{0}-{1}-objects.jpg", regX, regY)),
+                    new Uri(string.Format("http://map.secondlife.com/map-{0}-{1}-{2}-objects.jpg", zoom, regX, regY)),
                     20 * 1000,
                     null,
                     null,
@@ -355,6 +365,8 @@ namespace Radegast
             }
         }
 
+        Dictionary<string, Image> smallerTiles = new Dictionary<string, Image>();
+
         void DrawRegion(Graphics g, int x, int y, ulong handle)
         {
             uint regX, regY;
@@ -371,7 +383,31 @@ namespace Radegast
                 tile = GetRegionTile(handle);
 
             if (tile != null)
+            {
+                int targetSize = 256;
+                for (targetSize = 128; targetSize > PixRegS; targetSize /= 2);
+                targetSize *= 2;
+                if (targetSize != 256)
+                {
+                    string id = string.Format("{0},{1}", handle, targetSize);
+                    if (smallerTiles.ContainsKey(id))
+                    {
+                        tile = smallerTiles[id];
+                    }
+                    else
+                    {
+                        Bitmap smallTile = new Bitmap(targetSize, targetSize);
+                        using (Graphics resizer = Graphics.FromImage((Image)smallTile))
+                        {
+                            resizer.DrawImage(tile, 0, 0, targetSize, targetSize);
+                        }
+                        tile = (Image)smallTile;
+                        smallerTiles[id] = tile;
+                    }
+                }
+
                 g.DrawImage(tile, new Rectangle(x, y - PixRegS, PixRegS, PixRegS));
+            }
 
             if (!string.IsNullOrEmpty(name) && zoom < 3f)
                 Print(g, x + 2, y - 16, name);
@@ -388,6 +424,7 @@ namespace Radegast
             int h = Height, w = Width;
 
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            //Client.Grid.RequestMapLayer(GridLayerType.Objects);
 
 
             float localX, localY;
@@ -419,6 +456,7 @@ namespace Radegast
                     int pixY = pixCenterRegionY - (ry - (int)regY) * PixRegS;
                     ulong handle = Utils.UIntsToLong((uint)rx * regionSize, (uint)ry * regionSize);
 
+                    //Client.Grid.RequestMapItems(handle, OpenMetaverse.GridItemType.AgentLocations, GridLayerType.Objects);
                     DrawRegion(g,
                         pixX,
                         pixY,
@@ -606,13 +644,10 @@ namespace Radegast
 
     public class ParallelDownloader : IDisposable
     {
-        Thread worker;
-        bool done = false;
-        AutoResetEvent queueHold = new AutoResetEvent(false);
         Queue<QueuedItem> queue = new Queue<QueuedItem>();
         List<HttpWebRequest> activeDownloads = new List<HttpWebRequest>();
 
-        int m_ParallelDownloads = 20;
+        int m_ParallelDownloads = 15;
         X509Certificate2 m_ClientCert;
 
         public int ParallelDownloads
@@ -629,18 +664,10 @@ namespace Radegast
 
         public ParallelDownloader()
         {
-            worker = new Thread(new ThreadStart(Worker));
-            worker.Name = "Parallel Downloader";
-            worker.IsBackground = true;
-            worker.Start();
         }
 
         public virtual void Dispose()
         {
-            done = true;
-            queueHold.Set();
-            queue.Clear();
-
             lock (activeDownloads)
             {
                 for (int i = 0; i < activeDownloads.Count; i++)
@@ -652,9 +679,6 @@ namespace Radegast
                     catch { }
                 }
             }
-
-            if (worker.IsAlive)
-                worker.Abort();
         }
 
         protected virtual HttpWebRequest SetupRequest(Uri address, string acceptHeader)
@@ -674,7 +698,7 @@ namespace Radegast
             // Disable stupid Expect-100: Continue header
             request.ServicePoint.Expect100Continue = false;
             // Crank up the max number of connections per endpoint (default is 2!)
-            request.ServicePoint.ConnectionLimit = 60;
+            request.ServicePoint.ConnectionLimit = 30;
             // Caps requests are never sent as trickles of data, so Nagle's
             // coalescing algorithm won't help us
             request.ServicePoint.UseNagleAlgorithm = false;
@@ -682,40 +706,35 @@ namespace Radegast
             return request;
         }
 
-        private void Worker()
+        private void EnqueuePending()
         {
-            while (!done)
+            lock (queue)
             {
-                lock (queue)
+                if (queue.Count > 0)
                 {
-                    if (queue.Count > 0)
+                    int nr = 0;
+                    lock (activeDownloads) nr = activeDownloads.Count;
+
+                    for (int i = nr; i < ParallelDownloads && queue.Count > 0; i++)
                     {
-                        int nr = 0;
-                        lock (activeDownloads) nr = activeDownloads.Count;
+                        QueuedItem item = queue.Dequeue();
+                        Logger.DebugLog("Requesting " + item.address.ToString());
+                        HttpWebRequest req = SetupRequest(item.address, item.contentType);
+                        CapsBase.DownloadDataAsync(
+                            req,
+                            item.millisecondsTimeout,
+                            item.downloadProgressCallback,
+                            (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
+                            {
+                                lock (activeDownloads) activeDownloads.Remove(request);
+                                item.completedCallback(request, response, responseData, error);
+                                EnqueuePending();
+                            }
+                        );
 
-                        for (int i = nr; i < ParallelDownloads && queue.Count > 0; i++)
-                        {
-                            QueuedItem item = queue.Dequeue();
-                            Logger.DebugLog("Requesting " + item.address.ToString());
-                            HttpWebRequest req = SetupRequest(item.address, item.contentType);
-                            CapsBase.DownloadDataAsync(
-                                req,
-                                item.millisecondsTimeout,
-                                item.downloadProgressCallback,
-                                (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
-                                {
-                                    lock (activeDownloads) activeDownloads.Remove(request);
-                                    item.completedCallback(request, response, responseData, error);
-                                    queueHold.Set();
-                                }
-                            );
-
-                            lock (activeDownloads) activeDownloads.Add(req);
-                        }
+                        lock (activeDownloads) activeDownloads.Add(req);
                     }
                 }
-
-                queueHold.WaitOne();
             }
         }
 
@@ -734,7 +753,7 @@ namespace Radegast
                     completedCallback
                     ));
             }
-            queueHold.Set();
+            EnqueuePending();
         }
 
         public class QueuedItem
