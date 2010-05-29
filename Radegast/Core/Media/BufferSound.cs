@@ -103,6 +103,21 @@ namespace Radegast.Media
             }
         }
 
+        /// <summary>
+        /// Stop all playing sounds in the environment
+        /// </summary>
+        public static void KillAll()
+        {
+            // Make a list from the dictionary so we do not get a deadlock
+            // on it when removing entries.
+            List<BufferSound> list = new List<BufferSound>(allBuffers.Values);
+
+            foreach (BufferSound s in list)
+            {
+                s.StopSound();
+            }
+        }
+
         // A simpler constructor used by PreFetchSound.
         public BufferSound( UUID soundId )
             : base()
@@ -165,9 +180,6 @@ namespace Radegast.Media
 
                     // Register for callbacks.
                     RegisterSound(sound);
-
-                    if (loopSound)
-                       FMODExec(sound.setLoopCount(-1));
                     }));
             }
             else
@@ -189,9 +201,16 @@ namespace Radegast.Media
             {
                 try
                 {
+                    // If looping is requested, loop the entire thing.
+                    if (loopSound)
+                    {
+                        uint soundlen = 0;
+                        FMODExec(sound.getLength(ref soundlen, TIMEUNIT.PCM));
+                        FMODExec( sound.setLoopPoints( 0, TIMEUNIT.PCM, soundlen-1, TIMEUNIT.PCM ));
+                        FMODExec(sound.setLoopCount(-1));
+                    }
+
                     // Allocate a channel and set initial volume.  Initially paused.
-                    uint soundlen = 0;
-                    FMODExec(sound.getLength(ref soundlen, TIMEUNIT.MS));
                     FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
                     FMODExec(channel.setVolume(volume));
 

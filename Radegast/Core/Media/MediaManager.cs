@@ -74,18 +74,23 @@ namespace Radegast.Media
             listenerThread.Start();
 
             // Subscribe to events about inworld sounds
-            instance.Client.Objects.ObjectPropertiesUpdated +=new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
             instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
             instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
             instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
             instance.Client.Objects.ObjectUpdate +=new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            instance.Client.Objects.ObjectPropertiesUpdated += new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
             instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
         }
 
+        /// <summary>
+        /// Thread that processes FMOD calls.
+        /// </summary>
         private void CommandLoop()
         {
             SoundDelegate action = null;
 
+            // Initialze a bunch of static values
             UpVector.x = 0.0f;
             UpVector.y = 1.0f;
             UpVector.z = 0.0f;
@@ -96,6 +101,7 @@ namespace Radegast.Media
             allSounds = new Dictionary<IntPtr,MediaObject>();
             allChannels = new Dictionary<IntPtr, MediaObject>();
 
+            // Initialize the FMOD sound package
             InitFMOD();
             if (!this.soundSystemAvailable) return;
 
@@ -464,6 +470,18 @@ namespace Radegast.Media
                 fullPosition, //Instance.State.GlobalPosition(e.Simulator, fullPosition),
                 p.SoundGain);
         }
+
+        /// <summary>
+        /// Watch for Teleports to cancel all the old sounds
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void Network_SimChanged(object sender, SimChangedEventArgs e)
+        {
+            BufferSound.KillAll();
+        }
+
+
     }
 
     public class MediaException : Exception
