@@ -212,7 +212,7 @@ namespace Radegast.Media
 
                     // Allocate a channel and set initial volume.  Initially paused.
                     FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
-                    FMODExec(channel.setVolume(volume));
+                    FMODExec(channel.setVolume(volume * m_objectVolume ));
 
                     // Take note of when the sound is finished playing.
                     FMODExec(channel.setCallback(endCallback));

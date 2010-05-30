@@ -78,6 +78,9 @@ namespace Radegast
             lblStation.Tag = lblStation.Text = string.Empty;
             lblStation.Click += new EventHandler(lblStation_Click);
 
+            ObjVolume.Scroll += new EventHandler(volObject_Scroll);
+            ObjSoundEnable.CheckedChanged += new EventHandler(cbObjEnableChanged);
+
             // Network callbacks
             client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
         }
@@ -207,6 +210,18 @@ namespace Radegast
             lock (parcelMusicLock)
                 if (parcelStream != null)
                     parcelStream.Volume = volAudioStream.Value/50f;
+        }
+
+        private void volObject_Scroll(object sender, EventArgs e)
+        {
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
+            instance.MediaManager.ObjectVolume = ObjVolume.Value / 50f;
+        }
+
+        void cbObjEnableChanged(object sender, EventArgs e)
+        {
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
+            instance.MediaManager.ObjectEnable = ObjSoundEnable.Checked;
         }
 
         private void txtAudioURL_TextChanged(object sender, EventArgs e)

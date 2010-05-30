@@ -73,14 +73,7 @@ namespace Radegast.Media
             listenerThread.Name = "ListenerThread";
             listenerThread.Start();
 
-            // Subscribe to events about inworld sounds
-            instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
-            instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
-            instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
-            instance.Client.Objects.ObjectUpdate +=new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            instance.Client.Objects.ObjectPropertiesUpdated += new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
-            instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-            instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            ObjectEnable = true;
         }
 
         /// <summary>
@@ -343,7 +336,7 @@ namespace Radegast.Media
                 false,
                 true,
                 e.Position,
-                e.Gain);
+                e.Gain * ObjectVolume);
         }
 
         /// <summary>
@@ -386,7 +379,7 @@ namespace Radegast.Media
                 (e.Flags & SoundFlags.Loop) == SoundFlags.Loop,
                 true,
                 fullPosition,
-                e.Gain);
+                e.Gain * ObjectVolume);
         }
 
         
@@ -474,7 +467,49 @@ namespace Radegast.Media
                 (p.SoundFlags & SoundFlags.Loop) == SoundFlags.Loop,
                 true,
                 fullPosition, //Instance.State.GlobalPosition(e.Simulator, fullPosition),
-                p.SoundGain);
+                p.SoundGain * ObjectVolume);
+        }
+
+        public float ObjectVolume
+        {
+            set { m_objectVolume = value; }
+            get { return m_objectVolume; }
+        }
+
+        private bool m_objectEnabled = true;
+        public bool ObjectEnable
+        {
+            set
+            {
+                if (value)
+                {
+                    // Subscribe to events about inworld sounds
+                    Instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
+                    Instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
+                    Instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
+                    Instance.Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+                    Instance.Client.Objects.ObjectPropertiesUpdated += new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
+                    Instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+                    Instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+
+                }
+                else
+                {
+                    // Subscribe to events about inworld sounds
+                    Instance.Client.Sound.SoundTrigger -= new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
+                    Instance.Client.Sound.AttachedSound -= new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
+                    Instance.Client.Sound.PreloadSound -= new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
+                    Instance.Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+                    Instance.Client.Objects.ObjectPropertiesUpdated -= new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
+                    Instance.Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+                    Instance.Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+
+                    // Stop all running sounds
+                    BufferSound.KillAll();
+                }
+                m_objectEnabled = value;
+            }
+            get { return m_objectEnabled; }
         }
 
         /// <summary>

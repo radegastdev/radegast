@@ -80,6 +80,7 @@ namespace Radegast.Media
         protected static FMOD.System system = null;
         public FMOD.System FMODSystem { get { return system; } }
 
+        protected static float m_objectVolume = 0.8f;
         public MediaObject()
         {
             // Zero out the extra info structure.
