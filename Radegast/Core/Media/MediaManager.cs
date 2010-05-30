@@ -73,6 +73,7 @@ namespace Radegast.Media
             listenerThread.Name = "ListenerThread";
             listenerThread.Start();
 
+            // Initial inworld-sound setting comes from Config.
             ObjectEnable = true;
         }
 
@@ -470,13 +471,23 @@ namespace Radegast.Media
                 p.SoundGain * ObjectVolume);
         }
 
+        /// <summary>
+        /// Control the volume of all inworld sounds
+        /// </summary>
         public float ObjectVolume
         {
-            set { m_objectVolume = value; }
-            get { return m_objectVolume; }
+            set
+            {
+                AllObjectVolume = value;
+                BufferSound.AdjustVolumes();
+            }
+            get { return AllObjectVolume; }
         }
 
         private bool m_objectEnabled = true;
+        /// <summary>
+        /// Enable and Disable inworld sounds
+        /// </summary>
         public bool ObjectEnable
         {
             set
@@ -491,7 +502,6 @@ namespace Radegast.Media
                     Instance.Client.Objects.ObjectPropertiesUpdated += new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
                     Instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
                     Instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-
                 }
                 else
                 {

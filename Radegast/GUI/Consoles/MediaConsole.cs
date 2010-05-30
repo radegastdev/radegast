@@ -61,6 +61,13 @@ namespace Radegast
                 cbPlayAudioStream.Checked = s["parcel_audio_play"].AsBoolean();
             if (s["parcel_audio_keep_url"].Type != OSDType.Unknown)
                 cbKeep.Checked = s["parcel_audio_keep_url"].AsBoolean();
+            if (s["object_audio_enable"].Type != OSDType.Unknown)
+                ObjSoundEnable.Checked = s["object_audio_enable"].AsBoolean();
+            if (s["object_audio_vol"].Type != OSDType.Unknown)
+            {
+                instance.MediaManager.ObjectVolume = (float)s["parcel_audio_vol"].AsReal();
+                ObjVolume.Value = (int)(50f * instance.MediaManager.ObjectVolume);
+            }
 
             configTimer = new System.Threading.Timer(SaveConfig, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
@@ -216,12 +223,14 @@ namespace Radegast
         {
             configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
             instance.MediaManager.ObjectVolume = ObjVolume.Value / 50f;
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
         }
 
         void cbObjEnableChanged(object sender, EventArgs e)
         {
             configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
             instance.MediaManager.ObjectEnable = ObjSoundEnable.Checked;
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
         }
 
         private void txtAudioURL_TextChanged(object sender, EventArgs e)

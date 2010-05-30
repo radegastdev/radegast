@@ -46,6 +46,10 @@ namespace Radegast.Media
         private FMOD.MODE mode;
         public Sound Sound { get { return sound; } }
         private Boolean loopSound = false;
+        /// <summary>
+        /// The individual volume setting for THIS object
+        /// </summary>
+        private float volumeSetting = 0.5f;
 
         /// <summary>
         /// Creates a new sound object
@@ -71,7 +75,7 @@ namespace Radegast.Media
 
             Id = soundId;
             position = FromOMVSpace(worldpos);
-            volume = vol;
+            volumeSetting = vol;
             loopSound = loop;
 
             // Set flags to determine how it will be played.
@@ -116,6 +120,25 @@ namespace Radegast.Media
             {
                 s.StopSound();
             }
+        }
+
+        /// <summary>
+        /// Adjust volumes of all playing sounds to observe the new global sound volume
+        /// </summary>
+        public static void AdjustVolumes()
+        {
+            foreach (BufferSound s in allBuffers.Values)
+            {
+                s.AdjustVolume();
+            }
+        }
+
+        /// <summary>
+        /// Adjust the volume of THIS sound when all are being adjusted.
+        /// </summary>
+        private void AdjustVolume()
+        {
+            Volume = volumeSetting * AllObjectVolume;
         }
 
         // A simpler constructor used by PreFetchSound.
@@ -212,7 +235,7 @@ namespace Radegast.Media
 
                     // Allocate a channel and set initial volume.  Initially paused.
                     FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
-                    FMODExec(channel.setVolume(volume * m_objectVolume ));
+                    FMODExec(channel.setVolume(volumeSetting * AllObjectVolume ));
 
                     // Take note of when the sound is finished playing.
                     FMODExec(channel.setCallback(endCallback));
