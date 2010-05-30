@@ -200,6 +200,8 @@ namespace Radegast
             s["parcel_audio_vol"] = OSD.FromReal(audioVolume);
             s["parcel_audio_play"] = OSD.FromBoolean(cbPlayAudioStream.Checked);
             s["parcel_audio_keep_url"] = OSD.FromBoolean(cbKeep.Checked);
+            s["object_audio_vol"] = OSD.FromReal(this.instance.MediaManager.ObjectVolume);
+            s["object_audio_enable"] = OSD.FromBoolean(ObjSoundEnable.Checked);
         }
 
         #region GUI event handlers
