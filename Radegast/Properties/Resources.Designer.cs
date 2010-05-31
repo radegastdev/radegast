@@ -568,6 +568,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap map_dot {
+            get {
+                object obj = ResourceManager.GetObject("map_dot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap mic {
             get {
                 object obj = ResourceManager.GetObject("mic", resourceCulture);

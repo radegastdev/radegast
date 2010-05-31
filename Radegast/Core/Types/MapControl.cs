@@ -26,15 +26,19 @@ namespace Radegast
         Font textFont;
         Brush textBrush;
         Brush textBackgroudBrush;
+        Brush dotBrush;
+        Pen blackPen;
         uint regionSize = 256;
         float pixelsPerMeter;
         double centerX, centerY, targetX, targetY;
-        #pragma warning disable 0649
+#pragma warning disable 0649
         GridRegion targetRegion, nullRegion;
         bool centered = false;
         int PixRegS;
-        float maxZoom = 8f, minZoom = 0.5f;
+        float maxZoom = 6f, minZoom = 0.5f;
         string targetParcelName = null;
+        System.Threading.Timer repaint;
+        bool needRepaint = false;
 
         public bool UseExternalTiles = false;
         public event EventHandler<MapTargetChangedEventArgs> MapTargetChanged;
@@ -54,7 +58,11 @@ namespace Radegast
             background = Color.FromArgb(4, 4, 75);
             textFont = new Font(FontFamily.GenericSansSerif, 8.0f, FontStyle.Bold);
             textBrush = new SolidBrush(Color.FromArgb(255, 200, 200, 200));
+            dotBrush = new SolidBrush(Color.FromArgb(255, 30, 210, 30));
+            blackPen = new Pen(Color.Black, 2.0f);
             textBackgroudBrush = new SolidBrush(Color.Black);
+
+            repaint = new System.Threading.Timer(RepaintTick, null, 1000, 1000);
 
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
             RegisterClientEvents();
@@ -64,14 +72,28 @@ namespace Radegast
         {
             UnregisterClientEvents(Client);
 
-            downloader.Dispose();
-
-            lock (regionTiles)
+            if (repaint != null)
             {
-                foreach (Image img in regionTiles.Values)
-                    if (img != null)
-                        img.Dispose();
-                regionTiles.Clear();
+                repaint.Dispose();
+                repaint = null;
+            }
+
+            if (downloader != null)
+            {
+                downloader.Dispose();
+                downloader = null;
+            }
+
+            if (regionTiles != null)
+            {
+                lock (regionTiles)
+                {
+                    foreach (Image img in regionTiles.Values)
+                        if (img != null)
+                            img.Dispose();
+                    regionTiles.Clear();
+                }
+                regionTiles = null;
             }
         }
 
@@ -91,25 +113,45 @@ namespace Radegast
             Client.Grid.GridLayer -= new EventHandler<GridLayerEventArgs>(Grid_GridLayer);
         }
 
-        void Grid_GridLayer(object sender, GridLayerEventArgs e)
+        void RepaintTick(object sync)
         {
-            // int foo = 1;
+            if (needRepaint)
+            {
+                needRepaint = false;
+                SafeInvalidate();
+            }
         }
 
-        Dictionary<ulong, MapItem> regionMapItems = new Dictionary<ulong, MapItem>();
+        void Grid_GridLayer(object sender, GridLayerEventArgs e)
+        {
+        }
+
+        Dictionary<ulong, List<MapItem>> regionMapItems = new Dictionary<ulong, List<MapItem>>();
         Dictionary<ulong, GridRegion> regions = new Dictionary<ulong, GridRegion>();
 
         void Grid_GridItems(object sender, GridItemsEventArgs e)
         {
             foreach (MapItem item in e.Items)
             {
-                regionMapItems[item.RegionHandle] = item;
+                if (item is MapAgentLocation)
+                {
+                    MapAgentLocation loc = (MapAgentLocation)item;
+                    lock (regionMapItems)
+                    {
+                        if (!regionMapItems.ContainsKey(item.RegionHandle))
+                        {
+                            regionMapItems[loc.RegionHandle] = new List<MapItem>();
+                        }
+                        regionMapItems[loc.RegionHandle].Add(loc);
+                    }
+                    if (loc.AvatarCount > 0) needRepaint = true;
+                }
             }
-
         }
 
         void Grid_GridRegion(object sender, GridRegionEventArgs e)
         {
+            needRepaint = true;
             regions[e.Region.RegionHandle] = e.Region;
             if (!UseExternalTiles
                 && e.Region.Access != SimAccess.NonExistent
@@ -145,11 +187,10 @@ namespace Radegast
         {
             targetRegion = nullRegion;
             targetX = targetY = -5000000000d;
-            SafeInvalidate();
             ThreadPool.QueueUserWorkItem(sync =>
                 {
                     Thread.Sleep(500);
-                    SafeInvalidate();
+                    needRepaint = true;
                 }
             );
         }
@@ -180,6 +221,11 @@ namespace Radegast
             centerX = (double)regionX * 256 + (double)localX;
             centerY = (double)regionY * 256 + (double)localY;
             centered = true;
+            // opensim grids need extra push
+            if (!Instance.Netcom.Grid.ID.ToLower().Contains("secondlife"))
+            {
+                Client.Grid.RequestMapLayer(GridLayerType.Objects);
+            }
             SafeInvalidate();
         }
 
@@ -234,7 +280,7 @@ namespace Radegast
                     if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(Client.Assets.Cache.GetCachedAssetBytes(imageID), out mi, out img))
                     {
                         regionTiles[handle] = img;
-                        SafeInvalidate();
+                        needRepaint = true;
                     }
                     lock (tileRequests)
                         if (tileRequests.Contains(handle))
@@ -256,7 +302,7 @@ namespace Radegast
                                 if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(responseData, out mi, out img))
                                 {
                                     regionTiles[handle] = img;
-                                    SafeInvalidate();
+                                    needRepaint = true;
                                     Client.Assets.Cache.SaveAssetToCache(imageID, responseData);
                                 }
                             }
@@ -287,7 +333,7 @@ namespace Radegast
                                 if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img))
                                 {
                                     regionTiles[handle] = img;
-                                    SafeInvalidate();
+                                    needRepaint = true;
                                 }
                             }
                             goto default;
@@ -347,7 +393,7 @@ namespace Radegast
                                     lock (regionTiles)
                                     {
                                         regionTiles[handle] = Image.FromStream(s);
-                                        SafeInvalidate();
+                                        needRepaint = true;
                                     }
                                 }
                             }
@@ -377,6 +423,7 @@ namespace Radegast
             string name = GetRegionName(handle);
             Image tile = null;
 
+            // Get and draw image tile
             if (UseExternalTiles)
                 tile = GetRegionTileExternal(handle);
             else
@@ -385,7 +432,7 @@ namespace Radegast
             if (tile != null)
             {
                 int targetSize = 256;
-                for (targetSize = 128; targetSize > PixRegS; targetSize /= 2);
+                for (targetSize = 128; targetSize > PixRegS; targetSize /= 2) ;
                 targetSize *= 2;
                 if (targetSize != 256)
                 {
@@ -409,12 +456,15 @@ namespace Radegast
                 g.DrawImage(tile, new Rectangle(x, y - PixRegS, PixRegS, PixRegS));
             }
 
+            // Print region name
             if (!string.IsNullOrEmpty(name) && zoom < 3f)
+            {
                 Print(g, x + 2, y - 16, name);
-
+            }
         }
 
         List<string> requestedBlocks = new List<string>();
+        List<ulong> requestedLocations = new List<ulong>();
 
         private void MapControl_Paint(object sender, PaintEventArgs e)
         {
@@ -456,7 +506,15 @@ namespace Radegast
                     int pixY = pixCenterRegionY - (ry - (int)regY) * PixRegS;
                     ulong handle = Utils.UIntsToLong((uint)rx * regionSize, (uint)ry * regionSize);
 
-                    //Client.Grid.RequestMapItems(handle, OpenMetaverse.GridItemType.AgentLocations, GridLayerType.Objects);
+                    lock (requestedLocations)
+                    {
+                        if (!requestedLocations.Contains(handle))
+                        {
+                            requestedLocations.Add(handle);
+                            Client.Grid.RequestMapItems(handle, OpenMetaverse.GridItemType.AgentLocations, GridLayerType.Objects);
+                        }
+                    }
+
                     DrawRegion(g,
                         pixX,
                         pixY,
@@ -473,6 +531,40 @@ namespace Radegast
             }
 
             float ratio = (float)PixRegS / (float)regionSize;
+
+            // Draw agent dots
+            for (int ry = regBottom; ry <= regYMax; ry++)
+            {
+                for (int rx = regLeft; rx <= regXMax; rx++)
+                {
+                    int pixX = pixCenterRegionX - ((int)regX - rx) * PixRegS;
+                    int pixY = pixCenterRegionY - (ry - (int)regY) * PixRegS;
+                    ulong handle = Utils.UIntsToLong((uint)rx * regionSize, (uint)ry * regionSize);
+
+                    lock (regionMapItems)
+                    {
+                        if (regionMapItems.ContainsKey(handle))
+                        {
+                            foreach (MapItem i in regionMapItems[handle])
+                            {
+                                if (i is MapAgentLocation)
+                                {
+                                    MapAgentLocation loc = (MapAgentLocation)i;
+                                    if (loc.AvatarCount == 0) continue;
+                                    int dotX = pixX + (int)((float)loc.LocalX * ratio);
+                                    int dotY = pixY - (int)((float)loc.LocalY * ratio);
+                                    for (int j = 0; j < loc.AvatarCount; j++)
+                                    {
+                                        g.FillEllipse(dotBrush, dotX, dotY - (j * 3), 7, 7);
+                                        g.DrawEllipse(blackPen, dotX, dotY - (j * 3), 7, 7);
+                                        //g.DrawImageUnscaled(Properties.Resources.map_dot, dotX, dotY - (j * 4));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             if (foundMyPos)
             {
@@ -564,7 +656,7 @@ namespace Radegast
                         {
                             targetParcelName = e.Parcel.Name;
                             done.Set();
-                            SafeInvalidate();
+                            needRepaint = true;
                         }
                     };
                     Client.Parcels.ParcelInfoReply += handler;

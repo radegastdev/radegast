@@ -1117,6 +1117,7 @@
     <None Include="Resources\client_signatures.txt" />
     <None Include="Resources\mic.png" />
     <None Include="Resources\my_map_pos.png" />
+    <None Include="Resources\map_dot.png" />
     <Content Include="Resources\radegast_large.png" />
     <None Include="Resources\target_map_pos.png" />
     <Content Include="worldmap.html">
