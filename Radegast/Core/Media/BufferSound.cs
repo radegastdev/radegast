@@ -190,7 +190,7 @@ namespace Radegast.Media
                     return;
                 }
 
-                Logger.Log("Opening sound " + Id.ToString(), Helpers.LogLevel.Debug);
+//                Logger.Log("Opening sound " + Id.ToString(), Helpers.LogLevel.Debug);
 
                 // Decode the Ogg Vorbis buffer.
                 AssetSound s = asset as AssetSound;

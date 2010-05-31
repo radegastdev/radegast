@@ -122,7 +122,8 @@ namespace Radegast.Media
                 }
                 catch (Exception e)
                 {
-                    Logger.Log("Error in sound action: " + e.Message,
+
+                    Logger.Log("Error in sound action:\n    " + e.Message + "\n" + e.StackTrace,
                         Helpers.LogLevel.Error);
                 }
             }
@@ -263,6 +264,7 @@ namespace Radegast.Media
 
                 AgentManager my = Instance.Client.Self;
                 Vector3 newPosition = new Vector3(my.SimPosition);
+                float newFace = my.SimRotation.W;
 
                 // If we are standing still, nothing to update now, but
                 // FMOD needs a 'tick' anyway for callbacks, etc.  In looping
@@ -272,7 +274,7 @@ namespace Radegast.Media
                 // 500mm or turn more than 10 desgrees to bother with.
                 //
                 if (newPosition.ApproxEquals(lastpos, 0.5f) &&
-                    Math.Abs(my.Movement.BodyRotation.W - lastface) < 0.2)
+                    Math.Abs(newFace - lastface) < 0.2)
                 {
                     invoke(new SoundDelegate(delegate
                     {
@@ -283,7 +285,7 @@ namespace Radegast.Media
 
                 // We have moved or turned.  Remember new position.
                 lastpos = newPosition;
-                lastface = my.Movement.BodyRotation.W;
+                lastface = newFace;
 
                 // Convert coordinate spaces.
                 FMOD.VECTOR listenerpos = FromOMVSpace(newPosition);
@@ -293,9 +295,10 @@ namespace Radegast.Media
                 // hear things from unpredictable directions.
                 // By definition, facing.W = Cos( angle/2 )
                 // With angle=0 meaning East.
-                double angle = 2.0 * Math.Acos(my.Movement.BodyRotation.W);
+                double angle = 2.0 * Math.Acos(newFace);
 
                 // Construct facing unit vector in FMOD coordinates.
+                // Z is East, X is South, Y is up.
                 FMOD.VECTOR forward = new FMOD.VECTOR();
                 forward.x = (float)Math.Sin(-angle); // South
                 forward.y = 0.0f;
