@@ -78,6 +78,15 @@ namespace Radegast.Media
             volumeSetting = vol;
             loopSound = loop;
 
+            Logger.Log(
+                String.Format(
+                    "Playing sound at <{0:0.0},{1:0.0},{2:0.0}> ID {3}",
+                    position.x,
+                    position.y,
+                    position.z,
+                    Id.ToString()),
+                Helpers.LogLevel.Debug);
+
             // Set flags to determine how it will be played.
             mode = FMOD.MODE.SOFTWARE | // Need software processing for all the features
                 FMOD.MODE._3D |         // Need 3D effects for placement
@@ -245,7 +254,7 @@ namespace Radegast.Media
                                 1.2f,       // Any closer than this gets no louder
                                 100.0f));     // Further than this gets no softer.
 
-                    // Set the sound point of origin.  This is in GLOBAL coordinates.
+                    // Set the sound point of origin.  This is in SIM coordinates.
                     FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
 
                     // Turn off pause mode.  The sound will start playing now.
@@ -286,21 +295,25 @@ namespace Radegast.Media
         {
             Logger.Log("Removing sound " + Id.ToString(), Helpers.LogLevel.Debug);
 
-            // Release the buffer to avoid a big memory leak.
-            if (channel != null)
+            invoke(new SoundDelegate(delegate
             {
-                channel.stop();
+                // Release the buffer to avoid a big memory leak.
+                if (channel != null)
+                {
+                    channel.stop();
+                    channel = null;
+                }
+                if (sound != null)
+                {
+                    sound.release();
+                    sound = null;
+                }
                 channel = null;
-            }
-            if (sound != null)
-            {
-                sound.release();
-                sound = null;
-            }
-            channel = null;
 
-            lock (allBuffers)
-                allBuffers.Remove(Id);
+                lock (allBuffers)
+                    allBuffers.Remove(Id);
+            }));
+
         }
 
     }

@@ -144,6 +144,14 @@ namespace Radegast.Media
                            ref position,
                            ref ZeroVector));
 
+                        Logger.Log(
+                            String.Format(
+                                "Speech at <{0:0.0},{1:0.0},{2:0.0}>",
+                                position.x,
+                                position.y,
+                                position.z),
+                            Helpers.LogLevel.Debug);
+
                         // SET a handler for when it finishes.
                         FMODExec(channel.setCallback(endCallback));
                         RegisterChannel( channel );

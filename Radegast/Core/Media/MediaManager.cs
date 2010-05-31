@@ -301,8 +301,14 @@ namespace Radegast.Media
                 forward.y = 0.0f;
                 forward.z = (float)Math.Cos(angle); // East
 
-                int facing = (int)(angle * 180.0 / 3.141592);
-                Logger.Log("Facing "+facing.ToString(), Helpers.LogLevel.Debug);
+                Logger.Log(
+                    String.Format(
+                        "Standing at <{0:0.0},{1:0.0},{2:0.0}> facing {3:d}",
+                            listenerpos.x,
+                            listenerpos.y,
+                            listenerpos.z,
+                            (int)(angle * 180.0 / 3.141592)),
+                    Helpers.LogLevel.Debug);
 
                 // Tell FMOD the new orientation.
                 invoke( new SoundDelegate( delegate
@@ -372,9 +378,6 @@ namespace Radegast.Media
                 fullPosition += parentP.Position;
             }
 
-            Logger.Log("Attached sound " + e.SoundID.ToString(),
-                Helpers.LogLevel.Debug);
-
             new BufferSound(
                 e.SoundID,
                 (e.Flags & SoundFlags.Loop) == SoundFlags.Loop,
@@ -392,10 +395,6 @@ namespace Radegast.Media
         private void Sound_PreloadSound(object sender, PreloadSoundEventArgs e)
         {
             if (e.SoundID == UUID.Zero) return;
-
-            Logger.Log("Prefetch sound " + e.SoundID.ToString() +
-                " in object " + e.ObjectID.ToString(),
-                Helpers.LogLevel.Debug);
 
             new BufferSound( e.SoundID );
         }
@@ -433,7 +432,7 @@ namespace Radegast.Media
         }
 
         /// <summary>
-        /// Command object sound processing for various Update events
+        /// Common object sound processing for various Update events
         /// </summary>
         /// <param name="p"></param>
         /// <param name="s"></param>
@@ -449,10 +448,6 @@ namespace Radegast.Media
                 return;
             }
 
-            Logger.Log("Object sound " + p.Sound.ToString() +
-                " in object " + p.ID.ToString(),
-                Helpers.LogLevel.Debug);
-
             // If this is a child prim, its position is relative to the root prim.
             Vector3 fullPosition = p.Position;
             if (p.ParentID != 0)
@@ -462,13 +457,25 @@ namespace Radegast.Media
                 fullPosition += parentP.Position;
             }
   
-            // Create a sound object for this.
-            new BufferSound(
-                p.Sound,
-                (p.SoundFlags & SoundFlags.Loop) == SoundFlags.Loop,
-                true,
-                fullPosition, //Instance.State.GlobalPosition(e.Simulator, fullPosition),
-                p.SoundGain * ObjectVolume);
+            // See if this is an update to  something we already know about.
+            if (allBuffers.ContainsKey(p.Sound))
+            {
+                // Exists already, so modify existing sound.
+                //TODO posible to change sound on the same object.  Key by Object?
+                BufferSound snd = allBuffers[p.Sound];
+                snd.Volume = p.SoundGain * ObjectVolume;
+                snd.Position = fullPosition;
+            }
+            else
+            {
+                // Does not exist, so create a new one.
+                new BufferSound(
+                    p.Sound,
+                    (p.SoundFlags & SoundFlags.Loop) == SoundFlags.Loop,
+                    true,
+                    fullPosition, //Instance.State.GlobalPosition(e.Simulator, fullPosition),
+                    p.SoundGain * ObjectVolume);
+            }
         }
 
         /// <summary>
@@ -492,31 +499,42 @@ namespace Radegast.Media
         {
             set
             {
-                if (value)
+                try
                 {
-                    // Subscribe to events about inworld sounds
-                    Instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
-                    Instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
-                    Instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
-                    Instance.Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-                    Instance.Client.Objects.ObjectPropertiesUpdated += new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
-                    Instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-                    Instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-                }
-                else
-                {
-                    // Subscribe to events about inworld sounds
-                    Instance.Client.Sound.SoundTrigger -= new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
-                    Instance.Client.Sound.AttachedSound -= new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
-                    Instance.Client.Sound.PreloadSound -= new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
-                    Instance.Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-                    Instance.Client.Objects.ObjectPropertiesUpdated -= new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
-                    Instance.Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-                    Instance.Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+                    if (value)
+                    {
+                        // Subscribe to events about inworld sounds
+                        Instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
+                        Instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
+                        Instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
+                        Instance.Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+                        Instance.Client.Objects.ObjectPropertiesUpdated += new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
+                        Instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+                        Instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+                        Logger.Log("Inworld sound enabled", Helpers.LogLevel.Info);
+                    }
+                    else
+                    {
+                        // Subscribe to events about inworld sounds
+                        Instance.Client.Sound.SoundTrigger -= new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
+                        Instance.Client.Sound.AttachedSound -= new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
+                        Instance.Client.Sound.PreloadSound -= new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
+                        Instance.Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+                        Instance.Client.Objects.ObjectPropertiesUpdated -= new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
+                        Instance.Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+                        Instance.Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
 
-                    // Stop all running sounds
-                    BufferSound.KillAll();
+                        // Stop all running sounds
+                        BufferSound.KillAll();
+
+                        Logger.Log("Inworld sound disabled", Helpers.LogLevel.Info);
+                    }
                 }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine("Error on enable/disable: "+e.Message);
+                }
+
                 m_objectEnabled = value;
             }
             get { return m_objectEnabled; }
