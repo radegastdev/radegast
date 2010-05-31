@@ -1291,7 +1291,7 @@ function gotoSLURL(x,y,slMap)
 		var local_x = Math.round((x - int_x) * 256);
 		var local_y = Math.round((y - int_y) * 256);
 
-		if (window.external) {
+		if (window.external && window.external.setStatus) {
 		    window.external.setStatus("Looking up " + int_x + ", " + int_y);
 		}
 		// Add a dynamic script to get this region name, and then trigger a URL change
@@ -1304,7 +1304,7 @@ function gotoSLURL(x,y,slMap)
 		{
 			if (slRegionName == null || slRegionName.error)
 			{
-			    if (window.external)
+			    if (window.external && window.external.setStatus)
 			    {
 	                window.external.setStatus("No region at " + int_x + ", " + int_y);
 		        }
@@ -1320,7 +1320,7 @@ function gotoSLURL(x,y,slMap)
 					debugInfo = ' x: ' + int_x + ' y: ' + int_y;
 				}
 
-		        if (window.external)
+				if (window.external && window.external.doNavigate)
 		        {
                	    window.external.doNavigate(slRegionName, local_x, local_y);
 		        }

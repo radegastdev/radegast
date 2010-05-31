@@ -568,9 +568,23 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap map_dot {
+            get {
+                object obj = ResourceManager.GetObject("map_dot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap mic {
             get {
                 object obj = ResourceManager.GetObject("mic", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap my_map_pos {
+            get {
+                object obj = ResourceManager.GetObject("my_map_pos", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -689,6 +703,13 @@ namespace Radegast.Properties {
         public static System.Drawing.Bitmap status_search {
             get {
                 object obj = ResourceManager.GetObject("status_search", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap target_map_pos {
+            get {
+                object obj = ResourceManager.GetObject("target_map_pos", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
