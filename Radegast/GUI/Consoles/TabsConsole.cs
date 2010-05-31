@@ -535,13 +535,10 @@ namespace Radegast
             tab.AllowDetach = true;
             tab.Visible = false;
 
-            if (!TabExists("map"))
-            {
-                tab = AddTab("map", "Map", new MapConsole(instance));
-                tab.AllowClose = false;
-                tab.AllowDetach = true;
-                tab.Visible = false;
-            }
+            tab = AddTab("map", "Map", new MapConsole(instance));
+            tab.AllowClose = false;
+            tab.AllowDetach = true;
+            tab.Visible = false;
 
             tab = AddTab("voice", "Voice", new VoiceConsole(instance));
             tab.AllowClose = false;
@@ -557,13 +554,7 @@ namespace Radegast
             lock (tabs)
             {
                 ForceCloseTab("voice");
-
-                // Mono crashes if we try to open map for the second time
-                if (!instance.MonoRuntime)
-                    ForceCloseTab("map");
-                else if (TabExists("map"))
-                    tabs["map"].Hide();
-
+                ForceCloseTab("map");
                 ForceCloseTab("search");
                 ForceCloseTab("inventory");
                 ForceCloseTab("groups");
