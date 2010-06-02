@@ -71,8 +71,13 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.ObjSoundGroup = new System.Windows.Forms.GroupBox();
+            this.ObjVolume = new System.Windows.Forms.TrackBar();
+            this.ObjSoundEnable = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.volAudioStream)).BeginInit();
             this.pnlParcelAudio.SuspendLayout();
+            this.ObjSoundGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ObjVolume)).BeginInit();
             this.SuspendLayout();
             // 
             // volAudioStream
@@ -81,7 +86,7 @@ namespace Radegast
             this.volAudioStream.Location = new System.Drawing.Point(6, 19);
             this.volAudioStream.Maximum = 50;
             this.volAudioStream.Name = "volAudioStream";
-            this.volAudioStream.Size = new System.Drawing.Size(347, 45);
+            this.volAudioStream.Size = new System.Drawing.Size(347, 42);
             this.volAudioStream.SmallChange = 2;
             this.volAudioStream.TabIndex = 1;
             this.volAudioStream.Value = 25;
@@ -197,16 +202,55 @@ namespace Radegast
             this.label1.TabIndex = 2;
             this.label1.Text = "Stream";
             // 
+            // ObjSoundGroup
+            // 
+            this.ObjSoundGroup.Controls.Add(this.ObjSoundEnable);
+            this.ObjSoundGroup.Controls.Add(this.ObjVolume);
+            this.ObjSoundGroup.Location = new System.Drawing.Point(3, 147);
+            this.ObjSoundGroup.Name = "ObjSoundGroup";
+            this.ObjSoundGroup.Size = new System.Drawing.Size(358, 67);
+            this.ObjSoundGroup.TabIndex = 3;
+            this.ObjSoundGroup.TabStop = false;
+            this.ObjSoundGroup.Text = "Object Sounds";
+            // 
+            // ObjVolume
+            // 
+            this.ObjVolume.LargeChange = 10;
+            this.ObjVolume.Location = new System.Drawing.Point(4, 12);
+            this.ObjVolume.Maximum = 50;
+            this.ObjVolume.Name = "ObjVolume";
+            this.ObjVolume.Size = new System.Drawing.Size(347, 42);
+            this.ObjVolume.SmallChange = 2;
+            this.ObjVolume.TabIndex = 2;
+            this.ObjVolume.Value = 25;
+            // 
+            // ObjSoundEnable
+            // 
+            this.ObjSoundEnable.AutoSize = true;
+            this.ObjSoundEnable.Checked = true;
+            this.ObjSoundEnable.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ObjSoundEnable.Location = new System.Drawing.Point(10, 44);
+            this.ObjSoundEnable.Name = "ObjSoundEnable";
+            this.ObjSoundEnable.Size = new System.Drawing.Size(59, 17);
+            this.ObjSoundEnable.TabIndex = 5;
+            this.ObjSoundEnable.Text = "Enable";
+            this.toolTip1.SetToolTip(this.ObjSoundEnable, "When checked inworld sounds will play");
+            this.ObjSoundEnable.UseVisualStyleBackColor = true;
+            // 
             // MediaConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ObjSoundGroup);
             this.Controls.Add(this.pnlParcelAudio);
             this.Name = "MediaConsole";
-            this.Size = new System.Drawing.Size(368, 147);
+            this.Size = new System.Drawing.Size(368, 217);
             ((System.ComponentModel.ISupportInitialize)(this.volAudioStream)).EndInit();
             this.pnlParcelAudio.ResumeLayout(false);
             this.pnlParcelAudio.PerformLayout();
+            this.ObjSoundGroup.ResumeLayout(false);
+            this.ObjSoundGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ObjVolume)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -225,6 +269,9 @@ namespace Radegast
         public System.Windows.Forms.Label label2;
         public System.Windows.Forms.ToolTip toolTip1;
         public System.Windows.Forms.Label lblStation;
+        private System.Windows.Forms.GroupBox ObjSoundGroup;
+        public System.Windows.Forms.CheckBox ObjSoundEnable;
+        public System.Windows.Forms.TrackBar ObjVolume;
 
     }
 }

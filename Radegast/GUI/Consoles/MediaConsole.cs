@@ -34,7 +34,8 @@ namespace Radegast
         private const int saveConfigTimeout = 3000;
         private bool playing;
         private string currentURL;
-        private MediaManager mngr;
+        //private MediaManager mngr;
+        private Media.Stream parcelStream;
         private readonly object parcelMusicLock = new object();
 
 
@@ -47,7 +48,7 @@ namespace Radegast
             Disposed += new EventHandler(MediaConsole_Disposed);
 
             this.instance = instance;
-            this.mngr = instance.MediaManager;
+            this.parcelStream = new Media.Stream();
 
             s = instance.GlobalSettings;
 
@@ -60,6 +61,13 @@ namespace Radegast
                 cbPlayAudioStream.Checked = s["parcel_audio_play"].AsBoolean();
             if (s["parcel_audio_keep_url"].Type != OSDType.Unknown)
                 cbKeep.Checked = s["parcel_audio_keep_url"].AsBoolean();
+            if (s["object_audio_enable"].Type != OSDType.Unknown)
+                ObjSoundEnable.Checked = s["object_audio_enable"].AsBoolean();
+            if (s["object_audio_vol"].Type != OSDType.Unknown)
+            {
+                instance.MediaManager.ObjectVolume = (float)s["parcel_audio_vol"].AsReal();
+                ObjVolume.Value = (int)(50f * instance.MediaManager.ObjectVolume);
+            }
 
             configTimer = new System.Threading.Timer(SaveConfig, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
@@ -76,6 +84,9 @@ namespace Radegast
             cbPlayAudioStream.CheckedChanged += new EventHandler(cbPlayAudioStream_CheckedChanged);
             lblStation.Tag = lblStation.Text = string.Empty;
             lblStation.Click += new EventHandler(lblStation_Click);
+
+            ObjVolume.Scroll += new EventHandler(volObject_Scroll);
+            ObjSoundEnable.CheckedChanged += new EventHandler(cbObjEnableChanged);
 
             // Network callbacks
             client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
@@ -128,9 +139,9 @@ namespace Radegast
             lock (parcelMusicLock)
             {
                 playing = false;
-                if (mngr.ParcelMusic != null)
-                    mngr.ParcelMusic.Dispose();
-                mngr.ParcelMusic = null;
+                if (parcelStream != null)
+                    parcelStream.Dispose();
+                parcelStream = null;
                 lblStation.Tag = lblStation.Text = string.Empty;
                 txtSongTitle.Text = string.Empty;
             }
@@ -142,10 +153,10 @@ namespace Radegast
             {
                 Stop();
                 playing = true;
-                mngr.ParcelMusic = new Sound(mngr.FMODSystem);
-                mngr.ParcelMusic.Volume = audioVolume;
-                mngr.ParcelMusic.PlayStream(currentURL);
-                mngr.ParcelMusic.OnStreamInfo += new Sound.StreamInfoCallback(ParcelMusic_OnStreamInfo);
+                parcelStream = new Media.Stream();
+                parcelStream.Volume = audioVolume;
+                parcelStream.PlayStream(currentURL);
+                parcelStream.OnStreamInfo += new Media.Stream.StreamInfoCallback(ParcelMusic_OnStreamInfo);
             }
         }
 
@@ -189,6 +200,8 @@ namespace Radegast
             s["parcel_audio_vol"] = OSD.FromReal(audioVolume);
             s["parcel_audio_play"] = OSD.FromBoolean(cbPlayAudioStream.Checked);
             s["parcel_audio_keep_url"] = OSD.FromBoolean(cbKeep.Checked);
+            s["object_audio_vol"] = OSD.FromReal(this.instance.MediaManager.ObjectVolume);
+            s["object_audio_enable"] = OSD.FromBoolean(ObjSoundEnable.Checked);
         }
 
         #region GUI event handlers
@@ -204,8 +217,22 @@ namespace Radegast
         {
             configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
             lock (parcelMusicLock)
-                if (mngr.ParcelMusic != null)
-                    mngr.ParcelMusic.Volume = volAudioStream.Value/50f;
+                if (parcelStream != null)
+                    parcelStream.Volume = volAudioStream.Value/50f;
+        }
+
+        private void volObject_Scroll(object sender, EventArgs e)
+        {
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
+            instance.MediaManager.ObjectVolume = ObjVolume.Value / 50f;
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
+        }
+
+        void cbObjEnableChanged(object sender, EventArgs e)
+        {
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
+            instance.MediaManager.ObjectEnable = ObjSoundEnable.Checked;
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
         }
 
         private void txtAudioURL_TextChanged(object sender, EventArgs e)

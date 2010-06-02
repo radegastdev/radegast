@@ -118,9 +118,11 @@
     <Compile Include="Core\Contexts\IContextAction.cs" />
     <Compile Include="Core\Contexts\RezInventoryObjectAction.cs" />
     <Compile Include="Core\GridManager.cs" />
+    <Compile Include="Core\Media\BufferSound.cs" />
     <Compile Include="Core\Media\MediaManager.cs" />
     <Compile Include="Core\Media\MediaObject.cs" />
-    <Compile Include="Core\Media\Sound.cs" />
+    <Compile Include="Core\Media\Speech.cs" />
+    <Compile Include="Core\Media\Stream.cs" />
     <Compile Include="Core\PluginInterface\IRadegastPlugin.cs" />
     <Compile Include="Core\PluginInterface\PluginAttribute.cs" />
     <Compile Include="Core\PluginInterface\PluginManager.cs" />
