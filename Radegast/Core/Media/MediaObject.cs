@@ -45,7 +45,8 @@ namespace Radegast.Media
         /// </summary>
         public bool Disposed { get { return disposed; } }
         private bool disposed = false;
- 
+        protected Boolean finished = false;
+
         /// All commands are made through queued delegate calls, so they
         /// are guaranteed to take place in the same thread.  FMOD requires this.
         public delegate void SoundDelegate();
@@ -103,7 +104,8 @@ namespace Radegast.Media
         public bool Active { get { return (sound != null); } }
 
         /// <summary>
-        /// Put a delegate call on the command queue.
+        /// Put a delegate call on the command queue.  These will be executed on
+        /// the FMOD control thread.   All FMOD calls must happen there.
         /// </summary>
         /// <param name="action"></param>
         protected void invoke(SoundDelegate action)
@@ -133,13 +135,28 @@ namespace Radegast.Media
             set
             {
                 volume = value;
+#if NOT
+// This is getting Bad Handle errors, so disabled for now
                 if (channel == null) return;
 
                 invoke(new SoundDelegate(delegate
                 {
-                    FMODExec(channel.setVolume(volume));
-//                    system.update();
+                    try
+                    {
+                        Logger.Log(
+                            String.Format("Volume on channel {0} sound {1} finished {2}",
+                               channel.getRaw().ToString("X"),
+                               sound.getRaw().ToString("X"),
+                               finished),
+                             Helpers.LogLevel.Debug);
+                        FMODExec(channel.setVolume(volume));
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("Error changing volume", Helpers.LogLevel.Error, ex);
+                    }
                 }));
+#endif
             }
         }
 
@@ -152,14 +169,23 @@ namespace Radegast.Media
             set
             {
                 position = FromOMVSpace(value);
+#if NOT
+// This is getting Bad Handle errors, so disabled for now
+                if (channel == null) return;
+
                 invoke(new SoundDelegate(delegate
                     {
-                        if (channel != null)
-                            FMODExec(channel.set3DAttributes(
-                                ref position,
-                                ref ZeroVector));
-//                        system.update();
+                        Logger.Log(
+                            String.Format("Position on channel {0} sound {1} finished {2}",
+                                channel.getRaw().ToString("X"),
+                                sound.getRaw().ToString("X"),
+                                finished),
+                            Helpers.LogLevel.Debug);
+                        FMODExec(channel.set3DAttributes(
+                            ref position,
+                            ref ZeroVector));
                     }));
+#endif
             }
         }
 

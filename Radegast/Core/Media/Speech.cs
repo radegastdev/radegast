@@ -158,8 +158,6 @@ namespace Radegast.Media
 
                         // Un-pause the sound.
                         FMODExec(channel.setPaused(false));
-
-//                        system.update();
                     }
                     catch (Exception ex)
                     {
@@ -170,6 +168,10 @@ namespace Radegast.Media
             return RESULT.OK;
         }
 
+        /// <summary>
+        /// Handler for reaching the end of playback of a speech.
+        /// </summary>
+        /// <returns></returns>
         protected override RESULT EndCallbackHandler()
         {
             invoke(new SoundDelegate(

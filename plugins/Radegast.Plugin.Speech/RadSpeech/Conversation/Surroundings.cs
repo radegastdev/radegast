@@ -116,12 +116,12 @@ namespace RadegastSpeech.Conversation
 
             if (currentPrim.Properties == null)
             {
-                description = "Object data still loading.  Please wait.";
+                Talker.Say( "Object data still loading.  Please wait." );
+                return;
             }
             else
             {
-                description = currentPrim.Properties.Name;
-                description += control.env.people.Location(currentPrim.Position);
+                description = control.env.people.Location(currentPrim.Position);
 
                 if ((currentPrim.Flags & PrimFlags.Scripted) != 0)
                     description += " scripted,";
@@ -131,7 +131,9 @@ namespace RadegastSpeech.Conversation
                     description += " is touchable";
             }
 
-            Talker.SayMore(description,
+            Talker.SayObject(
+                currentPrim.Properties.Name,
+                description,
                 control.env.people.SameDirection( currentPrim.Position ) );
       }
 

@@ -42,6 +42,7 @@ namespace Radegast.Media
     public class BufferSound : MediaObject
     {
         private UUID Id;
+        private UUID ContainerId;
         private Boolean prefetchOnly = false;
         private FMOD.MODE mode;
         public Sound Sound { get { return sound; } }
@@ -55,24 +56,25 @@ namespace Radegast.Media
         /// Creates a new sound object
         /// </summary>
         /// <param name="system">Sound system</param>
-        public BufferSound( UUID soundId, bool loop, bool global, Vector3 worldpos, float vol )
+        public BufferSound( UUID objectId, UUID soundId, bool loop, bool global, Vector3 worldpos, float vol )
             :base()
         {
-            InitBuffer(soundId, loop, global, worldpos, vol);
+            InitBuffer(objectId, soundId, loop, global, worldpos, vol);
         }
 
-        public BufferSound(UUID soundId, bool loop, bool global, Vector3d worldpos, float vol)
+        public BufferSound(UUID objectId, UUID soundId, bool loop, bool global, Vector3d worldpos, float vol)
             : base()
         {
-            InitBuffer(soundId, loop, global, new Vector3(worldpos), vol);
+            InitBuffer(objectId, soundId, loop, global, new Vector3(worldpos), vol);
         }
 
-        private void InitBuffer(UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
+        private void InitBuffer(UUID objectId, UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
         {
             // Do not let this get garbage-collected.
             lock (allBuffers)
-                allBuffers[soundId] =this;
+                allBuffers[objectId] =this;
 
+            ContainerId = objectId;
             Id = soundId;
             position = FromOMVSpace(worldpos);
             volumeSetting = vol;
@@ -158,6 +160,7 @@ namespace Radegast.Media
                 allBuffers[soundId] = this;
 
             prefetchOnly = true;
+            ContainerId = UUID.Zero;
             Id = soundId;
 
             manager.Instance.Client.Assets.RequestAsset(
@@ -244,6 +247,12 @@ namespace Radegast.Media
 
                     // Allocate a channel and set initial volume.  Initially paused.
                     FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                    Logger.Log(
+                        String.Format("Channel {0} for {1} assigned to {2}",
+                             channel.getRaw().ToString("X"),
+                             sound.getRaw().ToString("X"),
+                             Id),
+                        Helpers.LogLevel.Debug);
                     FMODExec(channel.setVolume(volumeSetting * AllObjectVolume ));
 
                     // Take note of when the sound is finished playing.
@@ -293,10 +302,16 @@ namespace Radegast.Media
 
         protected void StopSound()
         {
-            Logger.Log("Removing sound " + Id.ToString(), Helpers.LogLevel.Debug);
+            finished = true;
 
             invoke(new SoundDelegate(delegate
             {
+                Logger.Log( String.Format("Removing channel {0} sound {1} ID {2}",
+                        channel.getRaw().ToString("X"),
+                        sound.getRaw().ToString("X"),
+                        Id.ToString()),
+                    Helpers.LogLevel.Debug);
+
                 // Release the buffer to avoid a big memory leak.
                 if (channel != null)
                 {
@@ -311,7 +326,7 @@ namespace Radegast.Media
                 channel = null;
 
                 lock (allBuffers)
-                    allBuffers.Remove(Id);
+                    allBuffers.Remove(ContainerId);
             }));
 
         }

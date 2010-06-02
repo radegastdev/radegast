@@ -140,6 +140,9 @@ namespace RadegastSpeech.Environment
             Vector3 pointer = Vector3.Multiply(
                 Vector3.Normalize( difference ), 4.0f );
 
+            // Add my position back
+            pointer += my.SimPosition;
+
             return pointer;
         }
 

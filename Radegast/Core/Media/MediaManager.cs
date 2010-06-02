@@ -122,7 +122,6 @@ namespace Radegast.Media
                 }
                 catch (Exception e)
                 {
-
                     Logger.Log("Error in sound action:\n    " + e.Message + "\n" + e.StackTrace,
                         Helpers.LogLevel.Error);
                 }
@@ -300,7 +299,7 @@ namespace Radegast.Media
                 // Construct facing unit vector in FMOD coordinates.
                 // Z is East, X is South, Y is up.
                 FMOD.VECTOR forward = new FMOD.VECTOR();
-                forward.x = (float)Math.Sin(-angle); // South
+                forward.x = (float)Math.Sin(angle); // South
                 forward.y = 0.0f;
                 forward.z = (float)Math.Cos(angle); // East
 
@@ -342,6 +341,7 @@ namespace Radegast.Media
                 Helpers.LogLevel.Debug);
 
             new BufferSound(
+                e.ObjectID,
                 e.SoundID,
                 false,
                 true,
@@ -382,6 +382,7 @@ namespace Radegast.Media
             }
 
             new BufferSound(
+                e.ObjectID,
                 e.SoundID,
                 (e.Flags & SoundFlags.Loop) == SoundFlags.Loop,
                 true,
@@ -447,7 +448,7 @@ namespace Radegast.Media
            
             if ((p.SoundFlags & SoundFlags.Stop) == SoundFlags.Stop)
             {
-                BufferSound.Kill(p.Sound);
+                BufferSound.Kill(p.ID);
                 return;
             }
 
@@ -461,11 +462,11 @@ namespace Radegast.Media
             }
   
             // See if this is an update to  something we already know about.
-            if (allBuffers.ContainsKey(p.Sound))
+            if (allBuffers.ContainsKey(p.ID))
             {
                 // Exists already, so modify existing sound.
                 //TODO posible to change sound on the same object.  Key by Object?
-                BufferSound snd = allBuffers[p.Sound];
+                BufferSound snd = allBuffers[p.ID];
                 snd.Volume = p.SoundGain * ObjectVolume;
                 snd.Position = fullPosition;
             }
@@ -473,6 +474,7 @@ namespace Radegast.Media
             {
                 // Does not exist, so create a new one.
                 new BufferSound(
+                    p.ID,
                     p.Sound,
                     (p.SoundFlags & SoundFlags.Loop) == SoundFlags.Loop,
                     true,
