@@ -125,7 +125,7 @@ namespace Radegast.Media
         /// <summary>
         ///  Change a playback volume
         /// </summary>
-        protected float volume = 0.5f;
+        protected float volume = 0.8f;
         public float Volume
         {
             get
@@ -135,28 +135,25 @@ namespace Radegast.Media
             set
             {
                 volume = value;
-#if NOT
-// This is getting Bad Handle errors, so disabled for now
                 if (channel == null) return;
 
                 invoke(new SoundDelegate(delegate
                 {
                     try
                     {
-                        Logger.Log(
-                            String.Format("Volume on channel {0} sound {1} finished {2}",
-                               channel.getRaw().ToString("X"),
-                               sound.getRaw().ToString("X"),
-                               finished),
-                             Helpers.LogLevel.Debug);
                         FMODExec(channel.setVolume(volume));
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log("Error changing volume", Helpers.LogLevel.Error, ex);
+                        Logger.Log(
+                            String.Format("Error on volume change on channel {0} sound {1} finished {2}",
+                               channel.getRaw().ToString("X"),
+                               sound.getRaw().ToString("X"),
+                               finished),
+                             Helpers.LogLevel.Error,
+                             ex);
                     }
                 }));
-#endif
             }
         }
 
@@ -169,23 +166,28 @@ namespace Radegast.Media
             set
             {
                 position = FromOMVSpace(value);
-#if NOT
-// This is getting Bad Handle errors, so disabled for now
                 if (channel == null) return;
 
                 invoke(new SoundDelegate(delegate
                     {
-                        Logger.Log(
-                            String.Format("Position on channel {0} sound {1} finished {2}",
-                                channel.getRaw().ToString("X"),
-                                sound.getRaw().ToString("X"),
-                                finished),
-                            Helpers.LogLevel.Debug);
-                        FMODExec(channel.set3DAttributes(
-                            ref position,
-                            ref ZeroVector));
+                        try
+                        {
+                            FMODExec(channel.set3DAttributes(
+                                ref position,
+                                ref ZeroVector));
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log(
+                                String.Format("Error on position change on channel {0} sound {1} finished {2}",
+                                   channel.getRaw().ToString("X"),
+                                   sound.getRaw().ToString("X"),
+                                   finished),
+                                 Helpers.LogLevel.Error,
+                                 ex);
+                        }
                     }));
-#endif
+
             }
         }
 

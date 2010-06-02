@@ -149,7 +149,8 @@ namespace Radegast.Media
         /// </summary>
         private void AdjustVolume()
         {
-            Volume = volumeSetting * AllObjectVolume;
+            //TODO This is disabled until we find why FMOD objects to the handle
+//            Volume = volumeSetting * AllObjectVolume;
         }
 
         // A simpler constructor used by PreFetchSound.

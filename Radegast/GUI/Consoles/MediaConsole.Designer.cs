@@ -71,9 +71,9 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.ObjSoundEnable = new System.Windows.Forms.CheckBox();
             this.ObjSoundGroup = new System.Windows.Forms.GroupBox();
             this.ObjVolume = new System.Windows.Forms.TrackBar();
-            this.ObjSoundEnable = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.volAudioStream)).BeginInit();
             this.pnlParcelAudio.SuspendLayout();
             this.ObjSoundGroup.SuspendLayout();
@@ -202,6 +202,19 @@ namespace Radegast
             this.label1.TabIndex = 2;
             this.label1.Text = "Stream";
             // 
+            // ObjSoundEnable
+            // 
+            this.ObjSoundEnable.AutoSize = true;
+            this.ObjSoundEnable.Checked = true;
+            this.ObjSoundEnable.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ObjSoundEnable.Location = new System.Drawing.Point(10, 44);
+            this.ObjSoundEnable.Name = "ObjSoundEnable";
+            this.ObjSoundEnable.Size = new System.Drawing.Size(59, 17);
+            this.ObjSoundEnable.TabIndex = 5;
+            this.ObjSoundEnable.Text = "Enable";
+            this.toolTip1.SetToolTip(this.ObjSoundEnable, "When checked inworld sounds will play");
+            this.ObjSoundEnable.UseVisualStyleBackColor = true;
+            // 
             // ObjSoundGroup
             // 
             this.ObjSoundGroup.Controls.Add(this.ObjSoundEnable);
@@ -222,20 +235,7 @@ namespace Radegast
             this.ObjVolume.Size = new System.Drawing.Size(347, 42);
             this.ObjVolume.SmallChange = 2;
             this.ObjVolume.TabIndex = 2;
-            this.ObjVolume.Value = 25;
-            // 
-            // ObjSoundEnable
-            // 
-            this.ObjSoundEnable.AutoSize = true;
-            this.ObjSoundEnable.Checked = true;
-            this.ObjSoundEnable.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ObjSoundEnable.Location = new System.Drawing.Point(10, 44);
-            this.ObjSoundEnable.Name = "ObjSoundEnable";
-            this.ObjSoundEnable.Size = new System.Drawing.Size(59, 17);
-            this.ObjSoundEnable.TabIndex = 5;
-            this.ObjSoundEnable.Text = "Enable";
-            this.toolTip1.SetToolTip(this.ObjSoundEnable, "When checked inworld sounds will play");
-            this.ObjSoundEnable.UseVisualStyleBackColor = true;
+            this.ObjVolume.Value = 40;
             // 
             // MediaConsole
             // 

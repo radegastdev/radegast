@@ -465,10 +465,11 @@ namespace Radegast.Media
             if (allBuffers.ContainsKey(p.ID))
             {
                 // Exists already, so modify existing sound.
-                //TODO posible to change sound on the same object.  Key by Object?
                 BufferSound snd = allBuffers[p.ID];
+                /* TODO  These cause INVALID_HANDLE errors.  Removed until we find why
                 snd.Volume = p.SoundGain * ObjectVolume;
                 snd.Position = fullPosition;
+                */
             }
             else
             {
