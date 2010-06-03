@@ -135,8 +135,14 @@ namespace Radegast.Media
 
                         // Set general Speech volume.
                         //TODO Set this in the GUI
-                        volume = 0.5f;
+                        volume = 0.8f;
                         FMODExec(channel.setVolume(volume));
+
+                        // Set attenuation limits so distant people get a little softer,
+                        // but not TOO soft
+                        FMODExec(sound.set3DMinMaxDistance(
+                                    1.2f,       // Any closer than this gets no louder
+                                    8.0f));     // Further than this gets no softer.
 
                         // Set speaker position.
                         position = FromOMVSpace(speakerPos);
