@@ -71,24 +71,25 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.ObjSoundEnable = new System.Windows.Forms.CheckBox();
+            this.cbObjSoundEnable = new System.Windows.Forms.CheckBox();
             this.ObjSoundGroup = new System.Windows.Forms.GroupBox();
-            this.ObjVolume = new System.Windows.Forms.TrackBar();
+            this.objVolume = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.volAudioStream)).BeginInit();
             this.pnlParcelAudio.SuspendLayout();
             this.ObjSoundGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ObjVolume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objVolume)).BeginInit();
             this.SuspendLayout();
             // 
             // volAudioStream
             // 
+            this.volAudioStream.AccessibleName = "Parcel music volume";
             this.volAudioStream.LargeChange = 10;
             this.volAudioStream.Location = new System.Drawing.Point(6, 19);
             this.volAudioStream.Maximum = 50;
             this.volAudioStream.Name = "volAudioStream";
-            this.volAudioStream.Size = new System.Drawing.Size(347, 42);
+            this.volAudioStream.Size = new System.Drawing.Size(347, 45);
             this.volAudioStream.SmallChange = 2;
-            this.volAudioStream.TabIndex = 1;
+            this.volAudioStream.TabIndex = 0;
             this.volAudioStream.Value = 25;
             // 
             // pnlParcelAudio
@@ -106,7 +107,7 @@ namespace Radegast
             this.pnlParcelAudio.Location = new System.Drawing.Point(3, 3);
             this.pnlParcelAudio.Name = "pnlParcelAudio";
             this.pnlParcelAudio.Size = new System.Drawing.Size(359, 138);
-            this.pnlParcelAudio.TabIndex = 2;
+            this.pnlParcelAudio.TabIndex = 0;
             this.pnlParcelAudio.TabStop = false;
             this.pnlParcelAudio.Text = "Parcel Audio Stream";
             // 
@@ -122,25 +123,27 @@ namespace Radegast
             // 
             // btnStop
             // 
+            this.btnStop.AccessibleName = "Stop parcel music";
             this.btnStop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.btnStop.Image = global::Radegast.Properties.Resources.btn_stop;
             this.btnStop.Location = new System.Drawing.Point(37, 99);
             this.btnStop.Margin = new System.Windows.Forms.Padding(0);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(25, 25);
-            this.btnStop.TabIndex = 5;
+            this.btnStop.TabIndex = 3;
             this.btnStop.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // btnPlay
             // 
+            this.btnPlay.AccessibleName = "Play parcel music";
             this.btnPlay.Image = global::Radegast.Properties.Resources.btn_play;
             this.btnPlay.Location = new System.Drawing.Point(10, 99);
             this.btnPlay.Margin = new System.Windows.Forms.Padding(0);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(25, 25);
-            this.btnPlay.TabIndex = 5;
+            this.btnPlay.TabIndex = 2;
             this.btnPlay.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.btnPlay.UseVisualStyleBackColor = true;
             this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
@@ -151,7 +154,7 @@ namespace Radegast
             this.cbKeep.Location = new System.Drawing.Point(232, 109);
             this.cbKeep.Name = "cbKeep";
             this.cbKeep.Size = new System.Drawing.Size(121, 17);
-            this.cbKeep.TabIndex = 4;
+            this.cbKeep.TabIndex = 5;
             this.cbKeep.Text = "Keep current stream";
             this.toolTip1.SetToolTip(this.cbKeep, "When checked the audio player will keep the current audio stream and not change w" +
                     "hen parcel audio changes");
@@ -174,7 +177,7 @@ namespace Radegast
             this.txtSongTitle.Name = "txtSongTitle";
             this.txtSongTitle.ReadOnly = true;
             this.txtSongTitle.Size = new System.Drawing.Size(304, 20);
-            this.txtSongTitle.TabIndex = 3;
+            this.txtSongTitle.TabIndex = 1;
             // 
             // txtAudioURL
             // 
@@ -204,38 +207,39 @@ namespace Radegast
             // 
             // ObjSoundEnable
             // 
-            this.ObjSoundEnable.AutoSize = true;
-            this.ObjSoundEnable.Checked = true;
-            this.ObjSoundEnable.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ObjSoundEnable.Location = new System.Drawing.Point(10, 44);
-            this.ObjSoundEnable.Name = "ObjSoundEnable";
-            this.ObjSoundEnable.Size = new System.Drawing.Size(59, 17);
-            this.ObjSoundEnable.TabIndex = 5;
-            this.ObjSoundEnable.Text = "Enable";
-            this.toolTip1.SetToolTip(this.ObjSoundEnable, "When checked inworld sounds will play");
-            this.ObjSoundEnable.UseVisualStyleBackColor = true;
+            this.cbObjSoundEnable.AutoSize = true;
+            this.cbObjSoundEnable.Checked = true;
+            this.cbObjSoundEnable.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbObjSoundEnable.Location = new System.Drawing.Point(10, 44);
+            this.cbObjSoundEnable.Name = "ObjSoundEnable";
+            this.cbObjSoundEnable.Size = new System.Drawing.Size(59, 17);
+            this.cbObjSoundEnable.TabIndex = 7;
+            this.cbObjSoundEnable.Text = "Enable";
+            this.toolTip1.SetToolTip(this.cbObjSoundEnable, "When checked inworld sounds will play");
+            this.cbObjSoundEnable.UseVisualStyleBackColor = true;
             // 
             // ObjSoundGroup
             // 
-            this.ObjSoundGroup.Controls.Add(this.ObjSoundEnable);
-            this.ObjSoundGroup.Controls.Add(this.ObjVolume);
+            this.ObjSoundGroup.AccessibleName = "In-world sounds volume";
+            this.ObjSoundGroup.Controls.Add(this.cbObjSoundEnable);
+            this.ObjSoundGroup.Controls.Add(this.objVolume);
             this.ObjSoundGroup.Location = new System.Drawing.Point(3, 147);
             this.ObjSoundGroup.Name = "ObjSoundGroup";
             this.ObjSoundGroup.Size = new System.Drawing.Size(358, 67);
-            this.ObjSoundGroup.TabIndex = 3;
+            this.ObjSoundGroup.TabIndex = 1;
             this.ObjSoundGroup.TabStop = false;
             this.ObjSoundGroup.Text = "Object Sounds";
             // 
             // ObjVolume
             // 
-            this.ObjVolume.LargeChange = 10;
-            this.ObjVolume.Location = new System.Drawing.Point(4, 12);
-            this.ObjVolume.Maximum = 50;
-            this.ObjVolume.Name = "ObjVolume";
-            this.ObjVolume.Size = new System.Drawing.Size(347, 42);
-            this.ObjVolume.SmallChange = 2;
-            this.ObjVolume.TabIndex = 2;
-            this.ObjVolume.Value = 40;
+            this.objVolume.LargeChange = 10;
+            this.objVolume.Location = new System.Drawing.Point(4, 12);
+            this.objVolume.Maximum = 50;
+            this.objVolume.Name = "ObjVolume";
+            this.objVolume.Size = new System.Drawing.Size(347, 45);
+            this.objVolume.SmallChange = 2;
+            this.objVolume.TabIndex = 6;
+            this.objVolume.Value = 40;
             // 
             // MediaConsole
             // 
@@ -250,7 +254,7 @@ namespace Radegast
             this.pnlParcelAudio.PerformLayout();
             this.ObjSoundGroup.ResumeLayout(false);
             this.ObjSoundGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ObjVolume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objVolume)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -270,8 +274,8 @@ namespace Radegast
         public System.Windows.Forms.ToolTip toolTip1;
         public System.Windows.Forms.Label lblStation;
         private System.Windows.Forms.GroupBox ObjSoundGroup;
-        public System.Windows.Forms.CheckBox ObjSoundEnable;
-        public System.Windows.Forms.TrackBar ObjVolume;
+        public System.Windows.Forms.CheckBox cbObjSoundEnable;
+        public System.Windows.Forms.TrackBar objVolume;
 
     }
 }

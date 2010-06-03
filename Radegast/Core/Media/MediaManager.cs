@@ -72,9 +72,6 @@ namespace Radegast.Media
             listenerThread.IsBackground = true;
             listenerThread.Name = "ListenerThread";
             listenerThread.Start();
-
-            // Initial inworld-sound setting comes from Config.
-            ObjectEnable = true;
         }
 
         /// <summary>
