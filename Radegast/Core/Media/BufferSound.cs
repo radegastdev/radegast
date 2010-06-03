@@ -56,8 +56,8 @@ namespace Radegast.Media
         /// Creates a new sound object
         /// </summary>
         /// <param name="system">Sound system</param>
-        public BufferSound( UUID objectId, UUID soundId, bool loop, bool global, Vector3 worldpos, float vol )
-            :base()
+        public BufferSound(UUID objectId, UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
+            : base()
         {
             InitBuffer(objectId, soundId, loop, global, worldpos, vol);
         }
@@ -72,7 +72,7 @@ namespace Radegast.Media
         {
             // Do not let this get garbage-collected.
             lock (allBuffers)
-                allBuffers[objectId] =this;
+                allBuffers[objectId] = this;
 
             ContainerId = objectId;
             Id = soundId;
@@ -109,7 +109,7 @@ namespace Radegast.Media
                 new AssetManager.AssetReceivedCallback(Assets_OnSoundReceived));
         }
 
-        public static void Kill( UUID id )
+        public static void Kill(UUID id)
         {
             if (allBuffers.ContainsKey(id))
             {
@@ -150,11 +150,11 @@ namespace Radegast.Media
         private void AdjustVolume()
         {
             //TODO This is disabled until we find why FMOD objects to the handle
-//            Volume = volumeSetting * AllObjectVolume;
+            //            Volume = volumeSetting * AllObjectVolume;
         }
 
         // A simpler constructor used by PreFetchSound.
-        public BufferSound( UUID soundId )
+        public BufferSound(UUID soundId)
             : base()
         {
             lock (allBuffers)
@@ -194,7 +194,7 @@ namespace Radegast.Media
                     return;
                 }
 
-//                Logger.Log("Opening sound " + Id.ToString(), Helpers.LogLevel.Debug);
+                //                Logger.Log("Opening sound " + Id.ToString(), Helpers.LogLevel.Debug);
 
                 // Decode the Ogg Vorbis buffer.
                 AssetSound s = asset as AssetSound;
@@ -204,6 +204,7 @@ namespace Radegast.Media
                 // Describe the data to FMOD
                 extraInfo.length = (uint)data.Length;
                 extraInfo.nonblockcallback = loadCallback;
+                extraInfo.cbsize = Marshal.SizeOf(extraInfo);
 
                 invoke(new SoundDelegate(delegate
                 {
@@ -216,7 +217,7 @@ namespace Radegast.Media
 
                     // Register for callbacks.
                     RegisterSound(sound);
-                    }));
+                }));
             }
             else
             {
@@ -242,7 +243,7 @@ namespace Radegast.Media
                     {
                         uint soundlen = 0;
                         FMODExec(sound.getLength(ref soundlen, TIMEUNIT.PCM));
-                        FMODExec( sound.setLoopPoints( 0, TIMEUNIT.PCM, soundlen-1, TIMEUNIT.PCM ));
+                        FMODExec(sound.setLoopPoints(0, TIMEUNIT.PCM, soundlen - 1, TIMEUNIT.PCM));
                         FMODExec(sound.setLoopCount(-1));
                     }
 
@@ -254,7 +255,11 @@ namespace Radegast.Media
                              sound.getRaw().ToString("X"),
                              Id),
                         Helpers.LogLevel.Debug);
-                    FMODExec(channel.setVolume(volumeSetting * AllObjectVolume ));
+
+                    lock (allChannels)
+                        allChannels[channel.getRaw()] = this;
+
+                    FMODExec(channel.setVolume(volumeSetting * AllObjectVolume));
 
                     // Take note of when the sound is finished playing.
                     FMODExec(channel.setCallback(endCallback));
@@ -280,24 +285,12 @@ namespace Radegast.Media
         }
 
         /// <summary>
-        /// Callback handler for reaching the end of a sound.
+        /// Handles stop sound even from FMOD
         /// </summary>
-        /// <param name="channelraw"></param>
-        /// <param name="type"></param>
-        /// <param name="commanddata1"></param>
-        /// <param name="commanddata2"></param>
-        /// <returns></returns>
-        private RESULT EndCallback(
-            IntPtr channelraw,
-            CHANNEL_CALLBACKTYPE type,
-            IntPtr commanddata1,
-            IntPtr commanddata2)
+        /// <returns>RESULT.OK</returns>
+        protected override RESULT EndCallbackHandler()
         {
-            // Ignore other callback types.
-            if (type != CHANNEL_CALLBACKTYPE.END) return RESULT.OK;
-
             StopSound();
-
             return RESULT.OK;
         }
 
@@ -307,24 +300,28 @@ namespace Radegast.Media
 
             invoke(new SoundDelegate(delegate
             {
-                Logger.Log( String.Format("Removing channel {0} sound {1} ID {2}",
-                        channel.getRaw().ToString("X"),
-                        sound.getRaw().ToString("X"),
-                        Id.ToString()),
-                    Helpers.LogLevel.Debug);
+                string chanStr = "none";
+                string soundStr = "none";
 
                 // Release the buffer to avoid a big memory leak.
                 if (channel != null)
                 {
+                    chanStr = channel.getRaw().ToString("X");
                     channel.stop();
                     channel = null;
                 }
                 if (sound != null)
                 {
+                    soundStr = sound.getRaw().ToString("X");
                     sound.release();
                     sound = null;
                 }
-                channel = null;
+
+                Logger.Log(String.Format("Removing channel {0} sound {1} ID {2}",
+                    chanStr,
+                    soundStr,
+                    Id.ToString()),
+                    Helpers.LogLevel.Debug);
 
                 lock (allBuffers)
                     allBuffers.Remove(ContainerId);
