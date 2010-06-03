@@ -28,7 +28,7 @@
 //
 // $Id: Sound.cs 502 2010-03-14 23:13:46Z latifer $
 //
-#define GET_STREAM_TAGS
+//#define GET_STREAM_TAGS
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
