@@ -336,7 +336,10 @@ namespace Radegast
                                     needRepaint = true;
                                 }
                             }
-                            goto default;
+                            lock (tileRequests)
+                                if (tileRequests.Contains(handle))
+                                    tileRequests.Remove(handle);
+                            break;
 
                         default:
                             lock (tileRequests)
