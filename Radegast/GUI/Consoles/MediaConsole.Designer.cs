@@ -130,7 +130,7 @@ namespace Radegast
             this.btnStop.Margin = new System.Windows.Forms.Padding(0);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(25, 25);
-            this.btnStop.TabIndex = 3;
+            this.btnStop.TabIndex = 4;
             this.btnStop.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
@@ -143,7 +143,7 @@ namespace Radegast
             this.btnPlay.Margin = new System.Windows.Forms.Padding(0);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(25, 25);
-            this.btnPlay.TabIndex = 2;
+            this.btnPlay.TabIndex = 3;
             this.btnPlay.TextImageRelation = System.Windows.Forms.TextImageRelation.TextAboveImage;
             this.btnPlay.UseVisualStyleBackColor = true;
             this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
@@ -154,7 +154,7 @@ namespace Radegast
             this.cbKeep.Location = new System.Drawing.Point(232, 109);
             this.cbKeep.Name = "cbKeep";
             this.cbKeep.Size = new System.Drawing.Size(121, 17);
-            this.cbKeep.TabIndex = 5;
+            this.cbKeep.TabIndex = 6;
             this.cbKeep.Text = "Keep current stream";
             this.toolTip1.SetToolTip(this.cbKeep, "When checked the audio player will keep the current audio stream and not change w" +
                     "hen parcel audio changes");
@@ -166,26 +166,28 @@ namespace Radegast
             this.cbPlayAudioStream.Location = new System.Drawing.Point(79, 109);
             this.cbPlayAudioStream.Name = "cbPlayAudioStream";
             this.cbPlayAudioStream.Size = new System.Drawing.Size(108, 17);
-            this.cbPlayAudioStream.TabIndex = 4;
+            this.cbPlayAudioStream.TabIndex = 5;
             this.cbPlayAudioStream.Text = "Auto start at login";
             this.cbPlayAudioStream.UseVisualStyleBackColor = true;
             // 
             // txtSongTitle
             // 
+            this.txtSongTitle.AccessibleName = "Song title";
             this.txtSongTitle.BackColor = System.Drawing.SystemColors.Control;
             this.txtSongTitle.Location = new System.Drawing.Point(49, 70);
             this.txtSongTitle.Name = "txtSongTitle";
             this.txtSongTitle.ReadOnly = true;
             this.txtSongTitle.Size = new System.Drawing.Size(304, 20);
-            this.txtSongTitle.TabIndex = 1;
+            this.txtSongTitle.TabIndex = 2;
             // 
             // txtAudioURL
             // 
+            this.txtAudioURL.AccessibleName = "Stream URL";
             this.txtAudioURL.BackColor = System.Drawing.SystemColors.Control;
             this.txtAudioURL.Location = new System.Drawing.Point(49, 48);
             this.txtAudioURL.Name = "txtAudioURL";
             this.txtAudioURL.Size = new System.Drawing.Size(304, 20);
-            this.txtAudioURL.TabIndex = 3;
+            this.txtAudioURL.TabIndex = 1;
             // 
             // label2
             // 
@@ -205,15 +207,15 @@ namespace Radegast
             this.label1.TabIndex = 2;
             this.label1.Text = "Stream";
             // 
-            // ObjSoundEnable
+            // cbObjSoundEnable
             // 
             this.cbObjSoundEnable.AutoSize = true;
             this.cbObjSoundEnable.Checked = true;
             this.cbObjSoundEnable.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbObjSoundEnable.Location = new System.Drawing.Point(10, 44);
-            this.cbObjSoundEnable.Name = "ObjSoundEnable";
+            this.cbObjSoundEnable.Name = "cbObjSoundEnable";
             this.cbObjSoundEnable.Size = new System.Drawing.Size(59, 17);
-            this.cbObjSoundEnable.TabIndex = 7;
+            this.cbObjSoundEnable.TabIndex = 1;
             this.cbObjSoundEnable.Text = "Enable";
             this.toolTip1.SetToolTip(this.cbObjSoundEnable, "When checked inworld sounds will play");
             this.cbObjSoundEnable.UseVisualStyleBackColor = true;
@@ -230,15 +232,16 @@ namespace Radegast
             this.ObjSoundGroup.TabStop = false;
             this.ObjSoundGroup.Text = "Object Sounds";
             // 
-            // ObjVolume
+            // objVolume
             // 
+            this.objVolume.AccessibleName = "Object sounds volume";
             this.objVolume.LargeChange = 10;
             this.objVolume.Location = new System.Drawing.Point(4, 12);
             this.objVolume.Maximum = 50;
-            this.objVolume.Name = "ObjVolume";
+            this.objVolume.Name = "objVolume";
             this.objVolume.Size = new System.Drawing.Size(347, 45);
             this.objVolume.SmallChange = 2;
-            this.objVolume.TabIndex = 6;
+            this.objVolume.TabIndex = 0;
             this.objVolume.Value = 40;
             // 
             // MediaConsole
