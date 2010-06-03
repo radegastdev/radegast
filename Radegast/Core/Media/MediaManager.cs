@@ -353,30 +353,46 @@ namespace Radegast.Media
         /// <param name="e"></param>
         private void Sound_AttachedSound(object sender, AttachedSoundEventArgs e)
         {
-            // We seem to get a lot of these zero sounds.
-            if (e.SoundID == UUID.Zero) return;
+            // This event tells us the Object ID, but not the Prim info directly.
+            // So we look it up in our internal Object memory.
+            Simulator sim = e.Simulator;
+            Primitive p = sim.ObjectsPrimitives.Find((Primitive p2) => { return p2.ID == e.ObjectID; });
+            if (p == null) return;
 
+            // Only one attached sound per prim, so we kill any previous
+            BufferSound.Kill(p.ID);
+
+            // If this is stop sound, we're done since we've already killed sound for this object
             if ((e.Flags & SoundFlags.Stop) == SoundFlags.Stop)
             {
-                BufferSound.Kill(e.SoundID);
                 return;
             }
 
-            // This event tells us the Object ID, but not the Prim info directly.
-            // So we look it up in our internal Object memory.
-            Simulator sim = Instance.Client.Network.CurrentSim;
-            Primitive p = sim.ObjectsPrimitives.Find((Primitive p2) => { return p2.ID == e.ObjectID; });
-            if (p==null) return;
+            // We seem to get a lot of these zero sounds.
+            if (e.SoundID == UUID.Zero) return;
 
             // If this is a child prim, its position is relative to the root.
             Vector3 fullPosition = p.Position;
-            if (p.ParentID != 0)
+
+            while (p != null && p.ParentID != 0)
             {
-                Primitive parentP;
-                sim.ObjectsPrimitives.TryGetValue(p.ParentID, out parentP);
-                if (parentP == null) return;
-                fullPosition += parentP.Position;
+                Avatar av;
+                if (sim.ObjectsAvatars.TryGetValue(p.ParentID, out av))
+                {
+                    p = av;
+                    fullPosition += p.Position;
+                }
+                else
+                {
+                    if (sim.ObjectsPrimitives.TryGetValue(p.ParentID, out p))
+                    {
+                        fullPosition += p.Position;
+                    }
+                }
             }
+
+            // Didn't find root prim
+            if (p == null) return;
 
             new BufferSound(
                 e.ObjectID,
@@ -429,7 +445,7 @@ namespace Radegast.Media
             if (p.Sound == null) return;
             if (p.Sound == UUID.Zero) return;
 
-            BufferSound.Kill(p.Sound);
+            BufferSound.Kill(p.ID);
         }
 
         /// <summary>

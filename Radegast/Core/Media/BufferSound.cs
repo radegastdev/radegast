@@ -157,9 +157,6 @@ namespace Radegast.Media
         public BufferSound(UUID soundId)
             : base()
         {
-            lock (allBuffers)
-                allBuffers[soundId] = this;
-
             prefetchOnly = true;
             ContainerId = UUID.Zero;
             Id = soundId;
@@ -189,8 +186,6 @@ namespace Radegast.Media
                 // If this was a Prefetch, just stop here.
                 if (prefetchOnly)
                 {
-                    lock (allBuffers)
-                        allBuffers.Remove(Id);
                     return;
                 }
 
@@ -306,10 +301,13 @@ namespace Radegast.Media
                 // Release the buffer to avoid a big memory leak.
                 if (channel != null)
                 {
+                    lock(allChannels)
+                        allChannels.Remove(channel.getRaw());
                     chanStr = channel.getRaw().ToString("X");
                     channel.stop();
                     channel = null;
                 }
+
                 if (sound != null)
                 {
                     soundStr = sound.getRaw().ToString("X");
