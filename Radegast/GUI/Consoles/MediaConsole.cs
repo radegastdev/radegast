@@ -16,16 +16,19 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private Settings s;
+        private float m_audioVolume;
+
         private float audioVolume
         {
             get
             {
-                return volAudioStream.Value / 50f;
+                return m_audioVolume;
             }
             set
             {
                 if (value >= 0f && value < 1f)
                 {
+                    m_audioVolume = value;
                     volAudioStream.Value = (int)(50f * value);
                 }
             }

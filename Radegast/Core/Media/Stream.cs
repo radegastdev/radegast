@@ -28,8 +28,10 @@
 //
 // $Id: Sound.cs 502 2010-03-14 23:13:46Z latifer $
 //
+#define GET_STREAM_TAGS
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using FMOD;
 using OpenMetaverse;
 
@@ -61,22 +63,57 @@ namespace Radegast.Media
         /// </summary>
         public event StreamInfoCallback OnStreamInfo;
 
+#if GET_STREAM_TAGS
+        Timer tagTimer = null;
+        uint tagCheckInterval = 1000;
+#endif
         /// <summary>
         /// Creates a new sound object
         /// </summary>
         /// <param name="system">Sound system</param>
         public Stream()
-            :base()
+            : base()
         {
         }
-
 
         /// <summary>
         /// Releases resources of this sound object
         /// </summary>
         public override void Dispose()
         {
+            StopStream();
             base.Dispose();
+        }
+
+        public void StopStream()
+        {
+#if GET_STREAM_TAGS
+            if (tagTimer != null)
+            {
+                tagTimer.Dispose();
+                tagTimer = null;
+            }
+#endif
+
+            if (channel != null)
+            {
+                ManualResetEvent stopped = new ManualResetEvent(false);
+                invoke(new SoundDelegate(
+                    delegate
+                    {
+                        try
+                        {
+                            FMODExec(channel.stop());
+                            channel = null;
+                            UnRegisterSound();
+                            FMODExec(sound.release());
+                            sound = null;
+                        }
+                        catch { }
+                        stopped.Set();
+                    }));
+                stopped.WaitOne();
+            }
         }
 
         /// <summary>
@@ -86,24 +123,14 @@ namespace Radegast.Media
         public void PlayStream(string url)
         {
             // Stop old stream first.
-            if (channel != null)
-            {
-                invoke(new SoundDelegate(
-                    delegate
-                    {
-                        FMODExec(channel.stop());
-                        channel = null;
-                        UnRegisterSound();
-                        FMODExec(sound.release());
-                        sound = null;
-                    }));
-            }
+            StopStream();
 
             extraInfo.nonblockcallback = loadCallback;
             extraInfo.format = SOUND_FORMAT.PCM16;
 
-            invoke( new SoundDelegate(
-                delegate {
+            invoke(new SoundDelegate(
+                delegate
+                {
                     FMODExec(
                         system.createSound(url,
                         (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING),
@@ -139,33 +166,18 @@ namespace Radegast.Media
                             sound,
                             false,
                             ref channel), "Stream channel");
-                        volume = 0.5f;
-//                        FMODExec(channel.setVolume(volume), "Stream volume");
+                        FMODExec(channel.setVolume(volume), "Stream volume");
 
-                        // If this is not Unix, try to get MP3 tags.
-                        // getTag seems to break on Unix.
-#if NOT
-                        // Seems to break on Windows too now
-                        if (false) //Environment.OSVersion.Platform != PlatformID.Unix)
+#if GET_STREAM_TAGS
+                        if (Environment.OSVersion.Platform != PlatformID.Unix)
                         {
-                            TAG tag = new TAG();
-
-                            while (sound.getTag(null, -1, ref tag) == RESULT.OK)
+                            if (tagTimer == null)
                             {
-                                if (tag.datatype != TAGDATATYPE.STRING) continue;
-
-                                // Tell listeners about the Stream tag.  This can be
-                                // displayed to the user.
-                                if (OnStreamInfo != null)
-                                    try
-                                    {
-                                        OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
-                                    }
-                                    catch (Exception) { }
+                                tagTimer = new Timer(CheckTags);
                             }
+                            tagTimer.Change(0, tagCheckInterval);
                         }
 #endif
-
                     }
                     catch (Exception ex)
                     {
@@ -176,5 +188,33 @@ namespace Radegast.Media
             Logger.Log("Stream playing", Helpers.LogLevel.Info);
             return RESULT.OK;
         }
+
+#if GET_STREAM_TAGS
+        private void CheckTags(object sender)
+        {
+            if (sound == null) return;
+
+            invoke(new SoundDelegate(() =>
+            {
+                try
+                {
+                    TAG tag = new TAG();
+                    while (sound.getTag(null, -1, ref tag) == RESULT.OK)
+                    {
+                        if (tag.datatype != TAGDATATYPE.STRING) continue;
+
+                        // Tell listeners about the Stream tag.  This can be
+                        // displayed to the user.
+                        if (OnStreamInfo != null)
+                            OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.DebugLog("Error getting stream tags: " + ex.Message);
+                }
+            }));
+        }
+#endif
     }
 }
