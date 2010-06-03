@@ -114,7 +114,9 @@ namespace Radegast.Media
             if (allBuffers.ContainsKey(id))
             {
                 BufferSound bs = allBuffers[id];
-                bs.StopSound();
+                ManualResetEvent done = new ManualResetEvent(false);
+                bs.StopSound(done);
+                done.WaitOne();
             }
         }
 
@@ -204,11 +206,11 @@ namespace Radegast.Media
                 invoke(new SoundDelegate(delegate
                 {
                     // Create an FMOD sound of this Ogg data.
-                    RESULT status = system.createSound(
+                    FMODExec(system.createSound(
                         data,
                         mode,
                         ref extraInfo,
-                        ref sound);
+                        ref sound));
 
                     // Register for callbacks.
                     RegisterSound(sound);
@@ -223,6 +225,9 @@ namespace Radegast.Media
 
         protected override RESULT NonBlockCallbackHandler(RESULT instatus)
         {
+            // Check if we killed the sound before it was decoded
+            if (sound == null) return RESULT.OK;
+
             if (instatus != RESULT.OK)
             {
                 Logger.Log("Error opening sound: " + instatus, Helpers.LogLevel.Error);
@@ -291,6 +296,11 @@ namespace Radegast.Media
 
         protected void StopSound()
         {
+            StopSound(null);
+        }
+
+        protected void StopSound(ManualResetEvent signal)
+        {
             finished = true;
 
             invoke(new SoundDelegate(delegate
@@ -301,7 +311,7 @@ namespace Radegast.Media
                 // Release the buffer to avoid a big memory leak.
                 if (channel != null)
                 {
-                    lock(allChannels)
+                    lock (allChannels)
                         allChannels.Remove(channel.getRaw());
                     chanStr = channel.getRaw().ToString("X");
                     channel.stop();
@@ -323,6 +333,9 @@ namespace Radegast.Media
 
                 lock (allBuffers)
                     allBuffers.Remove(ContainerId);
+
+                if (signal != null)
+                    signal.Set();
             }));
 
         }

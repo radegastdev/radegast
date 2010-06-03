@@ -50,6 +50,7 @@ namespace Radegast.Media
         public RadegastInstance Instance;
 
         private List<MediaObject> sounds = new List<MediaObject>();
+        ManualResetEvent initDone = new ManualResetEvent(false);
 
         public MediaManager(RadegastInstance instance)
             : base()
@@ -57,9 +58,10 @@ namespace Radegast.Media
             this.Instance = instance;
             manager = this;
 
+
             loadCallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
             endCallback = new FMOD.CHANNEL_CALLBACK(DispatchEndCallback);
-            allBuffers = new Dictionary<UUID,BufferSound>();
+            allBuffers = new Dictionary<UUID, BufferSound>();
 
             // Start the background thread that does all the FMOD calls.
             soundThread = new Thread(new ThreadStart(CommandLoop));
@@ -72,6 +74,10 @@ namespace Radegast.Media
             listenerThread.IsBackground = true;
             listenerThread.Name = "ListenerThread";
             listenerThread.Start();
+
+            // Wait for init to complete
+            initDone.WaitOne();
+            initDone = null;
         }
 
         /// <summary>
@@ -89,15 +95,16 @@ namespace Radegast.Media
             ZeroVector.y = 0.0f;
             ZeroVector.z = 0.0f;
 
-            allSounds = new Dictionary<IntPtr,MediaObject>();
+            allSounds = new Dictionary<IntPtr, MediaObject>();
             allChannels = new Dictionary<IntPtr, MediaObject>();
-
-            // Initialize the FMOD sound package
-            InitFMOD();
-            if (!this.soundSystemAvailable) return;
 
             // Initialize the command queue.
             queue = new Queue<SoundDelegate>();
+
+            // Initialize the FMOD sound package
+            InitFMOD();
+            initDone.Set();
+            if (!this.soundSystemAvailable) return;
 
             while (true)
             {
@@ -238,6 +245,20 @@ namespace Radegast.Media
                 system = null;
             }
 
+            if (listenerThread != null)
+            {
+                if (listenerThread.IsAlive)
+                    listenerThread.Abort();
+                listenerThread = null;
+            }
+
+            if (soundThread != null)
+            {
+                if (soundThread.IsAlive)
+                    soundThread.Abort();
+                soundThread = null;
+            }
+
             base.Dispose();
         }
 
@@ -248,7 +269,7 @@ namespace Radegast.Media
         private void ListenerUpdate()
         {
             // Notice changes in position or direction.
-            Vector3 lastpos = new Vector3(0.0f, 0.0f, 0.0f );
+            Vector3 lastpos = new Vector3(0.0f, 0.0f, 0.0f);
             float lastface = 0.0f;
 
             while (true)
@@ -310,14 +331,14 @@ namespace Radegast.Media
                     Helpers.LogLevel.Debug);
 
                 // Tell FMOD the new orientation.
-                invoke( new SoundDelegate( delegate
+                invoke(new SoundDelegate(delegate
                 {
-                    FMODExec( system.set3DListenerAttributes(
+                    FMODExec(system.set3DListenerAttributes(
                         0,
                         ref listenerpos,	// Position
                         ref ZeroVector,		// Velocity
                         ref forward,		// Facing direction
-                        ref UpVector ));	// Top of head
+                        ref UpVector));	// Top of head
 
                     FMODExec(system.update());
                 }));
@@ -403,7 +424,7 @@ namespace Radegast.Media
                 e.Gain * ObjectVolume);
         }
 
-        
+
         /// <summary>
         /// Handle request to preload a sound for playing later.
         /// </summary>
@@ -413,22 +434,18 @@ namespace Radegast.Media
         {
             if (e.SoundID == UUID.Zero) return;
 
-            new BufferSound( e.SoundID );
+            if (!Instance.Client.Assets.Cache.HasAsset(e.SoundID))
+                new BufferSound(e.SoundID);
         }
 
-        private void Objects_ObjectPropertiesUpdated(object sender, ObjectPropertiesUpdatedEventArgs e)
-        {
-            HandleObjectSound(e.Prim, e.Simulator );
-        }
-     
-     /// <summary>
+        /// <summary>
         /// Handle object updates, looking for sound events
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
-            HandleObjectSound(e.Prim, e.Simulator );
+            HandleObjectSound(e.Prim, e.Simulator);
         }
 
         /// <summary>
@@ -456,9 +473,8 @@ namespace Radegast.Media
         private void HandleObjectSound(Primitive p, Simulator s)
         {
             // Objects without sounds are not interesting.
-            if (p.Sound == null) return;
             if (p.Sound == UUID.Zero) return;
-           
+
             if ((p.SoundFlags & SoundFlags.Stop) == SoundFlags.Stop)
             {
                 BufferSound.Kill(p.ID);
@@ -473,7 +489,7 @@ namespace Radegast.Media
                 if (!s.ObjectsPrimitives.TryGetValue(p.ParentID, out parentP)) return;
                 fullPosition += parentP.Position;
             }
-  
+
             // See if this is an update to  something we already know about.
             if (allBuffers.ContainsKey(p.ID))
             {
@@ -527,9 +543,9 @@ namespace Radegast.Media
                         Instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
                         Instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
                         Instance.Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-                        Instance.Client.Objects.ObjectPropertiesUpdated += new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
                         Instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
                         Instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+                        Instance.Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
                         Logger.Log("Inworld sound enabled", Helpers.LogLevel.Info);
                     }
                     else
@@ -539,10 +555,9 @@ namespace Radegast.Media
                         Instance.Client.Sound.AttachedSound -= new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
                         Instance.Client.Sound.PreloadSound -= new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
                         Instance.Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-                        Instance.Client.Objects.ObjectPropertiesUpdated -= new EventHandler<ObjectPropertiesUpdatedEventArgs>(Objects_ObjectPropertiesUpdated);
                         Instance.Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
                         Instance.Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-
+                        Instance.Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
                         // Stop all running sounds
                         BufferSound.KillAll();
 
@@ -551,12 +566,26 @@ namespace Radegast.Media
                 }
                 catch (Exception e)
                 {
-                    System.Console.WriteLine("Error on enable/disable: "+e.Message);
+                    System.Console.WriteLine("Error on enable/disable: " + e.Message);
                 }
 
                 m_objectEnabled = value;
             }
             get { return m_objectEnabled; }
+        }
+
+        void Self_ChatFromSimulator(object sender, ChatEventArgs e)
+        {
+            if (e.Type == ChatType.StartTyping)
+            {
+                new BufferSound(
+                    UUID.Random(),
+                    new UUID("5e191c7b-8996-9ced-a177-b2ac32bfea06"),
+                    false,
+                    true,
+                    e.Position,
+                    ObjectVolume);
+            }
         }
 
         /// <summary>
