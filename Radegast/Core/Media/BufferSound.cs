@@ -101,6 +101,9 @@ namespace Radegast.Media
             else
                 mode |= FMOD.MODE._3D_HEADRELATIVE;
 
+            if (loopSound)
+                mode |= FMOD.MODE.LOOP_NORMAL;
+
             // Fetch the sound data.
             manager.Instance.Client.Assets.RequestAsset(
                 Id,
@@ -114,9 +117,7 @@ namespace Radegast.Media
             if (allBuffers.ContainsKey(id))
             {
                 BufferSound bs = allBuffers[id];
-                ManualResetEvent done = new ManualResetEvent(false);
-                bs.StopSound(done);
-                done.WaitOne();
+                bs.StopSound(true);
             }
         }
 
@@ -132,6 +133,13 @@ namespace Radegast.Media
             foreach (BufferSound s in list)
             {
                 s.StopSound();
+            }
+
+            List<MediaObject> objs = new List<MediaObject>(allChannels.Values);
+            foreach (MediaObject obj in objs)
+            {
+                if (obj is BufferSound)
+                    ((BufferSound)obj).StopSound();
             }
         }
 
@@ -296,11 +304,15 @@ namespace Radegast.Media
 
         protected void StopSound()
         {
-            StopSound(null);
+            StopSound(false);
         }
 
-        protected void StopSound(ManualResetEvent signal)
+        protected void StopSound(bool blocking)
         {
+            ManualResetEvent stopped = null;
+            if (blocking)
+                stopped = new ManualResetEvent(false);
+
             finished = true;
 
             invoke(new SoundDelegate(delegate
@@ -334,9 +346,12 @@ namespace Radegast.Media
                 lock (allBuffers)
                     allBuffers.Remove(ContainerId);
 
-                if (signal != null)
-                    signal.Set();
+                if (blocking)
+                    stopped.Set();
             }));
+
+            if (blocking)
+                stopped.WaitOne();
 
         }
 

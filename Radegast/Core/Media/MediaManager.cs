@@ -584,7 +584,7 @@ namespace Radegast.Media
                     false,
                     true,
                     e.Position,
-                    ObjectVolume);
+                    ObjectVolume / 2f);
             }
         }
 
