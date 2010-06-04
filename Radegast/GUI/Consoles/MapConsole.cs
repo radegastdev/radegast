@@ -219,9 +219,18 @@ namespace Radegast
         public void DisplayLocation(string region, int x, int y, int z)
         {
             txtRegion.Text = region;
-            nudX.Value = x;
-            nudY.Value = y;
-            nudZ.Value = z;
+            
+            try
+            {
+                nudX.Value = x;
+                nudY.Value = y;
+                nudZ.Value = z;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed setting map position controls: ", Helpers.LogLevel.Warning, instance.Client, ex);
+            }
+
             gotoRegion(txtRegion.Text, x, y);
             btnTeleport.Enabled = true;
             btnTeleport.Focus();
@@ -336,9 +345,16 @@ namespace Radegast
             if (m.Groups.Count > 3)
             {
                 txtRegion.Text = m.Groups[2].Value;
-                nudX.Value = int.Parse(m.Groups[3].Value);
-                nudY.Value = int.Parse(m.Groups[4].Value);
-                nudZ.Value = 0;
+                try
+                {
+                    nudX.Value = int.Parse(m.Groups[3].Value);
+                    nudY.Value = int.Parse(m.Groups[4].Value);
+                    nudZ.Value = 0;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failed setting map position controls: ", Helpers.LogLevel.Warning, instance.Client, ex);
+                }
 
                 if (m.Groups.Count > 5 && m.Groups[6].Value != String.Empty)
                 {
