@@ -51,6 +51,16 @@ namespace Radegast.Media
         private Vector3 speakerPos;
 
         /// <summary>
+        /// If true, decrease distance falloff effect in volume.
+        /// </summary>
+        private static Boolean compress = true;
+        public static Boolean Compress
+        {
+            set { compress = value; }
+            get { return compress; }
+        }
+
+        /// <summary>
         /// Creates a new sound object
         /// </summary>
         /// <param name="system">Sound system</param>
@@ -135,14 +145,19 @@ namespace Radegast.Media
 
                         // Set general Speech volume.
                         //TODO Set this in the GUI
-                        volume = 0.8f;
+                        volume = 1.0f;
                         FMODExec(channel.setVolume(volume));
 
                         // Set attenuation limits so distant people get a little softer,
                         // but not TOO soft
-                        FMODExec(sound.set3DMinMaxDistance(
-                                    1.2f,       // Any closer than this gets no louder
-                                    8.0f));     // Further than this gets no softer.
+                        if (compress)
+                            FMODExec(sound.set3DMinMaxDistance(
+                                    2f,       // Any closer than this gets no louder
+                                    3.5f));     // Further than this gets no softer.
+                        else
+                            FMODExec(sound.set3DMinMaxDistance(
+                                    2f,       // Any closer than this gets no louder
+                                    10f));     // Further than this gets no softer.
 
                         // Set speaker position.
                         position = FromOMVSpace(speakerPos);

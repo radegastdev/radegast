@@ -28,6 +28,8 @@
 //
 // $Id: Sound.cs 502 2010-03-14 23:13:46Z latifer $
 //
+// Uncomment this to get lots more logging
+//#define TRACE_SOUND
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
@@ -257,13 +259,14 @@ namespace Radegast.Media
 
                     // Allocate a channel and set initial volume.  Initially paused.
                     FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+#if TRACE_SOUND
                     Logger.Log(
                         String.Format("Channel {0} for {1} assigned to {2}",
                              channel.getRaw().ToString("X"),
                              sound.getRaw().ToString("X"),
                              Id),
                         Helpers.LogLevel.Debug);
-
+#endif
                     lock (allChannels)
                         allChannels[channel.getRaw()] = this;
 
@@ -336,13 +339,13 @@ namespace Radegast.Media
                     sound.release();
                     sound = null;
                 }
-
+#if TRACE_SOUND
                 Logger.Log(String.Format("Removing channel {0} sound {1} ID {2}",
                     chanStr,
                     soundStr,
                     Id.ToString()),
                     Helpers.LogLevel.Debug);
-
+#endif
                 lock (allBuffers)
                     allBuffers.Remove(ContainerId);
 
