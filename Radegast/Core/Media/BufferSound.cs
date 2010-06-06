@@ -150,7 +150,10 @@ namespace Radegast.Media
         /// </summary>
         public static void AdjustVolumes()
         {
-            foreach (BufferSound s in allBuffers.Values)
+            // Make a list from the dictionary so we do not get a deadlock
+            List<BufferSound> list = new List<BufferSound>(allBuffers.Values);
+
+            foreach (BufferSound s in list)
             {
                 s.AdjustVolume();
             }
@@ -161,8 +164,7 @@ namespace Radegast.Media
         /// </summary>
         private void AdjustVolume()
         {
-            //TODO This is disabled until we find why FMOD objects to the handle
-            //            Volume = volumeSetting * AllObjectVolume;
+            Volume = volumeSetting * AllObjectVolume;
         }
 
         // A simpler constructor used by PreFetchSound.

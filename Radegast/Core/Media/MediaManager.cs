@@ -495,10 +495,8 @@ namespace Radegast.Media
             {
                 // Exists already, so modify existing sound.
                 BufferSound snd = allBuffers[p.ID];
-                /* TODO  These cause INVALID_HANDLE errors.  Removed until we find why
                 snd.Volume = p.SoundGain * ObjectVolume;
                 snd.Position = fullPosition;
-                */
             }
             else
             {
