@@ -76,12 +76,12 @@ namespace Radegast
             this.proLogin = new System.Windows.Forms.ProgressBar();
             this.lblLoginStatus = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnGridManager = new System.Windows.Forms.Button();
             this.lblVersion = new System.Windows.Forms.Label();
             this.pnlSplash = new System.Windows.Forms.Panel();
             this.pnlTos = new System.Windows.Forms.Panel();
             this.cbTOS = new System.Windows.Forms.CheckBox();
             this.txtTOS = new System.Windows.Forms.TextBox();
-            this.btnGridManager = new System.Windows.Forms.Button();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -289,6 +289,17 @@ namespace Radegast
             this.panel1.Size = new System.Drawing.Size(682, 97);
             this.panel1.TabIndex = 18;
             // 
+            // btnGridManager
+            // 
+            this.btnGridManager.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.btnGridManager.Location = new System.Drawing.Point(6, 44);
+            this.btnGridManager.Name = "btnGridManager";
+            this.btnGridManager.Size = new System.Drawing.Size(116, 23);
+            this.btnGridManager.TabIndex = 16;
+            this.btnGridManager.Text = "Grid Manager";
+            this.btnGridManager.UseVisualStyleBackColor = true;
+            this.btnGridManager.Visible = false;
+            // 
             // lblVersion
             // 
             this.lblVersion.AutoSize = true;
@@ -343,17 +354,6 @@ namespace Radegast
             this.txtTOS.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtTOS.Size = new System.Drawing.Size(682, 302);
             this.txtTOS.TabIndex = 0;
-            // 
-            // btnGridManager
-            // 
-            this.btnGridManager.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnGridManager.Location = new System.Drawing.Point(6, 44);
-            this.btnGridManager.Name = "btnGridManager";
-            this.btnGridManager.Size = new System.Drawing.Size(116, 23);
-            this.btnGridManager.TabIndex = 16;
-            this.btnGridManager.Text = "Grid Manager";
-            this.btnGridManager.UseVisualStyleBackColor = true;
-            this.btnGridManager.Visible = false;
             // 
             // LoginConsole
             // 

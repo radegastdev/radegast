@@ -52,10 +52,13 @@ namespace Radegast
         [Option("g", "grid", HelpText = "Grid ID to login into, try --list-grids to see IDs used for this parameter")]
         public string Grid = string.Empty;
 
-        [Option("l", "list-grids", HelpText = "Lists grid IDs used for --grid option")]
+        [Option("l", "location", HelpText = "Login location: last, home or regionname. Regioname can also be in format regionname/x/y/z")]
+        public string Location = string.Empty;
+
+        [Option(null, "list-grids", HelpText = "Lists grid IDs used for --grid option")]
         public bool ListGrids = false;
 
-        [Option("u", "loginuri", HelpText = "Use this URI to login (don't use with --grid)")]
+        [Option(null, "loginuri", HelpText = "Use this URI to login (don't use with --grid)")]
         public string LoginUri = string.Empty;
 
         public HelpText GetHeader()
@@ -72,6 +75,8 @@ namespace Radegast
         {
             HelpText usage = GetHeader();
             usage.AddOptions(this);
+            usage.AddPostOptionsLine("Example: automatically login user called Some Resident to his last location on the Second Life main grid (agni)");
+            usage.AddPostOptionsLine("Radegast -a -g agni -u \"Some Resident\" -p \"secret\"  -l last");
             return usage.ToString();
         }
     }

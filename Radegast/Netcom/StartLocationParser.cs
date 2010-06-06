@@ -72,13 +72,16 @@ namespace Radegast.Netcom
 
             string[] locSplit = location.Split('/');
 
-            int returnResult;
-            bool stringToInt = int.TryParse(locSplit[2], out returnResult);
+            if (locSplit.Length > 2)
+            {
+                int returnResult;
+                bool stringToInt = int.TryParse(locSplit[2], out returnResult);
 
-            if (stringToInt)
-                return returnResult;
-            else
-                return 128;
+                if (stringToInt)
+                    return returnResult;
+            }
+
+            return 128;
         }
 
         private int GetZ(string location)
@@ -87,13 +90,16 @@ namespace Radegast.Netcom
 
             string[] locSplit = location.Split('/');
 
-            int returnResult;
-            bool stringToInt = int.TryParse(locSplit[3], out returnResult);
+            if (locSplit.Length > 3)
+            {
+                int returnResult;
+                bool stringToInt = int.TryParse(locSplit[3], out returnResult);
 
-            if (stringToInt)
-                return returnResult;
-            else
-                return 0;
+                if (stringToInt)
+                    return returnResult;
+            }
+
+            return 0;
         }
 
         public string Sim

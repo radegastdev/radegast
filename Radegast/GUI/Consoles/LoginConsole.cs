@@ -50,11 +50,6 @@ namespace Radegast
             this.instance = instance;
             AddNetcomEvents();
 
-            UpdateGrids();
-
-            cbxLocation.SelectedIndex = 0;
-            InitializeConfig();
-
             if (instance.GlobalSettings["hide_login_graphics"].AsBoolean())
                 pnlSplash.BackgroundImage = null;
             else
@@ -64,16 +59,8 @@ namespace Radegast
 
             lblVersion.Text = Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev;
 
-        }
+            Load += new EventHandler(LoginConsole_Load);
 
-        public void UpdateGrids()
-        {
-            cbxGrid.Items.Clear();
-            for (int i = 0; i < instance.GridManger.Count; i++)
-            {
-                cbxGrid.Items.Add(instance.GridManger[i]);
-            }
-            cbxGrid.Items.Add("Custom");
         }
 
         private void MainConsole_Disposed(object sender, EventArgs e)
@@ -82,6 +69,11 @@ namespace Radegast
             RemoveNetcomEvents();
         }
 
+        void LoginConsole_Load(object sender, EventArgs e)
+        {
+            cbxLocation.SelectedIndex = 0;
+            InitializeConfig();
+        }
 
         private void AddNetcomEvents()
         {
@@ -131,27 +123,120 @@ namespace Radegast
 
         private void InitializeConfig()
         {
+            // Initilize grid dropdown
+            int gridIx = -1;
+
+            cbxGrid.Items.Clear();
+            for (int i = 0; i < instance.GridManger.Count; i++)
+            {
+                cbxGrid.Items.Add(instance.GridManger[i]);
+                if (instance.CommandLine.Grid == instance.GridManger[i].ID)
+                    gridIx = i;
+            }
+            cbxGrid.Items.Add("Custom");
+
+            if (gridIx != -1)
+            {
+                cbxGrid.SelectedIndex = gridIx;
+            }
+
+
             Settings s = instance.GlobalSettings;
 
-            txtFirstName.Text = s["first_name"].AsString();
-            txtLastName.Text = s["last_name"].AsString();
-            txtPassword.Text = s["password"].AsString();
-            netcom.LoginOptions.IsPasswordMD5 = true;
-
-            // Use last location as default
-            if (s["login_location_type"].Type == OSDType.Unknown)
+            // Setup login name
+            if (string.IsNullOrEmpty(instance.CommandLine.Username))
             {
-                cbxLocation.SelectedIndex = 1;
-                s["login_location_type"] = OSD.FromInteger(1);
+                txtFirstName.Text = s["first_name"].AsString();
+                txtLastName.Text = s["last_name"].AsString();
             }
             else
             {
-                cbxLocation.SelectedIndex = s["login_location_type"].AsInteger();
-                cbxLocation.Text = s["login_location"].AsString();
+                string[] parts = System.Text.RegularExpressions.Regex.Split(instance.CommandLine.Username, @"\s");
+                txtFirstName.Text = parts[0];
+                if (parts.Length > 1)
+                    txtLastName.Text = parts[1];
             }
 
-            cbxGrid.SelectedIndex = s["login_grid"].AsInteger();
-            txtCustomLoginUri.Text = s["login_uri"].AsString();
+
+            // Fill in saved password or use one specified on the command line
+            if (string.IsNullOrEmpty(instance.CommandLine.Password))
+            {
+                txtPassword.Text = s["password"].AsString();
+                netcom.LoginOptions.IsPasswordMD5 = true;
+            }
+            else
+            {
+                txtPassword.Text = instance.CommandLine.Password;
+                netcom.LoginOptions.IsPasswordMD5 = false;
+            }
+
+
+            // Setup login location either from the last used or
+            // override from the command line
+            if (string.IsNullOrEmpty(instance.CommandLine.Location))
+            {
+                // Use last location as default
+                if (s["login_location_type"].Type == OSDType.Unknown)
+                {
+                    cbxLocation.SelectedIndex = 1;
+                    s["login_location_type"] = OSD.FromInteger(1);
+                }
+                else
+                {
+                    cbxLocation.SelectedIndex = s["login_location_type"].AsInteger();
+                    cbxLocation.Text = s["login_location"].AsString();
+                }
+            }
+            else
+            {
+                switch (instance.CommandLine.Location)
+                {
+                    case "home":
+                        cbxLocation.SelectedIndex = 0;
+                        break;
+
+                    case "last":
+                        cbxLocation.SelectedIndex = 1;
+                        break;
+
+                    default:
+                        cbxLocation.SelectedIndex = -1;
+                        cbxLocation.Text = instance.CommandLine.Location;
+                        break;
+                }
+            }
+
+
+            // Set grid dropdown to last used, or override from command line
+            if (string.IsNullOrEmpty(instance.CommandLine.Grid))
+            {
+                cbxGrid.SelectedIndex = s["login_grid"].AsInteger();
+            }
+            else if (gridIx == -1) // --grid specified but not found
+            {
+                MessageBox.Show(string.Format("Grid specified with --grid {0} not found", instance.CommandLine.Grid),
+                    "Grid not found",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                    );
+            }
+
+            // Restore login uri from settings, or command line
+            if (string.IsNullOrEmpty(instance.CommandLine.LoginUri))
+            {
+                txtCustomLoginUri.Text = s["login_uri"].AsString();
+            }
+            else
+            {
+                txtCustomLoginUri.Text = instance.CommandLine.LoginUri;
+                cbxGrid.SelectedIndex = cbxGrid.Items.Count - 1;
+            }
+
+            // Start logging in if autologin enabled from command line
+            if (instance.CommandLine.AutoLogin)
+            {
+                BeginLogin();
+            }
         }
 
         private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
@@ -177,7 +262,7 @@ namespace Radegast
                     lblLoginStatus.Text = "Reading response...";
                     lblLoginStatus.ForeColor = Color.Black;
                     break;
-                    
+
                 case LoginStatus.Success:
                     lblLoginStatus.Text = "Logged in as " + netcom.LoginOptions.FullName;
                     lblLoginStatus.ForeColor = Color.FromArgb(0, 128, 128, 255);
