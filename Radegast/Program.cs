@@ -55,7 +55,7 @@ namespace Radegast
         [Option("l", "list-grids", HelpText = "Lists grid IDs used for --grid option")]
         public bool ListGrids = false;
 
-        [Option("u", "loginuri", HelpText = "Use this URI to login")]
+        [Option("u", "loginuri", HelpText = "Use this URI to login (don't use with --grid)")]
         public string LoginUri = string.Empty;
 
         public HelpText GetHeader()
@@ -72,7 +72,7 @@ namespace Radegast
         {
             HelpText usage = GetHeader();
             usage.AddOptions(this);
-            return usage;
+            return usage.ToString();
         }
     }
 
