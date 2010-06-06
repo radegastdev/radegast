@@ -70,6 +70,7 @@ namespace Radegast
         public static readonly List<string> PluginBlackList = new List<string>(new string[]
             {
                 "AIMLbot.dll",
+                "CommandLine.dll",
                 "Meebey.SmartIrc4net.dll",
                 "Monobjc.Cocoa.dll",
                 "Monobjc.dll",
