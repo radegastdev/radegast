@@ -95,13 +95,19 @@ namespace Radegast
             // Change current working directory to Radegast install dir
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            
+            // Create main Radegast instance
+            RadegastInstance instance = RadegastInstance.GlobalInstance;
+            instance.CommandLine = options;
+
             // See if we only wanted to display list of grids
             if (options.ListGrids)
             {
                 Console.WriteLine(options.GetHeader());
                 Console.WriteLine();
-                GridManager grids = new GridManager(null);
-                grids.LoadGrids();
+                GridManager grids = instance.GridManger;
                 Console.WriteLine("Use Grid ID as the parameter for --grid");
                 Console.WriteLine("{0,-25} - {1}", "Grid ID", "Grid Name");
                 Console.WriteLine("========================================================");
@@ -114,15 +120,7 @@ namespace Radegast
                 Environment.Exit(0);
             }
 
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            
-            // Create main Radegast instance
-            RadegastInstance instance = RadegastInstance.GlobalInstance;
-            instance.CommandLine = options;
-
             Application.Run(instance.MainForm);
-            instance = null;
         }
     }
 }
