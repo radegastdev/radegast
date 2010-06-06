@@ -91,7 +91,7 @@ namespace Radegast
 
         void createMap()
         {
-            //if (instance.Netcom.Grid.ID == "secondlife")
+            //if (instance.Netcom.Grid.ID == "agni")
             //{
             //    try
             //    {
@@ -122,7 +122,7 @@ namespace Radegast
 
                 mmap.ZoomChanged += new EventHandler<EventArgs>(mmap_ZoomChaged);
 
-                if (instance.Netcom.Grid.ID == "secondlife")
+                if (instance.Netcom.Grid.ID == "agni")
                 {
                     mmap.UseExternalTiles = true;
                 }

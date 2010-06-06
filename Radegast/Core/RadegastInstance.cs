@@ -53,6 +53,7 @@ namespace Radegast
             if (RadegastFormCreated != null) RadegastFormCreated(radForm);
         }
         #endregion
+
         private GridClient client;
         private RadegastNetcom netcom;
 
@@ -73,6 +74,11 @@ namespace Radegast
                 return globalInstance;
             }
         }
+
+        /// <summary>
+        /// Processed command line options
+        /// </summary>
+        public CommandLine CommandLine { get; set; }
 
         private string userDir;
         /// <summary>

@@ -3,7 +3,7 @@
 
     <!-- Second Life -->
     <map>
-      <key>gridnick</key><string>secondlife</string>
+      <key>gridnick</key><string>agni</string>
       <key>gridname</key><string>Second Life (agni)</string>
       <key>platform</key><string>SecondLife</string>
       <key>loginuri</key><string>https://login.agni.lindenlab.com/cgi-bin/login.cgi</string>
@@ -18,7 +18,7 @@
 
     <!-- Second Life Beta -->
     <map>
-      <key>gridnick</key><string>secondlifebeta</string>
+      <key>gridnick</key><string>aditi</string>
       <key>gridname</key><string>Second Life Beta (aditi)</string>
       <key>platform</key><string>SecondLife</string>
       <key>loginuri</key><string>https://login.aditi.lindenlab.com/cgi-bin/login.cgi</string>

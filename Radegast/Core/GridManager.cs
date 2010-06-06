@@ -108,8 +108,8 @@ namespace Radegast
         public void LoadGrids()
         {
             Grids.Clear();
-            Grids.Add(new Grid("secondlife", "Second Life (agni)", "https://login.agni.lindenlab.com/cgi-bin/login.cgi"));
-            Grids.Add(new Grid("secondlifebeta", "Second Life Beta (aditi)", "https://login.aditi.lindenlab.com/cgi-bin/login.cgi"));
+            Grids.Add(new Grid("agni", "Second Life (agni)", "https://login.agni.lindenlab.com/cgi-bin/login.cgi"));
+            Grids.Add(new Grid("aditi", "Second Life Beta (aditi)", "https://login.aditi.lindenlab.com/cgi-bin/login.cgi"));
 
             try
             {

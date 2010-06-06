@@ -33,24 +33,94 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
+using CommandLine;
+using CommandLine.Text;
 
 namespace Radegast
 {
+    public class CommandLine
+    {
+        [Option("u", "username", HelpText = "Username, use quotes to supply \"First Last\"")]
+        public string Username = string.Empty;
+
+        [Option("p", "password", HelpText = "Account password")]
+        public string Password = string.Empty;
+
+        [Option("a", "autologin", HelpText = "Automatially login with provided user credentials")]
+        public bool AutoLogin = false;
+
+        [Option("g", "grid", HelpText = "Grid ID to login into, try --list-grids to see IDs used for this parameter")]
+        public string Grid = string.Empty;
+
+        [Option("l", "list-grids", HelpText = "Lists grid IDs used for --grid option")]
+        public bool ListGrids = false;
+
+        [Option("u", "loginuri", HelpText = "Use this URI to login")]
+        public string LoginUri = string.Empty;
+
+        public HelpText GetHeader()
+        {
+            HelpText header = new HelpText(Properties.Resources.RadegastTitle);
+            header.AdditionalNewLineAfterOption = true;
+            header.Copyright = new CopyrightInfo("Radegast Development Team", 2009, 2010);
+            header.AddPreOptionsLine("http://radegastclient.org/");
+            return header;
+        }
+
+        [HelpOption("h", "help", HelpText = "Display this help screen.")]
+        public string GetUsage()
+        {
+            HelpText usage = GetHeader();
+            usage.AddOptions(this);
+            return usage;
+        }
+    }
+
     static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            // Read command line options
+            CommandLine options = new CommandLine();
+            CommandLineParser parser = new CommandLineParser(new CommandLineParserSettings(Console.Error));
+            if (!parser.ParseArguments(args, options))
+            {
+                Environment.Exit(1);
+            }
+
             // Change current working directory to Radegast install dir
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
+            // See if we only wanted to display list of grids
+            if (options.ListGrids)
+            {
+                Console.WriteLine(options.GetHeader());
+                Console.WriteLine();
+                GridManager grids = new GridManager(null);
+                grids.LoadGrids();
+                Console.WriteLine("Use Grid ID as the parameter for --grid");
+                Console.WriteLine("{0,-25} - {1}", "Grid ID", "Grid Name");
+                Console.WriteLine("========================================================");
+
+                for (int i = 0; i < grids.Count; i++)
+                {
+                    Console.WriteLine("{0,-25} - {1}", grids[i].ID, grids[i].Name);
+                }
+
+                Environment.Exit(0);
+            }
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-
+            
+            // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
+            instance.CommandLine = options;
+
             Application.Run(instance.MainForm);
             instance = null;
         }

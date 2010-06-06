@@ -221,8 +221,9 @@ namespace Radegast
             centerX = (double)regionX * 256 + (double)localX;
             centerY = (double)regionY * 256 + (double)localY;
             centered = true;
+
             // opensim grids need extra push
-            if (!Instance.Netcom.Grid.ID.ToLower().Contains("secondlife"))
+            if (Instance.Netcom.Grid.Platform == "OpenSim")
             {
                 Client.Grid.RequestMapLayer(GridLayerType.Objects);
             }
