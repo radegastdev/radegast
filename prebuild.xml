@@ -279,7 +279,6 @@
           <Exclude name="AssemblyInfo.cs"/>
         </Match>
         <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
-        <Match path="assemblies" pattern="*.*" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
 
