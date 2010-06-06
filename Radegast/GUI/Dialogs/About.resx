@@ -168,7 +168,11 @@ All rights reserved.
 
 Uses artwork files are licenced under the 
 Creative Commons Share and Share Alike 3.0
-Copyright © 2002-2009 Linden Research Inc.</value>
+Copyright © 2002-2009 Linden Research Inc.
+
+Command Line Library (MIT License)
+Copyright © 2005 - 2010 Giacomo Stelluti Scala
+http://commandline.codeplex.com/</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

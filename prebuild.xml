@@ -182,6 +182,7 @@
       <Reference name="assemblies/Tao.Platform.Windows.dll" localCopy="true" />
       <Reference name="assemblies/Tools.dll" localCopy="true" />
       <Reference name="assemblies/log4net.dll" localCopy="true" />
+      <Reference name="assemblies/CommandLine.dll" localCopy="true" />
 
       <Reference name="../../libopenmetaverse/bin/XMLRPC.dll" localCopy="true" />
 

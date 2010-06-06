@@ -66,3 +66,6 @@ Uses artwork files are licenced under the
 Creative Commons Share and Share Alike 3.0
 Copyright © 2002-2009 Linden Research Inc.
 
+Command Line Library (MIT License)
+Copyright © 2005 - 2010 Giacomo Stelluti Scala
+http://commandline.codeplex.com/
