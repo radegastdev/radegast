@@ -69,7 +69,6 @@ namespace Radegast.Media
         // Additional info for callbacks goes here.
         protected FMOD.CREATESOUNDEXINFO extraInfo;
         protected static FMOD.CHANNEL_CALLBACK endCallback;
-        protected static FMOD.SOUND_NONBLOCKCALLBACK loadCallback;
 
         // Vectors used for orienting spatial axes.
         protected static FMOD.VECTOR UpVector;
@@ -259,25 +258,7 @@ namespace Radegast.Media
         /// <returns></returns>
 
         // Subclasses override these methods to handle callbacks.
-        protected virtual FMOD.RESULT NonBlockCallbackHandler( RESULT result ) { return RESULT.OK; }
         protected virtual FMOD.RESULT EndCallbackHandler() { return RESULT.OK; }
-
-        /// <summary>
-        /// Main handler for sound-loading callback.
-        /// </summary>
-        /// <param name="soundraw"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public RESULT DispatchNonBlockCallback(IntPtr soundraw, RESULT result)
-        {
-            if (allSounds.ContainsKey(soundraw))
-            {
-                MediaObject sndobj = allSounds[soundraw];
-                return sndobj.NonBlockCallbackHandler( result );
-            }
-
-            return FMOD.RESULT.OK;
-        }
 
         /// <summary>
         /// Main handler for playback-end callback.
@@ -307,8 +288,6 @@ namespace Radegast.Media
 
             return RESULT.OK;
         }
-
-        public delegate RESULT SOUND_NONBLOCKCALLBACK(IntPtr soundraw, RESULT result);
 
         protected static void FMODExec(FMOD.RESULT result)
         {

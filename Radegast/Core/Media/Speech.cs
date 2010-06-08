@@ -65,10 +65,10 @@ namespace Radegast.Media
         /// </summary>
         /// <param name="system">Sound system</param>
         public Speech()
-            :base()
-       {
-           extraInfo.format = SOUND_FORMAT.PCM16;
-       }
+            : base()
+        {
+            extraInfo.format = SOUND_FORMAT.PCM16;
+        }
 
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace Radegast.Media
             filename = speakfile;
 
             // Set flags to determine how it will be played.
-            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D | MODE.NONBLOCKING;
+            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D;
 
             // Set coordinate space interpretation.
             if (global)
@@ -102,44 +102,20 @@ namespace Radegast.Media
             else
                 mode |= FMOD.MODE._3D_HEADRELATIVE;
 
-            extraInfo.nonblockcallback = loadCallback;
-
-            invoke(new SoundDelegate(
-                delegate {
-                    FMODExec(
-                        system.createSound(filename,
-                        mode,
-                        ref extraInfo,
-                        ref sound));
-
-                    // Register for callbacks.
-                    RegisterSound(sound);
-                }));
-         }
-
-        /// <summary>
-        /// Callback when a stream has been loaded
-        /// </summary>
-        /// <param name="instatus"></param>
-        /// <returns></returns>
-        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
-        {
-            extraInfo.nonblockcallback = null;
-
-            if (instatus != RESULT.OK)
-            {
-                Logger.Log("FMOD error opening speech file " +
-                        filename +
-                        ": " + instatus,
-                    Helpers.LogLevel.Error);
-                return RESULT.OK;
-            }
-
             invoke(new SoundDelegate(
                 delegate
                 {
                     try
                     {
+                        FMODExec(
+                        system.createSound(filename,
+                        mode,
+                        ref extraInfo,
+                        ref sound));
+
+                        // Register for callbacks.
+                        RegisterSound(sound);
+
                         // Allocate a channel, initially paused.
                         FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
 
@@ -175,7 +151,7 @@ namespace Radegast.Media
 
                         // SET a handler for when it finishes.
                         FMODExec(channel.setCallback(endCallback));
-                        RegisterChannel( channel );
+                        RegisterChannel(channel);
 
                         // Un-pause the sound.
                         FMODExec(channel.setPaused(false));
@@ -185,8 +161,6 @@ namespace Radegast.Media
                         Logger.Log("Error playing speech: ", Helpers.LogLevel.Error, ex);
                     }
                 }));
-
-            return RESULT.OK;
         }
 
         /// <summary>
@@ -219,5 +193,5 @@ namespace Radegast.Media
 
             return RESULT.OK;
         }
-   }
+    }
 }

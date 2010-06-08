@@ -94,8 +94,7 @@ namespace Radegast.Media
             // Set flags to determine how it will be played.
             mode = FMOD.MODE.SOFTWARE | // Need software processing for all the features
                 FMOD.MODE._3D |         // Need 3D effects for placement
-                FMOD.MODE.OPENMEMORY |  // Use sound data in memory
-                FMOD.MODE.NONBLOCKING;
+                FMOD.MODE.OPENMEMORY;   // Use sound data in memory
 
             // Set coordinate space interpretation.
             if (global)
@@ -212,55 +211,34 @@ namespace Radegast.Media
 
                 // Describe the data to FMOD
                 extraInfo.length = (uint)data.Length;
-                extraInfo.nonblockcallback = loadCallback;
                 extraInfo.cbsize = Marshal.SizeOf(extraInfo);
 
                 invoke(new SoundDelegate(delegate
                 {
-                    // Create an FMOD sound of this Ogg data.
-                    FMODExec(system.createSound(
-                        data,
-                        mode,
-                        ref extraInfo,
-                        ref sound));
-
-                    // Register for callbacks.
-                    RegisterSound(sound);
-                }));
-            }
-            else
-            {
-                Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
-                                        Helpers.LogLevel.Error);
-            }
-        }
-
-        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
-        {
-            // Check if we killed the sound before it was decoded
-            if (sound == null) return RESULT.OK;
-
-            if (instatus != RESULT.OK)
-            {
-                Logger.Log("Error opening sound: " + instatus, Helpers.LogLevel.Error);
-                return RESULT.OK;
-            }
-
-            invoke(new SoundDelegate(delegate
-            {
-                try
-                {
-                    // If looping is requested, loop the entire thing.
-                    if (loopSound)
+                    try
                     {
-                        uint soundlen = 0;
-                        FMODExec(sound.getLength(ref soundlen, TIMEUNIT.PCM));
-                        FMODExec(sound.setLoopPoints(0, TIMEUNIT.PCM, soundlen - 1, TIMEUNIT.PCM));
-                        FMODExec(sound.setLoopCount(-1));
-                    }
+                        // Create an FMOD sound of this Ogg data.
+                        FMODExec(system.createSound(
+                            data,
+                            mode,
+                            ref extraInfo,
+                            ref sound));
 
-                    // Allocate a channel and set initial volume.  Initially paused.
-                    FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                        // Register for callbacks.
+                        RegisterSound(sound);
+
+
+                        // If looping is requested, loop the entire thing.
+                        if (loopSound)
+                        {
+                            uint soundlen = 0;
+                            FMODExec(sound.getLength(ref soundlen, TIMEUNIT.PCM));
+                            FMODExec(sound.setLoopPoints(0, TIMEUNIT.PCM, soundlen - 1, TIMEUNIT.PCM));
+                            FMODExec(sound.setLoopCount(-1));
+                        }
+
+                        // Allocate a channel and set initial volume.  Initially paused.
+                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
 #if TRACE_SOUND
                     Logger.Log(
                         String.Format("Channel {0} for {1} assigned to {2}",
@@ -269,32 +247,35 @@ namespace Radegast.Media
                              Id),
                         Helpers.LogLevel.Debug);
 #endif
-                    lock (allChannels)
-                        allChannels[channel.getRaw()] = this;
+                        RegisterChannel(channel);
 
-                    FMODExec(channel.setVolume(volumeSetting * AllObjectVolume));
+                        FMODExec(channel.setVolume(volumeSetting * AllObjectVolume));
 
-                    // Take note of when the sound is finished playing.
-                    FMODExec(channel.setCallback(endCallback));
+                        // Take note of when the sound is finished playing.
+                        FMODExec(channel.setCallback(endCallback));
 
-                    // Set attenuation limits.
-                    FMODExec(sound.set3DMinMaxDistance(
-                                1.2f,       // Any closer than this gets no louder
-                                100.0f));     // Further than this gets no softer.
+                        // Set attenuation limits.
+                        FMODExec(sound.set3DMinMaxDistance(
+                                    1.2f,       // Any closer than this gets no louder
+                                    100.0f));     // Further than this gets no softer.
 
-                    // Set the sound point of origin.  This is in SIM coordinates.
-                    FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
+                        // Set the sound point of origin.  This is in SIM coordinates.
+                        FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
 
-                    // Turn off pause mode.  The sound will start playing now.
-                    FMODExec(channel.setPaused(false));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("Error starting sound: ", Helpers.LogLevel.Error, ex);
-                }
-            }));
-
-            return RESULT.OK;
+                        // Turn off pause mode.  The sound will start playing now.
+                        FMODExec(channel.setPaused(false));
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("Error playing sound: ", Helpers.LogLevel.Error, ex);
+                    }
+                }));
+            }
+            else
+            {
+                Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
+                                        Helpers.LogLevel.Error);
+            }
         }
 
         /// <summary>

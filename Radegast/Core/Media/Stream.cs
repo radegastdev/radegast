@@ -125,41 +125,21 @@ namespace Radegast.Media
             // Stop old stream first.
             StopStream();
 
-            extraInfo.nonblockcallback = loadCallback;
             extraInfo.format = SOUND_FORMAT.PCM16;
-
-            invoke(new SoundDelegate(
-                delegate
-                {
-                    FMODExec(
-                        system.createSound(url,
-                        (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM | MODE.NONBLOCKING),
-                        ref extraInfo,
-                        ref sound), "Stream load");
-                    // Register for callbacks.
-                    RegisterSound(sound);
-                }));
-        }
-
-        /// <summary>
-        /// Callback when a stream has been loaded
-        /// </summary>
-        /// <param name="instatus"></param>
-        /// <returns></returns>
-        protected override RESULT NonBlockCallbackHandler(RESULT instatus)
-        {
-            if (instatus != RESULT.OK)
-            {
-                Logger.Log("Error opening audio stream: " + instatus,
-                    Helpers.LogLevel.Debug);
-                return RESULT.OK;
-            }
 
             invoke(new SoundDelegate(
                 delegate
                 {
                     try
                     {
+                        FMODExec(
+                            system.createSound(url,
+                            (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM),
+                            ref extraInfo,
+                            ref sound), "Stream load");
+                        // Register for callbacks.
+                        RegisterSound(sound);
+
                         // Allocate a channel and set initial volume.
                         FMODExec(system.playSound(
                             CHANNELINDEX.FREE,
@@ -184,10 +164,8 @@ namespace Radegast.Media
                         Logger.Log("Error playing stream: ", Helpers.LogLevel.Debug, ex);
                     }
                 }));
-
-            Logger.Log("Stream playing", Helpers.LogLevel.Info);
-            return RESULT.OK;
         }
+
 
 #if GET_STREAM_TAGS
         private void CheckTags(object sender)

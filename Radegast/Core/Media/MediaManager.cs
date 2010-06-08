@@ -58,8 +58,6 @@ namespace Radegast.Media
             this.Instance = instance;
             manager = this;
 
-
-            loadCallback = new FMOD.SOUND_NONBLOCKCALLBACK(DispatchNonBlockCallback);
             endCallback = new FMOD.CHANNEL_CALLBACK(DispatchEndCallback);
             allBuffers = new Dictionary<UUID, BufferSound>();
 
