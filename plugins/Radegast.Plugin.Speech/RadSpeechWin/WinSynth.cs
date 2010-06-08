@@ -185,6 +185,7 @@ namespace RadegastSpeech
                 syn.SetOutputToNull();
                 mstream.Flush();
                 mstream.Close();
+                mstream.Dispose();
             }
         }
 
