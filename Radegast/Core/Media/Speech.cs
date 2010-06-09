@@ -88,8 +88,12 @@ namespace Radegast.Media
         /// Plays audio from a file, as created by an external speech synthesizer.
         /// </summary>
         /// <param name="filename">Name of a WAV file</param>
-        public void Play(string speakfile, bool global, Vector3 pos)
+        /// <param name="global"></param>
+        /// <returns>Length of the sound in ms</returns>
+        public uint Play(string speakfile, bool global, Vector3 pos)
         {
+            uint len = 0;
+
             speakerPos = pos;
             filename = speakfile;
 
@@ -101,6 +105,8 @@ namespace Radegast.Media
                 mode |= FMOD.MODE._3D_WORLDRELATIVE;
             else
                 mode |= FMOD.MODE._3D_HEADRELATIVE;
+
+            System.Threading.AutoResetEvent done = new System.Threading.AutoResetEvent(false);
 
             invoke(new SoundDelegate(
                 delegate
@@ -115,6 +121,9 @@ namespace Radegast.Media
 
                         // Register for callbacks.
                         RegisterSound(sound);
+
+                        // Find out how long the sound should play
+                        FMODExec(sound.getLength(ref len, TIMEUNIT.MS));
 
                         // Allocate a channel, initially paused.
                         FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
@@ -160,7 +169,14 @@ namespace Radegast.Media
                     {
                         Logger.Log("Error playing speech: ", Helpers.LogLevel.Error, ex);
                     }
+                    finally
+                    {
+                        done.Set();
+                    }
                 }));
+
+            done.WaitOne(30 * 1000);
+            return len;
         }
 
         /// <summary>

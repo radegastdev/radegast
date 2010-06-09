@@ -46,23 +46,24 @@ namespace RadegastSpeech.Sound
     class FmodSound : Control
     {
         Radegast.Media.Speech speechPlayer;
-        private Semaphore playing;
+        private AutoResetEvent playing;
         private bool busy = true;
 
-       internal FmodSound( PluginControl pc ) : base(pc)
+        internal FmodSound(PluginControl pc)
+            : base(pc)
         {
-           playing = new Semaphore(0,1,"SpeechPlaying");
-           speechPlayer = new Radegast.Media.Speech();
-           speechPlayer.OnSpeechDone += new Speech.SpeechDoneCallback(SpeechDoneHandler);
-       }
+            playing = new AutoResetEvent(false);
+            speechPlayer = new Radegast.Media.Speech();
+            speechPlayer.OnSpeechDone += new Speech.SpeechDoneCallback(SpeechDoneHandler);
+        }
 
-       internal override void Stop()
-       {
-           if (speechPlayer == null) return;
-           speechPlayer.Stop();
+        internal override void Stop()
+        {
+            if (speechPlayer == null) return;
+            speechPlayer.Stop();
 
-           busy = false;
-       }
+            busy = false;
+        }
 
         /// <summary>
         /// Play a prerecorded sound
@@ -83,10 +84,10 @@ namespace RadegastSpeech.Sound
             {
                 // Play this file at the designated position.  When it finishes, the
                 // SpeechDoneHandler will be called.
-                speechPlayer.Play(filename, global, worldPos);
+                uint len = speechPlayer.Play(filename, global, worldPos);
 
-                // Wait for it to finish.
-                playing.WaitOne();
+                // Wait for it to finish. Max 2sec longer tha it is supposed to
+                playing.WaitOne((int)len + 2000);
             }
 
             // Delete the WAV file if requested.
@@ -100,7 +101,7 @@ namespace RadegastSpeech.Sound
         private void SpeechDoneHandler(object sender, EventArgs e)
         {
             // Poke the semaphore
-            playing.Release();
+            playing.Set();
         }
 
         // TODO do we need this?
@@ -117,5 +118,5 @@ namespace RadegastSpeech.Sound
 
         }
 
-	}
+    }
 }
