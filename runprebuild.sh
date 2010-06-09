@@ -4,7 +4,7 @@ cd `dirname "$0"`
 mkdir bin 2>/dev/null
 cp Radegast/assemblies/* bin
 
-mono Radegast/Prebuild.exe /target nant
+mono Radegast/prebuild.exe /target nant
 
 cp -f NullBuild.txt plugins/Radegast.Plugin.Speech/RadSpeechWin/RadSpeechWin.dll.build
 cp -f NullBuild.txt plugins/Radegast.Plugin.Speech/RadSpeechMac/RadSpeechMac.dll.build

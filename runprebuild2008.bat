@@ -22,7 +22,7 @@ echo ##########################################
 if not exist bin mkdir bin
 
 :: run prebuild to generate solution/project files from prebuild.xml configuration file
-Radegast\Prebuild.exe /target vs2008
+Radegast\prebuild.exe /target vs2008
 
 :: build compile.bat file based on command line parameters
 echo @echo off > compile.bat
