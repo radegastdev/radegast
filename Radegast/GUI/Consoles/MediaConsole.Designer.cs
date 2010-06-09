@@ -91,6 +91,7 @@ namespace Radegast
             this.volAudioStream.SmallChange = 2;
             this.volAudioStream.TabIndex = 0;
             this.volAudioStream.Value = 25;
+            this.volAudioStream.Scroll += new System.EventHandler(this.volAudioStream_Scroll);
             // 
             // pnlParcelAudio
             // 

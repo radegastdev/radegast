@@ -29,7 +29,7 @@ namespace Radegast
                 if (value >= 0f && value < 1f)
                 {
                     m_audioVolume = value;
-                    volAudioStream.Value = (int)(50f * value);
+                    parcelStream.Volume = m_audioVolume;
                 }
             }
         }
@@ -76,6 +76,7 @@ namespace Radegast
                 objVolume.Value = (int)(50f * instance.MediaManager.ObjectVolume);
             }
 
+            volAudioStream.Value = (int)(audioVolume * 50);
             instance.MediaManager.ObjectEnable = cbObjSoundEnable.Checked;
 
             configTimer = new System.Threading.Timer(SaveConfig, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
@@ -227,7 +228,7 @@ namespace Radegast
             configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
             lock (parcelMusicLock)
                 if (parcelStream != null)
-                    parcelStream.Volume = volAudioStream.Value / 50f;
+                    audioVolume = volAudioStream.Value / 50f;
         }
 
         private void volObject_Scroll(object sender, EventArgs e)
