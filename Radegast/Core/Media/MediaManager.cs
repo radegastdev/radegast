@@ -57,7 +57,7 @@ namespace Radegast.Media
         {
             this.Instance = instance;
             manager = this;
-
+            
             endCallback = new FMOD.CHANNEL_CALLBACK(DispatchEndCallback);
             allBuffers = new Dictionary<UUID, BufferSound>();
 
@@ -73,9 +73,40 @@ namespace Radegast.Media
             listenerThread.Name = "ListenerThread";
             listenerThread.Start();
 
+            Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
+
             // Wait for init to complete
             initDone.WaitOne();
             initDone = null;
+        }
+
+        void Instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            if (ObjectEnable)
+                RegisterClientEvents(e.Client);
+        }
+
+        void RegisterClientEvents(GridClient client)
+        {
+            client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
+            client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
+            client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
+            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+        }
+
+        void UnregisterClientEvents(GridClient client)
+        {
+            client.Sound.SoundTrigger -= new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
+            client.Sound.AttachedSound -= new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
+            client.Sound.PreloadSound -= new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
+            client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
         }
 
         /// <summary>
@@ -224,6 +255,9 @@ namespace Radegast.Media
 
         public override void Dispose()
         {
+            if (Instance.Client != null)
+                UnregisterClientEvents(Instance.Client);
+
             lock (sounds)
             {
                 for (int i = 0; i < sounds.Count; i++)
@@ -530,39 +564,19 @@ namespace Radegast.Media
         {
             set
             {
-                try
+                if (value)
                 {
-                    if (value)
-                    {
-                        // Subscribe to events about inworld sounds
-                        Instance.Client.Sound.SoundTrigger += new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
-                        Instance.Client.Sound.AttachedSound += new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
-                        Instance.Client.Sound.PreloadSound += new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
-                        Instance.Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-                        Instance.Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-                        Instance.Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-                        Instance.Client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-                        Logger.Log("Inworld sound enabled", Helpers.LogLevel.Info);
-                    }
-                    else
-                    {
-                        // Subscribe to events about inworld sounds
-                        Instance.Client.Sound.SoundTrigger -= new EventHandler<SoundTriggerEventArgs>(Sound_SoundTrigger);
-                        Instance.Client.Sound.AttachedSound -= new EventHandler<AttachedSoundEventArgs>(Sound_AttachedSound);
-                        Instance.Client.Sound.PreloadSound -= new EventHandler<PreloadSoundEventArgs>(Sound_PreloadSound);
-                        Instance.Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-                        Instance.Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-                        Instance.Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-                        Instance.Client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-                        // Stop all running sounds
-                        BufferSound.KillAll();
-
-                        Logger.Log("Inworld sound disabled", Helpers.LogLevel.Info);
-                    }
+                    // Subscribe to events about inworld sounds
+                    RegisterClientEvents(Instance.Client);
+                    Logger.Log("Inworld sound enabled", Helpers.LogLevel.Info);
                 }
-                catch (Exception e)
+                else
                 {
-                    System.Console.WriteLine("Error on enable/disable: " + e.Message);
+                    // Subscribe to events about inworld sounds
+                    UnregisterClientEvents(Instance.Client);
+                    // Stop all running sounds
+                    BufferSound.KillAll();
+                    Logger.Log("Inworld sound disabled", Helpers.LogLevel.Info);
                 }
 
                 m_objectEnabled = value;
