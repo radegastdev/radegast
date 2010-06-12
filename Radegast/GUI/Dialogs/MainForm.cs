@@ -862,11 +862,6 @@ namespace Radegast
 
         #region Menu click handlers
 
-        private void tbtnTeleport_Click(object sender, EventArgs e)
-        {
-            (new frmTeleport(instance)).ShowDialog();
-        }
-
         private void tmnuStatusAway_Click(object sender, EventArgs e)
         {
             instance.State.SetAway(tmnuStatusAway.Checked);
@@ -1049,14 +1044,6 @@ namespace Radegast
                     }
                 }
             );
-        }
-
-        private void tmnuTeleportHome_Click(object sender, EventArgs e)
-        {
-            if (WorldMap != null)
-            {
-                WorldMap.GoHome();
-            }
         }
 
         private TimeZoneInfo SLTime;

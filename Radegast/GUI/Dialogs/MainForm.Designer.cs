@@ -97,8 +97,6 @@ namespace Radegast
             this.tmnuStatusAway = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuStatusBusy = new System.Windows.Forms.ToolStripMenuItem();
             this.tbnTools = new System.Windows.Forms.ToolStripDropDownButton();
-            this.locationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.homeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autopilotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -347,7 +345,6 @@ namespace Radegast
             this.tmnuTeleportHome.ShortcutKeyDisplayString = "Ctrl-Shift-H";
             this.tmnuTeleportHome.Size = new System.Drawing.Size(223, 22);
             this.tmnuTeleportHome.Text = "Teleport Home";
-            this.tmnuTeleportHome.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
             // 
             // toolStripMenuItem5
             // 
@@ -374,8 +371,6 @@ namespace Radegast
             // 
             this.tbnTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbnTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.locationToolStripMenuItem,
-            this.homeToolStripMenuItem,
             this.autopilotToolStripMenuItem,
             this.cleanCacheToolStripMenuItem,
             this.reloadInventoryToolStripMenuItem,
@@ -387,20 +382,6 @@ namespace Radegast
             this.tbnTools.Name = "tbnTools";
             this.tbnTools.Size = new System.Drawing.Size(49, 22);
             this.tbnTools.Text = "&Tools";
-            // 
-            // locationToolStripMenuItem
-            // 
-            this.locationToolStripMenuItem.Name = "locationToolStripMenuItem";
-            this.locationToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.locationToolStripMenuItem.Text = "Teleport Sim";
-            this.locationToolStripMenuItem.Click += new System.EventHandler(this.tbtnTeleport_Click);
-            // 
-            // homeToolStripMenuItem
-            // 
-            this.homeToolStripMenuItem.Name = "homeToolStripMenuItem";
-            this.homeToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.homeToolStripMenuItem.Text = "Teleport Home";
-            this.homeToolStripMenuItem.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
             // 
             // autopilotToolStripMenuItem
             // 
@@ -882,8 +863,6 @@ namespace Radegast
         public System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
         public System.Windows.Forms.ToolStripStatusLabel tlblParcel;
         public System.Windows.Forms.ToolStripDropDownButton tbnTools;
-        public System.Windows.Forms.ToolStripMenuItem locationToolStripMenuItem;
-        public System.Windows.Forms.ToolStripMenuItem homeToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem tmnuImport;
         public System.Windows.Forms.ToolStripMenuItem autopilotToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem cleanCacheToolStripMenuItem;
