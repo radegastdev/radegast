@@ -147,7 +147,7 @@
 
     <!-- Main App -->
 
-    <Project name="Radegast" path="Radegast" type="WinExe" frameworkVersion="v3_5">
+    <Project name="Radegast" path="Radegast" type="WinExe" icon="radegast.ico" frameworkVersion="v3_5">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../bin/</OutputPath>
