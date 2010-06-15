@@ -153,6 +153,10 @@ namespace Radegast
                 new EventHandler(gateway_OnSessionRemove);
             gateway.OnVoiceConnectionChange +=
                 new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
+            gateway.OnAuxGetCaptureDevicesResponse +=
+                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetCaptureDevicesResponse);
+            gateway.OnAuxGetRenderDevicesResponse +=
+                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetRenderDevicesResponse);
         }
 
         private void UnregisterClientEvents()
@@ -163,21 +167,26 @@ namespace Radegast
                 new EventHandler(gateway_OnSessionRemove);
             gateway.OnVoiceConnectionChange -=
                 new VoiceGateway.VoiceConnectionChangeCallback(gateway_OnVoiceConnectionChange);
+            gateway.OnAuxGetCaptureDevicesResponse -=
+                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetCaptureDevicesResponse);
+            gateway.OnAuxGetRenderDevicesResponse -=
+                new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetRenderDevicesResponse);
         }
 
         #region Connection Status
+        void gateway_OnAuxGetRenderDevicesResponse(object sender, VoiceGateway.VoiceDevicesEventArgs e)
+        {
+            BeginInvoke(new MethodInvoker(() => LoadSpkrDevices( e.Devices, e.CurrentDevice )));
+        }
+
+        void gateway_OnAuxGetCaptureDevicesResponse(object sender, VoiceGateway.VoiceDevicesEventArgs e)
+        {
+            BeginInvoke(new MethodInvoker(() => LoadMicDevices(e.Devices, e.CurrentDevice)));
+        }
+
         void gateway_OnVoiceConnectionChange(VoiceGateway.ConnectionState state)
         {
-            BeginInvoke(new MethodInvoker(delegate()
-            {
-                if (state == VoiceGateway.ConnectionState.AccountLogin)
-                {
-                    LoadMicDevices( gateway.CaptureDevices, gateway.CurrentCaptureDevice );
-                    LoadSpkrDevices( gateway.PlaybackDevices, gateway.PlaybackDevice );
-                }
-
-                SetProgress(state);
-            }));
+            BeginInvoke(new MethodInvoker(() => SetProgress(state)));
         }
 
         void SetProgress(VoiceGateway.ConnectionState s)
@@ -193,9 +202,20 @@ namespace Radegast
             progressBar1.Value = value;
         }
         #endregion
+
         #region Sessions
+        bool queriedDevices = false;
+
         void gateway_OnSessionCreate(object sender, EventArgs e)
         {
+            if (queriedDevices == false)
+            {
+                queriedDevices = true;
+                Logger.Log("Voice session started, asking for device info", Helpers.LogLevel.Debug);
+                gateway.AuxGetCaptureDevices();
+                gateway.AuxGetRenderDevices();
+            }
+
             VoiceSession s = sender as VoiceSession;
 
             BeginInvoke(new MethodInvoker(delegate()
@@ -431,6 +451,8 @@ namespace Radegast
 
         void LoadSpkrDevices(List<string> available, string current)
         {
+            if (available == null) return;
+
             spkrDevice.Items.Clear();
             foreach (string name in available)
                 spkrDevice.Items.Add(name);
