@@ -211,8 +211,6 @@ namespace Radegast
             // cbObjSoundEnable
             // 
             this.cbObjSoundEnable.AutoSize = true;
-            this.cbObjSoundEnable.Checked = true;
-            this.cbObjSoundEnable.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbObjSoundEnable.Location = new System.Drawing.Point(10, 44);
             this.cbObjSoundEnable.Name = "cbObjSoundEnable";
             this.cbObjSoundEnable.Size = new System.Drawing.Size(59, 17);

@@ -120,6 +120,15 @@ namespace Radegast
                     s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
                 };
 
+
+            if (!s.ContainsKey("no_typing_anim")) s["no_typing_anim"] = OSD.FromBoolean(false);
+            cbNoTyping.Checked = s["no_typing_anim"].AsBoolean();
+            cbNoTyping.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["no_typing_anim"] = OSD.FromBoolean(cbNoTyping.Checked);
+            };
+
+
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)

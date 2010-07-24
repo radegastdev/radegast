@@ -74,6 +74,7 @@ namespace Radegast
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
+            this.cbNoTyping = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -86,13 +87,14 @@ namespace Radegast
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(464, 333);
+            this.tabControl1.Size = new System.Drawing.Size(464, 346);
             this.tabControl1.TabIndex = 0;
             // 
             // tbpGeneral
             // 
             this.tbpGeneral.Controls.Add(this.label1);
             this.tbpGeneral.Controls.Add(this.cbFontSize);
+            this.tbpGeneral.Controls.Add(this.cbNoTyping);
             this.tbpGeneral.Controls.Add(this.cbMinToTrey);
             this.tbpGeneral.Controls.Add(this.cbMUEmotes);
             this.tbpGeneral.Controls.Add(this.cbRLV);
@@ -107,7 +109,7 @@ namespace Radegast
             this.tbpGeneral.Location = new System.Drawing.Point(4, 22);
             this.tbpGeneral.Name = "tbpGeneral";
             this.tbpGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpGeneral.Size = new System.Drawing.Size(456, 307);
+            this.tbpGeneral.Size = new System.Drawing.Size(456, 320);
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
@@ -261,11 +263,22 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
+            // cbNoTyping
+            // 
+            this.cbNoTyping.AutoSize = true;
+            this.cbNoTyping.Location = new System.Drawing.Point(8, 286);
+            this.cbNoTyping.Name = "cbNoTyping";
+            this.cbNoTyping.Size = new System.Drawing.Size(150, 17);
+            this.cbNoTyping.TabIndex = 13;
+            this.cbNoTyping.Text = "Don\'t use typing animation";
+            this.cbNoTyping.UseVisualStyleBackColor = true;
+            this.cbNoTyping.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(464, 333);
+            this.ClientSize = new System.Drawing.Size(464, 346);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmSettings";
@@ -294,6 +307,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbMUEmotes;
         public System.Windows.Forms.CheckBox cbFriendsHighlight;
         public System.Windows.Forms.CheckBox cbMinToTrey;
+        public System.Windows.Forms.CheckBox cbNoTyping;
 
 
     }

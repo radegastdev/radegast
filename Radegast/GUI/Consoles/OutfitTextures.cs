@@ -49,6 +49,8 @@ namespace Radegast
 
         public void GetTextures()
         {
+            if (avatar.Textures == null) return;
+
             lblName.Text = this.avatar.Name;
 
             int nTextures = 0;

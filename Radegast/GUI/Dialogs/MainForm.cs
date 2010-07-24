@@ -1312,14 +1312,8 @@ namespace Radegast
         // Menu item for testing out stuff
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (KeyValuePair<UUID, string> kvp in Sounds.ToDictionary())
-            {
-                client.Assets.RequestAsset(kvp.Key, AssetType.Sound, true, (AssetDownload transfer, Asset asset) =>
-                    {
-                        System.Console.WriteLine("Sound '{0}' download success: {1}", transfer.AssetID, transfer.Success);
-                    }
-                );
-            }
+            client.Settings.SEND_AGENT_THROTTLE = true;
+            client.Settings.SEND_AGENT_UPDATES = true;
         }
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)

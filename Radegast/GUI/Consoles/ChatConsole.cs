@@ -523,14 +523,15 @@ namespace Radegast
 
                 if (!cbxInput.Text.StartsWith("/"))
                 {
-                    if (!instance.State.IsTyping)
+                    if (!instance.State.IsTyping && !instance.GlobalSettings["no_typing_anim"].AsBoolean())
                         instance.State.SetTyping(true);
                 }
             }
             else
             {
                 btnSay.Enabled = cbChatType.Enabled = false;
-                instance.State.SetTyping(false);
+                if (!instance.GlobalSettings["no_typing_anim"].AsBoolean())
+                    instance.State.SetTyping(false);
             }
         }
 
