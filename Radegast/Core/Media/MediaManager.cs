@@ -57,7 +57,13 @@ namespace Radegast.Media
         {
             this.Instance = instance;
             manager = this;
-            
+
+            if (MainProgram.CommandLine.DisableSound)
+            {
+                soundSystemAvailable = false;
+                return;
+            }
+
             endCallback = new FMOD.CHANNEL_CALLBACK(DispatchEndCallback);
             allBuffers = new Dictionary<UUID, BufferSound>();
 

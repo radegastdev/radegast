@@ -61,6 +61,10 @@ namespace Radegast
         [Option(null, "loginuri", HelpText = "Use this URI to login (don't use with --grid)")]
         public string LoginUri = string.Empty;
 
+        [Option(null, "no-sound", HelpText = "Disable sound")]
+        public bool DisableSound = false;
+
+
         public HelpText GetHeader()
         {
             HelpText header = new HelpText(Properties.Resources.RadegastTitle);
@@ -81,8 +85,13 @@ namespace Radegast
         }
     }
 
-    static class Program
+    public static class MainProgram
     {
+        /// <summary>
+        /// Parsed command line options
+        /// </summary>
+        public static CommandLine CommandLine;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -90,9 +99,9 @@ namespace Radegast
         static void Main(string[] args)
         {
             // Read command line options
-            CommandLine options = new CommandLine();
+            CommandLine = new CommandLine();
             CommandLineParser parser = new CommandLineParser(new CommandLineParserSettings(Console.Error));
-            if (!parser.ParseArguments(args, options))
+            if (!parser.ParseArguments(args, CommandLine))
             {
                 Environment.Exit(1);
             }
@@ -105,12 +114,11 @@ namespace Radegast
             
             // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
-            instance.CommandLine = options;
 
             // See if we only wanted to display list of grids
-            if (options.ListGrids)
+            if (CommandLine.ListGrids)
             {
-                Console.WriteLine(options.GetHeader());
+                Console.WriteLine(CommandLine.GetHeader());
                 Console.WriteLine();
                 GridManager grids = instance.GridManger;
                 Console.WriteLine("Use Grid ID as the parameter for --grid");

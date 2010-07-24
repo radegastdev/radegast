@@ -75,11 +75,6 @@ namespace Radegast
             }
         }
 
-        /// <summary>
-        /// Processed command line options
-        /// </summary>
-        public CommandLine CommandLine { get; set; }
-
         private string userDir;
         /// <summary>
         /// System (not grid!) user's dir
