@@ -878,9 +878,9 @@ namespace Radegast
 
         void invTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (e.Node.Tag is InventoryItem)
+            if (invTree.SelectedNode.Tag is InventoryItem)
             {
-                InventoryItem item = e.Node.Tag as InventoryItem;
+                InventoryItem item = invTree.SelectedNode.Tag as InventoryItem;
                 switch (item.AssetType)
                 {
 
