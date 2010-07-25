@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\AutoPilot.cs" />
+    <Compile Include="Core\AutoPilot2.cs" />
     <Compile Include="Core\ChatBufferItem.cs" />
     <Compile Include="Core\ClientSignatures.cs" />
     <Compile Include="Core\Commands\CommandsManager.cs" />
