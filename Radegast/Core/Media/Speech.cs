@@ -175,7 +175,7 @@ namespace Radegast.Media
                     }
                 }));
 
-            done.WaitOne(30 * 1000);
+            done.WaitOne(30 * 1000, false);
             return len;
         }
 

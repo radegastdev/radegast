@@ -87,7 +87,7 @@ namespace RadegastSpeech.Sound
                 uint len = speechPlayer.Play(filename, global, worldPos);
 
                 // Wait for it to finish. Max 2sec longer tha it is supposed to
-                playing.WaitOne((int)len + 2000);
+                playing.WaitOne((int)len + 2000, false);
             }
 
             // Delete the WAV file if requested.

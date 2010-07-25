@@ -665,7 +665,7 @@ namespace Radegast
                     };
                     Client.Parcels.ParcelInfoReply += handler;
                     Client.Parcels.RequestParcelInfo(parcelID);
-                    done.WaitOne(30 * 1000);
+                    done.WaitOne(30 * 1000, false);
                     Client.Parcels.ParcelInfoReply -= handler;
                 }
             });

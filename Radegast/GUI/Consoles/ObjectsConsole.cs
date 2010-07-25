@@ -547,7 +547,7 @@ namespace Radegast
                         });
                     client.Groups.GroupNamesReply += cbGroupName;
                     client.Groups.RequestGroupName(prim.Properties.GroupID);
-                    nameReceivedSignal.WaitOne(5000);
+                    nameReceivedSignal.WaitOne(5000, false);
                     nameReceivedSignal.Close();
                     client.Groups.GroupNamesReply -= cbGroupName;
                 }

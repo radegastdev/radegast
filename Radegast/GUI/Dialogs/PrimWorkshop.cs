@@ -406,7 +406,7 @@ namespace Radegast
                         gotImage.Set();
                     }
                 );
-                gotImage.WaitOne(30 * 1000);
+                gotImage.WaitOne(30 * 1000, false);
                 if (img != null)
                 {
                     Textures.Add(textureID, img);

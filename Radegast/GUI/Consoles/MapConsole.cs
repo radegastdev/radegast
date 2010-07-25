@@ -422,7 +422,7 @@ namespace Radegast
                                 };
                             client.Grid.GridRegion += handler;
                             client.Grid.RequestMapRegion(regionName, GridLayerType.Objects);
-                            if (done.WaitOne(30 * 1000))
+                            if (done.WaitOne(30 * 1000, false))
                             {
                                 if (IsHandleCreated)
                                     BeginInvoke(new MethodInvoker(() => gotoRegion(regionName, simX, simY)));

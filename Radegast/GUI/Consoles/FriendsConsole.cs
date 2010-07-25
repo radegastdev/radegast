@@ -338,7 +338,7 @@ namespace Radegast
 
                             client.Self.GroupChatJoined += handler;
                             client.Self.StartIMConference(participants, tmpID);
-                            if (started.WaitOne(30 * 1000))
+                            if (started.WaitOne(30 * 1000, false))
                             {
                                 instance.TabConsole.BeginInvoke(new MethodInvoker(() =>
                                     {

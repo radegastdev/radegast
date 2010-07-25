@@ -462,7 +462,7 @@ namespace Radegast
 
                 if (name == INCOMPLETE_NAME)
                 {
-                    gotName.WaitOne(10 * 1000);
+                    gotName.WaitOne(10 * 1000, false);
                 }
 
                 client.Avatars.UUIDNameReply -= handler;
