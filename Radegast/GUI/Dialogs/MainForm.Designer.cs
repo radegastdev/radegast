@@ -345,6 +345,7 @@ namespace Radegast
             this.tmnuTeleportHome.ShortcutKeyDisplayString = "Ctrl-Shift-H";
             this.tmnuTeleportHome.Size = new System.Drawing.Size(223, 22);
             this.tmnuTeleportHome.Text = "Teleport Home";
+            this.tmnuTeleportHome.Click += new System.EventHandler(this.tmnuTeleportHome_Click);
             // 
             // toolStripMenuItem5
             // 

@@ -1309,11 +1309,33 @@ namespace Radegast
             }
         }
 
+        int nr_reg = 0;
+        int nr_agent = 0;
+
         // Menu item for testing out stuff
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            client.Settings.SEND_AGENT_THROTTLE = true;
-            client.Settings.SEND_AGENT_UPDATES = true;
+            if (nr_reg > 0)
+            {
+                Logger.Log("Number of regions: " + nr_reg.ToString() + " agents: " + nr_agent.ToString(), Helpers.LogLevel.Info);
+                nr_reg = 0;
+                nr_agent = 0;
+                client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+                return;
+            }
+
+            client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
+            client.Grid.RequestMainlandSims(GridLayerType.Objects);
+        }
+
+        void Grid_GridRegion(object sender, GridRegionEventArgs e)
+        {
+            nr_reg++;
+            if ((nr_reg % 100) == 0)
+            {
+                nr_agent += e.Region.Agents;
+                Logger.Log("Number of regions: " + nr_reg.ToString() + " agents: " + nr_agent.ToString(), Helpers.LogLevel.Info);
+            }
         }
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1360,6 +1382,12 @@ namespace Radegast
             tmnuExit_Click(this, EventArgs.Empty);
         }
 
+        private void tmnuTeleportHome_Click(object sender, EventArgs e)
+        {
+            TabConsole.DisplayNotificationInChat("Teleporting home...");
+            client.Self.RequestTeleport(UUID.Zero);
+        }
         #endregion
+
     }
 }
