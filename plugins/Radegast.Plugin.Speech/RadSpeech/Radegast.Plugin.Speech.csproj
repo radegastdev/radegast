@@ -1,195 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
-    <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.21022</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A2E294B7-5E6C-4BA5-8E57-33A1CDEECCF3}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon></ApplicationIcon>
-    <AssemblyKeyContainerName>
-    </AssemblyKeyContainerName>
-    <AssemblyName>Radegast.Plugin.Speech</AssemblyName>
-    <DefaultClientScript>JScript</DefaultClientScript>
-    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
-    <DefaultTargetSchema>IE50</DefaultTargetSchema>
-    <DelaySign>false</DelaySign>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BA078535-BB58-45F0-9225-D2F6DF1197E4}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder></AppDesignerFolder>
-    <RootNamespace>Radegast.Plugin.Speech</RootNamespace>
-    <StartupObject></StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RadegastSpeech</RootNamespace>
+    <AssemblyName>Radegast.Plugin.Speech</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ReleaseVersion>0.4</ReleaseVersion>
+    <BaseDirectory>..\..\..\..\..\..\..\..\home\pd\Debug</BaseDirectory>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;VISUAL_STUDIO</DefineConstants>
-    <DocumentationFile></DocumentationFile>
-    <DebugSymbols>False</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <Optimize>True</Optimize>
-    <OutputPath>..\..\..\bin\</OutputPath>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <RemoveIntegerChecks>False</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <WarningLevel>3</WarningLevel>
-    <NoStdLib>False</NoStdLib>
-    <NoWarn>1591,1574,0419,0618,0414,0169</NoWarn>
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DEBUG;VISUAL_STUDIO</DefineConstants>
-    <DocumentationFile></DocumentationFile>
-    <DebugSymbols>True</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <Optimize>False</Optimize>
-    <OutputPath>..\..\..\bin\</OutputPath>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <RemoveIntegerChecks>False</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
-    <WarningLevel>3</WarningLevel>
-    <NoStdLib>False</NoStdLib>
-    <NoWarn>1591,1574,0419,0618,0414,0169</NoWarn>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="fmodex-dotnet.dll">
-        <Name>fmodex-dotnet.dll</Name>
+    <Reference Include="fmodex-dotnet, Version=4.26.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Radegast\assemblies\fmodex-dotnet.dll</HintPath>
     </Reference>
-    <Reference Include="System">
-        <Name>System</Name>
-    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core">
-        <Name>System.Core</Name>
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Drawing">
-        <Name>System.Drawing</Name>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-        <Name>System.Windows.Forms</Name>
-    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
-        <Name>System.Xml.Linq</Name>
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions">
-        <Name>System.Data.DataSetExtensions</Name>
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data">
-        <Name>System.Data</Name>
-    </Reference>
-    <Reference Include="System.Xml">
-        <Name>System.Xml</Name>
-    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
-      <Name>OpenMetaverse</Name>
-      <Project>{6280B6A7-C90A-4E75-921C-543A01F8A555}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
-      <Name>OpenMetaverseTypes</Name>
-      <Project>{6F771A1F-3BB1-46AE-9295-061AFB3096E0}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
-      <Name>OpenMetaverse.StructuredData</Name>
-      <Project>{55E03CC4-D0E7-487F-8F63-02F14FC0FD1E}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Radegast\Radegast.csproj">
-      <Name>Radegast</Name>
-      <Project>{0BDF1C22-0CBD-4A14-8151-BB9909433C8F}</Project>
-      <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AreaControl.cs">
-    </Compile>
-    <Compile Include="IRadSpeech.cs">
-    </Compile>
-    <Compile Include="PluginControl.cs">
-    </Compile>
-    <Compile Include="Conversation\BlueMenu.cs">
-    </Compile>
-    <Compile Include="Conversation\Chat.cs">
-    </Compile>
-    <Compile Include="Conversation\Closet.cs">
-    </Compile>
-    <Compile Include="Conversation\ConferenceIMSession.cs">
-    </Compile>
-    <Compile Include="Conversation\Control.cs">
-    </Compile>
-    <Compile Include="Conversation\Friends.cs">
-    </Compile>
-    <Compile Include="Conversation\Friendship.cs">
-    </Compile>
-    <Compile Include="Conversation\GroupIMSession.cs">
-    </Compile>
-    <Compile Include="Conversation\IMSession.cs">
-    </Compile>
-    <Compile Include="Conversation\InvLandmark.cs">
-    </Compile>
-    <Compile Include="Conversation\InvNotecard.cs">
-    </Compile>
-    <Compile Include="Conversation\Max.cs">
-    </Compile>
-    <Compile Include="Conversation\Mode.cs">
-    </Compile>
-    <Compile Include="Conversation\Movement.cs">
-    </Compile>
-    <Compile Include="Conversation\SingleIMSession.cs">
-    </Compile>
-    <Compile Include="Conversation\Surroundings.cs">
-    </Compile>
-    <Compile Include="Conversation\TalkingContextMenu.cs">
-    </Compile>
-    <Compile Include="Conversation\Voice.cs">
-    </Compile>
-    <Compile Include="Environment\Control.cs">
-    </Compile>
-    <Compile Include="Environment\People.cs">
-    </Compile>
-    <Compile Include="GUI\AvatarSpeechAction.cs">
-    </Compile>
-    <Compile Include="GUI\NotecardReadAction.cs">
-    </Compile>
+    <Compile Include="AreaControl.cs" />
+    <Compile Include="Conversation\Chat.cs" />
+    <Compile Include="Conversation\ConferenceIMSession.cs" />
+    <Compile Include="Conversation\Control.cs" />
+    <Compile Include="Conversation\BlueMenu.cs" />
+    <Compile Include="Conversation\Friends.cs" />
+    <Compile Include="Conversation\Friendship.cs" />
+    <Compile Include="Conversation\GroupIMSession.cs" />
+    <Compile Include="Conversation\IMSession.cs" />
+    <Compile Include="Conversation\Closet.cs" />
+    <Compile Include="Conversation\InvLandmark.cs" />
+    <Compile Include="Conversation\InvNotecard.cs" />
+    <Compile Include="Conversation\Max.cs" />
+    <Compile Include="Conversation\Mode.cs" />
+    <Compile Include="Conversation\Movement.cs" />
+    <Compile Include="Conversation\SingleIMSession.cs" />
+    <Compile Include="Conversation\Surroundings.cs" />
+    <Compile Include="Conversation\TalkingContextMenu.cs" />
+    <Compile Include="Conversation\Voice.cs" />
+    <Compile Include="Environment\Control.cs" />
+    <Compile Include="Environment\People.cs" />
+    <Compile Include="GUI\AvatarSpeechAction.cs" />
+    <Compile Include="GUI\NotecardReadAction.cs" />
     <Compile Include="GUI\VoiceAssignment.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\VoiceAssignment.Designer.cs">
       <DependentUpon>VoiceAssignment.cs</DependentUpon>
     </Compile>
-    <Compile Include="Listen\Control.cs">
-    </Compile>
-    <Compile Include="Listen\Recognizer.cs">
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs">
-    </Compile>
-    <Compile Include="Sound\Control.cs">
-    </Compile>
-    <Compile Include="Sound\FmodSound.cs">
-    </Compile>
-    <Compile Include="Talk\Control.cs">
-    </Compile>
-    <Compile Include="Talk\Substitutions.cs">
-    </Compile>
-    <Compile Include="Talk\Synthesizer.cs">
-    </Compile>
-    <Compile Include="Talk\Voices.cs">
-    </Compile>
+    <Compile Include="IRadSpeech.cs" />
+    <Compile Include="Listen\Control.cs" />
+    <Compile Include="Listen\Recognizer.cs" />
+    <Compile Include="PluginControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sound\Control.cs" />
+    <Compile Include="Sound\FmodSound.cs" />
+    <Compile Include="Talk\Control.cs" />
+    <Compile Include="Talk\Substitutions.cs" />
+    <Compile Include="Talk\Synthesizer.cs" />
+    <Compile Include="Talk\Voices.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="GUI\VoiceAssignment.resx">
       <DependentUpon>VoiceAssignment.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="BadBeep.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -215,10 +140,33 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
+      <Project>{E63618CF-B21B-44CD-BBDE-BCE26CF6AF0D}</Project>
+      <Name>OpenMetaverse.StructuredData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
+      <Project>{1A303634-82F1-4C91-9E1C-C96B8B03D10A}</Project>
+      <Name>OpenMetaverseTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
+      <Project>{30D9F2AE-42FE-4ACD-9E52-A819CB36EE05}</Project>
+      <Name>OpenMetaverse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Radegast\Radegast.csproj">
+      <Project>{A6D955CD-1F55-459F-A7AD-01E591404989}</Project>
+      <Name>Radegast</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
