@@ -14,8 +14,13 @@ if [ x$1 == xnant ]; then
     nant -buildfile:Radegast.build
     RES=$?
     echo Build Exit Code: $RES
-    if [ x$2 == xruntests ]; then
-        nunit-console2 bin/Radegast.Tests.dll /exclude=Network /labels /xml=testresults.xml
+
+    if [ x$RES != x0 ]; then
+	exit $RES
+    fi
+
+    if [ x$2 == xdist ]; then
+        tar czvf radegast-latest.tgz bin
     fi
     
     exit $RES
