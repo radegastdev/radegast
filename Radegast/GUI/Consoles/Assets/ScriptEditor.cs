@@ -744,7 +744,8 @@ namespace Radegast
             txtStatus.Hide();
             txtStatus.Text = string.Empty;
 
-            AssetScriptText n = new AssetScriptText(rtb.Text);
+            AssetScriptText n = new AssetScriptText();
+            n.Source = rtb.Text;
             n.Encode();
 
             if (prim != null)
