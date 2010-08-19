@@ -93,7 +93,6 @@ namespace Radegast
             glControl_Resize(null, null);
 
             renderer = new MeshmerizerR();
-            renderer.ShouldScaleMesh = false;
         }
 
         #region GLControl Callbacks
