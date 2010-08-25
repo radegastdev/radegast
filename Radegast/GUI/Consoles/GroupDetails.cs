@@ -232,7 +232,12 @@ namespace Radegast
                 ListViewItem item = new ListViewItem();
                 item.SubItems.Add(notice.Subject);
                 item.SubItems.Add(notice.FromName);
-                item.SubItems.Add(Utils.UnixTimeToDateTime(notice.Timestamp).ToShortDateString());
+                string noticeDate = string.Empty;
+                if (notice.Timestamp != 0)
+                {
+                    noticeDate = Utils.UnixTimeToDateTime(notice.Timestamp).ToShortDateString();
+                }
+                item.SubItems.Add(noticeDate);
 
                 if (notice.HasAttachment)
                 {
@@ -513,6 +518,7 @@ namespace Radegast
         {
             lvwNoticeArchive.Items.Clear();
             client.Groups.RequestGroupNoticesList(group.ID);
+            btnNewNotice.Enabled = HasPower(GroupPowers.SendNotices);
         }
 
         private void RefreshGroupInfo()
@@ -687,8 +693,12 @@ namespace Radegast
                     txtNotice.Text = string.Empty;
                     btnSave.Enabled = btnSave.Visible = icnItem.Visible = txtItemName.Visible = false;
                     client.Groups.RequestGroupNotice(notice.NoticeID);
+                    pnlNewNotice.Visible = false;
+                    pnlArchivedNotice.Visible = true;
+                    return;
                 }
             }
+            pnlArchivedNotice.Visible = false;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -1037,6 +1047,66 @@ namespace Radegast
                 RefreshRoles();
             }
         }
+
+        #region New notice
+        private void btnNewNotice_Click(object sender, EventArgs e)
+        {
+            if (HasPower(GroupPowers.SendNotices))
+            {
+                pnlArchivedNotice.Visible = false;
+                pnlNewNotice.Visible = true;
+                txtNewNoticeTitle.Focus();
+            }
+            else
+            {
+                instance.TabConsole.DisplayNotificationInChat("Don't have permission to send notices in this group", ChatBufferTextStyle.Error);
+            }
+        }
+
+        private void btnPasteInv_Click(object sender, EventArgs e)
+        {
+            if (instance.InventoryClipboard != null && instance.InventoryClipboard.Item is InventoryItem)
+            {
+                InventoryItem inv = instance.InventoryClipboard.Item as InventoryItem;
+                txtNewNoteAtt.Text = inv.Name;
+                int icoIndx = InventoryConsole.GetItemImageIndex(inv.AssetType.ToString().ToLower());
+                if (icoIndx >= 0)
+                {
+                    icnNewNoticeAtt.Image = frmMain.ResourceImages.Images[icoIndx];
+                    icnNewNoticeAtt.Visible = true;
+                }
+                txtNewNoteAtt.Tag = inv;
+                btnRemoveAttachment.Enabled = true;
+            }
+        }
+
+        private void btnRemoveAttachment_Click(object sender, EventArgs e)
+        {
+            txtNewNoteAtt.Tag = null;
+            txtNewNoteAtt.Text = string.Empty;
+            btnRemoveAttachment.Enabled = false;
+            icnNewNoticeAtt.Visible = false;
+        }
+
+        private void btnSend_Click(object sender, EventArgs e)
+        {
+            GroupNotice ntc = new GroupNotice();
+            ntc.Subject = txtNewNoticeTitle.Text;
+            ntc.Message = txtNewNoticeBody.Text;
+            if (txtNewNoteAtt.Tag != null && txtNewNoteAtt.Tag is InventoryItem)
+            {
+                InventoryItem inv = txtNewNoteAtt.Tag as InventoryItem;
+                ntc.OwnerID = inv.OwnerID;
+                ntc.AttachmentID = inv.UUID;
+            }
+            client.Groups.SendGroupNotice(group.ID, ntc);
+            btnRemoveAttachment.PerformClick();
+            txtNewNoticeTitle.Text = txtNewNoticeBody.Text = string.Empty;
+            pnlNewNotice.Visible = false;
+            btnRefresh.PerformClick();
+            instance.TabConsole.DisplayNotificationInChat("Notice sent", ChatBufferTextStyle.Invisible);
+        }
+        #endregion
     }
 
     public class EnhancedGroupMember

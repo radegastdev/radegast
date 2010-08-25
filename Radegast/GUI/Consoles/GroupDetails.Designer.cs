@@ -122,6 +122,24 @@ namespace Radegast
             this.chRoleTitle = new System.Windows.Forms.ColumnHeader();
             this.label2 = new System.Windows.Forms.Label();
             this.tpNotices = new System.Windows.Forms.TabPage();
+            this.btnNewNotice = new System.Windows.Forms.Button();
+            this.lblGroupNoticesArchive = new System.Windows.Forms.Label();
+            this.lvwNoticeArchive = new Radegast.ListViewNoFlicker();
+            this.ntcArchAttachment = new System.Windows.Forms.ColumnHeader();
+            this.ntcArchSubject = new System.Windows.Forms.ColumnHeader();
+            this.ntcArchFrom = new System.Windows.Forms.ColumnHeader();
+            this.ntcArchDate = new System.Windows.Forms.ColumnHeader();
+            this.pnlNewNotice = new System.Windows.Forms.Panel();
+            this.pnlNoticeAttachment = new System.Windows.Forms.GroupBox();
+            this.btnPasteInv = new System.Windows.Forms.Button();
+            this.btnRemoveAttachment = new System.Windows.Forms.Button();
+            this.icnNewNoticeAtt = new System.Windows.Forms.PictureBox();
+            this.txtNewNoteAtt = new System.Windows.Forms.TextBox();
+            this.txtNewNoticeTitle = new System.Windows.Forms.TextBox();
+            this.btnSend = new System.Windows.Forms.Button();
+            this.txtNewNoticeBody = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.pnlArchivedNotice = new System.Windows.Forms.Panel();
             this.txtItemName = new System.Windows.Forms.TextBox();
             this.icnItem = new System.Windows.Forms.PictureBox();
@@ -130,12 +148,6 @@ namespace Radegast
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblSentBy = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.lblGroupNoticesArchive = new System.Windows.Forms.Label();
-            this.lvwNoticeArchive = new Radegast.ListViewNoFlicker();
-            this.ntcArchAttachment = new System.Windows.Forms.ColumnHeader();
-            this.ntcArchSubject = new System.Windows.Forms.ColumnHeader();
-            this.ntcArchFrom = new System.Windows.Forms.ColumnHeader();
-            this.ntcArchDate = new System.Windows.Forms.ColumnHeader();
             this.pnlBottomControls = new System.Windows.Forms.Panel();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
@@ -151,6 +163,9 @@ namespace Radegast
             this.tpRoles.SuspendLayout();
             this.pnlRoleDetaiils.SuspendLayout();
             this.tpNotices.SuspendLayout();
+            this.pnlNewNotice.SuspendLayout();
+            this.pnlNoticeAttachment.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.icnNewNoticeAtt)).BeginInit();
             this.pnlArchivedNotice.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).BeginInit();
             this.pnlBottomControls.SuspendLayout();
@@ -835,9 +850,11 @@ namespace Radegast
             // tpNotices
             // 
             this.tpNotices.BackColor = System.Drawing.Color.Transparent;
-            this.tpNotices.Controls.Add(this.pnlArchivedNotice);
+            this.tpNotices.Controls.Add(this.btnNewNotice);
             this.tpNotices.Controls.Add(this.lblGroupNoticesArchive);
             this.tpNotices.Controls.Add(this.lvwNoticeArchive);
+            this.tpNotices.Controls.Add(this.pnlNewNotice);
+            this.tpNotices.Controls.Add(this.pnlArchivedNotice);
             this.tpNotices.Location = new System.Drawing.Point(4, 22);
             this.tpNotices.Name = "tpNotices";
             this.tpNotices.Padding = new System.Windows.Forms.Padding(3);
@@ -846,103 +863,15 @@ namespace Radegast
             this.tpNotices.Text = "Notices";
             this.tpNotices.UseVisualStyleBackColor = true;
             // 
-            // pnlArchivedNotice
+            // btnNewNotice
             // 
-            this.pnlArchivedNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlArchivedNotice.Controls.Add(this.txtItemName);
-            this.pnlArchivedNotice.Controls.Add(this.icnItem);
-            this.pnlArchivedNotice.Controls.Add(this.btnSave);
-            this.pnlArchivedNotice.Controls.Add(this.txtNotice);
-            this.pnlArchivedNotice.Controls.Add(this.lblTitle);
-            this.pnlArchivedNotice.Controls.Add(this.lblSentBy);
-            this.pnlArchivedNotice.Controls.Add(this.label1);
-            this.pnlArchivedNotice.Location = new System.Drawing.Point(6, 192);
-            this.pnlArchivedNotice.Name = "pnlArchivedNotice";
-            this.pnlArchivedNotice.Size = new System.Drawing.Size(385, 276);
-            this.pnlArchivedNotice.TabIndex = 11;
-            // 
-            // txtItemName
-            // 
-            this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtItemName.Location = new System.Drawing.Point(25, 250);
-            this.txtItemName.Name = "txtItemName";
-            this.txtItemName.ReadOnly = true;
-            this.txtItemName.Size = new System.Drawing.Size(302, 20);
-            this.txtItemName.TabIndex = 24;
-            this.txtItemName.Visible = false;
-            // 
-            // icnItem
-            // 
-            this.icnItem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.icnItem.Location = new System.Drawing.Point(3, 252);
-            this.icnItem.Name = "icnItem";
-            this.icnItem.Size = new System.Drawing.Size(16, 16);
-            this.icnItem.TabIndex = 23;
-            this.icnItem.TabStop = false;
-            this.icnItem.Visible = false;
-            // 
-            // btnSave
-            // 
-            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(333, 250);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(49, 23);
-            this.btnSave.TabIndex = 18;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Visible = false;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // txtNotice
-            // 
-            this.txtNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtNotice.BackColor = System.Drawing.SystemColors.Window;
-            this.txtNotice.Location = new System.Drawing.Point(7, 58);
-            this.txtNotice.Multiline = true;
-            this.txtNotice.Name = "txtNotice";
-            this.txtNotice.ReadOnly = true;
-            this.txtNotice.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNotice.Size = new System.Drawing.Size(375, 186);
-            this.txtNotice.TabIndex = 19;
-            // 
-            // lblTitle
-            // 
-            this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTitle.BackColor = System.Drawing.SystemColors.Window;
-            this.lblTitle.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.Location = new System.Drawing.Point(7, 37);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(375, 18);
-            this.lblTitle.TabIndex = 20;
-            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblSentBy
-            // 
-            this.lblSentBy.AutoSize = true;
-            this.lblSentBy.Location = new System.Drawing.Point(4, 24);
-            this.lblSentBy.Name = "lblSentBy";
-            this.lblSentBy.Size = new System.Drawing.Size(52, 13);
-            this.lblSentBy.TabIndex = 21;
-            this.lblSentBy.Text = "Sent by...";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(122, 24);
-            this.label1.TabIndex = 22;
-            this.label1.Text = "Group Notice";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.btnNewNotice.Location = new System.Drawing.Point(9, 192);
+            this.btnNewNotice.Name = "btnNewNotice";
+            this.btnNewNotice.Size = new System.Drawing.Size(132, 23);
+            this.btnNewNotice.TabIndex = 10;
+            this.btnNewNotice.Text = "Create &New Notice";
+            this.btnNewNotice.UseVisualStyleBackColor = true;
+            this.btnNewNotice.Click += new System.EventHandler(this.btnNewNotice_Click);
             // 
             // lblGroupNoticesArchive
             // 
@@ -998,6 +927,240 @@ namespace Radegast
             this.ntcArchDate.Text = "Date";
             this.ntcArchDate.Width = 72;
             // 
+            // pnlNewNotice
+            // 
+            this.pnlNewNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlNewNotice.Controls.Add(this.pnlNoticeAttachment);
+            this.pnlNewNotice.Controls.Add(this.txtNewNoticeTitle);
+            this.pnlNewNotice.Controls.Add(this.btnSend);
+            this.pnlNewNotice.Controls.Add(this.txtNewNoticeBody);
+            this.pnlNewNotice.Controls.Add(this.label10);
+            this.pnlNewNotice.Controls.Add(this.label11);
+            this.pnlNewNotice.Location = new System.Drawing.Point(6, 224);
+            this.pnlNewNotice.Name = "pnlNewNotice";
+            this.pnlNewNotice.Size = new System.Drawing.Size(385, 244);
+            this.pnlNewNotice.TabIndex = 25;
+            this.pnlNewNotice.Visible = false;
+            // 
+            // pnlNoticeAttachment
+            // 
+            this.pnlNoticeAttachment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlNoticeAttachment.Controls.Add(this.btnPasteInv);
+            this.pnlNoticeAttachment.Controls.Add(this.btnRemoveAttachment);
+            this.pnlNoticeAttachment.Controls.Add(this.icnNewNoticeAtt);
+            this.pnlNoticeAttachment.Controls.Add(this.txtNewNoteAtt);
+            this.pnlNoticeAttachment.Location = new System.Drawing.Point(3, 197);
+            this.pnlNoticeAttachment.Name = "pnlNoticeAttachment";
+            this.pnlNoticeAttachment.Size = new System.Drawing.Size(276, 44);
+            this.pnlNoticeAttachment.TabIndex = 3;
+            this.pnlNoticeAttachment.TabStop = false;
+            this.pnlNoticeAttachment.Text = "Notice attachment";
+            // 
+            // btnPasteInv
+            // 
+            this.btnPasteInv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPasteInv.Location = new System.Drawing.Point(202, 15);
+            this.btnPasteInv.Name = "btnPasteInv";
+            this.btnPasteInv.Size = new System.Drawing.Size(68, 23);
+            this.btnPasteInv.TabIndex = 3;
+            this.btnPasteInv.Text = "&Paste Inv";
+            this.btnPasteInv.UseVisualStyleBackColor = true;
+            this.btnPasteInv.Click += new System.EventHandler(this.btnPasteInv_Click);
+            // 
+            // btnRemoveAttachment
+            // 
+            this.btnRemoveAttachment.AccessibleName = "Remove attachment";
+            this.btnRemoveAttachment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRemoveAttachment.Enabled = false;
+            this.btnRemoveAttachment.Image = global::Radegast.Properties.Resources.inv_folder_trash;
+            this.btnRemoveAttachment.Location = new System.Drawing.Point(170, 15);
+            this.btnRemoveAttachment.Name = "btnRemoveAttachment";
+            this.btnRemoveAttachment.Size = new System.Drawing.Size(26, 23);
+            this.btnRemoveAttachment.TabIndex = 2;
+            this.btnRemoveAttachment.UseVisualStyleBackColor = true;
+            this.btnRemoveAttachment.Click += new System.EventHandler(this.btnRemoveAttachment_Click);
+            // 
+            // icnNewNoticeAtt
+            // 
+            this.icnNewNoticeAtt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.icnNewNoticeAtt.Location = new System.Drawing.Point(1, 17);
+            this.icnNewNoticeAtt.Name = "icnNewNoticeAtt";
+            this.icnNewNoticeAtt.Size = new System.Drawing.Size(16, 16);
+            this.icnNewNoticeAtt.TabIndex = 23;
+            this.icnNewNoticeAtt.TabStop = false;
+            this.icnNewNoticeAtt.Visible = false;
+            // 
+            // txtNewNoteAtt
+            // 
+            this.txtNewNoteAtt.AccessibleName = "Notice attachment";
+            this.txtNewNoteAtt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNewNoteAtt.Location = new System.Drawing.Point(23, 15);
+            this.txtNewNoteAtt.Name = "txtNewNoteAtt";
+            this.txtNewNoteAtt.ReadOnly = true;
+            this.txtNewNoteAtt.Size = new System.Drawing.Size(141, 20);
+            this.txtNewNoteAtt.TabIndex = 1;
+            // 
+            // txtNewNoticeTitle
+            // 
+            this.txtNewNoticeTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNewNoticeTitle.Location = new System.Drawing.Point(7, 35);
+            this.txtNewNoticeTitle.Name = "txtNewNoticeTitle";
+            this.txtNewNoticeTitle.Size = new System.Drawing.Size(375, 20);
+            this.txtNewNoticeTitle.TabIndex = 1;
+            // 
+            // btnSend
+            // 
+            this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSend.Location = new System.Drawing.Point(285, 212);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(97, 23);
+            this.btnSend.TabIndex = 6;
+            this.btnSend.Text = "&Send Notice";
+            this.btnSend.UseVisualStyleBackColor = false;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            // 
+            // txtNewNoticeBody
+            // 
+            this.txtNewNoticeBody.AccessibleName = "Notice text";
+            this.txtNewNoticeBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNewNoticeBody.BackColor = System.Drawing.SystemColors.Window;
+            this.txtNewNoticeBody.Location = new System.Drawing.Point(7, 58);
+            this.txtNewNoticeBody.Multiline = true;
+            this.txtNewNoticeBody.Name = "txtNewNoticeBody";
+            this.txtNewNoticeBody.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtNewNoticeBody.Size = new System.Drawing.Size(375, 133);
+            this.txtNewNoticeBody.TabIndex = 2;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(4, 21);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(27, 13);
+            this.label10.TabIndex = 21;
+            this.label10.Text = "Title";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(3, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(166, 24);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "New Group Notice";
+            this.label11.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // pnlArchivedNotice
+            // 
+            this.pnlArchivedNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlArchivedNotice.Controls.Add(this.txtItemName);
+            this.pnlArchivedNotice.Controls.Add(this.icnItem);
+            this.pnlArchivedNotice.Controls.Add(this.btnSave);
+            this.pnlArchivedNotice.Controls.Add(this.txtNotice);
+            this.pnlArchivedNotice.Controls.Add(this.lblTitle);
+            this.pnlArchivedNotice.Controls.Add(this.lblSentBy);
+            this.pnlArchivedNotice.Controls.Add(this.label1);
+            this.pnlArchivedNotice.Location = new System.Drawing.Point(6, 224);
+            this.pnlArchivedNotice.Name = "pnlArchivedNotice";
+            this.pnlArchivedNotice.Size = new System.Drawing.Size(385, 244);
+            this.pnlArchivedNotice.TabIndex = 11;
+            this.pnlArchivedNotice.Visible = false;
+            // 
+            // txtItemName
+            // 
+            this.txtItemName.AccessibleName = "Notice attachment";
+            this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtItemName.Location = new System.Drawing.Point(25, 218);
+            this.txtItemName.Name = "txtItemName";
+            this.txtItemName.ReadOnly = true;
+            this.txtItemName.Size = new System.Drawing.Size(302, 20);
+            this.txtItemName.TabIndex = 24;
+            this.txtItemName.Visible = false;
+            // 
+            // icnItem
+            // 
+            this.icnItem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.icnItem.Location = new System.Drawing.Point(3, 220);
+            this.icnItem.Name = "icnItem";
+            this.icnItem.Size = new System.Drawing.Size(16, 16);
+            this.icnItem.TabIndex = 23;
+            this.icnItem.TabStop = false;
+            this.icnItem.Visible = false;
+            // 
+            // btnSave
+            // 
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Enabled = false;
+            this.btnSave.Location = new System.Drawing.Point(333, 218);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(49, 23);
+            this.btnSave.TabIndex = 18;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Visible = false;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // txtNotice
+            // 
+            this.txtNotice.AccessibleName = "Notice text";
+            this.txtNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNotice.BackColor = System.Drawing.SystemColors.Window;
+            this.txtNotice.Location = new System.Drawing.Point(7, 58);
+            this.txtNotice.Multiline = true;
+            this.txtNotice.Name = "txtNotice";
+            this.txtNotice.ReadOnly = true;
+            this.txtNotice.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtNotice.Size = new System.Drawing.Size(375, 154);
+            this.txtNotice.TabIndex = 19;
+            // 
+            // lblTitle
+            // 
+            this.lblTitle.AccessibleName = "Notice title";
+            this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblTitle.BackColor = System.Drawing.SystemColors.Window;
+            this.lblTitle.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Location = new System.Drawing.Point(7, 37);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(375, 18);
+            this.lblTitle.TabIndex = 20;
+            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblSentBy
+            // 
+            this.lblSentBy.AutoSize = true;
+            this.lblSentBy.Location = new System.Drawing.Point(4, 24);
+            this.lblSentBy.Name = "lblSentBy";
+            this.lblSentBy.Size = new System.Drawing.Size(52, 13);
+            this.lblSentBy.TabIndex = 21;
+            this.lblSentBy.Text = "Sent by...";
+            this.lblSentBy.Visible = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(122, 24);
+            this.label1.TabIndex = 22;
+            this.label1.Text = "Group Notice";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // pnlBottomControls
             // 
             this.pnlBottomControls.Controls.Add(this.btnClose);
@@ -1027,7 +1190,7 @@ namespace Radegast
             this.btnApply.Location = new System.Drawing.Point(248, 6);
             this.btnApply.Name = "btnApply";
             this.btnApply.Size = new System.Drawing.Size(75, 23);
-            this.btnApply.TabIndex = 0;
+            this.btnApply.TabIndex = 1;
             this.btnApply.Text = "Apply";
             this.btnApply.UseVisualStyleBackColor = true;
             this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
@@ -1037,7 +1200,7 @@ namespace Radegast
             this.btnRefresh.Location = new System.Drawing.Point(13, 6);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 0;
+            this.btnRefresh.TabIndex = 2;
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
@@ -1068,6 +1231,11 @@ namespace Radegast
             this.pnlRoleDetaiils.PerformLayout();
             this.tpNotices.ResumeLayout(false);
             this.tpNotices.PerformLayout();
+            this.pnlNewNotice.ResumeLayout(false);
+            this.pnlNewNotice.PerformLayout();
+            this.pnlNoticeAttachment.ResumeLayout(false);
+            this.pnlNoticeAttachment.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.icnNewNoticeAtt)).EndInit();
             this.pnlArchivedNotice.ResumeLayout(false);
             this.pnlArchivedNotice.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).EndInit();
@@ -1160,6 +1328,18 @@ namespace Radegast
         public System.Windows.Forms.ColumnHeader columnHeader6;
         public System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.Button btnSaveRole;
+        private System.Windows.Forms.Button btnNewNotice;
+        public System.Windows.Forms.Panel pnlNewNotice;
+        public System.Windows.Forms.TextBox txtNewNoteAtt;
+        public System.Windows.Forms.PictureBox icnNewNoticeAtt;
+        public System.Windows.Forms.Button btnSend;
+        public System.Windows.Forms.TextBox txtNewNoticeBody;
+        public System.Windows.Forms.Label label10;
+        public System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox txtNewNoticeTitle;
+        private System.Windows.Forms.Button btnPasteInv;
+        private System.Windows.Forms.Button btnRemoveAttachment;
+        private System.Windows.Forms.GroupBox pnlNoticeAttachment;
 
     }
 }

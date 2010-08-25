@@ -117,7 +117,7 @@ namespace Radegast
             // Callbacks
             client.Assets.ImageReceiveProgress += new EventHandler<ImageReceiveProgressEventArgs>(Assets_ImageReceiveProgress);
             progressBar1.Visible = true;
-            client.Assets.RequestImage(imageID, ImageType.Normal, delegate(TextureRequestState state, AssetTexture assetTexture)
+            client.Assets.RequestImage(imageID, ImageType.Normal, 101300.0f, 0, 0, delegate(TextureRequestState state, AssetTexture assetTexture)
             {
                 if (state == TextureRequestState.Finished || state == TextureRequestState.Timeout)
                 {
@@ -127,7 +127,8 @@ namespace Radegast
                 {
                     // DisplayPartialImage(assetTexture);
                 }
-            });
+            },
+            true);
         }
 
         void SLImageHandler_Disposed(object sender, EventArgs e)
