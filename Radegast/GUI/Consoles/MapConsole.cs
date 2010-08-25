@@ -74,6 +74,7 @@ namespace Radegast
             client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Friends.FriendFoundReply += new EventHandler<FriendFoundReplyEventArgs>(Friends_FriendFoundReply);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -81,6 +82,7 @@ namespace Radegast
             client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Friends.FriendFoundReply -= new EventHandler<FriendFoundReplyEventArgs>(Friends_FriendFoundReply);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -322,7 +324,14 @@ namespace Radegast
                 return;
             }
 
-            if (e.Region.Name.ToLower().Contains(txtRegion.Text.ToLower())
+            if (e.Region.RegionHandle == friendRegionHandle)
+            {
+                txtRegion.Text = e.Region.Name;
+                friendRegionHandle = 0;
+            }
+
+            if (!string.IsNullOrEmpty(txtRegion.Text)
+                && e.Region.Name.ToLower().Contains(txtRegion.Text.ToLower())
                 && !lstRegions.Items.ContainsKey(e.Region.Name))
             {
                 ListViewItem item = new ListViewItem(e.Region.Name);
@@ -432,7 +441,7 @@ namespace Radegast
                     );
                     return;
                 }
-                mmap.CenterMap(regionHandles[regionName], (uint)simX, (uint)simY);
+                mmap.CenterMap(regionHandles[regionName], (uint)simX, (uint)simY, false);
                 return;
             }
 
@@ -523,6 +532,25 @@ namespace Radegast
 
         private void MapConsole_VisibleChanged(object sender, EventArgs e)
         {
+            if (Visible)
+            {
+                ddOnlineFriends.Items.Clear();
+                ddOnlineFriends.Items.Add("Online Friends");
+                ddOnlineFriends.SelectedIndex = 0;
+
+                var friends = client.Friends.FriendList.FindAll((FriendInfo f) => { return f.CanSeeThemOnMap && f.IsOnline; });
+                if (friends != null)
+                {
+                    foreach (var f in friends)
+                    {
+                        if (f.Name != null)
+                        {
+                            ddOnlineFriends.Items.Add(f.Name);
+                        }
+                    }
+                }
+            }
+
             if (!mapCreated && Visible)
             {
                 createMap();
@@ -543,5 +571,54 @@ namespace Radegast
         }
 
         #endregion GUIEvents
+
+        #region Map friends
+        FriendInfo mapFriend = null;
+        ulong friendRegionHandle = 0;
+
+        void Friends_FriendFoundReply(object sender, FriendFoundReplyEventArgs e)
+        {
+            if (mapFriend == null || mapFriend.UUID != e.AgentID) return;
+
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Friends_FriendFoundReply(sender, e)));
+                }
+                return;
+            }
+
+            txtRegion.Text = string.Empty;
+            nudX.Value = (int)e.Location.X;
+            nudY.Value = (int)e.Location.Y;
+            nudZ.Value = (int)e.Location.Z;
+            friendRegionHandle = e.RegionHandle;
+            uint x, y;
+            Utils.LongToUInts(e.RegionHandle, out x, out y);
+            x /= 256;
+            y /= 256;
+            ulong hndle = Utils.UIntsToLong(x, y);
+            foreach (KeyValuePair<string, ulong> kvp in regionHandles)
+            {
+                if (kvp.Value == hndle)
+                {
+                    txtRegion.Text = kvp.Key;
+                }
+            }
+            mmap.CenterMap(x, y, (uint)e.Location.X, (uint)e.Location.Y, true);
+        }
+
+        private void ddOnlineFriends_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ddOnlineFriends.SelectedIndex < 1) return;
+            mapFriend = client.Friends.FriendList.Find((FriendInfo f) => { return f.Name == ddOnlineFriends.SelectedItem.ToString(); });
+            if (mapFriend != null)
+            {
+                friendRegionHandle = 0;
+                client.Friends.MapFriend(mapFriend.UUID);
+            }
+        }
+        #endregion Map friends
     }
 }

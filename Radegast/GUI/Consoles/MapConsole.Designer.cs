@@ -59,6 +59,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.pnlSearch = new System.Windows.Forms.Panel();
+            this.ddOnlineFriends = new System.Windows.Forms.ComboBox();
             this.lblStatus = new System.Windows.Forms.Label();
             this.btnDestination = new System.Windows.Forms.Button();
             this.btnMyPos = new System.Windows.Forms.Button();
@@ -72,11 +73,11 @@ namespace Radegast
             this.label5 = new System.Windows.Forms.Label();
             this.nudZ = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.lstRegions = new Radegast.ListViewNoFlicker();
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtRegion = new System.Windows.Forms.TextBox();
-            this.pnlMap = new System.Windows.Forms.Panel();
             this.zoomTracker = new System.Windows.Forms.TrackBar();
+            this.pnlMap = new System.Windows.Forms.Panel();
+            this.lstRegions = new Radegast.ListViewNoFlicker();
             this.pnlSearch.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).BeginInit();
@@ -87,6 +88,7 @@ namespace Radegast
             // 
             // pnlSearch
             // 
+            this.pnlSearch.Controls.Add(this.ddOnlineFriends);
             this.pnlSearch.Controls.Add(this.lblStatus);
             this.pnlSearch.Controls.Add(this.btnDestination);
             this.pnlSearch.Controls.Add(this.btnMyPos);
@@ -109,6 +111,19 @@ namespace Radegast
             this.pnlSearch.Size = new System.Drawing.Size(194, 412);
             this.pnlSearch.TabIndex = 0;
             // 
+            // ddOnlineFriends
+            // 
+            this.ddOnlineFriends.AccessibleName = "Find online friends on the grid";
+            this.ddOnlineFriends.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ddOnlineFriends.FormattingEnabled = true;
+            this.ddOnlineFriends.Items.AddRange(new object[] {
+            "Online Friends"});
+            this.ddOnlineFriends.Location = new System.Drawing.Point(6, 195);
+            this.ddOnlineFriends.Name = "ddOnlineFriends";
+            this.ddOnlineFriends.Size = new System.Drawing.Size(182, 21);
+            this.ddOnlineFriends.TabIndex = 3;
+            this.ddOnlineFriends.SelectedIndexChanged += new System.EventHandler(this.ddOnlineFriends_SelectedIndexChanged);
+            // 
             // lblStatus
             // 
             this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -125,7 +140,7 @@ namespace Radegast
             this.btnDestination.Location = new System.Drawing.Point(91, 299);
             this.btnDestination.Name = "btnDestination";
             this.btnDestination.Size = new System.Drawing.Size(75, 23);
-            this.btnDestination.TabIndex = 21;
+            this.btnDestination.TabIndex = 22;
             this.btnDestination.Text = "Destination";
             this.btnDestination.UseVisualStyleBackColor = true;
             this.btnDestination.Click += new System.EventHandler(this.btnDestination_Click);
@@ -145,7 +160,7 @@ namespace Radegast
             this.btnGoHome.Location = new System.Drawing.Point(91, 270);
             this.btnGoHome.Name = "btnGoHome";
             this.btnGoHome.Size = new System.Drawing.Size(75, 23);
-            this.btnGoHome.TabIndex = 21;
+            this.btnGoHome.TabIndex = 19;
             this.btnGoHome.Text = "Go home";
             this.btnGoHome.UseVisualStyleBackColor = true;
             this.btnGoHome.Click += new System.EventHandler(this.btnGoHome_Click);
@@ -252,21 +267,6 @@ namespace Radegast
             this.label4.TabIndex = 16;
             this.label4.Text = "Y";
             // 
-            // lstRegions
-            // 
-            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lstRegions.Location = new System.Drawing.Point(6, 38);
-            this.lstRegions.MultiSelect = false;
-            this.lstRegions.Name = "lstRegions";
-            this.lstRegions.ShowGroups = false;
-            this.lstRegions.Size = new System.Drawing.Size(182, 175);
-            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lstRegions.TabIndex = 2;
-            this.lstRegions.UseCompatibleStateImageBehavior = false;
-            this.lstRegions.View = System.Windows.Forms.View.List;
-            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
-            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
-            // 
             // btnSearch
             // 
             this.btnSearch.Location = new System.Drawing.Point(136, 11);
@@ -285,14 +285,6 @@ namespace Radegast
             this.txtRegion.TabIndex = 0;
             this.txtRegion.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtRegion_KeyDown);
             // 
-            // pnlMap
-            // 
-            this.pnlMap.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlMap.Location = new System.Drawing.Point(0, 0);
-            this.pnlMap.Name = "pnlMap";
-            this.pnlMap.Size = new System.Drawing.Size(560, 412);
-            this.pnlMap.TabIndex = 1;
-            // 
             // zoomTracker
             // 
             this.zoomTracker.Location = new System.Drawing.Point(6, 331);
@@ -303,6 +295,29 @@ namespace Radegast
             this.zoomTracker.TickStyle = System.Windows.Forms.TickStyle.None;
             this.zoomTracker.Visible = false;
             this.zoomTracker.Scroll += new System.EventHandler(this.zoomTracker_Scroll);
+            // 
+            // pnlMap
+            // 
+            this.pnlMap.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlMap.Location = new System.Drawing.Point(0, 0);
+            this.pnlMap.Name = "pnlMap";
+            this.pnlMap.Size = new System.Drawing.Size(560, 412);
+            this.pnlMap.TabIndex = 1;
+            // 
+            // lstRegions
+            // 
+            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstRegions.Location = new System.Drawing.Point(6, 38);
+            this.lstRegions.MultiSelect = false;
+            this.lstRegions.Name = "lstRegions";
+            this.lstRegions.ShowGroups = false;
+            this.lstRegions.Size = new System.Drawing.Size(182, 151);
+            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lstRegions.TabIndex = 2;
+            this.lstRegions.UseCompatibleStateImageBehavior = false;
+            this.lstRegions.View = System.Windows.Forms.View.List;
+            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
+            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
             // 
             // MapConsole
             // 
@@ -344,6 +359,7 @@ namespace Radegast
         public System.Windows.Forms.Button btnMyPos;
         public System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.TrackBar zoomTracker;
+        private System.Windows.Forms.ComboBox ddOnlineFriends;
 
     }
 }

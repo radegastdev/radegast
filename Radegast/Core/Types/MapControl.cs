@@ -209,18 +209,38 @@ namespace Radegast
             }
         }
 
-        public void CenterMap(ulong regionHandle, uint localX, uint localY)
+        public void CenterMap(ulong regionHandle, uint localX, uint localY, bool setTarget)
         {
             uint regionX, regionY;
             Utils.LongToUInts(regionHandle, out regionX, out regionY);
-            CenterMap(regionX, regionY, localX, localY);
+            CenterMap(regionX, regionY, localX, localY, setTarget);
         }
 
-        public void CenterMap(uint regionX, uint regionY, uint localX, uint localY)
+        public void CenterMap(uint regionX, uint regionY, uint localX, uint localY, bool setTarget)
         {
             centerX = (double)regionX * 256 + (double)localX;
             centerY = (double)regionY * 256 + (double)localY;
             centered = true;
+
+            if (setTarget)
+            {
+                ulong handle = Utils.UIntsToLong(regionX * 256, regionY * 256);
+                if (regions.ContainsKey(handle))
+                {
+                    targetRegion = regions[handle];
+                    GetTargetParcel();
+                    if (MapTargetChanged != null)
+                    {
+                        MapTargetChanged(this, new MapTargetChangedEventArgs(targetRegion, (int)localX, (int)localY));
+                    }
+                }
+                else
+                {
+                    targetRegion = new GridRegion();
+                }
+                targetX = centerX;
+                targetY = centerY;
+            }
 
             // opensim grids need extra push
             if (Instance.Netcom.Grid.Platform == "OpenSim")
