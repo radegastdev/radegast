@@ -73,11 +73,11 @@ namespace Radegast
             this.label5 = new System.Windows.Forms.Label();
             this.nudZ = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
+            this.lstRegions = new Radegast.ListViewNoFlicker();
             this.btnSearch = new System.Windows.Forms.Button();
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.zoomTracker = new System.Windows.Forms.TrackBar();
             this.pnlMap = new System.Windows.Forms.Panel();
-            this.lstRegions = new Radegast.ListViewNoFlicker();
             this.pnlSearch.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).BeginInit();
@@ -267,6 +267,21 @@ namespace Radegast
             this.label4.TabIndex = 16;
             this.label4.Text = "Y";
             // 
+            // lstRegions
+            // 
+            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstRegions.Location = new System.Drawing.Point(6, 38);
+            this.lstRegions.MultiSelect = false;
+            this.lstRegions.Name = "lstRegions";
+            this.lstRegions.ShowGroups = false;
+            this.lstRegions.Size = new System.Drawing.Size(182, 151);
+            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lstRegions.TabIndex = 2;
+            this.lstRegions.UseCompatibleStateImageBehavior = false;
+            this.lstRegions.View = System.Windows.Forms.View.List;
+            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
+            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
+            // 
             // btnSearch
             // 
             this.btnSearch.Location = new System.Drawing.Point(136, 11);
@@ -303,21 +318,6 @@ namespace Radegast
             this.pnlMap.Name = "pnlMap";
             this.pnlMap.Size = new System.Drawing.Size(560, 412);
             this.pnlMap.TabIndex = 1;
-            // 
-            // lstRegions
-            // 
-            this.lstRegions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lstRegions.Location = new System.Drawing.Point(6, 38);
-            this.lstRegions.MultiSelect = false;
-            this.lstRegions.Name = "lstRegions";
-            this.lstRegions.ShowGroups = false;
-            this.lstRegions.Size = new System.Drawing.Size(182, 151);
-            this.lstRegions.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lstRegions.TabIndex = 2;
-            this.lstRegions.UseCompatibleStateImageBehavior = false;
-            this.lstRegions.View = System.Windows.Forms.View.List;
-            this.lstRegions.SelectedIndexChanged += new System.EventHandler(this.lstRegions_SelectedIndexChanged);
-            this.lstRegions.Enter += new System.EventHandler(this.lstRegions_Enter);
             // 
             // MapConsole
             // 
@@ -358,8 +358,8 @@ namespace Radegast
         public System.Windows.Forms.Button btnDestination;
         public System.Windows.Forms.Button btnMyPos;
         public System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.TrackBar zoomTracker;
-        private System.Windows.Forms.ComboBox ddOnlineFriends;
+        public System.Windows.Forms.TrackBar zoomTracker;
+        public System.Windows.Forms.ComboBox ddOnlineFriends;
 
     }
 }
