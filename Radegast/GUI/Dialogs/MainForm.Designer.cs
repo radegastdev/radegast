@@ -89,6 +89,7 @@ namespace Radegast
             this.tmnuControlAlwaysRun = new System.Windows.Forms.ToolStripMenuItem();
             this.groundSitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopAllAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuCreateLandmark = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuSetHome = new System.Windows.Forms.ToolStripMenuItem();
@@ -276,6 +277,7 @@ namespace Radegast
             this.tmnuControlAlwaysRun,
             this.groundSitToolStripMenuItem,
             this.standToolStripMenuItem,
+            this.stopAllAnimationsToolStripMenuItem,
             this.toolStripMenuItem4,
             this.tmnuCreateLandmark,
             this.tmnuSetHome,
@@ -319,6 +321,13 @@ namespace Radegast
             this.standToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.standToolStripMenuItem.Text = "Stand";
             this.standToolStripMenuItem.Click += new System.EventHandler(this.standToolStripMenuItem_Click);
+            // 
+            // stopAllAnimationsToolStripMenuItem
+            // 
+            this.stopAllAnimationsToolStripMenuItem.Name = "stopAllAnimationsToolStripMenuItem";
+            this.stopAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.stopAllAnimationsToolStripMenuItem.Text = "Stop All Animations";
+            this.stopAllAnimationsToolStripMenuItem.Click += new System.EventHandler(this.stopAllAnimationsToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
@@ -905,6 +914,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem reconnectToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem debugConsoleToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem stopAllAnimationsToolStripMenuItem;
     }
 }
 

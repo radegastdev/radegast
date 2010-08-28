@@ -1387,7 +1387,11 @@ namespace Radegast
             TabConsole.DisplayNotificationInChat("Teleporting home...");
             client.Self.RequestTeleport(UUID.Zero);
         }
+ 
+        private void stopAllAnimationsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            instance.State.StopAllAnimations();
+        }
         #endregion
-
     }
 }
