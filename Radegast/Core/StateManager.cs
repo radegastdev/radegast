@@ -178,10 +178,13 @@ namespace Radegast
             return ret;
         }
 
+        public Dictionary<UUID, string> KnownAnimations;
+
         public StateManager(RadegastInstance instance)
         {
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+            KnownAnimations = Animations.ToDictionary();
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -692,6 +695,29 @@ namespace Radegast
             if (SitStateChanged != null)
             {
                 SitStateChanged(this, new SitEventArgs(this.sitting));
+            }
+
+            if (!this.sitting)
+            {
+                StopAllAnimations();
+            }
+        }
+
+        public void StopAllAnimations()
+        {
+            Dictionary<UUID, bool> stop = new Dictionary<UUID,bool>();
+            
+            client.Self.SignaledAnimations.ForEach((UUID anim) =>
+            {
+                if (!KnownAnimations.ContainsKey(anim))
+                {
+                    stop.Add(anim, false);
+                }
+            });
+
+            if (stop.Count > 0)
+            {
+                client.Self.Animate(stop, true);
             }
         }
 
