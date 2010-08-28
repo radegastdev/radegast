@@ -92,6 +92,11 @@ namespace Radegast
         /// </summary>
         public event WalkStateCanged OnWalkStateCanged;
 
+        /// <summary>
+        /// Fires when avatar stands
+        /// </summary>
+        public event EventHandler<SitEventArgs> SitStateChanged;
+
         static List<KnownHeading> m_Headings;
         public static List<KnownHeading> KnownHeadings
         {
@@ -193,6 +198,7 @@ namespace Radegast
         private void RegisterClientEvents(GridClient client)
         {
             client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            client.Objects.AvatarSitChanged += new EventHandler<AvatarSitChangedEventArgs>(Objects_AvatarSitChanged);
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
@@ -201,15 +207,10 @@ namespace Radegast
         private void UnregisterClientEvents(GridClient client)
         {
             client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            client.Objects.AvatarSitChanged -= new EventHandler<AvatarSitChangedEventArgs>(Objects_AvatarSitChanged);
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
-        }
-
-        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
-        {
-            UnregisterClientEvents(e.OldClient);
-            RegisterClientEvents(client);
         }
 
         public void Dispose()
@@ -231,6 +232,23 @@ namespace Radegast
             {
                 walkTimer.Dispose();
                 walkTimer = null;
+            }
+        }
+
+        void instance_ClientChanged(object sender, ClientChangedEventArgs e)
+        {
+            UnregisterClientEvents(e.OldClient);
+            RegisterClientEvents(client);
+        }
+
+        void Objects_AvatarSitChanged(object sender, AvatarSitChangedEventArgs e)
+        {
+            if (e.Avatar.LocalID != client.Self.LocalID) return;
+
+            this.sitting = e.SittingOn != 0;
+            if (SitStateChanged != null)
+            {
+                SitStateChanged(this, new SitEventArgs(this.sitting));
             }
         }
 
@@ -670,6 +688,11 @@ namespace Radegast
             {
                 client.Self.Stand();
             }
+
+            if (SitStateChanged != null)
+            {
+                SitStateChanged(this, new SitEventArgs(this.sitting));
+            }
         }
 
         public Vector3d GlobalPosition(Simulator sim, Vector3 pos)
@@ -872,6 +895,16 @@ namespace Radegast
         public bool IsWalking
         {
             get { return walking; }
+        }
+    }
+
+    public class SitEventArgs : EventArgs
+    {
+        public bool Sitting;
+
+        public SitEventArgs(bool sitting)
+        {
+            this.Sitting = sitting;
         }
     }
 }

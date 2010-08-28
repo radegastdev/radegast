@@ -244,15 +244,14 @@ namespace Radegast
 
                         if (rule.Param == "force" && UUID.TryParse(rule.Option, out sitTarget) && sitTarget != UUID.Zero)
                         {
-                            instance.Client.Self.RequestSit(sitTarget, Vector3.Zero);
-                            instance.Client.Self.Sit();
+                            instance.State.SetSitting(true, sitTarget);
                         }
                         break;
 
                     case "unsit":
                         if (rule.Param == "force")
                         {
-                            instance.Client.Self.Stand();
+                            instance.State.SetSitting(false, UUID.Zero);
                         }
                         break;
 

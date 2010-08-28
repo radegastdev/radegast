@@ -967,7 +967,7 @@ namespace Radegast
 
         private void standToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            client.Self.Stand();
+            instance.State.SetSitting(false, UUID.Zero);
         }
 
         private void groundSitToolStripMenuItem_Click(object sender, EventArgs e)

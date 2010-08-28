@@ -63,7 +63,7 @@ namespace Radegast
             propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
 
             btnPointAt.Text = (this.instance.State.IsPointing ? "Unpoint" : "Point At");
-            btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
+            State_SitStateChanged(this, new SitEventArgs(instance.State.IsSitting));
 
             nudRadius.Value = (decimal)searchRadius;
             nudRadius.ValueChanged += nudRadius_ValueChanged;
@@ -80,6 +80,7 @@ namespace Radegast
 
             // Callbacks
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            instance.State.SitStateChanged += new EventHandler<SitEventArgs>(State_SitStateChanged);
             client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
@@ -104,6 +105,20 @@ namespace Radegast
             client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
+        }
+
+        void State_SitStateChanged(object sender, SitEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => State_SitStateChanged(sender, e)));
+                }
+                return;
+            }
+
+            btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
         }
 
         public void RefreshObjectList()
@@ -705,15 +720,13 @@ namespace Radegast
 
         private void btnSitOn_Click(object sender, EventArgs e)
         {
-            if (btnSitOn.Text == "Sit On")
+            if (!instance.State.IsSitting)
             {
                 instance.State.SetSitting(true, currentPrim.ID);
-                btnSitOn.Text = "Stand Up";
             }
-            else if (btnSitOn.Text == "Stand Up")
+            else
             {
                 instance.State.SetSitting(false, currentPrim.ID);
-                btnSitOn.Text = "Sit On";
             }
         }
 

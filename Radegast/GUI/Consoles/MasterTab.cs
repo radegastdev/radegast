@@ -155,14 +155,13 @@ namespace Radegast
         private void sitBitn_Click(object sender, EventArgs e)
         {
             if (selectedPrim != null) {
-                client.Self.RequestSit(selectedPrim.ID, Vector3.Zero);
-                client.Self.Sit();
+                instance.State.SetSitting(true, selectedPrim.ID);
             }
         }
 
         private void standBtn_Click(object sender, EventArgs e)
         {
-            client.Self.Stand();
+            instance.State.SetSitting(false, UUID.Zero);
         }
 
         private void touchBtn_Click(object sender, EventArgs e)
