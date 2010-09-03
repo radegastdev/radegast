@@ -208,21 +208,22 @@ namespace Radegast
 
         private void txtAmount_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (char.IsDigit(e.KeyChar) || char.IsControl(e.KeyChar))
+            if (!(char.IsDigit(e.KeyChar) || char.IsControl(e.KeyChar)))
             {
-                int amount;
-                if (int.TryParse(txtAmount.Text, out amount))
-                {
-                    btnPay.Enabled = true;
-                }
-                else
-                {
-                    btnPay.Enabled = false;
-                }
+                e.Handled = true;
+            }
+        }
+
+        private void txtAmount_TextChanged(object sender, EventArgs e)
+        {
+            int amount = 0;
+            if (int.TryParse(txtAmount.Text, out amount) && amount > 0)
+            {
+                btnPay.Enabled = true;
             }
             else
             {
-                e.Handled = true;
+                btnPay.Enabled = false;
             }
         }
     }
