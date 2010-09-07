@@ -29,6 +29,7 @@
 // $Id$
 //
 using System.Drawing;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
 
@@ -53,31 +54,24 @@ namespace Radegast
 
             lblName.Text = this.avatar.Name;
 
-            int nTextures = 0;
-
-            for (int j = 0; j < avatar.Textures.FaceTextures.Length; j++) {
+            for (int j = 0; j < avatar.Textures.FaceTextures.Length; j++)
+            {
                 Primitive.TextureEntryFace face = avatar.Textures.FaceTextures[j];
 
-                if (face != null) {
-                    //ImageType type = ImageType.Normal;
-
-                    //switch ((AppearanceManager.TextureIndex)j) {
-                    //    case AppearanceManager.TextureIndex.HeadBaked:
-                    //    case AppearanceManager.TextureIndex.EyesBaked:
-                    //    case AppearanceManager.TextureIndex.UpperBaked:
-                    //    case AppearanceManager.TextureIndex.LowerBaked:
-                    //    case AppearanceManager.TextureIndex.SkirtBaked:
-                    //    case AppearanceManager.TextureIndex.HairBaked:
-                    //        type = ImageType.Baked;
-                    //        break;
-                    //}
-
-                    if (face.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE) {
+                if (face != null)
+                {
+                    if (face.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE)
+                    {
                         SLImageHandler img = new SLImageHandler(instance, face.TextureID, ((AvatarTextureIndex)j).ToString());
-                        img.Location = new Point(0, nTextures++ * img.Height);
-                        img.Dock = DockStyle.Top;
-                        img.Height = 450;
-                        pnlImages.Controls.Add(img);
+
+                        GroupBox gbx = new GroupBox();
+                        gbx.Dock = DockStyle.Top;
+                        gbx.Text = img.Text;
+                        gbx.Height = 550;
+
+                        img.Dock = DockStyle.Fill;
+                        gbx.Controls.Add(img);
+                        pnlImages.Controls.Add(gbx);
                     }
                 }
             }

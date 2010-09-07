@@ -45,7 +45,6 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private UUID imageID;
 
-        TransparentLabel lblDesc;
         byte[] jpegdata;
         ManagedImage imgManaged;
         Image image;
@@ -101,18 +100,7 @@ namespace Radegast
             this.instance = instance;
             this.imageID = image;
 
-            lblDesc = new TransparentLabel();
-            lblDesc.Top = 5;
-            lblDesc.Left = 5;
-            lblDesc.Text = label;
-            pictureBox1.Controls.Add(lblDesc);
-
             Text = string.IsNullOrEmpty(label) ? "Image" : label;
-
-            if (lblDesc.Text == string.Empty)
-            {
-                lblDesc.Hide();
-            }
 
             // Callbacks
             client.Assets.ImageReceiveProgress += new EventHandler<ImageReceiveProgressEventArgs>(Assets_ImageReceiveProgress);
@@ -145,7 +133,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (IsHandleCreated || !instance.MonoRuntime)
                     BeginInvoke(new MethodInvoker(() => Assets_ImageReceiveProgress(sender, e)));
                 return;
             }
@@ -167,7 +155,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (IsHandleCreated || !instance.MonoRuntime)
                     BeginInvoke(new MethodInvoker(() => DisplayPartialImage(assetTexture)));
                 return;
             }
@@ -194,7 +182,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (IsHandleCreated || !instance.MonoRuntime)
                     BeginInvoke(new MethodInvoker(() => Assets_OnImageReceived(assetTexture)));
                 return;
             }
