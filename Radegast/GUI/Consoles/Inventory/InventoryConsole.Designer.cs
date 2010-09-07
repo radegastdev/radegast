@@ -105,11 +105,16 @@ namespace Radegast
             this.lblAsset = new System.Windows.Forms.Label();
             this.lblCreator = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
+            this.tabsInventory = new System.Windows.Forms.TabControl();
+            this.tabDetail = new System.Windows.Forms.TabPage();
+            this.tabSearch = new System.Windows.Forms.TabPage();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tstripInventory.SuspendLayout();
             this.pnlItemProperties.SuspendLayout();
+            this.tabsInventory.SuspendLayout();
+            this.tabDetail.SuspendLayout();
             this.SuspendLayout();
             // 
             // invTree
@@ -154,8 +159,7 @@ namespace Radegast
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.pnlDetail);
-            this.splitContainer1.Panel2.Controls.Add(this.pnlItemProperties);
+            this.splitContainer1.Panel2.Controls.Add(this.tabsInventory);
             this.splitContainer1.Size = new System.Drawing.Size(756, 483);
             this.splitContainer1.SplitterDistance = 331;
             this.splitContainer1.TabIndex = 1;
@@ -266,9 +270,9 @@ namespace Radegast
             // pnlDetail
             // 
             this.pnlDetail.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlDetail.Location = new System.Drawing.Point(0, 0);
+            this.pnlDetail.Location = new System.Drawing.Point(3, 3);
             this.pnlDetail.Name = "pnlDetail";
-            this.pnlDetail.Size = new System.Drawing.Size(421, 336);
+            this.pnlDetail.Size = new System.Drawing.Size(407, 304);
             this.pnlDetail.TabIndex = 2;
             // 
             // pnlItemProperties
@@ -283,9 +287,9 @@ namespace Radegast
             this.pnlItemProperties.Controls.Add(this.lblCreator);
             this.pnlItemProperties.Controls.Add(this.lblItemName);
             this.pnlItemProperties.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlItemProperties.Location = new System.Drawing.Point(0, 336);
+            this.pnlItemProperties.Location = new System.Drawing.Point(3, 307);
             this.pnlItemProperties.Name = "pnlItemProperties";
-            this.pnlItemProperties.Size = new System.Drawing.Size(421, 147);
+            this.pnlItemProperties.Size = new System.Drawing.Size(407, 147);
             this.pnlItemProperties.TabIndex = 0;
             // 
             // btnProfile
@@ -368,6 +372,39 @@ namespace Radegast
             this.lblItemName.TabIndex = 0;
             this.lblItemName.Text = "Item";
             // 
+            // tabsInventory
+            // 
+            this.tabsInventory.Controls.Add(this.tabDetail);
+            this.tabsInventory.Controls.Add(this.tabSearch);
+            this.tabsInventory.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabsInventory.Location = new System.Drawing.Point(0, 0);
+            this.tabsInventory.Name = "tabsInventory";
+            this.tabsInventory.SelectedIndex = 0;
+            this.tabsInventory.Size = new System.Drawing.Size(421, 483);
+            this.tabsInventory.TabIndex = 3;
+            // 
+            // tabDetail
+            // 
+            this.tabDetail.BackColor = System.Drawing.SystemColors.Control;
+            this.tabDetail.Controls.Add(this.pnlDetail);
+            this.tabDetail.Controls.Add(this.pnlItemProperties);
+            this.tabDetail.Location = new System.Drawing.Point(4, 22);
+            this.tabDetail.Name = "tabDetail";
+            this.tabDetail.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDetail.Size = new System.Drawing.Size(413, 457);
+            this.tabDetail.TabIndex = 0;
+            this.tabDetail.Text = "Detail";
+            // 
+            // tabSearch
+            // 
+            this.tabSearch.BackColor = System.Drawing.SystemColors.Control;
+            this.tabSearch.Location = new System.Drawing.Point(4, 22);
+            this.tabSearch.Name = "tabSearch";
+            this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSearch.Size = new System.Drawing.Size(413, 457);
+            this.tabSearch.TabIndex = 1;
+            this.tabSearch.Text = "Search";
+            // 
             // InventoryConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -383,6 +420,8 @@ namespace Radegast
             this.tstripInventory.PerformLayout();
             this.pnlItemProperties.ResumeLayout(false);
             this.pnlItemProperties.PerformLayout();
+            this.tabsInventory.ResumeLayout(false);
+            this.tabDetail.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -414,5 +453,8 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem tbtbFoldersByName;
         public System.Windows.Forms.ToolStripMenuItem tbtnSystemFoldersFirst;
         public System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
+        public System.Windows.Forms.TabControl tabsInventory;
+        public System.Windows.Forms.TabPage tabDetail;
+        public System.Windows.Forms.TabPage tabSearch;
     }
 }
