@@ -2013,6 +2013,131 @@ namespace Radegast
             invTree.Sort();
         }
 
+        #region Search
+
+        List<InventoryBase> searchRes;
+        string searchString;
+        Dictionary<int, ListViewItem> searchItemCache = new Dictionary<int, ListViewItem>();
+        ListViewItem emptyItem = null;
+
+        void PerformRecursiveSearch(UUID folderID)
+        {
+            var me = Inventory.Items[folderID].Data;
+            searchRes.Add(me);
+            var sorted = Inventory.GetContents(folderID);
+
+            sorted.Sort((InventoryBase b1, InventoryBase b2) =>
+            {
+                if (b1 is InventoryFolder && !(b2 is InventoryFolder))
+                {
+                    return -1;
+                }
+                else if (!(b1 is InventoryFolder) && b2 is InventoryFolder)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return string.Compare(b1.Name, b2.Name);
+                }
+            });
+
+            foreach (var item in sorted)
+            {
+                if (item is InventoryFolder)
+                {
+                    PerformRecursiveSearch(item.UUID);
+                }
+                else
+                {
+                    var it = item as InventoryItem;
+                    bool add = false;
+                    if (cbSrchName.Checked && it.Name.Contains(searchString))
+                        add = true;
+                    if (cbSrchDesc.Checked && it.Description.Contains(searchString))
+                        add = true;
+                    if (add)
+                        searchRes.Add(item);
+                }
+            }
+
+            if (searchRes[searchRes.Count - 1] == me)
+                searchRes.RemoveAt(searchRes.Count - 1);
+
+        }
+
+        public void UpdateSearch()
+        {
+            searchString = txtSearch.Text.Trim().ToLower();
+            if (searchString == string.Empty)
+                return;
+
+            if (emptyItem == null)
+            {
+                emptyItem = new ListViewItem(string.Empty);
+                emptyItem.SubItems.Add(string.Empty);
+                emptyItem.SubItems.Add(string.Empty);
+            }
+            lstInventorySearch.VirtualListSize = 0;
+            searchRes = new List<InventoryBase>(Inventory.Items.Count);
+            searchItemCache.Clear();
+            PerformRecursiveSearch(Inventory.RootFolder.UUID);
+            lstInventorySearch.VirtualListSize = searchRes.Count;
+        }
+
+        private void lstInventorySearch_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            if (searchItemCache.ContainsKey(e.ItemIndex))
+            {
+                e.Item = searchItemCache[e.ItemIndex];
+            }
+            else if (e.ItemIndex < searchRes.Count)
+            {
+                InventoryBase inv = searchRes[e.ItemIndex];
+                ListViewItem item = new ListViewItem();
+                item.SubItems.Add(inv.Name);
+                string desc = string.Empty;
+                if (inv is InventoryItem)
+                {
+                    desc = ((InventoryItem)inv).Description;
+                }
+                item.SubItems.Add(desc);
+                e.Item = item;
+                searchItemCache[e.ItemIndex] = item;
+            }
+            else
+            {
+                e.Item = emptyItem;
+            }
+        }
+
+        private void btnInvSearch_Click(object sender, EventArgs e)
+        {
+            UpdateSearch();
+        }
+
+        private void cbSrchName_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!cbSrchName.Checked && !cbSrchDesc.Checked && !cbSrchCreator.Checked)
+            {
+                cbSrchName.Checked = true;
+            }
+        }
+
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                if (txtSearch.Text.Trim().Length > 0)
+                {
+                    btnInvSearch.PerformClick();
+                }
+            }
+        }
+
+        #endregion Search
+
     }
 
     #region Sorter class

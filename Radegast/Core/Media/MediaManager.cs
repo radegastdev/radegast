@@ -359,14 +359,14 @@ namespace Radegast.Media
                 forward.y = 0.0f;
                 forward.z = (float)Math.Cos(angle); // East
 
-                Logger.Log(
-                    String.Format(
-                        "Standing at <{0:0.0},{1:0.0},{2:0.0}> facing {3:d}",
-                            listenerpos.x,
-                            listenerpos.y,
-                            listenerpos.z,
-                            (int)(angle * 180.0 / 3.141592)),
-                    Helpers.LogLevel.Debug);
+                //Logger.Log(
+                //    String.Format(
+                //        "Standing at <{0:0.0},{1:0.0},{2:0.0}> facing {3:d}",
+                //            listenerpos.x,
+                //            listenerpos.y,
+                //            listenerpos.z,
+                //            (int)(angle * 180.0 / 3.141592)),
+                //    Helpers.LogLevel.Debug);
 
                 // Tell FMOD the new orientation.
                 invoke(new SoundDelegate(delegate
