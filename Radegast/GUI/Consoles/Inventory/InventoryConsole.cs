@@ -2087,11 +2087,20 @@ namespace Radegast
         public void UpdateSearch()
         {
             found = 0;
+
+            if (instance.MonoRuntime)
+            {
+                lstInventorySearch.VirtualMode = false;
+                lstInventorySearch.Items.Clear();
+                lstInventorySearch.VirtualMode = true;
+            }
+
+            lstInventorySearch.VirtualListSize = 0;
             searchString = txtSearch.Text.Trim().ToLower();
             
             if (searchString == string.Empty)
             {
-                lstInventorySearch.VirtualListSize = 0;
+                lblSearchStatus.Text = "0 results";
                 return;
             }
 
