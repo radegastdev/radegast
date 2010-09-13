@@ -2015,15 +2015,28 @@ namespace Radegast
 
         #region Search
 
-        List<InventoryBase> searchRes;
+        public class SearchResult
+        {
+            public InventoryBase Inv;
+            public int Level;
+
+            public SearchResult(InventoryBase inv, int level)
+            {
+                this.Inv = inv;
+                this.Level = level;
+            }
+        }
+
+        List<SearchResult> searchRes;
         string searchString;
         Dictionary<int, ListViewItem> searchItemCache = new Dictionary<int, ListViewItem>();
         ListViewItem emptyItem = null;
+        int found;
 
-        void PerformRecursiveSearch(UUID folderID)
+        void PerformRecursiveSearch(int level, UUID folderID)
         {
             var me = Inventory.Items[folderID].Data;
-            searchRes.Add(me);
+            searchRes.Add(new SearchResult(me, level));
             var sorted = Inventory.GetContents(folderID);
 
             sorted.Sort((InventoryBase b1, InventoryBase b2) =>
@@ -2046,43 +2059,52 @@ namespace Radegast
             {
                 if (item is InventoryFolder)
                 {
-                    PerformRecursiveSearch(item.UUID);
+                    PerformRecursiveSearch(level + 1, item.UUID);
                 }
                 else
                 {
                     var it = item as InventoryItem;
                     bool add = false;
-                    if (cbSrchName.Checked && it.Name.Contains(searchString))
+
+                    if (cbSrchName.Checked && it.Name.ToLower().Contains(searchString))
                         add = true;
-                    if (cbSrchDesc.Checked && it.Description.Contains(searchString))
+                    if (cbSrchDesc.Checked && it.Description.ToLower().Contains(searchString))
                         add = true;
                     if (add)
-                        searchRes.Add(item);
+                    {
+                        found++;
+                        searchRes.Add(new SearchResult(it, level + 1));
+                    }
                 }
             }
 
-            if (searchRes[searchRes.Count - 1] == me)
+            if (searchRes[searchRes.Count - 1].Inv == me)
+            {
                 searchRes.RemoveAt(searchRes.Count - 1);
-
+            }
         }
 
         public void UpdateSearch()
         {
+            found = 0;
             searchString = txtSearch.Text.Trim().ToLower();
+            
             if (searchString == string.Empty)
+            {
+                lstInventorySearch.VirtualListSize = 0;
                 return;
+            }
 
             if (emptyItem == null)
             {
                 emptyItem = new ListViewItem(string.Empty);
-                emptyItem.SubItems.Add(string.Empty);
-                emptyItem.SubItems.Add(string.Empty);
             }
-            lstInventorySearch.VirtualListSize = 0;
-            searchRes = new List<InventoryBase>(Inventory.Items.Count);
+
+            searchRes = new List<SearchResult>(Inventory.Items.Count);
             searchItemCache.Clear();
-            PerformRecursiveSearch(Inventory.RootFolder.UUID);
+            PerformRecursiveSearch(0, Inventory.RootFolder.UUID);
             lstInventorySearch.VirtualListSize = searchRes.Count;
+            lblSearchStatus.Text = string.Format("{0} results", found);
         }
 
         private void lstInventorySearch_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
@@ -2093,15 +2115,14 @@ namespace Radegast
             }
             else if (e.ItemIndex < searchRes.Count)
             {
-                InventoryBase inv = searchRes[e.ItemIndex];
-                ListViewItem item = new ListViewItem();
-                item.SubItems.Add(inv.Name);
-                string desc = string.Empty;
+                InventoryBase inv = searchRes[e.ItemIndex].Inv;
+                string desc = inv.Name;
                 if (inv is InventoryItem)
                 {
-                    desc = ((InventoryItem)inv).Description;
+                    desc += string.Format(" - {0}", ((InventoryItem)inv).Description);
                 }
-                item.SubItems.Add(desc);
+                ListViewItem item = new ListViewItem(desc);
+                item.Tag = searchRes[e.ItemIndex];
                 e.Item = item;
                 searchItemCache[e.ItemIndex] = item;
             }
@@ -2131,11 +2152,110 @@ namespace Radegast
                 e.Handled = e.SuppressKeyPress = true;
                 if (txtSearch.Text.Trim().Length > 0)
                 {
-                    btnInvSearch.PerformClick();
+                    UpdateSearch();
                 }
             }
         }
 
+        private void lstInventorySearch_DrawItem(object sender, DrawListViewItemEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            e.DrawBackground();
+
+            if (!(e.Item.Tag is SearchResult))
+                return;
+
+            if (e.Item.Selected)
+            {
+                g.FillRectangle(SystemBrushes.Highlight, e.Bounds);
+            }
+
+            SearchResult res = e.Item.Tag as SearchResult;
+            int offset = 20 * (res.Level + 1);
+            Rectangle rec = new Rectangle(e.Bounds.X + offset, e.Bounds.Y, e.Bounds.Width - offset, e.Bounds.Height);
+            
+            Image icon = null;
+            int iconIx = 0;
+            
+            if (res.Inv is InventoryFolder)
+            {
+                iconIx = GetDirImageIndex(((InventoryFolder)res.Inv).PreferredType.ToString().ToLower());
+            }
+            else if (res.Inv is InventoryWearable)
+            {
+                iconIx = GetItemImageIndex(((InventoryWearable)res.Inv).WearableType.ToString().ToLower());
+            }
+            else if (res.Inv is InventoryItem)
+            {
+                iconIx = GetItemImageIndex(((InventoryItem)res.Inv).AssetType.ToString().ToLower());
+            }
+
+            if (iconIx < 0)
+            {
+                iconIx = 0;
+            }
+
+            try
+            {
+                icon = frmMain.ResourceImages.Images[iconIx];
+                g.DrawImageUnscaled(icon, e.Bounds.X + offset - 18, e.Bounds.Y);
+            }
+            catch { }
+
+            using (StringFormat sf = new StringFormat(StringFormatFlags.NoWrap | StringFormatFlags.LineLimit))
+            {
+                e.Graphics.DrawString(e.Item.Text, lstInventorySearch.Font, SystemBrushes.WindowText, rec, sf);
+            }
+
+        }
+
+        private void lstInventorySearch_SizeChanged(object sender, EventArgs e)
+        {
+            chResItemName.Width = lstInventorySearch.Width - 30;
+        }
+
+        private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            UpdateSearch();
+        }
+
+        private void lstInventorySearch_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (lstInventorySearch.SelectedIndices.Count != 1)
+                return;
+
+            try
+            {
+                SearchResult res = searchRes[lstInventorySearch.SelectedIndices[0]];
+                TreeNode node = findNodeForItem(res.Inv.UUID);
+                if (node == null)
+                    return;
+                invTree.SelectedNode = node;
+                if (e.Button == MouseButtons.Right)
+                {
+                    ctxInv.Show(lstInventorySearch, e.X, e.Y);
+                }
+            }
+            catch { }
+        }
+
+        private void lstInventorySearch_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (lstInventorySearch.SelectedIndices.Count != 1)
+                return;
+
+            try
+            {
+                SearchResult res = searchRes[lstInventorySearch.SelectedIndices[0]];
+                TreeNode node = findNodeForItem(res.Inv.UUID);
+                if (node == null)
+                    return;
+                invTree.SelectedNode = node;
+                invTree_NodeMouseDoubleClick(null, null);
+            }
+            catch { }
+
+        }
         #endregion Search
 
     }
