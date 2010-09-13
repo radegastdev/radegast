@@ -76,7 +76,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
                 return;
             }

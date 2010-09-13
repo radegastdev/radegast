@@ -112,7 +112,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                 {
                     BeginInvoke(new MethodInvoker(() => State_SitStateChanged(sender, e)));
                 }

@@ -165,7 +165,7 @@ namespace Radegast
             ThreadPool.QueueUserWorkItem(sync =>
                 {
                     Thread.Sleep(1000);
-                    if (InvokeRequired && IsHandleCreated)
+                    if (InvokeRequired && (!instance.MonoRuntime || IsHandleCreated))
                         BeginInvoke(new MethodInvoker(() =>
                             {
                                 if (savedRegion != null)
@@ -433,7 +433,7 @@ namespace Radegast
                             client.Grid.RequestMapRegion(regionName, GridLayerType.Objects);
                             if (done.WaitOne(30 * 1000, false))
                             {
-                                if (IsHandleCreated)
+                                if (!instance.MonoRuntime || IsHandleCreated)
                                     BeginInvoke(new MethodInvoker(() => gotoRegion(regionName, simX, simY)));
                             }
                             client.Grid.GridRegion -= handler;
@@ -582,7 +582,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                 {
                     BeginInvoke(new MethodInvoker(() => Friends_FriendFoundReply(sender, e)));
                 }

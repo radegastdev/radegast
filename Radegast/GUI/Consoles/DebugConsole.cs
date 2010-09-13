@@ -59,7 +59,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(() => RadegastAppender_Log(sender, e)));
                 return;
             }

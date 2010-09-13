@@ -403,11 +403,10 @@ namespace Radegast
         /// <param name="highlightChatTab">Highligt (and flash in taskbar) chat tab if not selected</param>
         public void DisplayNotificationInChat(string msg, ChatBufferTextStyle style, bool highlightChatTab)
         {
-            if (!instance.MainForm.IsHandleCreated) return;
-
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => DisplayNotificationInChat(msg, style, highlightChatTab)));
+                if (!instance.MonoRuntime || IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => DisplayNotificationInChat(msg, style, highlightChatTab)));
                 return;
             }
 

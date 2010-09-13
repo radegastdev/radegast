@@ -722,7 +722,7 @@ namespace Radegast
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
             ThreadPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
 
-            if (instance.MonoRuntime && IsHandleCreated)
+            if (!instance.MonoRuntime || IsHandleCreated)
                 Invoke(new MethodInvoker(() =>
                     {
                         invTree.Sort();

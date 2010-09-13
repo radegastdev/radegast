@@ -94,7 +94,7 @@ namespace Radegast
         {
             ((Radegast.Netcom.RadegastNetcom)sender).ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
-            if (IsHandleCreated)
+            if (!instance.MonoRuntime || IsHandleCreated)
                 BeginInvoke(new MethodInvoker(() =>
                 {
                     Close();

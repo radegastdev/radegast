@@ -108,7 +108,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(() => Assets_OnAssetReceived(transfer, asset)));
                 return;
             }
@@ -682,7 +682,7 @@ namespace Radegast
         {
             InventoryManager.ScriptUpdatedCallback handler = (bool uploadSuccess, string uploadStatus, bool compileSuccess, List<string> compileMessages, UUID itemID, UUID assetID) =>
                 {
-                    if (!IsHandleCreated) return;
+                    if (!IsHandleCreated && instance.MonoRuntime) return;
 
                     BeginInvoke(new MethodInvoker(() =>
                         {

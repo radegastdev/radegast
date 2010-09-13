@@ -63,7 +63,7 @@ namespace Radegast.Commands
         {
             if (Chat.InvokeRequired)
             {
-                if (Chat.IsHandleCreated)
+                if (!Instance.MonoRuntime || Chat.IsHandleCreated)
                     Chat.Invoke(new MethodInvoker(() => Execute(name, cmdArgs, WriteLine)));
                 return;
             }

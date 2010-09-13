@@ -149,7 +149,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
                 return;
             }
@@ -186,7 +186,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(UpdateParticipantList));
                 return;
             }
@@ -246,7 +246,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     Invoke(new MethodInvoker(() => Self_GroupChatJoined(sender, e)));
                 return;
             }
@@ -298,7 +298,7 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(RefreshControls));
                 return;
             }

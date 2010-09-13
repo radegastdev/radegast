@@ -199,12 +199,12 @@ namespace Radegast
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!Instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(() => Invalidate()));
             }
             else
             {
-                if (IsHandleCreated)
+                if (!Instance.MonoRuntime || IsHandleCreated)
                     Invalidate();
             }
         }

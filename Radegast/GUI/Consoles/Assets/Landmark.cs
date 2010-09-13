@@ -85,7 +85,7 @@ namespace Radegast
 
             if (InvokeRequired)
             {
-                if (IsHandleCreated)
+                if (!instance.MonoRuntime || IsHandleCreated)
                     BeginInvoke(new MethodInvoker(() => Parcels_ParcelInfoReply(sender, e)));
                 return;
             }
