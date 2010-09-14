@@ -874,6 +874,8 @@ namespace Radegast
                     break;
 
             }
+
+            tabsInventory.SelectedTab = tabDetail;
         }
 
         void invTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -1169,6 +1171,13 @@ namespace Radegast
                     {
                         ctxItem = new ToolStripMenuItem("Edit script", null, OnInvContextClick);
                         ctxItem.Name = "edit_script";
+                        ctxInv.Items.Add(ctxItem);
+                    }
+
+                    if (item.AssetType == AssetType.Texture)
+                    {
+                        ctxItem = new ToolStripMenuItem("View", null, OnInvContextClick);
+                        ctxItem.Name = "view_image";
                         ctxInv.Items.Add(ctxItem);
                     }
 
@@ -1536,6 +1545,10 @@ namespace Radegast
                         se.Detached = true;
                         return;
 
+                    case "view_image":
+                        UpdateItemInfo(item);
+                        break;
+
                     case "item_take_off":
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.RemoveFromOutfit(item);
@@ -1577,7 +1590,7 @@ namespace Radegast
                         break;
 
                     case "animation_play":
-                        Dictionary<UUID, bool> anim = new Dictionary<UUID,bool>();
+                        Dictionary<UUID, bool> anim = new Dictionary<UUID, bool>();
                         anim.Add(item.AssetUUID, true);
                         client.Self.Animate(anim, true);
                         break;
@@ -2067,9 +2080,24 @@ namespace Radegast
                     bool add = false;
 
                     if (cbSrchName.Checked && it.Name.ToLower().Contains(searchString))
+                    {
                         add = true;
-                    if (cbSrchDesc.Checked && it.Description.ToLower().Contains(searchString))
+                    }
+                    else if (cbSrchDesc.Checked && it.Description.ToLower().Contains(searchString))
+                    {
                         add = true;
+                    }
+
+                    if (cbSrchWorn.Checked && add &&
+                            !(
+                                (it.InventoryType == InventoryType.Wearable && IsWorn(it)) ||
+                                ((it.InventoryType == InventoryType.Attachment || it.InventoryType == InventoryType.Object) && IsAttached(it))
+                            )
+                    )
+                    {
+                        add = false;
+                    }
+
                     if (add)
                     {
                         found++;
@@ -2097,8 +2125,8 @@ namespace Radegast
 
             lstInventorySearch.VirtualListSize = 0;
             searchString = txtSearch.Text.Trim().ToLower();
-            
-            if (searchString == string.Empty)
+
+            if (searchString == string.Empty && !cbSrchWorn.Checked)
             {
                 lblSearchStatus.Text = "0 results";
                 return;
@@ -2152,6 +2180,12 @@ namespace Radegast
             {
                 cbSrchName.Checked = true;
             }
+            UpdateSearch();
+        }
+
+        private void cbSrchWorn_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateSearch();
         }
 
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
@@ -2182,10 +2216,10 @@ namespace Radegast
             SearchResult res = e.Item.Tag as SearchResult;
             int offset = 20 * (res.Level + 1);
             Rectangle rec = new Rectangle(e.Bounds.X + offset, e.Bounds.Y, e.Bounds.Width - offset, e.Bounds.Height);
-            
+
             Image icon = null;
             int iconIx = 0;
-            
+
             if (res.Inv is InventoryFolder)
             {
                 iconIx = GetDirImageIndex(((InventoryFolder)res.Inv).PreferredType.ToString().ToLower());
@@ -2213,7 +2247,22 @@ namespace Radegast
 
             using (StringFormat sf = new StringFormat(StringFormatFlags.NoWrap | StringFormatFlags.LineLimit))
             {
-                e.Graphics.DrawString(e.Item.Text, lstInventorySearch.Font, SystemBrushes.WindowText, rec, sf);
+                string label = ItemLabel(res.Inv, false);
+                SizeF len = e.Graphics.MeasureString(label, lstInventorySearch.Font, rec.Width, sf);
+
+                e.Graphics.DrawString(ItemLabel(res.Inv, false), lstInventorySearch.Font, SystemBrushes.WindowText, rec, sf);
+
+                if (res.Inv is InventoryItem)
+                {
+                    string desc = ((InventoryItem)res.Inv).Description.Trim();
+                    if (desc != string.Empty)
+                    {
+                        using (Font descFont = new Font(lstInventorySearch.Font, FontStyle.Italic))
+                        {
+                            e.Graphics.DrawString(desc, descFont, SystemBrushes.GrayText, rec.X + len.Width + 5, rec.Y, sf);
+                        }
+                    }
+                }
             }
 
         }
@@ -2266,7 +2315,6 @@ namespace Radegast
 
         }
         #endregion Search
-
     }
 
     #region Sorter class
@@ -2318,10 +2366,10 @@ namespace Radegast
             {
                 return 0;
             }
-            
+
             InventoryItem item1 = (InventoryItem)tx.Tag;
             InventoryItem item2 = (InventoryItem)ty.Tag;
-            
+
             if (_bydate)
             {
                 if (item1.CreationDate < item2.CreationDate)

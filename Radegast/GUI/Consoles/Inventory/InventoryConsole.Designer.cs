@@ -95,17 +95,6 @@ namespace Radegast
             this.tbtbFoldersByName = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnSystemFoldersFirst = new System.Windows.Forms.ToolStripMenuItem();
             this.tabsInventory = new System.Windows.Forms.TabControl();
-            this.tabSearch = new System.Windows.Forms.TabPage();
-            this.lstInventorySearch = new Radegast.ListViewNoFlicker();
-            this.chResItemName = new System.Windows.Forms.ColumnHeader();
-            this.pnlSearchOptions = new System.Windows.Forms.Panel();
-            this.lblSearchStatus = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cbSrchCreator = new System.Windows.Forms.CheckBox();
-            this.cbSrchDesc = new System.Windows.Forms.CheckBox();
-            this.cbSrchName = new System.Windows.Forms.CheckBox();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.btnInvSearch = new System.Windows.Forms.Button();
             this.tabDetail = new System.Windows.Forms.TabPage();
             this.pnlDetail = new System.Windows.Forms.Panel();
             this.pnlItemProperties = new System.Windows.Forms.Panel();
@@ -118,16 +107,28 @@ namespace Radegast
             this.lblAsset = new System.Windows.Forms.Label();
             this.lblCreator = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
+            this.tabSearch = new System.Windows.Forms.TabPage();
+            this.lstInventorySearch = new Radegast.ListViewNoFlicker();
+            this.chResItemName = new System.Windows.Forms.ColumnHeader();
+            this.pnlSearchOptions = new System.Windows.Forms.Panel();
+            this.lblSearchStatus = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cbSrchWorn = new System.Windows.Forms.CheckBox();
+            this.cbSrchCreator = new System.Windows.Forms.CheckBox();
+            this.cbSrchDesc = new System.Windows.Forms.CheckBox();
+            this.cbSrchName = new System.Windows.Forms.CheckBox();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.btnInvSearch = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tstripInventory.SuspendLayout();
             this.tabsInventory.SuspendLayout();
+            this.tabDetail.SuspendLayout();
+            this.pnlItemProperties.SuspendLayout();
             this.tabSearch.SuspendLayout();
             this.pnlSearchOptions.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.tabDetail.SuspendLayout();
-            this.pnlItemProperties.SuspendLayout();
             this.SuspendLayout();
             // 
             // invTree
@@ -283,145 +284,14 @@ namespace Radegast
             // 
             // tabsInventory
             // 
-            this.tabsInventory.Controls.Add(this.tabSearch);
             this.tabsInventory.Controls.Add(this.tabDetail);
+            this.tabsInventory.Controls.Add(this.tabSearch);
             this.tabsInventory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabsInventory.Location = new System.Drawing.Point(0, 0);
             this.tabsInventory.Name = "tabsInventory";
             this.tabsInventory.SelectedIndex = 0;
             this.tabsInventory.Size = new System.Drawing.Size(421, 483);
             this.tabsInventory.TabIndex = 3;
-            // 
-            // tabSearch
-            // 
-            this.tabSearch.BackColor = System.Drawing.SystemColors.Control;
-            this.tabSearch.Controls.Add(this.lstInventorySearch);
-            this.tabSearch.Controls.Add(this.pnlSearchOptions);
-            this.tabSearch.Location = new System.Drawing.Point(4, 22);
-            this.tabSearch.Name = "tabSearch";
-            this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSearch.Size = new System.Drawing.Size(413, 457);
-            this.tabSearch.TabIndex = 1;
-            this.tabSearch.Text = "Search";
-            // 
-            // lstInventorySearch
-            // 
-            this.lstInventorySearch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.chResItemName});
-            this.lstInventorySearch.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lstInventorySearch.FullRowSelect = true;
-            this.lstInventorySearch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lstInventorySearch.HideSelection = false;
-            this.lstInventorySearch.Location = new System.Drawing.Point(3, 91);
-            this.lstInventorySearch.MultiSelect = false;
-            this.lstInventorySearch.Name = "lstInventorySearch";
-            this.lstInventorySearch.OwnerDraw = true;
-            this.lstInventorySearch.ShowGroups = false;
-            this.lstInventorySearch.Size = new System.Drawing.Size(407, 363);
-            this.lstInventorySearch.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lstInventorySearch.TabIndex = 9;
-            this.lstInventorySearch.UseCompatibleStateImageBehavior = false;
-            this.lstInventorySearch.View = System.Windows.Forms.View.Details;
-            this.lstInventorySearch.VirtualMode = true;
-            this.lstInventorySearch.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseDoubleClick);
-            this.lstInventorySearch.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseClick);
-            this.lstInventorySearch.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lstInventorySearch_DrawItem);
-            this.lstInventorySearch.SizeChanged += new System.EventHandler(this.lstInventorySearch_SizeChanged);
-            this.lstInventorySearch.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.lstInventorySearch_RetrieveVirtualItem);
-            // 
-            // chResItemName
-            // 
-            this.chResItemName.Text = "Item";
-            this.chResItemName.Width = 382;
-            // 
-            // pnlSearchOptions
-            // 
-            this.pnlSearchOptions.Controls.Add(this.lblSearchStatus);
-            this.pnlSearchOptions.Controls.Add(this.groupBox1);
-            this.pnlSearchOptions.Controls.Add(this.txtSearch);
-            this.pnlSearchOptions.Controls.Add(this.btnInvSearch);
-            this.pnlSearchOptions.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlSearchOptions.Location = new System.Drawing.Point(3, 3);
-            this.pnlSearchOptions.Name = "pnlSearchOptions";
-            this.pnlSearchOptions.Size = new System.Drawing.Size(407, 88);
-            this.pnlSearchOptions.TabIndex = 10;
-            // 
-            // lblSearchStatus
-            // 
-            this.lblSearchStatus.AutoSize = true;
-            this.lblSearchStatus.Location = new System.Drawing.Point(256, 52);
-            this.lblSearchStatus.Name = "lblSearchStatus";
-            this.lblSearchStatus.Size = new System.Drawing.Size(46, 13);
-            this.lblSearchStatus.TabIndex = 3;
-            this.lblSearchStatus.Text = "0 results";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.cbSrchCreator);
-            this.groupBox1.Controls.Add(this.cbSrchDesc);
-            this.groupBox1.Controls.Add(this.cbSrchName);
-            this.groupBox1.Location = new System.Drawing.Point(3, 29);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(247, 49);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Search in";
-            // 
-            // cbSrchCreator
-            // 
-            this.cbSrchCreator.AutoSize = true;
-            this.cbSrchCreator.Location = new System.Drawing.Point(151, 19);
-            this.cbSrchCreator.Name = "cbSrchCreator";
-            this.cbSrchCreator.Size = new System.Drawing.Size(60, 17);
-            this.cbSrchCreator.TabIndex = 2;
-            this.cbSrchCreator.Text = "Creator";
-            this.cbSrchCreator.UseVisualStyleBackColor = true;
-            this.cbSrchCreator.Visible = false;
-            this.cbSrchCreator.CheckedChanged += new System.EventHandler(this.cbSrchName_CheckedChanged);
-            // 
-            // cbSrchDesc
-            // 
-            this.cbSrchDesc.AutoSize = true;
-            this.cbSrchDesc.Location = new System.Drawing.Point(66, 19);
-            this.cbSrchDesc.Name = "cbSrchDesc";
-            this.cbSrchDesc.Size = new System.Drawing.Size(79, 17);
-            this.cbSrchDesc.TabIndex = 1;
-            this.cbSrchDesc.Text = "Description";
-            this.cbSrchDesc.UseVisualStyleBackColor = true;
-            this.cbSrchDesc.CheckedChanged += new System.EventHandler(this.cbSrchName_CheckedChanged);
-            // 
-            // cbSrchName
-            // 
-            this.cbSrchName.AutoSize = true;
-            this.cbSrchName.Checked = true;
-            this.cbSrchName.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbSrchName.Location = new System.Drawing.Point(6, 19);
-            this.cbSrchName.Name = "cbSrchName";
-            this.cbSrchName.Size = new System.Drawing.Size(54, 17);
-            this.cbSrchName.TabIndex = 0;
-            this.cbSrchName.Text = "Name";
-            this.cbSrchName.UseVisualStyleBackColor = true;
-            this.cbSrchName.CheckedChanged += new System.EventHandler(this.cbSrchName_CheckedChanged);
-            // 
-            // txtSearch
-            // 
-            this.txtSearch.AccessibleName = "Search input";
-            this.txtSearch.Location = new System.Drawing.Point(3, 3);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(247, 20);
-            this.txtSearch.TabIndex = 0;
-            this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
-            this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
-            // 
-            // btnInvSearch
-            // 
-            this.btnInvSearch.Location = new System.Drawing.Point(256, 1);
-            this.btnInvSearch.Name = "btnInvSearch";
-            this.btnInvSearch.Size = new System.Drawing.Size(75, 23);
-            this.btnInvSearch.TabIndex = 1;
-            this.btnInvSearch.Text = "Search";
-            this.btnInvSearch.UseVisualStyleBackColor = true;
-            this.btnInvSearch.Click += new System.EventHandler(this.btnInvSearch_Click);
             // 
             // tabDetail
             // 
@@ -540,6 +410,149 @@ namespace Radegast
             this.lblItemName.TabIndex = 0;
             this.lblItemName.Text = "Item";
             // 
+            // tabSearch
+            // 
+            this.tabSearch.BackColor = System.Drawing.SystemColors.Control;
+            this.tabSearch.Controls.Add(this.lstInventorySearch);
+            this.tabSearch.Controls.Add(this.pnlSearchOptions);
+            this.tabSearch.Location = new System.Drawing.Point(4, 22);
+            this.tabSearch.Name = "tabSearch";
+            this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSearch.Size = new System.Drawing.Size(413, 457);
+            this.tabSearch.TabIndex = 1;
+            this.tabSearch.Text = "Search";
+            // 
+            // lstInventorySearch
+            // 
+            this.lstInventorySearch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chResItemName});
+            this.lstInventorySearch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lstInventorySearch.FullRowSelect = true;
+            this.lstInventorySearch.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstInventorySearch.HideSelection = false;
+            this.lstInventorySearch.Location = new System.Drawing.Point(3, 91);
+            this.lstInventorySearch.MultiSelect = false;
+            this.lstInventorySearch.Name = "lstInventorySearch";
+            this.lstInventorySearch.OwnerDraw = true;
+            this.lstInventorySearch.ShowGroups = false;
+            this.lstInventorySearch.Size = new System.Drawing.Size(407, 363);
+            this.lstInventorySearch.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.lstInventorySearch.TabIndex = 9;
+            this.lstInventorySearch.UseCompatibleStateImageBehavior = false;
+            this.lstInventorySearch.View = System.Windows.Forms.View.Details;
+            this.lstInventorySearch.VirtualMode = true;
+            this.lstInventorySearch.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseDoubleClick);
+            this.lstInventorySearch.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseClick);
+            this.lstInventorySearch.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lstInventorySearch_DrawItem);
+            this.lstInventorySearch.SizeChanged += new System.EventHandler(this.lstInventorySearch_SizeChanged);
+            this.lstInventorySearch.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.lstInventorySearch_RetrieveVirtualItem);
+            // 
+            // chResItemName
+            // 
+            this.chResItemName.Text = "Item";
+            this.chResItemName.Width = 382;
+            // 
+            // pnlSearchOptions
+            // 
+            this.pnlSearchOptions.Controls.Add(this.lblSearchStatus);
+            this.pnlSearchOptions.Controls.Add(this.groupBox1);
+            this.pnlSearchOptions.Controls.Add(this.txtSearch);
+            this.pnlSearchOptions.Controls.Add(this.btnInvSearch);
+            this.pnlSearchOptions.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlSearchOptions.Location = new System.Drawing.Point(3, 3);
+            this.pnlSearchOptions.Name = "pnlSearchOptions";
+            this.pnlSearchOptions.Size = new System.Drawing.Size(407, 88);
+            this.pnlSearchOptions.TabIndex = 10;
+            // 
+            // lblSearchStatus
+            // 
+            this.lblSearchStatus.AutoSize = true;
+            this.lblSearchStatus.Location = new System.Drawing.Point(317, 49);
+            this.lblSearchStatus.Name = "lblSearchStatus";
+            this.lblSearchStatus.Size = new System.Drawing.Size(46, 13);
+            this.lblSearchStatus.TabIndex = 3;
+            this.lblSearchStatus.Text = "0 results";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.cbSrchWorn);
+            this.groupBox1.Controls.Add(this.cbSrchCreator);
+            this.groupBox1.Controls.Add(this.cbSrchDesc);
+            this.groupBox1.Controls.Add(this.cbSrchName);
+            this.groupBox1.Location = new System.Drawing.Point(3, 29);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(308, 49);
+            this.groupBox1.TabIndex = 2;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Search in";
+            // 
+            // cbSrchWorn
+            // 
+            this.cbSrchWorn.AutoSize = true;
+            this.cbSrchWorn.Location = new System.Drawing.Point(151, 19);
+            this.cbSrchWorn.Name = "cbSrchWorn";
+            this.cbSrchWorn.Size = new System.Drawing.Size(76, 17);
+            this.cbSrchWorn.TabIndex = 2;
+            this.cbSrchWorn.Text = "Only Worn";
+            this.cbSrchWorn.UseVisualStyleBackColor = true;
+            this.cbSrchWorn.CheckedChanged += new System.EventHandler(this.cbSrchWorn_CheckedChanged);
+            // 
+            // cbSrchCreator
+            // 
+            this.cbSrchCreator.AutoSize = true;
+            this.cbSrchCreator.Location = new System.Drawing.Point(233, 19);
+            this.cbSrchCreator.Name = "cbSrchCreator";
+            this.cbSrchCreator.Size = new System.Drawing.Size(60, 17);
+            this.cbSrchCreator.TabIndex = 3;
+            this.cbSrchCreator.Text = "Creator";
+            this.cbSrchCreator.UseVisualStyleBackColor = true;
+            this.cbSrchCreator.Visible = false;
+            this.cbSrchCreator.CheckedChanged += new System.EventHandler(this.cbSrchName_CheckedChanged);
+            // 
+            // cbSrchDesc
+            // 
+            this.cbSrchDesc.AutoSize = true;
+            this.cbSrchDesc.Location = new System.Drawing.Point(66, 19);
+            this.cbSrchDesc.Name = "cbSrchDesc";
+            this.cbSrchDesc.Size = new System.Drawing.Size(79, 17);
+            this.cbSrchDesc.TabIndex = 1;
+            this.cbSrchDesc.Text = "Description";
+            this.cbSrchDesc.UseVisualStyleBackColor = true;
+            this.cbSrchDesc.CheckedChanged += new System.EventHandler(this.cbSrchName_CheckedChanged);
+            // 
+            // cbSrchName
+            // 
+            this.cbSrchName.AutoSize = true;
+            this.cbSrchName.Checked = true;
+            this.cbSrchName.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbSrchName.Location = new System.Drawing.Point(6, 19);
+            this.cbSrchName.Name = "cbSrchName";
+            this.cbSrchName.Size = new System.Drawing.Size(54, 17);
+            this.cbSrchName.TabIndex = 0;
+            this.cbSrchName.Text = "Name";
+            this.cbSrchName.UseVisualStyleBackColor = true;
+            this.cbSrchName.CheckedChanged += new System.EventHandler(this.cbSrchName_CheckedChanged);
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.AccessibleName = "Search input";
+            this.txtSearch.Location = new System.Drawing.Point(3, 3);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(227, 20);
+            this.txtSearch.TabIndex = 0;
+            this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
+            this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
+            // 
+            // btnInvSearch
+            // 
+            this.btnInvSearch.Location = new System.Drawing.Point(236, 1);
+            this.btnInvSearch.Name = "btnInvSearch";
+            this.btnInvSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnInvSearch.TabIndex = 1;
+            this.btnInvSearch.Text = "Search";
+            this.btnInvSearch.UseVisualStyleBackColor = true;
+            this.btnInvSearch.Click += new System.EventHandler(this.btnInvSearch_Click);
+            // 
             // InventoryConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -554,14 +567,14 @@ namespace Radegast
             this.tstripInventory.ResumeLayout(false);
             this.tstripInventory.PerformLayout();
             this.tabsInventory.ResumeLayout(false);
+            this.tabDetail.ResumeLayout(false);
+            this.pnlItemProperties.ResumeLayout(false);
+            this.pnlItemProperties.PerformLayout();
             this.tabSearch.ResumeLayout(false);
             this.pnlSearchOptions.ResumeLayout(false);
             this.pnlSearchOptions.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.tabDetail.ResumeLayout(false);
-            this.pnlItemProperties.ResumeLayout(false);
-            this.pnlItemProperties.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -606,5 +619,6 @@ namespace Radegast
         private System.Windows.Forms.CheckBox cbSrchCreator;
         private System.Windows.Forms.CheckBox cbSrchDesc;
         private System.Windows.Forms.Label lblSearchStatus;
+        private System.Windows.Forms.CheckBox cbSrchWorn;
     }
 }
