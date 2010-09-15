@@ -2087,13 +2087,18 @@ namespace Radegast
                     {
                         add = true;
                     }
-
+                    
                     if (cbSrchWorn.Checked && add &&
                             !(
                                 (it.InventoryType == InventoryType.Wearable && IsWorn(it)) ||
                                 ((it.InventoryType == InventoryType.Attachment || it.InventoryType == InventoryType.Object) && IsAttached(it))
                             )
                     )
+                    {
+                        add = false;
+                    }
+
+                    if (cbSrchRecent.Checked && add && it.CreationDate < instance.StartupTimeUTC)
                     {
                         add = false;
                     }
@@ -2126,11 +2131,11 @@ namespace Radegast
             lstInventorySearch.VirtualListSize = 0;
             searchString = txtSearch.Text.Trim().ToLower();
 
-            if (searchString == string.Empty && !cbSrchWorn.Checked)
-            {
-                lblSearchStatus.Text = "0 results";
-                return;
-            }
+            //if (searchString == string.Empty && rbSrchAll.Checked)
+            //{
+            //    lblSearchStatus.Text = "0 results";
+            //    return;
+            //}
 
             if (emptyItem == null)
             {
@@ -2273,6 +2278,11 @@ namespace Radegast
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            UpdateSearch();
+        }
+
+        private void rbSrchAll_CheckedChanged(object sender, EventArgs e)
         {
             UpdateSearch();
         }

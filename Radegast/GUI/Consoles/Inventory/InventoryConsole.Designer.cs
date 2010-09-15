@@ -111,9 +111,12 @@ namespace Radegast
             this.lstInventorySearch = new Radegast.ListViewNoFlicker();
             this.chResItemName = new System.Windows.Forms.ColumnHeader();
             this.pnlSearchOptions = new System.Windows.Forms.Panel();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbSrchRecent = new System.Windows.Forms.RadioButton();
+            this.cbSrchWorn = new System.Windows.Forms.RadioButton();
+            this.rbSrchAll = new System.Windows.Forms.RadioButton();
             this.lblSearchStatus = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cbSrchWorn = new System.Windows.Forms.CheckBox();
             this.cbSrchCreator = new System.Windows.Forms.CheckBox();
             this.cbSrchDesc = new System.Windows.Forms.CheckBox();
             this.cbSrchName = new System.Windows.Forms.CheckBox();
@@ -128,6 +131,7 @@ namespace Radegast
             this.pnlItemProperties.SuspendLayout();
             this.tabSearch.SuspendLayout();
             this.pnlSearchOptions.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -454,6 +458,7 @@ namespace Radegast
             // 
             // pnlSearchOptions
             // 
+            this.pnlSearchOptions.Controls.Add(this.groupBox2);
             this.pnlSearchOptions.Controls.Add(this.lblSearchStatus);
             this.pnlSearchOptions.Controls.Add(this.groupBox1);
             this.pnlSearchOptions.Controls.Add(this.txtSearch);
@@ -464,10 +469,57 @@ namespace Radegast
             this.pnlSearchOptions.Size = new System.Drawing.Size(407, 88);
             this.pnlSearchOptions.TabIndex = 10;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.cbSrchRecent);
+            this.groupBox2.Controls.Add(this.cbSrchWorn);
+            this.groupBox2.Controls.Add(this.rbSrchAll);
+            this.groupBox2.Location = new System.Drawing.Point(3, 29);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(227, 50);
+            this.groupBox2.TabIndex = 2;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Filter";
+            // 
+            // cbSrchRecent
+            // 
+            this.cbSrchRecent.AutoSize = true;
+            this.cbSrchRecent.Location = new System.Drawing.Point(105, 19);
+            this.cbSrchRecent.Name = "cbSrchRecent";
+            this.cbSrchRecent.Size = new System.Drawing.Size(60, 17);
+            this.cbSrchRecent.TabIndex = 2;
+            this.cbSrchRecent.Text = "Recent";
+            this.cbSrchRecent.UseVisualStyleBackColor = true;
+            this.cbSrchRecent.CheckedChanged += new System.EventHandler(this.rbSrchAll_CheckedChanged);
+            // 
+            // cbSrchWorn
+            // 
+            this.cbSrchWorn.AutoSize = true;
+            this.cbSrchWorn.Location = new System.Drawing.Point(48, 19);
+            this.cbSrchWorn.Name = "cbSrchWorn";
+            this.cbSrchWorn.Size = new System.Drawing.Size(51, 17);
+            this.cbSrchWorn.TabIndex = 1;
+            this.cbSrchWorn.Text = "Worn";
+            this.cbSrchWorn.UseVisualStyleBackColor = true;
+            this.cbSrchWorn.CheckedChanged += new System.EventHandler(this.rbSrchAll_CheckedChanged);
+            // 
+            // rbSrchAll
+            // 
+            this.rbSrchAll.AutoSize = true;
+            this.rbSrchAll.Checked = true;
+            this.rbSrchAll.Location = new System.Drawing.Point(6, 19);
+            this.rbSrchAll.Name = "rbSrchAll";
+            this.rbSrchAll.Size = new System.Drawing.Size(36, 17);
+            this.rbSrchAll.TabIndex = 0;
+            this.rbSrchAll.TabStop = true;
+            this.rbSrchAll.Text = "All";
+            this.rbSrchAll.UseVisualStyleBackColor = true;
+            this.rbSrchAll.CheckedChanged += new System.EventHandler(this.rbSrchAll_CheckedChanged);
+            // 
             // lblSearchStatus
             // 
             this.lblSearchStatus.AutoSize = true;
-            this.lblSearchStatus.Location = new System.Drawing.Point(317, 49);
+            this.lblSearchStatus.Location = new System.Drawing.Point(335, 6);
             this.lblSearchStatus.Name = "lblSearchStatus";
             this.lblSearchStatus.Size = new System.Drawing.Size(46, 13);
             this.lblSearchStatus.TabIndex = 3;
@@ -475,32 +527,20 @@ namespace Radegast
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.cbSrchWorn);
             this.groupBox1.Controls.Add(this.cbSrchCreator);
             this.groupBox1.Controls.Add(this.cbSrchDesc);
             this.groupBox1.Controls.Add(this.cbSrchName);
-            this.groupBox1.Location = new System.Drawing.Point(3, 29);
+            this.groupBox1.Location = new System.Drawing.Point(236, 30);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(308, 49);
-            this.groupBox1.TabIndex = 2;
+            this.groupBox1.Size = new System.Drawing.Size(154, 49);
+            this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Search in";
-            // 
-            // cbSrchWorn
-            // 
-            this.cbSrchWorn.AutoSize = true;
-            this.cbSrchWorn.Location = new System.Drawing.Point(151, 19);
-            this.cbSrchWorn.Name = "cbSrchWorn";
-            this.cbSrchWorn.Size = new System.Drawing.Size(76, 17);
-            this.cbSrchWorn.TabIndex = 2;
-            this.cbSrchWorn.Text = "Only Worn";
-            this.cbSrchWorn.UseVisualStyleBackColor = true;
-            this.cbSrchWorn.CheckedChanged += new System.EventHandler(this.cbSrchWorn_CheckedChanged);
             // 
             // cbSrchCreator
             // 
             this.cbSrchCreator.AutoSize = true;
-            this.cbSrchCreator.Location = new System.Drawing.Point(233, 19);
+            this.cbSrchCreator.Location = new System.Drawing.Point(151, 19);
             this.cbSrchCreator.Name = "cbSrchCreator";
             this.cbSrchCreator.Size = new System.Drawing.Size(60, 17);
             this.cbSrchCreator.TabIndex = 3;
@@ -547,9 +587,9 @@ namespace Radegast
             // 
             this.btnInvSearch.Location = new System.Drawing.Point(236, 1);
             this.btnInvSearch.Name = "btnInvSearch";
-            this.btnInvSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnInvSearch.Size = new System.Drawing.Size(96, 23);
             this.btnInvSearch.TabIndex = 1;
-            this.btnInvSearch.Text = "Search";
+            this.btnInvSearch.Text = "Search/Refresh";
             this.btnInvSearch.UseVisualStyleBackColor = true;
             this.btnInvSearch.Click += new System.EventHandler(this.btnInvSearch_Click);
             // 
@@ -573,6 +613,8 @@ namespace Radegast
             this.tabSearch.ResumeLayout(false);
             this.pnlSearchOptions.ResumeLayout(false);
             this.pnlSearchOptions.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
@@ -619,6 +661,9 @@ namespace Radegast
         private System.Windows.Forms.CheckBox cbSrchCreator;
         private System.Windows.Forms.CheckBox cbSrchDesc;
         private System.Windows.Forms.Label lblSearchStatus;
-        private System.Windows.Forms.CheckBox cbSrchWorn;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.RadioButton rbSrchAll;
+        private System.Windows.Forms.RadioButton cbSrchRecent;
+        private System.Windows.Forms.RadioButton cbSrchWorn;
     }
 }

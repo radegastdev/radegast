@@ -129,7 +129,6 @@ namespace Radegast
         public frmMain(RadegastInstance instance)
             : base(instance)
         {
-            GetSLTimeZone();
             InitializeComponent();
             Disposed += new EventHandler(frmMain_Disposed);
 
@@ -1046,39 +1045,10 @@ namespace Radegast
             );
         }
 
-        private TimeZoneInfo SLTime;
-
-        private void GetSLTimeZone()
-        {
-            try
-            {
-                foreach (TimeZoneInfo tz in TimeZoneInfo.GetSystemTimeZones())
-                {
-                    if (tz.Id == "Pacific Standard Time" || tz.Id == "America/Los_Angeles")
-                    {
-                        SLTime = tz;
-                        break;
-                    }
-                }
-            }
-            catch (Exception) { }
-        }
 
         private void timerWorldClock_Tick(object sender, EventArgs e)
         {
-            DateTime now;
-            try
-            {
-                if (SLTime != null)
-                    now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, SLTime);
-                else
-                    now = DateTime.UtcNow.AddHours(-7);
-            }
-            catch (Exception)
-            {
-                now = DateTime.UtcNow.AddHours(-7);
-            }
-            lblTime.Text = now.ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
+            lblTime.Text = instance.GetWorldTime().ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
         }
 
         private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)

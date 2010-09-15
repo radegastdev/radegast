@@ -75,6 +75,16 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// When was Radegast started (UTC)
+        /// </summary>
+        public readonly DateTime StartupTimeUTC;
+
+        /// <summary>
+        /// Time zone of the current world (currently hard coded to US Pacific time)
+        /// </summary>
+        public TimeZoneInfo WordTimeZone;
+
         private string userDir;
         /// <summary>
         /// System (not grid!) user's dir
@@ -250,6 +260,10 @@ namespace Radegast
 
             client = client0;
 
+            // Initialize current time zone, and mark when we started
+            GetWorldTimeZone();
+            StartupTimeUTC = DateTime.UtcNow;
+
             // Are we running mono?
             monoRuntime = Type.GetType("Mono.Runtime") != null;
 
@@ -322,6 +336,42 @@ namespace Radegast
             if (netcom != null)
                 netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
         }
+
+        private void GetWorldTimeZone()
+        {
+            try
+            {
+                foreach (TimeZoneInfo tz in TimeZoneInfo.GetSystemTimeZones())
+                {
+                    if (tz.Id == "Pacific Standard Time" || tz.Id == "America/Los_Angeles")
+                    {
+                        WordTimeZone = tz;
+                        break;
+                    }
+                }
+            }
+            catch (Exception) { }
+        }
+
+        public DateTime GetWorldTime()
+        {
+            DateTime now;
+            
+            try
+            {
+                if (WordTimeZone != null)
+                    now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, WordTimeZone);
+                else
+                    now = DateTime.UtcNow.AddHours(-7);
+            }
+            catch (Exception)
+            {
+                now = DateTime.UtcNow.AddHours(-7);
+            }
+
+            return now;
+        }
+
 
         public void Reconnect()
         {
