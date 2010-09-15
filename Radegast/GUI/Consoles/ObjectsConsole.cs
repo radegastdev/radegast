@@ -790,6 +790,12 @@ namespace Radegast
 
         private void btnView_Click(object sender, EventArgs e)
         {
+            if (currentPrim.PrimData.PCode != PCode.Prim)
+            {
+                instance.TabConsole.DisplayNotificationInChat("Cannot display objects of that type", ChatBufferTextStyle.Error);
+                return;
+            }
+
             List<Primitive> prims = new List<Primitive>();
 
             client.Network.CurrentSim.ObjectsPrimitives.ForEach(delegate(KeyValuePair<uint, Primitive> kvp)
