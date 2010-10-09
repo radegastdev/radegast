@@ -147,6 +147,18 @@ namespace Radegast
                         titem.Name = item.UUID.ToString(); ;
                         titem.Tag = item;
                         titem.Click += new EventHandler(attachmentMenuItem_Click);
+
+                        var saveToInv = new ToolStripMenuItem("Save to inventory");
+                        saveToInv.Click += (object xsender, EventArgs xe) =>
+                            {
+                                client.Inventory.RequestCopyItemFromNotecard(UUID.Zero,
+                                    notecard.UUID,
+                                    client.Inventory.FindFolderForType(item.AssetType),
+                                    item.UUID,
+                                    Inventory_OnInventoryItemCopied);
+                            };
+
+                        titem.DropDownItems.Add(saveToInv);
                         tbtnAttachments.DropDownItems.Add(titem);
                     }
                 }
@@ -171,6 +183,12 @@ namespace Radegast
 
             if (null == item) return;
 
+            instance.TabConsole.DisplayNotificationInChat(
+                string.Format("{0} saved to inventory", item.Name),
+                ChatBufferTextStyle.Invisible);
+
+            tlblStatus.Text = "Saved";
+            
             if (item is InventoryNotecard)
             {
                 Notecard nc = new Notecard(instance, (InventoryNotecard)item);
