@@ -2255,7 +2255,12 @@ namespace Radegast
                 string label = ItemLabel(res.Inv, false);
                 SizeF len = e.Graphics.MeasureString(label, lstInventorySearch.Font, rec.Width, sf);
 
-                e.Graphics.DrawString(ItemLabel(res.Inv, false), lstInventorySearch.Font, SystemBrushes.WindowText, rec, sf);
+                e.Graphics.DrawString(
+                    ItemLabel(res.Inv, false),
+                    lstInventorySearch.Font,
+                    e.Item.Selected ? SystemBrushes.HighlightText : SystemBrushes.WindowText,
+                    rec,
+                    sf);
 
                 if (res.Inv is InventoryItem)
                 {
@@ -2264,7 +2269,12 @@ namespace Radegast
                     {
                         using (Font descFont = new Font(lstInventorySearch.Font, FontStyle.Italic))
                         {
-                            e.Graphics.DrawString(desc, descFont, SystemBrushes.GrayText, rec.X + len.Width + 5, rec.Y, sf);
+                            e.Graphics.DrawString(desc,
+                                descFont,
+                                e.Item.Selected ? SystemBrushes.HighlightText : SystemBrushes.GrayText,
+                                rec.X + len.Width + 5,
+                                rec.Y,
+                                sf);
                         }
                     }
                 }
@@ -2285,6 +2295,14 @@ namespace Radegast
         private void rbSrchAll_CheckedChanged(object sender, EventArgs e)
         {
             UpdateSearch();
+        }
+
+        private void lstInventorySearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((e.KeyCode == Keys.Apps) || (e.Control && e.KeyCode == RadegastContextMenuStrip.ContexMenuKeyCode))
+            {
+                lstInventorySearch_MouseClick(sender, new MouseEventArgs(MouseButtons.Right, 1, 50, 150, 0));
+            }
         }
 
         private void lstInventorySearch_MouseClick(object sender, MouseEventArgs e)

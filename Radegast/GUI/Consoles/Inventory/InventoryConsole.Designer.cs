@@ -428,6 +428,7 @@ namespace Radegast
             // 
             // lstInventorySearch
             // 
+            this.lstInventorySearch.AccessibleName = "Search results";
             this.lstInventorySearch.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chResItemName});
             this.lstInventorySearch.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -441,7 +442,7 @@ namespace Radegast
             this.lstInventorySearch.ShowGroups = false;
             this.lstInventorySearch.Size = new System.Drawing.Size(407, 363);
             this.lstInventorySearch.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.lstInventorySearch.TabIndex = 9;
+            this.lstInventorySearch.TabIndex = 30;
             this.lstInventorySearch.UseCompatibleStateImageBehavior = false;
             this.lstInventorySearch.View = System.Windows.Forms.View.Details;
             this.lstInventorySearch.VirtualMode = true;
@@ -450,6 +451,7 @@ namespace Radegast
             this.lstInventorySearch.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lstInventorySearch_DrawItem);
             this.lstInventorySearch.SizeChanged += new System.EventHandler(this.lstInventorySearch_SizeChanged);
             this.lstInventorySearch.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.lstInventorySearch_RetrieveVirtualItem);
+            this.lstInventorySearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstInventorySearch_KeyDown);
             // 
             // chResItemName
             // 
@@ -467,7 +469,7 @@ namespace Radegast
             this.pnlSearchOptions.Location = new System.Drawing.Point(3, 3);
             this.pnlSearchOptions.Name = "pnlSearchOptions";
             this.pnlSearchOptions.Size = new System.Drawing.Size(407, 88);
-            this.pnlSearchOptions.TabIndex = 10;
+            this.pnlSearchOptions.TabIndex = 20;
             // 
             // groupBox2
             // 
