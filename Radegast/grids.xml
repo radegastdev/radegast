@@ -36,7 +36,7 @@
       <key>gridnick</key><string>osgrid</string>
       <key>gridname</key><string>OSGrid</string>
       <key>platform</key><string>OpenSim</string>
-      <key>loginuri</key><string>http://osgrid.org:8002/</string>
+      <key>loginuri</key><string>http://login.osgrid.org/</string>
       <key>loginpage</key><string>http://osgrid.org/loginscreen.php</string>
       <key>helperuri</key><string>http://osgrid.org/</string>
       <key>website</key><string>http://osgrid.org/</string>
