@@ -62,13 +62,13 @@ namespace Radegast
 
         private void btnTeleport_Click(object sender, EventArgs e)
         {
-            instance.Client.Self.TeleportLureRespond(msg.FromAgentID, true);
+            instance.Client.Self.TeleportLureRespond(msg.FromAgentID, msg.IMSessionID, true);
             instance.MainForm.RemoveNotification(this);
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            instance.Client.Self.TeleportLureRespond(msg.FromAgentID, false);
+            instance.Client.Self.TeleportLureRespond(msg.FromAgentID, msg.IMSessionID, false);
             instance.MainForm.RemoveNotification(this);
         }
     }

@@ -332,7 +332,7 @@ namespace Radegast
                     if (instance.RLV.AutoAcceptTP(e.IM.FromAgentID))
                     {
                         DisplayNotificationInChat("Auto accepting teleprot from " + e.IM.FromAgentName);
-                        instance.Client.Self.TeleportLureRespond(e.IM.FromAgentID, true);
+                        instance.Client.Self.TeleportLureRespond(e.IM.FromAgentID, e.IM.IMSessionID, true);
                     }
                     else
                     {
