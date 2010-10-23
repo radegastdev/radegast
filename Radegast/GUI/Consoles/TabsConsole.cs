@@ -345,7 +345,14 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.FriendshipOffered:
-                    instance.MainForm.AddNotification(new ntfFriendshipOffer(instance, e.IM));
+                    if (e.IM.FromAgentName == "Second Life")
+                    {
+                        HandleIMFromObject(e);
+                    }
+                    else
+                    {
+                        instance.MainForm.AddNotification(new ntfFriendshipOffer(instance, e.IM));
+                    }
                     break;
 
                 case InstantMessageDialog.InventoryAccepted:
