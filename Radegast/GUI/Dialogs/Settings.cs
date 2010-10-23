@@ -41,19 +41,61 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
+    public enum AutoResponseType: int
+    {
+        WhenBusy = 0,
+        WhenFromNonFriend = 1,
+        Always = 2
+    }
+
     public partial class frmSettings : RadegastForm
     {
         private Settings s;
+        private static bool settingInitialized = false;
+
+        public static void InitSettigs(Settings s)
+        {
+            if (s["im_timestamps"].Type == OSDType.Unknown)
+            {
+                s["im_timestamps"] = OSD.FromBoolean(true);
+            }
+
+            if (s["rlv_enabled"].Type == OSDType.Unknown)
+            {
+                s["rlv_enabled"] = new OSDBoolean(false);
+            }
+
+            if (s["mu_emotes"].Type == OSDType.Unknown)
+            {
+                s["mu_emotes"] = new OSDBoolean(false);
+            }
+
+            if (s["friends_notification_highlight"].Type == OSDType.Unknown)
+            {
+                s["friends_notification_highlight"] = new OSDBoolean(true);
+            }
+
+            if (!s.ContainsKey("no_typing_anim")) s["no_typing_anim"] = OSD.FromBoolean(false);
+
+            if (!s.ContainsKey("auto_response_type"))
+            {
+                s["auto_response_type"] = (int)AutoResponseType.WhenBusy;
+                s["auto_response_text"] = "The Resident you messaged is in 'busy mode' which means they have requested not to be disturbed.  Your message will still be shown in their IM panel for later viewing.";
+            }
+
+        }
 
         public frmSettings(RadegastInstance instance)
         {
+            if (settingInitialized)
+            {
+                frmSettings.InitSettigs(instance.GlobalSettings);
+            }
+
             InitializeComponent();
             s = instance.GlobalSettings;
 
             cbChatTimestamps.Checked = s["chat_timestamps"].AsBoolean();
-
-            if (s["im_timestamps"].Type == OSDType.Unknown)
-                s["im_timestamps"] = OSD.FromBoolean(true);
 
             cbIMTimeStamps.Checked = s["im_timestamps"].AsBoolean();
 
@@ -72,33 +114,17 @@ namespace Radegast
             cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
             cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
 
-            if (s["rlv_enabled"].Type == OSDType.Unknown)
-            {
-                s["rlv_enabled"] = new OSDBoolean(false);
-            }
-
             cbRLV.Checked = s["rlv_enabled"].AsBoolean();
             cbRLV.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["rlv_enabled"] = new OSDBoolean(cbRLV.Checked);
             };
 
-            if (s["mu_emotes"].Type == OSDType.Unknown)
-            {
-                s["mu_emotes"] = new OSDBoolean(false);
-            }
-
             cbMUEmotes.Checked = s["mu_emotes"].AsBoolean();
             cbMUEmotes.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
             };
-
-            
-            if (s["friends_notification_highlight"].Type == OSDType.Unknown)
-            {
-                s["friends_notification_highlight"] = new OSDBoolean(true);
-            }
 
             cbFriendsHighlight.Checked = s["friends_notification_highlight"].AsBoolean();
             cbFriendsHighlight.CheckedChanged += (object sender, EventArgs e) =>
@@ -121,13 +147,24 @@ namespace Radegast
                 };
 
 
-            if (!s.ContainsKey("no_typing_anim")) s["no_typing_anim"] = OSD.FromBoolean(false);
             cbNoTyping.Checked = s["no_typing_anim"].AsBoolean();
             cbNoTyping.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["no_typing_anim"] = OSD.FromBoolean(cbNoTyping.Checked);
             };
 
+            txtAutoResponse.Text = s["auto_response_text"];
+            txtAutoResponse.TextChanged += (object sender, EventArgs e) =>
+                {
+                    s["auto_response_text"] = txtAutoResponse.Text;
+                };
+            AutoResponseType art = (AutoResponseType)s["auto_response_type"].AsInteger();
+            switch (art)
+            {
+                case AutoResponseType.WhenBusy: rbAutobusy.Checked = true; break;
+                case AutoResponseType.WhenFromNonFriend: rbAutoNonFriend.Checked = true; break;
+                case AutoResponseType.Always: rbAutoAlways.Checked = true; break;
+            }
 
         }
 
@@ -170,7 +207,7 @@ namespace Radegast
         {
             double f = 8.25;
             double existing = s["chat_font_size"].AsReal();
-            
+
             if (!double.TryParse(cbFontSize.Text, out f))
             {
                 cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -199,6 +236,21 @@ namespace Radegast
         private void cbFontSize_Leave(object sender, EventArgs e)
         {
             UpdateFontSize();
+        }
+
+        private void rbAutobusy_CheckedChanged(object sender, EventArgs e)
+        {
+            s["auto_response_type"] = (int)AutoResponseType.WhenBusy;
+        }
+
+        private void rbAutoNonFriend_CheckedChanged(object sender, EventArgs e)
+        {
+            s["auto_response_type"] = (int)AutoResponseType.WhenFromNonFriend;
+        }
+
+        private void rbAutoAlways_CheckedChanged(object sender, EventArgs e)
+        {
+            s["auto_response_type"] = (int)AutoResponseType.Always;
         }
     }
 }

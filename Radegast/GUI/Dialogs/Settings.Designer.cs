@@ -63,6 +63,7 @@ namespace Radegast
             this.tbpGeneral = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.cbFontSize = new System.Windows.Forms.ComboBox();
+            this.cbNoTyping = new System.Windows.Forms.CheckBox();
             this.cbMinToTrey = new System.Windows.Forms.CheckBox();
             this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.cbRLV = new System.Windows.Forms.CheckBox();
@@ -74,14 +75,22 @@ namespace Radegast
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
-            this.cbNoTyping = new System.Windows.Forms.CheckBox();
+            this.tbpAutoResponse = new System.Windows.Forms.TabPage();
+            this.txtAutoResponse = new System.Windows.Forms.TextBox();
+            this.gbAutoResponse = new System.Windows.Forms.GroupBox();
+            this.rbAutoAlways = new System.Windows.Forms.RadioButton();
+            this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
+            this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
+            this.tbpAutoResponse.SuspendLayout();
+            this.gbAutoResponse.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tbpGeneral);
+            this.tabControl1.Controls.Add(this.tbpAutoResponse);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Multiline = true;
@@ -143,6 +152,17 @@ namespace Radegast
             this.cbFontSize.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
             this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
             this.cbFontSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
+            // 
+            // cbNoTyping
+            // 
+            this.cbNoTyping.AutoSize = true;
+            this.cbNoTyping.Location = new System.Drawing.Point(8, 286);
+            this.cbNoTyping.Name = "cbNoTyping";
+            this.cbNoTyping.Size = new System.Drawing.Size(150, 17);
+            this.cbNoTyping.TabIndex = 13;
+            this.cbNoTyping.Text = "Don\'t use typing animation";
+            this.cbNoTyping.UseVisualStyleBackColor = true;
+            this.cbNoTyping.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
             // cbMinToTrey
             // 
@@ -263,16 +283,73 @@ namespace Radegast
             this.cbChatTimestamps.Text = "Show timestamps in chat";
             this.cbChatTimestamps.UseVisualStyleBackColor = true;
             // 
-            // cbNoTyping
+            // tbpAutoResponse
             // 
-            this.cbNoTyping.AutoSize = true;
-            this.cbNoTyping.Location = new System.Drawing.Point(8, 286);
-            this.cbNoTyping.Name = "cbNoTyping";
-            this.cbNoTyping.Size = new System.Drawing.Size(150, 17);
-            this.cbNoTyping.TabIndex = 13;
-            this.cbNoTyping.Text = "Don\'t use typing animation";
-            this.cbNoTyping.UseVisualStyleBackColor = true;
-            this.cbNoTyping.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            this.tbpAutoResponse.Controls.Add(this.txtAutoResponse);
+            this.tbpAutoResponse.Controls.Add(this.gbAutoResponse);
+            this.tbpAutoResponse.Location = new System.Drawing.Point(4, 22);
+            this.tbpAutoResponse.Name = "tbpAutoResponse";
+            this.tbpAutoResponse.Padding = new System.Windows.Forms.Padding(3);
+            this.tbpAutoResponse.Size = new System.Drawing.Size(456, 320);
+            this.tbpAutoResponse.TabIndex = 2;
+            this.tbpAutoResponse.Text = "Auto Response";
+            this.tbpAutoResponse.UseVisualStyleBackColor = true;
+            // 
+            // txtAutoResponse
+            // 
+            this.txtAutoResponse.AccessibleName = "Auto response text";
+            this.txtAutoResponse.Location = new System.Drawing.Point(8, 63);
+            this.txtAutoResponse.Multiline = true;
+            this.txtAutoResponse.Name = "txtAutoResponse";
+            this.txtAutoResponse.Size = new System.Drawing.Size(282, 87);
+            this.txtAutoResponse.TabIndex = 1;
+            // 
+            // gbAutoResponse
+            // 
+            this.gbAutoResponse.Controls.Add(this.rbAutoAlways);
+            this.gbAutoResponse.Controls.Add(this.rbAutoNonFriend);
+            this.gbAutoResponse.Controls.Add(this.rbAutobusy);
+            this.gbAutoResponse.Location = new System.Drawing.Point(3, 6);
+            this.gbAutoResponse.Name = "gbAutoResponse";
+            this.gbAutoResponse.Size = new System.Drawing.Size(287, 51);
+            this.gbAutoResponse.TabIndex = 0;
+            this.gbAutoResponse.TabStop = false;
+            this.gbAutoResponse.Text = "Send auto response when:";
+            // 
+            // rbAutoAlways
+            // 
+            this.rbAutoAlways.AutoSize = true;
+            this.rbAutoAlways.Location = new System.Drawing.Point(216, 19);
+            this.rbAutoAlways.Name = "rbAutoAlways";
+            this.rbAutoAlways.Size = new System.Drawing.Size(58, 17);
+            this.rbAutoAlways.TabIndex = 2;
+            this.rbAutoAlways.Text = "Always";
+            this.rbAutoAlways.UseVisualStyleBackColor = true;
+            this.rbAutoAlways.CheckedChanged += new System.EventHandler(this.rbAutoAlways_CheckedChanged);
+            // 
+            // rbAutoNonFriend
+            // 
+            this.rbAutoNonFriend.AutoSize = true;
+            this.rbAutoNonFriend.Location = new System.Drawing.Point(100, 19);
+            this.rbAutoNonFriend.Name = "rbAutoNonFriend";
+            this.rbAutoNonFriend.Size = new System.Drawing.Size(110, 17);
+            this.rbAutoNonFriend.TabIndex = 1;
+            this.rbAutoNonFriend.Text = "IM from non-friend";
+            this.rbAutoNonFriend.UseVisualStyleBackColor = true;
+            this.rbAutoNonFriend.CheckedChanged += new System.EventHandler(this.rbAutoNonFriend_CheckedChanged);
+            // 
+            // rbAutobusy
+            // 
+            this.rbAutobusy.AutoSize = true;
+            this.rbAutobusy.Checked = true;
+            this.rbAutobusy.Location = new System.Drawing.Point(6, 19);
+            this.rbAutobusy.Name = "rbAutobusy";
+            this.rbAutobusy.Size = new System.Drawing.Size(88, 17);
+            this.rbAutobusy.TabIndex = 0;
+            this.rbAutobusy.TabStop = true;
+            this.rbAutobusy.Text = "In busy mode";
+            this.rbAutobusy.UseVisualStyleBackColor = true;
+            this.rbAutobusy.CheckedChanged += new System.EventHandler(this.rbAutobusy_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -286,6 +363,10 @@ namespace Radegast
             this.tabControl1.ResumeLayout(false);
             this.tbpGeneral.ResumeLayout(false);
             this.tbpGeneral.PerformLayout();
+            this.tbpAutoResponse.ResumeLayout(false);
+            this.tbpAutoResponse.PerformLayout();
+            this.gbAutoResponse.ResumeLayout(false);
+            this.gbAutoResponse.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -308,6 +389,12 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbFriendsHighlight;
         public System.Windows.Forms.CheckBox cbMinToTrey;
         public System.Windows.Forms.CheckBox cbNoTyping;
+        private System.Windows.Forms.TabPage tbpAutoResponse;
+        private System.Windows.Forms.GroupBox gbAutoResponse;
+        private System.Windows.Forms.TextBox txtAutoResponse;
+        private System.Windows.Forms.RadioButton rbAutoAlways;
+        private System.Windows.Forms.RadioButton rbAutoNonFriend;
+        private System.Windows.Forms.RadioButton rbAutobusy;
 
 
     }

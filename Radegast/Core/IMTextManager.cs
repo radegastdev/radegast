@@ -100,7 +100,7 @@ namespace Radegast
         private void netcom_InstantMessageSent(object sender, InstantMessageSentEventArgs e)
         {
             if (e.SessionID != sessionID) return;
-            
+
             textBuffer.Add(e);
             ProcessIM(e);
         }
@@ -132,7 +132,7 @@ namespace Radegast
         private void ProcessIncomingIM(InstantMessageEventArgs e)
         {
             string msg = e.IM.Message;
-            
+
             if (instance.RLV.RestictionActive("recvim", e.IM.FromAgentID.ToString()))
             {
                 msg = "*** IM blocked by your viewer";
@@ -152,6 +152,34 @@ namespace Radegast
             }
 
             PrintIM(DateTime.Now, e.IM.FromAgentName, msg);
+
+            if (Type == IMTextManagerType.Agent && e.IM.FromAgentID != UUID.Zero)
+            {
+                bool autoRespond = false;
+                AutoResponseType art = (AutoResponseType)instance.GlobalSettings["auto_response_type"].AsInteger();
+
+                switch (art)
+                {
+                    case AutoResponseType.WhenBusy: autoRespond = instance.State.IsBusy; break;
+                    case AutoResponseType.WhenFromNonFriend: autoRespond = !instance.Client.Friends.FriendList.ContainsKey(e.IM.FromAgentID); break;
+                    case AutoResponseType.Always: autoRespond = true; break;
+                }
+
+                if (autoRespond)
+                {
+                    instance.Client.Self.InstantMessage(instance.Client.Self.Name,
+                        e.IM.FromAgentID,
+                        instance.GlobalSettings["auto_response_text"].AsString(),
+                        e.IM.IMSessionID,
+                        InstantMessageDialog.BusyAutoResponse,
+                        InstantMessageOnline.Online,
+                        instance.Client.Self.RelativePosition,
+                        instance.Client.Network.CurrentSim.ID,
+                        null);
+
+                    PrintIM(DateTime.Now, instance.Client.Self.Name, instance.GlobalSettings["auto_response_text"].AsString());
+                }
+            }
         }
 
         private void PrintIM(DateTime timestamp, string fromName, string message)
