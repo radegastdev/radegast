@@ -256,7 +256,7 @@ namespace Radegast
             string last = string.Empty;
             try
             {
-                last = IMTextManager.ReadEndTokens(instance.ChatFileName(sessionName + ".txt"), 10, Encoding.UTF8, Environment.NewLine);
+                last = IMTextManager.ReadEndTokens(instance.ChatFileName(sessionName + ".txt"), 20, Encoding.UTF8, Environment.NewLine);
             }
             catch { }
 
