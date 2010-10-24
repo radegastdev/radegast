@@ -32,6 +32,7 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Text;
+using System.IO;
 using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
@@ -60,8 +61,10 @@ namespace Radegast
             this.Type = type;
 
             this.instance = instance;
+            PrintLastLog();
             AddNetcomEvents();
             InitializeConfig();
+
         }
 
         private void InitializeConfig()
@@ -186,11 +189,11 @@ namespace Radegast
         {
             if (showTimestamps)
             {
-                textPrinter.ForeColor = Color.Gray;
+                textPrinter.ForeColor = SystemColors.GrayText;
                 textPrinter.PrintText(timestamp.ToString("[HH:mm] "));
             }
 
-            textPrinter.ForeColor = Color.Black;
+            textPrinter.ForeColor = SystemColors.WindowText;
 
             StringBuilder sb = new StringBuilder();
 
@@ -211,10 +214,74 @@ namespace Radegast
             sb = null;
         }
 
+        public static string ReadEndTokens(string path, Int64 numberOfTokens, Encoding encoding, string tokenSeparator)
+        {
+
+            int sizeOfChar = encoding.GetByteCount("\n");
+            byte[] buffer = encoding.GetBytes(tokenSeparator);
+
+
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                Int64 tokenCount = 0;
+                Int64 endPosition = fs.Length / sizeOfChar;
+
+                for (Int64 position = sizeOfChar; position < endPosition; position += sizeOfChar)
+                {
+                    fs.Seek(-position, SeekOrigin.End);
+                    fs.Read(buffer, 0, buffer.Length);
+
+                    if (encoding.GetString(buffer) == tokenSeparator)
+                    {
+                        tokenCount++;
+                        if (tokenCount == numberOfTokens)
+                        {
+                            byte[] returnBuffer = new byte[fs.Length - fs.Position];
+                            fs.Read(returnBuffer, 0, returnBuffer.Length);
+                            return encoding.GetString(returnBuffer);
+                        }
+                    }
+                }
+
+                // handle case where number of tokens in file is less than numberOfTokens
+                fs.Seek(0, SeekOrigin.Begin);
+                buffer = new byte[fs.Length];
+                fs.Read(buffer, 0, buffer.Length);
+                return encoding.GetString(buffer);
+            }
+        }
+
+        private void PrintLastLog()
+        {
+            string last = string.Empty;
+            try
+            {
+                last = IMTextManager.ReadEndTokens(instance.ChatFileName(sessionName + ".txt"), 10, Encoding.UTF8, Environment.NewLine);
+            }
+            catch { }
+
+            if (string.IsNullOrEmpty(last))
+            {
+                return;
+            }
+
+            string[] lines = last.Split(Environment.NewLine.ToCharArray());
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string msg = lines[i].Trim();
+                if (!string.IsNullOrEmpty(msg))
+                {
+                    textPrinter.PrintTextLine(msg, SystemColors.GrayText);
+                }
+            }
+
+            textPrinter.PrintTextLine("====", SystemColors.GrayText);
+        }
+
         public void ReprintAllText()
         {
             textPrinter.ClearText();
-
+            PrintLastLog();
             foreach (object obj in textBuffer)
                 ProcessIM(obj);
         }

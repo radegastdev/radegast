@@ -591,18 +591,25 @@ namespace Radegast
             return fileName;
         }
 
-        public void LogClientMessage(string fileName, string message)
+        public string ChatFileName(string session)
+        {
+            string fileName = session;
+
+            foreach (char lDisallowed in System.IO.Path.GetInvalidFileNameChars())
+            {
+                fileName = fileName.Replace(lDisallowed.ToString(), "_");
+            }
+
+            return Path.Combine(ClientDir, fileName);
+        }
+
+        public void LogClientMessage(string sessioName, string message)
         {
             lock (this)
             {
                 try
                 {
-                    foreach (char lDisallowed in System.IO.Path.GetInvalidFileNameChars())
-                    {
-                        fileName = fileName.Replace(lDisallowed.ToString(), "_");
-                    }
-
-                    File.AppendAllText(Path.Combine(ClientDir, fileName),
+                    File.AppendAllText(ChatFileName(sessioName),
                         DateTime.Now.ToString("yyyy-MM-dd [HH:mm:ss] ") + message + Environment.NewLine);
                 }
                 catch (Exception) { }
