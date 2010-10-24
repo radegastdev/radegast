@@ -839,7 +839,7 @@ namespace Radegast
             switch (item.AssetType)
             {
                 case AssetType.Texture:
-                    SLImageHandler image = new SLImageHandler(instance, item.AssetUUID, item.Name);
+                    SLImageHandler image = new SLImageHandler(instance, item.AssetUUID, item.Name, IsFullPerm(item));
                     image.Dock = DockStyle.Fill;
                     pnlDetail.Controls.Add(image);
                     break;
@@ -1012,6 +1012,22 @@ namespace Radegast
             }
 
             return raw;
+        }
+
+        bool IsFullPerm(InventoryItem item)
+        {
+            if (
+                ((item.Permissions.OwnerMask & PermissionMask.Modify) != 0) &&
+                ((item.Permissions.OwnerMask & PermissionMask.Copy) != 0) &&
+                ((item.Permissions.OwnerMask & PermissionMask.Transfer) != 0)
+                )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         void invTree_MouseClick(object sender, TreeNodeMouseClickEventArgs e)

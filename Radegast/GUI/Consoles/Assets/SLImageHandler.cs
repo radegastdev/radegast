@@ -48,6 +48,7 @@ namespace Radegast
         byte[] jpegdata;
         ManagedImage imgManaged;
         Image image;
+        bool allowSave = false;
 
         public PictureBoxSizeMode SizeMode
         {
@@ -81,7 +82,13 @@ namespace Radegast
         }
 
         public SLImageHandler(RadegastInstance instance, UUID image, string label)
+            : this(instance, image, label, false)
         {
+        }
+
+        public SLImageHandler(RadegastInstance instance, UUID image, string label, bool allowSave)
+        {
+            this.allowSave = allowSave;
             InitializeComponent();
             Init(instance, image, label);
         }
@@ -90,7 +97,7 @@ namespace Radegast
         {
             Disposed += new EventHandler(SLImageHandler_Disposed);
 
-            if (!instance.advancedDebugging)
+            if (!allowSave && !instance.advancedDebugging) 
             {
                 tbtnCopy.Visible = false;
                 tbtnCopyUUID.Visible = false;
