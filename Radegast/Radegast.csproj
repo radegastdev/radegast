@@ -1114,6 +1114,8 @@
     <None Include="Resources\mic.png" />
     <None Include="Resources\my_map_pos.png" />
     <None Include="Resources\map_dot.png" />
+    <None Include="Resources\inv_item_alpha.png" />
+    <None Include="Resources\inv_item_tattoo.png" />
     <Content Include="Resources\radegast_large.png" />
     <None Include="Resources\target_map_pos.png" />
     <Content Include="worldmap.html">

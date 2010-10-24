@@ -336,6 +336,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap inv_item_alpha {
+            get {
+                object obj = ResourceManager.GetObject("inv_item_alpha", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap inv_item_animation {
             get {
                 object obj = ResourceManager.GetObject("inv_item_animation", resourceCulture);
@@ -514,6 +521,13 @@ namespace Radegast.Properties {
         public static System.Drawing.Bitmap inv_item_sound {
             get {
                 object obj = ResourceManager.GetObject("inv_item_sound", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap inv_item_tattoo {
+            get {
+                object obj = ResourceManager.GetObject("inv_item_tattoo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
