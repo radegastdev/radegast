@@ -507,7 +507,6 @@ namespace Radegast
             this.rtb.Location = new System.Drawing.Point(33, 25);
             this.rtb.Name = "rtb";
             this.rtb.Size = new System.Drawing.Size(628, 321);
-            this.rtb.SyntaxHighlightEnabled = true;
             this.rtb.TabIndex = 1;
             this.rtb.Text = "";
             this.rtb.WordWrap = false;
@@ -525,6 +524,7 @@ namespace Radegast
             this.lineNubersForRtb.RTB = this.rtb;
             this.lineNubersForRtb.Size = new System.Drawing.Size(33, 321);
             this.lineNubersForRtb.TabIndex = 6;
+            this.lineNubersForRtb.TabStop = false;
             // 
             // txtStatus
             // 

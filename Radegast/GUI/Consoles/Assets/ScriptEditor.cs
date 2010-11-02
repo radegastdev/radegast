@@ -68,6 +68,7 @@ namespace Radegast
             this.instance = instance;
             this.script = script;
             this.prim = prim;
+            rtb.SyntaxHighlightEnabled = instance.GlobalSettings["script_syntax_highlight"].AsBoolean();
             lblScripStatus.Text = string.Empty;
             lblScripStatus.TextChanged += (object sender, EventArgs e) =>
                 instance.TabConsole.DisplayNotificationInChat(lblScripStatus.Text, ChatBufferTextStyle.Invisible);

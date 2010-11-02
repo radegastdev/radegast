@@ -83,6 +83,9 @@ namespace Radegast
                 s["auto_response_text"] = "The Resident you messaged is in 'busy mode' which means they have requested not to be disturbed.  Your message will still be shown in their IM panel for later viewing.";
             }
 
+            if (!s.ContainsKey("script_syntax_highlight")) s["script_syntax_highlight"] = OSD.FromBoolean(true);
+
+
         }
 
         public frmSettings(RadegastInstance instance)
@@ -165,6 +168,13 @@ namespace Radegast
                 case AutoResponseType.WhenFromNonFriend: rbAutoNonFriend.Checked = true; break;
                 case AutoResponseType.Always: rbAutoAlways.Checked = true; break;
             }
+
+            cbSyntaxHighlight.Checked = s["script_syntax_highlight"].AsBoolean();
+            cbSyntaxHighlight.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["script_syntax_highlight"] = OSD.FromBoolean(cbSyntaxHighlight.Checked);
+            };
+
 
         }
 
