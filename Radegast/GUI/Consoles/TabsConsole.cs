@@ -151,6 +151,7 @@ namespace Radegast
             client.Self.ScriptQuestion += new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
             client.Self.ScriptDialog += new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
             client.Self.LoadURL += new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
+            client.Avatars.DisplayNameUpdate += new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -158,6 +159,7 @@ namespace Radegast
             client.Self.ScriptQuestion -= new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
             client.Self.ScriptDialog -= new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
             client.Self.LoadURL -= new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
+            client.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -244,6 +246,11 @@ namespace Radegast
             DisposeOnlineTabs();
             SelectDefaultTab();
             DisplayNotificationInChat("Disconnected: " + e.Message, ChatBufferTextStyle.Error);
+        }
+
+        void Avatars_DisplayNameUpdate(object sender, DisplayNameUpdateEventArgs e)
+        {
+            DisplayNotificationInChat(string.Format("({0}) is now known as {1}", e.DisplayName.UserName, e.DisplayName.DisplayName));
         }
 
         private void netcom_AlertMessageReceived(object sender, AlertMessageEventArgs e)
