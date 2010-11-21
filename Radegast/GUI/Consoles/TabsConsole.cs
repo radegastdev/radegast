@@ -151,6 +151,7 @@ namespace Radegast
             client.Self.ScriptQuestion += new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
             client.Self.ScriptDialog += new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
             client.Self.LoadURL += new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
+            client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
             client.Avatars.DisplayNameUpdate += new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
         }
 
@@ -159,6 +160,7 @@ namespace Radegast
             client.Self.ScriptQuestion -= new EventHandler<ScriptQuestionEventArgs>(Self_ScriptQuestion);
             client.Self.ScriptDialog -= new EventHandler<ScriptDialogEventArgs>(Self_ScriptDialog);
             client.Self.LoadURL -= new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
+            client.Self.SetDisplayNameReply -= new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
             client.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
         }
 
@@ -251,6 +253,18 @@ namespace Radegast
         void Avatars_DisplayNameUpdate(object sender, DisplayNameUpdateEventArgs e)
         {
             DisplayNotificationInChat(string.Format("({0}) is now known as {1}", e.DisplayName.UserName, e.DisplayName.DisplayName));
+        }
+
+        void Self_SetDisplayNameReply(object sender, SetDisplayNameReplyEventArgs e)
+        {
+            if (e.Status == 200)
+            {
+                DisplayNotificationInChat("You are now knows as " + e.DisplayName.DisplayName);
+            }
+            else
+            {
+                DisplayNotificationInChat("Failed to set a new display name: " + e.Reason, ChatBufferTextStyle.Error);
+            }
         }
 
         private void netcom_AlertMessageReceived(object sender, AlertMessageEventArgs e)
