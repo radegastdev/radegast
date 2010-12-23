@@ -96,7 +96,7 @@ namespace Radegast
         /// Instance of Radegast
         /// </summary>
         protected RadegastInstance Instance { get { return instance; } }
-        private RadegastInstance instance;
+        private RadegastInstance instance = null;
 
         /// <summary>
         /// Instance of OpenMetaverse's GridClient
@@ -147,6 +147,8 @@ namespace Radegast
 
         protected void SavePosition()
         {
+            if (instance == null) return;
+
             Instance.GlobalSettings[GetSettingsKey("left")] = OSD.FromInteger(Left);
             Instance.GlobalSettings[GetSettingsKey("top")] = OSD.FromInteger(Top);
             Instance.GlobalSettings[GetSettingsKey("width")] = OSD.FromInteger(Width);
@@ -155,6 +157,8 @@ namespace Radegast
 
         protected void ClearSavedPosition()
         {
+            if (instance == null) return;
+
             Instance.GlobalSettings.Remove(GetSettingsKey("left"));
             Instance.GlobalSettings.Remove(GetSettingsKey("top"));
             Instance.GlobalSettings.Remove(GetSettingsKey("width"));
@@ -163,6 +167,8 @@ namespace Radegast
 
         protected void RestoreSavedPosition()
         {
+            if (instance == null) return;
+
             int left = Left, top = Top, width = Width, height = Height;
 
             if (Instance.GlobalSettings[GetSettingsKey("left")].Type != OSDType.Unknown)
