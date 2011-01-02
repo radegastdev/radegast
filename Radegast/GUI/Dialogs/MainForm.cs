@@ -1362,6 +1362,16 @@ namespace Radegast
         {
             instance.State.StopAllAnimations();
         }
+
+        private void restartRegionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(new WindowWrapper(Handle),
+                "Do you want to restart region " + client.Network.CurrentSim.Name + "?",
+                "Confirm restart", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                client.Estate.RestartRegion();
+            }
+        }
         #endregion
     }
 }

@@ -142,6 +142,8 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.restartRegionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -385,7 +387,9 @@ namespace Radegast
             this.cleanCacheToolStripMenuItem,
             this.reloadInventoryToolStripMenuItem,
             this.setAppearanceToolStripMenuItem,
-            this.rebakeTexturesToolStripMenuItem});
+            this.rebakeTexturesToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.restartRegionToolStripMenuItem});
             this.tbnTools.Enabled = false;
             this.tbnTools.Image = ((System.Drawing.Image)(resources.GetObject("tbnTools.Image")));
             this.tbnTools.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -810,6 +814,18 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(160, 6);
+            // 
+            // restartRegionToolStripMenuItem
+            // 
+            this.restartRegionToolStripMenuItem.Name = "restartRegionToolStripMenuItem";
+            this.restartRegionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.restartRegionToolStripMenuItem.Text = "Restart Region";
+            this.restartRegionToolStripMenuItem.Click += new System.EventHandler(this.restartRegionToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -915,6 +931,8 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem debugConsoleToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem stopAllAnimationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem restartRegionToolStripMenuItem;
     }
 }
 
