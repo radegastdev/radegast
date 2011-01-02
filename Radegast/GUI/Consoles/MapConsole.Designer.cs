@@ -78,6 +78,7 @@ namespace Radegast
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.zoomTracker = new System.Windows.Forms.TrackBar();
             this.pnlMap = new System.Windows.Forms.Panel();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.pnlSearch.SuspendLayout();
             this.pnlProgress.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudX)).BeginInit();
@@ -88,6 +89,7 @@ namespace Radegast
             // 
             // pnlSearch
             // 
+            this.pnlSearch.Controls.Add(this.btnRefresh);
             this.pnlSearch.Controls.Add(this.ddOnlineFriends);
             this.pnlSearch.Controls.Add(this.lblStatus);
             this.pnlSearch.Controls.Add(this.btnDestination);
@@ -108,7 +110,7 @@ namespace Radegast
             this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlSearch.Location = new System.Drawing.Point(560, 0);
             this.pnlSearch.Name = "pnlSearch";
-            this.pnlSearch.Size = new System.Drawing.Size(194, 412);
+            this.pnlSearch.Size = new System.Drawing.Size(194, 426);
             this.pnlSearch.TabIndex = 0;
             // 
             // ddOnlineFriends
@@ -127,17 +129,18 @@ namespace Radegast
             // lblStatus
             // 
             this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblStatus.BackColor = System.Drawing.Color.Transparent;
             this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblStatus.Location = new System.Drawing.Point(3, 359);
+            this.lblStatus.Location = new System.Drawing.Point(3, 379);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(185, 21);
+            this.lblStatus.Size = new System.Drawing.Size(185, 16);
             this.lblStatus.TabIndex = 22;
             this.lblStatus.Text = "Teleport status";
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnDestination
             // 
-            this.btnDestination.Location = new System.Drawing.Point(91, 299);
+            this.btnDestination.Location = new System.Drawing.Point(91, 291);
             this.btnDestination.Name = "btnDestination";
             this.btnDestination.Size = new System.Drawing.Size(75, 23);
             this.btnDestination.TabIndex = 22;
@@ -147,7 +150,7 @@ namespace Radegast
             // 
             // btnMyPos
             // 
-            this.btnMyPos.Location = new System.Drawing.Point(10, 299);
+            this.btnMyPos.Location = new System.Drawing.Point(10, 291);
             this.btnMyPos.Name = "btnMyPos";
             this.btnMyPos.Size = new System.Drawing.Size(75, 23);
             this.btnMyPos.TabIndex = 21;
@@ -157,7 +160,7 @@ namespace Radegast
             // 
             // btnGoHome
             // 
-            this.btnGoHome.Location = new System.Drawing.Point(91, 270);
+            this.btnGoHome.Location = new System.Drawing.Point(91, 262);
             this.btnGoHome.Name = "btnGoHome";
             this.btnGoHome.Size = new System.Drawing.Size(75, 23);
             this.btnGoHome.TabIndex = 19;
@@ -169,7 +172,7 @@ namespace Radegast
             // 
             this.pnlProgress.Controls.Add(this.prgTeleport);
             this.pnlProgress.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlProgress.Location = new System.Drawing.Point(0, 383);
+            this.pnlProgress.Location = new System.Drawing.Point(0, 397);
             this.pnlProgress.Name = "pnlProgress";
             this.pnlProgress.Size = new System.Drawing.Size(194, 29);
             this.pnlProgress.TabIndex = 20;
@@ -186,7 +189,7 @@ namespace Radegast
             // btnTeleport
             // 
             this.btnTeleport.Enabled = false;
-            this.btnTeleport.Location = new System.Drawing.Point(10, 270);
+            this.btnTeleport.Location = new System.Drawing.Point(10, 262);
             this.btnTeleport.Name = "btnTeleport";
             this.btnTeleport.Size = new System.Drawing.Size(75, 23);
             this.btnTeleport.TabIndex = 18;
@@ -302,11 +305,11 @@ namespace Radegast
             // 
             // zoomTracker
             // 
-            this.zoomTracker.Location = new System.Drawing.Point(6, 331);
+            this.zoomTracker.Location = new System.Drawing.Point(6, 345);
             this.zoomTracker.Maximum = 100;
             this.zoomTracker.Name = "zoomTracker";
             this.zoomTracker.Size = new System.Drawing.Size(181, 45);
-            this.zoomTracker.TabIndex = 23;
+            this.zoomTracker.TabIndex = 24;
             this.zoomTracker.TickStyle = System.Windows.Forms.TickStyle.None;
             this.zoomTracker.Visible = false;
             this.zoomTracker.Scroll += new System.EventHandler(this.zoomTracker_Scroll);
@@ -316,8 +319,18 @@ namespace Radegast
             this.pnlMap.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMap.Location = new System.Drawing.Point(0, 0);
             this.pnlMap.Name = "pnlMap";
-            this.pnlMap.Size = new System.Drawing.Size(560, 412);
+            this.pnlMap.Size = new System.Drawing.Size(560, 426);
             this.pnlMap.TabIndex = 1;
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(10, 320);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 25;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // MapConsole
             // 
@@ -326,7 +339,7 @@ namespace Radegast
             this.Controls.Add(this.pnlMap);
             this.Controls.Add(this.pnlSearch);
             this.Name = "MapConsole";
-            this.Size = new System.Drawing.Size(754, 412);
+            this.Size = new System.Drawing.Size(754, 426);
             this.pnlSearch.ResumeLayout(false);
             this.pnlSearch.PerformLayout();
             this.pnlProgress.ResumeLayout(false);
@@ -360,6 +373,7 @@ namespace Radegast
         public System.Windows.Forms.Label lblStatus;
         public System.Windows.Forms.TrackBar zoomTracker;
         public System.Windows.Forms.ComboBox ddOnlineFriends;
+        public System.Windows.Forms.Button btnRefresh;
 
     }
 }

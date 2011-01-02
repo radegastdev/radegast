@@ -490,6 +490,59 @@ namespace Radegast
         List<string> requestedBlocks = new List<string>();
         List<ulong> requestedLocations = new List<ulong>();
 
+        public void RefreshRegionAgents()
+        {
+            if (!centered) return;
+            int h = Height, w = Width;
+
+            float localX, localY;
+            ulong centerRegion = GlobalPosToRegionHandle(centerX, centerY, out localX, out localY);
+            int pixCenterRegionX = (int)(w / 2 - localX / zoom);
+            int pixCenterRegionY = (int)(h / 2 + localY / zoom);
+
+            uint regX, regY;
+            Utils.LongToUInts(centerRegion, out regX, out regY);
+            regX /= regionSize;
+            regY /= regionSize;
+
+            int regXMax = 0, regYMax = 0;
+            int regLeft = (int)regX - ((int)(pixCenterRegionX / PixRegS) + 1);
+            if (regLeft < 0) regLeft = 0;
+            int regBottom = (int)regY - ((int)((Height - pixCenterRegionY) / PixRegS) + 1);
+            if (regBottom < 0) regBottom = 0;
+
+            for (int ry = regBottom; pixCenterRegionY - (ry - (int)regY) * PixRegS > 0; ry++)
+            {
+                regYMax = ry;
+                for (int rx = regLeft; pixCenterRegionX - ((int)regX - rx) * PixRegS < Width; rx++)
+                {
+                    regXMax = rx;
+                    int pixX = pixCenterRegionX - ((int)regX - rx) * PixRegS;
+                    int pixY = pixCenterRegionY - (ry - (int)regY) * PixRegS;
+                    ulong handle = Utils.UIntsToLong((uint)rx * regionSize, (uint)ry * regionSize);
+
+                    lock (regionMapItems)
+                    {
+                        if (regionMapItems.ContainsKey(handle))
+                        {
+                            regionMapItems.Remove(handle);
+                        }
+                    }
+
+                    Client.Grid.RequestMapItems(handle, OpenMetaverse.GridItemType.AgentLocations, GridLayerType.Objects);
+                    
+                    lock (requestedLocations)
+                    {
+                        if (!requestedLocations.Contains(handle))
+                        {
+                            requestedLocations.Add(handle);
+                        }
+                    }
+                }
+            }
+            needRepaint = true;
+        }
+
         private void MapControl_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;

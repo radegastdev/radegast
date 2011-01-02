@@ -30,8 +30,6 @@
 //
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Collections.Generic;
@@ -40,8 +38,6 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-    [ComVisibleAttribute(true)]
     public partial class MapConsole : UserControl
     {
         RadegastInstance instance;
@@ -93,24 +89,6 @@ namespace Radegast
 
         void createMap()
         {
-            //if (instance.Netcom.Grid.ID == "agni")
-            //{
-            //    try
-            //    {
-            //        map = new WebBrowser();
-            //        map.Dock = DockStyle.Fill;
-            //        map.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(map_DocumentCompleted);
-            //        map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
-            //        pnlMap.Controls.Add(map);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Logger.Log(e.Message, Helpers.LogLevel.Warning, client, e);
-            //        pnlMap.Visible = false;
-            //        map = null;
-            //    }
-            //}
-
             if (map == null)
             {
                 mmap = new MapControl(instance);
@@ -567,6 +545,14 @@ namespace Radegast
             if (mmap != null)
             {
                 mmap.Zoom = mmap.MinZoom + (mmap.MaxZoom - mmap.MinZoom) * (float)((float)zoomTracker.Value / 100f);
+            }
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            if (mmap != null)
+            {
+                mmap.RefreshRegionAgents();
             }
         }
 
