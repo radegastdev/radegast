@@ -1372,6 +1372,19 @@ namespace Radegast
                 client.Estate.RestartRegion();
             }
         }
+
+        private void regionInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (tabsConsole.TabExists("current region info"))
+            {
+                tabsConsole.Tabs["current region info"].Select();
+            }
+            else
+            {
+                tabsConsole.AddTab("current region info", "Region info", new RegionInfo(instance));
+                tabsConsole.Tabs["current region info"].Select();
+            }
+        }
         #endregion
     }
 }

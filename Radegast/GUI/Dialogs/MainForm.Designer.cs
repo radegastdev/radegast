@@ -103,6 +103,8 @@ namespace Radegast
             this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.restartRegionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnPluginsTab = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -142,8 +144,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.restartRegionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.regionInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -389,6 +390,7 @@ namespace Radegast
             this.setAppearanceToolStripMenuItem,
             this.rebakeTexturesToolStripMenuItem,
             this.toolStripMenuItem1,
+            this.regionInfoToolStripMenuItem,
             this.restartRegionToolStripMenuItem});
             this.tbnTools.Enabled = false;
             this.tbnTools.Image = ((System.Drawing.Image)(resources.GetObject("tbnTools.Image")));
@@ -432,6 +434,18 @@ namespace Radegast
             this.rebakeTexturesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.rebakeTexturesToolStripMenuItem.Text = "Rebake Textures";
             this.rebakeTexturesToolStripMenuItem.Click += new System.EventHandler(this.rebakeTexturesToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(160, 6);
+            // 
+            // restartRegionToolStripMenuItem
+            // 
+            this.restartRegionToolStripMenuItem.Name = "restartRegionToolStripMenuItem";
+            this.restartRegionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.restartRegionToolStripMenuItem.Text = "Restart Region";
+            this.restartRegionToolStripMenuItem.Click += new System.EventHandler(this.restartRegionToolStripMenuItem_Click);
             // 
             // tbnPlugins
             // 
@@ -814,17 +828,12 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
-            // toolStripMenuItem1
+            // regionInfoToolStripMenuItem
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(160, 6);
-            // 
-            // restartRegionToolStripMenuItem
-            // 
-            this.restartRegionToolStripMenuItem.Name = "restartRegionToolStripMenuItem";
-            this.restartRegionToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.restartRegionToolStripMenuItem.Text = "Restart Region";
-            this.restartRegionToolStripMenuItem.Click += new System.EventHandler(this.restartRegionToolStripMenuItem_Click);
+            this.regionInfoToolStripMenuItem.Name = "regionInfoToolStripMenuItem";
+            this.regionInfoToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.regionInfoToolStripMenuItem.Text = "Region Info";
+            this.regionInfoToolStripMenuItem.Click += new System.EventHandler(this.regionInfoToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -933,6 +942,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem stopAllAnimationsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem restartRegionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem regionInfoToolStripMenuItem;
     }
 }
 

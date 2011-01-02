@@ -339,6 +339,12 @@
     <Compile Include="GUI\Consoles\PluginsTab.Designer.cs">
       <DependentUpon>PluginsTab.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\RegionInfo.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\RegionInfo.Designer.cs">
+      <DependentUpon>RegionInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\VoiceConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -617,6 +623,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\PluginsTab.resx">
       <DependentUpon>PluginsTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\RegionInfo.resx">
+      <DependentUpon>RegionInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\VoiceConsole.resx">
       <DependentUpon>VoiceConsole.cs</DependentUpon>
