@@ -68,9 +68,11 @@ namespace Radegast.Commands
                 ParcelsDownloaded.Set();
             };
 
+            instance.MainForm.PreventParcelUpdate = true;
+
             ParcelsDownloaded.Reset();
             Client.Parcels.SimParcelsDownloaded += del;
-            Client.Parcels.RequestAllSimParcels(Client.Network.CurrentSim);
+            Client.Parcels.RequestAllSimParcels(Client.Network.CurrentSim, true, 750);
 
             if (Client.Network.CurrentSim.IsParcelMapFull())
                 ParcelsDownloaded.Set();
@@ -92,6 +94,9 @@ namespace Radegast.Commands
                 result = "Failed to retrieve information on all the simulator parcels";
 
             Client.Parcels.SimParcelsDownloaded -= del;
+
+            Thread.Sleep(2000);
+            instance.MainForm.PreventParcelUpdate = false;
 
             WriteLine("Parcel Infro results:\n{0}", result);
         }

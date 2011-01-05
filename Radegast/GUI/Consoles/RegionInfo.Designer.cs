@@ -29,12 +29,17 @@
         private void InitializeComponent()
         {
             this.pnlStats = new System.Windows.Forms.Panel();
+            this.btnRestart = new System.Windows.Forms.Button();
+            this.lblDataCenter = new System.Windows.Forms.Label();
+            this.lblCPUClass = new System.Windows.Forms.Label();
             this.lblSpareTime = new System.Windows.Forms.Label();
             this.lblScriptTime = new System.Windows.Forms.Label();
             this.lblImagesTime = new System.Windows.Forms.Label();
             this.lblAgentTime = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.lblSimTime = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
             this.lblPhysicsTime = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.lblNetTime = new System.Windows.Forms.Label();
@@ -64,17 +69,46 @@
             this.lblDilation = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblRegionName = new System.Windows.Forms.Label();
+            this.pnlParcels = new System.Windows.Forms.Panel();
+            this.pnlParcelList = new System.Windows.Forms.Panel();
+            this.pnlParcelImage = new System.Windows.Forms.Panel();
+            this.txtOwner = new Radegast.AgentNameTextBox();
+            this.lblSimType = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.lblGroup = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.txtParcelDescription = new System.Windows.Forms.TextBox();
+            this.txtParcelTitle = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.lblTraffic = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.lblSimPrims = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.lblParcelPrims = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.lblAutoReturn = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.lblArea = new System.Windows.Forms.Label();
             this.pnlStats.SuspendLayout();
+            this.pnlParcels.SuspendLayout();
+            this.pnlParcelList.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlStats
             // 
+            this.pnlStats.Controls.Add(this.btnRestart);
+            this.pnlStats.Controls.Add(this.lblDataCenter);
+            this.pnlStats.Controls.Add(this.lblCPUClass);
             this.pnlStats.Controls.Add(this.lblSpareTime);
             this.pnlStats.Controls.Add(this.lblScriptTime);
             this.pnlStats.Controls.Add(this.lblImagesTime);
             this.pnlStats.Controls.Add(this.lblAgentTime);
+            this.pnlStats.Controls.Add(this.label21);
+            this.pnlStats.Controls.Add(this.label10);
             this.pnlStats.Controls.Add(this.lblSimTime);
-            this.pnlStats.Controls.Add(this.label24);
+            this.pnlStats.Controls.Add(this.label23);
             this.pnlStats.Controls.Add(this.lblPhysicsTime);
             this.pnlStats.Controls.Add(this.label22);
             this.pnlStats.Controls.Add(this.lblNetTime);
@@ -109,6 +143,38 @@
             this.pnlStats.Name = "pnlStats";
             this.pnlStats.Size = new System.Drawing.Size(184, 390);
             this.pnlStats.TabIndex = 0;
+            // 
+            // btnRestart
+            // 
+            this.btnRestart.Location = new System.Drawing.Point(3, 309);
+            this.btnRestart.Name = "btnRestart";
+            this.btnRestart.Size = new System.Drawing.Size(75, 23);
+            this.btnRestart.TabIndex = 2;
+            this.btnRestart.Text = "Restart";
+            this.btnRestart.UseVisualStyleBackColor = true;
+            this.btnRestart.Click += new System.EventHandler(this.btnRestart_Click);
+            // 
+            // lblDataCenter
+            // 
+            this.lblDataCenter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDataCenter.Location = new System.Drawing.Point(76, 293);
+            this.lblDataCenter.Name = "lblDataCenter";
+            this.lblDataCenter.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.lblDataCenter.Size = new System.Drawing.Size(97, 13);
+            this.lblDataCenter.TabIndex = 1;
+            this.lblDataCenter.Text = "0";
+            this.lblDataCenter.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblCPUClass
+            // 
+            this.lblCPUClass.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCPUClass.Location = new System.Drawing.Point(73, 280);
+            this.lblCPUClass.Name = "lblCPUClass";
+            this.lblCPUClass.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.lblCPUClass.Size = new System.Drawing.Size(100, 13);
+            this.lblCPUClass.TabIndex = 1;
+            this.lblCPUClass.Text = "0";
+            this.lblCPUClass.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblSpareTime
             // 
@@ -154,6 +220,24 @@
             this.lblAgentTime.Text = "0";
             this.lblAgentTime.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(3, 293);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(63, 13);
+            this.label21.TabIndex = 1;
+            this.label21.Text = "Data center";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(3, 280);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(57, 13);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "CPU Class";
+            // 
             // lblSimTime
             // 
             this.lblSimTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -165,14 +249,14 @@
             this.lblSimTime.Text = "0";
             this.lblSimTime.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // label24
+            // label23
             // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(3, 254);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(57, 13);
-            this.label24.TabIndex = 1;
-            this.label24.Text = "Spare time";
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(3, 254);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(57, 13);
+            this.label23.TabIndex = 1;
+            this.label23.Text = "Spare time";
             // 
             // lblPhysicsTime
             // 
@@ -459,15 +543,242 @@
             this.lblRegionName.TabIndex = 0;
             this.lblRegionName.Text = "Region Name";
             // 
+            // pnlParcels
+            // 
+            this.pnlParcels.Controls.Add(this.pnlParcelList);
+            this.pnlParcels.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlParcels.Location = new System.Drawing.Point(184, 0);
+            this.pnlParcels.Name = "pnlParcels";
+            this.pnlParcels.Size = new System.Drawing.Size(445, 390);
+            this.pnlParcels.TabIndex = 1;
+            // 
+            // pnlParcelList
+            // 
+            this.pnlParcelList.Controls.Add(this.pnlParcelImage);
+            this.pnlParcelList.Controls.Add(this.txtOwner);
+            this.pnlParcelList.Controls.Add(this.lblSimType);
+            this.pnlParcelList.Controls.Add(this.label19);
+            this.pnlParcelList.Controls.Add(this.lblArea);
+            this.pnlParcelList.Controls.Add(this.label25);
+            this.pnlParcelList.Controls.Add(this.lblAutoReturn);
+            this.pnlParcelList.Controls.Add(this.label30);
+            this.pnlParcelList.Controls.Add(this.lblParcelPrims);
+            this.pnlParcelList.Controls.Add(this.label28);
+            this.pnlParcelList.Controls.Add(this.lblSimPrims);
+            this.pnlParcelList.Controls.Add(this.label26);
+            this.pnlParcelList.Controls.Add(this.lblTraffic);
+            this.pnlParcelList.Controls.Add(this.label24);
+            this.pnlParcelList.Controls.Add(this.lblGroup);
+            this.pnlParcelList.Controls.Add(this.label17);
+            this.pnlParcelList.Controls.Add(this.label15);
+            this.pnlParcelList.Controls.Add(this.txtParcelDescription);
+            this.pnlParcelList.Controls.Add(this.txtParcelTitle);
+            this.pnlParcelList.Controls.Add(this.label13);
+            this.pnlParcelList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlParcelList.Location = new System.Drawing.Point(0, 0);
+            this.pnlParcelList.Name = "pnlParcelList";
+            this.pnlParcelList.Size = new System.Drawing.Size(445, 390);
+            this.pnlParcelList.TabIndex = 3;
+            // 
+            // pnlParcelImage
+            // 
+            this.pnlParcelImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlParcelImage.Location = new System.Drawing.Point(236, 135);
+            this.pnlParcelImage.Name = "pnlParcelImage";
+            this.pnlParcelImage.Size = new System.Drawing.Size(200, 150);
+            this.pnlParcelImage.TabIndex = 7;
+            // 
+            // txtOwner
+            // 
+            this.txtOwner.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtOwner.Location = new System.Drawing.Point(80, 163);
+            this.txtOwner.Name = "txtOwner";
+            this.txtOwner.ReadOnly = true;
+            this.txtOwner.Size = new System.Drawing.Size(150, 13);
+            this.txtOwner.TabIndex = 6;
+            this.txtOwner.Text = "(Loading...)";
+            // 
+            // lblSimType
+            // 
+            this.lblSimType.AutoSize = true;
+            this.lblSimType.Location = new System.Drawing.Point(77, 150);
+            this.lblSimType.Name = "lblSimType";
+            this.lblSimType.Size = new System.Drawing.Size(37, 13);
+            this.lblSimType.TabIndex = 5;
+            this.lblSimType.Text = "(none)";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 150);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(47, 13);
+            this.label19.TabIndex = 5;
+            this.label19.Text = "Sim type";
+            // 
+            // lblGroup
+            // 
+            this.lblGroup.AutoSize = true;
+            this.lblGroup.Location = new System.Drawing.Point(77, 176);
+            this.lblGroup.Name = "lblGroup";
+            this.lblGroup.Size = new System.Drawing.Size(37, 13);
+            this.lblGroup.TabIndex = 5;
+            this.lblGroup.Text = "(none)";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 176);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(36, 13);
+            this.label17.TabIndex = 5;
+            this.label17.Text = "Group";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 163);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(38, 13);
+            this.label15.TabIndex = 5;
+            this.label15.Text = "Owner";
+            // 
+            // txtParcelDescription
+            // 
+            this.txtParcelDescription.AccessibleName = "Parcel description";
+            this.txtParcelDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtParcelDescription.Location = new System.Drawing.Point(9, 54);
+            this.txtParcelDescription.Multiline = true;
+            this.txtParcelDescription.Name = "txtParcelDescription";
+            this.txtParcelDescription.ReadOnly = true;
+            this.txtParcelDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtParcelDescription.Size = new System.Drawing.Size(427, 68);
+            this.txtParcelDescription.TabIndex = 3;
+            // 
+            // txtParcelTitle
+            // 
+            this.txtParcelTitle.AccessibleName = "Parcel name";
+            this.txtParcelTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtParcelTitle.Location = new System.Drawing.Point(9, 28);
+            this.txtParcelTitle.Name = "txtParcelTitle";
+            this.txtParcelTitle.ReadOnly = true;
+            this.txtParcelTitle.Size = new System.Drawing.Size(427, 20);
+            this.txtParcelTitle.TabIndex = 2;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 11);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(73, 13);
+            this.label13.TabIndex = 1;
+            this.label13.Text = "Current parcel";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(6, 189);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(37, 13);
+            this.label24.TabIndex = 5;
+            this.label24.Text = "Traffic";
+            // 
+            // lblTraffic
+            // 
+            this.lblTraffic.AutoSize = true;
+            this.lblTraffic.Location = new System.Drawing.Point(77, 189);
+            this.lblTraffic.Name = "lblTraffic";
+            this.lblTraffic.Size = new System.Drawing.Size(13, 13);
+            this.lblTraffic.TabIndex = 5;
+            this.lblTraffic.Text = "0";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(6, 202);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(51, 13);
+            this.label26.TabIndex = 5;
+            this.label26.Text = "Sim prims";
+            // 
+            // lblSimPrims
+            // 
+            this.lblSimPrims.AutoSize = true;
+            this.lblSimPrims.Location = new System.Drawing.Point(77, 202);
+            this.lblSimPrims.Name = "lblSimPrims";
+            this.lblSimPrims.Size = new System.Drawing.Size(13, 13);
+            this.lblSimPrims.TabIndex = 5;
+            this.lblSimPrims.Text = "0";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(6, 215);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(64, 13);
+            this.label28.TabIndex = 5;
+            this.label28.Text = "Parcel prims";
+            // 
+            // lblParcelPrims
+            // 
+            this.lblParcelPrims.AutoSize = true;
+            this.lblParcelPrims.Location = new System.Drawing.Point(77, 215);
+            this.lblParcelPrims.Name = "lblParcelPrims";
+            this.lblParcelPrims.Size = new System.Drawing.Size(13, 13);
+            this.lblParcelPrims.TabIndex = 5;
+            this.lblParcelPrims.Text = "0";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(6, 228);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(59, 13);
+            this.label30.TabIndex = 5;
+            this.label30.Text = "Auto return";
+            // 
+            // lblAutoReturn
+            // 
+            this.lblAutoReturn.AutoSize = true;
+            this.lblAutoReturn.Location = new System.Drawing.Point(77, 228);
+            this.lblAutoReturn.Name = "lblAutoReturn";
+            this.lblAutoReturn.Size = new System.Drawing.Size(13, 13);
+            this.lblAutoReturn.TabIndex = 5;
+            this.lblAutoReturn.Text = "0";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(6, 241);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(57, 13);
+            this.label25.TabIndex = 5;
+            this.label25.Text = "Area (sqm)";
+            // 
+            // lblArea
+            // 
+            this.lblArea.AutoSize = true;
+            this.lblArea.Location = new System.Drawing.Point(77, 241);
+            this.lblArea.Name = "lblArea";
+            this.lblArea.Size = new System.Drawing.Size(13, 13);
+            this.lblArea.TabIndex = 5;
+            this.lblArea.Text = "0";
+            // 
             // RegionInfo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.pnlParcels);
             this.Controls.Add(this.pnlStats);
             this.Name = "RegionInfo";
-            this.Size = new System.Drawing.Size(611, 390);
+            this.Size = new System.Drawing.Size(629, 390);
             this.pnlStats.ResumeLayout(false);
             this.pnlStats.PerformLayout();
+            this.pnlParcels.ResumeLayout(false);
+            this.pnlParcelList.ResumeLayout(false);
+            this.pnlParcelList.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -502,13 +813,40 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label lblSpareTime;
         private System.Windows.Forms.Label lblScriptTime;
         private System.Windows.Forms.Label lblImagesTime;
         private System.Windows.Forms.Label lblAgentTime;
-        private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button btnRestart;
+        public System.Windows.Forms.Panel pnlParcels;
+        private System.Windows.Forms.Label label13;
+        public System.Windows.Forms.Panel pnlParcelList;
+        public System.Windows.Forms.TextBox txtParcelDescription;
+        public System.Windows.Forms.TextBox txtParcelTitle;
+        private AgentNameTextBox txtOwner;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Panel pnlParcelImage;
+        private System.Windows.Forms.Label lblGroup;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lblDataCenter;
+        private System.Windows.Forms.Label lblCPUClass;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lblSimType;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label lblSpareTime;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label lblAutoReturn;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label lblParcelPrims;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Label lblSimPrims;
+        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label lblTraffic;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label lblArea;
+        private System.Windows.Forms.Label label25;
     }
 }

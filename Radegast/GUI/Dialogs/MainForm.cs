@@ -51,6 +51,7 @@ namespace Radegast
         #region Public members
         public static ImageList ResourceImages = new ImageList();
         public static List<string> ImageNames = new List<string>();
+        public bool PreventParcelUpdate = false;
 
         public TabsConsole TabConsole
         {
@@ -368,7 +369,7 @@ namespace Radegast
 
         void Parcels_ParcelProperties(object sender, ParcelPropertiesEventArgs e)
         {
-            if (e.Result != ParcelResult.Single) return;
+            if (PreventParcelUpdate || e.Result != ParcelResult.Single) return;
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(() => Parcels_ParcelProperties(sender, e)));
@@ -505,6 +506,14 @@ namespace Radegast
 
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
+            // Ctrl-Shift-1 (sim/parcel info)
+            if (e.Modifiers == (Keys.Control | Keys.Shift) && e.KeyCode == Keys.D1)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                DisplayRegionParcelConsole();
+                return;
+            }
+
             // Ctrl-W: Close tab
             if (e.Modifiers == Keys.Control && e.KeyCode == Keys.W)
             {
@@ -1363,27 +1372,28 @@ namespace Radegast
             instance.State.StopAllAnimations();
         }
 
-        private void restartRegionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show(new WindowWrapper(Handle),
-                "Do you want to restart region " + client.Network.CurrentSim.Name + "?",
-                "Confirm restart", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                client.Estate.RestartRegion();
-            }
-        }
-
-        private void regionInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        public void DisplayRegionParcelConsole()
         {
             if (tabsConsole.TabExists("current region info"))
             {
                 tabsConsole.Tabs["current region info"].Select();
+                (tabsConsole.Tabs["current region info"].Control as RegionInfo).UpdateDisplay();
             }
             else
             {
                 tabsConsole.AddTab("current region info", "Region info", new RegionInfo(instance));
                 tabsConsole.Tabs["current region info"].Select();
             }
+        }
+
+        private void regionParcelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DisplayRegionParcelConsole();
+        }
+
+        private void tlblParcel_Click(object sender, EventArgs e)
+        {
+            DisplayRegionParcelConsole();
         }
         #endregion
     }

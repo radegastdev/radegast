@@ -6,13 +6,15 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast
 {
     public partial class RegionInfo : RadegastTabControl
     {
-        Timer refresh;
+        System.Windows.Forms.Timer refresh;
+        UUID parcelGroupID = UUID.Zero;
 
         public RegionInfo()
             : this(null)
@@ -20,40 +22,80 @@ namespace Radegast
         }
 
         public RegionInfo(RadegastInstance instance)
-            :base(instance)
+            : base(instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(RegionInfo_Disposed);
 
-            refresh = new Timer()
+            refresh = new System.Windows.Forms.Timer()
             {
                 Enabled = false,
                 Interval = 1000,
             };
 
+            client.Groups.GroupNamesReply += new EventHandler<GroupNamesEventArgs>(Groups_GroupNamesReply);
+            client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
             refresh.Tick += new EventHandler(refresh_Tick);
             refresh.Enabled = true;
+            UpdateDisplay();
         }
 
         void RegionInfo_Disposed(object sender, EventArgs e)
         {
+            client.Groups.GroupNamesReply -= new EventHandler<GroupNamesEventArgs>(Groups_GroupNamesReply);
+            client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
             refresh.Enabled = false;
             refresh.Dispose();
             refresh = null;
         }
 
-        void refresh_Tick(object sender, EventArgs e)
+        void Parcels_ParcelProperties(object sender, ParcelPropertiesEventArgs e)
         {
-            UpdateDisplay();
+            if (instance.MainForm.PreventParcelUpdate || e.Result != ParcelResult.Single) return;
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                    BeginInvoke(new MethodInvoker(() => Parcels_ParcelProperties(sender, e)));
+                return;
+            }
+
+            UpdateParcelDisplay();
         }
 
-        void UpdateDisplay()
+        void Groups_GroupNamesReply(object sender, GroupNamesEventArgs e)
+        {
+            if (!e.GroupNames.ContainsKey(parcelGroupID)) return;
+
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                {
+                    BeginInvoke(new MethodInvoker(() => Groups_GroupNamesReply(sender, e)));
+                }
+                return;
+            }
+
+            lblGroup.Text = e.GroupNames[parcelGroupID];
+        }
+
+        void refresh_Tick(object sender, EventArgs e)
+        {
+            UpdateSimDisplay();
+        }
+
+        public void UpdateDisplay()
+        {
+            UpdateSimDisplay();
+            UpdateParcelDisplay();
+        }
+
+        void UpdateSimDisplay()
         {
             if (!client.Network.Connected) return;
             if (!Visible) return;
-            
+
             var s = client.Network.CurrentSim.Stats;
-            
+
             lblRegionName.Text = client.Network.CurrentSim.Name;
             lblDilation.Text = string.Format("{0:0.000}", s.Dilation);
             lblFPS.Text = s.FPS.ToString();
@@ -75,6 +117,58 @@ namespace Radegast
             lblImagesTime.Text = string.Format("{0:0.0} ms", s.ImageTime);
             lblScriptTime.Text = string.Format("{0:0.0} ms", s.ScriptTime);
             lblSpareTime.Text = string.Format("{0:0.0} ms", Math.Max(0f, 1000f / 45f - total));
+
+            lblCPUClass.Text = client.Network.CurrentSim.CPUClass.ToString();
+            lblDataCenter.Text = client.Network.CurrentSim.ColoLocation.ToString();
+        }
+
+        void UpdateParcelDisplay()
+        {
+            Parcel p = instance.State.Parcel;
+            txtParcelTitle.Text = p.Name;
+            txtParcelDescription.Text = p.Desc;
+            lblSimType.Text = client.Network.CurrentSim.ProductName.ToString();
+
+            pnlParcelImage.Controls.Clear();
+
+            if (p.SnapshotID != UUID.Zero)
+            {
+                SLImageHandler imgParcel = new SLImageHandler();
+                imgParcel.Dock = DockStyle.Fill;
+                pnlParcelImage.Controls.Add(imgParcel);
+                imgParcel.Init(instance, p.SnapshotID, string.Empty);
+            }
+
+            if (p.IsGroupOwned)
+            {
+                txtOwner.Text = "(Group owned)";
+            }
+            else
+            {
+                txtOwner.AgentID = p.OwnerID;
+            }
+
+            if (p.GroupID != UUID.Zero)
+            {
+                parcelGroupID = p.GroupID;
+                client.Groups.RequestGroupName(p.GroupID);
+            }
+
+            lblTraffic.Text = string.Format("{0:0}", p.Dwell);
+            lblSimPrims.Text = string.Format("{0} / {1}", p.SimWideTotalPrims, p.SimWideMaxPrims);
+            lblParcelPrims.Text = string.Format("{0} / {1}", p.TotalPrims, p.MaxPrims);
+            lblAutoReturn.Text = p.OtherCleanTime.ToString();
+            lblArea.Text = p.Area.ToString();
+        }
+
+        private void btnRestart_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(new WindowWrapper(Handle),
+                "Do you want to restart region " + client.Network.CurrentSim.Name + "?",
+                "Confirm restart", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                client.Estate.RestartRegion();
+            }
         }
     }
 }
