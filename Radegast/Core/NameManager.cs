@@ -39,26 +39,91 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
+    public enum NameMode : int
+    {
+        Standard,
+        DisplayNameAndUserName,
+        OnlyDisplayName
+    }
+
     public class NameManager : IDisposable
     {
+        public event EventHandler<UUIDNameReplyEventArgs> NameUpdated;
+
+        public NameMode Mode
+        {
+            get
+            {
+                if (!UseDisplayNames)
+                    return NameMode.Standard;
+
+                return (NameMode)instance.GlobalSettings["display_name_mode"].AsInteger();
+            }
+
+            set
+            {
+                instance.GlobalSettings["display_name_mode"] = (int)value;
+            }
+        }
+
         RadegastInstance instance;
         GridClient client { get { return instance.Client; } }
+        Timer requestTimer;
+        Timer cacheTimer;
+
+        Queue<UUID> requests = new Queue<UUID>();
+
+        bool UseDisplayNames
+        {
+            get
+            {
+                return client.Avatars.DisplayNamesAvailable();
+            }
+        }
+
+        int MaxNameRequests = 80;
+
+        const int REQUEST_DELAY = 100;
+        const int CACHE_DELAY = 5000;
+
+        Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
 
         public NameManager(RadegastInstance instance)
         {
             this.instance = instance;
+
+            Mode = NameMode.DisplayNameAndUserName;
+
+            requestTimer = new Timer(MakeRequest, null, Timeout.Infinite, Timeout.Infinite);
+            cacheTimer = new Timer(SaveCache, null, Timeout.Infinite, Timeout.Infinite);
+
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterEvents(client);
         }
 
         public void Dispose()
         {
-            DeregisterEvents(client);
+            if (client != null)
+            {
+                DeregisterEvents(client);
+            }
+
+            if (requestTimer != null)
+            {
+                requestTimer.Dispose();
+                requestTimer = null;
+            }
+
+            if (cacheTimer != null)
+            {
+                cacheTimer.Dispose();
+                cacheTimer = null;
+            }
         }
 
         void RegisterEvents(GridClient c)
         {
-             c.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            c.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         void DeregisterEvents(GridClient c)
@@ -74,8 +139,194 @@ namespace Radegast
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
+            Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
+
+            foreach (KeyValuePair<UUID, string> kvp in e.Names)
+            {
+                lock (names)
+                {
+                    if (!names.ContainsKey(kvp.Key))
+                    {
+                        names[kvp.Key] = new AgentDisplayName();
+                        names[kvp.Key].ID = kvp.Key;
+                    }
+
+                    string[] parts = kvp.Value.Split(' ');
+                    if (parts.Length == 2)
+                    {
+                        if (InvalidName(names[kvp.Key].DisplayName))
+                        {
+                            names[kvp.Key].DisplayName = string.Format("{0} {1}", parts[0], parts[1]);
+                        }
+
+                        names[kvp.Key].LegacyFirstName = parts[0];
+                        names[kvp.Key].LegacyLastName = parts[1];
+                        if (names[kvp.Key].LegacyLastName == "Resident")
+                        {
+                            names[kvp.Key].UserName = names[kvp.Key].LegacyFirstName.ToLower();
+                        }
+                        else
+                        {
+                            names[kvp.Key].UserName = string.Format("{0}.{1}", parts[0], parts[1]).ToLower();
+                        }
+
+                        ret.Add(kvp.Key, FormatName(names[kvp.Key]));
+                    }
+                }
+            }
+
+            if (ret.Count > 0 && NameUpdated != null)
+            {
+                try
+                {
+                    NameUpdated(this, new UUIDNameReplyEventArgs(ret));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failure in event handler: " + ex.Message, Helpers.LogLevel.Warning, client, ex);
+                }
+            }
+
+            TriggerCacheSave();
         }
 
+        string FormatName(AgentDisplayName n)
+        {
+            switch (Mode)
+            {
+                case NameMode.OnlyDisplayName:
+                    return n.DisplayName;
+                    break;
 
+                case NameMode.DisplayNameAndUserName:
+                    return string.Format("{0} ({1})", n.DisplayName, n.UserName);
+                    break;
+
+                default:
+                    return n.LegacyFullName;
+            }
+        }
+
+        bool InvalidName(string displayName)
+        {
+            if (string.IsNullOrEmpty(displayName) ||
+                displayName == "???" ||
+                displayName == RadegastInstance.INCOMPLETE_NAME)
+            {
+                return true;
+            }
+            return false;
+        }
+        void ProcessDisplayNames(AgentDisplayName[] names)
+        {
+            Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
+
+            foreach (var name in names)
+            {
+                if (InvalidName(name.DisplayName)) continue;
+
+                ret.Add(name.ID, FormatName(name));
+
+                lock (this.names)
+                {
+                    this.names[name.ID] = name;
+                }
+            }
+
+            if (ret.Count > 0 && NameUpdated != null)
+            {
+                try
+                {
+                    NameUpdated(this, new UUIDNameReplyEventArgs(ret));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failure in event handler: " + ex.Message, Helpers.LogLevel.Warning, client, ex);
+                }
+            }
+
+            TriggerCacheSave();
+        }
+
+        void MakeRequest(object sync)
+        {
+            List<UUID> req = new List<UUID>();
+            lock (requests)
+            {
+                while (requests.Count > 0)
+                    req.Add(requests.Dequeue());
+            }
+            if (req.Count > 0)
+            {
+                if (!UseDisplayNames)
+                {
+                    client.Avatars.RequestAvatarNames(req);
+                }
+                else
+                {
+                    client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
+                        {
+                            if (success)
+                            {
+                                ProcessDisplayNames(names);
+                            }
+                            else
+                            {
+                                Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
+                            }
+                        }
+                    );
+                }
+            }
+        }
+
+        void SaveCache(object sync)
+        {
+        }
+
+        void TriggerNameRequest()
+        {
+            requestTimer.Change(REQUEST_DELAY, Timeout.Infinite);
+        }
+
+        void TriggerCacheSave()
+        {
+            cacheTimer.Change(CACHE_DELAY, Timeout.Infinite);
+        }
+
+        void QueueNameRequest(UUID agentID)
+        {
+            lock (requests)
+            {
+                if (!requests.Contains(agentID))
+                {
+                    requests.Enqueue(agentID);
+
+                    if (requests.Count >= MaxNameRequests && UseDisplayNames)
+                    {
+                        requestTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                        MakeRequest(this);
+                    }
+                    else
+                    {
+                        TriggerNameRequest();
+                    }
+                }
+            }
+        }
+
+        public string Get(UUID agentID)
+        {
+            lock (names)
+            {
+                if (names.ContainsKey(agentID))
+                {
+                    return FormatName(names[agentID]);
+                }
+            }
+
+            QueueNameRequest(agentID);
+            return RadegastInstance.INCOMPLETE_NAME;
+        }
     }
 }
