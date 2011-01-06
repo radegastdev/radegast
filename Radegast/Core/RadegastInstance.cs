@@ -76,6 +76,12 @@ namespace Radegast
         }
 
         /// <summary>
+        /// Manages retrieving avatar names
+        /// </summary>
+        public NameManager Names { get { return names; } }
+        private NameManager names;
+
+        /// <summary>
         /// When was Radegast started (UTC)
         /// </summary>
         public readonly DateTime StartupTimeUTC;
@@ -281,6 +287,8 @@ namespace Radegast
             gridManager = new GridManager(this);
             gridManager.LoadGrids();
 
+            names = new NameManager(this);
+
             mainForm = new frmMain(this);
             mainForm.InitializeControls();
 
@@ -387,6 +395,12 @@ namespace Radegast
 
         public void CleanUp()
         {
+            if (names != null)
+            {
+                names.Dispose();
+                names = null;
+            }
+
             if (gridManager != null)
             {
                 gridManager.Dispose();
