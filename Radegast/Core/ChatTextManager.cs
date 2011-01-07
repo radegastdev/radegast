@@ -232,7 +232,14 @@ namespace Radegast
             // if (e.SourceType == ChatSourceType.Object) {
             //    sb.Append(e.Position + " ");
             // }
-            sb.Append(e.FromName);
+            if (e.SourceType == ChatSourceType.Agent)
+            {
+                sb.Append(instance.Names.Get(e.SourceID, e.FromName));
+            }
+            else
+            {
+                sb.Append(e.FromName);
+            }
 
             bool isEmote = e.Message.StartsWith("/me ");
 

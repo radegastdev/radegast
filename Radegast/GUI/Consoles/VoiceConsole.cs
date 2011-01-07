@@ -57,7 +57,7 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private TabsConsole tabConsole;
         private OSDMap config;
-        public VoiceGateway gateway;
+        public VoiceGateway gateway = null;
         public VoiceSession session;
         private VoiceParticipant selected;
 
@@ -70,8 +70,6 @@ namespace Radegast
 
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-
-            gateway = new VoiceGateway(this.instance.Client);
 
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
@@ -91,6 +89,11 @@ namespace Radegast
 
         private void Start()
         {
+            if (gateway == null)
+            {
+                gateway = new VoiceGateway(this.instance.Client);
+            }
+
             // Initialize progress bar
             progressBar1.Maximum = (int)VoiceGateway.ConnectionState.SessionRunning;
             SetProgress(0);
@@ -386,8 +389,11 @@ namespace Radegast
             try
             {
                 netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
-                UnregisterClientEvents();
-                gateway.Stop();
+                if (gateway != null)
+                {
+                    UnregisterClientEvents();
+                    gateway.Stop();
+                }
             }
             catch { }
         }

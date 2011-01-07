@@ -205,12 +205,12 @@ namespace Radegast
                         existing.Add(avi.Key);
                         if (!lvwObjects.Items.ContainsKey(avi.Key.ToString()))
                         {
-                            string name = instance.getAvatarName(avi.Key);
+                            string name = instance.Names.Get(avi.Key);
                             ListViewItem item = lvwObjects.Items.Add(avi.Key.ToString(), name, string.Empty);
                             if (avi.Key == client.Self.AgentID)
                             {
                                 // Stops our name saying "Loading..."
-                                item.Text = client.Self.Name;
+                                item.Text = instance.Names.Get(avi.Key, client.Self.Name);
                                 item.Font = new Font(item.Font, FontStyle.Bold);
                             }
                             item.Tag = avi.Key;
@@ -231,6 +231,8 @@ namespace Radegast
 
                         if (key == client.Self.AgentID)
                         {
+                            if (instance.Names.Mode != NameMode.Standard)
+                                item.Text = instance.Names.Get(key);
                             continue;
                         }
 
@@ -276,11 +278,11 @@ namespace Radegast
 
                         if (pos.Z < 0.1)
                         {
-                            item.Text = instance.getAvatarName(key) + " (?m)";
+                            item.Text = instance.Names.Get(key) + " (?m)";
                         }
                         else
                         {
-                            item.Text = instance.getAvatarName(key) + " (" + d + "m)";
+                            item.Text = instance.Names.Get(key) + " (" + d + "m)";
                         }
 
                         if (foundAvi != null)
@@ -544,7 +546,7 @@ namespace Radegast
         {
             if (lvwObjects.SelectedItems.Count == 0) return;
             UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
-            string name = instance.getAvatarName(av);
+            string name = instance.Names.Get(av);
 
             if (tabConsole.TabExists((client.Self.AgentID ^ av).ToString()))
             {
@@ -632,7 +634,7 @@ namespace Radegast
         {
             if (lvwObjects.SelectedItems.Count == 0) return;
             UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
-            string name = instance.getAvatarName(av);
+            string name = instance.Names.Get(av);
 
             instance.MainForm.ShowAgentProfile(name, av);
         }
@@ -746,13 +748,13 @@ namespace Radegast
             {
                 InventoryItem item = node.Tag as InventoryItem;
                 client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, (UUID)litem.Tag, true);
-                instance.TabConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + instance.getAvatarName((UUID)litem.Tag) + ".");
+                instance.TabConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + instance.Names.Get((UUID)litem.Tag) + ".");
             }
             else if (node.Tag is InventoryFolder)
             {
                 InventoryFolder folder = node.Tag as InventoryFolder;
                 client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, (UUID)litem.Tag, true);
-                instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + instance.getAvatarName((UUID)litem.Tag) + ".");
+                instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + instance.Names.Get((UUID)litem.Tag) + ".");
             }
         }
 
@@ -793,7 +795,7 @@ namespace Radegast
         private void ctxPay_Click(object sender, EventArgs e)
         {
             if (lvwObjects.SelectedItems.Count != 1) return;
-            (new frmPay(instance, (UUID)lvwObjects.SelectedItems[0].Tag, instance.getAvatarName((UUID)lvwObjects.SelectedItems[0].Tag), false)).ShowDialog();
+            (new frmPay(instance, (UUID)lvwObjects.SelectedItems[0].Tag, instance.Names.Get((UUID)lvwObjects.SelectedItems[0].Tag), false)).ShowDialog();
         }
 
         private void ChatConsole_VisibleChanged(object sender, EventArgs e)
@@ -818,7 +820,7 @@ namespace Radegast
                 try
                 {
                     UUID agentID = new UUID(item.Tag.ToString());
-                    instance.MainForm.ShowAgentProfile(instance.getAvatarName(agentID), agentID);
+                    instance.MainForm.ShowAgentProfile(instance.Names.Get(agentID), agentID);
                 }
                 catch (Exception) { }
             }
@@ -845,7 +847,7 @@ namespace Radegast
         {
             if (lvwObjects.SelectedItems.Count != 1) return;
             UUID person = (UUID)lvwObjects.SelectedItems[0].Tag;
-            string pname = instance.getAvatarName(person);
+            string pname = instance.Names.Get(person);
             Simulator sim = null;
             Vector3 pos;
 
@@ -901,10 +903,10 @@ namespace Radegast
             System.Windows.Forms.ListViewItem item1 = (System.Windows.Forms.ListViewItem)x;
             System.Windows.Forms.ListViewItem item2 = (System.Windows.Forms.ListViewItem)y;
 
-            if (item1.Text == instance.Client.Self.Name)
+            if ((item1.Tag is UUID) && ((UUID)item1.Tag == instance.Client.Self.AgentID))
                 return -1;
 
-            if (item2.Text == instance.Client.Self.Name)
+            if ((item2.Tag is UUID) && ((UUID)item2.Tag == instance.Client.Self.AgentID))
                 return 1;
 
             int distance1 = int.MaxValue, distance2 = int.MaxValue;

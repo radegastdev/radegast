@@ -131,6 +131,8 @@ namespace Radegast
             c.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
+        DateTime UUIDNameOnly = new DateTime(1970, 9, 4, 10, 0, 0, DateTimeKind.Utc);
+
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
         {
             DeregisterEvents(e.OldClient);
@@ -149,6 +151,8 @@ namespace Radegast
                     {
                         names[kvp.Key] = new AgentDisplayName();
                         names[kvp.Key].ID = kvp.Key;
+                        names[kvp.Key].NextUpdate = UUIDNameOnly;
+                        names[kvp.Key].IsDefaultDisplayName = true;
                     }
 
                     string[] parts = kvp.Value.Split(' ');
@@ -196,11 +200,12 @@ namespace Radegast
             {
                 case NameMode.OnlyDisplayName:
                     return n.DisplayName;
-                    break;
 
                 case NameMode.DisplayNameAndUserName:
-                    return string.Format("{0} ({1})", n.DisplayName, n.UserName);
-                    break;
+                    if (n.IsDefaultDisplayName)
+                        return n.DisplayName;
+                    else
+                        return string.Format("{0} ({1})", n.DisplayName, n.UserName);
 
                 default:
                     return n.LegacyFullName;
@@ -217,6 +222,7 @@ namespace Radegast
             }
             return false;
         }
+
         void ProcessDisplayNames(AgentDisplayName[] names)
         {
             Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
@@ -256,6 +262,8 @@ namespace Radegast
                 while (requests.Count > 0)
                     req.Add(requests.Dequeue());
             }
+
+
             if (req.Count > 0)
             {
                 if (!UseDisplayNames)
@@ -321,12 +329,28 @@ namespace Radegast
             {
                 if (names.ContainsKey(agentID))
                 {
+                    if (Mode != NameMode.Standard && names[agentID].NextUpdate == UUIDNameOnly)
+                    {
+                        QueueNameRequest(agentID);
+                    }
                     return FormatName(names[agentID]);
                 }
             }
 
             QueueNameRequest(agentID);
             return RadegastInstance.INCOMPLETE_NAME;
+        }
+
+        public string Get(UUID agentID, string defaultValue)
+        {
+            if (Mode == NameMode.Standard)
+                return defaultValue;
+
+            string name = Get(agentID);
+            if (name == RadegastInstance.INCOMPLETE_NAME)
+                return defaultValue;
+
+            return name;
         }
     }
 }
