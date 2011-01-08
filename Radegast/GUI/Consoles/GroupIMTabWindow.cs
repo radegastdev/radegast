@@ -132,6 +132,8 @@ namespace Radegast
         {
             if (e.Key == "chat_font_size")
                 UpdateFontSize();
+            else if (e.Key == "display_name_mode")
+                UpdateParticipantList();
         }
 
         void Netcom_Disconnected(object sender, DisconnectedEventArgs e)

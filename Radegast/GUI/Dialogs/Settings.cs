@@ -41,7 +41,7 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
-    public enum AutoResponseType: int
+    public enum AutoResponseType : int
     {
         WhenBusy = 0,
         WhenFromNonFriend = 1,
@@ -85,7 +85,7 @@ namespace Radegast
 
             if (!s.ContainsKey("script_syntax_highlight")) s["script_syntax_highlight"] = OSD.FromBoolean(true);
 
-
+            if (!s.ContainsKey("display_name_mode")) s["display_name_mode"] = (int)NameMode.Standard;
         }
 
         public frmSettings(RadegastInstance instance)
@@ -175,7 +175,13 @@ namespace Radegast
                 s["script_syntax_highlight"] = OSD.FromBoolean(cbSyntaxHighlight.Checked);
             };
 
-
+            switch ((NameMode)s["display_name_mode"].AsInteger())
+            {
+                case NameMode.Standard: rbDNOff.Checked = true; break;
+                case NameMode.Smart: rbDNSmart.Checked = true; break;
+                case NameMode.DisplayNameAndUserName: rbDNDandUsernme.Checked = true; break;
+                case NameMode.OnlyDisplayName: rbDNOnlyDN.Checked = true; break;
+            }
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)
@@ -261,6 +267,30 @@ namespace Radegast
         private void rbAutoAlways_CheckedChanged(object sender, EventArgs e)
         {
             s["auto_response_type"] = (int)AutoResponseType.Always;
+        }
+
+        private void rbDNOff_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbDNOff.Checked)
+                s["display_name_mode"] = (int)NameMode.Standard;
+        }
+
+        private void rbDNSmart_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbDNSmart.Checked)
+                s["display_name_mode"] = (int)NameMode.Smart;
+        }
+
+        private void rbDNDandUsernme_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbDNDandUsernme.Checked)
+                s["display_name_mode"] = (int)NameMode.DisplayNameAndUserName;
+        }
+
+        private void rbDNOnlyDN_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbDNOnlyDN.Checked)
+                s["display_name_mode"] = (int)NameMode.OnlyDisplayName;
         }
     }
 }

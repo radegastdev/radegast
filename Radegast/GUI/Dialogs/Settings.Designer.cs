@@ -61,6 +61,12 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.gbDisplayNames = new System.Windows.Forms.GroupBox();
+            this.rbDNOnlyDN = new System.Windows.Forms.RadioButton();
+            this.rbDNDandUsernme = new System.Windows.Forms.RadioButton();
+            this.rbDNSmart = new System.Windows.Forms.RadioButton();
+            this.rbDNOff = new System.Windows.Forms.RadioButton();
+            this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cbFontSize = new System.Windows.Forms.ComboBox();
             this.cbNoTyping = new System.Windows.Forms.CheckBox();
@@ -81,9 +87,9 @@ namespace Radegast
             this.rbAutoAlways = new System.Windows.Forms.RadioButton();
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
-            this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
+            this.gbDisplayNames.SuspendLayout();
             this.tbpAutoResponse.SuspendLayout();
             this.gbAutoResponse.SuspendLayout();
             this.SuspendLayout();
@@ -102,6 +108,7 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.gbDisplayNames);
             this.tbpGeneral.Controls.Add(this.cbSyntaxHighlight);
             this.tbpGeneral.Controls.Add(this.label1);
             this.tbpGeneral.Controls.Add(this.cbFontSize);
@@ -124,6 +131,77 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // gbDisplayNames
+            // 
+            this.gbDisplayNames.Controls.Add(this.rbDNOnlyDN);
+            this.gbDisplayNames.Controls.Add(this.rbDNDandUsernme);
+            this.gbDisplayNames.Controls.Add(this.rbDNSmart);
+            this.gbDisplayNames.Controls.Add(this.rbDNOff);
+            this.gbDisplayNames.Location = new System.Drawing.Point(270, 75);
+            this.gbDisplayNames.Name = "gbDisplayNames";
+            this.gbDisplayNames.Size = new System.Drawing.Size(200, 109);
+            this.gbDisplayNames.TabIndex = 15;
+            this.gbDisplayNames.TabStop = false;
+            this.gbDisplayNames.Text = "Display names";
+            // 
+            // rbDNOnlyDN
+            // 
+            this.rbDNOnlyDN.AutoSize = true;
+            this.rbDNOnlyDN.Location = new System.Drawing.Point(6, 88);
+            this.rbDNOnlyDN.Name = "rbDNOnlyDN";
+            this.rbDNOnlyDN.Size = new System.Drawing.Size(110, 17);
+            this.rbDNOnlyDN.TabIndex = 3;
+            this.rbDNOnlyDN.TabStop = true;
+            this.rbDNOnlyDN.Text = "Only display name";
+            this.rbDNOnlyDN.UseVisualStyleBackColor = true;
+            this.rbDNOnlyDN.CheckedChanged += new System.EventHandler(this.rbDNOnlyDN_CheckedChanged);
+            // 
+            // rbDNDandUsernme
+            // 
+            this.rbDNDandUsernme.AutoSize = true;
+            this.rbDNDandUsernme.Location = new System.Drawing.Point(6, 65);
+            this.rbDNDandUsernme.Name = "rbDNDandUsernme";
+            this.rbDNDandUsernme.Size = new System.Drawing.Size(143, 17);
+            this.rbDNDandUsernme.TabIndex = 2;
+            this.rbDNDandUsernme.TabStop = true;
+            this.rbDNDandUsernme.Text = "Display name (username)";
+            this.rbDNDandUsernme.UseVisualStyleBackColor = true;
+            this.rbDNDandUsernme.CheckedChanged += new System.EventHandler(this.rbDNDandUsernme_CheckedChanged);
+            // 
+            // rbDNSmart
+            // 
+            this.rbDNSmart.AutoSize = true;
+            this.rbDNSmart.Location = new System.Drawing.Point(6, 42);
+            this.rbDNSmart.Name = "rbDNSmart";
+            this.rbDNSmart.Size = new System.Drawing.Size(52, 17);
+            this.rbDNSmart.TabIndex = 1;
+            this.rbDNSmart.TabStop = true;
+            this.rbDNSmart.Text = "Smart";
+            this.rbDNSmart.UseVisualStyleBackColor = true;
+            this.rbDNSmart.CheckedChanged += new System.EventHandler(this.rbDNSmart_CheckedChanged);
+            // 
+            // rbDNOff
+            // 
+            this.rbDNOff.AutoSize = true;
+            this.rbDNOff.Location = new System.Drawing.Point(6, 19);
+            this.rbDNOff.Name = "rbDNOff";
+            this.rbDNOff.Size = new System.Drawing.Size(39, 17);
+            this.rbDNOff.TabIndex = 0;
+            this.rbDNOff.TabStop = true;
+            this.rbDNOff.Text = "Off";
+            this.rbDNOff.UseVisualStyleBackColor = true;
+            this.rbDNOff.CheckedChanged += new System.EventHandler(this.rbDNOff_CheckedChanged);
+            // 
+            // cbSyntaxHighlight
+            // 
+            this.cbSyntaxHighlight.AutoSize = true;
+            this.cbSyntaxHighlight.Location = new System.Drawing.Point(270, 52);
+            this.cbSyntaxHighlight.Name = "cbSyntaxHighlight";
+            this.cbSyntaxHighlight.Size = new System.Drawing.Size(134, 17);
+            this.cbSyntaxHighlight.TabIndex = 14;
+            this.cbSyntaxHighlight.Text = "LSL syntax highlighting";
+            this.cbSyntaxHighlight.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -292,7 +370,7 @@ namespace Radegast
             this.tbpAutoResponse.Location = new System.Drawing.Point(4, 22);
             this.tbpAutoResponse.Name = "tbpAutoResponse";
             this.tbpAutoResponse.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpAutoResponse.Size = new System.Drawing.Size(488, 320);
+            this.tbpAutoResponse.Size = new System.Drawing.Size(488, 277);
             this.tbpAutoResponse.TabIndex = 2;
             this.tbpAutoResponse.Text = "Auto Response";
             this.tbpAutoResponse.UseVisualStyleBackColor = true;
@@ -353,16 +431,6 @@ namespace Radegast
             this.rbAutobusy.UseVisualStyleBackColor = true;
             this.rbAutobusy.CheckedChanged += new System.EventHandler(this.rbAutobusy_CheckedChanged);
             // 
-            // cbSyntaxHighlight
-            // 
-            this.cbSyntaxHighlight.AutoSize = true;
-            this.cbSyntaxHighlight.Location = new System.Drawing.Point(270, 52);
-            this.cbSyntaxHighlight.Name = "cbSyntaxHighlight";
-            this.cbSyntaxHighlight.Size = new System.Drawing.Size(134, 17);
-            this.cbSyntaxHighlight.TabIndex = 14;
-            this.cbSyntaxHighlight.Text = "LSL syntax highlighting";
-            this.cbSyntaxHighlight.UseVisualStyleBackColor = true;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -375,6 +443,8 @@ namespace Radegast
             this.tabControl1.ResumeLayout(false);
             this.tbpGeneral.ResumeLayout(false);
             this.tbpGeneral.PerformLayout();
+            this.gbDisplayNames.ResumeLayout(false);
+            this.gbDisplayNames.PerformLayout();
             this.tbpAutoResponse.ResumeLayout(false);
             this.tbpAutoResponse.PerformLayout();
             this.gbAutoResponse.ResumeLayout(false);
@@ -408,6 +478,11 @@ namespace Radegast
         private System.Windows.Forms.RadioButton rbAutoNonFriend;
         private System.Windows.Forms.RadioButton rbAutobusy;
         private System.Windows.Forms.CheckBox cbSyntaxHighlight;
+        private System.Windows.Forms.GroupBox gbDisplayNames;
+        private System.Windows.Forms.RadioButton rbDNOnlyDN;
+        private System.Windows.Forms.RadioButton rbDNDandUsernme;
+        private System.Windows.Forms.RadioButton rbDNSmart;
+        private System.Windows.Forms.RadioButton rbDNOff;
 
 
     }
