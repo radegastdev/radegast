@@ -154,7 +154,7 @@ namespace Radegast
                 }
             }
 
-            PrintIM(DateTime.Now, e.IM.FromAgentName, msg);
+            PrintIM(DateTime.Now, instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), msg);
 
             if (Type == IMTextManagerType.Agent && e.IM.FromAgentID != UUID.Zero)
             {

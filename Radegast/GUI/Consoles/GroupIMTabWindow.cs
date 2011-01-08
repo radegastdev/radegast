@@ -79,7 +79,7 @@ namespace Radegast
             client.Self.GroupChatJoined += new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
             client.Self.ChatSessionMemberAdded += new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
             client.Self.ChatSessionMemberLeft += new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
-            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_Connected);
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
@@ -91,7 +91,7 @@ namespace Radegast
             client.Self.GroupChatJoined -= new EventHandler<GroupChatJoinedEventArgs>(Self_GroupChatJoined);
             client.Self.ChatSessionMemberAdded -= new EventHandler<ChatSessionMemberAddedEventArgs>(Self_ChatSessionMemberAdded);
             client.Self.ChatSessionMemberLeft -= new EventHandler<ChatSessionMemberLeftEventArgs>(Self_ChatSessionMemberLeft);
-            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             instance.Netcom.ClientConnected -= new EventHandler<EventArgs>(Netcom_Connected);
             instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_Disconnected);
             instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
@@ -145,12 +145,12 @@ namespace Radegast
             RefreshControls();
         }
 
-        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
+        void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
         {
             if (InvokeRequired)
             {
                 if (!instance.MonoRuntime || IsHandleCreated)
-                    BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
+                    BeginInvoke(new MethodInvoker(() => Names_NameUpdated(sender, e)));
                 return;
             }
 
@@ -199,7 +199,6 @@ namespace Radegast
                     Participants.Items.Clear();
 
                     List<ChatSessionMember> participants;
-                    List<UUID> nameLookup = new List<UUID>();
 
                     if (client.Self.GroupChatSessions.TryGetValue(session, out participants))
                     {
@@ -209,22 +208,11 @@ namespace Radegast
                             ChatSessionMember participant = members[i];
                             ListViewItem item = new ListViewItem();
                             item.Name = participant.AvatarKey.ToString();
-                            if (instance.nameCache.ContainsKey(participant.AvatarKey))
-                            {
-                                item.Text = instance.nameCache[participant.AvatarKey];
-                            }
-                            else
-                            {
-                                item.Text = RadegastInstance.INCOMPLETE_NAME;
-                                nameLookup.Add(participant.AvatarKey);
-                            }
+                            item.Text = instance.Names.Get(participant.AvatarKey); 
                             if (participant.IsModerator)
                                 item.Font = new Font(item.Font, FontStyle.Bold);
                             Participants.Items.Add(item);
                         }
-
-                        if (nameLookup.Count > 0)
-                            client.Avatars.RequestAvatarNames(nameLookup);
                     }
 
                     Participants.Sort();

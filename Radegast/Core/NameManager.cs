@@ -39,13 +39,24 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
+    /// <summary>
+    /// Enum representing different modes of handling display names
+    /// </summary>
     public enum NameMode : int
     {
+        /// <summary> No display names </summary>
         Standard,
+        /// <summary> Display name followed by (username) if display name is not default  </summary>
+        Smart,
+        /// <summary> Display name followed by (username) </summary>
+        OnlyDisplayName,
+        /// <summary> Only display </summary>
         DisplayNameAndUserName,
-        OnlyDisplayName
     }
 
+    /// <summary>
+    /// Manager for looking up avatar names and their caching 
+    /// </summary>
     public class NameManager : IDisposable
     {
         public event EventHandler<UUIDNameReplyEventArgs> NameUpdated;
@@ -92,7 +103,7 @@ namespace Radegast
         {
             this.instance = instance;
 
-            Mode = NameMode.DisplayNameAndUserName;
+            Mode = NameMode.Smart;
 
             requestTimer = new Timer(MakeRequest, null, Timeout.Infinite, Timeout.Infinite);
             cacheTimer = new Timer(SaveCache, null, Timeout.Infinite, Timeout.Infinite);
@@ -201,11 +212,14 @@ namespace Radegast
                 case NameMode.OnlyDisplayName:
                     return n.DisplayName;
 
-                case NameMode.DisplayNameAndUserName:
+                case NameMode.Smart:
                     if (n.IsDefaultDisplayName)
                         return n.DisplayName;
                     else
                         return string.Format("{0} ({1})", n.DisplayName, n.UserName);
+
+                case NameMode.DisplayNameAndUserName:
+                    return string.Format("{0} ({1})", n.DisplayName, n.UserName);
 
                 default:
                     return n.LegacyFullName;
