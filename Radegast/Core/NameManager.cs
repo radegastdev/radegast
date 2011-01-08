@@ -339,6 +339,8 @@ namespace Radegast
 
         public string Get(UUID agentID)
         {
+            if (agentID == UUID.Zero) return "(???) (???)";
+
             lock (names)
             {
                 if (names.ContainsKey(agentID))

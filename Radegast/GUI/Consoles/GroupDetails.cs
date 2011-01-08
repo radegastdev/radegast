@@ -95,11 +95,11 @@ namespace Radegast
             client.Groups.GroupMemberEjected += new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
             client.Groups.GroupRoleMembersReply += new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
-            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             RefreshControlsAvailability();
             RefreshGroupInfo();
         }
+
 
         void GroupDetails_Disposed(object sender, EventArgs e)
         {
@@ -114,7 +114,7 @@ namespace Radegast
             client.Groups.GroupRoleMembersReply -= new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Groups.GroupMemberEjected -= new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
         }
 
         #region Network callbacks
@@ -276,7 +276,7 @@ namespace Radegast
 
 
             tbxCharter.Text = group.Charter;
-            lblFounded.Text = "Founded by: " + instance.getAvatarName(group.FounderID);
+            lblFounded.Text = "Founded by: " + instance.Names.Get(group.FounderID);
             cbxShowInSearch.Checked = group.ShowInList;
             cbxOpenEnrollment.Checked = group.OpenEnrollment;
 
@@ -318,11 +318,11 @@ namespace Radegast
             RefreshControlsAvailability();
         }
 
-        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
+        void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
         {
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Avatars_UUIDNameReply(sender, e)));
+                BeginInvoke(new MethodInvoker(() => Names_NameUpdated(sender, e)));
                 return;
             }
 
@@ -396,22 +396,13 @@ namespace Radegast
             lvwGeneralMembers.BeginUpdate();
             List<ListViewItem> newItems = new List<ListViewItem>();
             List<ListViewItem> memberDetails = new List<ListViewItem>();
-            List<UUID> unknownNames = new List<UUID>();
 
             foreach (GroupMember baseMember in e.Members.Values)
             {
                 EnhancedGroupMember member = new EnhancedGroupMember(baseMember);
                 string name;
 
-                if (instance.haveAvatarName(member.Base.ID))
-                {
-                    name = instance.getAvatarName(member.Base.ID);
-                }
-                else
-                {
-                    name = "Loading...";
-                    unknownNames.Add(member.Base.ID);
-                }
+                name = instance.Names.Get(member.Base.ID);
 
                 {
                     ListViewItem item = new ListViewItem(name);
@@ -440,11 +431,6 @@ namespace Radegast
                 }
 
 
-            }
-
-            if (unknownNames.Count > 0)
-            {
-                instance.getAvatarNames(unknownNames);
             }
 
             lvwGeneralMembers.Items.AddRange(newItems.ToArray());
@@ -971,10 +957,10 @@ namespace Radegast
                 var mmb = roleMembers.FindAll((KeyValuePair<UUID, UUID> kvp) => { return kvp.Key == role.ID; });
                 foreach (var m in mmb)
                 {
-                    lvwAssignedMembers.Items.Add(instance.getAvatarName(m.Value));
+                    lvwAssignedMembers.Items.Add(instance.Names.Get(m.Value));
                 }
             }
-            
+
             lvwRoleAbilitis.Tag = role;
 
             foreach (GroupPowers p in Enum.GetValues(typeof(GroupPowers)))

@@ -138,8 +138,6 @@ namespace Radegast
         /// </summary>
         public Settings ClientSettings { get { return clientSettings; } }
 
-        public Dictionary<UUID, string> nameCache = new Dictionary<UUID, string>();
-
         public const string INCOMPLETE_NAME = "Loading...";
 
         public readonly bool advancedDebugging = false;
@@ -329,7 +327,6 @@ namespace Radegast
             client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupDropped += new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             if (netcom != null)
                 netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
         }
@@ -340,7 +337,6 @@ namespace Radegast
             client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             if (netcom != null)
                 netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
         }
@@ -482,20 +478,6 @@ namespace Radegast
         }
 
 
-        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
-        {
-            lock (nameCache)
-            {
-                foreach (KeyValuePair<UUID, string> av in e.Names)
-                {
-                    if (!nameCache.ContainsKey(av.Key))
-                    {
-                        nameCache.Add(av.Key, av.Value);
-                    }
-                }
-            }
-        }
-
         /// <summary>
         /// Fetches avatar name
         /// </summary>
@@ -505,7 +487,7 @@ namespace Radegast
         public string getAvatarName(UUID key, bool blocking)
         {
             if (!blocking)
-                return getAvatarName(key);
+                return Names.Get(key);
 
             string name = null;
 
@@ -521,18 +503,17 @@ namespace Radegast
                         }
                     };
 
-                client.Avatars.UUIDNameReply += handler;
-                name = getAvatarName(key);
+                Names.NameUpdated += handler;
+                name = Names.Get(key);
 
                 if (name == INCOMPLETE_NAME)
                 {
                     gotName.WaitOne(10 * 1000, false);
                 }
 
-                client.Avatars.UUIDNameReply -= handler;
+                Names.NameUpdated -= handler;
             }
             return name;
-
         }
 
         /// <summary>
@@ -542,52 +523,7 @@ namespace Radegast
         /// <returns>Avatar name</returns>
         public string getAvatarName(UUID key)
         {
-            lock (nameCache)
-            {
-                if (key == UUID.Zero)
-                {
-                    return "(???) (???)";
-                }
-                if (nameCache.ContainsKey(key))
-                {
-                    return nameCache[key];
-                }
-                else
-                {
-                    client.Avatars.RequestAvatarName(key);
-                    return INCOMPLETE_NAME;
-                }
-            }
-        }
-
-        public void getAvatarNames(List<UUID> keys)
-        {
-            lock (nameCache)
-            {
-                List<UUID> newNames = new List<UUID>();
-                foreach (UUID key in keys)
-                {
-                    if (!nameCache.ContainsKey(key))
-                    {
-                        newNames.Add(key);
-                    }
-                }
-                if (newNames.Count > 0)
-                {
-                    client.Avatars.RequestAvatarNames(newNames);
-                }
-            }
-        }
-
-        public bool haveAvatarName(UUID key)
-        {
-            lock (nameCache)
-            {
-                if (nameCache.ContainsKey(key))
-                    return true;
-                else
-                    return false;
-            }
+            return Names.Get(key);
         }
 
         void Groups_GroupsChanged(object sender, EventArgs e)
