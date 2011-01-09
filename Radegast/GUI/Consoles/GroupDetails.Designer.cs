@@ -180,7 +180,7 @@ namespace Radegast
             this.tcGroupDetails.Location = new System.Drawing.Point(0, 0);
             this.tcGroupDetails.Name = "tcGroupDetails";
             this.tcGroupDetails.SelectedIndex = 0;
-            this.tcGroupDetails.Size = new System.Drawing.Size(408, 500);
+            this.tcGroupDetails.Size = new System.Drawing.Size(408, 465);
             this.tcGroupDetails.TabIndex = 0;
             this.tcGroupDetails.SelectedIndexChanged += new System.EventHandler(this.tcGroupDetails_SelectedIndexChanged);
             // 
@@ -200,7 +200,7 @@ namespace Radegast
             this.tpGeneral.Location = new System.Drawing.Point(4, 22);
             this.tpGeneral.Name = "tpGeneral";
             this.tpGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tpGeneral.Size = new System.Drawing.Size(400, 474);
+            this.tpGeneral.Size = new System.Drawing.Size(400, 439);
             this.tpGeneral.TabIndex = 0;
             this.tpGeneral.Text = "General";
             this.tpGeneral.UseVisualStyleBackColor = true;
@@ -233,7 +233,7 @@ namespace Radegast
             this.lvwGeneralMembers.MultiSelect = false;
             this.lvwGeneralMembers.Name = "lvwGeneralMembers";
             this.lvwGeneralMembers.ShowGroups = false;
-            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 115);
+            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 80);
             this.lvwGeneralMembers.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvwGeneralMembers.TabIndex = 8;
             this.lvwGeneralMembers.UseCompatibleStateImageBehavior = false;
@@ -299,7 +299,7 @@ namespace Radegast
             this.gbPreferences.Controls.Add(this.cbxOpenEnrollment);
             this.gbPreferences.Controls.Add(this.cbxShowInSearch);
             this.gbPreferences.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbPreferences.Location = new System.Drawing.Point(3, 369);
+            this.gbPreferences.Location = new System.Drawing.Point(3, 334);
             this.gbPreferences.Name = "gbPreferences";
             this.gbPreferences.Size = new System.Drawing.Size(394, 102);
             this.gbPreferences.TabIndex = 4;
@@ -446,7 +446,7 @@ namespace Radegast
             this.tpMembersRoles.Location = new System.Drawing.Point(4, 22);
             this.tpMembersRoles.Name = "tpMembersRoles";
             this.tpMembersRoles.Padding = new System.Windows.Forms.Padding(3);
-            this.tpMembersRoles.Size = new System.Drawing.Size(400, 474);
+            this.tpMembersRoles.Size = new System.Drawing.Size(400, 433);
             this.tpMembersRoles.TabIndex = 3;
             this.tpMembersRoles.Text = "Members && Roles";
             this.tpMembersRoles.UseVisualStyleBackColor = true;
@@ -461,7 +461,7 @@ namespace Radegast
             this.tcMembersRoles.Location = new System.Drawing.Point(9, 23);
             this.tcMembersRoles.Name = "tcMembersRoles";
             this.tcMembersRoles.SelectedIndex = 0;
-            this.tcMembersRoles.Size = new System.Drawing.Size(385, 445);
+            this.tcMembersRoles.Size = new System.Drawing.Size(385, 404);
             this.tcMembersRoles.TabIndex = 2;
             this.tcMembersRoles.SelectedIndexChanged += new System.EventHandler(this.tcMembersRoles_SelectedIndexChanged);
             // 
@@ -472,7 +472,7 @@ namespace Radegast
             this.tpMembers.Location = new System.Drawing.Point(4, 22);
             this.tpMembers.Name = "tpMembers";
             this.tpMembers.Padding = new System.Windows.Forms.Padding(3);
-            this.tpMembers.Size = new System.Drawing.Size(377, 419);
+            this.tpMembers.Size = new System.Drawing.Size(377, 378);
             this.tpMembers.TabIndex = 0;
             this.tpMembers.Text = "Members";
             this.tpMembers.UseVisualStyleBackColor = true;
@@ -487,7 +487,7 @@ namespace Radegast
             this.panel1.Controls.Add(this.btnEjectMember);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.lblAssignedRoles);
-            this.panel1.Location = new System.Drawing.Point(0, 171);
+            this.panel1.Location = new System.Drawing.Point(0, 130);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(377, 248);
             this.panel1.TabIndex = 12;
@@ -594,7 +594,7 @@ namespace Radegast
             this.lvwMemberDetails.MultiSelect = false;
             this.lvwMemberDetails.Name = "lvwMemberDetails";
             this.lvwMemberDetails.ShowGroups = false;
-            this.lvwMemberDetails.Size = new System.Drawing.Size(377, 165);
+            this.lvwMemberDetails.Size = new System.Drawing.Size(377, 124);
             this.lvwMemberDetails.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvwMemberDetails.TabIndex = 9;
             this.lvwMemberDetails.UseCompatibleStateImageBehavior = false;
@@ -858,7 +858,7 @@ namespace Radegast
             this.tpNotices.Location = new System.Drawing.Point(4, 22);
             this.tpNotices.Name = "tpNotices";
             this.tpNotices.Padding = new System.Windows.Forms.Padding(3);
-            this.tpNotices.Size = new System.Drawing.Size(400, 474);
+            this.tpNotices.Size = new System.Drawing.Size(400, 463);
             this.tpNotices.TabIndex = 2;
             this.tpNotices.Text = "Notices";
             this.tpNotices.UseVisualStyleBackColor = true;
@@ -940,7 +940,7 @@ namespace Radegast
             this.pnlNewNotice.Controls.Add(this.label11);
             this.pnlNewNotice.Location = new System.Drawing.Point(6, 224);
             this.pnlNewNotice.Name = "pnlNewNotice";
-            this.pnlNewNotice.Size = new System.Drawing.Size(385, 244);
+            this.pnlNewNotice.Size = new System.Drawing.Size(385, 233);
             this.pnlNewNotice.TabIndex = 25;
             this.pnlNewNotice.Visible = false;
             // 
@@ -952,7 +952,7 @@ namespace Radegast
             this.pnlNoticeAttachment.Controls.Add(this.btnRemoveAttachment);
             this.pnlNoticeAttachment.Controls.Add(this.icnNewNoticeAtt);
             this.pnlNoticeAttachment.Controls.Add(this.txtNewNoteAtt);
-            this.pnlNoticeAttachment.Location = new System.Drawing.Point(3, 197);
+            this.pnlNoticeAttachment.Location = new System.Drawing.Point(3, 186);
             this.pnlNoticeAttachment.Name = "pnlNoticeAttachment";
             this.pnlNoticeAttachment.Size = new System.Drawing.Size(276, 44);
             this.pnlNoticeAttachment.TabIndex = 3;
@@ -1016,7 +1016,7 @@ namespace Radegast
             // btnSend
             // 
             this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSend.Location = new System.Drawing.Point(285, 212);
+            this.btnSend.Location = new System.Drawing.Point(285, 201);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(97, 23);
             this.btnSend.TabIndex = 6;
@@ -1035,7 +1035,7 @@ namespace Radegast
             this.txtNewNoticeBody.Multiline = true;
             this.txtNewNoticeBody.Name = "txtNewNoticeBody";
             this.txtNewNoticeBody.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNewNoticeBody.Size = new System.Drawing.Size(375, 133);
+            this.txtNewNoticeBody.Size = new System.Drawing.Size(375, 122);
             this.txtNewNoticeBody.TabIndex = 2;
             // 
             // label10
@@ -1072,7 +1072,7 @@ namespace Radegast
             this.pnlArchivedNotice.Controls.Add(this.label1);
             this.pnlArchivedNotice.Location = new System.Drawing.Point(6, 224);
             this.pnlArchivedNotice.Name = "pnlArchivedNotice";
-            this.pnlArchivedNotice.Size = new System.Drawing.Size(385, 244);
+            this.pnlArchivedNotice.Size = new System.Drawing.Size(385, 233);
             this.pnlArchivedNotice.TabIndex = 11;
             this.pnlArchivedNotice.Visible = false;
             // 
@@ -1081,7 +1081,7 @@ namespace Radegast
             this.txtItemName.AccessibleName = "Notice attachment";
             this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtItemName.Location = new System.Drawing.Point(25, 218);
+            this.txtItemName.Location = new System.Drawing.Point(25, 207);
             this.txtItemName.Name = "txtItemName";
             this.txtItemName.ReadOnly = true;
             this.txtItemName.Size = new System.Drawing.Size(302, 20);
@@ -1091,7 +1091,7 @@ namespace Radegast
             // icnItem
             // 
             this.icnItem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.icnItem.Location = new System.Drawing.Point(3, 220);
+            this.icnItem.Location = new System.Drawing.Point(3, 209);
             this.icnItem.Name = "icnItem";
             this.icnItem.Size = new System.Drawing.Size(16, 16);
             this.icnItem.TabIndex = 23;
@@ -1102,7 +1102,7 @@ namespace Radegast
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(333, 218);
+            this.btnSave.Location = new System.Drawing.Point(333, 207);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(49, 23);
             this.btnSave.TabIndex = 18;
@@ -1123,7 +1123,7 @@ namespace Radegast
             this.txtNotice.Name = "txtNotice";
             this.txtNotice.ReadOnly = true;
             this.txtNotice.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNotice.Size = new System.Drawing.Size(375, 154);
+            this.txtNotice.Size = new System.Drawing.Size(375, 143);
             this.txtNotice.TabIndex = 19;
             // 
             // lblTitle
@@ -1167,7 +1167,7 @@ namespace Radegast
             this.pnlBottomControls.Controls.Add(this.btnApply);
             this.pnlBottomControls.Controls.Add(this.btnRefresh);
             this.pnlBottomControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBottomControls.Location = new System.Drawing.Point(0, 500);
+            this.pnlBottomControls.Location = new System.Drawing.Point(0, 465);
             this.pnlBottomControls.Name = "pnlBottomControls";
             this.pnlBottomControls.Size = new System.Drawing.Size(408, 34);
             this.pnlBottomControls.TabIndex = 6;
@@ -1207,13 +1207,12 @@ namespace Radegast
             // 
             // GroupDetails
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.Controls.Add(this.tcGroupDetails);
             this.Controls.Add(this.pnlBottomControls);
-            this.MinimumSize = new System.Drawing.Size(408, 534);
+            this.MinimumSize = new System.Drawing.Size(300, 400);
             this.Name = "GroupDetails";
-            this.Size = new System.Drawing.Size(408, 534);
+            this.Size = new System.Drawing.Size(408, 499);
             this.tcGroupDetails.ResumeLayout(false);
             this.tpGeneral.ResumeLayout(false);
             this.tpGeneral.PerformLayout();
