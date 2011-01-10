@@ -65,7 +65,7 @@ namespace Radegast
             this.lvwGroups = new Radegast.ListViewNoFlicker();
             this.clGroupName = new System.Windows.Forms.ColumnHeader();
             this.clGroupTitle = new System.Windows.Forms.ColumnHeader();
-            this.txtFullName = new System.Windows.Forms.TextBox();
+            this.txtFullName = new Radegast.AgentNameTextBox();
             this.anPartner = new Radegast.AgentNameTextBox();
             this.btnIM = new System.Windows.Forms.Button();
             this.btnFriend = new System.Windows.Forms.Button();
@@ -738,7 +738,7 @@ namespace Radegast
         public System.Windows.Forms.Button btnShowOnMap;
         public System.Windows.Forms.Button btnTeleport;
         public AgentNameTextBox anPartner;
-        public System.Windows.Forms.TextBox txtFullName;
+        public AgentNameTextBox txtFullName;
         public System.Windows.Forms.TextBox txtUUID;
         public System.Windows.Forms.Label label9;
         public ListViewNoFlicker lvwGroups;

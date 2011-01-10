@@ -384,6 +384,7 @@ namespace Radegast
         private void InitializeProfile()
         {
             txtFullName.Text = fullName;
+            txtFullName.AgentID = agentID;
             btnOfferTeleport.Enabled = btnPay.Enabled = (agentID != client.Self.AgentID);
 
             client.Avatars.RequestAvatarProperties(agentID);
