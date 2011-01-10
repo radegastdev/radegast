@@ -39,6 +39,7 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
+    #region enums
     /// <summary>
     /// Enum representing different modes of handling display names
     /// </summary>
@@ -53,12 +54,14 @@ namespace Radegast
         /// <summary> Only display </summary>
         DisplayNameAndUserName,
     }
+    #endregion enums
 
     /// <summary>
     /// Manager for looking up avatar names and their caching 
     /// </summary>
     public class NameManager : IDisposable
     {
+        #region public fields and properties
         public event EventHandler<UUIDNameReplyEventArgs> NameUpdated;
 
         public NameMode Mode
@@ -76,7 +79,9 @@ namespace Radegast
                 instance.GlobalSettings["display_name_mode"] = (int)value;
             }
         }
+        #endregion public fields and properties
 
+        #region private fields and properties
         RadegastInstance instance;
         GridClient client { get { return instance.Client; } }
         Timer requestTimer;
@@ -98,12 +103,12 @@ namespace Radegast
         const int CACHE_DELAY = 5000;
 
         Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
+        #endregion private fields and properties
 
+        #region construction and disposal
         public NameManager(RadegastInstance instance)
         {
             this.instance = instance;
-
-            Mode = NameMode.Smart;
 
             requestTimer = new Timer(MakeRequest, null, Timeout.Infinite, Timeout.Infinite);
             cacheTimer = new Timer(SaveCache, null, Timeout.Infinite, Timeout.Infinite);
@@ -131,15 +136,19 @@ namespace Radegast
                 cacheTimer = null;
             }
         }
+        #endregion construction and disposal
 
+        #region private methods
         void RegisterEvents(GridClient c)
         {
             c.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            c.Avatars.DisplayNameUpdate += new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
         }
 
         void DeregisterEvents(GridClient c)
         {
             c.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            c.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
         }
 
         DateTime UUIDNameOnly = new DateTime(1970, 9, 4, 10, 0, 0, DateTimeKind.Utc);
@@ -148,6 +157,17 @@ namespace Radegast
         {
             DeregisterEvents(e.OldClient);
             RegisterEvents(e.Client);
+        }
+
+        void Avatars_DisplayNameUpdate(object sender, DisplayNameUpdateEventArgs e)
+        {
+            lock (names)
+            {
+                names[e.DisplayName.ID] = e.DisplayName;
+            }
+            Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
+            ret.Add(e.DisplayName.ID, FormatName(e.DisplayName));
+            TriggerEvent(ret);
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
@@ -190,18 +210,7 @@ namespace Radegast
                 }
             }
 
-            if (ret.Count > 0 && NameUpdated != null)
-            {
-                try
-                {
-                    NameUpdated(this, new UUIDNameReplyEventArgs(ret));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("Failure in event handler: " + ex.Message, Helpers.LogLevel.Warning, client, ex);
-                }
-            }
-
+            TriggerEvent(ret);
             TriggerCacheSave();
         }
 
@@ -253,18 +262,7 @@ namespace Radegast
                 }
             }
 
-            if (ret.Count > 0 && NameUpdated != null)
-            {
-                try
-                {
-                    NameUpdated(this, new UUIDNameReplyEventArgs(ret));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("Failure in event handler: " + ex.Message, Helpers.LogLevel.Warning, client, ex);
-                }
-            }
-
+            TriggerEvent(ret);
             TriggerCacheSave();
         }
 
@@ -306,6 +304,20 @@ namespace Radegast
         {
         }
 
+        void TriggerEvent(Dictionary<UUID, string> ret)
+        {
+            if (NameUpdated == null || ret.Count == 0) return;
+
+            try
+            {
+                NameUpdated(this, new UUIDNameReplyEventArgs(ret));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failure in event handler: " + ex.Message, Helpers.LogLevel.Warning, client, ex);
+            }
+        }
+
         void TriggerNameRequest()
         {
             requestTimer.Change(REQUEST_DELAY, Timeout.Infinite);
@@ -336,7 +348,14 @@ namespace Radegast
                 }
             }
         }
+        #endregion private methods
 
+        #region public methods
+        /// <summary>
+        /// Get avatar display name, or queue fetching of the name
+        /// </summary>
+        /// <param name="agentID">UUID of avatar to lookup</param>
+        /// <returns>Avatar display name or "Loading..." if not in cache</returns>
         public string Get(UUID agentID)
         {
             if (agentID == UUID.Zero) return "(???) (???)";
@@ -357,6 +376,12 @@ namespace Radegast
             return RadegastInstance.INCOMPLETE_NAME;
         }
 
+        /// <summary>
+        /// Get avatar display name, or queue fetching of the name
+        /// </summary>
+        /// <param name="agentID">UUID of avatar to lookup</param>
+        /// <param name="defaultValue"></param>
+        /// <returns>Avatar display name or the default value if not in cache</returns>
         public string Get(UUID agentID, string defaultValue)
         {
             if (Mode == NameMode.Standard)
@@ -368,5 +393,6 @@ namespace Radegast
 
             return name;
         }
+        #endregion public methods
     }
 }
