@@ -65,17 +65,18 @@ namespace Radegast
             this.btnInfo = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.pnlGroupList = new System.Windows.Forms.Panel();
+            this.lblGroupNr = new System.Windows.Forms.Label();
             this.btnNewGroup = new System.Windows.Forms.Button();
             this.pnlNewGroup = new System.Windows.Forms.Panel();
-            this.lblGroupNr = new System.Windows.Forms.Label();
-            this.txtNewGroupName = new System.Windows.Forms.TextBox();
-            this.txtNewGroupCharter = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lblCreateStatus = new System.Windows.Forms.Label();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.btnCreateGroup = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnCreateGroup = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.lblCreateStatus = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtNewGroupCharter = new System.Windows.Forms.TextBox();
+            this.txtNewGroupName = new System.Windows.Forms.TextBox();
+            this.lblGrpMax = new System.Windows.Forms.Label();
             this.pnlGroupList.SuspendLayout();
             this.pnlNewGroup.SuspendLayout();
             this.SuspendLayout();
@@ -159,6 +160,7 @@ namespace Radegast
             // 
             // pnlGroupList
             // 
+            this.pnlGroupList.Controls.Add(this.lblGrpMax);
             this.pnlGroupList.Controls.Add(this.lblGroupNr);
             this.pnlGroupList.Controls.Add(this.btnNewGroup);
             this.pnlGroupList.Controls.Add(this.listBox1);
@@ -173,6 +175,16 @@ namespace Radegast
             this.pnlGroupList.Name = "pnlGroupList";
             this.pnlGroupList.Size = new System.Drawing.Size(545, 305);
             this.pnlGroupList.TabIndex = 6;
+            // 
+            // lblGroupNr
+            // 
+            this.lblGroupNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblGroupNr.AutoSize = true;
+            this.lblGroupNr.Location = new System.Drawing.Point(454, 197);
+            this.lblGroupNr.Name = "lblGroupNr";
+            this.lblGroupNr.Size = new System.Drawing.Size(48, 13);
+            this.lblGroupNr.TabIndex = 7;
+            this.lblGroupNr.Text = "0 groups";
             // 
             // btnNewGroup
             // 
@@ -202,44 +214,35 @@ namespace Radegast
             this.pnlNewGroup.TabIndex = 7;
             this.pnlNewGroup.Visible = false;
             // 
-            // lblGroupNr
+            // lblCreateStatus
             // 
-            this.lblGroupNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblGroupNr.AutoSize = true;
-            this.lblGroupNr.Location = new System.Drawing.Point(454, 197);
-            this.lblGroupNr.Name = "lblGroupNr";
-            this.lblGroupNr.Size = new System.Drawing.Size(48, 13);
-            this.lblGroupNr.TabIndex = 7;
-            this.lblGroupNr.Text = "0 groups";
+            this.lblCreateStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblCreateStatus.Location = new System.Drawing.Point(0, 100);
+            this.lblCreateStatus.Name = "lblCreateStatus";
+            this.lblCreateStatus.Size = new System.Drawing.Size(545, 20);
+            this.lblCreateStatus.TabIndex = 5;
+            this.lblCreateStatus.TextChanged += new System.EventHandler(this.lblCreateStatus_TextChanged);
             // 
-            // txtNewGroupName
+            // btnCancel
             // 
-            this.txtNewGroupName.AccessibleName = "New Group Name";
-            this.txtNewGroupName.Location = new System.Drawing.Point(97, 6);
-            this.txtNewGroupName.Name = "txtNewGroupName";
-            this.txtNewGroupName.Size = new System.Drawing.Size(231, 20);
-            this.txtNewGroupName.TabIndex = 0;
-            this.txtNewGroupName.TextChanged += new System.EventHandler(this.txtNewGroupName_TextChanged);
-            this.txtNewGroupName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNewGroupName_KeyDown);
+            this.btnCancel.Location = new System.Drawing.Point(337, 64);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // txtNewGroupCharter
+            // btnCreateGroup
             // 
-            this.txtNewGroupCharter.AccessibleName = "Group Charter";
-            this.txtNewGroupCharter.Location = new System.Drawing.Point(97, 32);
-            this.txtNewGroupCharter.Multiline = true;
-            this.txtNewGroupCharter.Name = "txtNewGroupCharter";
-            this.txtNewGroupCharter.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNewGroupCharter.Size = new System.Drawing.Size(231, 55);
-            this.txtNewGroupCharter.TabIndex = 1;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(68, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Group name:";
+            this.btnCreateGroup.Enabled = false;
+            this.btnCreateGroup.Location = new System.Drawing.Point(337, 35);
+            this.btnCreateGroup.Name = "btnCreateGroup";
+            this.btnCreateGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnCreateGroup.TabIndex = 3;
+            this.btnCreateGroup.Text = "Create";
+            this.btnCreateGroup.UseVisualStyleBackColor = true;
+            this.btnCreateGroup.Click += new System.EventHandler(this.btnCreateGroup_Click);
             // 
             // label3
             // 
@@ -259,35 +262,44 @@ namespace Radegast
             this.label4.TabIndex = 2;
             this.label4.Text = "4-35 chars";
             // 
-            // btnCreateGroup
+            // label2
             // 
-            this.btnCreateGroup.Enabled = false;
-            this.btnCreateGroup.Location = new System.Drawing.Point(337, 35);
-            this.btnCreateGroup.Name = "btnCreateGroup";
-            this.btnCreateGroup.Size = new System.Drawing.Size(75, 23);
-            this.btnCreateGroup.TabIndex = 3;
-            this.btnCreateGroup.Text = "Create";
-            this.btnCreateGroup.UseVisualStyleBackColor = true;
-            this.btnCreateGroup.Click += new System.EventHandler(this.btnCreateGroup_Click);
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 9);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(68, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Group name:";
             // 
-            // btnCancel
+            // txtNewGroupCharter
             // 
-            this.btnCancel.Location = new System.Drawing.Point(337, 64);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 4;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.txtNewGroupCharter.AccessibleName = "Group Charter";
+            this.txtNewGroupCharter.Location = new System.Drawing.Point(97, 32);
+            this.txtNewGroupCharter.Multiline = true;
+            this.txtNewGroupCharter.Name = "txtNewGroupCharter";
+            this.txtNewGroupCharter.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtNewGroupCharter.Size = new System.Drawing.Size(231, 55);
+            this.txtNewGroupCharter.TabIndex = 1;
             // 
-            // lblCreateStatus
+            // txtNewGroupName
             // 
-            this.lblCreateStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblCreateStatus.Location = new System.Drawing.Point(0, 100);
-            this.lblCreateStatus.Name = "lblCreateStatus";
-            this.lblCreateStatus.Size = new System.Drawing.Size(545, 20);
-            this.lblCreateStatus.TabIndex = 5;
-            this.lblCreateStatus.TextChanged += new System.EventHandler(this.lblCreateStatus_TextChanged);
+            this.txtNewGroupName.AccessibleName = "New Group Name";
+            this.txtNewGroupName.Location = new System.Drawing.Point(97, 6);
+            this.txtNewGroupName.Name = "txtNewGroupName";
+            this.txtNewGroupName.Size = new System.Drawing.Size(231, 20);
+            this.txtNewGroupName.TabIndex = 0;
+            this.txtNewGroupName.TextChanged += new System.EventHandler(this.txtNewGroupName_TextChanged);
+            this.txtNewGroupName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNewGroupName_KeyDown);
+            // 
+            // lblGrpMax
+            // 
+            this.lblGrpMax.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblGrpMax.AutoSize = true;
+            this.lblGrpMax.Location = new System.Drawing.Point(454, 210);
+            this.lblGrpMax.Name = "lblGrpMax";
+            this.lblGrpMax.Size = new System.Drawing.Size(26, 13);
+            this.lblGrpMax.TabIndex = 7;
+            this.lblGrpMax.Text = "max";
             // 
             // GroupsConsole
             // 
@@ -314,18 +326,19 @@ namespace Radegast
         public System.Windows.Forms.ListBox listBox1;
         public System.Windows.Forms.Button btnInfo;
         public System.Windows.Forms.Button btnRefresh;
-        private System.Windows.Forms.Panel pnlGroupList;
-        private System.Windows.Forms.Button btnNewGroup;
-        private System.Windows.Forms.Panel pnlNewGroup;
-        private System.Windows.Forms.Label lblGroupNr;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtNewGroupCharter;
-        private System.Windows.Forms.TextBox txtNewGroupName;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button btnCreateGroup;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Label lblCreateStatus;
+        public System.Windows.Forms.Label lblGrpMax;
+        public System.Windows.Forms.Panel pnlGroupList;
+        public System.Windows.Forms.Button btnNewGroup;
+        public System.Windows.Forms.Panel pnlNewGroup;
+        public System.Windows.Forms.Label lblGroupNr;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.TextBox txtNewGroupCharter;
+        public System.Windows.Forms.TextBox txtNewGroupName;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Button btnCreateGroup;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.Button btnCancel;
+        public System.Windows.Forms.Label lblCreateStatus;
 
     }
 }

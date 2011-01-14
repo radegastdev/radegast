@@ -111,6 +111,15 @@ namespace Radegast
                 }
 
                 lblGroupNr.Text = string.Format("{0} groups", instance.Groups.Count);
+                if (client.Network.MaxAgentGroups > 0)
+                {
+                    lblGrpMax.Text = string.Format("max {0} groups", client.Network.MaxAgentGroups);
+                }
+                else
+                {
+                    lblGrpMax.Text = string.Empty;
+                }
+
                 if (newGrpID != UUID.Zero)
                 {
                     lblCreateStatus.Text = "Group created successfully";
