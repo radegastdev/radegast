@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Radegast.Plugin.Demo")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Radegast Demo Plugin")]
+[assembly: AssemblyDescription("Shows how to make plugins for Radegast")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("Radegast Development Team")]
 [assembly: AssemblyProduct("Radegast.Plugin.Demo")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2009")]
+[assembly: AssemblyCopyright("Copyright © Radegast Development Team 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
