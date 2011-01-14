@@ -697,7 +697,11 @@ namespace Radegast
             selectedTab = tab;
 
             tbtnCloseTab.Enabled = tab.AllowClose || tab.AllowHide;
-            owner.AcceptButton = tab.DefaultControlButton;
+            
+            if (owner != null)
+            {
+                owner.AcceptButton = tab.DefaultControlButton;
+            }
 
             if (OnTabSelected != null)
             {
