@@ -35,15 +35,18 @@ namespace Radegast
 
             client.Groups.GroupNamesReply += new EventHandler<GroupNamesEventArgs>(Groups_GroupNamesReply);
             client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Parcels.ParcelDwellReply += new EventHandler<ParcelDwellReplyEventArgs>(Parcels_ParcelDwellReply);
             refresh.Tick += new EventHandler(refresh_Tick);
             refresh.Enabled = true;
             UpdateDisplay();
+            client.Parcels.RequestDwell(client.Network.CurrentSim, instance.State.Parcel.LocalID);
         }
 
         void RegionInfo_Disposed(object sender, EventArgs e)
         {
             client.Groups.GroupNamesReply -= new EventHandler<GroupNamesEventArgs>(Groups_GroupNamesReply);
             client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+            client.Parcels.ParcelDwellReply -= new EventHandler<ParcelDwellReplyEventArgs>(Parcels_ParcelDwellReply);
             refresh.Enabled = false;
             refresh.Dispose();
             refresh = null;
@@ -60,6 +63,18 @@ namespace Radegast
             }
 
             UpdateParcelDisplay();
+        }
+
+        void Parcels_ParcelDwellReply(object sender, ParcelDwellReplyEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                    BeginInvoke(new MethodInvoker(() => Parcels_ParcelDwellReply(sender, e)));
+                return;
+            }
+
+            lblTraffic.Text = e.Dwell.ToString("0");
         }
 
         void Groups_GroupNamesReply(object sender, GroupNamesEventArgs e)
