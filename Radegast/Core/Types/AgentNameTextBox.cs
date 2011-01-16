@@ -42,7 +42,7 @@ namespace Radegast
         private GridClient client { get { return RadegastInstance.GlobalInstance.Client; } }
         private RadegastInstance instance { get { return RadegastInstance.GlobalInstance; } }
 
-        [Browsable(false), DesignOnly(true)]
+        [Browsable(false)]
         public UUID AgentID
         {
             get { return agentID; }
@@ -62,12 +62,6 @@ namespace Radegast
                     SetupHandlers();
                     string name = instance.getAvatarName(agentID);
                     SetName(name);
-
-                    // We got cached response, unhook event handlers
-                    if (name != RadegastInstance.INCOMPLETE_NAME)
-                    {
-                        CleanupHandlers(null, null);
-                    }
                 }
             }
         }
@@ -81,25 +75,18 @@ namespace Radegast
 
         void SetupHandlers()
         {
-            if (client != null)
-            {
-                client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            }
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
         }
 
         void CleanupHandlers(object sender, EventArgs e)
         {
-            if (client != null)
-            {
-                client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
-            }
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
         }
 
-        void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
+        void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
         {
             if (e.Names.ContainsKey(agentID))
             {
-                CleanupHandlers(null, null);
                 SetName(e.Names[agentID]);
             }
         }
