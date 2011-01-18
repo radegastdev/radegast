@@ -662,7 +662,7 @@ namespace RadegastSpeech.Conversation
         void Netcom_InstantMessageSent(object sender, Radegast.Netcom.InstantMessageSentEventArgs e)
         {
             // Message to an individual
-            Conversation.IMSession sess = (IMSession)control.converse.GetConversation(control.instance.getAvatarName(e.TargetID, true));
+            Conversation.IMSession sess = (IMSession)control.converse.GetConversation(control.instance.Names.Get(e.TargetID, true));
             if (sess != null)
                 sess.OnMessage(Client.Self.AgentID, Client.Self.Name, e.Message);
         }

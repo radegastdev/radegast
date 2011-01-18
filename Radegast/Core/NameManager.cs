@@ -380,7 +380,45 @@ namespace Radegast
         /// Get avatar display name, or queue fetching of the name
         /// </summary>
         /// <param name="agentID">UUID of avatar to lookup</param>
-        /// <param name="defaultValue"></param>
+        /// <param name="blocking">If true, wait until name is recieved, otherwise return immediately</param>
+        /// <returns>Avatar display name or "Loading..." if not in cache</returns>
+        public string Get(UUID agentID, bool blocking)
+        {
+            if (!blocking)
+                Get(agentID);
+
+            string name = null;
+
+            using (ManualResetEvent gotName = new ManualResetEvent(false))
+            {
+
+                EventHandler<UUIDNameReplyEventArgs> handler = (object sender, UUIDNameReplyEventArgs e) =>
+                {
+                    if (e.Names.ContainsKey(agentID))
+                    {
+                        name = e.Names[agentID];
+                        gotName.Set();
+                    }
+                };
+
+                NameUpdated += handler;
+                name = Get(agentID);
+
+                if (name == RadegastInstance.INCOMPLETE_NAME)
+                {
+                    gotName.WaitOne(10 * 1000, false);
+                }
+
+                NameUpdated -= handler;
+            }
+            return name;
+        }
+
+        /// <summary>
+        /// Get avatar display name, or queue fetching of the name
+        /// </summary>
+        /// <param name="agentID">UUID of avatar to lookup</param>
+        /// <param name="defaultValue">If name failed to retrieve, use this</param>
         /// <returns>Avatar display name or the default value if not in cache</returns>
         public string Get(UUID agentID, string defaultValue)
         {
@@ -393,6 +431,27 @@ namespace Radegast
 
             return name;
         }
+
+        /// <summary>
+        /// Get avatar display name, or queue fetching of the name
+        /// </summary>
+        /// <param name="agentID">UUID of avatar to lookup</param>
+        /// <param name="blocking">If true, wait until name is recieved, otherwise return immediately</param>
+        /// <param name="defaultValue">If name failed to retrieve, use this</param>
+        /// <returns></returns>
+        public string Get(UUID agentID, bool blocking, string defaultValue)
+        {
+            if (Mode == NameMode.Standard)
+                return defaultValue;
+
+            string name = Get(agentID, blocking);
+            if (name == RadegastInstance.INCOMPLETE_NAME)
+                return defaultValue;
+
+            return name;
+
+        }
+
         #endregion public methods
     }
 }

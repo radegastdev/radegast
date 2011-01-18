@@ -87,14 +87,14 @@ namespace Radegast.Commands
             }
 
             List<UUID> people = Chat.GetAvatarList();
-            UUID person = people.Find((UUID id) => { return Instance.getAvatarName(id).ToLower().StartsWith(cmd.ToLower()); });
+            UUID person = people.Find((UUID id) => { return Instance.Names.Get(id).ToLower().StartsWith(cmd.ToLower()); });
             if (person == UUID.Zero)
             {
                 WriteLine("Could not find {0}", cmd);
                 return;
             }
 
-            Instance.State.Follow(Instance.getAvatarName(person), person);
+            Instance.State.Follow(Instance.Names.Get(person), person);
             WriteLine("Following {0}", Instance.State.FollowName);
         }
     }

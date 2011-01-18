@@ -46,13 +46,13 @@ namespace Radegast.Plugin.Alice
             if (ali != null)
             {
                 uuid = (UUID)ali.Tag;
-                username = instance.getAvatarName(uuid);
+                username = instance.Names.Get(uuid);
             }
             else
             {
                 FriendInfo fi = target as FriendInfo;
                 uuid =fi.UUID;
-                username = instance.getAvatarName(uuid);
+                username = instance.Names.Get(uuid);
 
             }
             if (username==null)

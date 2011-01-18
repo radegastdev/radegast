@@ -149,13 +149,13 @@ Examples:
             {
                 case "person":
                     List<UUID> people = Chat.GetAvatarList();
-                    UUID person = people.Find((UUID id) => { return Instance.getAvatarName(id).ToLower().StartsWith(subarg.ToLower()); });
+                    UUID person = people.Find((UUID id) => { return Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()); });
                     if (person == UUID.Zero)
                     {
                         WriteLine("Could not find {0}", subarg);
                         return;
                     }
-                    string pname = Instance.getAvatarName(person);
+                    string pname = Instance.Names.Get(person);
 
                     targetPos = Vector3.Zero;
 

@@ -271,7 +271,7 @@ namespace Radegast
             BeginInvoke(new MethodInvoker(delegate()
             {
                 // Supply the name based on the UUID.
-                p.Name = instance.getAvatarName(p.ID);
+                p.Name = instance.Names.Get(p.ID);
 
                 if (participants.Items.ContainsKey(p.Name))
                     return;

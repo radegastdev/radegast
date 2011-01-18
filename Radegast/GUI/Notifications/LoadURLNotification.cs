@@ -51,7 +51,7 @@ namespace Radegast
             this.ev = e;
             this.instance = instance;
 
-            instance.Client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
             SetText();
 
@@ -65,14 +65,14 @@ namespace Radegast
 
         void ntfLoadURL_Disposed(object sender, EventArgs e)
         {
-            instance.Client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (!e.Names.ContainsKey(ev.OwnerID)) return;
 
-            instance.Client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
             if (InvokeRequired)
             {
@@ -91,7 +91,7 @@ namespace Radegast
                 Environment.NewLine + ev.URL +Environment.NewLine + Environment.NewLine,
                 ev.Message + Environment.NewLine + Environment.NewLine,
                 ev.ObjectName,
-                instance.getAvatarName(ev.OwnerID)
+                instance.Names.Get(ev.OwnerID)
             );
         }
 

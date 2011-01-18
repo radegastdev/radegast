@@ -68,7 +68,7 @@ namespace Radegast
             // Callbacks
             client.Objects.PayPriceReply += new EventHandler<PayPriceReplyEventArgs>(Objects_PayPriceReply);
             client.Objects.ObjectPropertiesFamily += new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
-            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
             if (isObject)
             {
@@ -88,7 +88,7 @@ namespace Radegast
         {
             client.Objects.PayPriceReply -= new EventHandler<PayPriceReplyEventArgs>(Objects_PayPriceReply);
             client.Objects.ObjectPropertiesFamily -= new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
-            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         void frmPay_Click(object sender, EventArgs e)
@@ -118,14 +118,14 @@ namespace Radegast
                 return;
             }
 
-            lblResident.Text = string.Format("Pay resident: {0}", instance.getAvatarName(owner));
+            lblResident.Text = string.Format("Pay resident: {0}", instance.Names.Get(owner));
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (e.Names.ContainsKey(owner))
             {
-                client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
                 UpdateResident();
             }
         }

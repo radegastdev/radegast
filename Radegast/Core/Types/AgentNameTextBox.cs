@@ -60,7 +60,7 @@ namespace Radegast
                 else
                 {
                     SetupHandlers();
-                    string name = instance.getAvatarName(agentID);
+                    string name = instance.Names.Get(agentID);
                     SetName(name);
                 }
             }

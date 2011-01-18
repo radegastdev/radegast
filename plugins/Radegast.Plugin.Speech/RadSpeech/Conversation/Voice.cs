@@ -60,7 +60,7 @@ namespace RadegastSpeech.Conversation
         {
             VoiceParticipant p = sender as VoiceParticipant;
 
-            string pName = (p.Name == null) ? control.instance.getAvatarName(p.ID) : p.Name;
+            string pName = (p.Name == null) ? control.instance.Names.Get(p.ID) : p.Name;
             control.talker.SayMore(pName + " is in voice range.");
         }
 

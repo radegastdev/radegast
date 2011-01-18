@@ -60,7 +60,7 @@ namespace Radegast
             this.instance = instance;
             this.msg = msg;
 
-            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
 
             if (msg.BinaryBucket.Length > 0)
             {
@@ -97,21 +97,21 @@ namespace Radegast
 
         void ntfInventoryOffer_Disposed(object sender, EventArgs e)
         {
-            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
         }
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
             if (e.Names.Keys.Contains(msg.FromAgentID))
             {
-                client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
                 BeginInvoke(new MethodInvoker(() => txtInfo.Text = objectOfferText()));
             }
         }
 
         private string objectOfferText()
         {
-            return string.Format("Object \"{0}\" owned by {1} has offered you {2}", msg.FromAgentName, instance.getAvatarName(msg.FromAgentID), msg.Message); 
+            return string.Format("Object \"{0}\" owned by {1} has offered you {2}", msg.FromAgentName, instance.Names.Get(msg.FromAgentID), msg.Message); 
         }
 
         private void SendReply(InstantMessageDialog dialog, byte[] bucket)

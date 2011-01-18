@@ -484,36 +484,10 @@ namespace Radegast
         /// <param name="key">Avatar UUID</param>
         /// <param name="blocking">Should we wait until the name is retrieved</param>
         /// <returns>Avatar name</returns>
+        [Obsolete("Use Instance.Names.Get() instead")]
         public string getAvatarName(UUID key, bool blocking)
         {
-            if (!blocking)
-                return Names.Get(key);
-
-            string name = null;
-
-            using (ManualResetEvent gotName = new ManualResetEvent(false))
-            {
-
-                EventHandler<UUIDNameReplyEventArgs> handler = (object sender, UUIDNameReplyEventArgs e) =>
-                    {
-                        if (e.Names.ContainsKey(key))
-                        {
-                            name = e.Names[key];
-                            gotName.Set();
-                        }
-                    };
-
-                Names.NameUpdated += handler;
-                name = Names.Get(key);
-
-                if (name == INCOMPLETE_NAME)
-                {
-                    gotName.WaitOne(10 * 1000, false);
-                }
-
-                Names.NameUpdated -= handler;
-            }
-            return name;
+            return Names.Get(key, blocking);
         }
 
         /// <summary>
@@ -521,6 +495,7 @@ namespace Radegast
         /// </summary>
         /// <param name="key">Avatar UUID</param>
         /// <returns>Avatar name</returns>
+        [Obsolete("Use Instance.Names.Get() instead")]
         public string getAvatarName(UUID key)
         {
             return Names.Get(key);

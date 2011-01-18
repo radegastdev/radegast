@@ -85,7 +85,7 @@ namespace Radegast
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
@@ -104,7 +104,7 @@ namespace Radegast
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            client.Avatars.UUIDNameReply -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
@@ -568,7 +568,7 @@ namespace Radegast
                     client.Groups.GroupNamesReply -= cbGroupName;
                 }
                 else
-                    ownerName = instance.getAvatarName(prim.Properties.OwnerID);
+                    ownerName = instance.Names.Get(prim.Properties.OwnerID);
             }
             return String.Format("{0} ({1}m) owned by {2}", name, distance, ownerName);
 

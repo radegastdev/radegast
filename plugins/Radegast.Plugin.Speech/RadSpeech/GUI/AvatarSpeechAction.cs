@@ -80,7 +80,7 @@ namespace RadegastSpeech.GUI
             {
                 ListViewItem i = target as ListViewItem;
                 id = (UUID)i.Tag;
-                name = control.instance.getAvatarName(id);
+                name = control.instance.Names.Get(id);
             }
             else
                 return;

@@ -186,32 +186,7 @@ namespace Radegast
 
             if (instance.GlobalSettings["show_friends_online_notifications"].AsBoolean())
             {
-                string name = e.Friend.Name;
-
-                if (string.IsNullOrEmpty(name))
-                {
-                    ManualResetEvent done = new ManualResetEvent(false);
-                    {
-
-                        EventHandler<UUIDNameReplyEventArgs> callback = delegate(object senderx, UUIDNameReplyEventArgs ex)
-                        {
-                            if (ex.Names.ContainsKey(e.Friend.UUID))
-                            {
-                                name = ex.Names[e.Friend.UUID];
-                                done.Set();
-                            }
-                        };
-
-                        client.Avatars.UUIDNameReply += callback;
-                        name = instance.getAvatarName(e.Friend.UUID);
-                        if (name == RadegastInstance.INCOMPLETE_NAME)
-                        {
-                            done.WaitOne(3000, false);
-                        }
-                        client.Avatars.UUIDNameReply -= callback;
-                    }
-                }
-
+                string name = instance.Names.Get(e.Friend.UUID, true, e.Friend.Name);
                 instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"].AsBoolean());
             }
 
@@ -220,31 +195,7 @@ namespace Radegast
 
         void Friends_FriendshipTerminated(object sender, FriendshipTerminatedEventArgs e)
         {
-            string agentName = e.AgentName;
-
-            if (agentName == string.Empty)
-            {
-                using (ManualResetEvent done = new ManualResetEvent(false))
-                {
-
-                    EventHandler<UUIDNameReplyEventArgs> callback = delegate(object senderx, UUIDNameReplyEventArgs ex)
-                    {
-                        if (ex.Names.ContainsKey(e.AgentID))
-                        {
-                            agentName = ex.Names[e.AgentID];
-                            done.Set();
-                        }
-                    };
-
-                    client.Avatars.UUIDNameReply += callback;
-                    agentName = instance.getAvatarName(e.AgentID);
-                    if (agentName == RadegastInstance.INCOMPLETE_NAME)
-                    {
-                        done.WaitOne(3000, false);
-                    }
-                    client.Avatars.UUIDNameReply -= callback;
-                }
-            }
+            string agentName = instance.Names.Get(e.AgentID, true, e.AgentName);
 
             if (InvokeRequired)
             {

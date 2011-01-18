@@ -158,7 +158,7 @@ namespace Radegast.Commands
             if (subcmd == "person")
             {
                 List<UUID> people = Chat.GetAvatarList();
-                people = people.FindAll((UUID id) => { return id != Client.Self.AgentID && Instance.getAvatarName(id).ToLower().StartsWith(subarg.ToLower()); });
+                people = people.FindAll((UUID id) => { return id != Client.Self.AgentID && Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()); });
                 if (people == null || people.Count == 0)
                 {
                     WriteLine("Could not find {0}", subarg);
@@ -167,7 +167,7 @@ namespace Radegast.Commands
 
                 foreach (UUID person in people)
                 {
-                    string pname = Instance.getAvatarName(person);
+                    string pname = Instance.Names.Get(person);
 
                     Vector3 targetPos = Vector3.Zero;
 

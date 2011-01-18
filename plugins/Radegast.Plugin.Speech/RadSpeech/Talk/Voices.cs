@@ -203,7 +203,7 @@ namespace RadegastSpeech.Talk
         internal bool PreAssigned(UUID id)
         {
             // Need the avatar name.
-            string avName = control.instance.getAvatarName(id);
+            string avName = control.instance.Names.Get(id);
             if (avName==null) return false;
 
             AssignedVoice av = PreAssigned(avName);
