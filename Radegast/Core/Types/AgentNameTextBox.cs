@@ -75,6 +75,7 @@ namespace Radegast
 
         void SetupHandlers()
         {
+            if (instance == null || instance.Names == null) return;
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
         }
 

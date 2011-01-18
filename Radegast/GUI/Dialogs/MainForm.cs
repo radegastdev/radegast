@@ -52,6 +52,8 @@ namespace Radegast
         public static ImageList ResourceImages = new ImageList();
         public static List<string> ImageNames = new List<string>();
         public bool PreventParcelUpdate = false;
+        public delegate void ProfileHandlerDelegate(string agentName, UUID agentID);
+        public ProfileHandlerDelegate ShowAgentProfile;
 
         public TabsConsole TabConsole
         {
@@ -136,6 +138,7 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             netcom.NetcomSync = this;
+            ShowAgentProfile = ShowAgentProfileInternal;
 
             pnlDialog.Visible = false;
             btnDialogNextControl = new TransparentButton();
@@ -655,7 +658,7 @@ namespace Radegast
 
         private Dictionary<UUID, frmProfile> shownProfiles = new Dictionary<UUID, frmProfile>();
 
-        public void ShowAgentProfile(string name, UUID agentID)
+        void ShowAgentProfileInternal(string name, UUID agentID)
         {
             lock (shownProfiles)
             {
