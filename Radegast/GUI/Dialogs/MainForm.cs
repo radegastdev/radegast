@@ -650,6 +650,12 @@ namespace Radegast
                     }
                 }
                 StartUpdateCheck(false);
+
+                if (instance.PlainColors)
+                {
+                    pnlDialog.BackColor = System.Drawing.Color.FromArgb(120, 220, 255);
+                }
+
             }
         }
         #endregion

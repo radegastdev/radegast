@@ -128,7 +128,6 @@ namespace Radegast
             // 
             this.cbxGrid.AccessibleName = "Grid";
             this.cbxGrid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbxGrid.ForeColor = System.Drawing.Color.Black;
             this.cbxGrid.Location = new System.Drawing.Point(56, 70);
             this.cbxGrid.Name = "cbxGrid";
             this.cbxGrid.Size = new System.Drawing.Size(210, 21);
@@ -186,7 +185,6 @@ namespace Radegast
             // cbxLocation
             // 
             this.cbxLocation.AccessibleName = "Start Location";
-            this.cbxLocation.ForeColor = System.Drawing.Color.Black;
             this.cbxLocation.Items.AddRange(new object[] {
             "My Home",
             "My Last Location"});
@@ -214,7 +212,6 @@ namespace Radegast
             this.btnLogin.Size = new System.Drawing.Size(116, 23);
             this.btnLogin.TabIndex = 15;
             this.btnLogin.Text = "Login";
-            this.btnLogin.UseVisualStyleBackColor = false;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // pnlLoggingIn
@@ -244,7 +241,6 @@ namespace Radegast
             this.lblLoginStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.lblLoginStatus.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblLoginStatus.ForeColor = System.Drawing.Color.Silver;
             this.lblLoginStatus.Location = new System.Drawing.Point(3, 0);
             this.lblLoginStatus.Name = "lblLoginStatus";
             this.lblLoginStatus.Size = new System.Drawing.Size(548, 86);
@@ -254,14 +250,13 @@ namespace Radegast
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.Color.Transparent;
+            this.panel1.BackColor = System.Drawing.SystemColors.Control;
             this.panel1.Controls.Add(this.btnGridManager);
             this.panel1.Controls.Add(this.lblVersion);
             this.panel1.Controls.Add(this.pnlLoginPrompt);
             this.panel1.Controls.Add(this.btnLogin);
             this.panel1.Controls.Add(this.pnlLoggingIn);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.ForeColor = System.Drawing.Color.Transparent;
             this.panel1.Location = new System.Drawing.Point(0, 335);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(682, 97);
@@ -275,13 +270,11 @@ namespace Radegast
             this.btnGridManager.Size = new System.Drawing.Size(116, 23);
             this.btnGridManager.TabIndex = 16;
             this.btnGridManager.Text = "Grid Manager";
-            this.btnGridManager.UseVisualStyleBackColor = true;
             this.btnGridManager.Visible = false;
             // 
             // lblVersion
             // 
             this.lblVersion.AutoSize = true;
-            this.lblVersion.ForeColor = System.Drawing.Color.Black;
             this.lblVersion.Location = new System.Drawing.Point(3, 3);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(100, 13);
@@ -318,7 +311,6 @@ namespace Radegast
             this.cbTOS.Size = new System.Drawing.Size(176, 17);
             this.cbTOS.TabIndex = 1;
             this.cbTOS.Text = "I agree to the Terms of Service";
-            this.cbTOS.UseVisualStyleBackColor = true;
             this.cbTOS.CheckedChanged += new System.EventHandler(this.cbTOS_CheckedChanged);
             // 
             // txtTOS
@@ -337,7 +329,6 @@ namespace Radegast
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Controls.Add(this.pnlSplash);
             this.Controls.Add(this.panel1);

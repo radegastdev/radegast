@@ -197,6 +197,21 @@ namespace Radegast
         /// <summary>Manages default params for different grids</summary>
         public GridManager GridManger { get { return gridManager; } }
 
+        /// <summary>
+        /// Is system using plain color theme, with white background and dark text
+        /// </summary>
+        public bool PlainColors
+        {
+            get
+            {
+                // If windows background is whiteish, declare as standard color scheme
+                var c = System.Drawing.SystemColors.Window;
+                if (c.R > 240 && c.G > 240 && c.B > 240)
+                    return true;
+                return false;
+            }
+        }
+
         #region Events
 
         #region ClientChanged event

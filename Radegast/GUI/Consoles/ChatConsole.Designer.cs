@@ -81,6 +81,7 @@ namespace Radegast
             this.ctxTeleportTo = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxEject = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxBan = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxEstateEject = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnStartIM = new System.Windows.Forms.ToolStripButton();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
@@ -102,7 +103,6 @@ namespace Radegast
             this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbChatType = new System.Windows.Forms.ComboBox();
             this.cbxInput = new Radegast.ChatInputBox();
-            this.ctxEstateEject = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -121,7 +121,6 @@ namespace Radegast
             this.btnSay.Size = new System.Drawing.Size(76, 24);
             this.btnSay.TabIndex = 10;
             this.btnSay.Text = "Say";
-            this.btnSay.UseVisualStyleBackColor = true;
             this.btnSay.Click += new System.EventHandler(this.btnSay_Click);
             // 
             // splitContainer1
@@ -148,7 +147,7 @@ namespace Radegast
             // rtbChat
             // 
             this.rtbChat.AccessibleName = "Chat history";
-            this.rtbChat.BackColor = System.Drawing.Color.White;
+            this.rtbChat.BackColor = System.Drawing.SystemColors.Window;
             this.rtbChat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbChat.HideSelection = false;
             this.rtbChat.Location = new System.Drawing.Point(0, 0);
@@ -201,7 +200,7 @@ namespace Radegast
             this.ctxBan,
             this.ctxEstateEject});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(163, 356);
+            this.avatarContext.Size = new System.Drawing.Size(163, 334);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
@@ -308,6 +307,14 @@ namespace Radegast
             this.ctxBan.ToolTipText = " Ban ";
             this.ctxBan.Click += new System.EventHandler(this.ctxBan_Click);
             // 
+            // ctxEstateEject
+            // 
+            this.ctxEstateEject.Name = "ctxEstateEject";
+            this.ctxEstateEject.Size = new System.Drawing.Size(162, 22);
+            this.ctxEstateEject.Text = "Eject from estate";
+            this.ctxEstateEject.ToolTipText = " Eject from estate ";
+            this.ctxEstateEject.Click += new System.EventHandler(this.ctxEstateEject_Click);
+            // 
             // toolStrip1
             // 
             this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Right;
@@ -338,7 +345,6 @@ namespace Radegast
             this.tbtnStartIM.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.tbtnStartIM.Enabled = false;
             this.tbtnStartIM.Image = global::Radegast.Properties.Resources.computer_16;
-            this.tbtnStartIM.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnStartIM.Name = "tbtnStartIM";
             this.tbtnStartIM.Size = new System.Drawing.Size(38, 20);
             this.tbtnStartIM.ToolTipText = "Start IM";
@@ -351,7 +357,6 @@ namespace Radegast
             this.tbtnProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.tbtnProfile.Enabled = false;
             this.tbtnProfile.Image = global::Radegast.Properties.Resources.applications_16;
-            this.tbtnProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnProfile.Name = "tbtnProfile";
             this.tbtnProfile.Size = new System.Drawing.Size(38, 20);
             this.tbtnProfile.ToolTipText = "View Profile";
@@ -369,7 +374,6 @@ namespace Radegast
             this.tbtnFollow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.tbtnFollow.Enabled = false;
             this.tbtnFollow.Image = global::Radegast.Properties.Resources.arrow_forward_16;
-            this.tbtnFollow.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnFollow.Name = "tbtnFollow";
             this.tbtnFollow.Size = new System.Drawing.Size(38, 20);
             this.tbtnFollow.ToolTipText = "Follow";
@@ -386,7 +390,6 @@ namespace Radegast
             this.tbtnTextures.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnTextures.Enabled = false;
             this.tbtnTextures.Image = ((System.Drawing.Image)(resources.GetObject("tbtnTextures.Image")));
-            this.tbtnTextures.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnTextures.Name = "tbtnTextures";
             this.tbtnTextures.Size = new System.Drawing.Size(38, 19);
             this.tbtnTextures.Text = "Txtr";
@@ -403,7 +406,6 @@ namespace Radegast
             this.tbtnAttach.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnAttach.Enabled = false;
             this.tbtnAttach.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAttach.Image")));
-            this.tbtnAttach.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnAttach.Name = "tbtnAttach";
             this.tbtnAttach.Size = new System.Drawing.Size(38, 19);
             this.tbtnAttach.Text = "Attn";
@@ -421,7 +423,6 @@ namespace Radegast
             this.tbtnMaster.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnMaster.Enabled = false;
             this.tbtnMaster.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMaster.Image")));
-            this.tbtnMaster.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnMaster.Name = "tbtnMaster";
             this.tbtnMaster.Size = new System.Drawing.Size(38, 19);
             this.tbtnMaster.Text = "Mstr";
@@ -438,7 +439,6 @@ namespace Radegast
             this.tbtnAnim.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnAnim.Enabled = false;
             this.tbtnAnim.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAnim.Image")));
-            this.tbtnAnim.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnAnim.Name = "tbtnAnim";
             this.tbtnAnim.Size = new System.Drawing.Size(38, 19);
             this.tbtnAnim.Text = "Anim";
@@ -469,7 +469,6 @@ namespace Radegast
             this.btnMoveBack.TabIndex = 2;
             this.btnMoveBack.TabStop = false;
             this.btnMoveBack.Text = "R";
-            this.btnMoveBack.UseVisualStyleBackColor = true;
             this.btnMoveBack.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseDown);
             this.btnMoveBack.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseUp);
             // 
@@ -484,7 +483,6 @@ namespace Radegast
             this.btnFwd.TabIndex = 1;
             this.btnFwd.TabStop = false;
             this.btnFwd.Text = "^";
-            this.btnFwd.UseVisualStyleBackColor = true;
             this.btnFwd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseDown);
             this.btnFwd.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseUp);
             // 
@@ -499,7 +497,6 @@ namespace Radegast
             this.btnTurnRight.TabIndex = 4;
             this.btnTurnRight.TabStop = false;
             this.btnTurnRight.Text = ">>";
-            this.btnTurnRight.UseVisualStyleBackColor = true;
             this.btnTurnRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseDown);
             this.btnTurnRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseUp);
             // 
@@ -514,7 +511,6 @@ namespace Radegast
             this.btnTurnLeft.TabIndex = 3;
             this.btnTurnLeft.TabStop = false;
             this.btnTurnLeft.Text = "<<";
-            this.btnTurnLeft.UseVisualStyleBackColor = true;
             this.btnTurnLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseDown);
             this.btnTurnLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseUp);
             // 
@@ -533,7 +529,6 @@ namespace Radegast
             // 
             this.cbChatType.AccessibleName = "Chat type";
             this.cbChatType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbChatType.BackColor = System.Drawing.SystemColors.Window;
             this.cbChatType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbChatType.Enabled = false;
             this.cbChatType.FormattingEnabled = true;
@@ -559,14 +554,6 @@ namespace Radegast
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
-            // 
-            // ctxEstateEject
-            // 
-            this.ctxEstateEject.Name = "ctxEstateEject";
-            this.ctxEstateEject.Size = new System.Drawing.Size(162, 22);
-            this.ctxEstateEject.Text = "Eject from estate";
-            this.ctxEstateEject.ToolTipText = " Eject from estate ";
-            this.ctxEstateEject.Click += new System.EventHandler(this.ctxEstateEject_Click);
             // 
             // ChatConsole
             // 

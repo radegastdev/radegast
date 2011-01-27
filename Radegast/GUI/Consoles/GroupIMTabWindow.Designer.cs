@@ -61,9 +61,9 @@ namespace Radegast
             this.rtbIMText = new System.Windows.Forms.RichTextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.chatSplit = new System.Windows.Forms.SplitContainer();
+            this.Participants = new Radegast.ListViewNoFlicker();
             this.btnShow = new System.Windows.Forms.Button();
             this.pnlChatInput = new System.Windows.Forms.Panel();
-            this.Participants = new Radegast.ListViewNoFlicker();
             this.cbxInput = new Radegast.ChatInputBox();
             this.chatSplit.Panel1.SuspendLayout();
             this.chatSplit.Panel2.SuspendLayout();
@@ -73,7 +73,7 @@ namespace Radegast
             // 
             // rtbIMText
             // 
-            this.rtbIMText.BackColor = System.Drawing.Color.White;
+            this.rtbIMText.BackColor = System.Drawing.SystemColors.Window;
             this.rtbIMText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbIMText.HideSelection = false;
             this.rtbIMText.Location = new System.Drawing.Point(0, 0);
@@ -113,6 +113,22 @@ namespace Radegast
             this.chatSplit.SplitterDistance = 377;
             this.chatSplit.TabIndex = 3;
             // 
+            // Participants
+            // 
+            this.Participants.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.Participants.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Participants.HideSelection = false;
+            this.Participants.Location = new System.Drawing.Point(0, 0);
+            this.Participants.MultiSelect = false;
+            this.Participants.Name = "Participants";
+            this.Participants.ShowGroups = false;
+            this.Participants.Size = new System.Drawing.Size(119, 302);
+            this.Participants.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.Participants.TabIndex = 4;
+            this.Participants.UseCompatibleStateImageBehavior = false;
+            this.Participants.View = System.Windows.Forms.View.List;
+            this.Participants.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Participants_MouseDoubleClick);
+            // 
             // btnShow
             // 
             this.btnShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -134,22 +150,6 @@ namespace Radegast
             this.pnlChatInput.Name = "pnlChatInput";
             this.pnlChatInput.Size = new System.Drawing.Size(500, 28);
             this.pnlChatInput.TabIndex = 4;
-            // 
-            // Participants
-            // 
-            this.Participants.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.Participants.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Participants.HideSelection = false;
-            this.Participants.Location = new System.Drawing.Point(0, 0);
-            this.Participants.MultiSelect = false;
-            this.Participants.Name = "Participants";
-            this.Participants.ShowGroups = false;
-            this.Participants.Size = new System.Drawing.Size(119, 302);
-            this.Participants.Sorting = System.Windows.Forms.SortOrder.Ascending;
-            this.Participants.TabIndex = 4;
-            this.Participants.UseCompatibleStateImageBehavior = false;
-            this.Participants.View = System.Windows.Forms.View.List;
-            this.Participants.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Participants_MouseDoubleClick);
             // 
             // cbxInput
             // 

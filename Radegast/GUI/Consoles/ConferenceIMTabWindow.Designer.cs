@@ -67,7 +67,7 @@ namespace Radegast
             // 
             // rtbIMText
             // 
-            this.rtbIMText.BackColor = System.Drawing.Color.White;
+            this.rtbIMText.BackColor = System.Drawing.SystemColors.Window;
             this.rtbIMText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbIMText.HideSelection = false;
             this.rtbIMText.Location = new System.Drawing.Point(0, 0);

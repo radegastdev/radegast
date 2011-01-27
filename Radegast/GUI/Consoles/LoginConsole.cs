@@ -71,6 +71,9 @@ namespace Radegast
 
         void LoginConsole_Load(object sender, EventArgs e)
         {
+            if (instance.PlainColors)
+                panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
+
             cbxLocation.SelectedIndex = 0;
             InitializeConfig();
         }

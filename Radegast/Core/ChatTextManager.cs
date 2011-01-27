@@ -136,14 +136,14 @@ namespace Radegast
 
                 if (showTimestamps)
                 {
-                    textPrinter.ForeColor = Color.Gray;
+                    textPrinter.ForeColor = SystemColors.GrayText;
                     textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
                 }
 
                 switch (item.Style)
                 {
                     case ChatBufferTextStyle.Normal:
-                        textPrinter.ForeColor = Color.Black;
+                        textPrinter.ForeColor = SystemColors.WindowText;
                         break;
 
                     case ChatBufferTextStyle.StatusBlue:
@@ -163,7 +163,7 @@ namespace Radegast
                         break;
 
                     case ChatBufferTextStyle.StartupTitle:
-                        textPrinter.ForeColor = Color.Black;
+                        textPrinter.ForeColor = SystemColors.WindowText;
                         textPrinter.Font = new Font(textPrinter.Font, FontStyle.Bold);
                         break;
 
