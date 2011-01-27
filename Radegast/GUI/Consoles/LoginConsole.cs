@@ -106,8 +106,7 @@ namespace Radegast
         {
             Settings s = instance.GlobalSettings;
 
-            s["first_name"] = OSD.FromString(txtFirstName.Text);
-            s["last_name"] = OSD.FromString(txtLastName.Text);
+            s["username"] = txtUsername.Text;
 
             if (netcom.LoginOptions.IsPasswordMD5)
                 s["password"] = OSD.FromString(txtPassword.Text);
@@ -146,15 +145,11 @@ namespace Radegast
             // Setup login name
             if (string.IsNullOrEmpty(MainProgram.CommandLine.Username))
             {
-                txtFirstName.Text = s["first_name"].AsString();
-                txtLastName.Text = s["last_name"].AsString();
+                txtUsername.Text = s["username"];
             }
             else
             {
-                string[] parts = System.Text.RegularExpressions.Regex.Split(MainProgram.CommandLine.Username, @"\s");
-                txtFirstName.Text = parts[0];
-                if (parts.Length > 1)
-                    txtLastName.Text = parts[1];
+                txtUsername.Text = MainProgram.CommandLine.Username;
             }
 
 
@@ -327,8 +322,18 @@ namespace Radegast
 
         private void BeginLogin()
         {
-            netcom.LoginOptions.FirstName = txtFirstName.Text;
-            netcom.LoginOptions.LastName = txtLastName.Text;
+            var parts = System.Text.RegularExpressions.Regex.Split(txtUsername.Text.Trim(), @"[. ]+");
+            if (parts.Length == 2)
+            {
+                netcom.LoginOptions.FirstName = parts[0];
+                netcom.LoginOptions.LastName = parts[1];
+            }
+            else
+            {
+                netcom.LoginOptions.FirstName = txtUsername.Text.Trim();
+                netcom.LoginOptions.LastName = "Resident";
+            }
+
             netcom.LoginOptions.Password = txtPassword.Text;
             netcom.LoginOptions.Channel = Properties.Resources.ProgramName; // Channel
             netcom.LoginOptions.Version = Properties.Resources.RadegastTitle; // Version

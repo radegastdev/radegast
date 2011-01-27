@@ -64,9 +64,7 @@ namespace Radegast
             this.cbxGrid = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtFirstName = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.txtLastName = new System.Windows.Forms.TextBox();
+            this.txtUsername = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.cbxLocation = new System.Windows.Forms.ComboBox();
@@ -97,9 +95,7 @@ namespace Radegast
             this.pnlLoginPrompt.Controls.Add(this.cbxGrid);
             this.pnlLoginPrompt.Controls.Add(this.label5);
             this.pnlLoginPrompt.Controls.Add(this.label1);
-            this.pnlLoginPrompt.Controls.Add(this.txtFirstName);
-            this.pnlLoginPrompt.Controls.Add(this.label4);
-            this.pnlLoginPrompt.Controls.Add(this.txtLastName);
+            this.pnlLoginPrompt.Controls.Add(this.txtUsername);
             this.pnlLoginPrompt.Controls.Add(this.label2);
             this.pnlLoginPrompt.Controls.Add(this.txtPassword);
             this.pnlLoginPrompt.Controls.Add(this.cbxLocation);
@@ -155,41 +151,23 @@ namespace Radegast
             this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label1.Location = new System.Drawing.Point(0, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 13);
+            this.label1.Size = new System.Drawing.Size(55, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "First Name";
+            this.label1.Text = "Username";
             // 
-            // txtFirstName
+            // txtUsername
             // 
-            this.txtFirstName.AccessibleName = "First Name";
-            this.txtFirstName.Location = new System.Drawing.Point(3, 16);
-            this.txtFirstName.Name = "txtFirstName";
-            this.txtFirstName.Size = new System.Drawing.Size(164, 21);
-            this.txtFirstName.TabIndex = 1;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label4.Location = new System.Drawing.Point(170, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(57, 13);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Last Name";
-            // 
-            // txtLastName
-            // 
-            this.txtLastName.AccessibleName = "Last Name";
-            this.txtLastName.Location = new System.Drawing.Point(173, 16);
-            this.txtLastName.Name = "txtLastName";
-            this.txtLastName.Size = new System.Drawing.Size(164, 21);
-            this.txtLastName.TabIndex = 2;
+            this.txtUsername.AccessibleName = "Username";
+            this.txtUsername.Location = new System.Drawing.Point(3, 16);
+            this.txtUsername.Name = "txtUsername";
+            this.txtUsername.Size = new System.Drawing.Size(263, 21);
+            this.txtUsername.TabIndex = 1;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label2.Location = new System.Drawing.Point(340, 0);
+            this.label2.Location = new System.Drawing.Point(272, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 13);
             this.label2.TabIndex = 3;
@@ -198,9 +176,9 @@ namespace Radegast
             // txtPassword
             // 
             this.txtPassword.AccessibleName = "Password";
-            this.txtPassword.Location = new System.Drawing.Point(343, 16);
+            this.txtPassword.Location = new System.Drawing.Point(275, 16);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(207, 21);
+            this.txtPassword.Size = new System.Drawing.Size(275, 21);
             this.txtPassword.TabIndex = 4;
             this.txtPassword.UseSystemPasswordChar = true;
             this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
@@ -382,9 +360,7 @@ namespace Radegast
 
         public System.Windows.Forms.Panel pnlLoginPrompt;
         public System.Windows.Forms.Label label1;
-        public System.Windows.Forms.TextBox txtFirstName;
-        public System.Windows.Forms.Label label4;
-        public System.Windows.Forms.TextBox txtLastName;
+        public System.Windows.Forms.TextBox txtUsername;
         public System.Windows.Forms.Label label2;
         public System.Windows.Forms.TextBox txtPassword;
         public System.Windows.Forms.ComboBox cbxLocation;

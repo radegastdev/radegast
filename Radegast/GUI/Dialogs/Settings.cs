@@ -86,6 +86,14 @@ namespace Radegast
             if (!s.ContainsKey("script_syntax_highlight")) s["script_syntax_highlight"] = OSD.FromBoolean(true);
 
             if (!s.ContainsKey("display_name_mode")) s["display_name_mode"] = (int)NameMode.Standard;
+
+            // Convert legacy settings from first last name to username
+            if (!s.ContainsKey("username") && (s.ContainsKey("first_name") && s.ContainsKey("last_name")))
+            {
+                s["username"] = s["first_name"] + " " + s["last_name"];
+                s.Remove("first_name");
+                s.Remove("last_name");
+            }
         }
 
         public frmSettings(RadegastInstance instance)
