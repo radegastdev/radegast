@@ -68,7 +68,7 @@ namespace Radegast
         {
             get
             {
-                if (!UseDisplayNames)
+                if (!client.Avatars.DisplayNamesAvailable())
                     return NameMode.Standard;
 
                 return (NameMode)instance.GlobalSettings["display_name_mode"].AsInteger();
@@ -89,20 +89,18 @@ namespace Radegast
 
         Queue<UUID> requests = new Queue<UUID>();
 
-        bool UseDisplayNames
-        {
-            get
-            {
-                return client.Avatars.DisplayNamesAvailable();
-            }
-        }
-
         int MaxNameRequests = 80;
 
+        // Queue up name request for this many ms, and send a batch requsr
         const int REQUEST_DELAY = 100;
+        // Save name cache after change to names after this many ms
         const int CACHE_DELAY = 5000;
+        // Consider request failed after this many ms
+        const int MAX_REQ_AGE = 15000;
 
         Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
+        Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
+
         #endregion private fields and properties
 
         #region construction and disposal
@@ -176,6 +174,15 @@ namespace Radegast
 
             foreach (KeyValuePair<UUID, string> kvp in e.Names)
             {
+                // Remove from the list of active requests if in UUID only (standard mode)
+                if (Mode == NameMode.Standard)
+                {
+                    lock (activeRequests)
+                    {
+                        activeRequests.Remove(kvp.Key);
+                    }
+                }
+
                 lock (names)
                 {
                     if (!names.ContainsKey(kvp.Key))
@@ -186,7 +193,7 @@ namespace Radegast
                         names[kvp.Key].IsDefaultDisplayName = true;
                     }
 
-                    string[] parts = kvp.Value.Split(' ');
+                    string[] parts = kvp.Value.Trim().Split(' ');
                     if (parts.Length == 2)
                     {
                         if (InvalidName(names[kvp.Key].DisplayName))
@@ -252,6 +259,12 @@ namespace Radegast
 
             foreach (var name in names)
             {
+                // Remove from the list of active requests
+                lock (activeRequests)
+                {
+                    activeRequests.Remove(name.ID);
+                }
+
                 if (InvalidName(name.DisplayName)) continue;
 
                 ret.Add(name.ID, FormatName(name));
@@ -278,11 +291,10 @@ namespace Radegast
 
             if (req.Count > 0)
             {
-                if (!UseDisplayNames)
-                {
-                    client.Avatars.RequestAvatarNames(req);
-                }
-                else
+                // Request standard name anyway
+                client.Avatars.RequestAvatarNames(req);
+
+                if (Mode != NameMode.Standard) // Use display names
                 {
                     client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
                         {
@@ -330,13 +342,40 @@ namespace Radegast
 
         void QueueNameRequest(UUID agentID)
         {
+            // Check if we're already waiting for an answer on this one
+            lock (activeRequests)
+            {
+                if (activeRequests.ContainsKey(agentID))
+                {
+                    // Logger.Log("Exiting is active " + agentID.ToString(), Helpers.LogLevel.Error);
+                    if (Environment.TickCount - activeRequests[agentID] < MAX_REQ_AGE) // Not timeout yet
+                    {
+                        // Logger.Log("Exiting is active " + agentID.ToString(), Helpers.LogLevel.Error);
+                        return;
+                    }
+                    else
+                    {
+                        // Logger.Log("Continuing, present but expired " + agentID.ToString(), Helpers.LogLevel.Error);
+                    }
+                }
+                else
+                {
+                    // Logger.Log("Not present " + agentID.ToString(), Helpers.LogLevel.Error);
+                }
+
+                // Record time of when we're making this request
+                activeRequests[agentID] = Environment.TickCount;
+            }
+
+
             lock (requests)
             {
                 if (!requests.Contains(agentID))
                 {
+                    // Logger.Log("Enqueueing " + agentID.ToString(), Helpers.LogLevel.Error);
                     requests.Enqueue(agentID);
 
-                    if (requests.Count >= MaxNameRequests && UseDisplayNames)
+                    if (requests.Count >= MaxNameRequests && Mode != NameMode.Standard)
                     {
                         requestTimer.Change(Timeout.Infinite, Timeout.Infinite);
                         MakeRequest(this);

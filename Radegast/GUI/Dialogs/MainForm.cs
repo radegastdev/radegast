@@ -179,6 +179,7 @@ namespace Radegast
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             RegisterClientEvents(client);
 
             InitializeStatusTimer();
@@ -212,15 +213,39 @@ namespace Radegast
                 netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
                 netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             }
+            
             if (client != null)
             {
                 UnregisterClientEvents(client);
             }
+
+            if (instance != null && instance.Names != null)
+            {
+                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            }
+
             this.instance.CleanUp();
         }
         #endregion
 
         #region Event handlers
+        void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
+        {
+            if (!e.Names.ContainsKey(client.Self.AgentID)) return;
+
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                {
+                    BeginInvoke(new MethodInvoker(() => Names_NameUpdated(sender, e)));
+                }
+                return;
+            }
+
+            RefreshWindowTitle();
+            RefreshStatusBar();
+        }
+
         void Self_MoneyBalanceReply(object sender, MoneyBalanceReplyEventArgs e)
         {
             if (!String.IsNullOrEmpty(e.Description))
@@ -419,7 +444,7 @@ namespace Radegast
         {
             if (netcom.IsLoggedIn)
             {
-                tlblLoginName.Text = netcom.LoginOptions.FullName;
+                tlblLoginName.Text = instance.Names.Get(client.Self.AgentID, client.Self.Name);
                 tlblMoneyBalance.Text = client.Self.Balance.ToString();
                 icoHealth.Text = client.Self.Health.ToString() + "%";
 
@@ -448,12 +473,13 @@ namespace Radegast
 
         private void RefreshWindowTitle()
         {
+            string name = instance.Names.Get(client.Self.AgentID, client.Self.Name);
             StringBuilder sb = new StringBuilder();
             sb.Append("Radegast - ");
 
             if (netcom.IsLoggedIn)
             {
-                sb.Append("[" + netcom.LoginOptions.FullName + "]");
+                sb.Append("[" + name + "]");
 
                 if (instance.State.IsAway)
                 {
