@@ -729,7 +729,7 @@ namespace Radegast.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://update.radegastclient.org/svc/get_latest.
+        ///   Looks up a localized string similar to http://update.radegast.org/svc/get_latest.
         /// </summary>
         public static string UpdateCheckUri {
             get {
