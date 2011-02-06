@@ -212,6 +212,7 @@ namespace Radegast
             this.btnLogin.Size = new System.Drawing.Size(116, 23);
             this.btnLogin.TabIndex = 15;
             this.btnLogin.Text = "Login";
+            this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // pnlLoggingIn
@@ -270,6 +271,7 @@ namespace Radegast
             this.btnGridManager.Size = new System.Drawing.Size(116, 23);
             this.btnGridManager.TabIndex = 16;
             this.btnGridManager.Text = "Grid Manager";
+            this.btnGridManager.UseVisualStyleBackColor = true;
             this.btnGridManager.Visible = false;
             // 
             // lblVersion

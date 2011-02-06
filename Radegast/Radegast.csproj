@@ -388,6 +388,12 @@
     <Compile Include="GUI\Consoles\TabsConsole.Designer.cs">
       <DependentUpon>TabsConsole.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Dialogs\DisplayNameChange.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\DisplayNameChange.Designer.cs">
+      <DependentUpon>DisplayNameChange.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Dialogs\GroupInfo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -654,6 +660,9 @@
     <EmbeddedResource Include="GUI\Consoles\LoginConsole.resx">
       <SubType>Designer</SubType>
       <DependentUpon>LoginConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\DisplayNameChange.resx">
+      <DependentUpon>DisplayNameChange.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\GroupInfo.resx">
       <DependentUpon>GroupInfo.cs</DependentUpon>

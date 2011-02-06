@@ -1430,6 +1430,19 @@ namespace Radegast
         {
             DisplayRegionParcelConsole();
         }
+
+        private void changeMyDisplayNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!client.Avatars.DisplayNamesAvailable())
+            {
+                tabsConsole.DisplayNotificationInChat("This grid does not support display names.", ChatBufferTextStyle.Error);
+                return;
+            }
+
+            var dlg = new DisplayNameChange(instance);
+            dlg.ShowDialog();
+        }
         #endregion
+
     }
 }
