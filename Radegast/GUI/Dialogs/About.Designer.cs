@@ -151,7 +151,7 @@ namespace Radegast
             this.lblHomepage.Name = "lblHomepage";
             this.lblHomepage.Size = new System.Drawing.Size(118, 13);
             this.lblHomepage.TabIndex = 4;
-            this.lblHomepage.Text = "www.radegastclient.org";
+            this.lblHomepage.Text = "www.radegast.org";
             this.lblHomepage.Click += new System.EventHandler(this.lblHomepage_Click);
             // 
             // frmAbout

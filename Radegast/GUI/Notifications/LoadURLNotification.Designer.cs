@@ -76,7 +76,7 @@ namespace Radegast
             this.rtbText.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.rtbText.Size = new System.Drawing.Size(289, 96);
             this.rtbText.TabIndex = 0;
-            this.rtbText.Text = "Load web page http://radegastclient.org/ ?\n\nPlease visit\n\nFrom object: Object, ow" +
+            this.rtbText.Text = "Load web page http://radegast.org/ ?\n\nPlease visit\n\nFrom object: Object, ow" +
                 "ner Latif Khalifa?";
             this.rtbText.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbText_LinkClicked);
             // 

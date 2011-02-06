@@ -36,11 +36,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Radegast")]
-[assembly: AssemblyDescription("Radegast - http://radegastclient.org/")]
+[assembly: AssemblyDescription("Radegast - http://radegast.org/")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Radegast Development Team")]
 [assembly: AssemblyProduct("Radegast Metaverse Client")]
-[assembly: AssemblyCopyright("Copyright ©  2009-2010 Radegast Development Team")]
+[assembly: AssemblyCopyright("Copyright ©  2009-2011 Radegast Development Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

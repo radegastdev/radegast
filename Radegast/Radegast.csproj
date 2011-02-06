@@ -1137,9 +1137,6 @@
     <None Include="Resources\inv_item_tattoo.png" />
     <Content Include="Resources\radegast_large.png" />
     <None Include="Resources\target_map_pos.png" />
-    <Content Include="worldmap.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\libopenmetaverse\OpenMetaverse.Rendering.Meshmerizer\OpenMetaverse.Rendering.Meshmerizer.csproj">

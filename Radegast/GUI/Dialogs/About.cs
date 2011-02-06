@@ -43,7 +43,7 @@ namespace Radegast
 
         private void lblHomepage_Click(object sender, System.EventArgs e)
         {
-            Instance.MainForm.ProcessLink("http://www.radegastclient.org/");
+            Instance.MainForm.ProcessLink("http://www.radegast.org/");
         }
 
     }
