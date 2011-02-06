@@ -38,7 +38,7 @@ using OpenMetaverse;
 
 namespace Radegast.Plugin.Demo
 {
-    [Radegast.Plugin(Name="Demo Plugin", Description="Demontration of plugin capabilites", Version="1.0")]
+    [Radegast.Plugin(Name="Demo Plugin", Description="Demonstration of plugin capabilites", Version="1.0")]
     public class DemoPlugin : IRadegastPlugin
     {
         private RadegastInstance Instance;
@@ -49,6 +49,7 @@ namespace Radegast.Plugin.Demo
         public void StartPlugin(RadegastInstance inst)
         {
             Instance = inst;
+            Instance.GlobalSettings[""] = false;
             Instance.MainForm.TabConsole.DisplayNotificationInChat("Demo Plugin version 1.0 loaded");
 
             // We want to process incoming chat in this plugin
