@@ -155,6 +155,7 @@ namespace Radegast
 
             if (!instance.TabConsole.TabExists(g.ID.ToString()))
             {
+                instance.MediaManager.PlayUISound(UISounds.IMWindow);
                 instance.TabConsole.AddGroupIMTab(g.ID, g.Name);
                 instance.TabConsole.Tabs[g.ID.ToString()].Highlight();
                 instance.TabConsole.Tabs[g.ID.ToString()].Select();

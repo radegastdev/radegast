@@ -477,6 +477,8 @@ namespace Radegast
                 if (!tab.Selected) tab.Highlight();
                 return;
             }
+            
+            instance.MediaManager.PlayUISound(UISounds.IM);
 
             IMTabWindow imTab = AddIMTab(e);
             tabs[e.IM.IMSessionID.ToString()].Highlight();
@@ -491,6 +493,8 @@ namespace Radegast
                 return;
             }
 
+            instance.MediaManager.PlayUISound(UISounds.IM);
+
             ConferenceIMTabWindow imTab = AddConferenceIMTab(e);
             tabs[e.IM.IMSessionID.ToString()].Highlight();
         }
@@ -503,6 +507,8 @@ namespace Radegast
                 if (!tab.Selected) tab.Highlight();
                 return;
             }
+
+            instance.MediaManager.PlayUISound(UISounds.IM);
 
             GroupIMTabWindow imTab = AddGroupIMTab(e);
             tabs[e.IM.IMSessionID.ToString()].Highlight();

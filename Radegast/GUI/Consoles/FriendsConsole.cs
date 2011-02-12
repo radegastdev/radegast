@@ -257,6 +257,8 @@ namespace Radegast
                     return;
                 }
 
+                instance.MediaManager.PlayUISound(UISounds.IMWindow);
+
                 instance.TabConsole.AddIMTab(selectedFriend.UUID, client.Self.AgentID ^ selectedFriend.UUID, selectedFriend.Name);
                 instance.TabConsole.SelectTab((client.Self.AgentID ^ selectedFriend.UUID).ToString());
             }

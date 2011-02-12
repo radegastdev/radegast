@@ -562,6 +562,11 @@ namespace Radegast.Media
             get { return AllObjectVolume; }
         }
 
+        /// <summary>
+        /// UI sounds volume
+        /// </summary>
+        public float UIVolume = 0.5f;
+
         private bool m_objectEnabled = true;
         /// <summary>
         /// Enable and Disable inworld sounds
@@ -596,7 +601,7 @@ namespace Radegast.Media
             {
                 new BufferSound(
                     UUID.Random(),
-                    new UUID("5e191c7b-8996-9ced-a177-b2ac32bfea06"),
+                    UISounds.Typing,
                     false,
                     true,
                     e.Position,
@@ -612,6 +617,21 @@ namespace Radegast.Media
         void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
             BufferSound.KillAll();
+        }
+
+        /// <summary>
+        /// Plays a sound
+        /// </summary>
+        /// <param name="sound">UUID of the sound to play</param>
+        public void PlayUISound(UUID sound)
+        {
+            new BufferSound(
+                UUID.Random(),
+                sound,
+                false,
+                true,
+                Instance.Client.Self.SimPosition,
+                UIVolume);
         }
 
 

@@ -1618,6 +1618,7 @@ namespace Radegast
                         break;
 
                     case "rez_inworld":
+                        instance.MediaManager.PlayUISound(UISounds.ObjectRez);
                         Vector3 rezpos = new Vector3(2, 0, 0);
                         rezpos = client.Self.SimPosition + rezpos * client.Self.Movement.BodyRotation;
                         client.Inventory.RequestRezFromInventory(client.Network.CurrentSim, Quaternion.Identity, rezpos, item);

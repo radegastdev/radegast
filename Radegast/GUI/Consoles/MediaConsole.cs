@@ -75,6 +75,11 @@ namespace Radegast
                 instance.MediaManager.ObjectVolume = (float)s["object_audio_vol"].AsReal();
                 objVolume.Value = (int)(50f * instance.MediaManager.ObjectVolume);
             }
+            if (s["ui_audio_vol"].Type != OSDType.Unknown)
+            {
+                instance.MediaManager.UIVolume = (float)s["ui_audio_vol"].AsReal();
+                UIVolume.Value = (int)(50f * instance.MediaManager.UIVolume);
+            }
 
             volAudioStream.Value = (int)(audioVolume * 50);
             instance.MediaManager.ObjectEnable = cbObjSoundEnable.Checked;
@@ -212,6 +217,7 @@ namespace Radegast
             s["parcel_audio_keep_url"] = OSD.FromBoolean(cbKeep.Checked);
             s["object_audio_vol"] = OSD.FromReal(this.instance.MediaManager.ObjectVolume);
             s["object_audio_enable"] = OSD.FromBoolean(cbObjSoundEnable.Checked);
+            s["ui_audio_vol"] = OSD.FromReal(this.instance.MediaManager.UIVolume);
         }
 
         #region GUI event handlers
@@ -274,6 +280,12 @@ namespace Radegast
                     currentURL = string.Empty;
                     Stop();
                 }
+        }
+
+        private void UIVolume_Scroll(object sender, EventArgs e)
+        {
+            instance.MediaManager.UIVolume = UIVolume.Value / 50f;
+            configTimer.Change(saveConfigTimeout, System.Threading.Timeout.Infinite);
         }
         #endregion GUI event handlers
     }

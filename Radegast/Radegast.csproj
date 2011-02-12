@@ -128,6 +128,7 @@
     <Compile Include="Core\Media\MediaObject.cs" />
     <Compile Include="Core\Media\Speech.cs" />
     <Compile Include="Core\Media\Stream.cs" />
+    <Compile Include="Core\Media\UISounds.cs" />
     <Compile Include="Core\NameManager.cs" />
     <Compile Include="Core\PluginInterface\IRadegastPlugin.cs" />
     <Compile Include="Core\PluginInterface\PluginAttribute.cs" />

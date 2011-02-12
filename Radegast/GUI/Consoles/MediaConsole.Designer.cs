@@ -74,10 +74,14 @@ namespace Radegast
             this.cbObjSoundEnable = new System.Windows.Forms.CheckBox();
             this.ObjSoundGroup = new System.Windows.Forms.GroupBox();
             this.objVolume = new System.Windows.Forms.TrackBar();
+            this.UISoundsGroup = new System.Windows.Forms.GroupBox();
+            this.UIVolume = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.volAudioStream)).BeginInit();
             this.pnlParcelAudio.SuspendLayout();
             this.ObjSoundGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.objVolume)).BeginInit();
+            this.UISoundsGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.UIVolume)).BeginInit();
             this.SuspendLayout();
             // 
             // volAudioStream
@@ -243,20 +247,48 @@ namespace Radegast
             this.objVolume.TabIndex = 0;
             this.objVolume.Value = 40;
             // 
+            // UISoundsGroup
+            // 
+            this.UISoundsGroup.AccessibleName = "UI sounds volume";
+            this.UISoundsGroup.Controls.Add(this.UIVolume);
+            this.UISoundsGroup.Location = new System.Drawing.Point(4, 220);
+            this.UISoundsGroup.Name = "UISoundsGroup";
+            this.UISoundsGroup.Size = new System.Drawing.Size(358, 53);
+            this.UISoundsGroup.TabIndex = 3;
+            this.UISoundsGroup.TabStop = false;
+            this.UISoundsGroup.Text = "UI Sounds";
+            // 
+            // UIVolume
+            // 
+            this.UIVolume.AccessibleName = "Object sounds volume";
+            this.UIVolume.LargeChange = 10;
+            this.UIVolume.Location = new System.Drawing.Point(4, 12);
+            this.UIVolume.Maximum = 50;
+            this.UIVolume.Name = "UIVolume";
+            this.UIVolume.Size = new System.Drawing.Size(347, 45);
+            this.UIVolume.SmallChange = 2;
+            this.UIVolume.TabIndex = 0;
+            this.UIVolume.Value = 20;
+            this.UIVolume.Scroll += new System.EventHandler(this.UIVolume_Scroll);
+            // 
             // MediaConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.UISoundsGroup);
             this.Controls.Add(this.ObjSoundGroup);
             this.Controls.Add(this.pnlParcelAudio);
             this.Name = "MediaConsole";
-            this.Size = new System.Drawing.Size(368, 217);
+            this.Size = new System.Drawing.Size(368, 275);
             ((System.ComponentModel.ISupportInitialize)(this.volAudioStream)).EndInit();
             this.pnlParcelAudio.ResumeLayout(false);
             this.pnlParcelAudio.PerformLayout();
             this.ObjSoundGroup.ResumeLayout(false);
             this.ObjSoundGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.objVolume)).EndInit();
+            this.UISoundsGroup.ResumeLayout(false);
+            this.UISoundsGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.UIVolume)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -278,6 +310,8 @@ namespace Radegast
         private System.Windows.Forms.GroupBox ObjSoundGroup;
         public System.Windows.Forms.CheckBox cbObjSoundEnable;
         public System.Windows.Forms.TrackBar objVolume;
+        private System.Windows.Forms.GroupBox UISoundsGroup;
+        public System.Windows.Forms.TrackBar UIVolume;
 
     }
 }

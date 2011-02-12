@@ -955,6 +955,7 @@ namespace Radegast
 
         private void btnTake_Click(object sender, EventArgs e)
         {
+            instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
             client.Inventory.RequestDeRezToInventory(currentPrim.LocalID);
         }
 
@@ -963,11 +964,15 @@ namespace Radegast
             if (currentPrim.Properties != null && currentPrim.Properties.OwnerID != client.Self.AgentID)
                 btnReturn_Click(sender, e);
             else
+            {
+                instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
                 client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.AgentInventoryTake, client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
+            }
         }
 
         private void btnReturn_Click(object sender, EventArgs e)
         {
+            instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
             client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.ReturnToOwner, UUID.Zero, UUID.Random());
         }
 

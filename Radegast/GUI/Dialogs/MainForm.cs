@@ -190,12 +190,14 @@ namespace Radegast
         {
             client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
             client.Self.MoneyBalanceReply += new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
+            client.Self.MoneyBalance += new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
             client.Parcels.ParcelProperties -= new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
             client.Self.MoneyBalanceReply -= new EventHandler<MoneyBalanceReplyEventArgs>(Self_MoneyBalanceReply);
+            client.Self.MoneyBalance -= new EventHandler<BalanceEventArgs>(Self_MoneyBalance);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -229,6 +231,25 @@ namespace Radegast
         #endregion
 
         #region Event handlers
+        void Self_MoneyBalance(object sender, BalanceEventArgs e)
+        {
+            int oldBalance = 0;
+            int.TryParse(tlblMoneyBalance.Text, out oldBalance);
+            int delta = Math.Abs(oldBalance - e.Balance);
+
+            if (delta > 50)
+            {
+                if (oldBalance > e.Balance)
+                {
+                    instance.MediaManager.PlayUISound(UISounds.MoneyIn);
+                }
+                else
+                {
+                    instance.MediaManager.PlayUISound(UISounds.MoneyOut);
+                }
+            }
+        }
+
         void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
         {
             if (!e.Names.ContainsKey(client.Self.AgentID)) return;
@@ -1323,33 +1344,10 @@ namespace Radegast
             }
         }
 
-        int nr_reg = 0;
-        int nr_agent = 0;
-
         // Menu item for testing out stuff
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (nr_reg > 0)
-            {
-                Logger.Log("Number of regions: " + nr_reg.ToString() + " agents: " + nr_agent.ToString(), Helpers.LogLevel.Info);
-                nr_reg = 0;
-                nr_agent = 0;
-                client.Grid.GridRegion -= new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
-                return;
-            }
-
-            client.Grid.GridRegion += new EventHandler<GridRegionEventArgs>(Grid_GridRegion);
-            client.Grid.RequestMainlandSims(GridLayerType.Objects);
-        }
-
-        void Grid_GridRegion(object sender, GridRegionEventArgs e)
-        {
-            nr_reg++;
-            if ((nr_reg % 100) == 0)
-            {
-                nr_agent += e.Region.Agents;
-                Logger.Log("Number of regions: " + nr_reg.ToString() + " agents: " + nr_agent.ToString(), Helpers.LogLevel.Info);
-            }
+            instance.MediaManager.PlayUISound(UISounds.IM);
         }
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)

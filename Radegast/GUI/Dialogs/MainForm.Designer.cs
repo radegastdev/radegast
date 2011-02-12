@@ -90,6 +90,7 @@ namespace Radegast
             this.groundSitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopAllAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeMyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuCreateLandmark = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuSetHome = new System.Windows.Forms.ToolStripMenuItem();
@@ -143,7 +144,6 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.changeMyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -332,6 +332,13 @@ namespace Radegast
             this.stopAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.stopAllAnimationsToolStripMenuItem.Text = "Stop All Animations";
             this.stopAllAnimationsToolStripMenuItem.Click += new System.EventHandler(this.stopAllAnimationsToolStripMenuItem_Click);
+            // 
+            // changeMyDisplayNameToolStripMenuItem
+            // 
+            this.changeMyDisplayNameToolStripMenuItem.Name = "changeMyDisplayNameToolStripMenuItem";
+            this.changeMyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.changeMyDisplayNameToolStripMenuItem.Text = "Change My Display Name";
+            this.changeMyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.changeMyDisplayNameToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
@@ -822,13 +829,6 @@ namespace Radegast
             this.ctxTreyExit.Text = "Exit";
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
-            // 
-            // changeMyDisplayNameToolStripMenuItem
-            // 
-            this.changeMyDisplayNameToolStripMenuItem.Name = "changeMyDisplayNameToolStripMenuItem";
-            this.changeMyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.changeMyDisplayNameToolStripMenuItem.Text = "Change My Display Name";
-            this.changeMyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.changeMyDisplayNameToolStripMenuItem_Click);
             // 
             // frmMain
             // 
