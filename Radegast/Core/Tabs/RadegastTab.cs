@@ -74,6 +74,11 @@ namespace Radegast
 
             if (control != null)
             {
+                if (control.Parent is Form)
+                {
+                    control.Parent.Dispose();
+                }
+
                 if (instance.TabConsole.toolStripContainer1.ContentPanel.Contains(control))
                 {
                     instance.TabConsole.toolStripContainer1.ContentPanel.Controls.Remove(control);
