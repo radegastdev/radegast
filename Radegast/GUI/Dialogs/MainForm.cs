@@ -231,21 +231,29 @@ namespace Radegast
         #endregion
 
         #region Event handlers
+        bool firstMoneyNotification = true;
         void Self_MoneyBalance(object sender, BalanceEventArgs e)
         {
             int oldBalance = 0;
             int.TryParse(tlblMoneyBalance.Text, out oldBalance);
             int delta = Math.Abs(oldBalance - e.Balance);
 
-            if (delta > 50)
+            if (firstMoneyNotification)
             {
-                if (oldBalance > e.Balance)
+                firstMoneyNotification = false;
+            }
+            else
+            {
+                if (delta > 50)
                 {
-                    instance.MediaManager.PlayUISound(UISounds.MoneyIn);
-                }
-                else
-                {
-                    instance.MediaManager.PlayUISound(UISounds.MoneyOut);
+                    if (oldBalance > e.Balance)
+                    {
+                        instance.MediaManager.PlayUISound(UISounds.MoneyIn);
+                    }
+                    else
+                    {
+                        instance.MediaManager.PlayUISound(UISounds.MoneyOut);
+                    }
                 }
             }
         }
@@ -1347,7 +1355,9 @@ namespace Radegast
         // Menu item for testing out stuff
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            instance.MediaManager.PlayUISound(UISounds.IM);
+            //instance.MediaManager.PlayUISound(UISounds.IM);
+            //Random r = new Random();
+            //client.Self.RequestMuteList((uint)r.Next());
         }
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
