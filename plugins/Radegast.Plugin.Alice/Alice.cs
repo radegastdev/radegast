@@ -59,6 +59,8 @@ namespace Radegast.Plugin.Alice
         private bool shout2shout = false;
         private bool whisper2whisper = false;
         private ToolStripMenuItem respondWithoutNameButton, distance_5m, distance_10m, distance_15m, distance_20m, btn_shout2shout, btn_whisper2whisper;
+        private bool DisableOnStart = false;
+        private ToolStripMenuItem btn_DisableOnStart;
 
         public void StartPlugin(RadegastInstance inst)
         {
@@ -73,6 +75,25 @@ namespace Radegast.Plugin.Alice
             {
                 Enabled = Instance.GlobalSettings["plugin.alice.enabled"].AsBoolean();
             }
+
+            if (!Instance.GlobalSettings.Keys.Contains("plugin.alice.disableOnStart"))
+            {
+                Instance.GlobalSettings["plugin.alice.disableOnStart"] = OSD.FromBoolean(DisableOnStart);
+            }
+            else
+            {
+                DisableOnStart = Instance.GlobalSettings["plugin.alice.disableOnStart"].AsBoolean();
+            }
+            if (DisableOnStart)
+            {
+                Enabled = false;
+            }
+            btn_DisableOnStart = new ToolStripMenuItem("Disable on start", null, (object sender, EventArgs e) =>
+            {
+                DisableOnStart = btn_DisableOnStart.Checked = !DisableOnStart;
+                Instance.GlobalSettings["plugin.alice.disableOnStart"] = OSD.FromBoolean(DisableOnStart);
+            });
+            btn_DisableOnStart.Checked = DisableOnStart;
 
             EnabledButton = new ToolStripMenuItem("Enabled", null, (object sender, EventArgs e) =>
             {
@@ -245,6 +266,7 @@ namespace Radegast.Plugin.Alice
             btn_shout2shout.Checked = shout2shout;
             btn_whisper2whisper.Checked = whisper2whisper;
 
+            MenuButton.DropDownItems.Add(btn_DisableOnStart);
             MenuButton.DropDownItems.Add("Reload AIML", null, (object sender, EventArgs e) =>
             {
                 Alice = null;
@@ -287,7 +309,7 @@ namespace Radegast.Plugin.Alice
             EnabledButton.Dispose();
             MenuButton.Dispose();
 
-            if (talkToAvatar!=null)
+            if (talkToAvatar != null)
             {
                 Instance.ContextActionManager.DeregisterContextAction(talkToAvatar);
             }
@@ -316,7 +338,7 @@ namespace Radegast.Plugin.Alice
             UnregisterClientEvents(e.OldClient);
             RegisterClientEvents(Client);
         }
-        
+
         void Netcom_ClientConnected(object sender, EventArgs e)
         {
             Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
@@ -347,7 +369,7 @@ namespace Radegast.Plugin.Alice
         void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
-            if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0 ) return;
+            if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0) return;
 
             bool parseForResponse = Alice.isAcceptingUserInput && Enabled;
             if (parseForResponse && respondRange >= 0)
