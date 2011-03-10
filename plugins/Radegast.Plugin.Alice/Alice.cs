@@ -42,7 +42,7 @@ using AIMLbot;
 
 namespace Radegast.Plugin.Alice
 {
-    [Radegast.Plugin(Name = "ALICE Chatbot", Description = "A.L.I.C.E. based AI chat bot", Version = "1.0")]
+    [Radegast.Plugin(Name = "ALICE Chatbot", Description = "A.L.I.C.E. based AI chat bot", Version = "1.1")]
     public class AliceAI : IRadegastPlugin
     {
         private RadegastInstance Instance;
@@ -54,6 +54,11 @@ namespace Radegast.Plugin.Alice
         private Hashtable AliceUsers = new Hashtable();
         private ToolStripMenuItem MenuButton, EnabledButton;
         private TalkToAvatar talkToAvatar;
+        private bool respondWithoutName = false;
+        private int respondRange = -1;
+        private bool shout2shout = false;
+        private bool whisper2whisper = false;
+        private ToolStripMenuItem respondWithoutNameButton, distance_5m, distance_10m, distance_15m, distance_20m, btn_shout2shout, btn_whisper2whisper;
 
         public void StartPlugin(RadegastInstance inst)
         {
@@ -75,6 +80,132 @@ namespace Radegast.Plugin.Alice
                 Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
             });
 
+            if (!Instance.GlobalSettings.Keys.Contains("plugin.alice.respondWithoutName"))
+            {
+                Instance.GlobalSettings["plugin.alice.respondWithoutName"] = OSD.FromBoolean(respondWithoutName);
+            }
+            else
+            {
+                respondWithoutName = Instance.GlobalSettings["plugin.alice.respondWithoutName"].AsBoolean();
+            }
+
+            respondWithoutNameButton = new ToolStripMenuItem("Respond without name", null, (object sender, EventArgs e) =>
+            {
+                respondWithoutName = respondWithoutNameButton.Checked = !respondWithoutName;
+                Instance.GlobalSettings["plugin.alice.respondWithoutName"] = OSD.FromBoolean(respondWithoutName);
+            });
+
+            if (!Instance.GlobalSettings.Keys.Contains("plugin.alice.respondRange"))
+            {
+                Instance.GlobalSettings["plugin.alice.respondRange"] = respondRange;
+            }
+            else
+            {
+                respondRange = Instance.GlobalSettings["plugin.alice.respondRange"];
+            }
+
+            distance_5m = new ToolStripMenuItem("5m range", null, (object sender, EventArgs e) =>
+            {
+                distance_5m.Checked = !distance_5m.Checked;
+                if (distance_5m.Checked)
+                {
+                    respondRange = 5;
+                    distance_10m.Checked = false;
+                    distance_15m.Checked = false;
+                    distance_20m.Checked = false;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+                else if (!distance_10m.Checked && !distance_15m.Checked && !distance_20m.Checked)
+                {
+                    respondRange = -1;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+            });
+
+            distance_10m = new ToolStripMenuItem("10m range", null, (object sender, EventArgs e) =>
+            {
+                distance_10m.Checked = !distance_10m.Checked;
+                if (distance_10m.Checked)
+                {
+                    respondRange = 10;
+                    distance_5m.Checked = false;
+                    distance_15m.Checked = false;
+                    distance_20m.Checked = false;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+                else if (!distance_5m.Checked && !distance_15m.Checked && !distance_20m.Checked)
+                {
+                    respondRange = -1;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+            });
+
+            distance_15m = new ToolStripMenuItem("15m range", null, (object sender, EventArgs e) =>
+            {
+                distance_15m.Checked = !distance_15m.Checked;
+                if (distance_15m.Checked)
+                {
+                    respondRange = 15;
+                    distance_5m.Checked = false;
+                    distance_10m.Checked = false;
+                    distance_20m.Checked = false;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+                else if (!distance_5m.Checked && !distance_10m.Checked && !distance_20m.Checked)
+                {
+                    respondRange = -1;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+            });
+
+            distance_20m = new ToolStripMenuItem("20m range", null, (object sender, EventArgs e) =>
+            {
+                distance_20m.Checked = !distance_20m.Checked;
+                if (distance_20m.Checked)
+                {
+                    respondRange = 20;
+                    distance_5m.Checked = false;
+                    distance_10m.Checked = false;
+                    distance_15m.Checked = false;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+                else if (!distance_5m.Checked && !distance_10m.Checked && !distance_15m.Checked)
+                {
+                    respondRange = -1;
+                    Instance.GlobalSettings["plugin.alice.respondRange"] = OSD.FromReal(respondRange);
+                }
+            });
+
+            if (!Instance.GlobalSettings.ContainsKey("plugin.alice.shout2shout"))
+            {
+                Instance.GlobalSettings["plugin.alice.shout2shout"] = OSD.FromBoolean(shout2shout);
+            }
+            else
+            {
+                shout2shout = Instance.GlobalSettings["plugin.alice.shout2shout"].AsBoolean();
+            }
+
+            btn_shout2shout = new ToolStripMenuItem("Shout response to Shout", null, (object sender, EventArgs e) =>
+            {
+                shout2shout = btn_shout2shout.Checked = !shout2shout;
+                Instance.GlobalSettings["plugin.alice.shout2shout"] = OSD.FromBoolean(shout2shout);
+            });
+
+            if (!Instance.GlobalSettings.ContainsKey("plugin.alice.whisper2whisper"))
+            {
+                Instance.GlobalSettings["plugin.alice.whisper2whisper"] = OSD.FromBoolean(whisper2whisper);
+            }
+            else
+            {
+                whisper2whisper = Instance.GlobalSettings["plugin.alice.whisper2whisper"].AsBoolean();
+            }
+
+            btn_whisper2whisper = new ToolStripMenuItem("Whisper response to Whisper", null, (object sender, EventArgs e) =>
+            {
+                whisper2whisper= btn_whisper2whisper.Checked = !whisper2whisper;
+                Instance.GlobalSettings["plugin.alice.whisper2whisper"] = OSD.FromBoolean(whisper2whisper);
+            });
+
             MenuButton = new ToolStripMenuItem("ALICE chatbot", null, (object sender, EventArgs e) =>
             {
                 Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
@@ -85,6 +216,35 @@ namespace Radegast.Plugin.Alice
             Instance.MainForm.PluginsMenu.Visible = true;
             MenuButton.DropDownItems.Add(EnabledButton);
             MenuButton.Checked = EnabledButton.Checked = Enabled;
+
+            MenuButton.DropDownItems.Add(respondWithoutNameButton);
+            MenuButton.DropDownItems.Add(distance_5m);
+            MenuButton.DropDownItems.Add(distance_10m);
+            MenuButton.DropDownItems.Add(distance_15m);
+            MenuButton.DropDownItems.Add(distance_20m);
+            MenuButton.DropDownItems.Add(btn_shout2shout);
+            MenuButton.DropDownItems.Add(btn_whisper2whisper);
+
+            respondWithoutNameButton.Checked = respondWithoutName;
+            if (respondRange == 5.0)
+            {
+                distance_5m.Checked = true;
+            }
+            else if (respondRange == 10.0)
+            {
+                distance_10m.Checked = true;
+            }
+            else if (respondRange == 15.0)
+            {
+                distance_15m.Checked = true;
+            }
+            else if (respondRange == 20.0)
+            {
+                distance_20m.Checked = true;
+            }
+            btn_shout2shout.Checked = shout2shout;
+            btn_whisper2whisper.Checked = whisper2whisper;
+
             MenuButton.DropDownItems.Add("Reload AIML", null, (object sender, EventArgs e) =>
             {
                 Alice = null;
@@ -187,9 +347,20 @@ namespace Radegast.Plugin.Alice
         void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
-            if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name) return;
+            if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0 ) return;
 
-            if (Alice.isAcceptingUserInput && e.Message.ToLower().Contains(FirstName(Client.Self.Name).ToLower()) && Enabled)
+            bool parseForResponse = Alice.isAcceptingUserInput && Enabled;
+            if (parseForResponse && respondRange >= 0)
+            {
+                parseForResponse = Vector3.Distance(Client.Self.SimPosition, e.Position) <= respondRange;
+            }
+            if (parseForResponse)
+            {
+                parseForResponse = respondWithoutName || e.Message.ToLower().Contains(FirstName(Client.Self.Name).ToLower());
+            }
+
+
+            if (parseForResponse)
             {
                 Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
                 string msg = e.Message.ToLower();
@@ -221,7 +392,16 @@ namespace Radegast.Plugin.Alice
                     outp = outp.Substring(0, 1000);
                 }
 
-                Client.Self.Chat(outp, 0, ChatType.Normal);
+                ChatType useChatType = ChatType.Normal;
+                if (shout2shout && e.Type == ChatType.Shout)
+                {
+                    useChatType = ChatType.Shout;
+                }
+                else if (whisper2whisper && e.Type == ChatType.Whisper)
+                {
+                    useChatType = ChatType.Whisper;
+                }
+                Client.Self.Chat(outp, 0, useChatType);
             }
         }
 
