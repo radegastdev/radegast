@@ -49,7 +49,6 @@ namespace Radegast.Plugin.Demo
         public void StartPlugin(RadegastInstance inst)
         {
             Instance = inst;
-            Instance.GlobalSettings[""] = false;
             Instance.MainForm.TabConsole.DisplayNotificationInChat("Demo Plugin version 1.0 loaded");
 
             // We want to process incoming chat in this plugin
