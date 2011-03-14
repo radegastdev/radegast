@@ -99,6 +99,7 @@ namespace Radegast
             this.txtDN1.Name = "txtDN1";
             this.txtDN1.Size = new System.Drawing.Size(339, 20);
             this.txtDN1.TabIndex = 2;
+            this.txtDN1.MaxLength = 31; // see http://community.secondlife.com/t5/English-Knowledge-Base/Display-names/ta-p/700173
             // 
             // label3
             // 
@@ -116,6 +117,7 @@ namespace Radegast
             this.txtDN2.Name = "txtDN2";
             this.txtDN2.Size = new System.Drawing.Size(339, 20);
             this.txtDN2.TabIndex = 4;
+            this.txtDN2.MaxLength = 31; // see http://community.secondlife.com/t5/English-Knowledge-Base/Display-names/ta-p/700173
             // 
             // btnApply
             // 
