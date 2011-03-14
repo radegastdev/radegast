@@ -119,9 +119,16 @@ namespace Radegast
             }
             set 
             {
-                SettingsData[key] = value;
-                FireEvent(key, value);
-                Save();
+                if (string.IsNullOrEmpty(key))
+                {
+                    Logger.DebugLog("Warning: trying to set an emprty setting: " + Environment.StackTrace.ToString());
+                }
+                else
+                {
+                    SettingsData[key] = value;
+                    FireEvent(key, value);
+                    Save();
+                }
             }
         }
 
