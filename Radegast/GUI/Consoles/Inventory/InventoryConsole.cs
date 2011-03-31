@@ -33,6 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
 using OpenMetaverse;
@@ -65,6 +66,8 @@ namespace Radegast
         private List<UUID> WornItems = new List<UUID>();
         private bool appearnceWasBusy;
         private InvNodeSorter sorter;
+        private List<UUID> QueuedFolders = new List<UUID>();
+        private Dictionary<UUID, int> FolderFetchRetries = new Dictionary<UUID, int>();
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -631,6 +634,37 @@ namespace Radegast
             }
         }
 
+        private void TraverseAndQueueNodes(InventoryNode start)
+        {
+            if (start.NeedsUpdate)
+            {
+                lock (QueuedFolders)
+                {
+                    lock (FolderFetchRetries)
+                    {
+                        int retries = 0;
+                        FolderFetchRetries.TryGetValue(start.Data.UUID, out retries);
+                        if (retries < 3)
+                        {
+                            if (!QueuedFolders.Contains(start.Data.UUID))
+                            {
+                                QueuedFolders.Add(start.Data.UUID);
+                            }
+                        }
+                        FolderFetchRetries[start.Data.UUID] = retries + 1;
+                    }
+                }
+            }
+
+            foreach (InventoryBase item in Inventory.GetContents((InventoryFolder)start.Data))
+            {
+                if (item is InventoryFolder)
+                {
+                    TraverseAndQueueNodes(Inventory.GetNodeFor(item.UUID));
+                }
+            }
+        }
+
         private void TraverseNodes(InventoryNode start)
         {
             bool has_items = false;
@@ -684,10 +718,73 @@ namespace Radegast
 
         private void StartTraverseNodes()
         {
+            if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
+            {
+                AutoResetEvent EQRunning = new AutoResetEvent(false);
+                EventHandler<EventQueueRunningEventArgs> handler = (sender, e) =>
+                    {
+                        EQRunning.Set();
+                    };
+                client.Network.EventQueueRunning += handler;
+                EQRunning.WaitOne(10 * 1000, false);
+                client.Network.EventQueueRunning -= handler;
+            }
+
+            if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
+            {
+                return;
+            }
+
             UpdateStatus("Loading...");
             TreeUpdateInProgress = true;
             TreeUpdateTimer.Start();
-            TraverseNodes(Inventory.RootNode);
+
+            if (null == client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2"))
+            {
+                TraverseNodes(Inventory.RootNode);
+            }
+            else
+            {
+                lock (FolderFetchRetries)
+                {
+                    FolderFetchRetries.Clear();
+                }
+
+                do
+                {
+                    lock (QueuedFolders)
+                    {
+                        QueuedFolders.Clear();
+                    }
+                    TraverseAndQueueNodes(Inventory.RootNode);
+                    Logger.DebugLog(string.Format("Queued {0} folders for update", QueuedFolders.Count));
+
+                    Parallel.ForEach<UUID>(Math.Max(QueuedFolders.Count, 12), QueuedFolders, folderID =>
+                    {
+                        bool success = false;
+
+                        AutoResetEvent gotFolder = new AutoResetEvent(false);
+                        EventHandler<FolderUpdatedEventArgs> handler = (sender, ev) =>
+                            {
+                                if (ev.FolderID == folderID)
+                                {
+                                    success = ev.Success;
+                                    gotFolder.Set();
+                                }
+                            };
+
+                        client.Inventory.FolderUpdated += handler;
+                        client.Inventory.RequestFolderContentsCap(folderID, client.Self.AgentID, true, true, InventorySortOrder.ByDate);
+                        if (!gotFolder.WaitOne(15 * 1000, false))
+                        {
+                            success = false;
+                        }
+                        client.Inventory.FolderUpdated -= handler;
+                    });
+                }
+                while (QueuedFolders.Count > 0);
+            }
+
             TreeUpdateTimer.Stop();
             Invoke(new MethodInvoker(() => TreeUpdateTimerTick(null, null)));
             TreeUpdateInProgress = false;
@@ -749,6 +846,7 @@ namespace Radegast
             invTree.Nodes.Clear();
             UUID2NodeCache.Clear();
             invRootNode = AddDir(null, Inventory.RootFolder);
+            Inventory.RootNode.NeedsUpdate = true;
 
             InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
             InventoryUpdate.Name = "InventoryUpdate";
@@ -918,7 +1016,15 @@ namespace Radegast
                 {
                     fetchedFolders.Add(folderID);
                 }
-                client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
+
+                if (null == client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2"))
+                {
+                    client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
+                }
+                else
+                {
+                    client.Inventory.RequestFolderContentsCap(folderID, ownerID, true, true, InventorySortOrder.ByDate);
+                }
             }
         }
 
@@ -2104,7 +2210,7 @@ namespace Radegast
                     {
                         add = true;
                     }
-                    
+
                     if (cbSrchWorn.Checked && add &&
                             !(
                                 (it.InventoryType == InventoryType.Wearable && IsWorn(it)) ||
