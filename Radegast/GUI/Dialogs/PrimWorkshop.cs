@@ -281,7 +281,6 @@ namespace Radegast
                         if (!LoadTexture(primList[i].Sculpt.SculptTexture, ref img, true))
                             continue;
                         mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.Highest);
-                        img.Dispose();
                     }
                     else
                     {
