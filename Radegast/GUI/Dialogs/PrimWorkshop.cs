@@ -401,6 +401,7 @@ namespace Radegast
                             }
 
                             img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
+                            Textures[textureID] = (System.Drawing.Image)img.Clone();
                         }
                         gotImage.Set();
                     }
@@ -408,7 +409,6 @@ namespace Radegast
                 gotImage.WaitOne(30 * 1000, false);
                 if (img != null)
                 {
-                    Textures.Add(textureID, img);
                     texture = img;
                     Wireframe = false;
                     return true;
