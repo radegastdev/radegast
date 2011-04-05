@@ -326,7 +326,7 @@ namespace Radegast
                     // Texture for this face
                     if (LoadTexture(teFace.TextureID, ref data.Texture, false))
                     {
-                        if (!instance.MonoRuntime || IsHandleCreated)
+                        if (IsHandleCreated)
                         {
                             Invoke(new MethodInvoker(() =>
                             {
@@ -359,7 +359,7 @@ namespace Radegast
 
                 Prims.Add(mesh);
 
-                if (!instance.MonoRuntime || IsHandleCreated)
+                if (IsHandleCreated)
                 {
                     BeginInvoke(new MethodInvoker(() =>
                     {
