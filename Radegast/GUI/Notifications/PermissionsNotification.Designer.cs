@@ -58,21 +58,21 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnIgnore = new System.Windows.Forms.Button();
+            this.btnMute = new System.Windows.Forms.Button();
             this.btnNo = new System.Windows.Forms.Button();
             this.btnYes = new System.Windows.Forms.Button();
             this.txtMessage = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // btnIgnore
+            // btnMute
             // 
-            this.btnIgnore.Location = new System.Drawing.Point(165, 62);
-            this.btnIgnore.Name = "btnIgnore";
-            this.btnIgnore.Size = new System.Drawing.Size(75, 23);
-            this.btnIgnore.TabIndex = 8;
-            this.btnIgnore.Text = "&Ignore";
-            this.btnIgnore.UseVisualStyleBackColor = true;
-            this.btnIgnore.Click += new System.EventHandler(this.btnIgnore_Click);
+            this.btnMute.Location = new System.Drawing.Point(165, 62);
+            this.btnMute.Name = "btnMute";
+            this.btnMute.Size = new System.Drawing.Size(75, 23);
+            this.btnMute.TabIndex = 8;
+            this.btnMute.Text = "&Mute";
+            this.btnMute.UseVisualStyleBackColor = true;
+            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
             // 
             // btnNo
             // 
@@ -111,7 +111,7 @@ namespace Radegast
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.btnIgnore);
+            this.Controls.Add(this.btnMute);
             this.Controls.Add(this.btnNo);
             this.Controls.Add(this.btnYes);
             this.Controls.Add(this.txtMessage);
@@ -124,7 +124,7 @@ namespace Radegast
 
         #endregion
 
-        public System.Windows.Forms.Button btnIgnore;
+        public System.Windows.Forms.Button btnMute;
         public System.Windows.Forms.Button btnNo;
         public System.Windows.Forms.Button btnYes;
         public System.Windows.Forms.TextBox txtMessage;

@@ -181,7 +181,6 @@ namespace Radegast
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            netcom.ChatReceived += new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             netcom.ChatSent += new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived += new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
             netcom.InstantMessageReceived += new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
@@ -192,7 +191,6 @@ namespace Radegast
             netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
-            netcom.ChatReceived -= new EventHandler<ChatEventArgs>(netcom_ChatReceived);
             netcom.ChatSent -= new EventHandler<ChatSentEventArgs>(netcom_ChatSent);
             netcom.AlertMessageReceived -= new EventHandler<AlertMessageEventArgs>(netcom_AlertMessageReceived);
             netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
@@ -202,12 +200,19 @@ namespace Radegast
         {
             // Is this object muted
             if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.ObjectID) // muted object by id
-                || (m.Type == MuteType.ByName && m.Name == e.ObjectName))) return;
+                || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
+                )) return;
+            
             instance.MainForm.AddNotification(new ntfScriptDialog(instance, e.Message, e.ObjectName, e.ImageID, e.ObjectID, e.FirstName, e.LastName, e.Channel, e.ButtonLabels));
         }
 
         void Self_ScriptQuestion(object sender, ScriptQuestionEventArgs e)
         {
+            // Is this object muted
+            if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.TaskID) // muted object by id
+                || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
+                )) return;
+
             instance.MainForm.AddNotification(new ntfPermissions(instance, e.Simulator, e.TaskID, e.ItemID, e.ObjectName, e.ObjectOwnerName, e.Questions));
         }
 
@@ -280,20 +285,22 @@ namespace Radegast
             tabs["chat"].Highlight();
         }
 
-        private void netcom_ChatReceived(object sender, ChatEventArgs e)
-        {
-            if (string.IsNullOrEmpty(e.Message)) return;
-
-            tabs["chat"].Highlight();
-        }
-
         void Self_LoadURL(object sender, LoadUrlEventArgs e)
         {
+            // Is the object or the owner muted?
+            if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.ObjectID) // muted object by id 
+                || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
+                || (m.Type == MuteType.Resident && m.ID == e.OwnerID) // object's owner muted
+                )) return;
+
             instance.MainForm.AddNotification(new ntfLoadURL(instance, e));
         }
 
         private void netcom_InstantMessageReceived(object sender, InstantMessageEventArgs e)
         {
+            // Messaage from someone we muted?
+            if (null != client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == e.IM.FromAgentID)) return;
+
             switch (e.IM.Dialog)
             {
                 case InstantMessageDialog.SessionSend:
@@ -469,6 +476,12 @@ namespace Radegast
 
         private void HandleIMFromObject(InstantMessageEventArgs e)
         {
+            // Is the object or the owner muted?
+            if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.IM.IMSessionID) // muted object by id 
+                || (m.Type == MuteType.ByName && m.Name == e.IM.FromAgentName) // object muted by name
+                || (m.Type == MuteType.Resident && m.ID == e.IM.FromAgentID) // object's owner muted
+                )) return;
+
             DisplayNotificationInChat(e.IM.FromAgentName + ": " + e.IM.Message);
         }
 

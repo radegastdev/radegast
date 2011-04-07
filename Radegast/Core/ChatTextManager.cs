@@ -220,6 +220,19 @@ namespace Radegast
         {
             if (string.IsNullOrEmpty(e.Message)) return;
 
+            // Check if the sender agent is muted
+            if (e.SourceType == ChatSourceType.Agent &&
+                null != client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == e.SourceID)
+                ) return;
+
+            // Check if sender object is muted
+            if (e.SourceType == ChatSourceType.Object &&
+                null != client.Self.MuteList.Find(me =>
+                    (me.Type == MuteType.Resident && me.ID == e.OwnerID) // Owner muted
+                    || (me.Type == MuteType.Object && me.ID == e.SourceID) // Object muted by ID
+                    || (me.Type == MuteType.ByName && me.Name == e.FromName) // Object muted by name
+                )) return;
+
             if (instance.RLV.Enabled && e.Message.StartsWith("@"))
             {
                 instance.RLV.TryProcessCMD(e);
@@ -299,6 +312,8 @@ namespace Radegast
             }
 
             ProcessBufferItem(item, true);
+            instance.TabConsole.Tabs["chat"].Highlight();
+
             sb = null;
         }
 

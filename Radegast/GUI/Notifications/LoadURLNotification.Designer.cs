@@ -61,6 +61,7 @@ namespace Radegast
             this.rtbText = new System.Windows.Forms.RichTextBox();
             this.btnGoTo = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.btnMute = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rtbText
@@ -76,8 +77,8 @@ namespace Radegast
             this.rtbText.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.rtbText.Size = new System.Drawing.Size(289, 96);
             this.rtbText.TabIndex = 0;
-            this.rtbText.Text = "Load web page http://radegast.org/ ?\n\nPlease visit\n\nFrom object: Object, ow" +
-                "ner Latif Khalifa?";
+            this.rtbText.Text = "Load web page http://radegast.org/ ?\n\nPlease visit\n\nFrom object: Object, owner La" +
+                "tif Khalifa?";
             this.rtbText.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbText_LinkClicked);
             // 
             // btnGoTo
@@ -100,10 +101,21 @@ namespace Radegast
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // btnMute
+            // 
+            this.btnMute.Location = new System.Drawing.Point(230, 117);
+            this.btnMute.Name = "btnMute";
+            this.btnMute.Size = new System.Drawing.Size(75, 23);
+            this.btnMute.TabIndex = 3;
+            this.btnMute.Text = "Mute";
+            this.btnMute.UseVisualStyleBackColor = true;
+            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
+            // 
             // ntfLoadURL
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btnMute);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnGoTo);
             this.Controls.Add(this.rtbText);
@@ -119,6 +131,7 @@ namespace Radegast
         public System.Windows.Forms.RichTextBox rtbText;
         public System.Windows.Forms.Button btnGoTo;
         public System.Windows.Forms.Button btnCancel;
+        public System.Windows.Forms.Button btnMute;
 
     }
 }

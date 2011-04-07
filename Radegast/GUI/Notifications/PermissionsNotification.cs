@@ -66,7 +66,7 @@ namespace Radegast
             args.Text = txtMessage.Text;
             args.Buttons.Add(btnYes);
             args.Buttons.Add(btnNo);
-            args.Buttons.Add(btnIgnore);
+            args.Buttons.Add(btnMute);
             FireNotificationCallback(args);
         }
 
@@ -82,8 +82,9 @@ namespace Radegast
             instance.MainForm.RemoveNotification(this);
         }
 
-        private void btnIgnore_Click(object sender, EventArgs e)
+        private void btnMute_Click(object sender, EventArgs e)
         {
+            instance.Client.Self.UpdateMuteListEntry(MuteType.Object, taskID, objectName);
             instance.MainForm.RemoveNotification(this);
         }
     }

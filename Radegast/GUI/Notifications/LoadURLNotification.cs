@@ -118,5 +118,11 @@ namespace Radegast
                 rtbText.BackColor = Parent.BackColor;
             }
         }
+
+        private void btnMute_Click(object sender, EventArgs e)
+        {
+            instance.Client.Self.UpdateMuteListEntry(MuteType.Object, ev.ObjectID, ev.ObjectName);
+            instance.MainForm.RemoveNotification(this);
+        }
     }
 }
