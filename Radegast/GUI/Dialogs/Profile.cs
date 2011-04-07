@@ -103,6 +103,7 @@ namespace Radegast
             client.Avatars.PickInfoReply += new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply += new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
+            client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.InventoryClipboardUpdated += new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
             InitializeProfile();
@@ -115,8 +116,39 @@ namespace Radegast
             client.Avatars.PickInfoReply -= new EventHandler<PickInfoReplyEventArgs>(Avatars_PickInfoReply);
             client.Parcels.ParcelInfoReply -= new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
             client.Avatars.AvatarGroupsReply -= new EventHandler<AvatarGroupsReplyEventArgs>(Avatars_AvatarGroupsReply);
+            client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
             netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.InventoryClipboardUpdated -= new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
+        }
+
+        void Self_MuteListUpdated(object sender, EventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Self_MuteListUpdated(sender, e)));
+                }
+                return;
+            }
+
+            UpdateMuteButton();
+        }
+
+        void UpdateMuteButton()
+        {
+            bool isMuted = client.Self.MuteList.Find(me => (me.Type == MuteType.Resident && me.ID == agentID)) != null;
+
+            if (isMuted)
+            {
+                btnMute.Enabled = false;
+                btnUnmute.Enabled = true;
+            }
+            else
+            {
+                btnMute.Enabled = true;
+                btnUnmute.Enabled = false;
+            }
         }
 
         void instance_InventoryClipboardUpdated(object sender, EventArgs e)
@@ -388,6 +420,19 @@ namespace Radegast
             btnOfferTeleport.Enabled = btnPay.Enabled = (agentID != client.Self.AgentID);
 
             client.Avatars.RequestAvatarProperties(agentID);
+            UpdateMuteButton();
+
+            if (agentID == client.Self.AgentID)
+            {
+                btnGive.Visible =
+                    btnIM.Visible =
+                    btnMute.Visible =
+                    btnUnmute.Visible =
+                    btnOfferTeleport.Visible =
+                    btnPay.Visible =
+                    btnFriend.Visible =
+                    false;
+            }
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -608,6 +653,25 @@ namespace Radegast
                     Invoke(new MethodInvoker(() => ClearPicks()));
                     client.Avatars.RequestAvatarPicks(agentID);
                 });
+        }
+
+        private void btnMute_Click(object sender, EventArgs e)
+        {
+            client.Self.UpdateMuteListEntry(MuteType.Resident, agentID, instance.Names.GetLegacyName(agentID));
+        }
+
+        private void btnUnmute_Click(object sender, EventArgs e)
+        {
+            MuteEntry me = client.Self.MuteList.Find(mle => mle.Type == MuteType.Resident && mle.ID == agentID);
+
+            if (me != null)
+            {
+                client.Self.RemoveMuteListEntry(me.ID, me.Name);
+            }
+            else
+            {
+                client.Self.RemoveMuteListEntry(agentID, instance.Names.GetLegacyName(agentID));
+            }
         }
     }
 }

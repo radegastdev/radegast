@@ -81,7 +81,10 @@ namespace Radegast
 
         void CleanupHandlers(object sender, EventArgs e)
         {
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            if (instance != null && instance.Names != null)
+            {
+                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            }
         }
 
         void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)

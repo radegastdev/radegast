@@ -391,6 +391,27 @@ namespace Radegast
 
         #region public methods
         /// <summary>
+        /// Gets legacy First Last name
+        /// </summary>
+        /// <param name="agentID">UUID of the agent</param>
+        /// <returns></returns>
+        public string GetLegacyName(UUID agentID)
+        {
+            if (agentID == UUID.Zero) return "(???) (???)";
+
+            lock (names)
+            {
+                if (names.ContainsKey(agentID))
+                {
+                    return names[agentID].LegacyFullName;
+                }
+            }
+
+            QueueNameRequest(agentID);
+            return RadegastInstance.INCOMPLETE_NAME;
+        }
+
+        /// <summary>
         /// Get avatar display name, or queue fetching of the name
         /// </summary>
         /// <param name="agentID">UUID of avatar to lookup</param>

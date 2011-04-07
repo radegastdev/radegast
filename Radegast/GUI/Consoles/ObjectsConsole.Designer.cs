@@ -62,6 +62,7 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ObjectsConsole));
             this.gbxInworld = new System.Windows.Forms.GroupBox();
             this.btnContents = new System.Windows.Forms.Button();
+            this.btnMute = new System.Windows.Forms.Button();
             this.btnTake = new System.Windows.Forms.Button();
             this.btnWalkTo = new System.Windows.Forms.Button();
             this.btnTurnTo = new System.Windows.Forms.Button();
@@ -91,7 +92,6 @@ namespace Radegast
             this.cbOwnerCopy = new System.Windows.Forms.CheckBox();
             this.cbOwnerModify = new System.Windows.Forms.CheckBox();
             this.txtPrims = new System.Windows.Forms.TextBox();
-            this.txtCreator = new Radegast.AgentNameTextBox();
             this.txtOwner = new Radegast.AgentNameTextBox();
             this.txtHover = new System.Windows.Forms.TextBox();
             this.txtDescription = new System.Windows.Forms.TextBox();
@@ -115,6 +115,7 @@ namespace Radegast
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.ctxopen = new Radegast.RadegastContextMenuStrip(this.components);
+            this.txtCreator = new Radegast.AgentNameTextBox();
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -128,6 +129,7 @@ namespace Radegast
             this.gbxInworld.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.gbxInworld.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gbxInworld.Controls.Add(this.btnContents);
+            this.gbxInworld.Controls.Add(this.btnMute);
             this.gbxInworld.Controls.Add(this.btnTake);
             this.gbxInworld.Controls.Add(this.btnWalkTo);
             this.gbxInworld.Controls.Add(this.btnTurnTo);
@@ -151,10 +153,20 @@ namespace Radegast
             this.btnContents.Location = new System.Drawing.Point(172, 107);
             this.btnContents.Name = "btnContents";
             this.btnContents.Size = new System.Drawing.Size(75, 23);
-            this.btnContents.TabIndex = 15;
+            this.btnContents.TabIndex = 16;
             this.btnContents.Text = "Contents";
             this.btnContents.UseVisualStyleBackColor = true;
             this.btnContents.Click += new System.EventHandler(this.btnContents_Click);
+            // 
+            // btnMute
+            // 
+            this.btnMute.Location = new System.Drawing.Point(87, 107);
+            this.btnMute.Name = "btnMute";
+            this.btnMute.Size = new System.Drawing.Size(77, 23);
+            this.btnMute.TabIndex = 15;
+            this.btnMute.Text = "Mute";
+            this.btnMute.UseVisualStyleBackColor = true;
+            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
             // 
             // btnTake
             // 
@@ -482,17 +494,9 @@ namespace Radegast
             this.txtPrims.Size = new System.Drawing.Size(54, 21);
             this.txtPrims.TabIndex = 55;
             // 
-            // txtCreator
-            // 
-            this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
-            this.txtCreator.Location = new System.Drawing.Point(61, 116);
-            this.txtCreator.Name = "txtCreator";
-            this.txtCreator.ReadOnly = true;
-            this.txtCreator.Size = new System.Drawing.Size(130, 21);
-            this.txtCreator.TabIndex = 54;
-            // 
             // txtOwner
             // 
+            this.txtOwner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtOwner.AgentID")));
             this.txtOwner.BackColor = System.Drawing.SystemColors.Window;
             this.txtOwner.Location = new System.Drawing.Point(61, 91);
             this.txtOwner.Name = "txtOwner";
@@ -711,6 +715,16 @@ namespace Radegast
             this.ctxopen.Name = "ctxMenuObjects";
             this.ctxopen.Size = new System.Drawing.Size(61, 4);
             // 
+            // txtCreator
+            // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
+            this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCreator.Location = new System.Drawing.Point(61, 116);
+            this.txtCreator.Name = "txtCreator";
+            this.txtCreator.ReadOnly = true;
+            this.txtCreator.Size = new System.Drawing.Size(130, 21);
+            this.txtCreator.TabIndex = 54;
+            // 
             // ObjectsConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -776,7 +790,6 @@ namespace Radegast
         public System.Windows.Forms.TextBox txtObjectName;
         public System.Windows.Forms.TextBox txtHover;
         public System.Windows.Forms.Label label2;
-        public AgentNameTextBox txtCreator;
         public AgentNameTextBox txtOwner;
         public System.Windows.Forms.Label label5;
         public System.Windows.Forms.Label label4;
@@ -802,6 +815,8 @@ namespace Radegast
         public System.Windows.Forms.ColumnHeader invName;
         private RadegastContextMenuStrip ctxContents;
         private System.Windows.Forms.Button btnOpen;
+        public System.Windows.Forms.Button btnMute;
+        public AgentNameTextBox txtCreator;
 
     }
 }

@@ -783,6 +783,17 @@ namespace Radegast
                 ctxPoint.Enabled = true;
                 ctxPoint.Text = "Unpoint";
             }
+
+            bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == (UUID)lvwObjects.SelectedItems[0].Tag);
+            if (isMuted)
+            {
+                muteToolStripMenuItem.Text = "Unmute";
+            }
+            else
+            {
+                muteToolStripMenuItem.Text = "Mute";
+            }
+
             instance.ContextActionManager.AddContributions(
                 avatarContext, typeof(Avatar), lvwObjects.SelectedItems[0]);
         }
@@ -883,6 +894,23 @@ namespace Radegast
             if (lvwObjects.SelectedItems.Count != 1) return;
             UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
             client.Estate.KickUser(av);
+        }
+
+        private void muteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+
+            var agentID = (UUID)lvwObjects.SelectedItems[0].Tag;
+            if (agentID == client.Self.AgentID) return;
+
+            if (muteToolStripMenuItem.Text == "Mute")
+            {
+                client.Self.UpdateMuteListEntry(MuteType.Resident, agentID, instance.Names.GetLegacyName(agentID));
+            }
+            else
+            {
+                client.Self.RemoveMuteListEntry(agentID, instance.Names.GetLegacyName(agentID));
+            }
         }
     }
 

@@ -399,7 +399,13 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.InventoryOffered:
+                    instance.MainForm.AddNotification(new ntfInventoryOffer(instance, e.IM));
+                    break;
+
                 case InstantMessageDialog.TaskInventoryOffered:
+                    // Is the object muted by name?
+                    if (null != client.Self.MuteList.Find(me => me.Type == MuteType.ByName && me.Name == e.IM.FromAgentName)) break;
+
                     instance.MainForm.AddNotification(new ntfInventoryOffer(instance, e.IM));
                     break;
             }

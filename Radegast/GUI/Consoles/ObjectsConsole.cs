@@ -85,6 +85,7 @@ namespace Radegast
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
@@ -104,6 +105,7 @@ namespace Radegast
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
             instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
@@ -520,6 +522,8 @@ namespace Radegast
             {
                 UpdateObjectContents();
             }
+            
+            UpdateMuteButton();
         }
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
@@ -941,6 +945,26 @@ namespace Radegast
             ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);
             ctxMenuObjects.Items.Add("Return", null, btnReturn_Click);
 
+            if (currentPrim.Properties != null)
+            {
+                bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Object && me.ID == currentPrim.ID);
+
+                if (isMuted)
+                {
+                    ctxMenuObjects.Items.Add("Unmute", null, (a, b) =>
+                        {
+                            client.Self.RemoveMuteListEntry(currentPrim.ID, currentPrim.Properties.Name);
+                        });
+                }
+                else
+                {
+                    ctxMenuObjects.Items.Add("Mute", null, (a, b) =>
+                    {
+                        client.Self.UpdateMuteListEntry(MuteType.Object, currentPrim.ID, currentPrim.Properties.Name);
+                    });
+                }
+            }
+
             //if (currentPrim.MediaURL != null && currentPrim.MediaURL.StartsWith("x-mv:"))
             //{
             //    ctxMenuObjects.Items.Add("Test", null, (object menuSender, EventArgs menuE) =>
@@ -1058,6 +1082,52 @@ namespace Radegast
             //    e.SuppressKeyPress = e.Handled = true;
             //    return;
             //}
+        }
+
+        void Self_MuteListUpdated(object sender, EventArgs e)
+        {
+            if (lstPrims.SelectedItems.Count != 1) return;
+
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Self_MuteListUpdated(sender, e)));
+                }
+                return;
+            }
+
+            UpdateMuteButton();
+        }
+
+        void UpdateMuteButton()
+        {
+            bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Object && me.ID == currentPrim.ID);
+
+            if (isMuted)
+            {
+                btnMute.Text = "Unmute";
+            }
+            else
+            {
+                btnMute.Text = "Mute";
+            }
+        }
+
+        private void btnMute_Click(object sender, EventArgs e)
+        {
+            if (lstPrims.SelectedItems.Count != 1) return;
+
+            if (currentPrim.Properties == null) return;
+
+            if (btnMute.Text == "Mute")
+            {
+                client.Self.UpdateMuteListEntry(MuteType.Object, currentPrim.ID, currentPrim.Properties.Name);
+            }
+            else
+            {
+                client.Self.RemoveMuteListEntry(currentPrim.ID, currentPrim.Properties.Name);
+            }
         }
     }
 

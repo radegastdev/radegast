@@ -82,6 +82,7 @@ namespace Radegast
             this.ctxEject = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxBan = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxEstateEject = new System.Windows.Forms.ToolStripMenuItem();
+            this.muteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnStartIM = new System.Windows.Forms.ToolStripButton();
             this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
@@ -198,9 +199,10 @@ namespace Radegast
             this.ctxTeleportTo,
             this.ctxEject,
             this.ctxBan,
-            this.ctxEstateEject});
+            this.ctxEstateEject,
+            this.muteToolStripMenuItem});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(163, 334);
+            this.avatarContext.Size = new System.Drawing.Size(163, 378);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
@@ -314,6 +316,14 @@ namespace Radegast
             this.ctxEstateEject.Text = "Eject from estate";
             this.ctxEstateEject.ToolTipText = " Eject from estate ";
             this.ctxEstateEject.Click += new System.EventHandler(this.ctxEstateEject_Click);
+            // 
+            // muteToolStripMenuItem
+            // 
+            this.muteToolStripMenuItem.Name = "muteToolStripMenuItem";
+            this.muteToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.muteToolStripMenuItem.Text = "Mute";
+            this.muteToolStripMenuItem.ToolTipText = " Mute ";
+            this.muteToolStripMenuItem.Click += new System.EventHandler(this.muteToolStripMenuItem_Click);
             // 
             // toolStrip1
             // 
@@ -622,5 +632,6 @@ namespace Radegast
         private ToolStripMenuItem ctxEject;
         private ToolStripMenuItem ctxBan;
         private ToolStripMenuItem ctxEstateEject;
+        private ToolStripMenuItem muteToolStripMenuItem;
     }
 }
