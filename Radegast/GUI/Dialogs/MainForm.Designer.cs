@@ -144,6 +144,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.muteListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -281,6 +282,7 @@ namespace Radegast
             this.standToolStripMenuItem,
             this.stopAllAnimationsToolStripMenuItem,
             this.changeMyDisplayNameToolStripMenuItem,
+            this.muteListToolStripMenuItem,
             this.toolStripMenuItem4,
             this.tmnuCreateLandmark,
             this.tmnuSetHome,
@@ -830,6 +832,13 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
+            // muteListToolStripMenuItem
+            // 
+            this.muteListToolStripMenuItem.Name = "muteListToolStripMenuItem";
+            this.muteListToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.muteListToolStripMenuItem.Text = "Mute List";
+            this.muteListToolStripMenuItem.Click += new System.EventHandler(this.muteListToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -937,6 +946,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem stopAllAnimationsToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem changeMyDisplayNameToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem regionParcelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
     }
 }
 

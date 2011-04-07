@@ -317,6 +317,12 @@
     <Compile Include="GUI\Consoles\Assets\Notecard.Designer.cs">
       <DependentUpon>Notecard.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\MuteList.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\MuteList.Designer.cs">
+      <DependentUpon>MuteList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\ObjectsConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -358,6 +364,12 @@
     </Compile>
     <Compile Include="GUI\Dialogs\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Dialogs\MuteResident.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\MuteResident.Designer.cs">
+      <DependentUpon>MuteResident.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Dialogs\DetachedTab.cs">
       <SubType>Form</SubType>
@@ -618,6 +630,9 @@
       <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\MuteList.resx">
+      <DependentUpon>MuteList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\ObjectsConsole.resx">
       <DependentUpon>ObjectsConsole.cs</DependentUpon>
     </EmbeddedResource>
@@ -641,6 +656,9 @@
     <EmbeddedResource Include="GUI\Dialogs\About.resx">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Dialogs\MuteResident.resx">
+      <DependentUpon>MuteResident.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\DetachedTab.resx">
       <SubType>Designer</SubType>

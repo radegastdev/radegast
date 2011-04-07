@@ -1384,6 +1384,7 @@ namespace Radegast
             {
                 ShowInTaskbar = false;
                 trayIcon.Visible = true;
+                FormBorderStyle = FormBorderStyle.SizableToolWindow;
             }
         }
 
@@ -1392,6 +1393,7 @@ namespace Radegast
             WindowState = FormWindowState.Normal;
             ShowInTaskbar = true;
             trayIcon.Visible = false;
+            FormBorderStyle = FormBorderStyle.Sizable;
         }
 
         private void ctxTreyRestore_Click(object sender, EventArgs e)
@@ -1449,6 +1451,15 @@ namespace Radegast
 
             var dlg = new DisplayNameChange(instance);
             dlg.ShowDialog();
+        }
+
+        private void muteListToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!tabsConsole.TabExists("mute list console"))
+            {
+                tabsConsole.AddTab("mute list console", "Mute List", new MuteList(instance));
+            }
+            tabsConsole.Tabs["mute list console"].Select();
         }
         #endregion
 

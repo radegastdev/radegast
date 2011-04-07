@@ -81,6 +81,7 @@ namespace Radegast
             List<NearbyAvatar> nearAvatars = instance.TabConsole.NearbyAvatars;
             for (int i = 0; i < nearAvatars.Count; i++)
             {
+                string name = instance.Names.Get(nearAvatars[i].ID, nearAvatars[i].Name);
                 lvwNear.Items.Add(new ListViewItem() { Text = nearAvatars[i].Name, Tag = nearAvatars[i].ID });
             }
         }
@@ -98,7 +99,8 @@ namespace Radegast
                     {
                         foreach (KeyValuePair<UUID, string> kvp in e.Avatars)
                         {
-                            lvwSearch.Items.Add(new ListViewItem(kvp.Value) { Text = kvp.Value, Tag = kvp.Key });
+                            string name = instance.Names.Get(kvp.Key, kvp.Value);
+                            lvwSearch.Items.Add(new ListViewItem(name) { Text = kvp.Value, Tag = kvp.Key });
                         }
                     }));
             }

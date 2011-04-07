@@ -200,6 +200,9 @@ namespace Radegast
 
         void Self_ScriptDialog(object sender, ScriptDialogEventArgs e)
         {
+            // Is this object muted
+            if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.ObjectID) // muted object by id
+                || (m.Type == MuteType.ByName && m.Name == e.ObjectName))) return;
             instance.MainForm.AddNotification(new ntfScriptDialog(instance, e.Message, e.ObjectName, e.ImageID, e.ObjectID, e.FirstName, e.LastName, e.Channel, e.ButtonLabels));
         }
 

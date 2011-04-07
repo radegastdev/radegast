@@ -524,6 +524,15 @@ namespace Radegast
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Netcom_ClientDisconnected(sender, e)));
+                }
+                return;
+            }
+
             if (instance.TabConsole.TabExists("objects"))
             {
                 instance.TabConsole.Tabs["objects"].Close();

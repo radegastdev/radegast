@@ -490,6 +490,7 @@ namespace Radegast
             }
 
             clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
+            client.Self.RequestMuteList();
         }
 
 
