@@ -716,6 +716,19 @@ namespace Radegast
             }
         }
 
+        bool UseInventoryCaps
+        {
+            get
+            {
+                bool res =
+                    client.Network.CurrentSim != null
+                    && client.Network.CurrentSim.Caps != null
+                    && client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2") != null
+                    && !instance.MonoRuntime;
+                return res;
+            }
+        }
+
         private void StartTraverseNodes()
         {
             if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
@@ -739,7 +752,7 @@ namespace Radegast
             TreeUpdateInProgress = true;
             TreeUpdateTimer.Start();
 
-            if (null == client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2"))
+            if (!UseInventoryCaps)
             {
                 TraverseNodes(Inventory.RootNode);
             }
@@ -1017,7 +1030,7 @@ namespace Radegast
                     fetchedFolders.Add(folderID);
                 }
 
-                if (null == client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2"))
+                if (!UseInventoryCaps)
                 {
                     client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
                 }
