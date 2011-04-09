@@ -114,7 +114,10 @@ namespace Radegast
             client.Groups.GroupRoleMembersReply -= new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Groups.GroupMemberEjected -= new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            if (instance != null && instance.Names != null)
+            {
+                instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            }
         }
 
         #region Network callbacks

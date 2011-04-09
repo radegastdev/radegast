@@ -395,6 +395,9 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.GroupNotice:
+                    // Is this group muted?
+                    if (null != client.Self.MuteList.Find(me => me.Type == MuteType.Group && me.ID == e.IM.FromAgentID)) break;
+
                     instance.MainForm.AddNotification(new ntfGroupNotice(instance, e.IM));
                     break;
 
@@ -523,6 +526,9 @@ namespace Radegast
 
         private void HandleGroupIM(InstantMessageEventArgs e)
         {
+            // Ignore group IM from a muted group
+            if (null != client.Self.MuteList.Find(me => me.Type == MuteType.Group && (me.ID == e.IM.IMSessionID || me.ID == e.IM.FromAgentID))) return;
+
             if (TabExists(e.IM.IMSessionID.ToString()))
             {
                 RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];

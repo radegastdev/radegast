@@ -532,6 +532,14 @@ namespace Radegast
             }
 
             this.Text = sb.ToString();
+
+            // When minimized to tray, update tray tool tip also
+            if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_tray"])
+            {
+                trayIcon.Text = sb.ToString();
+                ctxTrayMenuLabel.Text = sb.ToString();
+            }
+
             sb = null;
         }
 

@@ -91,6 +91,7 @@ namespace Radegast
             this.standToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopAllAnimationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeMyDisplayNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.muteListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuCreateLandmark = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuSetHome = new System.Windows.Forms.ToolStripMenuItem();
@@ -141,10 +142,11 @@ namespace Radegast
             this.timerWorldClock = new System.Windows.Forms.Timer(this.components);
             this.trayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.ctxTrayIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxTrayMenuLabel = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.muteListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -341,6 +343,13 @@ namespace Radegast
             this.changeMyDisplayNameToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.changeMyDisplayNameToolStripMenuItem.Text = "Change My Display Name";
             this.changeMyDisplayNameToolStripMenuItem.Click += new System.EventHandler(this.changeMyDisplayNameToolStripMenuItem_Click);
+            // 
+            // muteListToolStripMenuItem
+            // 
+            this.muteListToolStripMenuItem.Name = "muteListToolStripMenuItem";
+            this.muteListToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.muteListToolStripMenuItem.Text = "Mute List";
+            this.muteListToolStripMenuItem.Click += new System.EventHandler(this.muteListToolStripMenuItem_Click);
             // 
             // toolStripMenuItem4
             // 
@@ -805,16 +814,29 @@ namespace Radegast
             // ctxTrayIcon
             // 
             this.ctxTrayIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxTrayMenuLabel,
+            this.toolStripMenuItem1,
             this.ctxTreyRestore,
             this.toolStripSeparator3,
             this.ctxTreyExit});
             this.ctxTrayIcon.Name = "ctxTreyIcon";
-            this.ctxTrayIcon.Size = new System.Drawing.Size(114, 54);
+            this.ctxTrayIcon.Size = new System.Drawing.Size(153, 104);
+            // 
+            // ctxTrayMenuLabel
+            // 
+            this.ctxTrayMenuLabel.Name = "ctxTrayMenuLabel";
+            this.ctxTrayMenuLabel.Size = new System.Drawing.Size(152, 22);
+            this.ctxTrayMenuLabel.Text = "Radegast";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
             // 
             // ctxTreyRestore
             // 
             this.ctxTreyRestore.Name = "ctxTreyRestore";
-            this.ctxTreyRestore.Size = new System.Drawing.Size(113, 22);
+            this.ctxTreyRestore.Size = new System.Drawing.Size(152, 22);
             this.ctxTreyRestore.Text = "Restore";
             this.ctxTreyRestore.ToolTipText = "Restore Window";
             this.ctxTreyRestore.Click += new System.EventHandler(this.ctxTreyRestore_Click);
@@ -822,22 +844,15 @@ namespace Radegast
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(110, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
             // 
             // ctxTreyExit
             // 
             this.ctxTreyExit.Name = "ctxTreyExit";
-            this.ctxTreyExit.Size = new System.Drawing.Size(113, 22);
+            this.ctxTreyExit.Size = new System.Drawing.Size(152, 22);
             this.ctxTreyExit.Text = "Exit";
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
-            // 
-            // muteListToolStripMenuItem
-            // 
-            this.muteListToolStripMenuItem.Name = "muteListToolStripMenuItem";
-            this.muteListToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.muteListToolStripMenuItem.Text = "Mute List";
-            this.muteListToolStripMenuItem.Click += new System.EventHandler(this.muteListToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -947,6 +962,8 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem changeMyDisplayNameToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem regionParcelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem ctxTrayMenuLabel;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 

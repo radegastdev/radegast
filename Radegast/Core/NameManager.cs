@@ -332,12 +332,18 @@ namespace Radegast
 
         void TriggerNameRequest()
         {
-            requestTimer.Change(REQUEST_DELAY, Timeout.Infinite);
+            if (requestTimer != null)
+            {
+                requestTimer.Change(REQUEST_DELAY, Timeout.Infinite);
+            }
         }
 
         void TriggerCacheSave()
         {
-            cacheTimer.Change(CACHE_DELAY, Timeout.Infinite);
+            if (cacheTimer != null)
+            {
+                cacheTimer.Change(CACHE_DELAY, Timeout.Infinite);
+            }
         }
 
         void QueueNameRequest(UUID agentID)

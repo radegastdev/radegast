@@ -65,6 +65,7 @@ namespace Radegast
             this.btnInfo = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.pnlGroupList = new System.Windows.Forms.Panel();
+            this.lblGrpMax = new System.Windows.Forms.Label();
             this.lblGroupNr = new System.Windows.Forms.Label();
             this.btnNewGroup = new System.Windows.Forms.Button();
             this.pnlNewGroup = new System.Windows.Forms.Panel();
@@ -76,7 +77,7 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.txtNewGroupCharter = new System.Windows.Forms.TextBox();
             this.txtNewGroupName = new System.Windows.Forms.TextBox();
-            this.lblGrpMax = new System.Windows.Forms.Label();
+            this.btnMute = new System.Windows.Forms.Button();
             this.pnlGroupList.SuspendLayout();
             this.pnlNewGroup.SuspendLayout();
             this.SuspendLayout();
@@ -125,9 +126,11 @@ namespace Radegast
             // 
             // listBox1
             // 
+            this.listBox1.AccessibleName = "List of groups";
             this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(9, 26);
             this.listBox1.Name = "listBox1";
@@ -135,6 +138,8 @@ namespace Radegast
             this.listBox1.Sorted = true;
             this.listBox1.TabIndex = 0;
             this.listBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDoubleClick);
+            this.listBox1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBox1_DrawItem);
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // btnInfo
             // 
@@ -169,6 +174,7 @@ namespace Radegast
             this.pnlGroupList.Controls.Add(this.btnActivate);
             this.pnlGroupList.Controls.Add(this.btnIM);
             this.pnlGroupList.Controls.Add(this.btnLeave);
+            this.pnlGroupList.Controls.Add(this.btnMute);
             this.pnlGroupList.Controls.Add(this.btnRefresh);
             this.pnlGroupList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlGroupList.Location = new System.Drawing.Point(0, 0);
@@ -176,11 +182,21 @@ namespace Radegast
             this.pnlGroupList.Size = new System.Drawing.Size(545, 305);
             this.pnlGroupList.TabIndex = 6;
             // 
+            // lblGrpMax
+            // 
+            this.lblGrpMax.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblGrpMax.AutoSize = true;
+            this.lblGrpMax.Location = new System.Drawing.Point(454, 240);
+            this.lblGrpMax.Name = "lblGrpMax";
+            this.lblGrpMax.Size = new System.Drawing.Size(26, 13);
+            this.lblGrpMax.TabIndex = 7;
+            this.lblGrpMax.Text = "max";
+            // 
             // lblGroupNr
             // 
             this.lblGroupNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblGroupNr.AutoSize = true;
-            this.lblGroupNr.Location = new System.Drawing.Point(454, 197);
+            this.lblGroupNr.Location = new System.Drawing.Point(454, 227);
             this.lblGroupNr.Name = "lblGroupNr";
             this.lblGroupNr.Size = new System.Drawing.Size(48, 13);
             this.lblGroupNr.TabIndex = 7;
@@ -189,10 +205,10 @@ namespace Radegast
             // btnNewGroup
             // 
             this.btnNewGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNewGroup.Location = new System.Drawing.Point(457, 171);
+            this.btnNewGroup.Location = new System.Drawing.Point(457, 200);
             this.btnNewGroup.Name = "btnNewGroup";
             this.btnNewGroup.Size = new System.Drawing.Size(79, 23);
-            this.btnNewGroup.TabIndex = 6;
+            this.btnNewGroup.TabIndex = 7;
             this.btnNewGroup.Text = "New Group";
             this.btnNewGroup.UseVisualStyleBackColor = true;
             this.btnNewGroup.Click += new System.EventHandler(this.btnNewGroup_Click);
@@ -291,15 +307,16 @@ namespace Radegast
             this.txtNewGroupName.TextChanged += new System.EventHandler(this.txtNewGroupName_TextChanged);
             this.txtNewGroupName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNewGroupName_KeyDown);
             // 
-            // lblGrpMax
+            // btnMute
             // 
-            this.lblGrpMax.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblGrpMax.AutoSize = true;
-            this.lblGrpMax.Location = new System.Drawing.Point(454, 210);
-            this.lblGrpMax.Name = "lblGrpMax";
-            this.lblGrpMax.Size = new System.Drawing.Size(26, 13);
-            this.lblGrpMax.TabIndex = 7;
-            this.lblGrpMax.Text = "max";
+            this.btnMute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMute.Location = new System.Drawing.Point(457, 171);
+            this.btnMute.Name = "btnMute";
+            this.btnMute.Size = new System.Drawing.Size(79, 23);
+            this.btnMute.TabIndex = 6;
+            this.btnMute.Text = "Mute";
+            this.btnMute.UseVisualStyleBackColor = true;
+            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
             // 
             // GroupsConsole
             // 
@@ -339,6 +356,7 @@ namespace Radegast
         public System.Windows.Forms.Label label4;
         public System.Windows.Forms.Button btnCancel;
         public System.Windows.Forms.Label lblCreateStatus;
+        public System.Windows.Forms.Button btnMute;
 
     }
 }

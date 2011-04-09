@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Drawing;
 using OpenMetaverse;
 
 namespace Radegast
@@ -49,6 +50,7 @@ namespace Radegast
             this.instance = instance;
             client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupCreatedReply += new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
+            client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             client.Groups.RequestCurrentGroups();
             UpdateDisplay();
         }
@@ -57,6 +59,7 @@ namespace Radegast
         {
             client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupCreatedReply -= new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
+            client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
         }
 
         void Groups_GroupCreatedReply(object sender, GroupCreatedReplyEventArgs e)
@@ -226,6 +229,91 @@ namespace Radegast
         private void lblCreateStatus_TextChanged(object sender, EventArgs e)
         {
             instance.TabConsole.DisplayNotificationInChat(lblCreateStatus.Text, ChatBufferTextStyle.Invisible);
+        }
+
+        private void UpdateMuteButton()
+        {
+            btnMute.Text = "Mute";
+
+            if (listBox1.SelectedItem == null) return;
+            Group g = (Group)listBox1.SelectedItem;
+            if (g.ID == UUID.Zero) return;
+
+            if (null != client.Self.MuteList.Find(me => me.Type == MuteType.Group && me.ID == g.ID))
+            {
+                btnMute.Text = "Unmute";
+            }
+        }
+
+        void Self_MuteListUpdated(object sender, EventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Self_MuteListUpdated(sender, e)));
+                }
+                return;
+            }
+
+            UpdateMuteButton();
+            listBox1.Invalidate();
+        }
+
+        private void btnMute_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem == null) return;
+            Group g = (Group)listBox1.SelectedItem;
+            if (g.ID == UUID.Zero) return;
+
+            if (btnMute.Text == "Mute")
+            {
+                client.Self.UpdateMuteListEntry(MuteType.Group, g.ID, g.Name);
+            }
+            else
+            {
+                client.Self.RemoveMuteListEntry(g.ID, g.Name);
+            }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateMuteButton();
+        }
+
+        private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            
+            try
+            {
+                if (e.Index >= 0)
+                {
+                    var item = ((ListBox)sender).Items[e.Index];
+                    string title = item.ToString();
+                    using (var brush = new SolidBrush(e.ForeColor))
+                    {
+                        e.Graphics.DrawString(title, e.Font, brush, e.Bounds.X, e.Bounds.Y);
+                        if (item is Group)
+                        {
+                            UUID gid = ((Group)item).ID;
+                            bool isMuted = client.Self.MuteList.Find(me => me.ID == gid && me.Type == MuteType.Group) != null;
+                            if (isMuted)
+                            {
+                                var tsize = e.Graphics.MeasureString(title, e.Font);
+
+                                using (var font = new Font(e.Font, FontStyle.Italic))
+                                {
+                                    e.Graphics.DrawString("(muted)", font, brush, e.Bounds.X + tsize.Width + 10, e.Bounds.Y);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            e.DrawFocusRectangle();
         }
     }
 }
