@@ -770,9 +770,10 @@ namespace Radegast
                         QueuedFolders.Clear();
                     }
                     TraverseAndQueueNodes(Inventory.RootNode);
+                    if (QueuedFolders.Count == 0) break;
                     Logger.DebugLog(string.Format("Queued {0} folders for update", QueuedFolders.Count));
 
-                    Parallel.ForEach<UUID>(Math.Max(QueuedFolders.Count, 12), QueuedFolders, folderID =>
+                    Parallel.ForEach<UUID>(Math.Min(QueuedFolders.Count, 16), QueuedFolders, folderID =>
                     {
                         bool success = false;
 

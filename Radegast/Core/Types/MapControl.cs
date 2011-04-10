@@ -867,7 +867,7 @@ namespace Radegast
             // Disable stupid Expect-100: Continue header
             request.ServicePoint.Expect100Continue = false;
             // Crank up the max number of connections per endpoint (default is 2!)
-            request.ServicePoint.ConnectionLimit = 30;
+            request.ServicePoint.ConnectionLimit = Math.Max(request.ServicePoint.ConnectionLimit, 128);
             // Caps requests are never sent as trickles of data, so Nagle's
             // coalescing algorithm won't help us
             request.ServicePoint.UseNagleAlgorithm = false;
