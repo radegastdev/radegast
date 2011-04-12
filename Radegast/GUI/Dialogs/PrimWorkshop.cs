@@ -482,11 +482,8 @@ namespace Radegast
                                     gotMesh.Set();
                                 });
 
-                            if (!meshSuccess || !gotMesh.WaitOne(20 * 1000, false))
-                            {
-                                continue;
-                            }
-
+                            if (!gotMesh.WaitOne(20 * 1000, false)) continue;
+                            if (!meshSuccess) continue;
                         }
                     }
                     else
