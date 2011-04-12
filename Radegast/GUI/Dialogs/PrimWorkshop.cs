@@ -53,8 +53,6 @@ namespace Radegast
         #region Form Globals
 
         List<FacetedMesh> Prims = null;
-        FacetedMesh CurrentPrim = null;
-        ProfileFace? CurrentFace = null;
 
         bool DraggingTexture = false;
         bool Wireframe = false;
@@ -102,22 +100,23 @@ namespace Radegast
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
         }
 
-        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
+        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
-            if (null != Prims.Find(fm => fm.Prim.LocalID == e.Prim.LocalID))
+            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+        }
+
+        void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
+        {
+            if (Prims != null && null != Prims.Find(fm => fm.Prim.LocalID == e.Update.LocalID))
             {
                 SafeInvalidate();
             }
         }
 
-        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
+        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
-            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-        }
-
-        void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
-        {
-            if (null != Prims.Find(fm => fm.Prim.LocalID == e.Update.LocalID))
+            if (Prims != null && null != Prims.Find(fm => fm.Prim.LocalID == e.Prim.LocalID))
             {
                 SafeInvalidate();
             }
@@ -292,14 +291,15 @@ namespace Radegast
 
         void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
-            try
+            int newVal = scrollZoom.Value + e.Delta / 5;
+            if (newVal < scrollZoom.Minimum) newVal = scrollZoom.Minimum;
+            if (newVal > scrollZoom.Maximum) newVal = scrollZoom.Maximum;
+            if (scrollZoom.Value != newVal)
             {
-                scrollZoom.Value += e.Delta / 15;
+                scrollZoom.Value = newVal;
+                glControl_Resize(null, null);
+                glControl.Invalidate();
             }
-            catch (Exception) { }
-
-            glControl_Resize(null, null);
-            glControl.Invalidate();
         }
         #endregion GLControl Callbacks
 
@@ -435,7 +435,7 @@ namespace Radegast
             }
             catch (Exception ex)
             {
-                Logger.Log("Failed to decode mesh asset", Helpers.LogLevel.Warning, Client);
+                Logger.Log("Failed to decode mesh asset: " + ex.Message, Helpers.LogLevel.Warning, Client);
             }
             return ret;
         }
@@ -695,53 +695,59 @@ namespace Radegast
 
         #endregion PictureBox Callbacks
 
-        private void cboPrim_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CurrentPrim = (FacetedMesh)cboPrim.Items[cboPrim.SelectedIndex];
-            PopulateFaceCombobox();
-
-            glControl.Invalidate();
-        }
-
-        private void cboFace_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            CurrentFace = (ProfileFace)cboFace.Items[cboFace.SelectedIndex];
-
-            glControl.Invalidate();
-        }
-
-        private void PopulatePrimCombobox()
-        {
-            cboPrim.Items.Clear();
-
-            if (Prims != null)
-            {
-                for (int i = 0; i < Prims.Count; i++)
-                    cboPrim.Items.Add(Prims[i]);
-            }
-
-            if (cboPrim.Items.Count > 0)
-                cboPrim.SelectedIndex = 0;
-        }
-
-        private void PopulateFaceCombobox()
-        {
-            cboFace.Items.Clear();
-
-            if (CurrentPrim != null)
-            {
-                for (int i = 0; i < CurrentPrim.Profile.Faces.Count; i++)
-                    cboFace.Items.Add(CurrentPrim.Profile.Faces[i]);
-            }
-
-            if (cboFace.Items.Count > 0)
-                cboFace.SelectedIndex = 0;
-        }
-
         private void chkWireFrame_CheckedChanged(object sender, EventArgs e)
         {
             Wireframe = chkWireFrame.Checked;
             SafeInvalidate();
+        }
+
+        bool dragging = false;
+        int dragX, dragY, downX, downY;
+
+        private void glControl_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                dragging = true;
+                downX = dragX = e.X;
+                downY = dragY = e.Y;
+            }
+
+        }
+
+        private void glControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
+                int deltaX = e.X - dragX;
+                int deltaY = e.Y - dragY;
+
+                int newRoll = scrollRoll.Value + deltaY;
+                if (newRoll < 0) newRoll += 360;
+                if (newRoll > 360) newRoll -= 360;
+
+                scrollRoll.Value = newRoll;
+
+
+                int newYaw = scrollYaw.Value + deltaX;
+                if (newYaw < 0) newYaw += 360;
+                if (newYaw > 360) newYaw -= 360;
+
+                scrollYaw.Value = newYaw;
+                
+                dragX = e.X;
+                dragY = e.Y;
+                SafeInvalidate();
+            }
+        }
+
+        private void glControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                dragging = false;
+                SafeInvalidate();
+            }
         }
 
     }
