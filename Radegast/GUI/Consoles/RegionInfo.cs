@@ -135,6 +135,7 @@ namespace Radegast
 
             lblCPUClass.Text = client.Network.CurrentSim.CPUClass.ToString();
             lblDataCenter.Text = client.Network.CurrentSim.ColoLocation.ToString();
+            lblVersion.Text = client.Network.CurrentSim.SimVersion;
         }
 
         void UpdateParcelDisplay()

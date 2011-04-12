@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegionInfo));
             this.pnlStats = new System.Windows.Forms.Panel();
             this.btnRestart = new System.Windows.Forms.Button();
             this.lblDataCenter = new System.Windows.Forms.Label();
@@ -36,6 +37,7 @@
             this.lblScriptTime = new System.Windows.Forms.Label();
             this.lblImagesTime = new System.Windows.Forms.Label();
             this.lblAgentTime = new System.Windows.Forms.Label();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.lblSimTime = new System.Windows.Forms.Label();
@@ -75,22 +77,22 @@
             this.txtOwner = new Radegast.AgentNameTextBox();
             this.lblSimType = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
+            this.lblArea = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.lblAutoReturn = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.lblParcelPrims = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.lblSimPrims = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.lblTraffic = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
             this.lblGroup = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.txtParcelDescription = new System.Windows.Forms.TextBox();
             this.txtParcelTitle = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.lblTraffic = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.lblSimPrims = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.lblParcelPrims = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
-            this.lblAutoReturn = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.lblArea = new System.Windows.Forms.Label();
             this.pnlStats.SuspendLayout();
             this.pnlParcels.SuspendLayout();
             this.pnlParcelList.SuspendLayout();
@@ -141,7 +143,7 @@
             this.pnlStats.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlStats.Location = new System.Drawing.Point(0, 0);
             this.pnlStats.Name = "pnlStats";
-            this.pnlStats.Size = new System.Drawing.Size(184, 390);
+            this.pnlStats.Size = new System.Drawing.Size(179, 390);
             this.pnlStats.TabIndex = 0;
             // 
             // btnRestart
@@ -157,7 +159,7 @@
             // lblDataCenter
             // 
             this.lblDataCenter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDataCenter.Location = new System.Drawing.Point(76, 293);
+            this.lblDataCenter.Location = new System.Drawing.Point(71, 293);
             this.lblDataCenter.Name = "lblDataCenter";
             this.lblDataCenter.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblDataCenter.Size = new System.Drawing.Size(97, 13);
@@ -168,7 +170,7 @@
             // lblCPUClass
             // 
             this.lblCPUClass.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblCPUClass.Location = new System.Drawing.Point(73, 280);
+            this.lblCPUClass.Location = new System.Drawing.Point(68, 280);
             this.lblCPUClass.Name = "lblCPUClass";
             this.lblCPUClass.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblCPUClass.Size = new System.Drawing.Size(100, 13);
@@ -179,7 +181,7 @@
             // lblSpareTime
             // 
             this.lblSpareTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblSpareTime.Location = new System.Drawing.Point(113, 254);
+            this.lblSpareTime.Location = new System.Drawing.Point(108, 254);
             this.lblSpareTime.Name = "lblSpareTime";
             this.lblSpareTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblSpareTime.Size = new System.Drawing.Size(60, 13);
@@ -190,7 +192,7 @@
             // lblScriptTime
             // 
             this.lblScriptTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblScriptTime.Location = new System.Drawing.Point(113, 241);
+            this.lblScriptTime.Location = new System.Drawing.Point(108, 241);
             this.lblScriptTime.Name = "lblScriptTime";
             this.lblScriptTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblScriptTime.Size = new System.Drawing.Size(60, 13);
@@ -201,7 +203,7 @@
             // lblImagesTime
             // 
             this.lblImagesTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblImagesTime.Location = new System.Drawing.Point(113, 228);
+            this.lblImagesTime.Location = new System.Drawing.Point(108, 228);
             this.lblImagesTime.Name = "lblImagesTime";
             this.lblImagesTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblImagesTime.Size = new System.Drawing.Size(60, 13);
@@ -212,13 +214,22 @@
             // lblAgentTime
             // 
             this.lblAgentTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblAgentTime.Location = new System.Drawing.Point(113, 215);
+            this.lblAgentTime.Location = new System.Drawing.Point(108, 215);
             this.lblAgentTime.Name = "lblAgentTime";
             this.lblAgentTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblAgentTime.Size = new System.Drawing.Size(60, 13);
             this.lblAgentTime.TabIndex = 1;
             this.lblAgentTime.Text = "0";
             this.lblAgentTime.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // lblVersion
+            // 
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(6, 135);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(28, 13);
+            this.lblVersion.TabIndex = 1;
+            this.lblVersion.Text = "v1.0";
             // 
             // label21
             // 
@@ -241,7 +252,7 @@
             // lblSimTime
             // 
             this.lblSimTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblSimTime.Location = new System.Drawing.Point(113, 202);
+            this.lblSimTime.Location = new System.Drawing.Point(108, 202);
             this.lblSimTime.Name = "lblSimTime";
             this.lblSimTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblSimTime.Size = new System.Drawing.Size(60, 13);
@@ -261,7 +272,7 @@
             // lblPhysicsTime
             // 
             this.lblPhysicsTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblPhysicsTime.Location = new System.Drawing.Point(113, 189);
+            this.lblPhysicsTime.Location = new System.Drawing.Point(108, 189);
             this.lblPhysicsTime.Name = "lblPhysicsTime";
             this.lblPhysicsTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblPhysicsTime.Size = new System.Drawing.Size(60, 13);
@@ -281,7 +292,7 @@
             // lblNetTime
             // 
             this.lblNetTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblNetTime.Location = new System.Drawing.Point(113, 176);
+            this.lblNetTime.Location = new System.Drawing.Point(108, 176);
             this.lblNetTime.Name = "lblNetTime";
             this.lblNetTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblNetTime.Size = new System.Drawing.Size(60, 13);
@@ -301,7 +312,7 @@
             // lblTotalTime
             // 
             this.lblTotalTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTotalTime.Location = new System.Drawing.Point(113, 163);
+            this.lblTotalTime.Location = new System.Drawing.Point(108, 163);
             this.lblTotalTime.Name = "lblTotalTime";
             this.lblTotalTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblTotalTime.Size = new System.Drawing.Size(60, 13);
@@ -321,7 +332,7 @@
             // lblPendingUploads
             // 
             this.lblPendingUploads.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblPendingUploads.Location = new System.Drawing.Point(113, 135);
+            this.lblPendingUploads.Location = new System.Drawing.Point(108, 135);
             this.lblPendingUploads.Name = "lblPendingUploads";
             this.lblPendingUploads.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblPendingUploads.Size = new System.Drawing.Size(60, 13);
@@ -368,7 +379,7 @@
             // lblPendingDownloads
             // 
             this.lblPendingDownloads.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblPendingDownloads.Location = new System.Drawing.Point(113, 122);
+            this.lblPendingDownloads.Location = new System.Drawing.Point(108, 122);
             this.lblPendingDownloads.Name = "lblPendingDownloads";
             this.lblPendingDownloads.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblPendingDownloads.Size = new System.Drawing.Size(60, 13);
@@ -388,7 +399,7 @@
             // lblActiveScripts
             // 
             this.lblActiveScripts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblActiveScripts.Location = new System.Drawing.Point(113, 109);
+            this.lblActiveScripts.Location = new System.Drawing.Point(108, 109);
             this.lblActiveScripts.Name = "lblActiveScripts";
             this.lblActiveScripts.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblActiveScripts.Size = new System.Drawing.Size(60, 13);
@@ -408,7 +419,7 @@
             // lblActiveObjects
             // 
             this.lblActiveObjects.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblActiveObjects.Location = new System.Drawing.Point(113, 96);
+            this.lblActiveObjects.Location = new System.Drawing.Point(108, 96);
             this.lblActiveObjects.Name = "lblActiveObjects";
             this.lblActiveObjects.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblActiveObjects.Size = new System.Drawing.Size(60, 13);
@@ -428,7 +439,7 @@
             // lblObjects
             // 
             this.lblObjects.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblObjects.Location = new System.Drawing.Point(113, 83);
+            this.lblObjects.Location = new System.Drawing.Point(108, 83);
             this.lblObjects.Name = "lblObjects";
             this.lblObjects.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblObjects.Size = new System.Drawing.Size(60, 13);
@@ -448,7 +459,7 @@
             // lblChildAgents
             // 
             this.lblChildAgents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblChildAgents.Location = new System.Drawing.Point(113, 70);
+            this.lblChildAgents.Location = new System.Drawing.Point(108, 70);
             this.lblChildAgents.Name = "lblChildAgents";
             this.lblChildAgents.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblChildAgents.Size = new System.Drawing.Size(60, 13);
@@ -468,7 +479,7 @@
             // lblMainAgents
             // 
             this.lblMainAgents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblMainAgents.Location = new System.Drawing.Point(113, 57);
+            this.lblMainAgents.Location = new System.Drawing.Point(108, 57);
             this.lblMainAgents.Name = "lblMainAgents";
             this.lblMainAgents.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblMainAgents.Size = new System.Drawing.Size(60, 13);
@@ -488,7 +499,7 @@
             // lblFPS
             // 
             this.lblFPS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblFPS.Location = new System.Drawing.Point(113, 44);
+            this.lblFPS.Location = new System.Drawing.Point(108, 44);
             this.lblFPS.Name = "lblFPS";
             this.lblFPS.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblFPS.Size = new System.Drawing.Size(60, 13);
@@ -517,7 +528,7 @@
             // lblDilation
             // 
             this.lblDilation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblDilation.Location = new System.Drawing.Point(113, 31);
+            this.lblDilation.Location = new System.Drawing.Point(108, 31);
             this.lblDilation.Name = "lblDilation";
             this.lblDilation.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.lblDilation.Size = new System.Drawing.Size(60, 13);
@@ -547,9 +558,9 @@
             // 
             this.pnlParcels.Controls.Add(this.pnlParcelList);
             this.pnlParcels.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlParcels.Location = new System.Drawing.Point(184, 0);
+            this.pnlParcels.Location = new System.Drawing.Point(179, 0);
             this.pnlParcels.Name = "pnlParcels";
-            this.pnlParcels.Size = new System.Drawing.Size(445, 390);
+            this.pnlParcels.Size = new System.Drawing.Size(450, 390);
             this.pnlParcels.TabIndex = 1;
             // 
             // pnlParcelList
@@ -561,6 +572,7 @@
             this.pnlParcelList.Controls.Add(this.lblArea);
             this.pnlParcelList.Controls.Add(this.label25);
             this.pnlParcelList.Controls.Add(this.lblAutoReturn);
+            this.pnlParcelList.Controls.Add(this.lblVersion);
             this.pnlParcelList.Controls.Add(this.label30);
             this.pnlParcelList.Controls.Add(this.lblParcelPrims);
             this.pnlParcelList.Controls.Add(this.label28);
@@ -577,19 +589,20 @@
             this.pnlParcelList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlParcelList.Location = new System.Drawing.Point(0, 0);
             this.pnlParcelList.Name = "pnlParcelList";
-            this.pnlParcelList.Size = new System.Drawing.Size(445, 390);
+            this.pnlParcelList.Size = new System.Drawing.Size(450, 390);
             this.pnlParcelList.TabIndex = 3;
             // 
             // pnlParcelImage
             // 
             this.pnlParcelImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlParcelImage.Location = new System.Drawing.Point(236, 135);
+            this.pnlParcelImage.Location = new System.Drawing.Point(241, 135);
             this.pnlParcelImage.Name = "pnlParcelImage";
             this.pnlParcelImage.Size = new System.Drawing.Size(200, 150);
             this.pnlParcelImage.TabIndex = 7;
             // 
             // txtOwner
             // 
+            this.txtOwner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtOwner.AgentID")));
             this.txtOwner.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOwner.Location = new System.Drawing.Point(80, 163);
             this.txtOwner.Name = "txtOwner";
@@ -615,6 +628,96 @@
             this.label19.Size = new System.Drawing.Size(47, 13);
             this.label19.TabIndex = 5;
             this.label19.Text = "Sim type";
+            // 
+            // lblArea
+            // 
+            this.lblArea.AutoSize = true;
+            this.lblArea.Location = new System.Drawing.Point(77, 241);
+            this.lblArea.Name = "lblArea";
+            this.lblArea.Size = new System.Drawing.Size(13, 13);
+            this.lblArea.TabIndex = 5;
+            this.lblArea.Text = "0";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(6, 241);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(57, 13);
+            this.label25.TabIndex = 5;
+            this.label25.Text = "Area (sqm)";
+            // 
+            // lblAutoReturn
+            // 
+            this.lblAutoReturn.AutoSize = true;
+            this.lblAutoReturn.Location = new System.Drawing.Point(77, 228);
+            this.lblAutoReturn.Name = "lblAutoReturn";
+            this.lblAutoReturn.Size = new System.Drawing.Size(13, 13);
+            this.lblAutoReturn.TabIndex = 5;
+            this.lblAutoReturn.Text = "0";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(6, 228);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(59, 13);
+            this.label30.TabIndex = 5;
+            this.label30.Text = "Auto return";
+            // 
+            // lblParcelPrims
+            // 
+            this.lblParcelPrims.AutoSize = true;
+            this.lblParcelPrims.Location = new System.Drawing.Point(77, 215);
+            this.lblParcelPrims.Name = "lblParcelPrims";
+            this.lblParcelPrims.Size = new System.Drawing.Size(13, 13);
+            this.lblParcelPrims.TabIndex = 5;
+            this.lblParcelPrims.Text = "0";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(6, 215);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(64, 13);
+            this.label28.TabIndex = 5;
+            this.label28.Text = "Parcel prims";
+            // 
+            // lblSimPrims
+            // 
+            this.lblSimPrims.AutoSize = true;
+            this.lblSimPrims.Location = new System.Drawing.Point(77, 202);
+            this.lblSimPrims.Name = "lblSimPrims";
+            this.lblSimPrims.Size = new System.Drawing.Size(13, 13);
+            this.lblSimPrims.TabIndex = 5;
+            this.lblSimPrims.Text = "0";
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(6, 202);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(51, 13);
+            this.label26.TabIndex = 5;
+            this.label26.Text = "Sim prims";
+            // 
+            // lblTraffic
+            // 
+            this.lblTraffic.AutoSize = true;
+            this.lblTraffic.Location = new System.Drawing.Point(77, 189);
+            this.lblTraffic.Name = "lblTraffic";
+            this.lblTraffic.Size = new System.Drawing.Size(13, 13);
+            this.lblTraffic.TabIndex = 5;
+            this.lblTraffic.Text = "0";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(6, 189);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(37, 13);
+            this.label24.TabIndex = 5;
+            this.label24.Text = "Traffic";
             // 
             // lblGroup
             // 
@@ -653,7 +756,7 @@
             this.txtParcelDescription.Name = "txtParcelDescription";
             this.txtParcelDescription.ReadOnly = true;
             this.txtParcelDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtParcelDescription.Size = new System.Drawing.Size(427, 68);
+            this.txtParcelDescription.Size = new System.Drawing.Size(432, 68);
             this.txtParcelDescription.TabIndex = 3;
             // 
             // txtParcelTitle
@@ -664,7 +767,7 @@
             this.txtParcelTitle.Location = new System.Drawing.Point(9, 28);
             this.txtParcelTitle.Name = "txtParcelTitle";
             this.txtParcelTitle.ReadOnly = true;
-            this.txtParcelTitle.Size = new System.Drawing.Size(427, 20);
+            this.txtParcelTitle.Size = new System.Drawing.Size(432, 20);
             this.txtParcelTitle.TabIndex = 2;
             // 
             // label13
@@ -675,96 +778,6 @@
             this.label13.Size = new System.Drawing.Size(73, 13);
             this.label13.TabIndex = 1;
             this.label13.Text = "Current parcel";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(6, 189);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(37, 13);
-            this.label24.TabIndex = 5;
-            this.label24.Text = "Traffic";
-            // 
-            // lblTraffic
-            // 
-            this.lblTraffic.AutoSize = true;
-            this.lblTraffic.Location = new System.Drawing.Point(77, 189);
-            this.lblTraffic.Name = "lblTraffic";
-            this.lblTraffic.Size = new System.Drawing.Size(13, 13);
-            this.lblTraffic.TabIndex = 5;
-            this.lblTraffic.Text = "0";
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(6, 202);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(51, 13);
-            this.label26.TabIndex = 5;
-            this.label26.Text = "Sim prims";
-            // 
-            // lblSimPrims
-            // 
-            this.lblSimPrims.AutoSize = true;
-            this.lblSimPrims.Location = new System.Drawing.Point(77, 202);
-            this.lblSimPrims.Name = "lblSimPrims";
-            this.lblSimPrims.Size = new System.Drawing.Size(13, 13);
-            this.lblSimPrims.TabIndex = 5;
-            this.lblSimPrims.Text = "0";
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(6, 215);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(64, 13);
-            this.label28.TabIndex = 5;
-            this.label28.Text = "Parcel prims";
-            // 
-            // lblParcelPrims
-            // 
-            this.lblParcelPrims.AutoSize = true;
-            this.lblParcelPrims.Location = new System.Drawing.Point(77, 215);
-            this.lblParcelPrims.Name = "lblParcelPrims";
-            this.lblParcelPrims.Size = new System.Drawing.Size(13, 13);
-            this.lblParcelPrims.TabIndex = 5;
-            this.lblParcelPrims.Text = "0";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(6, 228);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(59, 13);
-            this.label30.TabIndex = 5;
-            this.label30.Text = "Auto return";
-            // 
-            // lblAutoReturn
-            // 
-            this.lblAutoReturn.AutoSize = true;
-            this.lblAutoReturn.Location = new System.Drawing.Point(77, 228);
-            this.lblAutoReturn.Name = "lblAutoReturn";
-            this.lblAutoReturn.Size = new System.Drawing.Size(13, 13);
-            this.lblAutoReturn.TabIndex = 5;
-            this.lblAutoReturn.Text = "0";
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(6, 241);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(57, 13);
-            this.label25.TabIndex = 5;
-            this.label25.Text = "Area (sqm)";
-            // 
-            // lblArea
-            // 
-            this.lblArea.AutoSize = true;
-            this.lblArea.Location = new System.Drawing.Point(77, 241);
-            this.lblArea.Name = "lblArea";
-            this.lblArea.Size = new System.Drawing.Size(13, 13);
-            this.lblArea.TabIndex = 5;
-            this.lblArea.Text = "0";
             // 
             // RegionInfo
             // 
@@ -848,5 +861,6 @@
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label lblArea;
         private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label lblVersion;
     }
 }
