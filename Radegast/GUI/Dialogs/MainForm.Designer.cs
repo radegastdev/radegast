@@ -147,6 +147,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -188,6 +189,7 @@ namespace Radegast
             this.tbtnSLeek.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnSLeek.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newWindowToolStripMenuItem,
+            this.uploadImageToolStripMenuItem,
             this.tmnuImport,
             this.scriptEditorToolStripMenuItem,
             this.toolStripMenuItem3,
@@ -206,7 +208,7 @@ namespace Radegast
             // newWindowToolStripMenuItem
             // 
             this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
-            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.newWindowToolStripMenuItem.Text = "&New window...";
             this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
             // 
@@ -214,27 +216,27 @@ namespace Radegast
             // 
             this.tmnuImport.Enabled = false;
             this.tmnuImport.Name = "tmnuImport";
-            this.tmnuImport.Size = new System.Drawing.Size(155, 22);
+            this.tmnuImport.Size = new System.Drawing.Size(157, 22);
             this.tmnuImport.Text = "Import object...";
             this.tmnuImport.Click += new System.EventHandler(this.importObjectToolStripMenuItem_Click);
             // 
             // scriptEditorToolStripMenuItem
             // 
             this.scriptEditorToolStripMenuItem.Name = "scriptEditorToolStripMenuItem";
-            this.scriptEditorToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.scriptEditorToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.scriptEditorToolStripMenuItem.Text = "Script editor...";
             this.scriptEditorToolStripMenuItem.Click += new System.EventHandler(this.scriptEditorToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(154, 6);
             // 
             // disconnectToolStripMenuItem
             // 
             this.disconnectToolStripMenuItem.Enabled = false;
             this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
-            this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.disconnectToolStripMenuItem.Text = "Disconnect";
             this.disconnectToolStripMenuItem.Click += new System.EventHandler(this.disconnectToolStripMenuItem_Click);
             // 
@@ -242,33 +244,33 @@ namespace Radegast
             // 
             this.reconnectToolStripMenuItem.Enabled = false;
             this.reconnectToolStripMenuItem.Name = "reconnectToolStripMenuItem";
-            this.reconnectToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.reconnectToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.reconnectToolStripMenuItem.Text = "Reconnect";
             this.reconnectToolStripMenuItem.Click += new System.EventHandler(this.reconnectToolStripMenuItem_Click);
             // 
             // tmnuPrefs
             // 
             this.tmnuPrefs.Name = "tmnuPrefs";
-            this.tmnuPrefs.Size = new System.Drawing.Size(155, 22);
+            this.tmnuPrefs.Size = new System.Drawing.Size(157, 22);
             this.tmnuPrefs.Text = "Preferences...";
             this.tmnuPrefs.Click += new System.EventHandler(this.tmnuPrefs_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(154, 6);
             // 
             // tmnuExit
             // 
             this.tmnuExit.Name = "tmnuExit";
-            this.tmnuExit.Size = new System.Drawing.Size(155, 22);
+            this.tmnuExit.Size = new System.Drawing.Size(157, 22);
             this.tmnuExit.Text = "E&xit";
             this.tmnuExit.Click += new System.EventHandler(this.tmnuExit_Click);
             // 
             // testToolStripMenuItem
             // 
             this.testToolStripMenuItem.Name = "testToolStripMenuItem";
-            this.testToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.testToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.testToolStripMenuItem.Text = "Test";
             this.testToolStripMenuItem.Visible = false;
             this.testToolStripMenuItem.Click += new System.EventHandler(this.testToolStripMenuItem_Click);
@@ -820,23 +822,23 @@ namespace Radegast
             this.toolStripSeparator3,
             this.ctxTreyExit});
             this.ctxTrayIcon.Name = "ctxTreyIcon";
-            this.ctxTrayIcon.Size = new System.Drawing.Size(153, 104);
+            this.ctxTrayIcon.Size = new System.Drawing.Size(123, 82);
             // 
             // ctxTrayMenuLabel
             // 
             this.ctxTrayMenuLabel.Name = "ctxTrayMenuLabel";
-            this.ctxTrayMenuLabel.Size = new System.Drawing.Size(152, 22);
+            this.ctxTrayMenuLabel.Size = new System.Drawing.Size(122, 22);
             this.ctxTrayMenuLabel.Text = "Radegast";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(119, 6);
             // 
             // ctxTreyRestore
             // 
             this.ctxTreyRestore.Name = "ctxTreyRestore";
-            this.ctxTreyRestore.Size = new System.Drawing.Size(152, 22);
+            this.ctxTreyRestore.Size = new System.Drawing.Size(122, 22);
             this.ctxTreyRestore.Text = "Restore";
             this.ctxTreyRestore.ToolTipText = "Restore Window";
             this.ctxTreyRestore.Click += new System.EventHandler(this.ctxTreyRestore_Click);
@@ -844,15 +846,22 @@ namespace Radegast
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(119, 6);
             // 
             // ctxTreyExit
             // 
             this.ctxTreyExit.Name = "ctxTreyExit";
-            this.ctxTreyExit.Size = new System.Drawing.Size(152, 22);
+            this.ctxTreyExit.Size = new System.Drawing.Size(122, 22);
             this.ctxTreyExit.Text = "Exit";
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
+            // 
+            // uploadImageToolStripMenuItem
+            // 
+            this.uploadImageToolStripMenuItem.Name = "uploadImageToolStripMenuItem";
+            this.uploadImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.uploadImageToolStripMenuItem.Text = "Upload image...";
+            this.uploadImageToolStripMenuItem.Click += new System.EventHandler(this.uploadImageToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -961,9 +970,10 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem stopAllAnimationsToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem changeMyDisplayNameToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem regionParcelToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem ctxTrayMenuLabel;
         public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem uploadImageToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
     }
 }
 

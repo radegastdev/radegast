@@ -286,6 +286,12 @@
     <Compile Include="GUI\Consoles\GroupsConsole.Designer.cs">
       <DependentUpon>GroupsConsole.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\ImageUploadConsole.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Consoles\ImageUploadConsole.Designer.cs">
+      <DependentUpon>ImageUploadConsole.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Consoles\Inventory\InventoryBackup.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -610,6 +616,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\GroupsConsole.resx">
       <DependentUpon>GroupsConsole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Consoles\ImageUploadConsole.resx">
+      <DependentUpon>ImageUploadConsole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Consoles\Inventory\InventoryBackup.resx">
       <DependentUpon>InventoryBackup.cs</DependentUpon>

@@ -1465,9 +1465,18 @@ namespace Radegast
         {
             if (!tabsConsole.TabExists("mute list console"))
             {
-                tabsConsole.AddTab("mute list console", "Mute List", new MuteList(instance));
+                tabsConsole.AddTab("mute list console", "Mute list", new MuteList(instance));
             }
             tabsConsole.Tabs["mute list console"].Select();
+        }
+
+        private void uploadImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!tabsConsole.TabExists("image upload console"))
+            {
+                tabsConsole.AddTab("image upload console", "Upload image", new ImageUploadConsole(instance));
+            }
+            tabsConsole.Tabs["image upload console"].Select();
         }
         #endregion
 
