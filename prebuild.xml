@@ -112,6 +112,7 @@
       <Reference name="OpenMetaverseTypes"/>
       <Reference name="OpenMetaverse.StructuredData"/>
       <Reference name="XMLRPC" localCopy="true"/>
+	  <Reference name="zlib.net" localCopy="true"/>
       <Files>
         <Match pattern="*.cs" recurse="true"/>
       </Files>
