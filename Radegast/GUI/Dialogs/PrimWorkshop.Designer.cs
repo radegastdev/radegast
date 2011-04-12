@@ -74,6 +74,7 @@ namespace Radegast
             this.scrollYaw = new System.Windows.Forms.HScrollBar();
             this.picTexture = new System.Windows.Forms.PictureBox();
             this.scrollZoom = new System.Windows.Forms.HScrollBar();
+            this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -180,6 +181,7 @@ namespace Radegast
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.chkWireFrame);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.cboPrim);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -269,6 +271,17 @@ namespace Radegast
             this.scrollZoom.Value = -50;
             this.scrollZoom.ValueChanged += new System.EventHandler(this.scrollZoom_ValueChanged);
             // 
+            // chkWireFrame
+            // 
+            this.chkWireFrame.AutoSize = true;
+            this.chkWireFrame.Location = new System.Drawing.Point(274, 4);
+            this.chkWireFrame.Name = "chkWireFrame";
+            this.chkWireFrame.Size = new System.Drawing.Size(74, 17);
+            this.chkWireFrame.TabIndex = 17;
+            this.chkWireFrame.Text = "Wireframe";
+            this.chkWireFrame.UseVisualStyleBackColor = true;
+            this.chkWireFrame.CheckedChanged += new System.EventHandler(this.chkWireFrame_CheckedChanged);
+            // 
             // frmPrimWorkshop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -307,6 +320,7 @@ namespace Radegast
         public System.Windows.Forms.ComboBox cboPrim;
         public System.Windows.Forms.PictureBox picTexture;
         public System.Windows.Forms.HScrollBar scrollZoom;
+        private System.Windows.Forms.CheckBox chkWireFrame;
 
     }
 }
