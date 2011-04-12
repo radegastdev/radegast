@@ -271,9 +271,20 @@ namespace Radegast.Netcom
             string password;
 
             if (loginOptions.IsPasswordMD5)
+            {
                 password = loginOptions.Password;
+            }
             else
-                password = Utils.MD5(loginOptions.Password);
+            {
+                if (loginOptions.Password.Length > 16)
+                {
+                    password = Utils.MD5(loginOptions.Password.Substring(0, 16));
+                }
+                else
+                {
+                    password = Utils.MD5(loginOptions.Password);
+                }
+            }
 
             LoginParams loginParams = client.Network.DefaultLoginParams(
                 loginOptions.FirstName, loginOptions.LastName, password,
