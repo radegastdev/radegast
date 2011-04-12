@@ -65,8 +65,11 @@ namespace Radegast
         #endregion Form Globals
 
         public frmPrimWorkshop(RadegastInstance instance)
+            : base(instance)
         {
             InitializeComponent();
+            Disposed += new EventHandler(frmPrimWorkshop_Disposed);
+            AutoSavePosition = true;
 
             this.instance = instance;
 
@@ -93,6 +96,45 @@ namespace Radegast
             glControl_Resize(null, null);
 
             renderer = new MeshmerizerR();
+
+            Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+        }
+
+        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
+        {
+            if (null != Prims.Find(fm => fm.Prim.LocalID == e.Prim.LocalID))
+            {
+                SafeInvalidate();
+            }
+        }
+
+        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
+        {
+            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+        }
+
+        void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
+        {
+            if (null != Prims.Find(fm => fm.Prim.LocalID == e.Update.LocalID))
+            {
+                SafeInvalidate();
+            }
+        }
+
+        void SafeInvalidate()
+        {
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => SafeInvalidate()));
+                }
+                return;
+            }
+
+            glControl.Invalidate();
+
         }
 
         #region GLControl Callbacks
@@ -135,15 +177,23 @@ namespace Radegast
                     // Individual prim matrix
                     Gl.glPushMatrix();
 
-                    // The root prim position is sim-relative, while child prim positions are
-                    // parent-relative. We want to apply parent-relative translations but not
-                    // sim-relative ones
                     if (Prims[i].Prim.ParentID != 0)
                     {
-                        // Apply prim translation and rotation
+                        var parent = Prims.Find(fm => fm.Prim.LocalID == Prims[i].Prim.ParentID);
+
+                        if (parent != null)
+                        {
+                            // Apply prim translation and rotation relative to the root prim
+                            Gl.glMultMatrixf(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
+                            //Gl.glMultMatrixf(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                        }
+
+                        // Prim roation relative to root
                         Gl.glMultMatrixf(Math3D.CreateTranslationMatrix(prim.Position));
-                        Gl.glMultMatrixf(Math3D.CreateRotationMatrix(prim.Rotation));
                     }
+
+                    // Prim roation
+                    Gl.glMultMatrixf(Math3D.CreateRotationMatrix(prim.Rotation));
 
                     // Prim scaling
                     Gl.glScalef(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
@@ -390,7 +440,7 @@ namespace Radegast
                         {
                             ManagedImage mi;
                             OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
-                            
+
                             if (removeAlpha)
                             {
                                 if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
