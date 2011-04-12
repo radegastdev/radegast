@@ -572,6 +572,14 @@ namespace Radegast
 
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
+            // Ctrl-Alt-Shift-H Say "Hippos!" in chat
+            if (e.Modifiers == (Keys.Control | Keys.Shift | Keys.Alt) && e.KeyCode == Keys.H)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                netcom.ChatOut("Hippos!", ChatType.Normal, 0);
+                return;
+            }
+
             // Ctrl-Shift-1 (sim/parcel info)
             if (e.Modifiers == (Keys.Control | Keys.Shift) && e.KeyCode == Keys.D1)
             {
