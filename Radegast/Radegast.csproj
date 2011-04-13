@@ -1160,9 +1160,6 @@
     <None Include="Resources\status_buy_currency.png" />
     <None Include="Resources\status_health.png" />
     <None Include="Resources\status_no_build.png" />
-    <None Include="Tao.OpenGl.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Resources\lsl_keywords.txt" />
     <None Include="Resources\del_trans.png" />
     <None Include="Resources\radegast_icon.ico" />
