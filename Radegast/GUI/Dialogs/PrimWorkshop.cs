@@ -563,13 +563,13 @@ namespace Radegast
                                     PixelType.UnsignedByte,
                                     bitmapData.Scan0);
 
-                                //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                                //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
                                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                                //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                                 bitmap.UnlockBits(bitmapData);
                                 bitmap.Dispose();
                             }
