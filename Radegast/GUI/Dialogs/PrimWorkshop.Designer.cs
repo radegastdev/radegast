@@ -45,7 +45,6 @@ namespace Radegast
         {
             if (disposing && (components != null))
             {
-                glControl.DestroyContexts();
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -60,7 +59,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPrimWorkshop));
-            this.glControl = new Tao.Platform.Windows.SimpleOpenGlControl();
+            this.glControl = new OpenTK.GLControl();
             this.scrollRoll = new System.Windows.Forms.HScrollBar();
             this.scrollPitch = new System.Windows.Forms.HScrollBar();
             this.scrollYaw = new System.Windows.Forms.HScrollBar();
@@ -73,20 +72,12 @@ namespace Radegast
             // 
             // glControl
             // 
-            this.glControl.AccumBits = ((byte)(0));
-            this.glControl.AutoCheckErrors = false;
-            this.glControl.AutoFinish = false;
-            this.glControl.AutoMakeCurrent = true;
-            this.glControl.AutoSwapBuffers = true;
             this.glControl.BackColor = System.Drawing.SystemColors.Control;
             this.glControl.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("glControl.BackgroundImage")));
-            this.glControl.ColorBits = ((byte)(32));
-            this.glControl.DepthBits = ((byte)(16));
             this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glControl.Location = new System.Drawing.Point(0, 0);
             this.glControl.Name = "glControl";
             this.glControl.Size = new System.Drawing.Size(644, 549);
-            this.glControl.StencilBits = ((byte)(0));
             this.glControl.TabIndex = 5;
             this.glControl.VSync = false;
             this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
@@ -188,7 +179,7 @@ namespace Radegast
 
         #endregion
 
-        public Tao.Platform.Windows.SimpleOpenGlControl glControl;
+        public OpenTK.GLControl glControl;
         public System.Windows.Forms.HScrollBar scrollRoll;
         public System.Windows.Forms.HScrollBar scrollPitch;
         public System.Windows.Forms.HScrollBar scrollYaw;

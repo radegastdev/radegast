@@ -36,7 +36,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Text;
 using System.Threading;
-using Tao.OpenGl;
+using OpenTK.Graphics.OpenGL;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using OpenMetaverse.Assets;
@@ -121,32 +121,37 @@ namespace Radegast
 
         private void glControl_Paint(object sender, PaintEventArgs e)
         {
-            Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
-            Gl.glLoadIdentity();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.LoadIdentity();
 
             // Setup wireframe or solid fill drawing mode
             if (Wireframe)
-                Gl.glPolygonMode(Gl.GL_FRONT_AND_BACK, Gl.GL_LINE);
+            {
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            }
             else
-                Gl.glPolygonMode(Gl.GL_FRONT, Gl.GL_FILL);
+            {
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            }
 
             Vector3 center = Vector3.Zero;
 
-            Glu.gluLookAt(
+            var mLookAt = OpenTK.Matrix4d.LookAt(
                     center.X, (double)scrollZoom.Value * 0.1d + center.Y, center.Z,
                     center.X, center.Y, center.Z,
                     0d, 0d, 1d);
+            GL.MultMatrix(ref mLookAt);
 
             // Push the world matrix
-            Gl.glPushMatrix();
+            GL.PushMatrix();
 
-            Gl.glEnableClientState(Gl.GL_VERTEX_ARRAY);
-            Gl.glEnableClientState(Gl.GL_TEXTURE_COORD_ARRAY);
+            GL.EnableClientState(ArrayCap.VertexArray);
+            GL.EnableClientState(ArrayCap.TextureCoordArray);
 
             // World rotations
-            Gl.glRotatef((float)scrollRoll.Value, 1f, 0f, 0f);
-            Gl.glRotatef((float)scrollPitch.Value, 0f, 1f, 0f);
-            Gl.glRotatef((float)scrollYaw.Value, 0f, 0f, 1f);
+            GL.Rotate((float)scrollRoll.Value, 1f, 0f, 0f);
+            GL.Rotate((float)scrollPitch.Value, 0f, 1f, 0f);
+            GL.Rotate((float)scrollYaw.Value, 0f, 0f, 1f);
 
             if (Prims != null)
             {
@@ -155,7 +160,7 @@ namespace Radegast
                     Primitive prim = Prims[i].Prim;
 
                     // Individual prim matrix
-                    Gl.glPushMatrix();
+                    GL.PushMatrix();
 
                     if (Prims[i].Prim.ParentID != 0)
                     {
@@ -164,19 +169,19 @@ namespace Radegast
                         if (parent != null)
                         {
                             // Apply prim translation and rotation relative to the root prim
-                            Gl.glMultMatrixf(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                            //Gl.glMultMatrixf(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                            GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
+                            //GL.MultMatrixf(Math3D.CreateTranslationMatrix(parent.Prim.Position));
                         }
 
                         // Prim roation relative to root
-                        Gl.glMultMatrixf(Math3D.CreateTranslationMatrix(prim.Position));
+                        GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.Position));
                     }
 
                     // Prim roation
-                    Gl.glMultMatrixf(Math3D.CreateRotationMatrix(prim.Rotation));
+                    GL.MultMatrix(Math3D.CreateRotationMatrix(prim.Rotation));
 
                     // Prim scaling
-                    Gl.glScalef(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
+                    GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
 
                     // Draw the prim faces
                     for (int j = 0; j < Prims[i].Faces.Count; j++)
@@ -188,32 +193,32 @@ namespace Radegast
                         //switch (teFace.Shiny)
                         //{
                         //    case Shininess.High:
-                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 128f);
+                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 128f);
                         //        break;
 
                         //    case Shininess.Medium:
-                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 70f);
+                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 70f);
                         //        break;
 
                         //    case Shininess.Low:
-                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 20f);
+                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 20f);
                         //        break;
 
 
                         //    case Shininess.None:
                         //    default:
-                        //        Gl.glMaterialf(Gl.GL_FRONT, Gl.GL_SHININESS, 0f);
+                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 0f);
                         //        break;
                         //}
 
-                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_AMBIENT, new float[4] { 0.7f, 0.7f, 0.7f, 1.0f });
-                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_DIFFUSE, new float[4] { 0.1f, 0.5f, 0.8f, 1.0f });
-                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_SPECULAR, new float[4] {1.0f, 1.0f, 1.0f, 1.0f});
-                        //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_EMISSION, new float[4] { 0.0f, 0.0f, 0.0f, 1.0f });
+                        //GL.Materialfv(GL._FRONT, GL._AMBIENT, new float[4] { 0.7f, 0.7f, 0.7f, 1.0f });
+                        //GL.Materialfv(GL._FRONT, GL._DIFFUSE, new float[4] { 0.1f, 0.5f, 0.8f, 1.0f });
+                        //GL.Materialfv(GL._FRONT, GL._SPECULAR, new float[4] {1.0f, 1.0f, 1.0f, 1.0f});
+                        //GL.Materialfv(GL._FRONT, GL._EMISSION, new float[4] { 0.0f, 0.0f, 0.0f, 1.0f });
 
-                        Gl.glColor4f(teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A);
-                        Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A });
-                        Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_SPECULAR, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f });
+                        GL.Color4(teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A);
+                        GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A });
+                        GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f });
                         #region Texturing
 
                         Face face = Prims[i].Faces[j];
@@ -222,58 +227,65 @@ namespace Radegast
                         if (data.TexturePointer != 0)
                         {
                             // Set the color to solid white so the texture is not altered
-                            //Gl.glColor3f(1f, 1f, 1f);
+                            //GL.Color3f(1f, 1f, 1f);
                             // Enable texturing for this face
-                            Gl.glEnable(Gl.GL_TEXTURE_2D);
+                            GL.Enable(EnableCap.Texture2D);
                         }
                         else
                         {
-                            Gl.glDisable(Gl.GL_TEXTURE_2D);
+                            GL.Disable(EnableCap.Texture2D);
                         }
 
                         // Bind the texture
-                        Gl.glBindTexture(Gl.GL_TEXTURE_2D, data.TexturePointer);
+                        GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
 
                         #endregion Texturing
-
-                        Gl.glTexCoordPointer(2, Gl.GL_FLOAT, 0, data.TexCoords);
-                        Gl.glVertexPointer(3, Gl.GL_FLOAT, 0, data.Vertices);
-                        Gl.glDrawElements(Gl.GL_TRIANGLES, data.Indices.Length, Gl.GL_UNSIGNED_SHORT, data.Indices);
+                        GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
+                        GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
+                        GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
                     }
 
                     // Pop the prim matrix
-                    Gl.glPopMatrix();
+                    GL.PopMatrix();
                 }
             }
 
             // Pop the world matrix
-            Gl.glPopMatrix();
+            GL.PopMatrix();
 
-            Gl.glDisableClientState(Gl.GL_TEXTURE_COORD_ARRAY);
-            Gl.glDisableClientState(Gl.GL_VERTEX_ARRAY);
+            GL.DisableClientState(ArrayCap.TextureCoordArray);
+            GL.DisableClientState(ArrayCap.VertexArray);
 
-            Gl.glFlush();
+            GL.Flush();
+            glControl.SwapBuffers();
         }
 
         private void glControl_Resize(object sender, EventArgs e)
         {
-            Gl.glClearColor(0.39f, 0.58f, 0.93f, 1.0f);
+            GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
 
-            Gl.glViewport(0, 0, glControl.Width, glControl.Height);
+            GL.Viewport(0, 0, glControl.Width, glControl.Height);
 
-            Gl.glPushMatrix();
-            Gl.glMatrixMode(Gl.GL_PROJECTION);
-            Gl.glLoadIdentity();
+            GL.PushMatrix();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
 
-            Glu.gluPerspective(50.0d, 1.0d, 0.1d, 50d);
+            double dAspRat = (double)glControl.Width / (double)glControl.Height;
 
-            Gl.glMatrixMode(Gl.GL_MODELVIEW);
-            Gl.glPopMatrix();
+#pragma warning disable 0618
+            OpenTK.Graphics.Glu.Perspective(50.0d, dAspRat, 0.1d, 50d);
+#pragma warning restore 0618
+            //var mPerspective = OpenTK.Matrix4d.Perspective(50.0d, dAspRat, 0.1d, 50d);
+            //GL.MultMatrix(ref mPerspective);
+            
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PopMatrix();
         }
 
         void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
-            int newVal = scrollZoom.Value + e.Delta / 5;
+            int newVal = scrollZoom.Value + e.Delta / 10;
             if (newVal < scrollZoom.Minimum) newVal = scrollZoom.Minimum;
             if (newVal > scrollZoom.Maximum) newVal = scrollZoom.Maximum;
             if (scrollZoom.Value != newVal)
@@ -516,21 +528,48 @@ namespace Radegast
                         {
                             Invoke(new MethodInvoker(() =>
                             {
+                                GL.GenTextures(1, out data.TexturePointer);
+                                GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
+
                                 Bitmap bitmap = new Bitmap(data.Texture);
+                                bool hasAlpha;
+                                if (data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                                {
+                                    hasAlpha = true;
+                                }
+                                else
+                                {
+                                    hasAlpha = false;
+                                }
+
                                 bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                                 Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-                                BitmapData bitmapData = bitmap.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+                                
 
-                                Gl.glGenTextures(1, out data.TexturePointer);
-                                Gl.glBindTexture(Gl.GL_TEXTURE_2D, data.TexturePointer);
+                                BitmapData bitmapData = 
+                                    bitmap.LockBits(
+                                    rectangle,
+                                    ImageLockMode.ReadOnly,
+                                    hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
-                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR_MIPMAP_LINEAR);
-                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
-                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_S, Gl.GL_REPEAT);
-                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_T, Gl.GL_REPEAT);
-                                Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_GENERATE_MIPMAP, Gl.GL_TRUE);
-                                Glu.gluBuild2DMipmaps(Gl.GL_TEXTURE_2D, Gl.GL_RGB8, bitmap.Width, bitmap.Height, Gl.GL_BGR, Gl.GL_UNSIGNED_BYTE, bitmapData.Scan0);
+                                GL.TexImage2D(
+                                    TextureTarget.Texture2D,
+                                    0,
+                                    hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
+                                    bitmap.Width,
+                                    bitmap.Height,
+                                    0,
+                                    hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
+                                    PixelType.UnsignedByte,
+                                    bitmapData.Scan0);
 
+                                //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
+                                //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                                 bitmap.UnlockBits(bitmapData);
                                 bitmap.Dispose();
                             }
@@ -726,33 +765,32 @@ namespace Radegast
 
         private void frmPrimWorkshop_Load(object sender, EventArgs e)
         {
-            glControl.InitializeContexts();
             glControl.MouseWheel += new MouseEventHandler(glControl_MouseWheel);
 
-            Gl.glShadeModel(Gl.GL_SMOOTH);
-            Gl.glClearColor(0f, 0f, 0f, 0f);
+            GL.ShadeModel(ShadingModel.Smooth);
+            GL.ClearColor(0f, 0f, 0f, 0f);
 
-            //Gl.glEnable(Gl.GL_LIGHTING);
-            //Gl.glEnable(Gl.GL_LIGHT0);
-            //Gl.glLightModelfv(Gl.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
+            //GL.Enable(GL._LIGHTING);
+            //GL.Enable(GL._LIGHT0);
+            //GL.LightModelfv(GL._LIGHT_MODEL_AMBIENT, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
 
-            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_AMBIENT, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
-            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_DIFFUSE, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
-            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_SPECULAR, new float[] { 1.0f, 1.0f, 1.0f, 0.5f });
-            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_POSITION, new float[] { 4f, 4.0f, -4.0f, 1.0f });
+            //GL.Lightfv(GL._LIGHT0, GL._AMBIENT, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
+            //GL.Lightfv(GL._LIGHT0, GL._DIFFUSE, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
+            //GL.Lightfv(GL._LIGHT0, GL._SPECULAR, new float[] { 1.0f, 1.0f, 1.0f, 0.5f });
+            //GL.Lightfv(GL._LIGHT0, GL._POSITION, new float[] { 4f, 4.0f, -4.0f, 1.0f });
 
-            Gl.glClearDepth(1.0f);
-            Gl.glEnable(Gl.GL_DEPTH_TEST);
-            Gl.glEnable(Gl.GL_COLOR_MATERIAL);
-            Gl.glColorMaterial(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE);
+            GL.ClearDepth(1.0f);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.ColorMaterial);
+            GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
 
-            Gl.glDepthMask(Gl.GL_TRUE);
-            Gl.glDepthFunc(Gl.GL_LEQUAL);
-            Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
-            Gl.glMatrixMode(Gl.GL_PROJECTION);
+            GL.DepthMask(true);
+            GL.DepthFunc(DepthFunction.Lequal);
+            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
+            GL.MatrixMode(MatrixMode.Projection);
 
-            Gl.glEnable(Gl.GL_BLEND);
-            Gl.glBlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE_MINUS_SRC_ALPHA);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
             // Call the resizing function which sets up the GL drawing window
             // and will also invalidate the GL control

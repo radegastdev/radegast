@@ -61,7 +61,9 @@ namespace Radegast.Media
         /// <summary>
         /// Fired when a stream meta data is received
         /// </summary>
+#pragma warning disable 0067
         public event StreamInfoCallback OnStreamInfo;
+#pragma warning restore 0067
 
 #if GET_STREAM_TAGS
         Timer tagTimer = null;
