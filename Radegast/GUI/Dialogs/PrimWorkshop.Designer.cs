@@ -79,6 +79,7 @@ namespace Radegast
             this.glControl.AutoMakeCurrent = true;
             this.glControl.AutoSwapBuffers = true;
             this.glControl.BackColor = System.Drawing.SystemColors.Control;
+            this.glControl.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("glControl.BackgroundImage")));
             this.glControl.ColorBits = ((byte)(32));
             this.glControl.DepthBits = ((byte)(16));
             this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -87,6 +88,7 @@ namespace Radegast
             this.glControl.Size = new System.Drawing.Size(644, 549);
             this.glControl.StencilBits = ((byte)(0));
             this.glControl.TabIndex = 5;
+            this.glControl.VSync = false;
             this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
             this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
             this.glControl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseDown);
@@ -177,6 +179,7 @@ namespace Radegast
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPrimWorkshop";
             this.Text = "Prim Workshop";
+            this.Load += new System.EventHandler(this.frmPrimWorkshop_Load);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
             this.ResumeLayout(false);

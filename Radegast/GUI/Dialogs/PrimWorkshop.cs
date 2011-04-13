@@ -72,27 +72,7 @@ namespace Radegast
 
             this.instance = instance;
 
-            glControl.InitializeContexts();
-            glControl.MouseWheel += new MouseEventHandler(glControl_MouseWheel);
-
-            Gl.glShadeModel(Gl.GL_SMOOTH);
-            Gl.glClearColor(0f, 0f, 0f, 0f);
-
-            Gl.glClearDepth(1.0f);
-            Gl.glEnable(Gl.GL_DEPTH_TEST);
-            Gl.glEnable(Gl.GL_COLOR_MATERIAL);
-            Gl.glDepthMask(Gl.GL_TRUE);
-            Gl.glDepthFunc(Gl.GL_LEQUAL);
-            Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
-            Gl.glMatrixMode(Gl.GL_PROJECTION);
-
-            Gl.glEnable(Gl.GL_BLEND);
-            Gl.glBlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE_MINUS_SRC_ALPHA);
             TexturePointers[0] = 0;
-
-            // Call the resizing function which sets up the GL drawing window
-            // and will also invalidate the GL control
-            glControl_Resize(null, null);
 
             renderer = new MeshmerizerR();
 
@@ -232,6 +212,8 @@ namespace Radegast
                         //Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_EMISSION, new float[4] { 0.0f, 0.0f, 0.0f, 1.0f });
 
                         Gl.glColor4f(teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A);
+                        Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE, new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A });
+                        Gl.glMaterialfv(Gl.GL_FRONT, Gl.GL_SPECULAR, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f });
                         #region Texturing
 
                         Face face = Prims[i].Faces[j];
@@ -298,7 +280,7 @@ namespace Radegast
             {
                 scrollZoom.Value = newVal;
                 glControl_Resize(null, null);
-                glControl.Invalidate();
+                SafeInvalidate();
             }
         }
         #endregion GLControl Callbacks
@@ -562,15 +544,7 @@ namespace Radegast
                 }
 
                 Prims.Add(mesh);
-
-                if (IsHandleCreated)
-                {
-                    BeginInvoke(new MethodInvoker(() =>
-                    {
-                        glControl.Invalidate();
-                    }));
-                }
-
+                SafeInvalidate();
             }
         }
 
@@ -644,13 +618,13 @@ namespace Radegast
 
         private void scroll_ValueChanged(object sender, EventArgs e)
         {
-            glControl.Invalidate();
+            SafeInvalidate();
         }
 
         private void scrollZoom_ValueChanged(object sender, EventArgs e)
         {
             glControl_Resize(null, null);
-            glControl.Invalidate();
+            SafeInvalidate();
         }
 
         #endregion Scrollbar Callbacks
@@ -734,7 +708,7 @@ namespace Radegast
                 if (newYaw > 360) newYaw -= 360;
 
                 scrollYaw.Value = newYaw;
-                
+
                 dragX = e.X;
                 dragY = e.Y;
                 SafeInvalidate();
@@ -750,6 +724,40 @@ namespace Radegast
             }
         }
 
+        private void frmPrimWorkshop_Load(object sender, EventArgs e)
+        {
+            glControl.InitializeContexts();
+            glControl.MouseWheel += new MouseEventHandler(glControl_MouseWheel);
+
+            Gl.glShadeModel(Gl.GL_SMOOTH);
+            Gl.glClearColor(0f, 0f, 0f, 0f);
+
+            //Gl.glEnable(Gl.GL_LIGHTING);
+            //Gl.glEnable(Gl.GL_LIGHT0);
+            //Gl.glLightModelfv(Gl.GL_LIGHT_MODEL_AMBIENT, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
+
+            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_AMBIENT, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
+            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_DIFFUSE, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
+            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_SPECULAR, new float[] { 1.0f, 1.0f, 1.0f, 0.5f });
+            //Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_POSITION, new float[] { 4f, 4.0f, -4.0f, 1.0f });
+
+            Gl.glClearDepth(1.0f);
+            Gl.glEnable(Gl.GL_DEPTH_TEST);
+            Gl.glEnable(Gl.GL_COLOR_MATERIAL);
+            Gl.glColorMaterial(Gl.GL_FRONT, Gl.GL_AMBIENT_AND_DIFFUSE);
+
+            Gl.glDepthMask(Gl.GL_TRUE);
+            Gl.glDepthFunc(Gl.GL_LEQUAL);
+            Gl.glHint(Gl.GL_PERSPECTIVE_CORRECTION_HINT, Gl.GL_NICEST);
+            Gl.glMatrixMode(Gl.GL_PROJECTION);
+
+            Gl.glEnable(Gl.GL_BLEND);
+            Gl.glBlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE_MINUS_SRC_ALPHA);
+
+            // Call the resizing function which sets up the GL drawing window
+            // and will also invalidate the GL control
+            glControl_Resize(null, null);
+        }
     }
 
     public struct FaceData

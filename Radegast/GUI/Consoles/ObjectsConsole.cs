@@ -73,10 +73,10 @@ namespace Radegast
             lstContents.LargeImageList = frmMain.ResourceImages;
             lstContents.SmallImageList = frmMain.ResourceImages;
 
-            if (instance.MonoRuntime)
-            {
-                btnView.Visible = false;
-            }
+            //if (instance.MonoRuntime)
+            //{
+            //    btnView.Visible = false;
+            //}
 
             // Callbacks
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);

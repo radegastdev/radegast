@@ -179,8 +179,9 @@
       <Reference name="OpenMetaverse.Rendering.Meshmerizer" localCopy="false" />
 
       <Reference name="assemblies/fmodex-dotnet.dll" localCopy="true"/>
-      <Reference name="assemblies/Tao.OpenGl.dll" localCopy="true"/>
-      <Reference name="assemblies/Tao.Platform.Windows.dll" localCopy="true" />
+      <Reference name="assemblies/OpenTK.dll" localCopy="true"/>
+      <Reference name="assemblies/OpenTK.GLControl.dll" localCopy="true" />
+	  <Reference name="assemblies/OpenTK.Compatibility.dll" localCopy="true" />
       <Reference name="assemblies/Tools.dll" localCopy="true" />
       <Reference name="assemblies/log4net.dll" localCopy="true" />
       <Reference name="assemblies/CommandLine.dll" localCopy="true" />
