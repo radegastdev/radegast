@@ -809,18 +809,14 @@ namespace Radegast
                 return;
             }
 
-            List<Primitive> prims = new List<Primitive>();
-
-            client.Network.CurrentSim.ObjectsPrimitives.ForEach(delegate(KeyValuePair<uint, Primitive> kvp)
-            {
-                if (kvp.Key == currentPrim.LocalID || kvp.Value.ParentID == currentPrim.LocalID)
-                {
-                    prims.Add(kvp.Value);
-                }
-            });
+            var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.LocalID == currentPrim.LocalID || p.ParentID == currentPrim.LocalID);
 
             frmPrimWorkshop pw = new frmPrimWorkshop(instance);
-            pw.loadPrims(prims);
+            pw.Load += (xsender, xe) =>
+                {
+                    Thread.Sleep(500);
+                    pw.loadPrims(prims);
+                };
             pw.Show();
         }
 
@@ -1086,8 +1082,6 @@ namespace Radegast
 
         void Self_MuteListUpdated(object sender, EventArgs e)
         {
-            if (lstPrims.SelectedItems.Count != 1) return;
-
             if (InvokeRequired)
             {
                 if (!instance.MonoRuntime || IsHandleCreated)
@@ -1096,6 +1090,8 @@ namespace Radegast
                 }
                 return;
             }
+
+            if (lstPrims.SelectedItems.Count != 1) return;
 
             UpdateMuteButton();
         }

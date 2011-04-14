@@ -56,6 +56,8 @@ namespace Radegast
 
         bool DraggingTexture = false;
         bool Wireframe = false;
+        bool RenderingEnabled = false;
+
         int[] TexturePointers = new int[1];
         Dictionary<UUID, Image> Textures = new Dictionary<UUID, Image>();
         RadegastInstance instance;
@@ -121,6 +123,8 @@ namespace Radegast
 
         private void glControl_Paint(object sender, PaintEventArgs e)
         {
+            if (!RenderingEnabled) return;
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
 
@@ -136,17 +140,23 @@ namespace Radegast
 
             Vector3 center = Vector3.Zero;
 
-            var mLookAt = OpenTK.Matrix4d.LookAt(
+            //var mLookAt = OpenTK.Matrix4d.LookAt(
+            //        center.X, (double)scrollZoom.Value * 0.1d + center.Y, center.Z,
+            //        center.X, center.Y, center.Z,
+            //        0d, 0d, 1d);
+            //GL.MultMatrix(ref mLookAt);
+            OpenTK.Graphics.Glu.LookAt(
                     center.X, (double)scrollZoom.Value * 0.1d + center.Y, center.Z,
                     center.X, center.Y, center.Z,
                     0d, 0d, 1d);
-            GL.MultMatrix(ref mLookAt);
+            //GL.Light(LightName.Light0, LightParameter.Position, lightPos);
 
             // Push the world matrix
             GL.PushMatrix();
 
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.TextureCoordArray);
+            GL.EnableClientState(ArrayCap.NormalArray);
 
             // World rotations
             GL.Rotate((float)scrollRoll.Value, 1f, 0f, 0f);
@@ -190,35 +200,30 @@ namespace Radegast
                         if (teFace == null)
                             teFace = Prims[i].Prim.Textures.DefaultTexture;
 
-                        //switch (teFace.Shiny)
-                        //{
-                        //    case Shininess.High:
-                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 128f);
-                        //        break;
+                        switch (teFace.Shiny)
+                        {
+                            case Shininess.High:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 128f);
+                                break;
 
-                        //    case Shininess.Medium:
-                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 70f);
-                        //        break;
+                            case Shininess.Medium:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 96f);
+                                break;
 
-                        //    case Shininess.Low:
-                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 20f);
-                        //        break;
+                            case Shininess.Low:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
+                                break;
 
 
-                        //    case Shininess.None:
-                        //    default:
-                        //        GL.Materialf(GL._FRONT, GL._SHININESS, 0f);
-                        //        break;
-                        //}
-
-                        //GL.Materialfv(GL._FRONT, GL._AMBIENT, new float[4] { 0.7f, 0.7f, 0.7f, 1.0f });
-                        //GL.Materialfv(GL._FRONT, GL._DIFFUSE, new float[4] { 0.1f, 0.5f, 0.8f, 1.0f });
-                        //GL.Materialfv(GL._FRONT, GL._SPECULAR, new float[4] {1.0f, 1.0f, 1.0f, 1.0f});
-                        //GL.Materialfv(GL._FRONT, GL._EMISSION, new float[4] { 0.0f, 0.0f, 0.0f, 1.0f });
+                            case Shininess.None:
+                            default:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
+                                break;
+                        }
 
                         GL.Color4(teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A);
                         GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A });
-                        GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[4] { 1.0f, 1.0f, 1.0f, 1.0f });
+                        GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[4] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A });
                         #region Texturing
 
                         Face face = Prims[i].Faces[j];
@@ -226,9 +231,6 @@ namespace Radegast
 
                         if (data.TexturePointer != 0)
                         {
-                            // Set the color to solid white so the texture is not altered
-                            //GL.Color3f(1f, 1f, 1f);
-                            // Enable texturing for this face
                             GL.Enable(EnableCap.Texture2D);
                         }
                         else
@@ -242,6 +244,7 @@ namespace Radegast
                         #endregion Texturing
                         GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
                         GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
+                        GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
                         GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
                     }
 
@@ -255,6 +258,7 @@ namespace Radegast
 
             GL.DisableClientState(ArrayCap.TextureCoordArray);
             GL.DisableClientState(ArrayCap.VertexArray);
+            GL.DisableClientState(ArrayCap.NormalArray);
 
             GL.Flush();
             glControl.SwapBuffers();
@@ -262,6 +266,8 @@ namespace Radegast
 
         private void glControl_Resize(object sender, EventArgs e)
         {
+            if (!RenderingEnabled) return;
+
             GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
 
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
@@ -277,7 +283,7 @@ namespace Radegast
 #pragma warning restore 0618
             //var mPerspective = OpenTK.Matrix4d.Perspective(50.0d, dAspRat, 0.1d, 50d);
             //GL.MultMatrix(ref mPerspective);
-            
+
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.PopMatrix();
@@ -299,6 +305,8 @@ namespace Radegast
 
         public void loadPrims(List<Primitive> primList)
         {
+            if (!RenderingEnabled) return;
+
             ThreadPool.QueueUserWorkItem((object sync) =>
                 {
                     loadPrimsBlocking(primList);
@@ -491,7 +499,7 @@ namespace Radegast
                 }
 
                 // Create a FaceData struct for each face that stores the 3D data
-                // in a Tao.OpenGL friendly format
+                // in a OpenGL friendly format
                 for (int j = 0; j < mesh.Faces.Count; j++)
                 {
                     Face face = mesh.Faces[j];
@@ -499,11 +507,16 @@ namespace Radegast
 
                     // Vertices for this face
                     data.Vertices = new float[face.Vertices.Count * 3];
+                    data.Normals = new float[face.Vertices.Count * 3];
                     for (int k = 0; k < face.Vertices.Count; k++)
                     {
                         data.Vertices[k * 3 + 0] = face.Vertices[k].Position.X;
                         data.Vertices[k * 3 + 1] = face.Vertices[k].Position.Y;
                         data.Vertices[k * 3 + 2] = face.Vertices[k].Position.Z;
+
+                        data.Normals[k * 3 + 0] = face.Vertices[k].Normal.X;
+                        data.Normals[k * 3 + 1] = face.Vertices[k].Normal.Y;
+                        data.Normals[k * 3 + 2] = face.Vertices[k].Normal.Z;
                     }
 
                     // Indices for this face
@@ -544,9 +557,9 @@ namespace Radegast
 
                                 bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                                 Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-                                
 
-                                BitmapData bitmapData = 
+
+                                BitmapData bitmapData =
                                     bitmap.LockBits(
                                     rectangle,
                                     ImageLockMode.ReadOnly,
@@ -762,35 +775,47 @@ namespace Radegast
                 SafeInvalidate();
             }
         }
+        float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
 
         private void frmPrimWorkshop_Load(object sender, EventArgs e)
         {
             glControl.MouseWheel += new MouseEventHandler(glControl_MouseWheel);
 
-            GL.ShadeModel(ShadingModel.Smooth);
-            GL.ClearColor(0f, 0f, 0f, 0f);
+            try
+            {
+                GL.ShadeModel(ShadingModel.Smooth);
+                GL.ClearColor(0f, 0f, 0f, 0f);
 
-            //GL.Enable(GL._LIGHTING);
-            //GL.Enable(GL._LIGHT0);
-            //GL.LightModelfv(GL._LIGHT_MODEL_AMBIENT, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
+                //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
 
-            //GL.Lightfv(GL._LIGHT0, GL._AMBIENT, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
-            //GL.Lightfv(GL._LIGHT0, GL._DIFFUSE, new float[] { 0.3f, 0.3f, 0.3f, 1.0f });
-            //GL.Lightfv(GL._LIGHT0, GL._SPECULAR, new float[] { 1.0f, 1.0f, 1.0f, 0.5f });
-            //GL.Lightfv(GL._LIGHT0, GL._POSITION, new float[] { 4f, 4.0f, -4.0f, 1.0f });
+                GL.Enable(EnableCap.Lighting);
+                GL.Enable(EnableCap.Light0);
+                GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.5f, 0.5f, 0.5f, 1f });
+                GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { 0.3f, 0.3f, 0.3f, 1f });
+                GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
+                GL.Light(LightName.Light0, LightParameter.Position, lightPos);
 
-            GL.ClearDepth(1.0f);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.ColorMaterial);
-            GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
+                GL.ClearDepth(1.0f);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.ColorMaterial);
+                GL.Enable(EnableCap.CullFace);
+                GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
+                GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
+                
+                GL.DepthMask(true);
+                GL.DepthFunc(DepthFunction.Lequal);
+                GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
+                GL.MatrixMode(MatrixMode.Projection);
 
-            GL.DepthMask(true);
-            GL.DepthFunc(DepthFunction.Lequal);
-            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-            GL.MatrixMode(MatrixMode.Projection);
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                RenderingEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                RenderingEnabled = false;
+                Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Warning, Client, ex);
+            }
 
             // Call the resizing function which sets up the GL drawing window
             // and will also invalidate the GL control
@@ -803,9 +828,9 @@ namespace Radegast
         public float[] Vertices;
         public ushort[] Indices;
         public float[] TexCoords;
+        public float[] Normals;
         public int TexturePointer;
         public System.Drawing.Image Texture;
-        // TODO: Normals / binormals?
     }
 
     public static class Render
