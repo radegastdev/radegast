@@ -65,10 +65,10 @@ namespace Radegast
             this.scrollYaw = new System.Windows.Forms.HScrollBar();
             this.scrollZoom = new System.Windows.Forms.HScrollBar();
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.btnResetView = new System.Windows.Forms.Button();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.gbZoom.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -144,6 +144,16 @@ namespace Radegast
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(140, 57);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(391, 13);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "Drag to rotate object, ALT-Drag for Zoom, Alt-Ctrl-Drag for rotate, Ctrl-Drag  to" +
+                " pan";
+            // 
             // btnResetView
             // 
             this.btnResetView.Location = new System.Drawing.Point(12, 52);
@@ -174,16 +184,6 @@ namespace Radegast
             this.label1.TabIndex = 20;
             this.label1.Text = "Zoom";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(140, 57);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(391, 13);
-            this.label2.TabIndex = 23;
-            this.label2.Text = "Drag to rotate object, ALT-Drag for Zoom, Alt-Ctrl-Drag for rotate, Ctrl-Drag  to" +
-                " pan";
-            // 
             // frmPrimWorkshop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -193,7 +193,7 @@ namespace Radegast
             this.Controls.Add(this.gbZoom);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPrimWorkshop";
-            this.Text = "Prim Workshop";
+            this.Text = "Object Viewer";
             this.Load += new System.EventHandler(this.frmPrimWorkshop_Load);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
