@@ -52,10 +52,12 @@ namespace Radegast
     {
         #region Form Globals
 
+        public OpenTK.GLControl glControl = null;
+
         List<FacetedMesh> Prims = null;
 
         bool Wireframe = false;
-        bool RenderingEnabled = false;
+        public bool RenderingEnabled = false;
 
         int[] TexturePointers = new int[1];
         Dictionary<UUID, Image> Textures = new Dictionary<UUID, Image>();
@@ -80,6 +82,90 @@ namespace Radegast
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
         }
+
+        public void SetupGLControl()
+        {
+            if (glControl != null)
+                glControl.Dispose();
+            glControl = null;
+
+            // Enable anti aliasing
+            //try
+            //{
+            //    glControl = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 8, 4));
+            //}
+            //catch
+            //{
+            //    glControl = null;
+            //}
+
+            if (glControl == null)
+            {
+                try
+                {
+                    glControl = new OpenTK.GLControl();
+                }
+                catch
+                {
+                    glControl = null;
+                }
+            }
+
+            if (glControl == null) return;
+
+            glControl.Paint += glControl_Paint;
+            glControl.Resize += glControl_Resize;
+            glControl.MouseDown += glControl_MouseDown;
+            glControl.MouseUp += glControl_MouseUp;
+            glControl.MouseMove += glControl_MouseMove;
+            glControl.MouseWheel += glControl_MouseWheel;
+            glControl.Load += new EventHandler(glControl_Load);
+            glControl.Dock = DockStyle.Fill;
+            Controls.Add(glControl);
+        }
+
+        void glControl_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                GL.ShadeModel(ShadingModel.Smooth);
+                GL.ClearColor(0f, 0f, 0f, 0f);
+
+                //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
+
+                GL.Enable(EnableCap.Lighting);
+                GL.Enable(EnableCap.Light0);
+                GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.5f, 0.5f, 0.5f, 1f });
+                GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { 0.3f, 0.3f, 0.3f, 1f });
+                GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
+                GL.Light(LightName.Light0, LightParameter.Position, lightPos);
+
+                GL.ClearDepth(1.0f);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.ColorMaterial);
+                GL.Enable(EnableCap.CullFace);
+                GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
+                GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
+
+                GL.DepthMask(true);
+                GL.DepthFunc(DepthFunction.Lequal);
+                GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
+                GL.MatrixMode(MatrixMode.Projection);
+
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                RenderingEnabled = true;
+                // Call the resizing function which sets up the GL drawing window
+                // and will also invalidate the GL control
+                glControl_Resize(null, null);
+            }
+            catch (Exception ex)
+            {
+                RenderingEnabled = false;
+                Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Warning, Client, ex);
+            }
+        }
+
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
@@ -784,47 +870,7 @@ namespace Radegast
 
         private void frmPrimWorkshop_Load(object sender, EventArgs e)
         {
-            glControl.MouseWheel += new MouseEventHandler(glControl_MouseWheel);
 
-            try
-            {
-                GL.ShadeModel(ShadingModel.Smooth);
-                GL.ClearColor(0f, 0f, 0f, 0f);
-
-                //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
-
-                GL.Enable(EnableCap.Lighting);
-                GL.Enable(EnableCap.Light0);
-                GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.5f, 0.5f, 0.5f, 1f });
-                GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { 0.3f, 0.3f, 0.3f, 1f });
-                GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
-                GL.Light(LightName.Light0, LightParameter.Position, lightPos);
-
-                GL.ClearDepth(1.0f);
-                GL.Enable(EnableCap.DepthTest);
-                GL.Enable(EnableCap.ColorMaterial);
-                GL.Enable(EnableCap.CullFace);
-                GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
-                GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
-
-                GL.DepthMask(true);
-                GL.DepthFunc(DepthFunction.Lequal);
-                GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-                GL.MatrixMode(MatrixMode.Projection);
-
-                GL.Enable(EnableCap.Blend);
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-                RenderingEnabled = true;
-            }
-            catch (Exception ex)
-            {
-                RenderingEnabled = false;
-                Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Warning, Client, ex);
-            }
-
-            // Call the resizing function which sets up the GL drawing window
-            // and will also invalidate the GL control
-            glControl_Resize(null, null);
         }
 
         private void btnReset_Click(object sender, EventArgs e)

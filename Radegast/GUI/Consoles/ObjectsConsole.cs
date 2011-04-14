@@ -812,10 +812,14 @@ namespace Radegast
             var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.LocalID == currentPrim.LocalID || p.ParentID == currentPrim.LocalID);
 
             frmPrimWorkshop pw = new frmPrimWorkshop(instance);
-            pw.Load += (xsender, xe) =>
+            pw.Shown += (xsender, xe) =>
                 {
                     Thread.Sleep(500);
-                    pw.loadPrims(prims);
+                    pw.SetupGLControl();
+                    if (pw.RenderingEnabled)
+                    {
+                        pw.loadPrims(prims);
+                    }
                 };
             pw.Show();
         }

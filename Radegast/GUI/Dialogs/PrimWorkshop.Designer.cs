@@ -59,7 +59,6 @@ namespace Radegast
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPrimWorkshop));
-            this.glControl = new OpenTK.GLControl();
             this.scrollRoll = new System.Windows.Forms.HScrollBar();
             this.scrollPitch = new System.Windows.Forms.HScrollBar();
             this.scrollYaw = new System.Windows.Forms.HScrollBar();
@@ -71,22 +70,6 @@ namespace Radegast
             this.label1 = new System.Windows.Forms.Label();
             this.gbZoom.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // glControl
-            // 
-            this.glControl.BackColor = System.Drawing.SystemColors.Control;
-            this.glControl.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("glControl.BackgroundImage")));
-            this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(0, 0);
-            this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(644, 524);
-            this.glControl.TabIndex = 5;
-            this.glControl.VSync = false;
-            this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
-            this.glControl.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseMove);
-            this.glControl.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseDown);
-            this.glControl.Resize += new System.EventHandler(this.glControl_Resize);
-            this.glControl.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseUp);
             // 
             // scrollRoll
             // 
@@ -189,7 +172,6 @@ namespace Radegast
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(644, 605);
-            this.Controls.Add(this.glControl);
             this.Controls.Add(this.gbZoom);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPrimWorkshop";
@@ -203,7 +185,6 @@ namespace Radegast
 
         #endregion
 
-        public OpenTK.GLControl glControl;
         public System.Windows.Forms.HScrollBar scrollRoll;
         public System.Windows.Forms.HScrollBar scrollPitch;
         public System.Windows.Forms.HScrollBar scrollYaw;
