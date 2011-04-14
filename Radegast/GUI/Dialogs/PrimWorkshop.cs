@@ -267,7 +267,7 @@ namespace Radegast
             if (!RenderingEnabled) return;
 
             Render();
-            
+
             glControl.SwapBuffers();
         }
 
@@ -705,7 +705,7 @@ namespace Radegast
 
         private void glControl_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle)
             {
                 dragging = true;
                 downX = dragX = e.X;
@@ -721,38 +721,47 @@ namespace Radegast
                 int deltaX = e.X - dragX;
                 int deltaY = e.Y - dragY;
 
-                if (ModifierKeys == Keys.Control || ModifierKeys == (Keys.Alt | Keys.Control | Keys.Shift))
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (ModifierKeys == Keys.Control || ModifierKeys == (Keys.Alt | Keys.Control | Keys.Shift))
+                    {
+                        Center.X -= deltaX / 100f;
+                        Center.Z += deltaY / 100f;
+                    }
+
+                    if (ModifierKeys == Keys.Alt)
+                    {
+                        Center.Y -= deltaY / 25f;
+
+                        int newYaw = scrollYaw.Value + deltaX;
+                        if (newYaw < 0) newYaw += 360;
+                        if (newYaw > 360) newYaw -= 360;
+
+                        scrollYaw.Value = newYaw;
+
+                    }
+
+                    if (ModifierKeys == Keys.None || ModifierKeys == (Keys.Alt | Keys.Control))
+                    {
+                        int newRoll = scrollRoll.Value + deltaY;
+                        if (newRoll < 0) newRoll += 360;
+                        if (newRoll > 360) newRoll -= 360;
+
+                        scrollRoll.Value = newRoll;
+
+
+                        int newYaw = scrollYaw.Value + deltaX;
+                        if (newYaw < 0) newYaw += 360;
+                        if (newYaw > 360) newYaw -= 360;
+
+                        scrollYaw.Value = newYaw;
+
+                    }
+                }
+                else if (e.Button == MouseButtons.Middle)
                 {
                     Center.X -= deltaX / 100f;
                     Center.Z += deltaY / 100f;
-                }
-
-                if (ModifierKeys == Keys.Alt)
-                {
-                    Center.Y -= deltaY / 25f;
-
-                    int newYaw = scrollYaw.Value + deltaX;
-                    if (newYaw < 0) newYaw += 360;
-                    if (newYaw > 360) newYaw -= 360;
-
-                    scrollYaw.Value = newYaw;
-
-                }
-
-                if (ModifierKeys == Keys.None || ModifierKeys == (Keys.Alt | Keys.Control))
-                {
-                    int newRoll = scrollRoll.Value + deltaY;
-                    if (newRoll < 0) newRoll += 360;
-                    if (newRoll > 360) newRoll -= 360;
-
-                    scrollRoll.Value = newRoll;
-
-
-                    int newYaw = scrollYaw.Value + deltaX;
-                    if (newYaw < 0) newYaw += 360;
-                    if (newYaw > 360) newYaw -= 360;
-
-                    scrollYaw.Value = newYaw;
 
                 }
 
