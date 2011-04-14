@@ -54,7 +54,6 @@ namespace Radegast
 
         List<FacetedMesh> Prims = null;
 
-        bool DraggingTexture = false;
         bool Wireframe = false;
         bool RenderingEnabled = false;
 
@@ -121,10 +120,10 @@ namespace Radegast
 
         #region GLControl Callbacks
 
-        private void glControl_Paint(object sender, PaintEventArgs e)
-        {
-            if (!RenderingEnabled) return;
+        Vector3 Center = Vector3.Zero;
 
+        private void Render()
+        {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
 
@@ -138,16 +137,14 @@ namespace Radegast
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
 
-            Vector3 center = Vector3.Zero;
-
             //var mLookAt = OpenTK.Matrix4d.LookAt(
             //        center.X, (double)scrollZoom.Value * 0.1d + center.Y, center.Z,
             //        center.X, center.Y, center.Z,
             //        0d, 0d, 1d);
             //GL.MultMatrix(ref mLookAt);
             OpenTK.Graphics.Glu.LookAt(
-                    center.X, (double)scrollZoom.Value * 0.1d + center.Y, center.Z,
-                    center.X, center.Y, center.Z,
+                    Center.X, (double)scrollZoom.Value * 0.1d + Center.Y, Center.Z,
+                    Center.X, Center.Y, Center.Z,
                     0d, 0d, 1d);
             //GL.Light(LightName.Light0, LightParameter.Position, lightPos);
 
@@ -221,9 +218,11 @@ namespace Radegast
                                 break;
                         }
 
-                        GL.Color4(teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A);
-                        GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A });
-                        GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[4] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A });
+                        var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
+
+                        GL.Color4(faceColor);
+                        GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, faceColor);
+                        GL.Material(MaterialFace.Front, MaterialParameter.Specular, faceColor);
                         #region Texturing
 
                         Face face = Prims[i].Faces[j];
@@ -261,6 +260,14 @@ namespace Radegast
             GL.DisableClientState(ArrayCap.NormalArray);
 
             GL.Flush();
+        }
+
+        private void glControl_Paint(object sender, PaintEventArgs e)
+        {
+            if (!RenderingEnabled) return;
+
+            Render();
+            
             glControl.SwapBuffers();
         }
 
@@ -534,61 +541,66 @@ namespace Radegast
                         data.TexCoords[k * 2 + 1] = face.Vertices[k].TexCoord.Y;
                     }
 
-                    // Texture for this face
-                    if (LoadTexture(teFace.TextureID, ref data.Texture, false))
-                    {
-                        if (IsHandleCreated)
+                    ThreadPool.QueueUserWorkItem(sync =>
                         {
-                            Invoke(new MethodInvoker(() =>
+                            // Texture for this face
+                            if (LoadTexture(teFace.TextureID, ref data.Texture, false))
                             {
-                                GL.GenTextures(1, out data.TexturePointer);
-                                GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
-
-                                Bitmap bitmap = new Bitmap(data.Texture);
-                                bool hasAlpha;
-                                if (data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                                if (IsHandleCreated)
                                 {
-                                    hasAlpha = true;
+                                    Invoke(new MethodInvoker(() =>
+                                    {
+                                        GL.GenTextures(1, out data.TexturePointer);
+                                        GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
+
+                                        Bitmap bitmap = new Bitmap(data.Texture);
+                                        bool hasAlpha;
+                                        if (data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                                        {
+                                            hasAlpha = true;
+                                        }
+                                        else
+                                        {
+                                            hasAlpha = false;
+                                        }
+
+                                        bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                                        Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+
+                                        BitmapData bitmapData =
+                                            bitmap.LockBits(
+                                            rectangle,
+                                            ImageLockMode.ReadOnly,
+                                            hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+                                        GL.TexImage2D(
+                                            TextureTarget.Texture2D,
+                                            0,
+                                            hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
+                                            bitmap.Width,
+                                            bitmap.Height,
+                                            0,
+                                            hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
+                                            PixelType.UnsignedByte,
+                                            bitmapData.Scan0);
+
+                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                                        //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
+                                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                                        bitmap.UnlockBits(bitmapData);
+                                        bitmap.Dispose();
+
+                                        SafeInvalidate();
+                                    }
+                                    ));
                                 }
-                                else
-                                {
-                                    hasAlpha = false;
-                                }
-
-                                bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                                Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-
-                                BitmapData bitmapData =
-                                    bitmap.LockBits(
-                                    rectangle,
-                                    ImageLockMode.ReadOnly,
-                                    hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-                                GL.TexImage2D(
-                                    TextureTarget.Texture2D,
-                                    0,
-                                    hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
-                                    bitmap.Width,
-                                    bitmap.Height,
-                                    0,
-                                    hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
-                                    PixelType.UnsignedByte,
-                                    bitmapData.Scan0);
-
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                                //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-                                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                                bitmap.UnlockBits(bitmapData);
-                                bitmap.Dispose();
                             }
-                            ));
-                        }
-                    }
+                        });
 
                     // Set the UserData for this face to our FaceData struct
                     face.UserData = data;
@@ -681,45 +693,6 @@ namespace Radegast
 
         #endregion Scrollbar Callbacks
 
-        #region PictureBox Callbacks
-
-        private void picTexture_MouseDown(object sender, MouseEventArgs e)
-        {
-            DraggingTexture = true;
-        }
-
-        private void picTexture_MouseUp(object sender, MouseEventArgs e)
-        {
-            DraggingTexture = false;
-        }
-
-        private void picTexture_MouseLeave(object sender, EventArgs e)
-        {
-            DraggingTexture = false;
-        }
-
-        private void picTexture_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (DraggingTexture)
-            {
-                // What is the current action?
-                // None, DraggingEdge, DraggingCorner, DraggingWhole
-            }
-            else
-            {
-                // Check if the mouse is close to the edge or corner of a selection
-                // rectangle
-
-                // If so, change the cursor accordingly
-            }
-        }
-
-        private void picTexture_Paint(object sender, PaintEventArgs e)
-        {
-            // Draw the current selection rectangles
-        }
-
-        #endregion PictureBox Callbacks
 
         private void chkWireFrame_CheckedChanged(object sender, EventArgs e)
         {
@@ -748,21 +721,44 @@ namespace Radegast
                 int deltaX = e.X - dragX;
                 int deltaY = e.Y - dragY;
 
-                int newRoll = scrollRoll.Value + deltaY;
-                if (newRoll < 0) newRoll += 360;
-                if (newRoll > 360) newRoll -= 360;
+                if (ModifierKeys == Keys.Control || ModifierKeys == (Keys.Alt | Keys.Control | Keys.Shift))
+                {
+                    Center.X -= deltaX / 100f;
+                    Center.Z += deltaY / 100f;
+                }
 
-                scrollRoll.Value = newRoll;
+                if (ModifierKeys == Keys.Alt)
+                {
+                    Center.Y -= deltaY / 25f;
+
+                    int newYaw = scrollYaw.Value + deltaX;
+                    if (newYaw < 0) newYaw += 360;
+                    if (newYaw > 360) newYaw -= 360;
+
+                    scrollYaw.Value = newYaw;
+
+                }
+
+                if (ModifierKeys == Keys.None || ModifierKeys == (Keys.Alt | Keys.Control))
+                {
+                    int newRoll = scrollRoll.Value + deltaY;
+                    if (newRoll < 0) newRoll += 360;
+                    if (newRoll > 360) newRoll -= 360;
+
+                    scrollRoll.Value = newRoll;
 
 
-                int newYaw = scrollYaw.Value + deltaX;
-                if (newYaw < 0) newYaw += 360;
-                if (newYaw > 360) newYaw -= 360;
+                    int newYaw = scrollYaw.Value + deltaX;
+                    if (newYaw < 0) newYaw += 360;
+                    if (newYaw > 360) newYaw -= 360;
 
-                scrollYaw.Value = newYaw;
+                    scrollYaw.Value = newYaw;
+
+                }
 
                 dragX = e.X;
                 dragY = e.Y;
+
                 SafeInvalidate();
             }
         }
@@ -801,7 +797,7 @@ namespace Radegast
                 GL.Enable(EnableCap.CullFace);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
-                
+
                 GL.DepthMask(true);
                 GL.DepthFunc(DepthFunction.Lequal);
                 GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
@@ -821,9 +817,21 @@ namespace Radegast
             // and will also invalidate the GL control
             glControl_Resize(null, null);
         }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            scrollYaw.Value = 0;
+            scrollPitch.Value = 0;
+            scrollRoll.Value = 0;
+            scrollZoom.Value = -50;
+            Center = Vector3.Zero;
+
+            SafeInvalidate();
+        }
+
     }
 
-    public struct FaceData
+    public class FaceData
     {
         public float[] Vertices;
         public ushort[] Indices;

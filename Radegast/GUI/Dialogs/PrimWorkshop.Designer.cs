@@ -65,8 +65,10 @@ namespace Radegast
             this.scrollYaw = new System.Windows.Forms.HScrollBar();
             this.scrollZoom = new System.Windows.Forms.HScrollBar();
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.btnResetView = new System.Windows.Forms.Button();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.gbZoom.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -77,7 +79,7 @@ namespace Radegast
             this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glControl.Location = new System.Drawing.Point(0, 0);
             this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(644, 549);
+            this.glControl.Size = new System.Drawing.Size(644, 524);
             this.glControl.TabIndex = 5;
             this.glControl.VSync = false;
             this.glControl.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl_Paint);
@@ -127,6 +129,8 @@ namespace Radegast
             // 
             // gbZoom
             // 
+            this.gbZoom.Controls.Add(this.label2);
+            this.gbZoom.Controls.Add(this.btnResetView);
             this.gbZoom.Controls.Add(this.chkWireFrame);
             this.gbZoom.Controls.Add(this.label1);
             this.gbZoom.Controls.Add(this.scrollZoom);
@@ -134,11 +138,21 @@ namespace Radegast
             this.gbZoom.Controls.Add(this.scrollPitch);
             this.gbZoom.Controls.Add(this.scrollRoll);
             this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbZoom.Location = new System.Drawing.Point(0, 549);
+            this.gbZoom.Location = new System.Drawing.Point(0, 524);
             this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(644, 56);
+            this.gbZoom.Size = new System.Drawing.Size(644, 81);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
+            // 
+            // btnResetView
+            // 
+            this.btnResetView.Location = new System.Drawing.Point(12, 52);
+            this.btnResetView.Name = "btnResetView";
+            this.btnResetView.Size = new System.Drawing.Size(94, 23);
+            this.btnResetView.TabIndex = 22;
+            this.btnResetView.Text = "Reset View";
+            this.btnResetView.UseVisualStyleBackColor = true;
+            this.btnResetView.Click += new System.EventHandler(this.btnReset_Click);
             // 
             // chkWireFrame
             // 
@@ -154,11 +168,21 @@ namespace Radegast
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(293, 32);
+            this.label1.Location = new System.Drawing.Point(385, 29);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(132, 13);
+            this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 20;
-            this.label1.Text = "Zoom (mouse scroll wheel)";
+            this.label1.Text = "Zoom";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(140, 57);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(391, 13);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "Drag to rotate object, ALT-Drag for Zoom, Alt-Ctrl-Drag for rotate, Ctrl-Drag  to" +
+                " pan";
             // 
             // frmPrimWorkshop
             // 
@@ -187,6 +211,8 @@ namespace Radegast
         public System.Windows.Forms.GroupBox gbZoom;
         private System.Windows.Forms.CheckBox chkWireFrame;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnResetView;
+        private System.Windows.Forms.Label label2;
 
     }
 }
