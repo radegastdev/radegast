@@ -89,26 +89,35 @@ namespace Radegast
                 glControl.Dispose();
             glControl = null;
 
-            // Enable anti aliasing
-            //try
-            //{
-            //    glControl = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 8, 4));
-            //}
-            //catch
-            //{
-            //    glControl = null;
-            //}
+            OpenTK.Graphics.GraphicsMode mode = null;
 
-            if (glControl == null)
+            try
             {
-                try
+                for (int aa = 0; aa <= 8; aa += 2)
                 {
-                    glControl = new OpenTK.GLControl();
+                    var testMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 16, 0, aa);
+                    if (testMode.Samples == aa)
+                    {
+                        mode = testMode;
+                    }
                 }
-                catch
-                {
-                    glControl = null;
-                }
+            }
+            catch {}
+
+            if (mode == null)
+            {
+                Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Error, Client);
+                return;
+            }
+
+            Logger.DebugLog("Initializing OpenGL mode: " + mode.ToString());
+            try
+            {
+                glControl = new OpenTK.GLControl(mode);
+            }
+            catch
+            {
+                glControl = null;
             }
 
             if (glControl == null) return;
@@ -140,7 +149,7 @@ namespace Radegast
                 GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
                 GL.Light(LightName.Light0, LightParameter.Position, lightPos);
 
-                GL.ClearDepth(1.0f);
+                GL.ClearDepth(1.0d);
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.ColorMaterial);
                 GL.Enable(EnableCap.CullFace);
