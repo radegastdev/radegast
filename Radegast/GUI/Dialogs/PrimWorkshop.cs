@@ -110,7 +110,7 @@ namespace Radegast
                 return;
             }
 
-            Logger.DebugLog("Initializing OpenGL mode: " + mode.ToString());
+            Logger.Log("Initializing OpenGL mode: " + mode.ToString(), Helpers.LogLevel.Info);
             try
             {
                 glControl = new OpenTK.GLControl(mode);
