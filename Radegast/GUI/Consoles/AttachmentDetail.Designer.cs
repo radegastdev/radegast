@@ -65,6 +65,7 @@ namespace Radegast
             this.btnSave = new System.Windows.Forms.Button();
             this.lblPrimCount = new System.Windows.Forms.Label();
             this.lblAttachmentPoint = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblAttachment
@@ -118,10 +119,10 @@ namespace Radegast
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(87, 46);
+            this.btnSave.Location = new System.Drawing.Point(168, 44);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
-            this.btnSave.TabIndex = 2;
+            this.btnSave.TabIndex = 4;
             this.btnSave.Text = "Save...";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -144,11 +145,22 @@ namespace Radegast
             this.lblAttachmentPoint.TabIndex = 0;
             this.lblAttachmentPoint.Text = "Point";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(87, 44);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "3D View";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // AttachmentDetail
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.lblPrimCount);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnTouch);
@@ -175,6 +187,7 @@ namespace Radegast
         public System.Windows.Forms.Button btnSave;
         public System.Windows.Forms.Label lblPrimCount;
         public System.Windows.Forms.Label lblAttachmentPoint;
+        private System.Windows.Forms.Button button1;
 
     }
 }

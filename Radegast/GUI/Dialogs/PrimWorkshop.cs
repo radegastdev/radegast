@@ -636,8 +636,8 @@ namespace Radegast
                         data.TexCoords[k * 2 + 1] = face.Vertices[k].TexCoord.Y;
                     }
 
-                    ThreadPool.QueueUserWorkItem(sync =>
-                        {
+                    //ThreadPool.QueueUserWorkItem(sync =>
+                    //    {
                             // Texture for this face
                             if (LoadTexture(teFace.TextureID, ref data.Texture, false))
                             {
@@ -695,7 +695,7 @@ namespace Radegast
                                     ));
                                 }
                             }
-                        });
+                        //});
 
                     // Set the UserData for this face to our FaceData struct
                     face.UserData = data;

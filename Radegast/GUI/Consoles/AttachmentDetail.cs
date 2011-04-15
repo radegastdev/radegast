@@ -154,5 +154,30 @@ namespace Radegast
             }
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var prims = instance.Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == attachment.LocalID || p.LocalID == attachment.LocalID);
+            var root = prims.Find((Primitive p) => p.LocalID == attachment.LocalID);
+            if (root != null)
+            {
+                prims.Remove(root);
+                root = new Primitive(root);
+                root.ParentID = 0;
+
+                frmPrimWorkshop pw = new frmPrimWorkshop(instance);
+                pw.Shown += (xsender, xe) =>
+                {
+                    Thread.Sleep(500);
+                    pw.SetupGLControl();
+                    if (pw.RenderingEnabled)
+                    {
+                        pw.loadPrims(prims);
+                    }
+                };
+                pw.Show();
+
+            }
+        }
     }
 }
