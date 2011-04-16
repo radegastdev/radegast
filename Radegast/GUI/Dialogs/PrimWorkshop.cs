@@ -95,7 +95,7 @@ namespace Radegast
             {
                 for (int aa = 0; aa <= 8; aa += 2)
                 {
-                    var testMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 16, 0, aa);
+                    var testMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 24, 8, aa);
                     if (testMode.Samples == aa)
                     {
                         mode = testMode;
