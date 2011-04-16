@@ -63,6 +63,8 @@ namespace Radegast
         Dictionary<UUID, Image> Textures = new Dictionary<UUID, Image>();
         RadegastInstance instance;
         MeshmerizerR renderer;
+        OpenTK.Graphics.GraphicsMode GLMode = null;
+        AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
 
         #endregion Form Globals
 
@@ -89,7 +91,7 @@ namespace Radegast
                 glControl.Dispose();
             glControl = null;
 
-            OpenTK.Graphics.GraphicsMode mode = null;
+            GLMode = null;
 
             try
             {
@@ -98,22 +100,22 @@ namespace Radegast
                     var testMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 24, 8, aa);
                     if (testMode.Samples == aa)
                     {
-                        mode = testMode;
+                        GLMode = testMode;
                     }
                 }
             }
-            catch {}
+            catch { }
 
-            if (mode == null)
+            if (GLMode == null)
             {
                 Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Error, Client);
                 return;
             }
 
-            Logger.Log("Initializing OpenGL mode: " + mode.ToString(), Helpers.LogLevel.Info);
+            Logger.Log("Initializing OpenGL mode: " + GLMode.ToString(), Helpers.LogLevel.Info);
             try
             {
-                glControl = new OpenTK.GLControl(mode);
+                glControl = new OpenTK.GLControl(GLMode);
             }
             catch
             {
@@ -167,6 +169,17 @@ namespace Radegast
                 // Call the resizing function which sets up the GL drawing window
                 // and will also invalidate the GL control
                 glControl_Resize(null, null);
+
+                glControl.Context.MakeCurrent(null);
+                TextureThreadContextReady.Reset();
+                var textureThread = new Thread(() => TextureThread())
+                {
+                    IsBackground = true,
+                    Name = "TextureLoadingThread"
+                };
+                textureThread.Start();
+                TextureThreadContextReady.WaitOne(1000, false);
+                glControl.MakeCurrent();
             }
             catch (Exception ex)
             {
@@ -175,11 +188,85 @@ namespace Radegast
             }
         }
 
+        bool TextureThreadRunning = true;
+
+        void TextureThread()
+        {
+            OpenTK.INativeWindow window = new OpenTK.NativeWindow();
+            OpenTK.Graphics.IGraphicsContext context = new OpenTK.Graphics.GraphicsContext(GLMode, window.WindowInfo);
+            context.MakeCurrent(window.WindowInfo);
+            TextureThreadContextReady.Set();
+            Logger.DebugLog("Started Texture Thread");
+
+            while (window.Exists && TextureThreadRunning)
+            {
+                window.ProcessEvents();
+
+                TextureLoadItem item = null;
+
+                if (!PendingTextures.Dequeue(Timeout.Infinite, ref item)) continue;
+
+                if (LoadTexture(item.TeFace.TextureID, ref item.Data.Texture, false))
+                {
+                    GL.GenTextures(1, out item.Data.TexturePointer);
+                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TexturePointer);
+
+                    Bitmap bitmap = new Bitmap(item.Data.Texture);
+                    bool hasAlpha;
+                    if (item.Data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                    {
+                        hasAlpha = true;
+                    }
+                    else
+                    {
+                        hasAlpha = false;
+                    }
+
+                    bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                    Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+
+                    BitmapData bitmapData =
+                        bitmap.LockBits(
+                        rectangle,
+                        ImageLockMode.ReadOnly,
+                        hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+                    GL.TexImage2D(
+                        TextureTarget.Texture2D,
+                        0,
+                        hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
+                        bitmap.Width,
+                        bitmap.Height,
+                        0,
+                        hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
+                        PixelType.UnsignedByte,
+                        bitmapData.Scan0);
+
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                    //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
+                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                    bitmap.UnlockBits(bitmapData);
+                    bitmap.Dispose();
+
+                    SafeInvalidate();
+                }
+                GL.Flush();
+                Thread.Sleep(10);
+            }
+            Logger.DebugLog("Texture thread exited");
+        }
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            TextureThreadRunning = false;
+            PendingTextures.Close();
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
@@ -291,7 +378,7 @@ namespace Radegast
                         Primitive.TextureEntryFace teFace = Prims[i].Prim.Textures.FaceTextures[j];
                         if (teFace == null)
                             teFace = Prims[i].Prim.Textures.DefaultTexture;
-                        
+
                         // Don't render transparent faces
                         if (teFace.RGBA.A <= 0.01f) continue;
 
@@ -547,10 +634,13 @@ namespace Radegast
             return ret;
         }
 
+        BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
+
         private void loadPrimsBlocking(List<Primitive> primList)
         {
             Prims = null;
             Prims = new List<FacetedMesh>(primList.Count);
+            PendingTextures.Open();
 
             for (int i = 0; i < primList.Count; i++)
             {
@@ -639,66 +729,14 @@ namespace Radegast
                         data.TexCoords[k * 2 + 1] = face.Vertices[k].TexCoord.Y;
                     }
 
-                    //ThreadPool.QueueUserWorkItem(sync =>
-                    //    {
-                            // Texture for this face
-                            if (LoadTexture(teFace.TextureID, ref data.Texture, false))
-                            {
-                                if (IsHandleCreated)
-                                {
-                                    Invoke(new MethodInvoker(() =>
-                                    {
-                                        GL.GenTextures(1, out data.TexturePointer);
-                                        GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
+                    var textureItem = new TextureLoadItem()
+                    {
+                        Data = data,
+                        Prim = prim,
+                        TeFace = teFace
+                    };
 
-                                        Bitmap bitmap = new Bitmap(data.Texture);
-                                        bool hasAlpha;
-                                        if (data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
-                                        {
-                                            hasAlpha = true;
-                                        }
-                                        else
-                                        {
-                                            hasAlpha = false;
-                                        }
-
-                                        bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                                        Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-
-                                        BitmapData bitmapData =
-                                            bitmap.LockBits(
-                                            rectangle,
-                                            ImageLockMode.ReadOnly,
-                                            hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-                                        GL.TexImage2D(
-                                            TextureTarget.Texture2D,
-                                            0,
-                                            hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
-                                            bitmap.Width,
-                                            bitmap.Height,
-                                            0,
-                                            hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
-                                            PixelType.UnsignedByte,
-                                            bitmapData.Scan0);
-
-                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                                        //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-                                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                                        bitmap.UnlockBits(bitmapData);
-                                        bitmap.Dispose();
-
-                                        SafeInvalidate();
-                                    }
-                                    ));
-                                }
-                            }
-                        //});
+                    PendingTextures.Enqueue(textureItem);
 
                     // Set the UserData for this face to our FaceData struct
                     face.UserData = data;
@@ -906,6 +944,13 @@ namespace Radegast
         public float[] Normals;
         public int TexturePointer;
         public System.Drawing.Image Texture;
+    }
+
+    public class TextureLoadItem
+    {
+        public FaceData Data;
+        public Primitive Prim;
+        public Primitive.TextureEntryFace TeFace;
     }
 
     public static class Render
