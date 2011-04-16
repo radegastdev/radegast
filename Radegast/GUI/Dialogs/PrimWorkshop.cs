@@ -291,15 +291,18 @@ namespace Radegast
                         Primitive.TextureEntryFace teFace = Prims[i].Prim.Textures.FaceTextures[j];
                         if (teFace == null)
                             teFace = Prims[i].Prim.Textures.DefaultTexture;
+                        
+                        // Don't render transparent faces
+                        if (teFace.RGBA.A <= 0.01f) continue;
 
                         switch (teFace.Shiny)
                         {
                             case Shininess.High:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 128f);
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 94f);
                                 break;
 
                             case Shininess.Medium:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 96f);
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 64f);
                                 break;
 
                             case Shininess.Low:
