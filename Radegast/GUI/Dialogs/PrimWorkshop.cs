@@ -270,7 +270,6 @@ namespace Radegast
                     GL.Flush();
                     SafeInvalidate();
                 }
-                Thread.Sleep(10);
             }
             Logger.DebugLog("Texture thread exited");
         }
@@ -286,7 +285,7 @@ namespace Radegast
         {
             if (Prims.ContainsKey(e.Prim.LocalID))
             {
-                SafeInvalidate();
+                UpdatePrimBlocking(e.Prim);
             }
         }
 
@@ -294,7 +293,7 @@ namespace Radegast
         {
             if (Prims.ContainsKey(e.Prim.LocalID) || Prims.ContainsKey(e.Prim.ParentID))
             {
-                AddPrimBlocking(e.Prim);
+                UpdatePrimBlocking(e.Prim);
             }
         }
 
@@ -302,7 +301,7 @@ namespace Radegast
         {
             if (Prims.ContainsKey(e.Prim.LocalID))
             {
-                AddPrimBlocking(e.Prim);
+                UpdatePrimBlocking(e.Prim);
             }
         }
 
@@ -726,11 +725,11 @@ namespace Radegast
 
             ThreadPool.QueueUserWorkItem((object sync) =>
             {
-                primList.ForEach(p => AddPrimBlocking(p));
+                primList.ForEach(p => UpdatePrimBlocking(p));
             });
         }
 
-        private void AddPrimBlocking(Primitive prim)
+        private void UpdatePrimBlocking(Primitive prim)
         {
 
             FacetedMesh mesh = null;
