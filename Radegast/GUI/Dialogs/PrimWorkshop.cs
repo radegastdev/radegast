@@ -304,13 +304,22 @@ namespace Radegast
 
         Vector3 Center = Vector3.Zero;
 
-        private void Render()
+        private void Render(bool picking)
         {
+            if (picking)
+            {
+                GL.ClearColor(1f, 1f, 1f, 1f);
+            }
+            else
+            {
+                GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
+            }
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.LoadIdentity();
 
             // Setup wireframe or solid fill drawing mode
-            if (Wireframe)
+            if (Wireframe && !picking)
             {
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             }
@@ -319,15 +328,17 @@ namespace Radegast
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
 
-            //var mLookAt = OpenTK.Matrix4d.LookAt(
-            //        center.X, (double)scrollZoom.Value * 0.1d + center.Y, center.Z,
-            //        center.X, center.Y, center.Z,
-            //        0d, 0d, 1d);
-            //GL.MultMatrix(ref mLookAt);
-            OpenTK.Graphics.Glu.LookAt(
+            var mLookAt = OpenTK.Matrix4d.LookAt(
                     Center.X, (double)scrollZoom.Value * 0.1d + Center.Y, Center.Z,
                     Center.X, Center.Y, Center.Z,
                     0d, 0d, 1d);
+            GL.MultMatrix(ref mLookAt);
+            
+            //OpenTK.Graphics.Glu.LookAt(
+            //        Center.X, (double)scrollZoom.Value * 0.1d + Center.Y, Center.Z,
+            //        Center.X, Center.Y, Center.Z,
+            //        0d, 0d, 1d);
+            
             //GL.Light(LightName.Light0, LightParameter.Position, lightPos);
 
             // Push the world matrix
@@ -403,33 +414,42 @@ namespace Radegast
                                 break;
                         }
 
-                        var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
-
-                        GL.Color4(faceColor);
-                        GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, faceColor);
-                        GL.Material(MaterialFace.Front, MaterialParameter.Specular, faceColor);
-                        #region Texturing
-
                         Face face = Prims[i].Faces[j];
                         FaceData data = (FaceData)face.UserData;
 
-                        if (data.TexturePointer != 0)
+                        if (!picking)
                         {
-                            GL.Enable(EnableCap.Texture2D);
+                            var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
+
+                            GL.Color4(faceColor);
+                            GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, faceColor);
+                            GL.Material(MaterialFace.Front, MaterialParameter.Specular, faceColor);
+
+                            if (data.TexturePointer != 0)
+                            {
+                                GL.Enable(EnableCap.Texture2D);
+                            }
+                            else
+                            {
+                                GL.Disable(EnableCap.Texture2D);
+                            }
+
+                            // Bind the texture
+                            GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
                         }
                         else
                         {
-                            GL.Disable(EnableCap.Texture2D);
+                            var primNr = Utils.Int16ToBytes((short)i);
+                            var faceColor = new byte[] { primNr[0], primNr[1], (byte)j, 255 };
+
+                            GL.Color4(faceColor);
                         }
 
-                        // Bind the texture
-                        GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
-
-                        #endregion Texturing
                         GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
                         GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
                         GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
                         GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+
                     }
 
                     // Pop the prim matrix
@@ -447,11 +467,51 @@ namespace Radegast
             GL.Flush();
         }
 
+        private void GluPerspective(float fovy, float aspect, float zNear, float zFar)
+        {
+            float fH = (float)Math.Tan(fovy / 360 * (float)Math.PI) * zNear;
+            float fW = fH * aspect;
+            GL.Frustum(-fW, fW, -fH, fH, zNear, zFar);
+        }
+
+        void Pick(int x, int y)
+        {
+            // Save old attributes
+            GL.PushAttrib(AttribMask.AllAttribBits);
+ 
+            // Disable some attributes to make the objects flat / solid color when they are drawn
+            GL.Disable(EnableCap.Fog);
+            GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.Dither);
+            GL.Disable(EnableCap.Lighting);
+            GL.Disable(EnableCap.LineStipple);
+            GL.Disable(EnableCap.PolygonStipple);
+            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.AlphaTest);
+
+            Render(true);
+
+            byte[] color = new byte[4];
+            GL.ReadPixels(x, glControl.Height - y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, color);
+
+            GL.PopAttrib();
+
+            int primID = Utils.BytesToUInt16(color, 0);
+            int faceID = color[2];
+
+            if (Prims.Count > primID)
+            {
+                Client.Self.Grab(Prims[primID].Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                Client.Self.DeGrab(Prims[primID].Prim.LocalID); 
+            }
+        }
+
         private void glControl_Paint(object sender, PaintEventArgs e)
         {
             if (!RenderingEnabled) return;
 
-            Render();
+            Render(false);
 
             glControl.SwapBuffers();
         }
@@ -468,14 +528,8 @@ namespace Radegast
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
 
-            double dAspRat = (double)glControl.Width / (double)glControl.Height;
-
-#pragma warning disable 0618
-            OpenTK.Graphics.Glu.Perspective(50.0d, dAspRat, 0.1d, 50d);
-#pragma warning restore 0618
-            //var mPerspective = OpenTK.Matrix4d.Perspective(50.0d, dAspRat, 0.1d, 50d);
-            //GL.MultMatrix(ref mPerspective);
-
+            float dAspRat = (float)glControl.Width / (float)glControl.Height;
+            GluPerspective(50f, dAspRat, 0.1f, 100.0f);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.PopMatrix();
@@ -483,9 +537,8 @@ namespace Radegast
 
         void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
-            int newVal = scrollZoom.Value + e.Delta / 10;
-            if (newVal < scrollZoom.Minimum) newVal = scrollZoom.Minimum;
-            if (newVal > scrollZoom.Maximum) newVal = scrollZoom.Maximum;
+            int newVal = Utils.Clamp(scrollZoom.Value + e.Delta / 10, scrollZoom.Minimum, scrollZoom.Maximum);
+
             if (scrollZoom.Value != newVal)
             {
                 scrollZoom.Value = newVal;
@@ -910,9 +963,14 @@ namespace Radegast
 
         private void glControl_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left )
             {
                 dragging = false;
+
+                if (e.X == downX && e.Y == downY) // click
+                {
+                    Pick(e.X, e.Y);
+                }
                 SafeInvalidate();
             }
         }
