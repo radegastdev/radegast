@@ -36,6 +36,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Text;
 using System.Threading;
+using System.Linq;
 using OpenTK.Graphics.OpenGL;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
@@ -54,7 +55,7 @@ namespace Radegast
 
         public OpenTK.GLControl glControl = null;
 
-        List<FacetedMesh> Prims = null;
+        Dictionary<uint, FacetedMesh> Prims = new Dictionary<uint, FacetedMesh>();
 
         bool Wireframe = false;
         public bool RenderingEnabled = false;
@@ -65,6 +66,8 @@ namespace Radegast
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
+        BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
+
 
         #endregion Form Globals
 
@@ -83,6 +86,7 @@ namespace Radegast
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
         }
 
         public void SetupGLControl()
@@ -131,8 +135,16 @@ namespace Radegast
             glControl.MouseMove += glControl_MouseMove;
             glControl.MouseWheel += glControl_MouseWheel;
             glControl.Load += new EventHandler(glControl_Load);
+            glControl.Disposed += new EventHandler(glControl_Disposed);
             glControl.Dock = DockStyle.Fill;
             Controls.Add(glControl);
+            glControl.BringToFront();
+        }
+
+        void glControl_Disposed(object sender, EventArgs e)
+        {
+            TextureThreadRunning = false;
+            PendingTextures.Close();
         }
 
         void glControl_Load(object sender, EventArgs e)
@@ -196,6 +208,7 @@ namespace Radegast
             OpenTK.Graphics.IGraphicsContext context = new OpenTK.Graphics.GraphicsContext(GLMode, window.WindowInfo);
             context.MakeCurrent(window.WindowInfo);
             TextureThreadContextReady.Set();
+            PendingTextures.Open();
             Logger.DebugLog("Started Texture Thread");
 
             while (window.Exists && TextureThreadRunning)
@@ -212,6 +225,7 @@ namespace Radegast
                     GL.BindTexture(TextureTarget.Texture2D, item.Data.TexturePointer);
 
                     Bitmap bitmap = new Bitmap(item.Data.Texture);
+
                     bool hasAlpha;
                     if (item.Data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     {
@@ -253,9 +267,9 @@ namespace Radegast
                     bitmap.UnlockBits(bitmapData);
                     bitmap.Dispose();
 
+                    GL.Flush();
                     SafeInvalidate();
                 }
-                GL.Flush();
                 Thread.Sleep(10);
             }
             Logger.DebugLog("Texture thread exited");
@@ -263,15 +277,14 @@ namespace Radegast
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
+            glControl.Dispose();
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            TextureThreadRunning = false;
-            PendingTextures.Close();
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
-            if (Prims != null && null != Prims.Find(fm => fm.Prim.LocalID == e.Update.LocalID))
+            if (Prims.ContainsKey(e.Prim.LocalID))
             {
                 SafeInvalidate();
             }
@@ -279,11 +292,20 @@ namespace Radegast
 
         void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
-            if (Prims != null && null != Prims.Find(fm => fm.Prim.LocalID == e.Prim.LocalID))
+            if (Prims.ContainsKey(e.Prim.LocalID) || Prims.ContainsKey(e.Prim.ParentID))
             {
-                SafeInvalidate();
+                AddPrimBlocking(e.Prim);
             }
         }
+
+        void Objects_ObjectDataBlockUpdate(object sender, ObjectDataBlockUpdateEventArgs e)
+        {
+            if (Prims.ContainsKey(e.Prim.LocalID))
+            {
+                AddPrimBlocking(e.Prim);
+            }
+        }
+
 
         void SafeInvalidate()
         {
@@ -306,6 +328,7 @@ namespace Radegast
 
         private void Render(bool picking)
         {
+            glControl.MakeCurrent();
             if (picking)
             {
                 GL.ClearColor(1f, 1f, 1f, 1f);
@@ -333,12 +356,12 @@ namespace Radegast
                     Center.X, Center.Y, Center.Z,
                     0d, 0d, 1d);
             GL.MultMatrix(ref mLookAt);
-            
+
             //OpenTK.Graphics.Glu.LookAt(
             //        Center.X, (double)scrollZoom.Value * 0.1d + Center.Y, Center.Z,
             //        Center.X, Center.Y, Center.Z,
             //        0d, 0d, 1d);
-            
+
             //GL.Light(LightName.Light0, LightParameter.Position, lightPos);
 
             // Push the world matrix
@@ -353,20 +376,20 @@ namespace Radegast
             GL.Rotate((float)scrollPitch.Value, 0f, 1f, 0f);
             GL.Rotate((float)scrollYaw.Value, 0f, 0f, 1f);
 
-            if (Prims != null)
+            lock (Prims)
             {
-                for (int i = 0; i < Prims.Count; i++)
+                int primNr = 0;
+                foreach (FacetedMesh mesh in Prims.Values)
                 {
-                    Primitive prim = Prims[i].Prim;
-
+                    primNr++;
+                    Primitive prim = mesh.Prim;
                     // Individual prim matrix
                     GL.PushMatrix();
 
-                    if (Prims[i].Prim.ParentID != 0)
+                    if (prim.ParentID != 0)
                     {
-                        var parent = Prims.Find(fm => fm.Prim.LocalID == Prims[i].Prim.ParentID);
-
-                        if (parent != null)
+                        FacetedMesh parent = null;
+                        if (Prims.TryGetValue(prim.ParentID, out parent))
                         {
                             // Apply prim translation and rotation relative to the root prim
                             GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
@@ -384,11 +407,11 @@ namespace Radegast
                     GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
 
                     // Draw the prim faces
-                    for (int j = 0; j < Prims[i].Faces.Count; j++)
+                    for (int j = 0; j < mesh.Faces.Count; j++)
                     {
-                        Primitive.TextureEntryFace teFace = Prims[i].Prim.Textures.FaceTextures[j];
+                        Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
                         if (teFace == null)
-                            teFace = Prims[i].Prim.Textures.DefaultTexture;
+                            teFace = mesh.Prim.Textures.DefaultTexture;
 
                         // Don't render transparent faces
                         if (teFace.RGBA.A <= 0.01f) continue;
@@ -414,7 +437,7 @@ namespace Radegast
                                 break;
                         }
 
-                        Face face = Prims[i].Faces[j];
+                        Face face = mesh.Faces[j];
                         FaceData data = (FaceData)face.UserData;
 
                         if (!picking)
@@ -439,8 +462,9 @@ namespace Radegast
                         }
                         else
                         {
-                            var primNr = Utils.Int16ToBytes((short)i);
-                            var faceColor = new byte[] { primNr[0], primNr[1], (byte)j, 255 };
+                            data.PickingID = primNr;
+                            var primNrBytes = Utils.Int16ToBytes((short)primNr);
+                            var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
 
                             GL.Color4(faceColor);
                         }
@@ -478,7 +502,7 @@ namespace Radegast
         {
             // Save old attributes
             GL.PushAttrib(AttribMask.AllAttribBits);
- 
+
             // Disable some attributes to make the objects flat / solid color when they are drawn
             GL.Disable(EnableCap.Fog);
             GL.Disable(EnableCap.Texture2D);
@@ -500,10 +524,29 @@ namespace Radegast
             int primID = Utils.BytesToUInt16(color, 0);
             int faceID = color[2];
 
-            if (Prims.Count > primID)
+            FacetedMesh picked = null;
+
+            lock (Prims)
             {
-                Client.Self.Grab(Prims[primID].Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                Client.Self.DeGrab(Prims[primID].Prim.LocalID); 
+                foreach (var mesh in Prims.Values)
+                {
+                    foreach (var face in mesh.Faces)
+                    {
+                        if (((FaceData)face.UserData).PickingID == primID)
+                        {
+                            picked = mesh;
+                            break;
+                        }
+                    }
+
+                    if (picked != null) break;
+                }
+            }
+
+            if (picked != null)
+            {
+                Client.Self.Grab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                Client.Self.DeGrab(picked.Prim.LocalID);
             }
         }
 
@@ -519,6 +562,7 @@ namespace Radegast
         private void glControl_Resize(object sender, EventArgs e)
         {
             if (!RenderingEnabled) return;
+            glControl.MakeCurrent();
 
             GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
 
@@ -547,17 +591,6 @@ namespace Radegast
             }
         }
         #endregion GLControl Callbacks
-
-        public void loadPrims(List<Primitive> primList)
-        {
-            if (!RenderingEnabled) return;
-
-            ThreadPool.QueueUserWorkItem((object sync) =>
-                {
-                    loadPrimsBlocking(primList);
-                }
-            );
-        }
 
         public FacetedMesh GenerateFacetedMesh(Primitive prim, OSDMap MeshData, DetailLevel LOD)
         {
@@ -687,100 +720,128 @@ namespace Radegast
             return ret;
         }
 
-        BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
-
-        private void loadPrimsBlocking(List<Primitive> primList)
+        public void loadPrims(List<Primitive> primList)
         {
-            Prims = null;
-            Prims = new List<FacetedMesh>(primList.Count);
-            PendingTextures.Open();
+            if (!RenderingEnabled) return;
 
-            for (int i = 0; i < primList.Count; i++)
+            ThreadPool.QueueUserWorkItem((object sync) =>
             {
-                FacetedMesh mesh = null;
-                Primitive prim = primList[i];
-                if (prim.Textures == null)
-                    continue;
+                primList.ForEach(p => AddPrimBlocking(p));
+            });
+        }
 
-                try
+        private void AddPrimBlocking(Primitive prim)
+        {
+
+            FacetedMesh mesh = null;
+            FacetedMesh existingMesh = null;
+
+            lock (Prims)
+            {
+                if (Prims.ContainsKey(prim.LocalID))
                 {
-                    if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
-                    {
-                        if (prim.Sculpt.Type != SculptType.Mesh)
-                        { // Regular sculptie
-                            Image img = null;
-                            if (!LoadTexture(primList[i].Sculpt.SculptTexture, ref img, true))
-                                continue;
-                            mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.Highest);
-                        }
-                        else
-                        { // Mesh
-                            AutoResetEvent gotMesh = new AutoResetEvent(false);
-                            bool meshSuccess = false;
+                    existingMesh = Prims[prim.LocalID];
+                }
+            }
 
-                            Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
-                                {
-                                    if (!success || !meshAsset.Decode())
-                                    {
-                                        Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
-                                    }
-                                    else
-                                    {
-                                        mesh = GenerateFacetedMesh(prim, meshAsset.MeshData, DetailLevel.Highest);
-                                        meshSuccess = true;
-                                    }
-                                    gotMesh.Set();
-                                });
+            if (prim.Textures == null)
+                return;
 
-                            if (!gotMesh.WaitOne(20 * 1000, false)) continue;
-                            if (!meshSuccess) continue;
-                        }
+            try
+            {
+                if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
+                {
+                    if (prim.Sculpt.Type != SculptType.Mesh)
+                    { // Regular sculptie
+                        Image img = null;
+                        if (!LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
+                            return;
+                        mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.Highest);
                     }
                     else
-                    {
-                        mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.Highest);
+                    { // Mesh
+                        AutoResetEvent gotMesh = new AutoResetEvent(false);
+                        bool meshSuccess = false;
+
+                        Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
+                            {
+                                if (!success || !meshAsset.Decode())
+                                {
+                                    Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
+                                }
+                                else
+                                {
+                                    mesh = GenerateFacetedMesh(prim, meshAsset.MeshData, DetailLevel.Highest);
+                                    meshSuccess = true;
+                                }
+                                gotMesh.Set();
+                            });
+
+                        if (!gotMesh.WaitOne(20 * 1000, false)) return;
+                        if (!meshSuccess) return;
                     }
                 }
-                catch
+                else
                 {
-                    continue;
+                    mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.Highest);
+                }
+            }
+            catch
+            {
+                return;
+            }
+
+            // Create a FaceData struct for each face that stores the 3D data
+            // in a OpenGL friendly format
+            for (int j = 0; j < mesh.Faces.Count; j++)
+            {
+                Face face = mesh.Faces[j];
+                FaceData data = new FaceData();
+
+                // Vertices for this face
+                data.Vertices = new float[face.Vertices.Count * 3];
+                data.Normals = new float[face.Vertices.Count * 3];
+                for (int k = 0; k < face.Vertices.Count; k++)
+                {
+                    data.Vertices[k * 3 + 0] = face.Vertices[k].Position.X;
+                    data.Vertices[k * 3 + 1] = face.Vertices[k].Position.Y;
+                    data.Vertices[k * 3 + 2] = face.Vertices[k].Position.Z;
+
+                    data.Normals[k * 3 + 0] = face.Vertices[k].Normal.X;
+                    data.Normals[k * 3 + 1] = face.Vertices[k].Normal.Y;
+                    data.Normals[k * 3 + 2] = face.Vertices[k].Normal.Z;
                 }
 
-                // Create a FaceData struct for each face that stores the 3D data
-                // in a OpenGL friendly format
-                for (int j = 0; j < mesh.Faces.Count; j++)
+                // Indices for this face
+                data.Indices = face.Indices.ToArray();
+
+                // Texture transform for this face
+                Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
+                renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
+
+                // Texcoords for this face
+                data.TexCoords = new float[face.Vertices.Count * 2];
+                for (int k = 0; k < face.Vertices.Count; k++)
                 {
-                    Face face = mesh.Faces[j];
-                    FaceData data = new FaceData();
+                    data.TexCoords[k * 2 + 0] = face.Vertices[k].TexCoord.X;
+                    data.TexCoords[k * 2 + 1] = face.Vertices[k].TexCoord.Y;
+                }
 
-                    // Vertices for this face
-                    data.Vertices = new float[face.Vertices.Count * 3];
-                    data.Normals = new float[face.Vertices.Count * 3];
-                    for (int k = 0; k < face.Vertices.Count; k++)
-                    {
-                        data.Vertices[k * 3 + 0] = face.Vertices[k].Position.X;
-                        data.Vertices[k * 3 + 1] = face.Vertices[k].Position.Y;
-                        data.Vertices[k * 3 + 2] = face.Vertices[k].Position.Z;
+                // Set the UserData for this face to our FaceData struct
+                face.UserData = data;
+                mesh.Faces[j] = face;
 
-                        data.Normals[k * 3 + 0] = face.Vertices[k].Normal.X;
-                        data.Normals[k * 3 + 1] = face.Vertices[k].Normal.Y;
-                        data.Normals[k * 3 + 2] = face.Vertices[k].Normal.Z;
-                    }
 
-                    // Indices for this face
-                    data.Indices = face.Indices.ToArray();
-
-                    // Texture transform for this face
-                    Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
-                    renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
-
-                    // Texcoords for this face
-                    data.TexCoords = new float[face.Vertices.Count * 2];
-                    for (int k = 0; k < face.Vertices.Count; k++)
-                    {
-                        data.TexCoords[k * 2 + 0] = face.Vertices[k].TexCoord.X;
-                        data.TexCoords[k * 2 + 1] = face.Vertices[k].TexCoord.Y;
-                    }
+                if (existingMesh != null &&
+                    existingMesh.Faces[j].TextureFace.TextureID == teFace.TextureID &&
+                    ((FaceData)existingMesh.Faces[j].UserData).TexturePointer != 0
+                    )
+                {
+                    FaceData existingData = (FaceData)existingMesh.Faces[j].UserData;
+                    data.TexturePointer = existingData.TexturePointer;
+                }
+                else
+                {
 
                     var textureItem = new TextureLoadItem()
                     {
@@ -790,15 +851,15 @@ namespace Radegast
                     };
 
                     PendingTextures.Enqueue(textureItem);
-
-                    // Set the UserData for this face to our FaceData struct
-                    face.UserData = data;
-                    mesh.Faces[j] = face;
                 }
 
-                Prims.Add(mesh);
-                SafeInvalidate();
             }
+
+            lock (Prims)
+            {
+                Prims[prim.LocalID] = mesh;
+            }
+            SafeInvalidate();
         }
 
         private bool LoadTexture(UUID textureID, ref Image texture, bool removeAlpha)
@@ -963,7 +1024,7 @@ namespace Radegast
 
         private void glControl_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left )
+            if (e.Button == MouseButtons.Left)
             {
                 dragging = false;
 
@@ -1001,6 +1062,7 @@ namespace Radegast
         public float[] TexCoords;
         public float[] Normals;
         public int TexturePointer;
+        public int PickingID = -1;
         public System.Drawing.Image Texture;
     }
 
@@ -1018,7 +1080,7 @@ namespace Radegast
 
     public static class MeshToOBJ
     {
-        public static bool MeshesToOBJ(List<FacetedMesh> meshes, string filename)
+        public static bool MeshesToOBJ(Dictionary<uint, FacetedMesh> meshes, string filename)
         {
             StringBuilder obj = new StringBuilder();
             StringBuilder mtl = new StringBuilder();
@@ -1035,17 +1097,16 @@ namespace Radegast
             mtl.AppendLine("# Created by libprimrender");
             mtl.AppendLine();
 
-            for (int i = 0; i < meshes.Count; i++)
+            int primNr = 0;
+            foreach (FacetedMesh mesh in meshes.Values)
             {
-                FacetedMesh mesh = meshes[i];
-
                 for (int j = 0; j < mesh.Faces.Count; j++)
                 {
                     Face face = mesh.Faces[j];
 
                     if (face.Vertices.Count > 2)
                     {
-                        string mtlName = String.Format("material{0}-{1}", i, face.ID);
+                        string mtlName = String.Format("material{0}-{1}", primNr, face.ID);
                         Primitive.TextureEntryFace tex = face.TextureFace;
                         string texName = tex.TextureID.ToString() + ".tga";
 
@@ -1065,7 +1126,7 @@ namespace Radegast
                                 break;
                         }
 
-                        obj.AppendFormat("g face{0}-{1}{2}", i, face.ID, Environment.NewLine);
+                        obj.AppendFormat("g face{0}-{1}{2}", primNr, face.ID, Environment.NewLine);
 
                         mtl.AppendLine("newmtl " + mtlName);
                         mtl.AppendFormat("Ka {0} {1} {2}{3}", tex.RGBA.R, tex.RGBA.G, tex.RGBA.B, Environment.NewLine);
@@ -1144,6 +1205,7 @@ namespace Radegast
                         #endregion Elements
                     }
                 }
+                primNr++;
             }
 
             try
