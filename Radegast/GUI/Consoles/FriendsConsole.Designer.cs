@@ -74,8 +74,7 @@ namespace Radegast
             this.chkModifyMyObjects = new System.Windows.Forms.CheckBox();
             this.pnlFriendsRights = new System.Windows.Forms.GroupBox();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.lvwFriends = new Radegast.ListViewNoFlicker();
-            this.chName = new System.Windows.Forms.ColumnHeader();
+            this.listFriends = new System.Windows.Forms.ListBox();
             this.pnlActions.SuspendLayout();
             this.pnlFriendsRights.SuspendLayout();
             this.SuspendLayout();
@@ -210,36 +209,27 @@ namespace Radegast
             this.imageList1.Images.SetKeyName(0, "GreenOrbFaded_16.png");
             this.imageList1.Images.SetKeyName(1, "GreenOrb_16.png");
             // 
-            // lvwFriends
+            // listFriends
             // 
-            this.lvwFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.listFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
-            this.lvwFriends.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.chName});
-            this.lvwFriends.FullRowSelect = true;
-            this.lvwFriends.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.lvwFriends.HideSelection = false;
-            this.lvwFriends.LargeImageList = this.imageList1;
-            this.lvwFriends.Location = new System.Drawing.Point(0, 0);
-            this.lvwFriends.Name = "lvwFriends";
-            this.lvwFriends.Size = new System.Drawing.Size(203, 466);
-            this.lvwFriends.SmallImageList = this.imageList1;
-            this.lvwFriends.TabIndex = 0;
-            this.lvwFriends.UseCompatibleStateImageBehavior = false;
-            this.lvwFriends.View = System.Windows.Forms.View.Details;
-            this.lvwFriends.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lvwFriends_MouseClick);
-            this.lvwFriends.SelectedIndexChanged += new System.EventHandler(this.lvwFriends_SelectedIndexChanged);
-            this.lvwFriends.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lvwFriends_KeyDown);
-            // 
-            // chName
-            // 
-            this.chName.Text = "";
-            this.chName.Width = 195;
+            this.listFriends.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.listFriends.FormattingEnabled = true;
+            this.listFriends.ItemHeight = 18;
+            this.listFriends.Location = new System.Drawing.Point(3, 9);
+            this.listFriends.Name = "listFriends";
+            this.listFriends.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.listFriends.Size = new System.Drawing.Size(200, 454);
+            this.listFriends.TabIndex = 0;
+            this.listFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listFriends_DrawItem);
+            this.listFriends.SelectedIndexChanged += new System.EventHandler(this.listFriends_SelectedIndexChanged);
+            this.listFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listFriends_MouseDown);
+            this.listFriends.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listFriends_KeyDown);
             // 
             // FriendsConsole
             // 
+            this.Controls.Add(this.listFriends);
             this.Controls.Add(this.pnlFriendsRights);
-            this.Controls.Add(this.lvwFriends);
             this.Controls.Add(this.pnlActions);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "FriendsConsole";
@@ -265,8 +255,7 @@ namespace Radegast
         public Button btnPay;
         public Button btnRemove;
         public GroupBox pnlFriendsRights;
-        public ListViewNoFlicker lvwFriends;
-        public ColumnHeader chName;
         public ImageList imageList1;
+        private ListBox listFriends;
     }
 }

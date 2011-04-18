@@ -38,7 +38,7 @@ using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
-    public partial class FriendsConsole : UserControl, IContextMenuProvider
+    public partial class FriendsConsole : UserControl
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
@@ -70,7 +70,29 @@ namespace Radegast
             client.Friends.FriendshipResponse += new EventHandler<FriendshipResponseEventArgs>(Friends_FriendshipResponse);
             client.Friends.FriendNames += new EventHandler<FriendNamesEventArgs>(Friends_FriendNames);
             Load += new EventHandler(FriendsConsole_Load);
-            lvwFriends.ListViewItemSorter = new FriendsSorter();
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+        }
+
+        void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
+        {
+            bool moded = false;
+
+            foreach (var id in e.Names.Keys)
+            {
+                if (client.Friends.FriendList.ContainsKey(id))
+                {
+                    moded = true;
+                    break;
+                }
+            }
+
+            if (moded)
+            {
+                if (InvokeRequired)
+                    BeginInvoke(new MethodInvoker(() => listFriends.Invalidate()));
+                else
+                    listFriends.Invalidate();
+            }
         }
 
         void FriendsConsole_Disposed(object sender, EventArgs e)
@@ -85,51 +107,34 @@ namespace Radegast
         void FriendsConsole_Load(object sender, EventArgs e)
         {
             InitializeFriendsList();
-            lvwFriends.Select();
+            listFriends.Select();
         }
 
         private void InitializeFriendsList()
         {
             if (!Monitor.TryEnter(lockOneAtaTime)) return;
             List<FriendInfo> friends = client.Friends.FriendList.FindAll(delegate(FriendInfo f) { return true; });
+            
+            friends.Sort((fi1, fi2) =>
+                {
+                    if (fi1.IsOnline && !fi2.IsOnline)
+                        return -1;
+                    else if (!fi1.IsOnline && fi2.IsOnline)
+                        return 1;
+                    else
+                        return string.Compare(fi1.Name, fi2.Name);
+                }
+            );
 
-            lvwFriends.BeginUpdate();
+            listFriends.BeginUpdate();
+            
+            listFriends.Items.Clear();
             foreach (FriendInfo friend in friends)
             {
-                ListViewItem item;
-                if (lvwFriends.Items.ContainsKey(friend.UUID.ToString()))
-                {
-                    item = lvwFriends.Items[friend.UUID.ToString()];
-                    if (friend.Name != null) item.Text = friend.Name;
-                    item.ImageIndex = friend.IsOnline ? 1 : 0;
-                    item.Tag = friend;
-                }
-                else
-                {
-                    item = new ListViewItem();
-                    item.Name = friend.UUID.ToString();
-                    if (friend.Name != null) item.Text = friend.Name;
-                    item.ImageIndex = friend.IsOnline ? 1 : 0;
-                    item.Tag = friend;
-                    lvwFriends.Items.Add(item);
-                }
+                listFriends.Items.Add(friend);
             }
             
-            List<UUID> removed = new List<UUID>();
-            foreach (ListViewItem item in lvwFriends.Items)
-            {
-                UUID id = ((FriendInfo)item.Tag).UUID;
-                if (null == friends.Find((FriendInfo f) => { return f.UUID == id; }))
-                    removed.Add(id);
-            }
-            
-            foreach (UUID id in removed)
-            {
-                lvwFriends.Items.RemoveByKey(id.ToString());
-            }
-
-            lvwFriends.Sort();
-            lvwFriends.EndUpdate();
+            listFriends.EndUpdate();
             Monitor.Exit(lockOneAtaTime);
         }
 
@@ -209,18 +214,18 @@ namespace Radegast
 
         private void SetControls()
         {
-            if (lvwFriends.SelectedItems.Count == 0)
+            if (listFriends.SelectedItems.Count == 0)
             {
                 pnlActions.Enabled = pnlFriendsRights.Enabled = false;
             }
-            else if (lvwFriends.SelectedItems.Count == 1)
+            else if (listFriends.SelectedItems.Count == 1)
             {
                 pnlActions.Enabled = pnlFriendsRights.Enabled = true;
                 btnProfile.Enabled = btnIM.Enabled = btnPay.Enabled = btnRemove.Enabled = true;
 
-                FriendInfo friend = (FriendInfo)lvwFriends.SelectedItems[0].Tag;
+                FriendInfo friend = (FriendInfo)listFriends.SelectedItems[0];
                 lblFriendName.Text = friend.Name + (friend.IsOnline ? " (online)" : " (offline)");
-                
+
                 settingFriend = true;
                 chkSeeMeOnline.Checked = friend.CanSeeMeOnline;
                 chkSeeMeOnMap.Checked = friend.CanSeeMeOnMap;
@@ -236,20 +241,11 @@ namespace Radegast
             }
         }
 
-        private void lvwFriends_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (lvwFriends.SelectedItems.Count == 1)
-                selectedFriend = (FriendInfo)lvwFriends.SelectedItems[0].Tag;
-            else
-                selectedFriend = null;
-            SetControls();
-        }
-
         private void btnIM_Click(object sender, EventArgs e)
         {
-            if (lvwFriends.SelectedItems.Count == 1)
+            if (listFriends.SelectedItems.Count == 1)
             {
-                selectedFriend = (FriendInfo)lvwFriends.SelectedItems[0].Tag;
+                selectedFriend = (FriendInfo)listFriends.SelectedItems[0];
 
                 if (instance.TabConsole.TabExists((client.Self.AgentID ^ selectedFriend.UUID).ToString()))
                 {
@@ -262,11 +258,11 @@ namespace Radegast
                 instance.TabConsole.AddIMTab(selectedFriend.UUID, client.Self.AgentID ^ selectedFriend.UUID, selectedFriend.Name);
                 instance.TabConsole.SelectTab((client.Self.AgentID ^ selectedFriend.UUID).ToString());
             }
-            else if (lvwFriends.SelectedItems.Count > 1)
+            else if (listFriends.SelectedItems.Count > 1)
             {
                 List<UUID> participants = new List<UUID>();
-                foreach(ListViewItem item in lvwFriends.SelectedItems)
-                    participants.Add(((FriendInfo)item.Tag).UUID);
+                foreach (var item in listFriends.SelectedItems)
+                    participants.Add(((FriendInfo)item).UUID);
                 UUID tmpID = UUID.Random();
                 lblFriendName.Text = "Startings friends conference...";
                 instance.TabConsole.DisplayNotificationInChat(lblFriendName.Text, ChatBufferTextStyle.Invisible);
@@ -339,9 +335,9 @@ namespace Radegast
 
         private void btnOfferTeleport_Click(object sender, EventArgs e)
         {
-            foreach (ListViewItem item in lvwFriends.SelectedItems)
+            foreach (var item in listFriends.SelectedItems)
             {
-                FriendInfo friend = (FriendInfo)item.Tag;
+                FriendInfo friend = (FriendInfo)item;
                 client.Self.SendTeleportLure(friend.UUID, "Join me in " + client.Network.CurrentSim.Name + "!");
             }
         }
@@ -357,41 +353,25 @@ namespace Radegast
             RefreshFriendsList();
         }
 
-        private void lvwFriends_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-                ShowContextMenu();
-        }
-
-        private void lvwFriends_KeyDown(object sender, KeyEventArgs e)
-        {
-            if ((e.KeyCode == Keys.Apps) ||
-                (e.Control && e.KeyCode == RadegastContextMenuStrip.ContexMenuKeyCode))
-            {
-                ShowContextMenu();
-                e.SuppressKeyPress = e.Handled = true;
-            }
-        }
-
         public void ShowContextMenu()
         {
             RadegastContextMenuStrip menu = GetContextMenu();
-            if (menu.HasSelection) menu.Show(lvwFriends, lvwFriends.PointToClient(System.Windows.Forms.Control.MousePosition));
+            if (menu.HasSelection) menu.Show(listFriends, listFriends.PointToClient(System.Windows.Forms.Control.MousePosition));
         }
 
         public RadegastContextMenuStrip GetContextMenu()
         {
             RadegastContextMenuStrip friendsContextMenuStrip = new RadegastContextMenuStrip();
-            if (lvwFriends.SelectedItems.Count == 1)
+            if (listFriends.SelectedItems.Count == 1)
             {
-                FriendInfo item = (FriendInfo)lvwFriends.SelectedItems[0].Tag;
+                FriendInfo item = (FriendInfo)listFriends.SelectedItems[0];
                 instance.ContextActionManager.AddContributions(friendsContextMenuStrip, typeof(Avatar), item, btnPay.Parent);
                 friendsContextMenuStrip.Selection = item.Name;
                 friendsContextMenuStrip.HasSelection = true;
             }
-            else if (lvwFriends.SelectedItems.Count > 1)
+            else if (listFriends.SelectedItems.Count > 1)
             {
-                instance.ContextActionManager.AddContributions(friendsContextMenuStrip, typeof(ListView), lvwFriends, btnPay.Parent);
+                instance.ContextActionManager.AddContributions(friendsContextMenuStrip, typeof(ListView), listFriends, btnPay.Parent);
                 friendsContextMenuStrip.Selection = "Multiple friends";
                 friendsContextMenuStrip.HasSelection = true;
             }
@@ -403,20 +383,54 @@ namespace Radegast
             return friendsContextMenuStrip;
         }
 
-        public class FriendsSorter : System.Collections.IComparer
+        private void listFriends_DrawItem(object sender, DrawItemEventArgs e)
         {
-            public int Compare(object o1, object o2)
-            {
-                FriendInfo f1 = (FriendInfo)((ListViewItem)o1).Tag;
-                FriendInfo f2 = (FriendInfo)((ListViewItem)o2).Tag;
+            e.DrawBackground();
 
-                if (f1.IsOnline && !f2.IsOnline)
-                    return -1;
-                else if (!f1.IsOnline && f2.IsOnline)
-                    return 1;
-                else
-                    return string.Compare(f1.Name, f2.Name, true);
+            try
+            {
+                if (e.Index >= 0)
+                {
+                    var item = ((ListBox)sender).Items[e.Index];
+                    if (item is FriendInfo)
+                    {
+                        var friend = (FriendInfo)((ListBox)sender).Items[e.Index];
+                        string title = instance.Names.Get(friend.UUID);
+
+                        using (var brush = new SolidBrush(e.ForeColor))
+                        {
+                            e.Graphics.DrawImageUnscaled(imageList1.Images[friend.IsOnline ? 1 : 0], e.Bounds.X, e.Bounds.Y);
+                            e.Graphics.DrawString(title, e.Font, brush, e.Bounds.X + 20, e.Bounds.Y + 2);
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            e.DrawFocusRectangle();
+        }
+
+        private void listFriends_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedFriend = (FriendInfo)listFriends.SelectedItem;
+            SetControls();
+        }
+
+        private void listFriends_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Apps || (e.Control && e.KeyCode == RadegastContextMenuStrip.ContexMenuKeyCode))
+            {
+                ShowContextMenu();
             }
         }
+
+        private void listFriends_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                ShowContextMenu();
+            }
+        }
+
     }
 }
