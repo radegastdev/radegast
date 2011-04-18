@@ -818,7 +818,7 @@ namespace Radegast
                     pw.SetupGLControl();
                     if (pw.RenderingEnabled)
                     {
-                        pw.loadPrims(prims);
+                        pw.LoadPrims(prims);
                     }
                 };
             pw.Show();

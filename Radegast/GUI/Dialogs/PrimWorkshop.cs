@@ -28,6 +28,8 @@
 //
 // $Id$
 //
+
+#region Usings
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -43,22 +45,41 @@ using OpenMetaverse.Rendering;
 using OpenMetaverse.Assets;
 using OpenMetaverse.Imaging;
 using OpenMetaverse.StructuredData;
-
-// NOTE: Batches are divided by texture, fullbright, shiny, transparent, and glow
+#endregion Usings
 
 namespace Radegast
 {
 
     public partial class frmPrimWorkshop : RadegastForm
     {
-        #region Form Globals
-
+        #region Public fields
+        /// <summary>
+        /// The OpenGL surface
+        /// </summary>
         public OpenTK.GLControl glControl = null;
 
-        Dictionary<uint, FacetedMesh> Prims = new Dictionary<uint, FacetedMesh>();
+        /// <summary>
+        /// Use multi sampling (anti aliasing)
+        /// </summary>
+        public bool UseMultiSampling = false;
 
-        bool Wireframe = false;
+        /// <summary>
+        /// Is rendering engine ready and enabled
+        /// </summary>
         public bool RenderingEnabled = false;
+
+        /// <summary>
+        /// Rednder in wireframe mode
+        /// </summary>
+        public bool Wireframe = false;
+
+        /// <summary>
+        /// List of prims in the scene
+        /// </summary>
+        Dictionary<uint, FacetedMesh> Prims = new Dictionary<uint, FacetedMesh>();
+        #endregion Public fields
+
+        #region Private fields
 
         int[] TexturePointers = new int[1];
         Dictionary<UUID, Image> Textures = new Dictionary<UUID, Image>();
@@ -67,10 +88,12 @@ namespace Radegast
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
+        Vector3 Center = Vector3.Zero;
+        float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
 
+        #endregion Private fields
 
-        #endregion Form Globals
-
+        #region Construction and disposal
         public frmPrimWorkshop(RadegastInstance instance)
             : base(instance)
         {
@@ -89,6 +112,42 @@ namespace Radegast
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
         }
 
+        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
+        {
+            glControl.Dispose();
+            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
+        }
+        #endregion Construction and disposal
+
+        #region Network messaage handlers
+        void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
+        {
+            if (Prims.ContainsKey(e.Prim.LocalID))
+            {
+                UpdatePrimBlocking(e.Prim);
+            }
+        }
+
+        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
+        {
+            if (Prims.ContainsKey(e.Prim.LocalID) || Prims.ContainsKey(e.Prim.ParentID))
+            {
+                UpdatePrimBlocking(e.Prim);
+            }
+        }
+
+        void Objects_ObjectDataBlockUpdate(object sender, ObjectDataBlockUpdateEventArgs e)
+        {
+            if (Prims.ContainsKey(e.Prim.LocalID))
+            {
+                UpdatePrimBlocking(e.Prim);
+            }
+        }
+        #endregion Network messaage handlers
+
+        #region glControl setup and disposal
         public void SetupGLControl()
         {
             if (glControl != null)
@@ -99,16 +158,26 @@ namespace Radegast
 
             try
             {
-                for (int aa = 0; aa <= 8; aa += 2)
+                if (!UseMultiSampling)
                 {
-                    var testMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 24, 8, aa);
-                    if (testMode.Samples == aa)
+                    GLMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 24, 8, 0);
+                }
+                else
+                {
+                    for (int aa = 0; aa <= 8; aa += 2)
                     {
-                        GLMode = testMode;
+                        var testMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 24, 8, aa);
+                        if (testMode.Samples == aa)
+                        {
+                            GLMode = testMode;
+                        }
                     }
                 }
             }
-            catch { }
+            catch
+            { 
+                GLMode = null;
+            }
 
             if (GLMode == null)
             {
@@ -199,7 +268,140 @@ namespace Radegast
                 Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Warning, Client, ex);
             }
         }
+        #endregion glControl setup and disposal
 
+        #region glControl paint and resize events
+        private void glControl_Paint(object sender, PaintEventArgs e)
+        {
+            if (!RenderingEnabled) return;
+
+            Render(false);
+
+            glControl.SwapBuffers();
+        }
+
+        private void glControl_Resize(object sender, EventArgs e)
+        {
+            if (!RenderingEnabled) return;
+            glControl.MakeCurrent();
+
+            GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
+
+            GL.Viewport(0, 0, glControl.Width, glControl.Height);
+
+            GL.PushMatrix();
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+
+            float dAspRat = (float)glControl.Width / (float)glControl.Height;
+            GluPerspective(50f, dAspRat, 0.1f, 100.0f);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PopMatrix();
+        }
+        #endregion glControl paint and resize events
+
+        #region Mouse handling
+        bool dragging = false;
+        int dragX, dragY, downX, downY;
+
+        private void glControl_MouseWheel(object sender, MouseEventArgs e)
+        {
+            int newVal = Utils.Clamp(scrollZoom.Value + e.Delta / 10, scrollZoom.Minimum, scrollZoom.Maximum);
+
+            if (scrollZoom.Value != newVal)
+            {
+                scrollZoom.Value = newVal;
+                glControl_Resize(null, null);
+                SafeInvalidate();
+            }
+        }
+
+        private void glControl_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle)
+            {
+                dragging = true;
+                downX = dragX = e.X;
+                downY = dragY = e.Y;
+            }
+
+        }
+
+        private void glControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
+                int deltaX = e.X - dragX;
+                int deltaY = e.Y - dragY;
+
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (ModifierKeys == Keys.Control || ModifierKeys == (Keys.Alt | Keys.Control | Keys.Shift))
+                    {
+                        Center.X -= deltaX / 100f;
+                        Center.Z += deltaY / 100f;
+                    }
+
+                    if (ModifierKeys == Keys.Alt)
+                    {
+                        Center.Y -= deltaY / 25f;
+
+                        int newYaw = scrollYaw.Value + deltaX;
+                        if (newYaw < 0) newYaw += 360;
+                        if (newYaw > 360) newYaw -= 360;
+
+                        scrollYaw.Value = newYaw;
+
+                    }
+
+                    if (ModifierKeys == Keys.None || ModifierKeys == (Keys.Alt | Keys.Control))
+                    {
+                        int newRoll = scrollRoll.Value + deltaY;
+                        if (newRoll < 0) newRoll += 360;
+                        if (newRoll > 360) newRoll -= 360;
+
+                        scrollRoll.Value = newRoll;
+
+
+                        int newYaw = scrollYaw.Value + deltaX;
+                        if (newYaw < 0) newYaw += 360;
+                        if (newYaw > 360) newYaw -= 360;
+
+                        scrollYaw.Value = newYaw;
+
+                    }
+                }
+                else if (e.Button == MouseButtons.Middle)
+                {
+                    Center.X -= deltaX / 100f;
+                    Center.Z += deltaY / 100f;
+
+                }
+
+                dragX = e.X;
+                dragY = e.Y;
+
+                SafeInvalidate();
+            }
+        }
+
+        private void glControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                dragging = false;
+
+                if (e.X == downX && e.Y == downY) // click
+                {
+                    Pick(e.X, e.Y);
+                }
+                SafeInvalidate();
+            }
+        }
+        #endregion Mouse handling
+
+        #region Texture thread
         bool TextureThreadRunning = true;
 
         void TextureThread()
@@ -273,58 +475,150 @@ namespace Radegast
             }
             Logger.DebugLog("Texture thread exited");
         }
+        #endregion Texture thread
 
-        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
+        #region Public methods
+        public void LoadPrims(List<Primitive> primList)
         {
-            glControl.Dispose();
-            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-        }
+            if (!RenderingEnabled) return;
 
-        void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
-        {
-            if (Prims.ContainsKey(e.Prim.LocalID))
+            ThreadPool.QueueUserWorkItem((object sync) =>
             {
-                UpdatePrimBlocking(e.Prim);
-            }
-        }
-
-        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
-        {
-            if (Prims.ContainsKey(e.Prim.LocalID) || Prims.ContainsKey(e.Prim.ParentID))
-            {
-                UpdatePrimBlocking(e.Prim);
-            }
-        }
-
-        void Objects_ObjectDataBlockUpdate(object sender, ObjectDataBlockUpdateEventArgs e)
-        {
-            if (Prims.ContainsKey(e.Prim.LocalID))
-            {
-                UpdatePrimBlocking(e.Prim);
-            }
+                primList.ForEach(p => UpdatePrimBlocking(p));
+            });
         }
 
 
-        void SafeInvalidate()
+        public FacetedMesh GenerateFacetedMesh(Primitive prim, OSDMap MeshData, DetailLevel LOD)
         {
-            if (InvokeRequired)
+            FacetedMesh ret = new FacetedMesh();
+
+            ret.Faces = new List<Face>();
+            ret.Prim = prim;
+            ret.Profile = new Profile();
+            ret.Profile.Faces = new List<ProfileFace>();
+            ret.Profile.Positions = new List<Vector3>();
+            ret.Path = new OpenMetaverse.Rendering.Path();
+            ret.Path.Points = new List<PathPoint>();
+
+            try
             {
-                if (!instance.MonoRuntime || IsHandleCreated)
+                OSD facesOSD = null;
+
+                switch (LOD)
                 {
-                    BeginInvoke(new MethodInvoker(() => SafeInvalidate()));
+                    default:
+                    case DetailLevel.Highest:
+                        facesOSD = MeshData["high_lod"];
+                        break;
+
+                    case DetailLevel.High:
+                        facesOSD = MeshData["medium_lod"];
+                        break;
+
+                    case DetailLevel.Medium:
+                        facesOSD = MeshData["low_lod"];
+                        break;
+
+                    case DetailLevel.Low:
+                        facesOSD = MeshData["lowest_lod"];
+                        break;
                 }
-                return;
+
+                if (facesOSD == null || !(facesOSD is OSDArray))
+                {
+                    return ret;
+                }
+
+                OSDArray decodedMeshOsdArray = (OSDArray)facesOSD;
+
+
+
+                for (int faceNr = 0; faceNr < decodedMeshOsdArray.Count; faceNr++)
+                {
+                    OSD subMeshOsd = decodedMeshOsdArray[faceNr];
+                    Face oface = new Face();
+                    oface.ID = faceNr;
+                    oface.Vertices = new List<Vertex>();
+                    oface.Indices = new List<ushort>();
+                    oface.TextureFace = prim.Textures.GetFace((uint)faceNr);
+
+                    if (subMeshOsd is OSDMap)
+                    {
+                        OSDMap subMeshMap = (OSDMap)subMeshOsd;
+
+                        Vector3 posMax = ((OSDMap)subMeshMap["PositionDomain"])["Max"];
+                        Vector3 posMin = ((OSDMap)subMeshMap["PositionDomain"])["Min"];
+
+                        Vector2 texPosMax = ((OSDMap)subMeshMap["TexCoord0Domain"])["Max"];
+                        Vector2 texPosMin = ((OSDMap)subMeshMap["TexCoord0Domain"])["Min"];
+
+
+                        byte[] posBytes = subMeshMap["Position"];
+                        byte[] norBytes = subMeshMap["Normal"];
+                        byte[] texBytes = subMeshMap["TexCoord0"];
+
+                        for (int i = 0; i < posBytes.Length; i += 6)
+                        {
+                            ushort uX = Utils.BytesToUInt16(posBytes, i);
+                            ushort uY = Utils.BytesToUInt16(posBytes, i + 2);
+                            ushort uZ = Utils.BytesToUInt16(posBytes, i + 4);
+
+                            Vertex vx = new Vertex();
+
+                            vx.Position = new Vector3(
+                                Utils.UInt16ToFloat(uX, posMin.X, posMax.X),
+                                Utils.UInt16ToFloat(uY, posMin.Y, posMax.Y),
+                                Utils.UInt16ToFloat(uZ, posMin.Z, posMax.Z));
+
+                            ushort nX = Utils.BytesToUInt16(norBytes, i);
+                            ushort nY = Utils.BytesToUInt16(norBytes, i + 2);
+                            ushort nZ = Utils.BytesToUInt16(norBytes, i + 4);
+
+                            vx.Normal = new Vector3(
+                                Utils.UInt16ToFloat(nX, posMin.X, posMax.X),
+                                Utils.UInt16ToFloat(nY, posMin.Y, posMax.Y),
+                                Utils.UInt16ToFloat(nZ, posMin.Z, posMax.Z));
+
+                            var vertexIndexOffset = oface.Vertices.Count * 4;
+
+                            if (texBytes != null && texBytes.Length >= vertexIndexOffset + 4)
+                            {
+                                ushort tX = Utils.BytesToUInt16(texBytes, vertexIndexOffset);
+                                ushort tY = Utils.BytesToUInt16(texBytes, vertexIndexOffset + 2);
+
+                                vx.TexCoord = new Vector2(
+                                    Utils.UInt16ToFloat(tX, texPosMin.X, texPosMax.X),
+                                    Utils.UInt16ToFloat(tY, texPosMin.Y, texPosMax.Y));
+                            }
+
+                            oface.Vertices.Add(vx);
+                        }
+
+                        byte[] triangleBytes = subMeshMap["TriangleList"];
+                        for (int i = 0; i < triangleBytes.Length; i += 6)
+                        {
+                            ushort v1 = (ushort)(Utils.BytesToUInt16(triangleBytes, i));
+                            oface.Indices.Add(v1);
+                            ushort v2 = (ushort)(Utils.BytesToUInt16(triangleBytes, i + 2));
+                            oface.Indices.Add(v2);
+                            ushort v3 = (ushort)(Utils.BytesToUInt16(triangleBytes, i + 4));
+                            oface.Indices.Add(v3);
+                        }
+                    }
+                    ret.Faces.Add(oface);
+                }
+
             }
-
-            glControl.Invalidate();
-
+            catch (Exception ex)
+            {
+                Logger.Log("Failed to decode mesh asset: " + ex.Message, Helpers.LogLevel.Warning, Client);
+            }
+            return ret;
         }
+        #endregion Public methods
 
-        #region GLControl Callbacks
-
-        Vector3 Center = Vector3.Zero;
-
+        #region Private methods (the meat)
         private void Render(bool picking)
         {
             glControl.MakeCurrent();
@@ -497,7 +791,7 @@ namespace Radegast
             GL.Frustum(-fW, fW, -fH, fH, zNear, zFar);
         }
 
-        void Pick(int x, int y)
+        private void Pick(int x, int y)
         {
             // Save old attributes
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -549,185 +843,6 @@ namespace Radegast
             }
         }
 
-        private void glControl_Paint(object sender, PaintEventArgs e)
-        {
-            if (!RenderingEnabled) return;
-
-            Render(false);
-
-            glControl.SwapBuffers();
-        }
-
-        private void glControl_Resize(object sender, EventArgs e)
-        {
-            if (!RenderingEnabled) return;
-            glControl.MakeCurrent();
-
-            GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
-
-            GL.Viewport(0, 0, glControl.Width, glControl.Height);
-
-            GL.PushMatrix();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            float dAspRat = (float)glControl.Width / (float)glControl.Height;
-            GluPerspective(50f, dAspRat, 0.1f, 100.0f);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.PopMatrix();
-        }
-
-        void glControl_MouseWheel(object sender, MouseEventArgs e)
-        {
-            int newVal = Utils.Clamp(scrollZoom.Value + e.Delta / 10, scrollZoom.Minimum, scrollZoom.Maximum);
-
-            if (scrollZoom.Value != newVal)
-            {
-                scrollZoom.Value = newVal;
-                glControl_Resize(null, null);
-                SafeInvalidate();
-            }
-        }
-        #endregion GLControl Callbacks
-
-        public FacetedMesh GenerateFacetedMesh(Primitive prim, OSDMap MeshData, DetailLevel LOD)
-        {
-            FacetedMesh ret = new FacetedMesh();
-
-            ret.Faces = new List<Face>();
-            ret.Prim = prim;
-            ret.Profile = new Profile();
-            ret.Profile.Faces = new List<ProfileFace>();
-            ret.Profile.Positions = new List<Vector3>();
-            ret.Path = new OpenMetaverse.Rendering.Path();
-            ret.Path.Points = new List<PathPoint>();
-
-            try
-            {
-                OSD facesOSD = null;
-
-                switch (LOD)
-                {
-                    default:
-                    case DetailLevel.Highest:
-                        facesOSD = MeshData["high_lod"];
-                        break;
-
-                    case DetailLevel.High:
-                        facesOSD = MeshData["medium_lod"];
-                        break;
-
-                    case DetailLevel.Medium:
-                        facesOSD = MeshData["low_lod"];
-                        break;
-
-                    case DetailLevel.Low:
-                        facesOSD = MeshData["lowest_lod"];
-                        break;
-                }
-
-                if (facesOSD == null || !(facesOSD is OSDArray))
-                {
-                    return ret;
-                }
-
-                OSDArray decodedMeshOsdArray = (OSDArray)facesOSD;
-
-
-
-                for (int faceNr = 0; faceNr < decodedMeshOsdArray.Count; faceNr++)
-                {
-                    OSD subMeshOsd = decodedMeshOsdArray[faceNr];
-                    Face oface = new Face();
-                    oface.ID = faceNr;
-                    oface.Vertices = new List<Vertex>();
-                    oface.Indices = new List<ushort>();
-                    oface.TextureFace = prim.Textures.GetFace((uint)faceNr);
-
-                    if (subMeshOsd is OSDMap)
-                    {
-                        OSDMap subMeshMap = (OSDMap)subMeshOsd;
-
-                        Vector3 posMax = ((OSDMap)subMeshMap["PositionDomain"])["Max"];
-                        Vector3 posMin = ((OSDMap)subMeshMap["PositionDomain"])["Min"];
-
-                        Vector2 texPosMax = ((OSDMap)subMeshMap["TexCoord0Domain"])["Max"];
-                        Vector2 texPosMin = ((OSDMap)subMeshMap["TexCoord0Domain"])["Min"];
-
-
-                        byte[] posBytes = subMeshMap["Position"];
-                        byte[] norBytes = subMeshMap["Normal"];
-                        byte[] texBytes = subMeshMap["TexCoord0"];
-
-                        for (int i = 0; i < posBytes.Length; i += 6)
-                        {
-                            ushort uX = Utils.BytesToUInt16(posBytes, i);
-                            ushort uY = Utils.BytesToUInt16(posBytes, i + 2);
-                            ushort uZ = Utils.BytesToUInt16(posBytes, i + 4);
-
-                            Vertex vx = new Vertex();
-
-                            vx.Position = new Vector3(
-                                Utils.UInt16ToFloat(uX, posMin.X, posMax.X),
-                                Utils.UInt16ToFloat(uY, posMin.Y, posMax.Y),
-                                Utils.UInt16ToFloat(uZ, posMin.Z, posMax.Z));
-
-                            ushort nX = Utils.BytesToUInt16(norBytes, i);
-                            ushort nY = Utils.BytesToUInt16(norBytes, i + 2);
-                            ushort nZ = Utils.BytesToUInt16(norBytes, i + 4);
-
-                            vx.Normal = new Vector3(
-                                Utils.UInt16ToFloat(nX, posMin.X, posMax.X),
-                                Utils.UInt16ToFloat(nY, posMin.Y, posMax.Y),
-                                Utils.UInt16ToFloat(nZ, posMin.Z, posMax.Z));
-
-                            var vertexIndexOffset = oface.Vertices.Count * 4;
-
-                            if (texBytes != null && texBytes.Length >= vertexIndexOffset + 4)
-                            {
-                                ushort tX = Utils.BytesToUInt16(texBytes, vertexIndexOffset);
-                                ushort tY = Utils.BytesToUInt16(texBytes, vertexIndexOffset + 2);
-
-                                vx.TexCoord = new Vector2(
-                                    Utils.UInt16ToFloat(tX, texPosMin.X, texPosMax.X),
-                                    Utils.UInt16ToFloat(tY, texPosMin.Y, texPosMax.Y));
-                            }
-
-                            oface.Vertices.Add(vx);
-                        }
-
-                        byte[] triangleBytes = subMeshMap["TriangleList"];
-                        for (int i = 0; i < triangleBytes.Length; i += 6)
-                        {
-                            ushort v1 = (ushort)(Utils.BytesToUInt16(triangleBytes, i));
-                            oface.Indices.Add(v1);
-                            ushort v2 = (ushort)(Utils.BytesToUInt16(triangleBytes, i + 2));
-                            oface.Indices.Add(v2);
-                            ushort v3 = (ushort)(Utils.BytesToUInt16(triangleBytes, i + 4));
-                            oface.Indices.Add(v3);
-                        }
-                    }
-                    ret.Faces.Add(oface);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to decode mesh asset: " + ex.Message, Helpers.LogLevel.Warning, Client);
-            }
-            return ret;
-        }
-
-        public void loadPrims(List<Primitive> primList)
-        {
-            if (!RenderingEnabled) return;
-
-            ThreadPool.QueueUserWorkItem((object sync) =>
-            {
-                primList.ForEach(p => UpdatePrimBlocking(p));
-            });
-        }
 
         private void UpdatePrimBlocking(Primitive prim)
         {
@@ -912,6 +1027,50 @@ namespace Radegast
             }
         }
 
+        private void SafeInvalidate()
+        {
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => SafeInvalidate()));
+                }
+                return;
+            }
+
+            glControl.Invalidate();
+        }
+        #endregion Private methods (the meat)
+
+        #region Form controls handlers
+        private void scroll_ValueChanged(object sender, EventArgs e)
+        {
+            SafeInvalidate();
+        }
+
+        private void scrollZoom_ValueChanged(object sender, EventArgs e)
+        {
+            glControl_Resize(null, null);
+            SafeInvalidate();
+        }
+
+        private void chkWireFrame_CheckedChanged(object sender, EventArgs e)
+        {
+            Wireframe = chkWireFrame.Checked;
+            SafeInvalidate();
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            scrollYaw.Value = 0;
+            scrollPitch.Value = 0;
+            scrollRoll.Value = 0;
+            scrollZoom.Value = -50;
+            Center = Vector3.Zero;
+
+            SafeInvalidate();
+        }
+
         private void oBJToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -926,134 +1085,11 @@ namespace Radegast
                 }
             }
         }
-
-        #region Scrollbar Callbacks
-
-        private void scroll_ValueChanged(object sender, EventArgs e)
-        {
-            SafeInvalidate();
-        }
-
-        private void scrollZoom_ValueChanged(object sender, EventArgs e)
-        {
-            glControl_Resize(null, null);
-            SafeInvalidate();
-        }
-
-        #endregion Scrollbar Callbacks
-
-
-        private void chkWireFrame_CheckedChanged(object sender, EventArgs e)
-        {
-            Wireframe = chkWireFrame.Checked;
-            SafeInvalidate();
-        }
-
-        bool dragging = false;
-        int dragX, dragY, downX, downY;
-
-        private void glControl_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle)
-            {
-                dragging = true;
-                downX = dragX = e.X;
-                downY = dragY = e.Y;
-            }
-
-        }
-
-        private void glControl_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (dragging)
-            {
-                int deltaX = e.X - dragX;
-                int deltaY = e.Y - dragY;
-
-                if (e.Button == MouseButtons.Left)
-                {
-                    if (ModifierKeys == Keys.Control || ModifierKeys == (Keys.Alt | Keys.Control | Keys.Shift))
-                    {
-                        Center.X -= deltaX / 100f;
-                        Center.Z += deltaY / 100f;
-                    }
-
-                    if (ModifierKeys == Keys.Alt)
-                    {
-                        Center.Y -= deltaY / 25f;
-
-                        int newYaw = scrollYaw.Value + deltaX;
-                        if (newYaw < 0) newYaw += 360;
-                        if (newYaw > 360) newYaw -= 360;
-
-                        scrollYaw.Value = newYaw;
-
-                    }
-
-                    if (ModifierKeys == Keys.None || ModifierKeys == (Keys.Alt | Keys.Control))
-                    {
-                        int newRoll = scrollRoll.Value + deltaY;
-                        if (newRoll < 0) newRoll += 360;
-                        if (newRoll > 360) newRoll -= 360;
-
-                        scrollRoll.Value = newRoll;
-
-
-                        int newYaw = scrollYaw.Value + deltaX;
-                        if (newYaw < 0) newYaw += 360;
-                        if (newYaw > 360) newYaw -= 360;
-
-                        scrollYaw.Value = newYaw;
-
-                    }
-                }
-                else if (e.Button == MouseButtons.Middle)
-                {
-                    Center.X -= deltaX / 100f;
-                    Center.Z += deltaY / 100f;
-
-                }
-
-                dragX = e.X;
-                dragY = e.Y;
-
-                SafeInvalidate();
-            }
-        }
-
-        private void glControl_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                dragging = false;
-
-                if (e.X == downX && e.Y == downY) // click
-                {
-                    Pick(e.X, e.Y);
-                }
-                SafeInvalidate();
-            }
-        }
-        float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
-
-        private void frmPrimWorkshop_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void btnReset_Click(object sender, EventArgs e)
-        {
-            scrollYaw.Value = 0;
-            scrollPitch.Value = 0;
-            scrollRoll.Value = 0;
-            scrollZoom.Value = -50;
-            Center = Vector3.Zero;
-
-            SafeInvalidate();
-        }
+        #endregion Form controls handlers
 
     }
 
+    #region Helper classes
     public class FaceData
     {
         public float[] Vertices;
@@ -1298,4 +1334,5 @@ namespace Radegast
             return mat;
         }
     }
+    #endregion Helper classes
 }

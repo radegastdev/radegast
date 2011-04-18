@@ -176,7 +176,6 @@ namespace Radegast
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPrimWorkshop";
             this.Text = "Object Viewer";
-            this.Load += new System.EventHandler(this.frmPrimWorkshop_Load);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
             this.ResumeLayout(false);
