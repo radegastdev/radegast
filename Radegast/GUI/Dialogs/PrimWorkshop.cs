@@ -947,6 +947,7 @@ namespace Radegast
 
 
                 if (existingMesh != null &&
+                    j < existingMesh.Faces.Count &&
                     existingMesh.Faces[j].TextureFace.TextureID == teFace.TextureID &&
                     ((FaceData)existingMesh.Faces[j].UserData).TexturePointer != 0
                     )
