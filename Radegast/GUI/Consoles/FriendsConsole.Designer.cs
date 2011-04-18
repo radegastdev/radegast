@@ -256,6 +256,6 @@ namespace Radegast
         public Button btnRemove;
         public GroupBox pnlFriendsRights;
         public ImageList imageList1;
-        private ListBox listFriends;
+        public ListBox listFriends;
     }
 }

@@ -41,7 +41,7 @@ namespace RadegastSpeech.Conversation
     {
         private FriendsConsole frTab;
         public bool Announce { get; set; }
-        private System.Windows.Forms.ListView friends;
+        private System.Windows.Forms.ListBox friends;
 
         #region statechange
         internal Friends(PluginControl pc)
@@ -50,7 +50,7 @@ namespace RadegastSpeech.Conversation
             Title = "friends";
             Announce = false;
             frTab = (FriendsConsole)control.instance.TabConsole.Tabs["friends"].Control;
-            friends = frTab.lvwFriends;
+            friends = frTab.listFriends;
 
             control.instance.Client.Friends.FriendOffline +=
                 new EventHandler<FriendInfoEventArgs>(Friends_OnFriendOffline);
@@ -64,7 +64,7 @@ namespace RadegastSpeech.Conversation
         internal override void Start()
         {
             base.Start();
-            friends.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(friends_ItemSelectionChanged);
+            friends.SelectedIndexChanged += new EventHandler(friends_ItemSelectionChanged);
             Talker.SayMore("Friends");
         }
 
@@ -73,7 +73,7 @@ namespace RadegastSpeech.Conversation
         /// </summary>
         internal override void Stop()
         {
-            friends.ItemSelectionChanged -= new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(friends_ItemSelectionChanged);
+            friends.SelectedIndexChanged -= new EventHandler(friends_ItemSelectionChanged);
             base.Stop();
         }
         #endregion
@@ -121,18 +121,19 @@ namespace RadegastSpeech.Conversation
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void friends_ItemSelectionChanged(object sender, System.Windows.Forms.ListViewItemSelectionChangedEventArgs e)
+        void friends_ItemSelectionChanged(object sender, EventArgs e)
         {
-            FriendInfo f = (FriendInfo)e.Item.Tag;
+            FriendInfo f = (FriendInfo)friends.SelectedItem;
             bool multiple = friends.SelectedItems.Count > 1;
             string desc = f.Name;
-            
+            bool IsSelected = true;
+
             if (multiple || prevMultiple)
             {
-                desc += e.IsSelected ? " selected" : " deselected";
+                desc += IsSelected ? " selected" : " deselected";
                 Talker.SayMore(desc);
             }
-            else if (e.IsSelected)
+            else if (IsSelected)
             {
                 if (!f.IsOnline)
                     desc += " is off line.";
