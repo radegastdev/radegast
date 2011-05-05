@@ -375,6 +375,8 @@ namespace Radegast
 
         private void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
+            firstMoneyNotification = true;
+
             if (e.Reason == NetworkManager.DisconnectType.ClientInitiated) return;
             netcom_ClientLoggedOut(sender, EventArgs.Empty);
 

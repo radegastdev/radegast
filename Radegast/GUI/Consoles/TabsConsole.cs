@@ -153,6 +153,7 @@ namespace Radegast
             client.Self.LoadURL += new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
             client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
             client.Avatars.DisplayNameUpdate += new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
+            client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -162,6 +163,7 @@ namespace Radegast
             client.Self.LoadURL -= new EventHandler<LoadUrlEventArgs>(Self_LoadURL);
             client.Self.SetDisplayNameReply -= new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
             client.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
+            client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -196,6 +198,21 @@ namespace Radegast
             netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
         }
 
+        void Network_EventQueueRunning(object sender, EventQueueRunningEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Network_EventQueueRunning(sender, e)));
+                return;
+            }
+
+            if (TabExists("friends")) return;
+            if (e.Simulator == client.Network.CurrentSim)
+            {
+                InitializeOnlineTabs();
+            }
+        }
+
         void Self_ScriptDialog(object sender, ScriptDialogEventArgs e)
         {
             // Is this object muted
@@ -226,8 +243,6 @@ namespace Radegast
             {
                 DisplayNotificationInChat("Logged in as " + netcom.LoginOptions.FullName + ".", ChatBufferTextStyle.StatusDarkBlue);
                 DisplayNotificationInChat("Login reply: " + e.Message, ChatBufferTextStyle.StatusDarkBlue);
-
-                InitializeOnlineTabs();
 
                 if (tabs.ContainsKey("login"))
                 {
