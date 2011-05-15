@@ -925,6 +925,7 @@ namespace Radegast
                 c.Dispose();
             }
             pnlDetail.Controls.Clear();
+            pnlItemProperties.Tag = item;
 
             if (item == null)
             {
@@ -947,6 +948,24 @@ namespace Radegast
             {
                 txtAssetID.Text = String.Empty;
             }
+
+            Permissions p = item.Permissions;
+            cbOwnerModify.Checked = (p.OwnerMask & PermissionMask.Modify) != 0;
+            cbOwnerCopy.Checked = (p.OwnerMask & PermissionMask.Copy) != 0;
+            cbOwnerTransfer.Checked = (p.OwnerMask & PermissionMask.Transfer) != 0;
+
+            cbNextOwnModify.CheckedChanged -= cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnCopy.CheckedChanged -= cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnTransfer.CheckedChanged -= cbNextOwnerUpdate_CheckedChanged;
+
+            cbNextOwnModify.Checked = (p.NextOwnerMask & PermissionMask.Modify) != 0;
+            cbNextOwnCopy.Checked = (p.NextOwnerMask & PermissionMask.Copy) != 0;
+            cbNextOwnTransfer.Checked = (p.NextOwnerMask & PermissionMask.Transfer) != 0;
+
+            cbNextOwnModify.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnCopy.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnTransfer.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
+
 
             switch (item.AssetType)
             {
@@ -989,6 +1008,41 @@ namespace Radegast
 
             tabsInventory.SelectedTab = tabDetail;
         }
+
+        void cbNextOwnerUpdate_CheckedChanged(object sender, EventArgs e)
+        {
+            InventoryItem item = null;
+            if (pnlItemProperties.Tag != null && pnlItemProperties.Tag is InventoryItem)
+            {
+                item = (InventoryItem)pnlItemProperties.Tag;
+            }
+            if (item == null) return;
+
+            PermissionMask pm = PermissionMask.Move;
+            if (cbNextOwnCopy.Checked) pm |= PermissionMask.Copy;
+            if (cbNextOwnModify.Checked) pm |= PermissionMask.Modify;
+            if (cbNextOwnTransfer.Checked) pm |= PermissionMask.Transfer;
+            item.Permissions.NextOwnerMask = pm;
+
+            client.Inventory.RequestUpdateItem(item);
+            client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
+        }
+
+        private void txtItemName_Leave(object sender, EventArgs e)
+        {
+            InventoryItem item = null;
+            if (pnlItemProperties.Tag != null && pnlItemProperties.Tag is InventoryItem)
+            {
+                item = (InventoryItem)pnlItemProperties.Tag;
+            }
+            if (item == null) return;
+
+            item.Name = txtItemName.Text;
+
+            client.Inventory.RequestUpdateItem(item);
+            client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
+        }
+
 
         void invTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -1506,7 +1560,7 @@ namespace Radegast
                     case "refresh":
                         foreach (TreeNode old in invTree.SelectedNode.Nodes)
                         {
-                            if (old.Tag is InventoryFolder)
+                            if (!(old.Tag is InventoryFolder))
                             {
                                 removeNode(old);
                             }
@@ -2480,6 +2534,8 @@ namespace Radegast
 
         }
         #endregion Search
+
+
     }
 
     #region Sorter class

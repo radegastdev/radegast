@@ -80,9 +80,9 @@ namespace Radegast
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InventoryConsole));
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.invTree = new System.Windows.Forms.TreeView();
             this.ctxInv = new Radegast.RadegastContextMenuStrip(this.components);
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tstripInventory = new System.Windows.Forms.ToolStrip();
             this.tlabelStatus = new System.Windows.Forms.ToolStripLabel();
             this.tbtnFile = new System.Windows.Forms.ToolStripDropDownButton();
@@ -95,18 +95,6 @@ namespace Radegast
             this.tbtbFoldersByName = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnSystemFoldersFirst = new System.Windows.Forms.ToolStripMenuItem();
             this.tabsInventory = new System.Windows.Forms.TabControl();
-            this.tabDetail = new System.Windows.Forms.TabPage();
-            this.pnlDetail = new System.Windows.Forms.Panel();
-            this.pnlItemProperties = new System.Windows.Forms.Panel();
-            this.btnProfile = new System.Windows.Forms.Button();
-            this.txtCreator = new Radegast.AgentNameTextBox();
-            this.txtCreated = new System.Windows.Forms.TextBox();
-            this.txtAssetID = new System.Windows.Forms.TextBox();
-            this.lblCreated = new System.Windows.Forms.Label();
-            this.txtItemName = new System.Windows.Forms.TextBox();
-            this.lblAsset = new System.Windows.Forms.Label();
-            this.lblCreator = new System.Windows.Forms.Label();
-            this.lblItemName = new System.Windows.Forms.Label();
             this.tabSearch = new System.Windows.Forms.TabPage();
             this.lstInventorySearch = new Radegast.ListViewNoFlicker();
             this.chResItemName = new System.Windows.Forms.ColumnHeader();
@@ -122,18 +110,58 @@ namespace Radegast
             this.cbSrchName = new System.Windows.Forms.CheckBox();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.btnInvSearch = new System.Windows.Forms.Button();
+            this.tabDetail = new System.Windows.Forms.TabPage();
+            this.pnlDetail = new System.Windows.Forms.Panel();
+            this.pnlItemProperties = new System.Windows.Forms.Panel();
+            this.gbxPerms = new System.Windows.Forms.GroupBox();
+            this.cbNextOwnTransfer = new System.Windows.Forms.CheckBox();
+            this.cbNextOwnCopy = new System.Windows.Forms.CheckBox();
+            this.cbOwnerTransfer = new System.Windows.Forms.CheckBox();
+            this.cbNextOwnModify = new System.Windows.Forms.CheckBox();
+            this.cbOwnerCopy = new System.Windows.Forms.CheckBox();
+            this.cbOwnerModify = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.btnProfile = new System.Windows.Forms.Button();
+            this.txtCreator = new Radegast.AgentNameTextBox();
+            this.txtCreated = new System.Windows.Forms.TextBox();
+            this.txtAssetID = new System.Windows.Forms.TextBox();
+            this.lblCreated = new System.Windows.Forms.Label();
+            this.txtItemName = new System.Windows.Forms.TextBox();
+            this.lblAsset = new System.Windows.Forms.Label();
+            this.lblCreator = new System.Windows.Forms.Label();
+            this.lblItemName = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.tstripInventory.SuspendLayout();
             this.tabsInventory.SuspendLayout();
-            this.tabDetail.SuspendLayout();
-            this.pnlItemProperties.SuspendLayout();
             this.tabSearch.SuspendLayout();
             this.pnlSearchOptions.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tabDetail.SuspendLayout();
+            this.pnlItemProperties.SuspendLayout();
+            this.gbxPerms.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.invTree);
+            this.splitContainer1.Panel1.Controls.Add(this.tstripInventory);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.tabsInventory);
+            this.splitContainer1.Size = new System.Drawing.Size(791, 483);
+            this.splitContainer1.SplitterDistance = 346;
+            this.splitContainer1.TabIndex = 1;
             // 
             // invTree
             // 
@@ -147,7 +175,7 @@ namespace Radegast
             this.invTree.LineColor = System.Drawing.Color.White;
             this.invTree.Location = new System.Drawing.Point(0, 25);
             this.invTree.Name = "invTree";
-            this.invTree.Size = new System.Drawing.Size(331, 458);
+            this.invTree.Size = new System.Drawing.Size(346, 458);
             this.invTree.TabIndex = 0;
             this.invTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_AfterLabelEdit);
             this.invTree.DragDrop += new System.Windows.Forms.DragEventHandler(this.invTree_DragDrop);
@@ -165,24 +193,6 @@ namespace Radegast
             this.ctxInv.Text = "Inventory Folder";
             this.ctxInv.Opening += new System.ComponentModel.CancelEventHandler(this.ctxInv_Opening);
             // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.invTree);
-            this.splitContainer1.Panel1.Controls.Add(this.tstripInventory);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.tabsInventory);
-            this.splitContainer1.Size = new System.Drawing.Size(756, 483);
-            this.splitContainer1.SplitterDistance = 331;
-            this.splitContainer1.TabIndex = 1;
-            // 
             // tstripInventory
             // 
             this.tstripInventory.GripMargin = new System.Windows.Forms.Padding(0);
@@ -193,7 +203,7 @@ namespace Radegast
             this.tbtbSort});
             this.tstripInventory.Location = new System.Drawing.Point(0, 0);
             this.tstripInventory.Name = "tstripInventory";
-            this.tstripInventory.Size = new System.Drawing.Size(331, 25);
+            this.tstripInventory.Size = new System.Drawing.Size(346, 25);
             this.tstripInventory.TabIndex = 1;
             this.tstripInventory.TabStop = true;
             this.tstripInventory.Text = "toolStrip1";
@@ -288,143 +298,27 @@ namespace Radegast
             // 
             // tabsInventory
             // 
-            this.tabsInventory.Controls.Add(this.tabDetail);
             this.tabsInventory.Controls.Add(this.tabSearch);
+            this.tabsInventory.Controls.Add(this.tabDetail);
             this.tabsInventory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabsInventory.Location = new System.Drawing.Point(0, 0);
             this.tabsInventory.Name = "tabsInventory";
             this.tabsInventory.SelectedIndex = 0;
-            this.tabsInventory.Size = new System.Drawing.Size(421, 483);
+            this.tabsInventory.Size = new System.Drawing.Size(441, 483);
             this.tabsInventory.TabIndex = 3;
-            // 
-            // tabDetail
-            // 
-            this.tabDetail.BackColor = System.Drawing.SystemColors.Control;
-            this.tabDetail.Controls.Add(this.pnlDetail);
-            this.tabDetail.Controls.Add(this.pnlItemProperties);
-            this.tabDetail.Location = new System.Drawing.Point(4, 22);
-            this.tabDetail.Name = "tabDetail";
-            this.tabDetail.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDetail.Size = new System.Drawing.Size(413, 457);
-            this.tabDetail.TabIndex = 0;
-            this.tabDetail.Text = "Detail";
-            // 
-            // pnlDetail
-            // 
-            this.pnlDetail.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlDetail.Location = new System.Drawing.Point(3, 3);
-            this.pnlDetail.Name = "pnlDetail";
-            this.pnlDetail.Size = new System.Drawing.Size(407, 304);
-            this.pnlDetail.TabIndex = 2;
-            // 
-            // pnlItemProperties
-            // 
-            this.pnlItemProperties.Controls.Add(this.btnProfile);
-            this.pnlItemProperties.Controls.Add(this.txtCreator);
-            this.pnlItemProperties.Controls.Add(this.txtCreated);
-            this.pnlItemProperties.Controls.Add(this.txtAssetID);
-            this.pnlItemProperties.Controls.Add(this.lblCreated);
-            this.pnlItemProperties.Controls.Add(this.txtItemName);
-            this.pnlItemProperties.Controls.Add(this.lblAsset);
-            this.pnlItemProperties.Controls.Add(this.lblCreator);
-            this.pnlItemProperties.Controls.Add(this.lblItemName);
-            this.pnlItemProperties.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlItemProperties.Location = new System.Drawing.Point(3, 307);
-            this.pnlItemProperties.Name = "pnlItemProperties";
-            this.pnlItemProperties.Size = new System.Drawing.Size(407, 147);
-            this.pnlItemProperties.TabIndex = 0;
-            // 
-            // btnProfile
-            // 
-            this.btnProfile.AccessibleDescription = "Open profile";
-            this.btnProfile.Enabled = false;
-            this.btnProfile.Image = global::Radegast.Properties.Resources.applications_16;
-            this.btnProfile.Location = new System.Drawing.Point(54, 36);
-            this.btnProfile.Name = "btnProfile";
-            this.btnProfile.Size = new System.Drawing.Size(26, 23);
-            this.btnProfile.TabIndex = 12;
-            this.btnProfile.UseVisualStyleBackColor = true;
-            this.btnProfile.Click += new System.EventHandler(this.btnProfile_Click);
-            // 
-            // txtCreator
-            // 
-            this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
-            this.txtCreator.Location = new System.Drawing.Point(80, 36);
-            this.txtCreator.Name = "txtCreator";
-            this.txtCreator.ReadOnly = true;
-            this.txtCreator.Size = new System.Drawing.Size(338, 20);
-            this.txtCreator.TabIndex = 11;
-            // 
-            // txtCreated
-            // 
-            this.txtCreated.Location = new System.Drawing.Point(80, 62);
-            this.txtCreated.Name = "txtCreated";
-            this.txtCreated.ReadOnly = true;
-            this.txtCreated.Size = new System.Drawing.Size(144, 20);
-            this.txtCreated.TabIndex = 13;
-            // 
-            // txtAssetID
-            // 
-            this.txtAssetID.Location = new System.Drawing.Point(80, 88);
-            this.txtAssetID.Name = "txtAssetID";
-            this.txtAssetID.ReadOnly = true;
-            this.txtAssetID.Size = new System.Drawing.Size(338, 20);
-            this.txtAssetID.TabIndex = 14;
-            // 
-            // lblCreated
-            // 
-            this.lblCreated.AutoSize = true;
-            this.lblCreated.Location = new System.Drawing.Point(3, 62);
-            this.lblCreated.Name = "lblCreated";
-            this.lblCreated.Size = new System.Drawing.Size(44, 13);
-            this.lblCreated.TabIndex = 0;
-            this.lblCreated.Text = "Created";
-            // 
-            // txtItemName
-            // 
-            this.txtItemName.Location = new System.Drawing.Point(80, 10);
-            this.txtItemName.Name = "txtItemName";
-            this.txtItemName.Size = new System.Drawing.Size(338, 20);
-            this.txtItemName.TabIndex = 10;
-            // 
-            // lblAsset
-            // 
-            this.lblAsset.AutoSize = true;
-            this.lblAsset.Location = new System.Drawing.Point(3, 88);
-            this.lblAsset.Name = "lblAsset";
-            this.lblAsset.Size = new System.Drawing.Size(47, 13);
-            this.lblAsset.TabIndex = 0;
-            this.lblAsset.Text = "Asset ID";
-            // 
-            // lblCreator
-            // 
-            this.lblCreator.AutoSize = true;
-            this.lblCreator.Location = new System.Drawing.Point(3, 36);
-            this.lblCreator.Name = "lblCreator";
-            this.lblCreator.Size = new System.Drawing.Size(41, 13);
-            this.lblCreator.TabIndex = 0;
-            this.lblCreator.Text = "Creator";
-            // 
-            // lblItemName
-            // 
-            this.lblItemName.AutoSize = true;
-            this.lblItemName.Location = new System.Drawing.Point(3, 10);
-            this.lblItemName.Name = "lblItemName";
-            this.lblItemName.Size = new System.Drawing.Size(27, 13);
-            this.lblItemName.TabIndex = 0;
-            this.lblItemName.Text = "Item";
             // 
             // tabSearch
             // 
-            this.tabSearch.BackColor = System.Drawing.SystemColors.Control;
+            this.tabSearch.BackColor = System.Drawing.Color.Transparent;
             this.tabSearch.Controls.Add(this.lstInventorySearch);
             this.tabSearch.Controls.Add(this.pnlSearchOptions);
             this.tabSearch.Location = new System.Drawing.Point(4, 22);
             this.tabSearch.Name = "tabSearch";
             this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSearch.Size = new System.Drawing.Size(413, 457);
+            this.tabSearch.Size = new System.Drawing.Size(433, 457);
             this.tabSearch.TabIndex = 1;
             this.tabSearch.Text = "Search";
+            this.tabSearch.UseVisualStyleBackColor = true;
             // 
             // lstInventorySearch
             // 
@@ -440,7 +334,7 @@ namespace Radegast
             this.lstInventorySearch.Name = "lstInventorySearch";
             this.lstInventorySearch.OwnerDraw = true;
             this.lstInventorySearch.ShowGroups = false;
-            this.lstInventorySearch.Size = new System.Drawing.Size(407, 363);
+            this.lstInventorySearch.Size = new System.Drawing.Size(427, 363);
             this.lstInventorySearch.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lstInventorySearch.TabIndex = 30;
             this.lstInventorySearch.UseCompatibleStateImageBehavior = false;
@@ -468,7 +362,7 @@ namespace Radegast
             this.pnlSearchOptions.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSearchOptions.Location = new System.Drawing.Point(3, 3);
             this.pnlSearchOptions.Name = "pnlSearchOptions";
-            this.pnlSearchOptions.Size = new System.Drawing.Size(407, 88);
+            this.pnlSearchOptions.Size = new System.Drawing.Size(427, 88);
             this.pnlSearchOptions.TabIndex = 20;
             // 
             // groupBox2
@@ -595,13 +489,235 @@ namespace Radegast
             this.btnInvSearch.UseVisualStyleBackColor = true;
             this.btnInvSearch.Click += new System.EventHandler(this.btnInvSearch_Click);
             // 
+            // tabDetail
+            // 
+            this.tabDetail.BackColor = System.Drawing.Color.Transparent;
+            this.tabDetail.Controls.Add(this.pnlDetail);
+            this.tabDetail.Controls.Add(this.pnlItemProperties);
+            this.tabDetail.Location = new System.Drawing.Point(4, 22);
+            this.tabDetail.Name = "tabDetail";
+            this.tabDetail.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDetail.Size = new System.Drawing.Size(433, 457);
+            this.tabDetail.TabIndex = 0;
+            this.tabDetail.Text = "Detail";
+            this.tabDetail.UseVisualStyleBackColor = true;
+            // 
+            // pnlDetail
+            // 
+            this.pnlDetail.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlDetail.Location = new System.Drawing.Point(3, 3);
+            this.pnlDetail.Name = "pnlDetail";
+            this.pnlDetail.Size = new System.Drawing.Size(427, 297);
+            this.pnlDetail.TabIndex = 2;
+            // 
+            // pnlItemProperties
+            // 
+            this.pnlItemProperties.Controls.Add(this.gbxPerms);
+            this.pnlItemProperties.Controls.Add(this.btnProfile);
+            this.pnlItemProperties.Controls.Add(this.txtCreator);
+            this.pnlItemProperties.Controls.Add(this.txtCreated);
+            this.pnlItemProperties.Controls.Add(this.txtAssetID);
+            this.pnlItemProperties.Controls.Add(this.lblCreated);
+            this.pnlItemProperties.Controls.Add(this.txtItemName);
+            this.pnlItemProperties.Controls.Add(this.lblAsset);
+            this.pnlItemProperties.Controls.Add(this.lblCreator);
+            this.pnlItemProperties.Controls.Add(this.lblItemName);
+            this.pnlItemProperties.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlItemProperties.Location = new System.Drawing.Point(3, 300);
+            this.pnlItemProperties.Name = "pnlItemProperties";
+            this.pnlItemProperties.Size = new System.Drawing.Size(427, 154);
+            this.pnlItemProperties.TabIndex = 0;
+            // 
+            // gbxPerms
+            // 
+            this.gbxPerms.Controls.Add(this.cbNextOwnTransfer);
+            this.gbxPerms.Controls.Add(this.cbNextOwnCopy);
+            this.gbxPerms.Controls.Add(this.cbOwnerTransfer);
+            this.gbxPerms.Controls.Add(this.cbNextOwnModify);
+            this.gbxPerms.Controls.Add(this.cbOwnerCopy);
+            this.gbxPerms.Controls.Add(this.cbOwnerModify);
+            this.gbxPerms.Controls.Add(this.label8);
+            this.gbxPerms.Controls.Add(this.label7);
+            this.gbxPerms.Location = new System.Drawing.Point(6, 81);
+            this.gbxPerms.Name = "gbxPerms";
+            this.gbxPerms.Size = new System.Drawing.Size(267, 64);
+            this.gbxPerms.TabIndex = 15;
+            this.gbxPerms.TabStop = false;
+            // 
+            // cbNextOwnTransfer
+            // 
+            this.cbNextOwnTransfer.AutoSize = true;
+            this.cbNextOwnTransfer.Location = new System.Drawing.Point(195, 36);
+            this.cbNextOwnTransfer.Name = "cbNextOwnTransfer";
+            this.cbNextOwnTransfer.Size = new System.Drawing.Size(55, 17);
+            this.cbNextOwnTransfer.TabIndex = 69;
+            this.cbNextOwnTransfer.Text = "Resell";
+            this.cbNextOwnTransfer.UseVisualStyleBackColor = true;
+            // 
+            // cbNextOwnCopy
+            // 
+            this.cbNextOwnCopy.AutoSize = true;
+            this.cbNextOwnCopy.Location = new System.Drawing.Point(140, 36);
+            this.cbNextOwnCopy.Name = "cbNextOwnCopy";
+            this.cbNextOwnCopy.Size = new System.Drawing.Size(50, 17);
+            this.cbNextOwnCopy.TabIndex = 68;
+            this.cbNextOwnCopy.Text = "Copy";
+            this.cbNextOwnCopy.UseVisualStyleBackColor = true;
+            // 
+            // cbOwnerTransfer
+            // 
+            this.cbOwnerTransfer.AutoSize = true;
+            this.cbOwnerTransfer.Enabled = false;
+            this.cbOwnerTransfer.Location = new System.Drawing.Point(195, 15);
+            this.cbOwnerTransfer.Name = "cbOwnerTransfer";
+            this.cbOwnerTransfer.Size = new System.Drawing.Size(55, 17);
+            this.cbOwnerTransfer.TabIndex = 66;
+            this.cbOwnerTransfer.Text = "Resell";
+            this.cbOwnerTransfer.UseVisualStyleBackColor = true;
+            // 
+            // cbNextOwnModify
+            // 
+            this.cbNextOwnModify.AutoSize = true;
+            this.cbNextOwnModify.Location = new System.Drawing.Point(90, 36);
+            this.cbNextOwnModify.Name = "cbNextOwnModify";
+            this.cbNextOwnModify.Size = new System.Drawing.Size(47, 17);
+            this.cbNextOwnModify.TabIndex = 67;
+            this.cbNextOwnModify.Text = "Mod";
+            this.cbNextOwnModify.UseVisualStyleBackColor = true;
+            // 
+            // cbOwnerCopy
+            // 
+            this.cbOwnerCopy.AutoSize = true;
+            this.cbOwnerCopy.Enabled = false;
+            this.cbOwnerCopy.Location = new System.Drawing.Point(140, 15);
+            this.cbOwnerCopy.Name = "cbOwnerCopy";
+            this.cbOwnerCopy.Size = new System.Drawing.Size(50, 17);
+            this.cbOwnerCopy.TabIndex = 65;
+            this.cbOwnerCopy.Text = "Copy";
+            this.cbOwnerCopy.UseVisualStyleBackColor = true;
+            // 
+            // cbOwnerModify
+            // 
+            this.cbOwnerModify.AutoSize = true;
+            this.cbOwnerModify.Enabled = false;
+            this.cbOwnerModify.Location = new System.Drawing.Point(90, 15);
+            this.cbOwnerModify.Name = "cbOwnerModify";
+            this.cbOwnerModify.Size = new System.Drawing.Size(47, 17);
+            this.cbOwnerModify.TabIndex = 64;
+            this.cbOwnerModify.Text = "Mod";
+            this.cbOwnerModify.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 16);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(67, 13);
+            this.label8.TabIndex = 62;
+            this.label8.Text = "Owner perm.";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 37);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(81, 13);
+            this.label7.TabIndex = 63;
+            this.label7.Text = "Next own perm.";
+            // 
+            // btnProfile
+            // 
+            this.btnProfile.AccessibleDescription = "Open profile";
+            this.btnProfile.Enabled = false;
+            this.btnProfile.Image = global::Radegast.Properties.Resources.applications_16;
+            this.btnProfile.Location = new System.Drawing.Point(50, 29);
+            this.btnProfile.Name = "btnProfile";
+            this.btnProfile.Size = new System.Drawing.Size(26, 23);
+            this.btnProfile.TabIndex = 12;
+            this.btnProfile.UseVisualStyleBackColor = true;
+            this.btnProfile.Click += new System.EventHandler(this.btnProfile_Click);
+            // 
+            // txtCreator
+            // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
+            this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCreator.Location = new System.Drawing.Point(80, 29);
+            this.txtCreator.Name = "txtCreator";
+            this.txtCreator.ReadOnly = true;
+            this.txtCreator.Size = new System.Drawing.Size(169, 20);
+            this.txtCreator.TabIndex = 11;
+            // 
+            // txtCreated
+            // 
+            this.txtCreated.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtCreated.Location = new System.Drawing.Point(305, 29);
+            this.txtCreated.Name = "txtCreated";
+            this.txtCreated.ReadOnly = true;
+            this.txtCreated.Size = new System.Drawing.Size(113, 20);
+            this.txtCreated.TabIndex = 13;
+            // 
+            // txtAssetID
+            // 
+            this.txtAssetID.Location = new System.Drawing.Point(80, 55);
+            this.txtAssetID.Name = "txtAssetID";
+            this.txtAssetID.ReadOnly = true;
+            this.txtAssetID.Size = new System.Drawing.Size(338, 20);
+            this.txtAssetID.TabIndex = 14;
+            // 
+            // lblCreated
+            // 
+            this.lblCreated.AutoSize = true;
+            this.lblCreated.Location = new System.Drawing.Point(255, 34);
+            this.lblCreated.Name = "lblCreated";
+            this.lblCreated.Size = new System.Drawing.Size(44, 13);
+            this.lblCreated.TabIndex = 0;
+            this.lblCreated.Text = "Created";
+            // 
+            // txtItemName
+            // 
+            this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtItemName.Location = new System.Drawing.Point(80, 3);
+            this.txtItemName.Name = "txtItemName";
+            this.txtItemName.Size = new System.Drawing.Size(338, 20);
+            this.txtItemName.TabIndex = 10;
+            this.txtItemName.Leave += new System.EventHandler(this.txtItemName_Leave);
+            // 
+            // lblAsset
+            // 
+            this.lblAsset.AutoSize = true;
+            this.lblAsset.Location = new System.Drawing.Point(3, 58);
+            this.lblAsset.Name = "lblAsset";
+            this.lblAsset.Size = new System.Drawing.Size(47, 13);
+            this.lblAsset.TabIndex = 0;
+            this.lblAsset.Text = "Asset ID";
+            // 
+            // lblCreator
+            // 
+            this.lblCreator.AutoSize = true;
+            this.lblCreator.Location = new System.Drawing.Point(3, 32);
+            this.lblCreator.Name = "lblCreator";
+            this.lblCreator.Size = new System.Drawing.Size(41, 13);
+            this.lblCreator.TabIndex = 0;
+            this.lblCreator.Text = "Creator";
+            // 
+            // lblItemName
+            // 
+            this.lblItemName.AutoSize = true;
+            this.lblItemName.Location = new System.Drawing.Point(3, 10);
+            this.lblItemName.Name = "lblItemName";
+            this.lblItemName.Size = new System.Drawing.Size(27, 13);
+            this.lblItemName.TabIndex = 0;
+            this.lblItemName.Text = "Item";
+            // 
             // InventoryConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
             this.Name = "InventoryConsole";
-            this.Size = new System.Drawing.Size(756, 483);
+            this.Size = new System.Drawing.Size(791, 483);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -609,9 +725,6 @@ namespace Radegast
             this.tstripInventory.ResumeLayout(false);
             this.tstripInventory.PerformLayout();
             this.tabsInventory.ResumeLayout(false);
-            this.tabDetail.ResumeLayout(false);
-            this.pnlItemProperties.ResumeLayout(false);
-            this.pnlItemProperties.PerformLayout();
             this.tabSearch.ResumeLayout(false);
             this.pnlSearchOptions.ResumeLayout(false);
             this.pnlSearchOptions.PerformLayout();
@@ -619,12 +732,38 @@ namespace Radegast
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tabDetail.ResumeLayout(false);
+            this.pnlItemProperties.ResumeLayout(false);
+            this.pnlItemProperties.PerformLayout();
+            this.gbxPerms.ResumeLayout(false);
+            this.gbxPerms.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
+        public System.Windows.Forms.CheckBox cbNextOwnTransfer;
+        public System.Windows.Forms.CheckBox cbNextOwnCopy;
+        public System.Windows.Forms.CheckBox cbOwnerTransfer;
+        public System.Windows.Forms.CheckBox cbNextOwnModify;
+        public System.Windows.Forms.CheckBox cbOwnerCopy;
+        public System.Windows.Forms.CheckBox cbOwnerModify;
+        public System.Windows.Forms.Label label8;
+        public System.Windows.Forms.Label label7;
+        public System.Windows.Forms.Panel pnlSearchOptions;
+        public System.Windows.Forms.Button btnInvSearch;
+        public System.Windows.Forms.GroupBox groupBox1;
+        public System.Windows.Forms.CheckBox cbSrchName;
+        public System.Windows.Forms.TextBox txtSearch;
+        public System.Windows.Forms.CheckBox cbSrchCreator;
+        public System.Windows.Forms.CheckBox cbSrchDesc;
+        public System.Windows.Forms.Label lblSearchStatus;
+        public System.Windows.Forms.GroupBox groupBox2;
+        public System.Windows.Forms.RadioButton rbSrchAll;
+        public System.Windows.Forms.RadioButton cbSrchRecent;
+        public System.Windows.Forms.RadioButton cbSrchWorn;
+        public System.Windows.Forms.GroupBox gbxPerms;
         public System.Windows.Forms.TreeView invTree;
         public System.Windows.Forms.SplitContainer splitContainer1;
         public RadegastContextMenuStrip ctxInv;
@@ -655,17 +794,5 @@ namespace Radegast
         public System.Windows.Forms.TabPage tabSearch;
         public ListViewNoFlicker lstInventorySearch;
         public System.Windows.Forms.ColumnHeader chResItemName;
-        private System.Windows.Forms.Panel pnlSearchOptions;
-        private System.Windows.Forms.Button btnInvSearch;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox cbSrchName;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.CheckBox cbSrchCreator;
-        private System.Windows.Forms.CheckBox cbSrchDesc;
-        private System.Windows.Forms.Label lblSearchStatus;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RadioButton rbSrchAll;
-        private System.Windows.Forms.RadioButton cbSrchRecent;
-        private System.Windows.Forms.RadioButton cbSrchWorn;
     }
 }
