@@ -227,6 +227,16 @@ namespace Radegast
                 }
             }
 
+            lock (lstChildren.Items)
+            {
+                if (lstChildren.Items.ContainsKey(e.Properties.ObjectID.ToString()))
+                {
+                    Primitive prim = lstChildren.Items[e.Properties.ObjectID.ToString()].Tag as Primitive;
+                    prim.Properties = e.Properties;
+                    lstChildren.Items[e.Properties.ObjectID.ToString()].Text = prim.Properties.Name;
+                }
+            }
+
             if (e.Properties.ObjectID == currentPrim.ID)
             {
                 UpdateCurrentObject(false);
@@ -334,8 +344,7 @@ namespace Radegast
 
             ctxContents.Items.Clear();
             Primitive prim = (Primitive)lstContents.Tag;
-            bool myObject = prim.Properties != null && prim.Properties.OwnerID == client.Self.AgentID;
-
+            bool canModify = (prim.Flags & PrimFlags.ObjectModify) == PrimFlags.ObjectModify;
 
             if (lstContents.SelectedItems.Count == 1)
             {
@@ -345,7 +354,7 @@ namespace Radegast
                 {
                     InventoryItem item = (InventoryItem)entry.Tag;
 
-                    if (myObject)
+                    if (canModify)
                     {
                         switch (item.InventoryType)
                         {
@@ -387,7 +396,7 @@ namespace Radegast
                 ctxContents.Items.Add(new ToolStripSeparator());
             }
 
-            if (myObject && instance.InventoryClipboard != null)
+            if (canModify && instance.InventoryClipboard != null)
             {
                 if (instance.InventoryClipboard.Item is InventoryItem)
                 {
@@ -425,7 +434,7 @@ namespace Radegast
                 }
             }
 
-            if (myObject)
+            if (canModify)
             {
                 ctxContents.Items.Add("Open (copy all to inventory)", null, OpenObject);
             }
@@ -476,10 +485,21 @@ namespace Radegast
                 return;
             }
 
-            currentItem.Text = GetObjectName(currentPrim);
+            // currentItem.Text = GetObjectName(currentPrim);
 
             txtObjectName.Text = currentPrim.Properties.Name;
             txtDescription.Text = currentPrim.Properties.Description;
+            if ((currentPrim.Flags & PrimFlags.ObjectModify) == PrimFlags.ObjectModify)
+            {
+                txtObjectName.ReadOnly = txtDescription.ReadOnly = false;
+                gbxObjectDetails.Text = "Object details (you can modify)";
+            }
+            else
+            {
+                txtObjectName.ReadOnly = txtDescription.ReadOnly = true;
+                gbxObjectDetails.Text = "Object details";
+            }
+
             txtHover.Text = currentPrim.Text;
             txtOwner.AgentID = currentPrim.Properties.OwnerID;
             txtCreator.AgentID = currentPrim.Properties.CreatorID;
@@ -488,9 +508,27 @@ namespace Radegast
             cbOwnerModify.Checked = (p.OwnerMask & PermissionMask.Modify) != 0;
             cbOwnerCopy.Checked = (p.OwnerMask & PermissionMask.Copy) != 0;
             cbOwnerTransfer.Checked = (p.OwnerMask & PermissionMask.Transfer) != 0;
+
+            cbNextOwnModify.CheckedChanged -= cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnCopy.CheckedChanged -= cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnTransfer.CheckedChanged -= cbNextOwnerUpdate_CheckedChanged;
+
             cbNextOwnModify.Checked = (p.NextOwnerMask & PermissionMask.Modify) != 0;
             cbNextOwnCopy.Checked = (p.NextOwnerMask & PermissionMask.Copy) != 0;
             cbNextOwnTransfer.Checked = (p.NextOwnerMask & PermissionMask.Transfer) != 0;
+
+            cbNextOwnModify.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnCopy.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
+            cbNextOwnTransfer.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
+
+            if (currentPrim.Properties.OwnerID == client.Self.AgentID)
+            {
+                cbNextOwnModify.Enabled = cbNextOwnCopy.Enabled = cbNextOwnTransfer.Enabled = true;
+            }
+            else
+            {
+                cbNextOwnModify.Enabled = cbNextOwnCopy.Enabled = cbNextOwnTransfer.Enabled = false;
+            }
 
             txtPrims.Text = (client.Network.CurrentSim.ObjectsPrimitives.FindAll(
                 delegate(Primitive prim)
@@ -550,7 +588,7 @@ namespace Radegast
 
             if (prim.Properties == null)
             {
-                if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
+                //if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
                 propRequester.RequestProps(prim.LocalID);
             }
             else
@@ -789,11 +827,67 @@ namespace Radegast
                 }
 
                 UpdateCurrentObject();
+                UpdateChildren();
+            }
+            else
+            {
+                lstChildren.Visible = false;
+                gbxInworld.Enabled = false;
+            }
+        }
+
+        private void lstChildren_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstChildren.SelectedItems.Count == 1)
+            {
+                gbxInworld.Enabled = true;
+                currentPrim = lstChildren.SelectedItems[0].Tag as Primitive;
+                btnBuy.Tag = currentPrim;
+
+                if (currentPrim.Properties == null)
+                {
+                    client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
+                }
+
+                UpdateCurrentObject();
             }
             else
             {
                 gbxInworld.Enabled = false;
             }
+        }
+
+        void UpdateChildren()
+        {
+            if (currentPrim == null) return;
+            var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == currentPrim.LocalID);
+            if (prims == null || prims.Count == 0) return;
+
+            lstChildren.BeginUpdate();
+            lock (lstChildren.Items)
+            {
+                lstChildren.Items.Clear();
+                foreach (var prim in prims)
+                {
+                    var item = new ListViewItem();
+
+                    if (prim.Properties != null)
+                    {
+                        item.Text = prim.Properties.Name;
+                    }
+                    else
+                    {
+                        item.Text = "Loading...";
+                        propRequester.RequestProps(prim.LocalID);
+                    }
+
+                    item.Tag = prim;
+                    item.Name = prim.ID.ToString();
+                    lstChildren.Items.Add(item);
+                }
+            }
+            lstChildren.EndUpdate();
+            lstChildren.Visible = true;
         }
 
         private void btnPay_Click(object sender, EventArgs e)
@@ -1128,6 +1222,38 @@ namespace Radegast
             {
                 client.Self.RemoveMuteListEntry(currentPrim.ID, currentPrim.Properties.Name);
             }
+        }
+
+        private void txtObjectName_Leave(object sender, EventArgs e)
+        {
+            if (currentPrim == null) return;
+            if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.Name != txtObjectName.Text))
+            {
+                client.Objects.SetName(client.Network.CurrentSim, currentPrim.LocalID, txtObjectName.Text);
+            }
+        }
+
+        private void txtDescription_Leave(object sender, EventArgs e)
+        {
+            if (currentPrim == null) return;
+            if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.Description != txtDescription.Text))
+            {
+                client.Objects.SetDescription(client.Network.CurrentSim, currentPrim.LocalID, txtDescription.Text);
+            }
+        }
+
+        private void cbNextOwnerUpdate_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox cb = (CheckBox)sender;
+            PermissionMask pm = PermissionMask.None;
+
+            if (cb == cbNextOwnCopy) pm = PermissionMask.Copy;
+            if (cb == cbNextOwnModify) pm = PermissionMask.Modify;
+            if (cb == cbNextOwnTransfer) pm = PermissionMask.Transfer;
+
+            if (pm == PermissionMask.None) return;
+
+            client.Objects.SetPermissions(client.Network.CurrentSim, new List<uint>() { currentPrim.LocalID }, PermissionWho.NextOwner, pm, cb.Checked);
         }
     }
 

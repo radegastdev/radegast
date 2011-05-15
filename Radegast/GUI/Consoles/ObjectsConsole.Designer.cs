@@ -92,6 +92,7 @@ namespace Radegast
             this.cbOwnerCopy = new System.Windows.Forms.CheckBox();
             this.cbOwnerModify = new System.Windows.Forms.CheckBox();
             this.txtPrims = new System.Windows.Forms.TextBox();
+            this.txtCreator = new Radegast.AgentNameTextBox();
             this.txtOwner = new Radegast.AgentNameTextBox();
             this.txtHover = new System.Windows.Forms.TextBox();
             this.txtDescription = new System.Windows.Forms.TextBox();
@@ -115,13 +116,16 @@ namespace Radegast
             this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
             this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.ctxopen = new Radegast.RadegastContextMenuStrip(this.components);
-            this.txtCreator = new Radegast.AgentNameTextBox();
+            this.pnlList = new System.Windows.Forms.Panel();
+            this.lstChildren = new Radegast.ListViewNoFlicker();
+            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
             this.gbxInworld.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudRadius)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.gbxObjectDetails.SuspendLayout();
             this.gbxContents.SuspendLayout();
+            this.pnlList.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbxInworld
@@ -428,26 +432,31 @@ namespace Radegast
             // cbNextOwnTransfer
             // 
             this.cbNextOwnTransfer.AutoSize = true;
+            this.cbNextOwnTransfer.Enabled = false;
             this.cbNextOwnTransfer.Location = new System.Drawing.Point(195, 164);
             this.cbNextOwnTransfer.Name = "cbNextOwnTransfer";
             this.cbNextOwnTransfer.Size = new System.Drawing.Size(54, 17);
             this.cbNextOwnTransfer.TabIndex = 61;
             this.cbNextOwnTransfer.Text = "Resell";
             this.cbNextOwnTransfer.UseVisualStyleBackColor = true;
+            this.cbNextOwnTransfer.CheckedChanged += new System.EventHandler(this.cbNextOwnerUpdate_CheckedChanged);
             // 
             // cbNextOwnCopy
             // 
             this.cbNextOwnCopy.AutoSize = true;
+            this.cbNextOwnCopy.Enabled = false;
             this.cbNextOwnCopy.Location = new System.Drawing.Point(140, 164);
             this.cbNextOwnCopy.Name = "cbNextOwnCopy";
             this.cbNextOwnCopy.Size = new System.Drawing.Size(51, 17);
             this.cbNextOwnCopy.TabIndex = 60;
             this.cbNextOwnCopy.Text = "Copy";
             this.cbNextOwnCopy.UseVisualStyleBackColor = true;
+            this.cbNextOwnCopy.CheckedChanged += new System.EventHandler(this.cbNextOwnerUpdate_CheckedChanged);
             // 
             // cbOwnerTransfer
             // 
             this.cbOwnerTransfer.AutoSize = true;
+            this.cbOwnerTransfer.Enabled = false;
             this.cbOwnerTransfer.Location = new System.Drawing.Point(195, 143);
             this.cbOwnerTransfer.Name = "cbOwnerTransfer";
             this.cbOwnerTransfer.Size = new System.Drawing.Size(54, 17);
@@ -458,16 +467,19 @@ namespace Radegast
             // cbNextOwnModify
             // 
             this.cbNextOwnModify.AutoSize = true;
+            this.cbNextOwnModify.Enabled = false;
             this.cbNextOwnModify.Location = new System.Drawing.Point(90, 164);
             this.cbNextOwnModify.Name = "cbNextOwnModify";
             this.cbNextOwnModify.Size = new System.Drawing.Size(46, 17);
             this.cbNextOwnModify.TabIndex = 59;
             this.cbNextOwnModify.Text = "Mod";
             this.cbNextOwnModify.UseVisualStyleBackColor = true;
+            this.cbNextOwnModify.CheckedChanged += new System.EventHandler(this.cbNextOwnerUpdate_CheckedChanged);
             // 
             // cbOwnerCopy
             // 
             this.cbOwnerCopy.AutoSize = true;
+            this.cbOwnerCopy.Enabled = false;
             this.cbOwnerCopy.Location = new System.Drawing.Point(140, 143);
             this.cbOwnerCopy.Name = "cbOwnerCopy";
             this.cbOwnerCopy.Size = new System.Drawing.Size(51, 17);
@@ -478,6 +490,7 @@ namespace Radegast
             // cbOwnerModify
             // 
             this.cbOwnerModify.AutoSize = true;
+            this.cbOwnerModify.Enabled = false;
             this.cbOwnerModify.Location = new System.Drawing.Point(90, 143);
             this.cbOwnerModify.Name = "cbOwnerModify";
             this.cbOwnerModify.Size = new System.Drawing.Size(46, 17);
@@ -493,6 +506,16 @@ namespace Radegast
             this.txtPrims.ReadOnly = true;
             this.txtPrims.Size = new System.Drawing.Size(54, 21);
             this.txtPrims.TabIndex = 55;
+            // 
+            // txtCreator
+            // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
+            this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
+            this.txtCreator.Location = new System.Drawing.Point(61, 116);
+            this.txtCreator.Name = "txtCreator";
+            this.txtCreator.ReadOnly = true;
+            this.txtCreator.Size = new System.Drawing.Size(130, 21);
+            this.txtCreator.TabIndex = 54;
             // 
             // txtOwner
             // 
@@ -515,17 +538,23 @@ namespace Radegast
             // 
             // txtDescription
             // 
+            this.txtDescription.BackColor = System.Drawing.SystemColors.Window;
             this.txtDescription.Location = new System.Drawing.Point(61, 41);
             this.txtDescription.Name = "txtDescription";
+            this.txtDescription.ReadOnly = true;
             this.txtDescription.Size = new System.Drawing.Size(188, 21);
             this.txtDescription.TabIndex = 51;
+            this.txtDescription.Leave += new System.EventHandler(this.txtDescription_Leave);
             // 
             // txtObjectName
             // 
+            this.txtObjectName.BackColor = System.Drawing.SystemColors.Window;
             this.txtObjectName.Location = new System.Drawing.Point(61, 16);
             this.txtObjectName.Name = "txtObjectName";
+            this.txtObjectName.ReadOnly = true;
             this.txtObjectName.Size = new System.Drawing.Size(188, 21);
             this.txtObjectName.TabIndex = 50;
+            this.txtObjectName.Leave += new System.EventHandler(this.txtObjectName_Leave);
             // 
             // label8
             // 
@@ -680,21 +709,19 @@ namespace Radegast
             // lstPrims
             // 
             this.lstPrims.AccessibleName = "Objects";
-            this.lstPrims.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.lstPrims.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
             this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
+            this.lstPrims.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstPrims.FullRowSelect = true;
             this.lstPrims.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.lstPrims.HideSelection = false;
             this.lstPrims.LabelWrap = false;
-            this.lstPrims.Location = new System.Drawing.Point(12, 39);
+            this.lstPrims.Location = new System.Drawing.Point(0, 0);
             this.lstPrims.MultiSelect = false;
             this.lstPrims.Name = "lstPrims";
             this.lstPrims.ShowGroups = false;
-            this.lstPrims.Size = new System.Drawing.Size(365, 392);
+            this.lstPrims.Size = new System.Drawing.Size(358, 258);
             this.lstPrims.TabIndex = 0;
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
@@ -715,25 +742,53 @@ namespace Radegast
             this.ctxopen.Name = "ctxMenuObjects";
             this.ctxopen.Size = new System.Drawing.Size(61, 4);
             // 
-            // txtCreator
+            // pnlList
             // 
-            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
-            this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
-            this.txtCreator.Location = new System.Drawing.Point(61, 116);
-            this.txtCreator.Name = "txtCreator";
-            this.txtCreator.ReadOnly = true;
-            this.txtCreator.Size = new System.Drawing.Size(130, 21);
-            this.txtCreator.TabIndex = 54;
+            this.pnlList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlList.Controls.Add(this.lstPrims);
+            this.pnlList.Controls.Add(this.lstChildren);
+            this.pnlList.Location = new System.Drawing.Point(15, 39);
+            this.pnlList.Name = "pnlList";
+            this.pnlList.Size = new System.Drawing.Size(358, 390);
+            this.pnlList.TabIndex = 74;
+            // 
+            // lstChildren
+            // 
+            this.lstChildren.AccessibleName = "Objects";
+            this.lstChildren.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader2});
+            this.lstChildren.ContextMenuStrip = this.ctxMenuObjects;
+            this.lstChildren.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lstChildren.FullRowSelect = true;
+            this.lstChildren.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.lstChildren.HideSelection = false;
+            this.lstChildren.LabelWrap = false;
+            this.lstChildren.Location = new System.Drawing.Point(0, 258);
+            this.lstChildren.MultiSelect = false;
+            this.lstChildren.Name = "lstChildren";
+            this.lstChildren.ShowGroups = false;
+            this.lstChildren.Size = new System.Drawing.Size(358, 132);
+            this.lstChildren.TabIndex = 1;
+            this.lstChildren.UseCompatibleStateImageBehavior = false;
+            this.lstChildren.View = System.Windows.Forms.View.Details;
+            this.lstChildren.Visible = false;
+            this.lstChildren.SelectedIndexChanged += new System.EventHandler(this.lstChildren_SelectedIndexChanged);
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Width = 340;
             // 
             // ObjectsConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.pnlList);
             this.Controls.Add(this.gbxObjectDetails);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.nudRadius);
-            this.Controls.Add(this.lstPrims);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.lblDistance);
@@ -754,6 +809,7 @@ namespace Radegast
             this.gbxObjectDetails.ResumeLayout(false);
             this.gbxObjectDetails.PerformLayout();
             this.gbxContents.ResumeLayout(false);
+            this.pnlList.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -817,6 +873,9 @@ namespace Radegast
         private System.Windows.Forms.Button btnOpen;
         public System.Windows.Forms.Button btnMute;
         public AgentNameTextBox txtCreator;
+        private System.Windows.Forms.Panel pnlList;
+        public ListViewNoFlicker lstChildren;
+        public System.Windows.Forms.ColumnHeader columnHeader2;
 
     }
 }
