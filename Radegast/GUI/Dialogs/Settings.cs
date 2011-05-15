@@ -85,7 +85,7 @@ namespace Radegast
 
             if (!s.ContainsKey("script_syntax_highlight")) s["script_syntax_highlight"] = OSD.FromBoolean(true);
 
-            if (!s.ContainsKey("display_name_mode")) s["display_name_mode"] = (int)NameMode.Standard;
+            if (!s.ContainsKey("display_name_mode")) s["display_name_mode"] = (int)NameMode.Smart;
 
             // Convert legacy settings from first last name to username
             if (!s.ContainsKey("username") && (s.ContainsKey("first_name") && s.ContainsKey("last_name")))
@@ -94,6 +94,15 @@ namespace Radegast
                 s.Remove("first_name");
                 s.Remove("last_name");
             }
+
+            if (!s.ContainsKey("reconnect_time")) s["reconnect_time"] = 120;
+
+            if (!s.ContainsKey("transaction_notification_chat")) s["transaction_notification_chat"] = true;
+
+            if (!s.ContainsKey("transaction_notification_dialog")) s["transaction_notification_dialog"] = true;
+
+            if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = false;
+
         }
 
         public frmSettings(RadegastInstance instance)
@@ -104,6 +113,7 @@ namespace Radegast
             }
 
             InitializeComponent();
+
             s = instance.GlobalSettings;
 
             cbChatTimestamps.Checked = s["chat_timestamps"].AsBoolean();
@@ -190,6 +200,8 @@ namespace Radegast
                 case NameMode.DisplayNameAndUserName: rbDNDandUsernme.Checked = true; break;
                 case NameMode.OnlyDisplayName: rbDNOnlyDN.Checked = true; break;
             }
+
+            txtReconnectTime.Text = s["reconnect_time"].AsInteger().ToString();
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)
@@ -299,6 +311,21 @@ namespace Radegast
         {
             if (rbDNOnlyDN.Checked)
                 s["display_name_mode"] = (int)NameMode.OnlyDisplayName;
+        }
+
+        private void txtReconnectTime_TextChanged(object sender, EventArgs e)
+        {
+            string input = System.Text.RegularExpressions.Regex.Replace(txtReconnectTime.Text, @"[^\d]", "");
+            int t = 120;
+            int.TryParse(input, out t);
+            
+            if (txtReconnectTime.Text != t.ToString())
+            {
+                txtReconnectTime.Text = t.ToString();
+                txtReconnectTime.Select(txtReconnectTime.Text.Length, 0);
+            }
+            
+            s["reconnect_time"] = t;
         }
     }
 }

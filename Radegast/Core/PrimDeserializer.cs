@@ -129,15 +129,19 @@ namespace Radegast
         {
             // Build an organized structure from the imported prims
             Dictionary<uint, Linkset> linksets = new Dictionary<uint, Linkset>();
-            for (int i = 0; i < prims.Count; i++) {
+            for (int i = 0; i < prims.Count; i++)
+            {
                 Primitive prim = prims[i];
 
-                if (prim.ParentID == 0) {
+                if (prim.ParentID == 0)
+                {
                     if (linksets.ContainsKey(prim.LocalID))
                         linksets[prim.LocalID].RootPrim = prim;
                     else
                         linksets[prim.LocalID] = new Linkset(prim);
-                } else {
+                }
+                else
+                {
                     if (!linksets.ContainsKey(prim.ParentID))
                         linksets[prim.ParentID] = new Linkset();
 
@@ -148,8 +152,10 @@ namespace Radegast
             primsCreated = new List<Primitive>();
             Console.WriteLine("Importing " + linksets.Count + " structures.");
 
-            foreach (Linkset linkset in linksets.Values) {
-                if (linkset.RootPrim.LocalID != 0) {
+            foreach (Linkset linkset in linksets.Values)
+            {
+                if (linkset.RootPrim.LocalID != 0)
+                {
                     state = ImporterState.RezzingParent;
                     currentPrim = linkset.RootPrim;
                     // HACK: Import the structure just above our head
@@ -165,7 +171,8 @@ namespace Radegast
                     Client.Objects.AddPrim(Client.Network.CurrentSim, linkset.RootPrim.PrimData, Client.Self.ActiveGroup,
                         linkset.RootPrim.Position, linkset.RootPrim.Scale, linkset.RootPrim.Rotation);
 
-                    if (!primDone.WaitOne(25000, false)) {
+                    if (!primDone.WaitOne(25000, false))
+                    {
                         throw new Exception("Rez failed, timed out while creating the root prim.");
                     }
                     Client.Objects.SetPosition(Client.Network.CurrentSim, primsCreated[primsCreated.Count - 1].LocalID, currentPosition);
@@ -173,25 +180,29 @@ namespace Radegast
                     state = ImporterState.RezzingChildren;
 
                     // Rez the child prims
-                    foreach (Primitive prim in linkset.Children) {
+                    foreach (Primitive prim in linkset.Children)
+                    {
                         currentPrim = prim;
                         currentPosition = prim.Position + linkset.RootPrim.Position;
 
                         Client.Objects.AddPrim(Client.Network.CurrentSim, prim.PrimData, UUID.Zero, currentPosition,
                             prim.Scale, prim.Rotation);
 
-                        if (!primDone.WaitOne(25000, false)) {
+                        if (!primDone.WaitOne(25000, false))
+                        {
                             throw new Exception("Rez failed, timed out while creating child prim.");
                         }
                         Client.Objects.SetPosition(Client.Network.CurrentSim, primsCreated[primsCreated.Count - 1].LocalID, currentPosition);
                         // Client.Objects.SetRotation(Client.Network.CurrentSim, primsCreated[primsCreated.Count - 1].LocalID, prim.Rotation);
                     }
 
-                    if (linkset.Children.Count != 0) {
+                    if (linkset.Children.Count != 0)
+                    {
                         // Create a list of the local IDs of the newly created prims
                         List<uint> primIDs = new List<uint>(primsCreated.Count);
                         primIDs.Add(rootLocalID); // Root prim is first in list.
-                        foreach (Primitive prim in primsCreated) {
+                        foreach (Primitive prim in primsCreated)
+                        {
                             if (prim.LocalID != rootLocalID)
                                 primIDs.Add(prim.LocalID);
                         }
@@ -203,14 +214,17 @@ namespace Radegast
                         Client.Objects.LinkPrims(Client.Network.CurrentSim, linkQueue);
                         Client.Objects.SetRotation(Client.Network.CurrentSim, rootLocalID, rootRotation);
 
-                        if (!primDone.WaitOne(5000, false)) {
+                        if (!primDone.WaitOne(5000, false))
+                        {
                             Logger.Log(String.Format("Warning: Failed to link {0} prims", linkQueue.Count), Helpers.LogLevel.Warning);
                         }
 
                         Client.Objects.SetPermissions(Client.Network.CurrentSim, primIDs,
                             PermissionWho.NextOwner,
                             PermissionMask.All, true);
-                    } else {
+                    }
+                    else
+                    {
                         List<uint> primsForPerms = new List<uint>();
                         primsForPerms.Add(rootLocalID);
                         Client.Objects.SetRotation(Client.Network.CurrentSim, rootLocalID, rootRotation);
@@ -219,7 +233,9 @@ namespace Radegast
                             PermissionMask.All, true);
                     }
                     state = ImporterState.Idle;
-                } else {
+                }
+                else
+                {
                     // Skip linksets with a missing root prim
                     Logger.Log("WARNING: Skipping a linkset with a missing root prim", Helpers.LogLevel.Warning);
                 }
@@ -236,7 +252,8 @@ namespace Radegast
             if ((e.Prim.Flags & PrimFlags.CreateSelected) == 0)
                 return; // We received an update for an object we didn't create
 
-            switch (state) {
+            switch (state)
+            {
                 case ImporterState.RezzingParent:
                     rootLocalID = e.Prim.LocalID;
                     goto case ImporterState.RezzingChildren;
@@ -263,11 +280,13 @@ namespace Radegast
                             Client.Objects.SetSculpt(e.Simulator, e.Prim.LocalID, currentPrim.Sculpt);
                         }
 
-                        if (currentPrim.Properties != null && !String.IsNullOrEmpty(currentPrim.Properties.Name)) {
+                        if (currentPrim.Properties != null && !String.IsNullOrEmpty(currentPrim.Properties.Name))
+                        {
                             Client.Objects.SetName(e.Simulator, e.Prim.LocalID, currentPrim.Properties.Name);
                         }
 
-                        if (currentPrim.Properties != null && !String.IsNullOrEmpty(currentPrim.Properties.Description)) {
+                        if (currentPrim.Properties != null && !String.IsNullOrEmpty(currentPrim.Properties.Description))
+                        {
                             Client.Objects.SetDescription(e.Simulator, e.Prim.LocalID, currentPrim.Properties.Description);
                         }
 

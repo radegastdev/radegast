@@ -165,16 +165,6 @@ namespace Radegast
                 statusStrip1.LayoutStyle = ToolStripLayoutStyle.Table;
             }
 
-            // Config options
-            if (instance.GlobalSettings["transaction_notification_chat"].Type == OSDType.Unknown)
-                instance.GlobalSettings["transaction_notification_chat"] = OSD.FromBoolean(true);
-
-            if (instance.GlobalSettings["transaction_notification_dialog"].Type == OSDType.Unknown)
-                instance.GlobalSettings["transaction_notification_dialog"] = OSD.FromBoolean(true);
-
-            if (!instance.GlobalSettings.ContainsKey("minimize_to_tray"))
-                instance.GlobalSettings["minimize_to_tray"] = OSD.FromBoolean(false);
-
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
@@ -310,7 +300,7 @@ namespace Radegast
             }
 
             InAutoReconnect = true;
-            frmReconnect dialog = new frmReconnect(instance, 120);
+            frmReconnect dialog = new frmReconnect(instance, instance.GlobalSettings["reconnect_time"]);
             dialog.ShowDialog(this);
             dialog.Dispose();
             dialog = null;

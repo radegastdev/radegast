@@ -61,6 +61,8 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
+            this.txtReconnectTime = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.gbDisplayNames = new System.Windows.Forms.GroupBox();
             this.rbDNOnlyDN = new System.Windows.Forms.RadioButton();
             this.rbDNDandUsernme = new System.Windows.Forms.RadioButton();
@@ -108,6 +110,8 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.txtReconnectTime);
+            this.tbpGeneral.Controls.Add(this.label2);
             this.tbpGeneral.Controls.Add(this.gbDisplayNames);
             this.tbpGeneral.Controls.Add(this.cbSyntaxHighlight);
             this.tbpGeneral.Controls.Add(this.label1);
@@ -131,6 +135,24 @@ namespace Radegast
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
+            // 
+            // txtReconnectTime
+            // 
+            this.txtReconnectTime.Location = new System.Drawing.Point(139, 165);
+            this.txtReconnectTime.Name = "txtReconnectTime";
+            this.txtReconnectTime.Size = new System.Drawing.Size(53, 20);
+            this.txtReconnectTime.TabIndex = 7;
+            this.txtReconnectTime.Text = "120";
+            this.txtReconnectTime.TextChanged += new System.EventHandler(this.txtReconnectTime_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(8, 167);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(125, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Autoreconnect time (sec)";
             // 
             // gbDisplayNames
             // 
@@ -206,7 +228,7 @@ namespace Radegast
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 239);
+            this.label1.Location = new System.Drawing.Point(267, 190);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(73, 13);
             this.label1.TabIndex = 10;
@@ -224,10 +246,10 @@ namespace Radegast
             "14",
             "16",
             "20"});
-            this.cbFontSize.Location = new System.Drawing.Point(87, 236);
+            this.cbFontSize.Location = new System.Drawing.Point(346, 187);
             this.cbFontSize.Name = "cbFontSize";
             this.cbFontSize.Size = new System.Drawing.Size(54, 21);
-            this.cbFontSize.TabIndex = 11;
+            this.cbFontSize.TabIndex = 16;
             this.cbFontSize.Text = "8.25";
             this.cbFontSize.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
             this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
@@ -258,10 +280,10 @@ namespace Radegast
             // cbMUEmotes
             // 
             this.cbMUEmotes.AutoSize = true;
-            this.cbMUEmotes.Location = new System.Drawing.Point(8, 213);
+            this.cbMUEmotes.Location = new System.Drawing.Point(8, 235);
             this.cbMUEmotes.Name = "cbMUEmotes";
             this.cbMUEmotes.Size = new System.Drawing.Size(108, 17);
-            this.cbMUEmotes.TabIndex = 9;
+            this.cbMUEmotes.TabIndex = 10;
             this.cbMUEmotes.Text = "MU* style emotes";
             this.cbMUEmotes.UseVisualStyleBackColor = true;
             this.cbMUEmotes.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -269,10 +291,10 @@ namespace Radegast
             // cbRLV
             // 
             this.cbRLV.AutoSize = true;
-            this.cbRLV.Location = new System.Drawing.Point(8, 190);
+            this.cbRLV.Location = new System.Drawing.Point(8, 212);
             this.cbRLV.Name = "cbRLV";
             this.cbRLV.Size = new System.Drawing.Size(85, 17);
-            this.cbRLV.TabIndex = 8;
+            this.cbRLV.TabIndex = 9;
             this.cbRLV.Text = "RLV support";
             this.cbRLV.UseVisualStyleBackColor = true;
             this.cbRLV.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -280,10 +302,10 @@ namespace Radegast
             // cbHideLoginGraphics
             // 
             this.cbHideLoginGraphics.AutoSize = true;
-            this.cbHideLoginGraphics.Location = new System.Drawing.Point(8, 167);
+            this.cbHideLoginGraphics.Location = new System.Drawing.Point(8, 189);
             this.cbHideLoginGraphics.Name = "cbHideLoginGraphics";
             this.cbHideLoginGraphics.Size = new System.Drawing.Size(141, 17);
-            this.cbHideLoginGraphics.TabIndex = 7;
+            this.cbHideLoginGraphics.TabIndex = 8;
             this.cbHideLoginGraphics.Text = "Hide login slpash screen";
             this.cbHideLoginGraphics.UseVisualStyleBackColor = true;
             this.cbHideLoginGraphics.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
@@ -471,18 +493,20 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbFriendsHighlight;
         public System.Windows.Forms.CheckBox cbMinToTrey;
         public System.Windows.Forms.CheckBox cbNoTyping;
-        private System.Windows.Forms.TabPage tbpAutoResponse;
-        private System.Windows.Forms.GroupBox gbAutoResponse;
-        private System.Windows.Forms.TextBox txtAutoResponse;
-        private System.Windows.Forms.RadioButton rbAutoAlways;
-        private System.Windows.Forms.RadioButton rbAutoNonFriend;
-        private System.Windows.Forms.RadioButton rbAutobusy;
-        private System.Windows.Forms.CheckBox cbSyntaxHighlight;
-        private System.Windows.Forms.GroupBox gbDisplayNames;
-        private System.Windows.Forms.RadioButton rbDNOnlyDN;
-        private System.Windows.Forms.RadioButton rbDNDandUsernme;
-        private System.Windows.Forms.RadioButton rbDNSmart;
-        private System.Windows.Forms.RadioButton rbDNOff;
+        public System.Windows.Forms.TextBox txtReconnectTime;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.TabPage tbpAutoResponse;
+        public System.Windows.Forms.GroupBox gbAutoResponse;
+        public System.Windows.Forms.TextBox txtAutoResponse;
+        public System.Windows.Forms.RadioButton rbAutoAlways;
+        public System.Windows.Forms.RadioButton rbAutoNonFriend;
+        public System.Windows.Forms.RadioButton rbAutobusy;
+        public System.Windows.Forms.CheckBox cbSyntaxHighlight;
+        public System.Windows.Forms.GroupBox gbDisplayNames;
+        public System.Windows.Forms.RadioButton rbDNOnlyDN;
+        public System.Windows.Forms.RadioButton rbDNDandUsernme;
+        public System.Windows.Forms.RadioButton rbDNSmart;
+        public System.Windows.Forms.RadioButton rbDNOff;
 
 
     }
