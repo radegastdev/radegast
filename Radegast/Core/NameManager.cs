@@ -418,6 +418,48 @@ namespace Radegast
         }
 
         /// <summary>
+        /// Gets UserName
+        /// </summary>
+        /// <param name="agentID">UUID of the agent</param>
+        /// <returns></returns>
+        public string GetUserName(UUID agentID)
+        {
+            if (agentID == UUID.Zero) return "(???) (???)";
+
+            lock (names)
+            {
+                if (names.ContainsKey(agentID))
+                {
+                    return names[agentID].UserName;
+                }
+            }
+
+            QueueNameRequest(agentID);
+            return RadegastInstance.INCOMPLETE_NAME;
+        }
+
+        /// <summary>
+        /// Gets DisplayName
+        /// </summary>
+        /// <param name="agentID">UUID of the agent</param>
+        /// <returns></returns>
+        public string GetDisplayName(UUID agentID)
+        {
+            if (agentID == UUID.Zero) return "(???) (???)";
+
+            lock (names)
+            {
+                if (names.ContainsKey(agentID))
+                {
+                    return names[agentID].DisplayName;
+                }
+            }
+
+            QueueNameRequest(agentID);
+            return RadegastInstance.INCOMPLETE_NAME;
+        }
+
+        /// <summary>
         /// Get avatar display name, or queue fetching of the name
         /// </summary>
         /// <param name="agentID">UUID of avatar to lookup</param>
