@@ -105,9 +105,12 @@ namespace Radegast
         private void Stop()
         {
             participants.Clear();
-            session = null;
-            SetProgress(VoiceGateway.ConnectionState.None);
             gateway.Stop();
+            UnregisterClientEvents();
+            session = null;
+            gateway = null;
+            SetProgress(VoiceGateway.ConnectionState.None);
+            GC.Collect();
         }
 
         /// <summary>
@@ -149,6 +152,8 @@ namespace Radegast
 
         private void RegisterClientEvents()
         {
+            instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            
             // Voice hooks
             gateway.OnSessionCreate +=
                 new EventHandler(gateway_OnSessionCreate);
@@ -164,6 +169,8 @@ namespace Radegast
 
         private void UnregisterClientEvents()
         {
+            instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+
             gateway.OnSessionCreate -=
                new EventHandler(gateway_OnSessionCreate);
             gateway.OnSessionRemove -=
@@ -174,6 +181,28 @@ namespace Radegast
                 new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetCaptureDevicesResponse);
             gateway.OnAuxGetRenderDevicesResponse -=
                 new EventHandler<VoiceGateway.VoiceDevicesEventArgs>(gateway_OnAuxGetRenderDevicesResponse);
+        }
+
+        void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                    BeginInvoke((MethodInvoker)(() =>  Names_NameUpdated(sender, e)));
+                return;
+            }
+
+            lock (participants)
+            {
+                foreach (var name in e.Names)
+                {
+                    if (participants.Items.ContainsKey(name.Key.ToString()))
+                    {
+                        participants.Items[name.Key.ToString()].Text = name.Value;
+                        ((VoiceParticipant)participants.Items[name.Key.ToString()].Tag).Name = name.Value;
+                    }
+                }
+            }
         }
 
         #region Connection Status
@@ -244,21 +273,25 @@ namespace Radegast
         void gateway_OnSessionRemove(object sender, EventArgs e)
         {
             VoiceSession s = sender as VoiceSession;
-            if (session != s || session==null)
-                return;
+            if (s == null) return;
+
+            s.OnParticipantAdded -= new EventHandler(session_OnParticipantAdded);
+            s.OnParticipantRemoved -= new EventHandler(session_OnParticipantRemoved);
+            s.OnParticipantUpdate -= new EventHandler(session_OnParticipantUpdate);
+
+            if (session != s) return;
 
             BeginInvoke(new MethodInvoker(delegate()
              {
                  participants.Clear();
-                 session.OnParticipantAdded -= new EventHandler(session_OnParticipantAdded);
-                 session.OnParticipantRemoved -= new EventHandler(session_OnParticipantRemoved);
-                 session.OnParticipantUpdate -= new EventHandler(session_OnParticipantUpdate);
 
-                 gateway.MicMute = true;
+                 if (gateway != null)
+                 {
+                     gateway.MicMute = true;
+                 }
                  micMute.Checked = true;
 
                  session = null;
-                 SetProgress(VoiceGateway.ConnectionState.AccountLogin);
              }));
         }
 
@@ -273,10 +306,11 @@ namespace Radegast
                 // Supply the name based on the UUID.
                 p.Name = instance.Names.Get(p.ID);
 
-                if (participants.Items.ContainsKey(p.Name))
+                if (participants.Items.ContainsKey(p.ID.ToString()))
                     return;
 
                 ListViewItem item = new ListViewItem(p.Name);
+                item.Name = p.ID.ToString();
                 item.Tag = p;
                 item.StateImageIndex = (int)TalkState.Idle;
 
@@ -513,7 +547,10 @@ namespace Radegast
 
        private void micMute_CheckedChanged(object sender, EventArgs e)
        {
-           gateway.MicMute = micMute.Checked;
+           if (gateway != null)
+           {
+               gateway.MicMute = micMute.Checked;
+           }
        }
 
     }
