@@ -61,7 +61,7 @@ namespace Radegast
         /// <summary>
         /// Use multi sampling (anti aliasing)
         /// </summary>
-        public bool UseMultiSampling = false;
+        public bool UseMultiSampling = true;
 
         /// <summary>
         /// Is rendering engine ready and enabled
@@ -100,6 +100,8 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(frmPrimWorkshop_Disposed);
             AutoSavePosition = true;
+            UseMultiSampling = cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];
+            cbAA.CheckedChanged += cbAA_CheckedChanged;
 
             this.instance = instance;
 
@@ -168,7 +170,7 @@ namespace Radegast
                 }
                 else
                 {
-                    for (int aa = 0; aa <= 8; aa += 2)
+                    for (int aa = 0; aa <= 4; aa += 2)
                     {
                         var testMode = new OpenTK.Graphics.GraphicsMode(OpenTK.DisplayDevice.Default.BitsPerPixel, 24, 8, aa);
                         if (testMode.Samples == aa)
@@ -183,23 +185,32 @@ namespace Radegast
                 GLMode = null;
             }
 
-            if (GLMode == null)
+            
+            try
             {
-                Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Error, Client);
+                if (GLMode == null)
+                {
+                    // Try default mode
+                    glControl = new OpenTK.GLControl();
+                }
+                else
+                {
+                    glControl = new OpenTK.GLControl(GLMode);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex.Message, Helpers.LogLevel.Warning, Client);
+                glControl = null;
+            }
+
+            if (glControl == null)
+            {
+                Logger.Log("Failed to initialize OpenGL control, cannot continue", Helpers.LogLevel.Error, Client);
                 return;
             }
 
             Logger.Log("Initializing OpenGL mode: " + GLMode.ToString(), Helpers.LogLevel.Info);
-            try
-            {
-                glControl = new OpenTK.GLControl(GLMode);
-            }
-            catch
-            {
-                glControl = null;
-            }
-
-            if (glControl == null) return;
 
             glControl.Paint += glControl_Paint;
             glControl.Resize += glControl_Resize;
@@ -1172,8 +1183,16 @@ namespace Radegast
                 }
             }
         }
+
+        private void cbAA_CheckedChanged(object sender, EventArgs e)
+        {
+            instance.GlobalSettings["use_multi_sampling"] = UseMultiSampling = cbAA.Checked;
+            SetupGLControl();
+        }
+
         #endregion Form controls handlers
 
+        #region Context menu
         private void ctxObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (instance.State.IsSitting)
@@ -1246,6 +1265,8 @@ namespace Radegast
             }
             Close();
         }
+        #endregion Context menu
+
 
     }
 

@@ -67,6 +67,7 @@ namespace Radegast
             this.gbZoom = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.btnResetView = new System.Windows.Forms.Button();
+            this.cbAA = new System.Windows.Forms.CheckBox();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.ctxObjects = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -123,6 +124,7 @@ namespace Radegast
             // 
             this.gbZoom.Controls.Add(this.label2);
             this.gbZoom.Controls.Add(this.btnResetView);
+            this.gbZoom.Controls.Add(this.cbAA);
             this.gbZoom.Controls.Add(this.chkWireFrame);
             this.gbZoom.Controls.Add(this.label1);
             this.gbZoom.Controls.Add(this.scrollZoom);
@@ -156,6 +158,16 @@ namespace Radegast
             this.btnResetView.UseVisualStyleBackColor = true;
             this.btnResetView.Click += new System.EventHandler(this.btnReset_Click);
             // 
+            // cbAA
+            // 
+            this.cbAA.AutoSize = true;
+            this.cbAA.Location = new System.Drawing.Point(89, 32);
+            this.cbAA.Name = "cbAA";
+            this.cbAA.Size = new System.Drawing.Size(82, 17);
+            this.cbAA.TabIndex = 21;
+            this.cbAA.Text = "Anti-aliasing";
+            this.cbAA.UseVisualStyleBackColor = true;
+            // 
             // chkWireFrame
             // 
             this.chkWireFrame.AutoSize = true;
@@ -186,46 +198,46 @@ namespace Radegast
             this.returnToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.ctxObjects.Name = "ctxObjects";
-            this.ctxObjects.Size = new System.Drawing.Size(153, 142);
+            this.ctxObjects.Size = new System.Drawing.Size(110, 120);
             this.ctxObjects.Opening += new System.ComponentModel.CancelEventHandler(this.ctxObjects_Opening);
             // 
             // touchToolStripMenuItem
             // 
             this.touchToolStripMenuItem.Name = "touchToolStripMenuItem";
-            this.touchToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.touchToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.touchToolStripMenuItem.Text = "Touch";
             this.touchToolStripMenuItem.Click += new System.EventHandler(this.touchToolStripMenuItem_Click);
             // 
             // sitToolStripMenuItem
             // 
             this.sitToolStripMenuItem.Name = "sitToolStripMenuItem";
-            this.sitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sitToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.sitToolStripMenuItem.Text = "Sit";
             this.sitToolStripMenuItem.Click += new System.EventHandler(this.sitToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(106, 6);
             // 
             // takeToolStripMenuItem
             // 
             this.takeToolStripMenuItem.Name = "takeToolStripMenuItem";
-            this.takeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.takeToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.takeToolStripMenuItem.Text = "Take";
             this.takeToolStripMenuItem.Click += new System.EventHandler(this.takeToolStripMenuItem_Click);
             // 
             // returnToolStripMenuItem
             // 
             this.returnToolStripMenuItem.Name = "returnToolStripMenuItem";
-            this.returnToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.returnToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.returnToolStripMenuItem.Text = "Return";
             this.returnToolStripMenuItem.Click += new System.EventHandler(this.returnToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -252,17 +264,18 @@ namespace Radegast
         public System.Windows.Forms.HScrollBar scrollYaw;
         public System.Windows.Forms.HScrollBar scrollZoom;
         public System.Windows.Forms.GroupBox gbZoom;
-        private System.Windows.Forms.CheckBox chkWireFrame;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnResetView;
-        private System.Windows.Forms.Label label2;
         public System.Windows.Forms.ContextMenuStrip ctxObjects;
-        private System.Windows.Forms.ToolStripMenuItem touchToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem takeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem returnToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        public System.Windows.Forms.CheckBox cbAA;
+        public System.Windows.Forms.CheckBox chkWireFrame;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Button btnResetView;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.ToolStripMenuItem touchToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem sitToolStripMenuItem;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem takeToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem returnToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
 
     }
 }
