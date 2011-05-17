@@ -321,6 +321,9 @@ namespace Radegast
             }
         }
 
+        FacetedMesh RightclickedPrim;
+        int RightclickedFaceID;
+
         private void glControl_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle)
@@ -328,6 +331,13 @@ namespace Radegast
                 dragging = true;
                 downX = dragX = e.X;
                 downY = dragY = e.Y;
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                if (TryPick(e.X, e.Y, out RightclickedPrim, out RightclickedFaceID))
+                {
+                    ctxObjects.Show(glControl, e.X, e.Y);
+                }
             }
 
         }
@@ -398,7 +408,13 @@ namespace Radegast
 
                 if (e.X == downX && e.Y == downY) // click
                 {
-                    Pick(e.X, e.Y);
+                    FacetedMesh picked;
+                    int faceID;
+                    if (TryPick(e.X, e.Y, out picked, out faceID))
+                    {
+                        Client.Self.Grab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                        Client.Self.DeGrab(picked.Prim.LocalID);
+                    }
                 }
                 SafeInvalidate();
             }
@@ -865,7 +881,7 @@ namespace Radegast
             GL.Frustum(-fW, fW, -fH, fH, zNear, zFar);
         }
 
-        private void Pick(int x, int y)
+        private bool TryPick(int x, int y, out FacetedMesh picked, out int faceID)
         {
             // Save old attributes
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -889,9 +905,9 @@ namespace Radegast
             GL.PopAttrib();
 
             int primID = Utils.BytesToUInt16(color, 0);
-            int faceID = color[2];
+            faceID = color[2];
 
-            FacetedMesh picked = null;
+            picked = null;
 
             lock (Prims)
             {
@@ -910,11 +926,7 @@ namespace Radegast
                 }
             }
 
-            if (picked != null)
-            {
-                Client.Self.Grab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                Client.Self.DeGrab(picked.Prim.LocalID);
-            }
+            return picked != null;
         }
 
 
@@ -1161,6 +1173,79 @@ namespace Radegast
             }
         }
         #endregion Form controls handlers
+
+        private void ctxObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (instance.State.IsSitting)
+            {
+                sitToolStripMenuItem.Text = "Stand up";
+            }
+            else if (RightclickedPrim.Prim.Properties != null
+                && !string.IsNullOrEmpty(RightclickedPrim.Prim.Properties.SitName))
+            {
+                sitToolStripMenuItem.Text = RightclickedPrim.Prim.Properties.SitName;
+            }
+            else
+            {
+                sitToolStripMenuItem.Text = "Sit";
+            }
+
+            if (RightclickedPrim.Prim.Properties != null
+                && !string.IsNullOrEmpty(RightclickedPrim.Prim.Properties.TouchName))
+            {
+                touchToolStripMenuItem.Text = RightclickedPrim.Prim.Properties.TouchName;
+            }
+            else
+            {
+                touchToolStripMenuItem.Text = "Touch";
+            }
+        }
+
+        private void touchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            Client.Self.Grab(RightclickedPrim.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+            Thread.Sleep(100);
+            Client.Self.DeGrab(RightclickedPrim.Prim.LocalID);
+        }
+
+        private void sitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!instance.State.IsSitting)
+            {
+                instance.State.SetSitting(true, RightclickedPrim.Prim.ID);
+            }
+            else
+            {
+                instance.State.SetSitting(false, UUID.Zero);
+            }
+        }
+
+        private void takeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
+            Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID);
+            Close();
+        }
+
+        private void returnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
+            Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID, DeRezDestination.ReturnToOwner, UUID.Zero, UUID.Random());
+            Close();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (RightclickedPrim.Prim.Properties != null && RightclickedPrim.Prim.Properties.OwnerID != Client.Self.AgentID)
+                returnToolStripMenuItem_Click(sender, e);
+            else
+            {
+                instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
+                Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
+            }
+            Close();
+        }
 
     }
 

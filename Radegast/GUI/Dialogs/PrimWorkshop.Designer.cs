@@ -58,6 +58,7 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPrimWorkshop));
             this.scrollRoll = new System.Windows.Forms.HScrollBar();
             this.scrollPitch = new System.Windows.Forms.HScrollBar();
@@ -68,7 +69,15 @@ namespace Radegast
             this.btnResetView = new System.Windows.Forms.Button();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.ctxObjects = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.touchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gbZoom.SuspendLayout();
+            this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // scrollRoll
@@ -167,6 +176,59 @@ namespace Radegast
             this.label1.TabIndex = 20;
             this.label1.Text = "Zoom";
             // 
+            // ctxObjects
+            // 
+            this.ctxObjects.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.touchToolStripMenuItem,
+            this.sitToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.takeToolStripMenuItem,
+            this.returnToolStripMenuItem,
+            this.deleteToolStripMenuItem});
+            this.ctxObjects.Name = "ctxObjects";
+            this.ctxObjects.Size = new System.Drawing.Size(153, 142);
+            this.ctxObjects.Opening += new System.ComponentModel.CancelEventHandler(this.ctxObjects_Opening);
+            // 
+            // touchToolStripMenuItem
+            // 
+            this.touchToolStripMenuItem.Name = "touchToolStripMenuItem";
+            this.touchToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.touchToolStripMenuItem.Text = "Touch";
+            this.touchToolStripMenuItem.Click += new System.EventHandler(this.touchToolStripMenuItem_Click);
+            // 
+            // sitToolStripMenuItem
+            // 
+            this.sitToolStripMenuItem.Name = "sitToolStripMenuItem";
+            this.sitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sitToolStripMenuItem.Text = "Sit";
+            this.sitToolStripMenuItem.Click += new System.EventHandler(this.sitToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // takeToolStripMenuItem
+            // 
+            this.takeToolStripMenuItem.Name = "takeToolStripMenuItem";
+            this.takeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.takeToolStripMenuItem.Text = "Take";
+            this.takeToolStripMenuItem.Click += new System.EventHandler(this.takeToolStripMenuItem_Click);
+            // 
+            // returnToolStripMenuItem
+            // 
+            this.returnToolStripMenuItem.Name = "returnToolStripMenuItem";
+            this.returnToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.returnToolStripMenuItem.Text = "Return";
+            this.returnToolStripMenuItem.Click += new System.EventHandler(this.returnToolStripMenuItem_Click);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
             // frmPrimWorkshop
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -178,6 +240,7 @@ namespace Radegast
             this.Text = "Object Viewer";
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
+            this.ctxObjects.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -193,6 +256,13 @@ namespace Radegast
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnResetView;
         private System.Windows.Forms.Label label2;
+        public System.Windows.Forms.ContextMenuStrip ctxObjects;
+        private System.Windows.Forms.ToolStripMenuItem touchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem sitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem takeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem returnToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
 
     }
 }
