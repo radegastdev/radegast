@@ -114,7 +114,11 @@ namespace Radegast
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
-            glControl.Dispose();
+            if (glControl != null)
+            {
+                glControl.Dispose();
+            }
+            glControl = null;
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
@@ -656,21 +660,29 @@ namespace Radegast
                         string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
                         OpenTK.Vector3 screenPos = OpenTK.Vector3.Zero;
                         OpenTK.Vector3 primPos = OpenTK.Vector3.Zero;
+                        
                         if (prim.ParentID != 0)
                         {
                             primPos = new OpenTK.Vector3(prim.Position.X, prim.Position.Y, prim.Position.Z);
                         }
-                        primPos.Z += prim.Scale.Z; 
+                        
+                        primPos.Z += prim.Scale.Z * 0.7f; 
                         screenPos = WorldToScreen(primPos);
                         Printer.Begin();
+
                         Color color = Color.FromArgb((int)(prim.TextColor.A * 255), (int)(prim.TextColor.R * 255), (int)(prim.TextColor.G * 255), (int)(prim.TextColor.B * 255));
 
                         using (Font f = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold))
                         {
                             var size = Printer.Measure(text, f);
                             screenPos.X -= size.BoundingBox.Width / 2;
-                            screenPos.Y += size.BoundingBox.Height / 2;
-                            Printer.Print(text, f, Color.Black, new RectangleF(screenPos.X + 2 , screenPos.Y + 2, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            screenPos.Y -= size.BoundingBox.Height;
+                            
+                            // Shadow
+                            if (color != Color.Black)
+                            {
+                                Printer.Print(text, f, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            }
                             Printer.Print(text, f, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
                         }
                         Printer.End();
