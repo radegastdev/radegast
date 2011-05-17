@@ -468,6 +468,7 @@ namespace Radegast
                     {
                         hasAlpha = false;
                     }
+                    item.Data.IsAlpha = hasAlpha;
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -718,6 +719,121 @@ namespace Radegast
             }
         }
 
+        private void RenderObjects(RenderPass pass)
+        {
+            lock (Prims)
+            {
+                int primNr = 0;
+                foreach (FacetedMesh mesh in Prims.Values)
+                {
+                    primNr++;
+                    Primitive prim = mesh.Prim;
+                    // Individual prim matrix
+                    GL.PushMatrix();
+
+                    if (prim.ParentID != 0)
+                    {
+                        FacetedMesh parent = null;
+                        if (Prims.TryGetValue(prim.ParentID, out parent))
+                        {
+                            // Apply prim translation and rotation relative to the root prim
+                            GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
+                            //GL.MultMatrixf(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                        }
+
+                        // Prim roation relative to root
+                        GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.Position));
+                    }
+
+                    // Prim roation
+                    GL.MultMatrix(Math3D.CreateRotationMatrix(prim.Rotation));
+
+                    // Prim scaling
+                    GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
+
+                    // Draw the prim faces
+                    for (int j = 0; j < mesh.Faces.Count; j++)
+                    {
+                        Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
+                        Face face = mesh.Faces[j];
+                        FaceData data = (FaceData)face.UserData;
+
+                        if (teFace == null)
+                            teFace = mesh.Prim.Textures.DefaultTexture;
+
+                        if (pass != RenderPass.Picking)
+                        {
+                            bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.IsAlpha;
+
+                            if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
+                            if (!belongToAlphaPass && pass != RenderPass.Simple) continue;
+                        }
+                        // Don't render transparent faces
+                        if (teFace.RGBA.A <= 0.01f) continue;
+
+                        switch (teFace.Shiny)
+                        {
+                            case Shininess.High:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 94f);
+                                break;
+
+                            case Shininess.Medium:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 64f);
+                                break;
+
+                            case Shininess.Low:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
+                                break;
+
+
+                            case Shininess.None:
+                            default:
+                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
+                                break;
+                        }
+
+                        if (pass != RenderPass.Picking)
+                        {
+                            var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
+
+                            GL.Color4(faceColor);
+                            GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, faceColor);
+                            GL.Material(MaterialFace.Front, MaterialParameter.Specular, faceColor);
+
+                            if (data.TexturePointer != 0)
+                            {
+                                GL.Enable(EnableCap.Texture2D);
+                            }
+                            else
+                            {
+                                GL.Disable(EnableCap.Texture2D);
+                            }
+
+                            // Bind the texture
+                            GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
+                        }
+                        else
+                        {
+                            data.PickingID = primNr;
+                            var primNrBytes = Utils.Int16ToBytes((short)primNr);
+                            var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
+
+                            GL.Color4(faceColor);
+                        }
+
+                        GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
+                        GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
+                        GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
+                        GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+
+                    }
+
+                    // Pop the prim matrix
+                    GL.PopMatrix();
+                }
+            }
+        }
+
         private void Render(bool picking)
         {
             glControl.MakeCurrent();
@@ -768,109 +884,14 @@ namespace Radegast
             GL.Rotate((float)scrollPitch.Value, 0f, 1f, 0f);
             GL.Rotate((float)scrollYaw.Value, 0f, 0f, 1f);
 
-            lock (Prims)
+            if (picking)
             {
-                int primNr = 0;
-                foreach (FacetedMesh mesh in Prims.Values)
-                {
-                    primNr++;
-                    Primitive prim = mesh.Prim;
-                    // Individual prim matrix
-                    GL.PushMatrix();
-
-                    if (prim.ParentID != 0)
-                    {
-                        FacetedMesh parent = null;
-                        if (Prims.TryGetValue(prim.ParentID, out parent))
-                        {
-                            // Apply prim translation and rotation relative to the root prim
-                            GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                            //GL.MultMatrixf(Math3D.CreateTranslationMatrix(parent.Prim.Position));
-                        }
-
-                        // Prim roation relative to root
-                        GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.Position));
-                    }
-
-                    // Prim roation
-                    GL.MultMatrix(Math3D.CreateRotationMatrix(prim.Rotation));
-
-                    // Prim scaling
-                    GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
-
-                    // Draw the prim faces
-                    for (int j = 0; j < mesh.Faces.Count; j++)
-                    {
-                        Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
-                        if (teFace == null)
-                            teFace = mesh.Prim.Textures.DefaultTexture;
-
-                        // Don't render transparent faces
-                        if (teFace.RGBA.A <= 0.01f) continue;
-
-                        switch (teFace.Shiny)
-                        {
-                            case Shininess.High:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 94f);
-                                break;
-
-                            case Shininess.Medium:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 64f);
-                                break;
-
-                            case Shininess.Low:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
-                                break;
-
-
-                            case Shininess.None:
-                            default:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
-                                break;
-                        }
-
-                        Face face = mesh.Faces[j];
-                        FaceData data = (FaceData)face.UserData;
-
-                        if (!picking)
-                        {
-                            var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
-
-                            GL.Color4(faceColor);
-                            GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, faceColor);
-                            GL.Material(MaterialFace.Front, MaterialParameter.Specular, faceColor);
-
-                            if (data.TexturePointer != 0)
-                            {
-                                GL.Enable(EnableCap.Texture2D);
-                            }
-                            else
-                            {
-                                GL.Disable(EnableCap.Texture2D);
-                            }
-
-                            // Bind the texture
-                            GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
-                        }
-                        else
-                        {
-                            data.PickingID = primNr;
-                            var primNrBytes = Utils.Int16ToBytes((short)primNr);
-                            var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
-
-                            GL.Color4(faceColor);
-                        }
-
-                        GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
-                        GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
-                        GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
-                        GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
-
-                    }
-
-                    // Pop the prim matrix
-                    GL.PopMatrix();
-                }
+                RenderObjects(RenderPass.Picking);
+            }
+            else
+            {
+                RenderObjects(RenderPass.Simple);
+                RenderObjects(RenderPass.Alpha);
             }
 
             RenderText();
@@ -1280,6 +1301,7 @@ namespace Radegast
         public int TexturePointer;
         public int PickingID = -1;
         public System.Drawing.Image Texture;
+        public bool IsAlpha;
     }
 
     public class TextureLoadItem
@@ -1514,6 +1536,13 @@ namespace Radegast
 
             return mat;
         }
+    }
+
+    public enum RenderPass
+    {
+        Picking,
+        Simple,
+        Alpha
     }
     #endregion Helper classes
 }
