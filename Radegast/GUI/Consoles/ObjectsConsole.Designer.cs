@@ -726,6 +726,7 @@ namespace Radegast
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
             this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
+            this.lstPrims.Enter += new System.EventHandler(this.lstPrims_Enter);
             // 
             // columnHeader1
             // 
@@ -775,6 +776,7 @@ namespace Radegast
             this.lstChildren.View = System.Windows.Forms.View.Details;
             this.lstChildren.Visible = false;
             this.lstChildren.SelectedIndexChanged += new System.EventHandler(this.lstChildren_SelectedIndexChanged);
+            this.lstChildren.Enter += new System.EventHandler(this.lstChildren_Enter);
             // 
             // columnHeader2
             // 

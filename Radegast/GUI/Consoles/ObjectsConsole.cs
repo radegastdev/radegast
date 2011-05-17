@@ -1255,6 +1255,16 @@ namespace Radegast
 
             client.Objects.SetPermissions(client.Network.CurrentSim, new List<uint>() { currentPrim.LocalID }, PermissionWho.NextOwner, pm, cb.Checked);
         }
+
+        private void lstPrims_Enter(object sender, EventArgs e)
+        {
+            lstPrims_SelectedIndexChanged(sender, EventArgs.Empty);
+        }
+
+        private void lstChildren_Enter(object sender, EventArgs e)
+        {
+            lstChildren_SelectedIndexChanged(sender, EventArgs.Empty);
+        }
     }
 
     public class ObjectSorter : IComparer
