@@ -175,7 +175,7 @@ namespace Radegast
                 }
             }
             catch
-            { 
+            {
                 GLMode = null;
             }
 
@@ -619,6 +619,66 @@ namespace Radegast
         #endregion Public methods
 
         #region Private methods (the meat)
+        private OpenTK.Vector3 WorldToScreen(OpenTK.Vector3 world)
+        {
+            OpenTK.Vector3 screen;
+            double[] ModelViewMatrix = new double[16];
+            double[] ProjectionMatrix = new double[16];
+            int[] Viewport = new int[4];
+
+            GL.GetInteger(GetPName.Viewport, Viewport);
+            GL.GetDouble(GetPName.ModelviewMatrix, ModelViewMatrix);
+            GL.GetDouble(GetPName.ProjectionMatrix, ProjectionMatrix);
+
+
+            OpenTK.Graphics.Glu.Project(world,
+                ModelViewMatrix,
+                ProjectionMatrix,
+                Viewport,
+                out screen);
+
+            screen.Y = glControl.Height - screen.Y;
+            return screen;
+        }
+
+        OpenTK.Graphics.TextPrinter Printer = new OpenTK.Graphics.TextPrinter(OpenTK.Graphics.TextQuality.High);
+        private void RenderText()
+        {
+            lock (Prims)
+            {
+                int primNr = 0;
+                foreach (FacetedMesh mesh in Prims.Values)
+                {
+                    primNr++;
+                    Primitive prim = mesh.Prim;
+                    if (!string.IsNullOrEmpty(prim.Text))
+                    {
+                        string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
+                        OpenTK.Vector3 screenPos = OpenTK.Vector3.Zero;
+                        OpenTK.Vector3 primPos = OpenTK.Vector3.Zero;
+                        if (prim.ParentID != 0)
+                        {
+                            primPos = new OpenTK.Vector3(prim.Position.X, prim.Position.Y, prim.Position.Z);
+                        }
+                        primPos.Z += prim.Scale.Z; 
+                        screenPos = WorldToScreen(primPos);
+                        Printer.Begin();
+                        Color color = Color.FromArgb((int)(prim.TextColor.A * 255), (int)(prim.TextColor.R * 255), (int)(prim.TextColor.G * 255), (int)(prim.TextColor.B * 255));
+
+                        using (Font f = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold))
+                        {
+                            var size = Printer.Measure(text, f);
+                            screenPos.X -= size.BoundingBox.Width / 2;
+                            screenPos.Y += size.BoundingBox.Height / 2;
+                            Printer.Print(text, f, Color.Black, new RectangleF(screenPos.X + 2 , screenPos.Y + 2, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            Printer.Print(text, f, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                        }
+                        Printer.End();
+                    }
+                }
+            }
+        }
+
         private void Render(bool picking)
         {
             glControl.MakeCurrent();
@@ -773,6 +833,8 @@ namespace Radegast
                     GL.PopMatrix();
                 }
             }
+
+            RenderText();
 
             // Pop the world matrix
             GL.PopMatrix();
