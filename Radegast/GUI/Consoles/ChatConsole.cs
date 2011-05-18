@@ -670,11 +670,12 @@ namespace Radegast
             Avatar av = currentAvatar;
             if (av == null) return;
 
-            if (!instance.TabConsole.TabExists("AT: " + av.Name))
+            if (!instance.TabConsole.TabExists("AT: " + av.ID.ToString()))
             {
-                instance.TabConsole.AddATTab(av);
+               instance.TabConsole.AddTab("AT: " + av.ID.ToString(), "AT: " + av.Name, new AttachmentTab(instance, av));
+
             }
-            instance.TabConsole.SelectTab("AT: " + av.Name);
+            instance.TabConsole.SelectTab("AT: " + av.ID.ToString());
         }
 
         private void tbtnAnim_Click(object sender, EventArgs e)

@@ -77,6 +77,16 @@ namespace Radegast
         /// List of prims in the scene
         /// </summary>
         Dictionary<uint, FacetedMesh> Prims = new Dictionary<uint, FacetedMesh>();
+
+        /// <summary>
+        /// Local ID of the root prim
+        /// </summary>
+        public uint RootPrimLocalID = 0;
+
+        /// <summary>
+        /// Camera center
+        /// </summary>
+        public Vector3 Center = Vector3.Zero;
         #endregion Public fields
 
         #region Private fields
@@ -88,15 +98,16 @@ namespace Radegast
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
-        Vector3 Center = Vector3.Zero;
         float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
 
         #endregion Private fields
 
         #region Construction and disposal
-        public frmPrimWorkshop(RadegastInstance instance)
+        public frmPrimWorkshop(RadegastInstance instance, uint rootLocalID)
             : base(instance)
         {
+            this.RootPrimLocalID = rootLocalID;
+
             InitializeComponent();
             Disposed += new EventHandler(frmPrimWorkshop_Disposed);
             AutoSavePosition = true;
@@ -187,7 +198,7 @@ namespace Radegast
                 GLMode = null;
             }
 
-            
+
             try
             {
                 if (GLMode == null)
@@ -511,17 +522,32 @@ namespace Radegast
         }
         #endregion Texture thread
 
-        #region Public methods
-        public void LoadPrims(List<Primitive> primList)
+        private void frmPrimWorkshop_Shown(object sender, EventArgs e)
         {
-            if (!RenderingEnabled) return;
+            SetupGLControl();
 
-            ThreadPool.QueueUserWorkItem((object sync) =>
-            {
-                primList.ForEach(p => UpdatePrimBlocking(p));
-            });
+            ThreadPool.QueueUserWorkItem(sync =>
+                {
+                    if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(RootPrimLocalID))
+                    {
+                        UpdatePrimBlocking(Client.Network.CurrentSim.ObjectsPrimitives[RootPrimLocalID]);
+                        var children = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => { return p.ParentID == RootPrimLocalID; });
+                        children.ForEach(p => UpdatePrimBlocking(p));
+                    }
+                }
+            );
+
         }
 
+        #region Public methods
+        public void SetView(Vector3 center, int roll, int pitch, int yaw, int zoom)
+        {
+            this.Center = center;
+            scrollRoll.Value = roll;
+            scrollPitch.Value = pitch;
+            scrollYaw.Value = yaw;
+            scrollZoom.Value = zoom;
+        }
 
         public FacetedMesh GenerateFacetedMesh(Primitive prim, OSDMap MeshData, DetailLevel LOD)
         {
@@ -693,13 +719,14 @@ namespace Radegast
                         string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
                         OpenTK.Vector3 screenPos = OpenTK.Vector3.Zero;
                         OpenTK.Vector3 primPos = OpenTK.Vector3.Zero;
-                        
-                        if (prim.ParentID != 0)
+
+                        // Is it child prim
+                        if (prim.ParentID == RootPrimLocalID)
                         {
                             primPos = new OpenTK.Vector3(prim.Position.X, prim.Position.Y, prim.Position.Z);
                         }
-                        
-                        primPos.Z += prim.Scale.Z * 0.7f; 
+
+                        primPos.Z += prim.Scale.Z * 0.7f;
                         screenPos = WorldToScreen(primPos);
                         Printer.Begin();
 
@@ -710,7 +737,7 @@ namespace Radegast
                             var size = Printer.Measure(text, f);
                             screenPos.X -= size.BoundingBox.Width / 2;
                             screenPos.Y -= size.BoundingBox.Height;
-                            
+
                             // Shadow
                             if (color != Color.Black)
                             {
@@ -736,7 +763,7 @@ namespace Radegast
                     // Individual prim matrix
                     GL.PushMatrix();
 
-                    if (prim.ParentID != 0)
+                    if (prim.ParentID == RootPrimLocalID)
                     {
                         FacetedMesh parent = null;
                         if (Prims.TryGetValue(prim.ParentID, out parent))
@@ -772,33 +799,31 @@ namespace Radegast
 
                             if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
                             if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
-                        }
-                        // Don't render transparent faces
-                        if (teFace.RGBA.A <= 0.01f) continue;
 
-                        switch (teFace.Shiny)
-                        {
-                            case Shininess.High:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 94f);
-                                break;
+                            // Don't render transparent faces
+                            if (teFace.RGBA.A <= 0.01f) continue;
 
-                            case Shininess.Medium:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 64f);
-                                break;
+                            switch (teFace.Shiny)
+                            {
+                                case Shininess.High:
+                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 94f);
+                                    break;
 
-                            case Shininess.Low:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
-                                break;
+                                case Shininess.Medium:
+                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 64f);
+                                    break;
+
+                                case Shininess.Low:
+                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
+                                    break;
 
 
-                            case Shininess.None:
-                            default:
-                                GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
-                                break;
-                        }
+                                case Shininess.None:
+                                default:
+                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
+                                    break;
+                            }
 
-                        if (pass != RenderPass.Picking)
-                        {
                             var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
 
                             GL.Color4(faceColor);
@@ -1152,6 +1177,8 @@ namespace Radegast
 
         private void SafeInvalidate()
         {
+            if (glControl == null || !RenderingEnabled) return;
+
             if (InvokeRequired)
             {
                 if (!instance.MonoRuntime || IsHandleCreated)
@@ -1185,10 +1212,10 @@ namespace Radegast
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            scrollYaw.Value = 0;
+            scrollYaw.Value = 90;
             scrollPitch.Value = 0;
             scrollRoll.Value = 0;
-            scrollZoom.Value = -50;
+            scrollZoom.Value = -30;
             Center = Vector3.Zero;
 
             SafeInvalidate();
@@ -1291,6 +1318,7 @@ namespace Radegast
             Close();
         }
         #endregion Context menu
+
 
 
     }

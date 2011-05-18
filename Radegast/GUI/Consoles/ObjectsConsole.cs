@@ -903,18 +903,7 @@ namespace Radegast
                 return;
             }
 
-            var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.LocalID == currentPrim.LocalID || p.ParentID == currentPrim.LocalID);
-
-            frmPrimWorkshop pw = new frmPrimWorkshop(instance);
-            pw.Shown += (xsender, xe) =>
-                {
-                    Thread.Sleep(500);
-                    pw.SetupGLControl();
-                    if (pw.RenderingEnabled)
-                    {
-                        pw.LoadPrims(prims);
-                    }
-                };
+            frmPrimWorkshop pw = new frmPrimWorkshop(instance, currentPrim.LocalID);
             pw.Show();
         }
 

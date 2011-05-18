@@ -84,7 +84,8 @@ namespace Radegast
 
         private void UpdateControls()
         {
-            if (InvokeRequired) {
+            if (InvokeRequired)
+            {
                 Invoke(new MethodInvoker(UpdateControls));
                 return;
             }
@@ -102,14 +103,15 @@ namespace Radegast
                 {
                     return (prim.LocalID == attachment.LocalID || prim.ParentID == attachment.LocalID);
                 }
-            ); 
+            );
 
             lblPrimCount.Text = "Prims: " + parts.Count.ToString();
         }
 
         void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)
         {
-            if (e.Properties.ObjectID == attachment.ID) {
+            if (e.Properties.ObjectID == attachment.ID)
+            {
                 attachment.Properties = e.Properties;
                 UpdateControls();
             }
@@ -157,27 +159,9 @@ namespace Radegast
 
         private void button1_Click(object sender, EventArgs e)
         {
-            var prims = instance.Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == attachment.LocalID || p.LocalID == attachment.LocalID);
-            var root = prims.Find((Primitive p) => p.LocalID == attachment.LocalID);
-            if (root != null)
-            {
-                prims.Remove(root);
-                root = new Primitive(root);
-                root.ParentID = 0;
-
-                frmPrimWorkshop pw = new frmPrimWorkshop(instance);
-                pw.Shown += (xsender, xe) =>
-                {
-                    Thread.Sleep(500);
-                    pw.SetupGLControl();
-                    if (pw.RenderingEnabled)
-                    {
-                        pw.LoadPrims(prims);
-                    }
-                };
-                pw.Show();
-
-            }
+            frmPrimWorkshop pw = new frmPrimWorkshop(instance, attachment.LocalID);
+            pw.Show();
+            pw.SetView(new Vector3(0f, 0.5f, 0f), 0, 0, 90, -10);
         }
     }
 }

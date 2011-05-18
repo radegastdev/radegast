@@ -994,14 +994,6 @@ namespace Radegast
             return msTab;
         }
 
-        public AttachmentTab AddATTab(Avatar avatar)
-        {
-            AttachmentTab atTab = new AttachmentTab(instance, avatar);
-
-            RadegastTab tab = AddTab("AT: " + avatar.Name, "AT: " + avatar.Name, atTab);
-            return atTab;
-        }
-
         public AnimTab AddAnimTab(Avatar avatar)
         {
             AnimTab animTab = new AnimTab(instance, avatar);

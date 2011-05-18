@@ -57,7 +57,7 @@ namespace Radegast
             RefreshList();
         }
 
-        private void RefreshList()
+        public void RefreshList()
         {
             List<Primitive> attachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(
                 delegate(Primitive prim)

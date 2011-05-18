@@ -1480,5 +1480,23 @@ namespace Radegast
         }
         #endregion
 
+        private void myAttachmentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Avatar av = client.Network.CurrentSim.ObjectsAvatars.Find((Avatar a) => { return a.ID == client.Self.AgentID; });
+            
+            if (av == null)
+            {
+                tabsConsole.DisplayNotificationInChat("Unable to find my avatar!", ChatBufferTextStyle.Error);
+                return;
+            }
+
+            if (!instance.TabConsole.TabExists("AT: " + av.ID.ToString()))
+            {
+                instance.TabConsole.AddTab("AT: " + av.ID.ToString(), "My Attachments", new AttachmentTab(instance, av));
+            }
+            instance.TabConsole.SelectTab("AT: " + av.ID.ToString());
+
+        }
+
     }
 }

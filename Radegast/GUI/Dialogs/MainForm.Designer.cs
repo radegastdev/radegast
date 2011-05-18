@@ -75,6 +75,7 @@ namespace Radegast
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.tbtnSLeek = new System.Windows.Forms.ToolStripDropDownButton();
             this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuImport = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
@@ -147,7 +148,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.uploadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.myAttachmentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -211,6 +212,13 @@ namespace Radegast
             this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.newWindowToolStripMenuItem.Text = "&New window...";
             this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
+            // 
+            // uploadImageToolStripMenuItem
+            // 
+            this.uploadImageToolStripMenuItem.Name = "uploadImageToolStripMenuItem";
+            this.uploadImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.uploadImageToolStripMenuItem.Text = "Upload image...";
+            this.uploadImageToolStripMenuItem.Click += new System.EventHandler(this.uploadImageToolStripMenuItem_Click);
             // 
             // tmnuImport
             // 
@@ -417,7 +425,8 @@ namespace Radegast
             this.cleanCacheToolStripMenuItem,
             this.reloadInventoryToolStripMenuItem,
             this.setAppearanceToolStripMenuItem,
-            this.rebakeTexturesToolStripMenuItem});
+            this.rebakeTexturesToolStripMenuItem,
+            this.myAttachmentsToolStripMenuItem});
             this.tbnTools.Enabled = false;
             this.tbnTools.Image = ((System.Drawing.Image)(resources.GetObject("tbnTools.Image")));
             this.tbnTools.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -856,12 +865,12 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
-            // uploadImageToolStripMenuItem
+            // myAttachmentsToolStripMenuItem
             // 
-            this.uploadImageToolStripMenuItem.Name = "uploadImageToolStripMenuItem";
-            this.uploadImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.uploadImageToolStripMenuItem.Text = "Upload image...";
-            this.uploadImageToolStripMenuItem.Click += new System.EventHandler(this.uploadImageToolStripMenuItem_Click);
+            this.myAttachmentsToolStripMenuItem.Name = "myAttachmentsToolStripMenuItem";
+            this.myAttachmentsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.myAttachmentsToolStripMenuItem.Text = "My Attachments";
+            this.myAttachmentsToolStripMenuItem.Click += new System.EventHandler(this.myAttachmentsToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -974,6 +983,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         public System.Windows.Forms.ToolStripMenuItem uploadImageToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem myAttachmentsToolStripMenuItem;
     }
 }
 

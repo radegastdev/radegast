@@ -106,6 +106,7 @@ namespace Radegast
             this.scrollYaw.Name = "scrollYaw";
             this.scrollYaw.Size = new System.Drawing.Size(200, 16);
             this.scrollYaw.TabIndex = 11;
+            this.scrollYaw.Value = 90;
             this.scrollYaw.ValueChanged += new System.EventHandler(this.scroll_ValueChanged);
             // 
             // scrollZoom
@@ -117,7 +118,7 @@ namespace Radegast
             this.scrollZoom.Name = "scrollZoom";
             this.scrollZoom.Size = new System.Drawing.Size(200, 16);
             this.scrollZoom.TabIndex = 19;
-            this.scrollZoom.Value = -50;
+            this.scrollZoom.Value = -30;
             this.scrollZoom.ValueChanged += new System.EventHandler(this.scrollZoom_ValueChanged);
             // 
             // gbZoom
@@ -250,6 +251,7 @@ namespace Radegast
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPrimWorkshop";
             this.Text = "Object Viewer";
+            this.Shown += new System.EventHandler(this.frmPrimWorkshop_Shown);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
             this.ctxObjects.ResumeLayout(false);
