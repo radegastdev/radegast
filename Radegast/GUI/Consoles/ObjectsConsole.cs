@@ -1254,6 +1254,11 @@ namespace Radegast
         {
             lstChildren_SelectedIndexChanged(sender, EventArgs.Empty);
         }
+
+        private void lstPrims_DoubleClick(object sender, EventArgs e)
+        {
+            btnView.PerformClick();
+        }
     }
 
     public class ObjectSorter : IComparer
