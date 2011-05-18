@@ -57,10 +57,9 @@ Copyright © Apache Software Foundation
 Uses LSL parser from OpenSimulator project (BSD License)
 Copyright © Contributors, http://opensimulator.org/
 
-Uses TAO OpenGL framework (MIT License)
-Copyright © 2003-2007 Tao Framework Team
-http://www.taoframework.com
-All rights reserved.
+Uses OpenTK library (MIT License)
+Copyright © 2006 - 2009 The Open Toolkit library.
+http://www.opentk.com/
 
 Uses artwork files are licenced under the 
 Creative Commons Share and Share Alike 3.0

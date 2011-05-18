@@ -149,7 +149,7 @@ namespace Radegast
             this.lblHomepage.ForeColor = System.Drawing.Color.Blue;
             this.lblHomepage.Location = new System.Drawing.Point(12, 342);
             this.lblHomepage.Name = "lblHomepage";
-            this.lblHomepage.Size = new System.Drawing.Size(118, 13);
+            this.lblHomepage.Size = new System.Drawing.Size(93, 13);
             this.lblHomepage.TabIndex = 4;
             this.lblHomepage.Text = "www.radegast.org";
             this.lblHomepage.Click += new System.EventHandler(this.lblHomepage_Click);
