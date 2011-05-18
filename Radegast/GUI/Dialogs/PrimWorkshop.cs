@@ -156,6 +156,8 @@ namespace Radegast
         #region glControl setup and disposal
         public void SetupGLControl()
         {
+            RenderingEnabled = false;
+
             if (glControl != null)
                 glControl.Dispose();
             glControl = null;
@@ -662,18 +664,21 @@ namespace Radegast
             GL.GetDouble(GetPName.ModelviewMatrix, ModelViewMatrix);
             GL.GetDouble(GetPName.ProjectionMatrix, ProjectionMatrix);
 
-
+#pragma warning disable 0618
             OpenTK.Graphics.Glu.Project(world,
                 ModelViewMatrix,
                 ProjectionMatrix,
                 Viewport,
                 out screen);
+#pragma warning restore 0618
 
             screen.Y = glControl.Height - screen.Y;
             return screen;
         }
 
+#pragma warning disable 0612
         OpenTK.Graphics.TextPrinter Printer = new OpenTK.Graphics.TextPrinter(OpenTK.Graphics.TextQuality.High);
+#pragma warning restore 0612
         private void RenderText()
         {
             lock (Prims)
@@ -766,7 +771,7 @@ namespace Radegast
                             bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.IsAlpha;
 
                             if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
-                            if (!belongToAlphaPass && pass != RenderPass.Simple) continue;
+                            if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
                         }
                         // Don't render transparent faces
                         if (teFace.RGBA.A <= 0.01f) continue;
@@ -892,9 +897,8 @@ namespace Radegast
             {
                 RenderObjects(RenderPass.Simple);
                 RenderObjects(RenderPass.Alpha);
+                RenderText();
             }
-
-            RenderText();
 
             // Pop the world matrix
             GL.PopMatrix();
