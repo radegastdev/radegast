@@ -99,6 +99,7 @@ namespace Radegast
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
         float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
+        bool hasMipmap;
 
         #endregion Private fields
 
@@ -274,6 +275,8 @@ namespace Radegast
 
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                hasMipmap = GL.GetString(StringName.Extensions).Contains("GL_SGIS_generate_mipmap");
+
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
                 // and will also invalidate the GL control
@@ -504,13 +507,20 @@ namespace Radegast
                         PixelType.UnsignedByte,
                         bitmapData.Scan0);
 
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                    //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                    if (hasMipmap)
+                    {
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
+                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                    }
+                    else
+                    {
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                    }
+
                     bitmap.UnlockBits(bitmapData);
                     bitmap.Dispose();
 
