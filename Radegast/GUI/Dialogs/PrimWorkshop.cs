@@ -512,9 +512,9 @@ namespace Radegast
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
                     if (hasMipmap)
                     {
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
                         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
                         GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
                     }
                     else
                     {
