@@ -54,14 +54,12 @@ namespace Radegast
             set {
                 turningLeft = value;
                 if (value) {
-                    client.Self.Movement.AutoResetControls = false;
                     timer_Elapsed(null, null);
                     timer.Enabled = true;
                 } else {
                     timer.Enabled = false;
                     client.Self.Movement.TurnLeft = false;
-                    client.Self.Movement.SendUpdate();
-                    client.Self.Movement.AutoResetControls = true;
+                    client.Self.Movement.SendUpdate(true);
                 }
             }
         }
@@ -76,14 +74,12 @@ namespace Radegast
             {
                 turningRight = value;
                 if (value) {
-                    client.Self.Movement.AutoResetControls = false;
                     timer_Elapsed(null, null);
                     timer.Enabled = true;
                 } else {
                     timer.Enabled = false;
                     client.Self.Movement.TurnRight = false;
-                    client.Self.Movement.SendUpdate();
-                    client.Self.Movement.AutoResetControls = true;
+                    client.Self.Movement.SendUpdate(true);
                 }
             }
         }
@@ -98,13 +94,11 @@ namespace Radegast
             {
                 movingForward = value;
                 if (value) {
-                    client.Self.Movement.AutoResetControls = false;
                     client.Self.Movement.AtPos = true;
-                    client.Self.Movement.SendUpdate();
+                    client.Self.Movement.SendUpdate(true);
                 } else {
                     client.Self.Movement.AtPos = false;
-                    client.Self.Movement.SendUpdate();
-                    client.Self.Movement.AutoResetControls = true;
+                    client.Self.Movement.SendUpdate(true);
                 }
             }
         }
@@ -119,13 +113,12 @@ namespace Radegast
             {
                 movingBackward = value;
                 if (value) {
-                    client.Self.Movement.AutoResetControls = false;
                     client.Self.Movement.AtNeg = true;
-                    client.Self.Movement.SendUpdate();
+                    client.Self.Movement.SendUpdate(true);
                 } else {
                     client.Self.Movement.AtNeg = false;
-                    client.Self.Movement.SendUpdate();
-                    client.Self.Movement.AutoResetControls = true;
+                    client.Self.Movement.SendUpdate(true);
+                    
                 }
             }
         }

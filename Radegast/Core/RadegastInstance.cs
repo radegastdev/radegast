@@ -333,6 +333,8 @@ namespace Radegast
             client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
             client.Settings.MAX_CONCURRENT_TEXTURE_DOWNLOADS = 20;
 
+            client.Self.Movement.AutoResetControls = false;
+            client.Self.Movement.UpdateInterval = 250;
             RegisterClientEvents(client);
         }
 
