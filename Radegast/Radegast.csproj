@@ -1176,6 +1176,7 @@
     <None Include="Resources\map_dot.png" />
     <None Include="Resources\inv_item_alpha.png" />
     <None Include="Resources\inv_item_tattoo.png" />
+    <None Include="Resources\inv_item_physics.png" />
     <Content Include="Resources\radegast_large.png" />
     <None Include="Resources\target_map_pos.png" />
   </ItemGroup>

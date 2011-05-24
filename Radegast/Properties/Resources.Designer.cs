@@ -455,6 +455,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap inv_item_physics {
+            get {
+                object obj = ResourceManager.GetObject("inv_item_physics", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap inv_item_script {
             get {
                 object obj = ResourceManager.GetObject("inv_item_script", resourceCulture);
