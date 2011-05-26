@@ -90,7 +90,9 @@ namespace Radegast
                 "fmodex.dll",
                 "log4net.dll",
                 "openjpeg-dotnet-x86_64.dll",
-                "openjpeg-dotnet.dll"
+                "openjpeg-dotnet.dll",
+                "OpenCyc.dll",
+                "IKVM.",
             });
 
         /// <summary>List of file extensions that could potentially hold plugins</summary>
@@ -255,14 +257,28 @@ namespace Radegast
 
             foreach (string loadFileName in Directory.GetFiles(dirName))
             {
-                if (!AllowedPluginExtensions.Contains(Path.GetExtension(loadFileName).ToLower())
-                    || PluginBlackList.Contains(Path.GetFileName(loadFileName)))
+                if (IsUnusedFile(loadFileName))
                 {
                     continue;
                 }
 
                 LoadPluginFile(loadFileName, false);
             }
+        }
+
+        private static bool IsUnusedFile(string loadFileName)
+        {
+            if (!AllowedPluginExtensions.Contains(Path.GetExtension(loadFileName).ToLower())) return true;
+            loadFileName = Path.GetFileName(loadFileName).ToLower();
+
+            foreach (string blackList in PluginBlackList)
+            {
+                if (loadFileName.StartsWith(blackList.ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
