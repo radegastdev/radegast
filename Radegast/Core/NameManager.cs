@@ -514,7 +514,7 @@ namespace Radegast
 
                 if (name == RadegastInstance.INCOMPLETE_NAME)
                 {
-                    gotName.WaitOne(10 * 1000, false);
+                    gotName.WaitOne(20 * 1000, false);
                 }
 
                 NameUpdated -= handler;

@@ -168,48 +168,72 @@ namespace Radegast
 
         void Friends_FriendOffline(object sender, FriendInfoEventArgs e)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(() => Friends_FriendOffline(sender, e)));
-                return;
-            }
+            if (!instance.GlobalSettings["show_friends_online_notifications"]) return;
 
-            if (instance.GlobalSettings["show_friends_online_notifications"].AsBoolean())
+            ThreadPool.QueueUserWorkItem(sync =>
             {
-                instance.MainForm.TabConsole.DisplayNotificationInChat(e.Friend.Name + " is offline", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"].AsBoolean());
-            }
-            RefreshFriendsList();
+                string name = instance.Names.Get(e.Friend.UUID, true);
+                MethodInvoker display = () =>
+                {
+                    instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is offline", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"]);
+                    RefreshFriendsList();
+                };
+
+                if (InvokeRequired)
+                {
+                    BeginInvoke(display);
+                }
+                else
+                {
+                    display();
+                }
+            });
         }
 
         void Friends_FriendOnline(object sender, FriendInfoEventArgs e)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(() => Friends_FriendOnline(sender, e)));
-                return;
-            }
+            if (!instance.GlobalSettings["show_friends_online_notifications"]) return;
 
-            if (instance.GlobalSettings["show_friends_online_notifications"].AsBoolean())
+            ThreadPool.QueueUserWorkItem(sync =>
             {
-                string name = instance.Names.Get(e.Friend.UUID, true, e.Friend.Name);
-                instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"].AsBoolean());
-            }
+                string name = instance.Names.Get(e.Friend.UUID, true);
+                MethodInvoker display = () =>
+                {
+                    instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"]);
+                    RefreshFriendsList();
+                };
 
-            RefreshFriendsList();
+                if (InvokeRequired)
+                {
+                    BeginInvoke(display);
+                }
+                else
+                {
+                    display();
+                }
+            });
         }
 
         void Friends_FriendshipTerminated(object sender, FriendshipTerminatedEventArgs e)
         {
-            string agentName = instance.Names.Get(e.AgentID, true, e.AgentName);
-
-            if (InvokeRequired)
+            ThreadPool.QueueUserWorkItem(sync =>
             {
-                BeginInvoke(new MethodInvoker(() => Friends_FriendshipTerminated(sender, e)));
-                return;
-            }
+                string name = instance.Names.Get(e.AgentID, true);
+                MethodInvoker display = () =>
+                {
+                    instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is no longer on your friend list");
+                    RefreshFriendsList();
+                };
 
-            instance.MainForm.TabConsole.DisplayNotificationInChat(agentName + " is no longer on your friend list");
-            RefreshFriendsList();
+                if (InvokeRequired)
+                {
+                    BeginInvoke(display);
+                }
+                else
+                {
+                    display();
+                }
+            });
         }
 
         private void SetControls()
