@@ -154,6 +154,7 @@ namespace Radegast
             client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
             client.Avatars.DisplayNameUpdate += new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
             client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Network.RegisterCallback(OpenMetaverse.Packets.PacketType.ScriptTeleportRequest, ScriptTeleportRequestHandler);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -164,6 +165,7 @@ namespace Radegast
             client.Self.SetDisplayNameReply -= new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
             client.Avatars.DisplayNameUpdate -= new EventHandler<DisplayNameUpdateEventArgs>(Avatars_DisplayNameUpdate);
             client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Network.UnregisterCallback(OpenMetaverse.Packets.PacketType.ScriptTeleportRequest, ScriptTeleportRequestHandler);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -198,6 +200,28 @@ namespace Radegast
             netcom.InstantMessageReceived -= new EventHandler<InstantMessageEventArgs>(netcom_InstantMessageReceived);
         }
 
+        void ScriptTeleportRequestHandler(object sender, PacketReceivedEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                    BeginInvoke(new MethodInvoker(() => ScriptTeleportRequestHandler(sender, e)));
+                return;
+            }
+
+            var msg = (OpenMetaverse.Packets.ScriptTeleportRequestPacket)e.Packet;
+
+            if (TabExists("map"))
+            {
+                Tabs["map"].Select();
+                ((MapConsole)Tabs["map"].Control).DisplayLocation(
+                    Utils.BytesToString(msg.Data.SimName),
+                    (int)msg.Data.SimPosition.X,
+                    (int)msg.Data.SimPosition.Y,
+                    (int)msg.Data.SimPosition.Z);
+            }
+        }
+
         void Network_EventQueueRunning(object sender, EventQueueRunningEventArgs e)
         {
             if (InvokeRequired)
@@ -219,7 +243,7 @@ namespace Radegast
             if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.ObjectID) // muted object by id
                 || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
                 )) return;
-            
+
             instance.MainForm.AddNotification(new ntfScriptDialog(instance, e.Message, e.ObjectName, e.ImageID, e.ObjectID, e.FirstName, e.LastName, e.Channel, e.ButtonLabels));
         }
 
@@ -517,7 +541,7 @@ namespace Radegast
                 if (!tab.Selected) tab.Highlight();
                 return;
             }
-            
+
             instance.MediaManager.PlayUISound(UISounds.IM);
 
             IMTabWindow imTab = AddIMTab(e);
@@ -746,7 +770,7 @@ namespace Radegast
             selectedTab = tab;
 
             tbtnCloseTab.Enabled = tab.AllowClose || tab.AllowHide;
-            
+
             if (owner != null)
             {
                 owner.AcceptButton = tab.DefaultControlButton;
