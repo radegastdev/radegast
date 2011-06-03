@@ -214,11 +214,10 @@ namespace Radegast
             if (TabExists("map"))
             {
                 Tabs["map"].Select();
-                ((MapConsole)Tabs["map"].Control).DisplayLocation(
-                    Utils.BytesToString(msg.Data.SimName),
-                    (int)msg.Data.SimPosition.X,
-                    (int)msg.Data.SimPosition.Y,
-                    (int)msg.Data.SimPosition.Z);
+                ((MapConsole)Tabs["map"].Control).CenterOnGlobalPos(
+                    (float)(client.Self.GlobalPosition.X - client.Self.SimPosition.X) + msg.Data.SimPosition.X,
+                    (float)(client.Self.GlobalPosition.Y - client.Self.SimPosition.Y) + msg.Data.SimPosition.Y,
+                    msg.Data.SimPosition.Z);
             }
         }
 

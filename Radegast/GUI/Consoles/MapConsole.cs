@@ -121,11 +121,6 @@ namespace Radegast
                 zoomTracker.Value = newval;
         }
 
-        void mmap_MapTargetChanged(object sender, MapTargetChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         void map_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             map.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(map_DocumentCompleted);
@@ -223,6 +218,31 @@ namespace Radegast
             btnTeleport.Enabled = false;
         }
 
+        public void CenterOnGlobalPos(float gx, float gy, float z)
+        {
+            txtRegion.Text = string.Empty;
+
+            nudX.Value = (int)gx % 256;
+            nudY.Value = (int)gy % 256;
+            nudZ.Value = (int)z;
+
+            uint rx = (uint)(gx / 256);
+            uint ry = (uint)(gy / 256);
+
+            ulong hndle = Utils.UIntsToLong(rx * 256, ry * 256);
+            targetRegionHandle = hndle;
+
+            foreach (KeyValuePair<string, ulong> kvp in regionHandles)
+            {
+                if (kvp.Value == hndle)
+                {
+                    txtRegion.Text = kvp.Key;
+                    btnTeleport.Enabled = true;
+                }
+            }
+            mmap.CenterMap(rx, ry, (uint)gx % 256, (uint)gy % 256, true);
+        }
+
         #endregion
 
         #region NetworkEvents
@@ -302,10 +322,11 @@ namespace Radegast
                 return;
             }
 
-            if (e.Region.RegionHandle == friendRegionHandle)
+            if (e.Region.RegionHandle == targetRegionHandle)
             {
                 txtRegion.Text = e.Region.Name;
-                friendRegionHandle = 0;
+                btnTeleport.Enabled = true;
+                targetRegionHandle = 0;
             }
 
             if (!string.IsNullOrEmpty(txtRegion.Text)
@@ -560,7 +581,7 @@ namespace Radegast
 
         #region Map friends
         FriendInfo mapFriend = null;
-        ulong friendRegionHandle = 0;
+        ulong targetRegionHandle = 0;
 
         void Friends_FriendFoundReply(object sender, FriendFoundReplyEventArgs e)
         {
@@ -579,7 +600,7 @@ namespace Radegast
             nudX.Value = (int)e.Location.X;
             nudY.Value = (int)e.Location.Y;
             nudZ.Value = (int)e.Location.Z;
-            friendRegionHandle = e.RegionHandle;
+            targetRegionHandle = e.RegionHandle;
             uint x, y;
             Utils.LongToUInts(e.RegionHandle, out x, out y);
             x /= 256;
@@ -590,6 +611,7 @@ namespace Radegast
                 if (kvp.Value == hndle)
                 {
                     txtRegion.Text = kvp.Key;
+                    btnTeleport.Enabled = true;
                 }
             }
             mmap.CenterMap(x, y, (uint)e.Location.X, (uint)e.Location.Y, true);
@@ -601,7 +623,7 @@ namespace Radegast
             mapFriend = client.Friends.FriendList.Find((FriendInfo f) => { return f.Name == ddOnlineFriends.SelectedItem.ToString(); });
             if (mapFriend != null)
             {
-                friendRegionHandle = 0;
+                targetRegionHandle = 0;
                 client.Friends.MapFriend(mapFriend.UUID);
             }
         }
