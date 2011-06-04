@@ -232,6 +232,7 @@ namespace Radegast
             if (TabExists("friends")) return;
             if (e.Simulator == client.Network.CurrentSim)
             {
+                client.Self.UpdateAgentLanguage("en", true);
                 InitializeOnlineTabs();
             }
         }
