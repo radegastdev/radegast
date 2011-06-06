@@ -92,11 +92,7 @@ namespace Radegast
         /// </summary>
         public static CommandLine CommandLine;
 
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main(string[] args)
+        static void RunRadegast(string[] args)
         {
             // Read command line options
             CommandLine = new CommandLine();
@@ -111,7 +107,7 @@ namespace Radegast
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
+
             // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
 
@@ -134,6 +130,46 @@ namespace Radegast
             }
 
             Application.Run(instance.MainForm);
+        }
+
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main(string[] args)
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                RunRadegast(args);
+            }
+            else
+            {
+                try
+                {
+                    RunRadegast(args);
+                }
+                catch (Exception e)
+                {
+                    string errMsg = "Unhandled " + e.ToString() + ": " +
+                        e.Message + Environment.NewLine +
+                        e.StackTrace + Environment.NewLine;
+
+                    OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
+
+                    string dlgMsg = "Radegast has encoutered an unrecoverable errror." + Environment.NewLine +
+                        "Would you like to send the error report to help improve Radegast?";
+
+                    var res = MessageBox.Show(dlgMsg, "Unrecoverable error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+
+                    if (res == DialogResult.Yes)
+                    {
+                        var reporter = new ErrorReporter("http://api.radegast.org/svc/error_report");
+                        reporter.SendExceptionReport(e);
+                    }
+
+                    Environment.Exit(1);
+                }
+            }
         }
     }
 }

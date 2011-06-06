@@ -210,6 +210,7 @@
     <Compile Include="Core\Types\TransparentLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Core\Updater\ErrorReporter.cs" />
     <Compile Include="Core\Updater\UpdateChecker.cs" />
     <Compile Include="FormFlash.cs" />
     <Compile Include="GUI\Consoles\AnimDetail.cs">

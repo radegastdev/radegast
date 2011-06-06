@@ -272,10 +272,11 @@ namespace Radegast
             // incase something else calls GlobalInstance while we are loading
             globalInstance = this;
 
-#if !DEBUG
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-            Application.ThreadException += HandleThreadException;
-#endif
+            if (!System.Diagnostics.Debugger.IsAttached)
+            {
+                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+                Application.ThreadException += HandleThreadException;
+            }
 
             client = client0;
 
@@ -611,14 +612,11 @@ namespace Radegast
 
         public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            Logger.Log("Unhandled Thread Exception: "
+            Logger.Log("Unhandled thread exception: "
                 + e.Exception.Message + Environment.NewLine
                 + e.Exception.StackTrace + Environment.NewLine,
                 Helpers.LogLevel.Error,
                 client);
-#if DEBUG
-            Application.Exit();
-#endif
         }
     }
 
