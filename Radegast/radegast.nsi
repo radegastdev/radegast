@@ -59,7 +59,7 @@ Section "${APPNAME} core (required)"
   SetOutPath $INSTDIR
 
   ; Put file there
-  File /r /x *.nsi /x *.bak /x *.mdb /x *.pdb /x *.application /x *vshost*.* /x *installer*.* /x *.so /x *.dylib *.*
+  File /r /x *.nsi /x *.bak /x *.mdb /x *.application /x *vshost*.* /x *installer*.* /x *.so /x *.dylib *.*
   
   ; Write the installation path into the registry
   WriteRegStr HKLM "SOFTWARE\${APPNAME}" "Install_Dir" "$INSTDIR"
