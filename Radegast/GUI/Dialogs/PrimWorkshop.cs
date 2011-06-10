@@ -558,134 +558,6 @@ namespace Radegast
             scrollYaw.Value = yaw;
             scrollZoom.Value = zoom;
         }
-
-        public FacetedMesh GenerateFacetedMesh(Primitive prim, OSDMap MeshData, DetailLevel LOD)
-        {
-            FacetedMesh ret = new FacetedMesh();
-
-            ret.Faces = new List<Face>();
-            ret.Prim = prim;
-            ret.Profile = new Profile();
-            ret.Profile.Faces = new List<ProfileFace>();
-            ret.Profile.Positions = new List<Vector3>();
-            ret.Path = new OpenMetaverse.Rendering.Path();
-            ret.Path.Points = new List<PathPoint>();
-
-            try
-            {
-                OSD facesOSD = null;
-
-                switch (LOD)
-                {
-                    default:
-                    case DetailLevel.Highest:
-                        facesOSD = MeshData["high_lod"];
-                        break;
-
-                    case DetailLevel.High:
-                        facesOSD = MeshData["medium_lod"];
-                        break;
-
-                    case DetailLevel.Medium:
-                        facesOSD = MeshData["low_lod"];
-                        break;
-
-                    case DetailLevel.Low:
-                        facesOSD = MeshData["lowest_lod"];
-                        break;
-                }
-
-                if (facesOSD == null || !(facesOSD is OSDArray))
-                {
-                    return ret;
-                }
-
-                OSDArray decodedMeshOsdArray = (OSDArray)facesOSD;
-
-
-
-                for (int faceNr = 0; faceNr < decodedMeshOsdArray.Count; faceNr++)
-                {
-                    OSD subMeshOsd = decodedMeshOsdArray[faceNr];
-                    Face oface = new Face();
-                    oface.ID = faceNr;
-                    oface.Vertices = new List<Vertex>();
-                    oface.Indices = new List<ushort>();
-                    oface.TextureFace = prim.Textures.GetFace((uint)faceNr);
-
-                    if (subMeshOsd is OSDMap)
-                    {
-                        OSDMap subMeshMap = (OSDMap)subMeshOsd;
-
-                        Vector3 posMax = ((OSDMap)subMeshMap["PositionDomain"])["Max"];
-                        Vector3 posMin = ((OSDMap)subMeshMap["PositionDomain"])["Min"];
-
-                        Vector2 texPosMax = ((OSDMap)subMeshMap["TexCoord0Domain"])["Max"];
-                        Vector2 texPosMin = ((OSDMap)subMeshMap["TexCoord0Domain"])["Min"];
-
-
-                        byte[] posBytes = subMeshMap["Position"];
-                        byte[] norBytes = subMeshMap["Normal"];
-                        byte[] texBytes = subMeshMap["TexCoord0"];
-
-                        for (int i = 0; i < posBytes.Length; i += 6)
-                        {
-                            ushort uX = Utils.BytesToUInt16(posBytes, i);
-                            ushort uY = Utils.BytesToUInt16(posBytes, i + 2);
-                            ushort uZ = Utils.BytesToUInt16(posBytes, i + 4);
-
-                            Vertex vx = new Vertex();
-
-                            vx.Position = new Vector3(
-                                Utils.UInt16ToFloat(uX, posMin.X, posMax.X),
-                                Utils.UInt16ToFloat(uY, posMin.Y, posMax.Y),
-                                Utils.UInt16ToFloat(uZ, posMin.Z, posMax.Z));
-
-                            ushort nX = Utils.BytesToUInt16(norBytes, i);
-                            ushort nY = Utils.BytesToUInt16(norBytes, i + 2);
-                            ushort nZ = Utils.BytesToUInt16(norBytes, i + 4);
-
-                            vx.Normal = new Vector3(
-                                Utils.UInt16ToFloat(nX, posMin.X, posMax.X),
-                                Utils.UInt16ToFloat(nY, posMin.Y, posMax.Y),
-                                Utils.UInt16ToFloat(nZ, posMin.Z, posMax.Z));
-
-                            var vertexIndexOffset = oface.Vertices.Count * 4;
-
-                            if (texBytes != null && texBytes.Length >= vertexIndexOffset + 4)
-                            {
-                                ushort tX = Utils.BytesToUInt16(texBytes, vertexIndexOffset);
-                                ushort tY = Utils.BytesToUInt16(texBytes, vertexIndexOffset + 2);
-
-                                vx.TexCoord = new Vector2(
-                                    Utils.UInt16ToFloat(tX, texPosMin.X, texPosMax.X),
-                                    Utils.UInt16ToFloat(tY, texPosMin.Y, texPosMax.Y));
-                            }
-
-                            oface.Vertices.Add(vx);
-                        }
-
-                        byte[] triangleBytes = subMeshMap["TriangleList"];
-                        for (int i = 0; i < triangleBytes.Length; i += 6)
-                        {
-                            ushort v1 = (ushort)(Utils.BytesToUInt16(triangleBytes, i));
-                            oface.Indices.Add(v1);
-                            ushort v2 = (ushort)(Utils.BytesToUInt16(triangleBytes, i + 2));
-                            oface.Indices.Add(v2);
-                            ushort v3 = (ushort)(Utils.BytesToUInt16(triangleBytes, i + 4));
-                            oface.Indices.Add(v3);
-                        }
-                    }
-                    ret.Faces.Add(oface);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to decode mesh asset: " + ex.Message, Helpers.LogLevel.Warning, Client);
-            }
-            return ret;
-        }
         #endregion Public methods
 
         #region Private methods (the meat)
@@ -1036,13 +908,12 @@ namespace Radegast
 
                         Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
                             {
-                                if (!success || !meshAsset.Decode())
+                                if (!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, DetailLevel.Highest, out mesh))
                                 {
                                     Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
                                 }
                                 else
                                 {
-                                    mesh = GenerateFacetedMesh(prim, meshAsset.MeshData, DetailLevel.Highest);
                                     meshSuccess = true;
                                 }
                                 gotMesh.Set();
