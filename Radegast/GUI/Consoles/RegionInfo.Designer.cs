@@ -602,7 +602,6 @@
             // 
             // txtOwner
             // 
-            this.txtOwner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtOwner.AgentID")));
             this.txtOwner.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOwner.Location = new System.Drawing.Point(80, 163);
             this.txtOwner.Name = "txtOwner";

@@ -214,7 +214,6 @@ namespace Radegast
             // txtFullName
             // 
             this.txtFullName.AccessibleName = "Name";
-            this.txtFullName.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtFullName.AgentID")));
             this.txtFullName.Location = new System.Drawing.Point(50, 6);
             this.txtFullName.Name = "txtFullName";
             this.txtFullName.ReadOnly = true;
@@ -224,7 +223,6 @@ namespace Radegast
             // anPartner
             // 
             this.anPartner.AccessibleName = "Partner";
-            this.anPartner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("anPartner.AgentID")));
             this.anPartner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.anPartner.Location = new System.Drawing.Point(306, 34);
             this.anPartner.Name = "anPartner";
