@@ -127,7 +127,9 @@ namespace Radegast
             // cbxGrid
             // 
             this.cbxGrid.AccessibleName = "Grid";
+            this.cbxGrid.DropDownHeight = 300;
             this.cbxGrid.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxGrid.IntegralHeight = false;
             this.cbxGrid.Location = new System.Drawing.Point(56, 70);
             this.cbxGrid.Name = "cbxGrid";
             this.cbxGrid.Size = new System.Drawing.Size(210, 21);
