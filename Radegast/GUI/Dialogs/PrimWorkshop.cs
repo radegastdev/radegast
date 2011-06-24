@@ -92,7 +92,7 @@ namespace Radegast
         #region Private fields
 
         int[] TexturePointers = new int[1];
-        Dictionary<UUID, Image> Textures = new Dictionary<UUID, Image>();
+        Dictionary<UUID, int> TexturesPtrMap = new Dictionary<UUID, int>();
         RadegastInstance instance;
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
@@ -468,10 +468,19 @@ namespace Radegast
 
                 if (!PendingTextures.Dequeue(Timeout.Infinite, ref item)) continue;
 
+                if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
+                {
+                    item.Data.TexturePointer = TexturesPtrMap[item.TeFace.TextureID];
+                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TexturePointer);
+                    continue;
+                }
+
                 if (LoadTexture(item.TeFace.TextureID, ref item.Data.Texture, false))
                 {
                     GL.GenTextures(1, out item.Data.TexturePointer);
                     GL.BindTexture(TextureTarget.Texture2D, item.Data.TexturePointer);
+
+                    TexturesPtrMap.Add(item.TeFace.TextureID, item.Data.TexturePointer);
 
                     Bitmap bitmap = new Bitmap(item.Data.Texture);
 
@@ -1010,12 +1019,6 @@ namespace Radegast
             ManualResetEvent gotImage = new ManualResetEvent(false);
             Image img = null;
 
-            if (Textures.ContainsKey(textureID))
-            {
-                texture = Textures[textureID];
-                return true;
-            }
-
             try
             {
                 gotImage.Reset();
@@ -1035,7 +1038,6 @@ namespace Radegast
                             }
 
                             img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
-                            Textures[textureID] = (System.Drawing.Image)img.Clone();
                         }
                         gotImage.Set();
                     }
