@@ -153,7 +153,7 @@ namespace Radegast
         private void RegisterClientEvents()
         {
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
-            
+
             // Voice hooks
             gateway.OnSessionCreate +=
                 new EventHandler(gateway_OnSessionCreate);
@@ -188,7 +188,7 @@ namespace Radegast
             if (InvokeRequired)
             {
                 if (IsHandleCreated || !instance.MonoRuntime)
-                    BeginInvoke((MethodInvoker)(() =>  Names_NameUpdated(sender, e)));
+                    BeginInvoke((MethodInvoker)(() => Names_NameUpdated(sender, e)));
                 return;
             }
 
@@ -208,7 +208,7 @@ namespace Radegast
         #region Connection Status
         void gateway_OnAuxGetRenderDevicesResponse(object sender, VoiceGateway.VoiceDevicesEventArgs e)
         {
-            BeginInvoke(new MethodInvoker(() => LoadSpkrDevices( e.Devices, e.CurrentDevice )));
+            BeginInvoke(new MethodInvoker(() => LoadSpkrDevices(e.Devices, e.CurrentDevice)));
         }
 
         void gateway_OnAuxGetCaptureDevicesResponse(object sender, VoiceGateway.VoiceDevicesEventArgs e)
@@ -225,7 +225,10 @@ namespace Radegast
         {
             int value = (int)s;
             if (value == progressBar1.Maximum)
+            {
                 progressBar1.ForeColor = Color.Green;
+                LoadConfigVolume();
+            }
             else if (value > (progressBar1.Maximum / 2))
                 progressBar1.ForeColor = Color.Yellow;
             else
@@ -478,7 +481,7 @@ namespace Radegast
         #endregion
 
         #region Audio Settings
- 
+
         void LoadMicDevices(List<string> available, string current)
         {
             if (available == null) return;
@@ -515,23 +518,31 @@ namespace Radegast
 
         private void micLevel_ValueChanged(object sender, EventArgs e)
         {
-            gateway.MicLevel = micLevel.Value;
+            if (gateway != null)
+            {
+                gateway.MicLevel = micLevel.Value;
+            }
+            instance.GlobalSettings["voice_mic_level"] = micLevel.Value;
         }
 
         private void spkrLevel_ValueChanged(object sender, EventArgs e)
         {
-            gateway.SpkrLevel = spkrLevel.Value;
+            if (gateway != null)
+            {
+                gateway.SpkrLevel = spkrLevel.Value;
+            }
+            instance.GlobalSettings["voice_speaker_level"] = spkrLevel.Value;
         }
         #endregion
 
         /// <summary>
         /// Start and stop the voice functions.
         /// </summary>
-       private void chkVoiceEnable_Click(object sender, EventArgs e)
+        private void chkVoiceEnable_Click(object sender, EventArgs e)
         {
             this.BeginInvoke(new MethodInvoker(delegate()
             {
-                config["enabled"] = new OSDBoolean( chkVoiceEnable.Checked );
+                config["enabled"] = new OSDBoolean(chkVoiceEnable.Checked);
                 instance.GlobalSettings.Save();
 
                 if (chkVoiceEnable.Checked)
@@ -545,14 +556,31 @@ namespace Radegast
             }));
         }
 
-       private void micMute_CheckedChanged(object sender, EventArgs e)
-       {
-           if (gateway != null)
-           {
-               gateway.MicMute = micMute.Checked;
-           }
-       }
+        private void micMute_CheckedChanged(object sender, EventArgs e)
+        {
+            if (gateway != null)
+            {
+                gateway.MicMute = micMute.Checked;
+            }
+        }
 
+        void LoadConfigVolume()
+        {
+            if (instance.GlobalSettings.ContainsKey("voice_mic_level"))
+            {
+                micLevel.Value = instance.GlobalSettings["voice_mic_level"];
+            }
+
+            if (instance.GlobalSettings.ContainsKey("voice_speaker_level"))
+            {
+                spkrLevel.Value = instance.GlobalSettings["voice_speaker_level"];
+            }
+        }
+
+        private void VoiceConsole_Load(object sender, EventArgs e)
+        {
+            LoadConfigVolume();
+        }
     }
 }
 

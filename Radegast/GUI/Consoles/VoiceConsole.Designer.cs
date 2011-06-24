@@ -278,7 +278,7 @@ namespace Radegast
             this.micLevel.Minimum = -100;
             this.micLevel.Name = "micLevel";
             this.micLevel.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.micLevel.Size = new System.Drawing.Size(42, 104);
+            this.micLevel.Size = new System.Drawing.Size(45, 104);
             this.micLevel.TabIndex = 15;
             this.micLevel.TickFrequency = 20;
             this.micLevel.ValueChanged += new System.EventHandler(this.micLevel_ValueChanged);
@@ -290,7 +290,7 @@ namespace Radegast
             this.spkrLevel.Minimum = -100;
             this.spkrLevel.Name = "spkrLevel";
             this.spkrLevel.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.spkrLevel.Size = new System.Drawing.Size(42, 104);
+            this.spkrLevel.Size = new System.Drawing.Size(45, 104);
             this.spkrLevel.TabIndex = 14;
             this.spkrLevel.TickFrequency = 20;
             this.spkrLevel.ValueChanged += new System.EventHandler(this.spkrLevel_ValueChanged);
@@ -426,6 +426,7 @@ namespace Radegast
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "VoiceConsole";
             this.Size = new System.Drawing.Size(654, 424);
+            this.Load += new System.EventHandler(this.VoiceConsole_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
