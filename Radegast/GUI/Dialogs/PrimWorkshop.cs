@@ -92,7 +92,7 @@ namespace Radegast
         #region Private fields
 
         int[] TexturePointers = new int[1];
-        Dictionary<UUID, int> TexturesPtrMap = new Dictionary<UUID, int>();
+        Dictionary<UUID, TextureInfo> TexturesPtrMap = new Dictionary<UUID, TextureInfo>();
         RadegastInstance instance;
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
@@ -470,22 +470,20 @@ namespace Radegast
 
                 if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                 {
-                    item.Data.TexturePointer = TexturesPtrMap[item.TeFace.TextureID];
-                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TexturePointer);
+                    item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
+                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
                     continue;
                 }
 
-                if (LoadTexture(item.TeFace.TextureID, ref item.Data.Texture, false))
+                if (LoadTexture(item.TeFace.TextureID, ref item.Data.TextureInfo.Texture, false))
                 {
-                    GL.GenTextures(1, out item.Data.TexturePointer);
-                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TexturePointer);
+                    GL.GenTextures(1, out item.Data.TextureInfo.TexturePointer);
+                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
 
-                    TexturesPtrMap.Add(item.TeFace.TextureID, item.Data.TexturePointer);
-
-                    Bitmap bitmap = (Bitmap)item.Data.Texture;
+                    Bitmap bitmap = (Bitmap)item.Data.TextureInfo.Texture;
 
                     bool hasAlpha;
-                    if (item.Data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                    if (item.Data.TextureInfo.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     {
                         hasAlpha = true;
                     }
@@ -493,7 +491,7 @@ namespace Radegast
                     {
                         hasAlpha = false;
                     }
-                    item.Data.IsAlpha = hasAlpha;
+                    item.Data.TextureInfo.HasAlpha = hasAlpha;
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -529,9 +527,11 @@ namespace Radegast
                         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                     }
 
+                    TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
+
                     bitmap.UnlockBits(bitmapData);
                     bitmap.Dispose();
-                    item.Data.Texture = null;
+                    item.Data.TextureInfo.Texture = null;
 
                     GL.Flush();
                     SafeInvalidate();
@@ -686,7 +686,7 @@ namespace Radegast
 
                         if (pass != RenderPass.Picking)
                         {
-                            bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.IsAlpha;
+                            bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.TextureInfo.HasAlpha;
 
                             if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
                             if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
@@ -721,7 +721,7 @@ namespace Radegast
                             GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, faceColor);
                             GL.Material(MaterialFace.Front, MaterialParameter.Specular, faceColor);
 
-                            if (data.TexturePointer != 0)
+                            if (data.TextureInfo.TexturePointer != 0)
                             {
                                 GL.Enable(EnableCap.Texture2D);
                             }
@@ -731,7 +731,7 @@ namespace Radegast
                             }
 
                             // Bind the texture
-                            GL.BindTexture(TextureTarget.Texture2D, data.TexturePointer);
+                            GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
                         }
                         else
                         {
@@ -986,11 +986,11 @@ namespace Radegast
                 if (existingMesh != null &&
                     j < existingMesh.Faces.Count &&
                     existingMesh.Faces[j].TextureFace.TextureID == teFace.TextureID &&
-                    ((FaceData)existingMesh.Faces[j].UserData).TexturePointer != 0
+                    ((FaceData)existingMesh.Faces[j].UserData).TextureInfo.TexturePointer != 0
                     )
                 {
                     FaceData existingData = (FaceData)existingMesh.Faces[j].UserData;
-                    data.TexturePointer = existingData.TexturePointer;
+                    data.TextureInfo.TexturePointer = existingData.TextureInfo.TexturePointer;
                 }
                 else
                 {
@@ -1212,10 +1212,15 @@ namespace Radegast
         public ushort[] Indices;
         public float[] TexCoords;
         public float[] Normals;
-        public int TexturePointer;
         public int PickingID = -1;
+        public TextureInfo TextureInfo = new TextureInfo();
+    }
+
+    public class TextureInfo
+    {
         public System.Drawing.Image Texture;
-        public bool IsAlpha;
+        public int TexturePointer;
+        public bool HasAlpha;
     }
 
     public class TextureLoadItem
