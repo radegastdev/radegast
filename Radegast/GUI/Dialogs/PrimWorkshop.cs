@@ -482,7 +482,7 @@ namespace Radegast
 
                     TexturesPtrMap.Add(item.TeFace.TextureID, item.Data.TexturePointer);
 
-                    Bitmap bitmap = new Bitmap(item.Data.Texture);
+                    Bitmap bitmap = (Bitmap)item.Data.Texture;
 
                     bool hasAlpha;
                     if (item.Data.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
@@ -497,7 +497,6 @@ namespace Radegast
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
 
                     BitmapData bitmapData =
                         bitmap.LockBits(
@@ -532,6 +531,7 @@ namespace Radegast
 
                     bitmap.UnlockBits(bitmapData);
                     bitmap.Dispose();
+                    item.Data.Texture = null;
 
                     GL.Flush();
                     SafeInvalidate();
