@@ -1046,7 +1046,6 @@ namespace Radegast
                 if (img != null)
                 {
                     texture = img;
-                    Wireframe = false;
                     return true;
                 }
                 return false;
