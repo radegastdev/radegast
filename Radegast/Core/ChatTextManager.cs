@@ -254,7 +254,7 @@ namespace Radegast
                 sb.Append(e.FromName);
             }
 
-            bool isEmote = e.Message.StartsWith("/me ");
+            bool isEmote = e.Message.ToLower().StartsWith("/me ");
 
             if (!isEmote)
             {

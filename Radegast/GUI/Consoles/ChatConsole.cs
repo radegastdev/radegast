@@ -450,7 +450,7 @@ namespace Radegast
                 if (instance.RLV.Enabled && ch == 0)
                 {
                     // emote
-                    if (msg.StartsWith("/me"))
+                    if (msg.ToLower().StartsWith("/me"))
                     {
                         var opt = instance.RLV.GetOptions("rediremote");
                         if (opt.Count > 0)
