@@ -91,7 +91,6 @@ namespace Radegast
 
         #region Private fields
 
-        int[] TexturePointers = new int[1];
         Dictionary<UUID, TextureInfo> TexturesPtrMap = new Dictionary<UUID, TextureInfo>();
         RadegastInstance instance;
         MeshmerizerR renderer;
@@ -116,8 +115,6 @@ namespace Radegast
             cbAA.CheckedChanged += cbAA_CheckedChanged;
 
             this.instance = instance;
-
-            TexturePointers[0] = 0;
 
             renderer = new MeshmerizerR();
 
@@ -613,13 +610,10 @@ namespace Radegast
 
                         // Is it child prim
                         FacetedMesh parent = null;
-                        if (prim.ParentID == RootPrimLocalID)
+                        if (Prims.TryGetValue(prim.ParentID, out parent))
                         {
-                            if (Prims.TryGetValue(prim.ParentID, out parent))
-                            {
-                                var newPrimPos = prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
-                                primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
-                            }
+                            var newPrimPos = prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
+                            primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
                         }
 
                         primPos.Z += prim.Scale.Z * 0.7f;
