@@ -612,9 +612,14 @@ namespace Radegast
                         OpenTK.Vector3 primPos = OpenTK.Vector3.Zero;
 
                         // Is it child prim
+                        FacetedMesh parent = null;
                         if (prim.ParentID == RootPrimLocalID)
                         {
-                            primPos = new OpenTK.Vector3(prim.Position.X, prim.Position.Y, prim.Position.Z);
+                            if (Prims.TryGetValue(prim.ParentID, out parent))
+                            {
+                                var newPrimPos = prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
+                                primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
+                            }
                         }
 
                         primPos.Z += prim.Scale.Z * 0.7f;
