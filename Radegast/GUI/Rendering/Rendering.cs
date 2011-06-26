@@ -140,7 +140,7 @@ namespace Radegast
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
-            Application.Idle += new EventHandler(Application_Idle);
+            Application.Idle -= new EventHandler(Application_Idle);
         }
         #endregion Construction and disposal
 
