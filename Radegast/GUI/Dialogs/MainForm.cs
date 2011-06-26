@@ -1498,5 +1498,10 @@ namespace Radegast
 
         }
 
+        private void tsb3D_Click(object sender, EventArgs e)
+        {
+            (new SceneWindow(instance)).Show();
+        }
+
     }
 }

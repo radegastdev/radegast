@@ -107,6 +107,7 @@ namespace Radegast
             this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.myAttachmentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnPluginsTab = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -148,7 +149,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.myAttachmentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsb3D = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -175,6 +176,7 @@ namespace Radegast
             this.lblTime,
             this.tbtnMedia,
             this.tbtnVoice,
+            this.tsb3D,
             this.tbtnHelp,
             this.toolStripSeparator2});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -469,6 +471,13 @@ namespace Radegast
             this.rebakeTexturesToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.rebakeTexturesToolStripMenuItem.Text = "Rebake Textures";
             this.rebakeTexturesToolStripMenuItem.Click += new System.EventHandler(this.rebakeTexturesToolStripMenuItem_Click);
+            // 
+            // myAttachmentsToolStripMenuItem
+            // 
+            this.myAttachmentsToolStripMenuItem.Name = "myAttachmentsToolStripMenuItem";
+            this.myAttachmentsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.myAttachmentsToolStripMenuItem.Text = "My Attachments";
+            this.myAttachmentsToolStripMenuItem.Click += new System.EventHandler(this.myAttachmentsToolStripMenuItem_Click);
             // 
             // tbnPlugins
             // 
@@ -865,12 +874,15 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
-            // myAttachmentsToolStripMenuItem
+            // tsb3D
             // 
-            this.myAttachmentsToolStripMenuItem.Name = "myAttachmentsToolStripMenuItem";
-            this.myAttachmentsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.myAttachmentsToolStripMenuItem.Text = "My Attachments";
-            this.myAttachmentsToolStripMenuItem.Click += new System.EventHandler(this.myAttachmentsToolStripMenuItem_Click);
+            this.tsb3D.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsb3D.Image = ((System.Drawing.Image)(resources.GetObject("tsb3D.Image")));
+            this.tsb3D.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsb3D.Name = "tsb3D";
+            this.tsb3D.Size = new System.Drawing.Size(59, 22);
+            this.tsb3D.Text = "3D Scene";
+            this.tsb3D.Click += new System.EventHandler(this.tsb3D_Click);
             // 
             // frmMain
             // 
@@ -984,6 +996,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem uploadImageToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem myAttachmentsToolStripMenuItem;
+        public System.Windows.Forms.ToolStripButton tsb3D;
     }
 }
 
