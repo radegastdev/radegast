@@ -81,13 +81,12 @@ namespace Radegast
             // scrollZoom
             // 
             this.scrollZoom.LargeChange = 1;
-            this.scrollZoom.Location = new System.Drawing.Point(428, 29);
+            this.scrollZoom.Location = new System.Drawing.Point(428, 8);
             this.scrollZoom.Maximum = 0;
             this.scrollZoom.Minimum = -300;
             this.scrollZoom.Name = "scrollZoom";
             this.scrollZoom.Size = new System.Drawing.Size(200, 16);
             this.scrollZoom.TabIndex = 19;
-            this.scrollZoom.Value = -30;
             this.scrollZoom.ValueChanged += new System.EventHandler(this.scrollZoom_ValueChanged);
             // 
             // gbZoom
@@ -99,25 +98,24 @@ namespace Radegast
             this.gbZoom.Controls.Add(this.label1);
             this.gbZoom.Controls.Add(this.scrollZoom);
             this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbZoom.Location = new System.Drawing.Point(0, 524);
+            this.gbZoom.Location = new System.Drawing.Point(0, 546);
             this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(644, 81);
+            this.gbZoom.Size = new System.Drawing.Size(644, 59);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(140, 57);
+            this.label2.Location = new System.Drawing.Point(140, 36);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(391, 13);
+            this.label2.Size = new System.Drawing.Size(167, 13);
             this.label2.TabIndex = 23;
-            this.label2.Text = "Drag to rotate object, ALT-Drag for Zoom, Alt-Ctrl-Drag for rotate, Ctrl-Drag  to" +
-                " pan";
+            this.label2.Text = "Alt-Drag to Zoom, Ctrl-Drag to pan";
             // 
             // btnResetView
             // 
-            this.btnResetView.Location = new System.Drawing.Point(12, 52);
+            this.btnResetView.Location = new System.Drawing.Point(12, 31);
             this.btnResetView.Name = "btnResetView";
             this.btnResetView.Size = new System.Drawing.Size(94, 23);
             this.btnResetView.TabIndex = 22;
@@ -128,7 +126,7 @@ namespace Radegast
             // cbAA
             // 
             this.cbAA.AutoSize = true;
-            this.cbAA.Location = new System.Drawing.Point(89, 32);
+            this.cbAA.Location = new System.Drawing.Point(89, 11);
             this.cbAA.Name = "cbAA";
             this.cbAA.Size = new System.Drawing.Size(82, 17);
             this.cbAA.TabIndex = 21;
@@ -138,7 +136,7 @@ namespace Radegast
             // chkWireFrame
             // 
             this.chkWireFrame.AutoSize = true;
-            this.chkWireFrame.Location = new System.Drawing.Point(9, 31);
+            this.chkWireFrame.Location = new System.Drawing.Point(9, 10);
             this.chkWireFrame.Name = "chkWireFrame";
             this.chkWireFrame.Size = new System.Drawing.Size(74, 17);
             this.chkWireFrame.TabIndex = 21;
@@ -149,7 +147,7 @@ namespace Radegast
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(385, 29);
+            this.label1.Location = new System.Drawing.Point(385, 8);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(34, 13);
             this.label1.TabIndex = 20;

@@ -119,6 +119,22 @@ namespace Radegast
             Application.Idle += new EventHandler(Application_Idle);
         }
 
+        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
+        {
+            Application.Idle -= new EventHandler(Application_Idle);
+            if (glControl != null)
+            {
+                glControl.Dispose();
+            }
+            glControl = null;
+            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
+            lock (Prims) Prims.Clear();
+            TexturesPtrMap.Clear();
+            GC.Collect();
+        }
+
         void Application_Idle(object sender, EventArgs e)
         {
             if (glControl != null && !glControl.IsDisposed && RenderingEnabled)
@@ -128,19 +144,6 @@ namespace Radegast
                     MainRenderLoop();
                 }
             }
-        }
-
-        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
-        {
-            if (glControl != null)
-            {
-                glControl.Dispose();
-            }
-            glControl = null;
-            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
-            Application.Idle -= new EventHandler(Application_Idle);
         }
         #endregion Construction and disposal
 
@@ -413,6 +416,8 @@ namespace Radegast
                         Camera.Position = Camera.FocalPoint + 
                             (Camera.Position - Camera.FocalPoint) 
                             * Quaternion.CreateFromAxisAngle((Camera.Position - Camera.FocalPoint) % new Vector3(0f, 0f, 1f), deltaY * pixelToM);
+                        var dx = -(deltaX * pixelToM);
+                        Camera.Position = Camera.FocalPoint + (Camera.Position - Camera.FocalPoint) * new Quaternion(0f, 0f, (float)Math.Sin(dx), (float)Math.Cos(dx));
                     }
 
                 }
