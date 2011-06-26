@@ -216,7 +216,7 @@ namespace Radegast
             this.Controls.Add(this.gbZoom);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SceneWindow";
-            this.Text = "Object Viewer";
+            this.Text = "Scene Viewer";
             this.Shown += new System.EventHandler(this.frmPrimWorkshop_Shown);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
