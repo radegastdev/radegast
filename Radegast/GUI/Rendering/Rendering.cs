@@ -115,6 +115,7 @@ namespace Radegast
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
+            Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
 
             Application.Idle += new EventHandler(Application_Idle);
         }
@@ -122,14 +123,16 @@ namespace Radegast
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
             Application.Idle -= new EventHandler(Application_Idle);
+            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
+            Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
+            Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+
             if (glControl != null)
             {
                 glControl.Dispose();
             }
             glControl = null;
-            Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
-            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
             lock (Prims) Prims.Clear();
             TexturesPtrMap.Clear();
             GC.Collect();
@@ -148,6 +151,11 @@ namespace Radegast
         #endregion Construction and disposal
 
         #region Network messaage handlers
+        void Objects_KillObject(object sender, KillObjectEventArgs e)
+        {
+            lock (Prims) Prims.Remove(e.ObjectLocalID);
+        }
+
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
             UpdatePrimBlocking(e.Prim);
