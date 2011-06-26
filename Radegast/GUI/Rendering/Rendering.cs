@@ -239,6 +239,14 @@ namespace Radegast
         {
             TextureThreadRunning = false;
             PendingTextures.Close();
+            glControl.Paint -= glControl_Paint;
+            glControl.Resize -= glControl_Resize;
+            glControl.MouseDown -= glControl_MouseDown;
+            glControl.MouseUp -= glControl_MouseUp;
+            glControl.MouseMove -= glControl_MouseMove;
+            glControl.MouseWheel -= glControl_MouseWheel;
+            glControl.Load -= new EventHandler(glControl_Load);
+            glControl.Disposed -= glControl_Disposed;
         }
 
         void glControl_Load(object sender, EventArgs e)
