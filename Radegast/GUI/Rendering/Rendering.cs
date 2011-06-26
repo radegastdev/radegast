@@ -116,7 +116,9 @@ namespace Radegast
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
             Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-
+            Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            Client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
         }
 
@@ -127,6 +129,9 @@ namespace Radegast
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
             Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
+            Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
             if (glControl != null)
             {
@@ -151,23 +156,72 @@ namespace Radegast
         #endregion Construction and disposal
 
         #region Network messaage handlers
+        void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                {
+                    BeginInvoke(new MethodInvoker(() => Netcom_ClientDisconnected(sender, e)));
+                }
+                return;
+            }
+
+            Dispose();
+        }
+
+        void Self_TeleportProgress(object sender, TeleportEventArgs e)
+        {
+            switch (e.Status)
+            {
+                case TeleportStatus.Progress:
+                case TeleportStatus.Start:
+                    RenderingEnabled = false;
+                    break;
+
+                case TeleportStatus.Cancelled:
+                case TeleportStatus.Failed:
+                    RenderingEnabled = true;
+                    break;
+
+                case TeleportStatus.Finished:
+                    ThreadPool.QueueUserWorkItem(sync =>
+                    {
+                        Thread.Sleep(3000);
+                        InitCamera();
+                        LoadCurrentPrims();
+                        RenderingEnabled = true;
+                    });
+                    break;
+            }
+        }
+
+        void Network_SimChanged(object sender, SimChangedEventArgs e)
+        {
+            lock (Prims) Prims.Clear();
+        }
+
         void Objects_KillObject(object sender, KillObjectEventArgs e)
         {
+            if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
             lock (Prims) Prims.Remove(e.ObjectLocalID);
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
+            if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
             UpdatePrimBlocking(e.Prim);
         }
 
         void Objects_ObjectUpdate(object sender, PrimEventArgs e)
         {
+            if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
             UpdatePrimBlocking(e.Prim);
         }
 
         void Objects_ObjectDataBlockUpdate(object sender, ObjectDataBlockUpdateEventArgs e)
         {
+            if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
             UpdatePrimBlocking(e.Prim);
         }
         #endregion Network messaage handlers
@@ -421,8 +475,8 @@ namespace Radegast
                     // Rotate camera in a vertical circle around target on up down mouse movement
                     if (ModifierKeys == (Keys.Alt | Keys.Control))
                     {
-                        Camera.Position = Camera.FocalPoint + 
-                            (Camera.Position - Camera.FocalPoint) 
+                        Camera.Position = Camera.FocalPoint +
+                            (Camera.Position - Camera.FocalPoint)
                             * Quaternion.CreateFromAxisAngle((Camera.Position - Camera.FocalPoint) % new Vector3(0f, 0f, 1f), deltaY * pixelToM);
                         var dx = -(deltaX * pixelToM);
                         Camera.Position = Camera.FocalPoint + (Camera.Position - Camera.FocalPoint) * new Quaternion(0f, 0f, (float)Math.Sin(dx), (float)Math.Cos(dx));
@@ -556,10 +610,8 @@ namespace Radegast
         }
         #endregion Texture thread
 
-        private void frmPrimWorkshop_Shown(object sender, EventArgs e)
+        void LoadCurrentPrims()
         {
-            SetupGLControl();
-            UpdateCamera();
             ThreadPool.QueueUserWorkItem(sync =>
                 {
                     Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0).ForEach((Primitive mainPrim) =>
@@ -571,7 +623,13 @@ namespace Radegast
                     });
                 }
             );
+        }
 
+        private void frmPrimWorkshop_Shown(object sender, EventArgs e)
+        {
+            SetupGLControl();
+            UpdateCamera();
+            LoadCurrentPrims();
         }
 
         #region Private methods (the meat)
@@ -603,7 +661,6 @@ namespace Radegast
             Camera.FocalPoint = Client.Self.SimPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
             Camera.Zoom = 1.0f;
             Camera.Far = 128.0f;
-            UpdateCamera();
         }
 
         Vector3 PrimPos(Primitive prim)
@@ -1131,6 +1188,7 @@ namespace Radegast
         private void btnReset_Click(object sender, EventArgs e)
         {
             InitCamera();
+            UpdateCamera();
             scrollZoom.Value = 0;
         }
 
