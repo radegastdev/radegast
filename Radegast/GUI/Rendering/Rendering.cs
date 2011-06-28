@@ -93,7 +93,9 @@ namespace Radegast
         bool hasMipmap;
         Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Regular);
         Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
-
+        OpenTK.Matrix4 ModelViewMatrix;
+        OpenTK.Matrix4 ProjectionMatrix;
+        int[] Viewport = new int[4];
         #endregion Private fields
 
         #region Construction and disposal
@@ -714,14 +716,6 @@ namespace Radegast
 #pragma warning restore 0612
         private void RenderText()
         {
-            OpenTK.Matrix4 ModelViewMatrix;
-            OpenTK.Matrix4 ProjectionMatrix;
-            int[] Viewport = new int[4];
-
-            GL.GetFloat(GetPName.ProjectionMatrix, out ProjectionMatrix);
-            GL.GetFloat(GetPName.ModelviewMatrix, out ModelViewMatrix);
-            GL.GetInteger(GetPName.Viewport, Viewport);
-
             lock (Prims)
             {
                 int primNr = 0;
@@ -914,6 +908,9 @@ namespace Radegast
             GL.EnableClientState(ArrayCap.TextureCoordArray);
             GL.EnableClientState(ArrayCap.NormalArray);
 
+            GL.GetFloat(GetPName.ProjectionMatrix, out ProjectionMatrix);
+            GL.GetFloat(GetPName.ModelviewMatrix, out ModelViewMatrix);
+            GL.GetInteger(GetPName.Viewport, Viewport);
 
             if (picking)
             {
