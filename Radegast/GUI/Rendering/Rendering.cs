@@ -337,6 +337,19 @@ namespace Radegast
         {
             try
             {
+                // Double check if we have mipmap ability
+                if (hasMipmap)
+                {
+                    try
+                    {
+                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                    }
+                    catch
+                    {
+                        Logger.DebugLog("Don't have glGenerateMipmap() after all");
+                        hasMipmap = false;
+                    }
+                }
                 GL.ShadeModel(ShadingModel.Smooth);
                 GL.ClearColor(0f, 0f, 0f, 0f);
 
@@ -858,11 +871,10 @@ namespace Radegast
                             GL.Color4(faceColor);
                         }
 
+                        GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
                         GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
                         GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
-                        GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
                         GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
-
                     }
 
                     // Pop the prim matrix
