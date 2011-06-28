@@ -272,5 +272,43 @@ namespace Radegast
 
             return mat;
         }
+
+        public static bool GluProject(OpenTK.Vector3 objPos, OpenTK.Matrix4 modelMatrix, OpenTK.Matrix4 projMatrix, int[] viewport, out OpenTK.Vector3 screenPos)
+        {
+            OpenTK.Vector4 _in;
+            OpenTK.Vector4 _out;
+
+            _in.X = objPos.X;
+            _in.Y = objPos.Y;
+            _in.Z = objPos.Z;
+            _in.W = 1.0f;
+
+            _out = OpenTK.Vector4.Transform(_in, modelMatrix);
+            _in = OpenTK.Vector4.Transform(_out, projMatrix);
+
+            if (_in.W <= 0.0)
+            {
+                screenPos = OpenTK.Vector3.Zero;
+                return false;
+            }
+
+            _in.X /= _in.W;
+            _in.Y /= _in.W;
+            _in.Z /= _in.W;
+            /* Map x, y and z to range 0-1 */
+            _in.X = _in.X * 0.5f + 0.5f;
+            _in.Y = _in.Y * 0.5f + 0.5f;
+            _in.Z = _in.Z * 0.5f + 0.5f;
+
+            /* Map x,y to viewport */
+            _in.X = _in.X * viewport[2] + viewport[0];
+            _in.Y = _in.Y * viewport[3] + viewport[1];
+
+            screenPos.X = _in.X;
+            screenPos.Y = _in.Y;
+            screenPos.Z = _in.Z;
+
+            return true;
+        }
     }
 }

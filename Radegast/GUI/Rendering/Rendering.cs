@@ -91,6 +91,8 @@ namespace Radegast
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
         float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
         bool hasMipmap;
+        Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Regular);
+        Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
 
         #endregion Private fields
 
@@ -138,6 +140,14 @@ namespace Radegast
                 glControl.Dispose();
             }
             glControl = null;
+
+            lock (sculptCache)
+            {
+                foreach (var img in sculptCache.Values)
+                    img.Dispose();
+                sculptCache.Clear();
+            }
+
             lock (Prims) Prims.Clear();
             TexturesPtrMap.Clear();
             GC.Collect();
@@ -198,6 +208,12 @@ namespace Radegast
 
         void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
+            lock (sculptCache)
+            {
+                foreach (var img in sculptCache.Values)
+                    img.Dispose();
+                sculptCache.Clear();
+            }
             lock (Prims) Prims.Clear();
         }
 
@@ -427,7 +443,7 @@ namespace Radegast
 
         private void glControl_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Middle)
+            if (e.Button == MouseButtons.Left)
             {
                 dragging = true;
                 downX = dragX = e.X;
@@ -511,6 +527,7 @@ namespace Radegast
                         else if (ModifierKeys == Keys.Alt)
                         {
                             Camera.FocalPoint = PrimPos(picked.Prim);
+                            Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             UpdateCamera();
                         }
                     }
@@ -691,34 +708,20 @@ namespace Radegast
             GluPerspective(50.0f * Camera.Zoom, dAspRat, 0.1f, (float)Camera.Far);
         }
 
-        private OpenTK.Vector3 WorldToScreen(OpenTK.Vector3 world)
-        {
-            OpenTK.Vector3 screen;
-            double[] ModelViewMatrix = new double[16];
-            double[] ProjectionMatrix = new double[16];
-            int[] Viewport = new int[4];
-
-            GL.GetInteger(GetPName.Viewport, Viewport);
-            GL.GetDouble(GetPName.ModelviewMatrix, ModelViewMatrix);
-            GL.GetDouble(GetPName.ProjectionMatrix, ProjectionMatrix);
-
-#pragma warning disable 0618
-            OpenTK.Graphics.Glu.Project(world,
-                ModelViewMatrix,
-                ProjectionMatrix,
-                Viewport,
-                out screen);
-#pragma warning restore 0618
-
-            screen.Y = glControl.Height - screen.Y;
-            return screen;
-        }
 
 #pragma warning disable 0612
         OpenTK.Graphics.TextPrinter Printer = new OpenTK.Graphics.TextPrinter(OpenTK.Graphics.TextQuality.High);
 #pragma warning restore 0612
         private void RenderText()
         {
+            OpenTK.Matrix4 ModelViewMatrix;
+            OpenTK.Matrix4 ProjectionMatrix;
+            int[] Viewport = new int[4];
+
+            GL.GetFloat(GetPName.ProjectionMatrix, out ProjectionMatrix);
+            GL.GetFloat(GetPName.ModelviewMatrix, out ModelViewMatrix);
+            GL.GetInteger(GetPName.Viewport, Viewport);
+
             lock (Prims)
             {
                 int primNr = 0;
@@ -729,36 +732,32 @@ namespace Radegast
                     if (!string.IsNullOrEmpty(prim.Text))
                     {
                         string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
-                        OpenTK.Vector3 screenPos = OpenTK.Vector3.Zero;
-                        OpenTK.Vector3 primPos = OpenTK.Vector3.Zero;
+                        var newPrimPos = PrimPos(prim);
+                        OpenTK.Vector3 primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
 
-                        // Is it child prim
-                        FacetedMesh parent = null;
-                        if (Prims.TryGetValue(prim.ParentID, out parent))
-                        {
-                            var newPrimPos = prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
-                            primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
-                        }
+                        if (Vector3.Distance(newPrimPos, Camera.Position) > 15) continue;
 
-                        primPos.Z += prim.Scale.Z * 0.7f;
-                        screenPos = WorldToScreen(primPos);
+                        primPos.Z += prim.Scale.Z * 0.8f;
+
+                        OpenTK.Vector3 screenPos;
+                        if (!Math3D.GluProject(primPos, ModelViewMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
+                        screenPos.Y = glControl.Height - screenPos.Y;
+
                         Printer.Begin();
 
                         Color color = Color.FromArgb((int)(prim.TextColor.A * 255), (int)(prim.TextColor.R * 255), (int)(prim.TextColor.G * 255), (int)(prim.TextColor.B * 255));
 
-                        using (Font f = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold))
-                        {
-                            var size = Printer.Measure(text, f);
-                            screenPos.X -= size.BoundingBox.Width / 2;
-                            screenPos.Y -= size.BoundingBox.Height;
+                        var size = Printer.Measure(text, HoverTextFont);
+                        screenPos.X -= size.BoundingBox.Width / 2;
+                        screenPos.Y -= size.BoundingBox.Height;
 
-                            // Shadow
-                            if (color != Color.Black)
-                            {
-                                Printer.Print(text, f, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
-                            }
-                            Printer.Print(text, f, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                        // Shadow
+                        if (color != Color.Black)
+                        {
+                            Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
                         }
+                        Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+
                         Printer.End();
                     }
                 }
@@ -924,7 +923,7 @@ namespace Radegast
             {
                 RenderObjects(RenderPass.Simple);
                 RenderObjects(RenderPass.Alpha);
-                //RenderText();
+                RenderText();
             }
 
             // Pop the world matrix
@@ -1000,6 +999,7 @@ namespace Radegast
             if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID)) return;
 
             if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > 32 && !Prims.ContainsKey(prim.ParentID)) return;
+            if (prim.Textures == null) return;
 
             FacetedMesh mesh = null;
             FacetedMesh existingMesh = null;
@@ -1012,9 +1012,6 @@ namespace Radegast
                 }
             }
 
-            if (prim.Textures == null)
-                return;
-
             try
             {
                 if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
@@ -1022,8 +1019,27 @@ namespace Radegast
                     if (prim.Sculpt.Type != SculptType.Mesh)
                     { // Regular sculptie
                         Image img = null;
-                        if (!LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
-                            return;
+                        
+                        lock (sculptCache)
+                        {
+                            if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
+                            {
+                                img = sculptCache[prim.Sculpt.SculptTexture];
+                            }
+                        }
+
+                        if (img == null)
+                        {
+                            if (LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
+                            {
+                                sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+
                         mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.Highest);
                     }
                     else
