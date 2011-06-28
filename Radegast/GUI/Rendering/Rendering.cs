@@ -296,6 +296,7 @@ namespace Radegast
             glControl.Load += new EventHandler(glControl_Load);
             glControl.Disposed += new EventHandler(glControl_Disposed);
             glControl.Dock = DockStyle.Fill;
+            glControl.VSync = false;
             Controls.Add(glControl);
             glControl.BringToFront();
         }
@@ -616,7 +617,7 @@ namespace Radegast
                 {
                     Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0).ForEach((Primitive mainPrim) =>
                     {
-                        UpdatePrimBlocking(Client.Network.CurrentSim.ObjectsPrimitives[mainPrim.LocalID]);
+                        UpdatePrimBlocking(mainPrim);
                         Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => { return p.ParentID == mainPrim.LocalID; })
                             .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
                             .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
@@ -671,10 +672,10 @@ namespace Radegast
             }
             else
             {
-                Primitive parent;
-                if (Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(prim.ParentID, out parent))
+                FacetedMesh parent;
+                if (Prims.TryGetValue(prim.ParentID, out parent))
                 {
-                    return parent.Position + prim.Position * Matrix4.CreateFromQuaternion(parent.Rotation);
+                    return parent.Prim.Position + prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
                     //return parent.Position * prim.Position * prim.Rotation;
                 }
                 else
@@ -773,8 +774,8 @@ namespace Radegast
                 {
                     primNr++;
                     Primitive prim = mesh.Prim;
-                    Primitive parent = null;
-                    if (prim.ParentID != 0 && !Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(prim.ParentID, out parent)) continue;
+                    FacetedMesh parent = null;
+                    if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent)) continue;
 
                     // Individual prim matrix
                     GL.PushMatrix();
@@ -782,8 +783,8 @@ namespace Radegast
                     if (prim.ParentID != 0)
                     {
                         // Apply prim translation and rotation relative to the root prim
-                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Position));
-                        GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Rotation));
+                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                        GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
                     }
 
                     // Prim roation and position
@@ -1049,7 +1050,7 @@ namespace Radegast
                 }
                 else
                 {
-                    mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.Highest);
+                    mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
                 }
             }
             catch
