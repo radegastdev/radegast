@@ -797,6 +797,9 @@ namespace Radegast
                         if (teFace == null)
                             teFace = mesh.Prim.Textures.DefaultTexture;
 
+                        if (teFace == null)
+                            continue;
+
                         if (pass != RenderPass.Picking)
                         {
                             bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.TextureInfo.HasAlpha;
@@ -1037,7 +1040,7 @@ namespace Radegast
                             }
                         }
 
-                        mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.Highest);
+                        mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.High);
                     }
                     else
                     { // Mesh
@@ -1076,6 +1079,7 @@ namespace Radegast
             for (int j = 0; j < mesh.Faces.Count; j++)
             {
                 Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
+                if (teFace == null) continue;
 
                 Face face = mesh.Faces[j];
                 FaceData data = new FaceData();
