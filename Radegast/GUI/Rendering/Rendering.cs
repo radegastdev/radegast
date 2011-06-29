@@ -162,6 +162,10 @@ namespace Radegast
                 while (glControl.IsIdle)
                 {
                     MainRenderLoop();
+                    if (instance.MonoRuntime)
+                    {
+                        Application.DoEvents();
+                    }
                 }
             }
         }
