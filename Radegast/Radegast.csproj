@@ -551,6 +551,7 @@
     <Compile Include="GUI\Notifications\TeleportNotification.Designer.cs">
       <DependentUpon>TeleportNotification.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Rendering\Frustum.cs" />
     <Compile Include="GUI\Rendering\PrimWorkshop.cs">
       <SubType>Form</SubType>
     </Compile>

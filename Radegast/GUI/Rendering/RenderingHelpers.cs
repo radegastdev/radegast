@@ -16,6 +16,7 @@ namespace Radegast
         public float[] Normals;
         public int PickingID = -1;
         public TextureInfo TextureInfo = new TextureInfo();
+        public BoundingSphere BoundingSphere = new BoundingSphere();
     }
 
     public class TextureInfo
@@ -44,12 +45,25 @@ namespace Radegast
         public static IRendering Plugin;
     }
 
+    /// <summary>
+    /// Represents camera object
+    /// </summary>
     public struct Camera
     {
-        public Vector3 Position;
-        public Vector3 FocalPoint;
+        Vector3 mPosition;
+        Vector3 mFocalPoint;
+        bool mModified;
+        
+        /// <summary>Camera position</summary>
+        public Vector3 Position { get { return mPosition; } set { mPosition = value; mModified = true; } }
+        /// <summary>Camera target</summary>
+        public Vector3 FocalPoint { get { return mFocalPoint; } set { mFocalPoint = value; mModified = true; } }
+        /// <summary>Zoom level</summary>
         public float Zoom;
+        /// <summary>Draw distance</summary>
         public float Far;
+        /// <summary>Has camera been modified</summary>
+        public bool Modified { get { return mModified; } set { mModified = value; } }
     }
 
     public static class MeshToOBJ

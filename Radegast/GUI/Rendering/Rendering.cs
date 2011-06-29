@@ -93,7 +93,7 @@ namespace Radegast
         bool hasMipmap;
         Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 9f, FontStyle.Regular);
         Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
-        OpenTK.Matrix4 ModelViewMatrix;
+        OpenTK.Matrix4 ModelMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
         int[] Viewport = new int[4];
         #endregion Private fields
@@ -693,8 +693,9 @@ namespace Radegast
 
         void InitCamera()
         {
-            Camera.Position = Client.Self.SimPosition + new Vector3(-2, 0, 0) * Client.Self.Movement.BodyRotation;
-            Camera.Position.Z += 2f;
+            Vector3 camPos = Client.Self.SimPosition + new Vector3(-2, 0, 0) * Client.Self.Movement.BodyRotation;
+            camPos.Z += 2f;
+            Camera.Position = camPos;
             Camera.FocalPoint = Client.Self.SimPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
             Camera.Zoom = 1.0f;
             Camera.Far = 128.0f;
@@ -754,7 +755,7 @@ namespace Radegast
 
                         // Convert objects world position to 2D screen position in pixels
                         OpenTK.Vector3 screenPos;
-                        if (!Math3D.GluProject(primPos, ModelViewMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
+                        if (!Math3D.GluProject(primPos, ModelMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
                         screenPos.Y = glControl.Height - screenPos.Y;
 
                         Printer.Begin();
@@ -764,14 +765,18 @@ namespace Radegast
                         var size = Printer.Measure(text, HoverTextFont);
                         screenPos.X -= size.BoundingBox.Width / 2;
                         screenPos.Y -= size.BoundingBox.Height;
-                        if (screenPos.Y < 0) continue;
 
-                        // Shadow
-                        if (color != Color.Black)
+                        if (screenPos.Y > 0)
                         {
-                            Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+
+                            // Shadow
+                            if (color != Color.Black)
+                            {
+                                Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            }
+                            // Text
+                            Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
                         }
-                        Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
 
                         Printer.End();
                     }
@@ -790,6 +795,7 @@ namespace Radegast
                     Primitive prim = mesh.Prim;
                     FacetedMesh parent = null;
                     if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent)) continue;
+                    Vector3 primPos = PrimPos(prim);
 
                     // Individual prim matrix
                     GL.PushMatrix();
@@ -814,6 +820,7 @@ namespace Radegast
                         Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
                         Face face = mesh.Faces[j];
                         FaceData data = (FaceData)face.UserData;
+                        if (!Frustum.ObjectInFrustum(primPos, data.BoundingSphere, prim.Scale)) continue;
 
                         if (teFace == null)
                             teFace = mesh.Prim.Textures.DefaultTexture;
@@ -931,9 +938,14 @@ namespace Radegast
             GL.EnableClientState(ArrayCap.TextureCoordArray);
             GL.EnableClientState(ArrayCap.NormalArray);
 
-            GL.GetFloat(GetPName.ProjectionMatrix, out ProjectionMatrix);
-            GL.GetFloat(GetPName.ModelviewMatrix, out ModelViewMatrix);
-            GL.GetInteger(GetPName.Viewport, Viewport);
+            if (Camera.Modified)
+            {
+                GL.GetFloat(GetPName.ProjectionMatrix, out ProjectionMatrix);
+                GL.GetFloat(GetPName.ModelviewMatrix, out ModelMatrix);
+                GL.GetInteger(GetPName.Viewport, Viewport);
+                Frustum.CalculateFrustum(ProjectionMatrix, ModelMatrix);
+                Camera.Modified = false;
+            }
 
             if (picking)
             {
@@ -1113,10 +1125,20 @@ namespace Radegast
                     data.Vertices[k * 3 + 1] = face.Vertices[k].Position.Y;
                     data.Vertices[k * 3 + 2] = face.Vertices[k].Position.Z;
 
+                    if (data.Vertices[k * 3 + 0] < data.BoundingSphere.Min.X) data.BoundingSphere.Min.X = data.Vertices[k * 3 + 0];
+                    if (data.Vertices[k * 3 + 1] < data.BoundingSphere.Min.Y) data.BoundingSphere.Min.Y = data.Vertices[k * 3 + 1];
+                    if (data.Vertices[k * 3 + 2] < data.BoundingSphere.Min.Z) data.BoundingSphere.Min.Z = data.Vertices[k * 3 + 2];
+
+                    if (data.Vertices[k * 3 + 0] > data.BoundingSphere.Max.X) data.BoundingSphere.Max.X = data.Vertices[k * 3 + 0];
+                    if (data.Vertices[k * 3 + 1] > data.BoundingSphere.Max.Y) data.BoundingSphere.Max.Y = data.Vertices[k * 3 + 1];
+                    if (data.Vertices[k * 3 + 2] > data.BoundingSphere.Max.Z) data.BoundingSphere.Max.Z = data.Vertices[k * 3 + 2];
+
                     data.Normals[k * 3 + 0] = face.Vertices[k].Normal.X;
                     data.Normals[k * 3 + 1] = face.Vertices[k].Normal.Y;
                     data.Normals[k * 3 + 2] = face.Vertices[k].Normal.Z;
                 }
+
+                data.BoundingSphere.R = (data.BoundingSphere.Max - data.BoundingSphere.Min).Length();
 
                 // Indices for this face
                 data.Indices = face.Indices.ToArray();
