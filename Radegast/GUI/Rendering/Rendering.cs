@@ -91,7 +91,7 @@ namespace Radegast
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
         float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
         bool hasMipmap;
-        Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Regular);
+        Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 9f, FontStyle.Regular);
         Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
         OpenTK.Matrix4 ModelViewMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
@@ -745,11 +745,14 @@ namespace Radegast
                         string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
                         var newPrimPos = PrimPos(prim);
                         OpenTK.Vector3 primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
+                        var distance = Vector3.Distance(newPrimPos, Camera.Position);
 
-                        if (Vector3.Distance(newPrimPos, Camera.Position) > 15) continue;
+                        // Display hovertext only on objects that are withing 12m of the camera
+                        if (distance > 12) continue;
 
                         primPos.Z += prim.Scale.Z * 0.8f;
 
+                        // Convert objects world position to 2D screen position in pixels
                         OpenTK.Vector3 screenPos;
                         if (!Math3D.GluProject(primPos, ModelViewMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
                         screenPos.Y = glControl.Height - screenPos.Y;
@@ -761,6 +764,7 @@ namespace Radegast
                         var size = Printer.Measure(text, HoverTextFont);
                         screenPos.X -= size.BoundingBox.Width / 2;
                         screenPos.Y -= size.BoundingBox.Height;
+                        if (screenPos.Y < 0) continue;
 
                         // Shadow
                         if (color != Color.Black)
