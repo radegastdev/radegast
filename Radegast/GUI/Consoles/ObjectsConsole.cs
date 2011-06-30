@@ -903,7 +903,7 @@ namespace Radegast
                 return;
             }
 
-            frmPrimWorkshop pw = new frmPrimWorkshop(instance, currentPrim.LocalID);
+            Rendering.frmPrimWorkshop pw = new Rendering.frmPrimWorkshop(instance, currentPrim.LocalID);
             pw.Show();
         }
 

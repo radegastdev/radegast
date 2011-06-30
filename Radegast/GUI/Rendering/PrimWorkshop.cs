@@ -47,7 +47,7 @@ using OpenMetaverse.Imaging;
 using OpenMetaverse.StructuredData;
 #endregion Usings
 
-namespace Radegast
+namespace Radegast.Rendering
 {
 
     public partial class frmPrimWorkshop : RadegastForm

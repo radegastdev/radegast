@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using OpenTK.Graphics.OpenGL;
+using System.Runtime.InteropServices;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 
-namespace Radegast
+namespace Radegast.Rendering
 {
     public class FaceData
     {
@@ -15,8 +17,30 @@ namespace Radegast
         public float[] TexCoords;
         public float[] Normals;
         public int PickingID = -1;
+        public int VertexVBO = -1;
+        public int IndexVBO = -1;
         public TextureInfo TextureInfo = new TextureInfo();
         public BoundingSphere BoundingSphere = new BoundingSphere();
+        public static int VertexSize = 32; // sizeof (vertex), 2  x vector3 + 1 x vector2 = 8 floats x 4 bytes = 32 bytes 
+        
+        public void CheckVBO(Face face)
+        {
+            if (VertexVBO == -1)
+            {
+                Vertex[] vArray = face.Vertices.ToArray();
+                GL.GenBuffers(1, out VertexVBO);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexVBO);
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vArray.Length * VertexSize), vArray, BufferUsageHint.StreamDraw);
+            }
+
+            if (IndexVBO == -1)
+            {
+                ushort[] iArray = face.Indices.ToArray();
+                GL.GenBuffers(1, out IndexVBO);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, IndexVBO);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(iArray.Length * sizeof(ushort)), iArray, BufferUsageHint.StreamDraw);
+            }
+        }
     }
 
     public class TextureInfo
@@ -43,6 +67,24 @@ namespace Radegast
     public static class Render
     {
         public static IRendering Plugin;
+    }
+
+    public static class RHelp
+    {
+        public static OpenTK.Vector2 TKVector3(Vector2 v)
+        {
+            return new OpenTK.Vector2(v.X, v.Y);
+        }
+
+        public static OpenTK.Vector3 TKVector3(Vector3 v)
+        {
+            return new OpenTK.Vector3(v.X, v.Y, v.Z);
+        }
+
+        public static OpenTK.Vector4 TKVector3(Vector4 v)
+        {
+            return new OpenTK.Vector4(v.X, v.Y, v.Z, v.W);
+        }
     }
 
     /// <summary>

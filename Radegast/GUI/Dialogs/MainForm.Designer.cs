@@ -120,6 +120,7 @@ namespace Radegast
             this.lblTime = new System.Windows.Forms.ToolStripLabel();
             this.tbtnMedia = new System.Windows.Forms.ToolStripButton();
             this.tbtnVoice = new System.Windows.Forms.ToolStripButton();
+            this.tsb3D = new System.Windows.Forms.ToolStripButton();
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -149,7 +150,6 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsb3D = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -605,6 +605,16 @@ namespace Radegast
             this.tbtnVoice.Text = "Voice";
             this.tbtnVoice.Click += new System.EventHandler(this.tbtnVoice_Click);
             // 
+            // tsb3D
+            // 
+            this.tsb3D.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsb3D.Image = ((System.Drawing.Image)(resources.GetObject("tsb3D.Image")));
+            this.tsb3D.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsb3D.Name = "tsb3D";
+            this.tsb3D.Size = new System.Drawing.Size(59, 22);
+            this.tsb3D.Text = "3D Scene";
+            this.tsb3D.Click += new System.EventHandler(this.tsb3D_Click);
+            // 
             // tbtnHelp
             // 
             this.tbtnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -873,16 +883,6 @@ namespace Radegast
             this.ctxTreyExit.Text = "Exit";
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
-            // 
-            // tsb3D
-            // 
-            this.tsb3D.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tsb3D.Image = ((System.Drawing.Image)(resources.GetObject("tsb3D.Image")));
-            this.tsb3D.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsb3D.Name = "tsb3D";
-            this.tsb3D.Size = new System.Drawing.Size(59, 22);
-            this.tsb3D.Text = "3D Scene";
-            this.tsb3D.Click += new System.EventHandler(this.tsb3D_Click);
             // 
             // frmMain
             // 

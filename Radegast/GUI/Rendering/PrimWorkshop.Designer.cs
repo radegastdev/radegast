@@ -28,7 +28,7 @@
 //
 // $Id$
 //
-namespace Radegast
+namespace Radegast.Rendering
 {
     partial class frmPrimWorkshop
     {

@@ -47,7 +47,7 @@ using OpenMetaverse.Imaging;
 using OpenMetaverse.StructuredData;
 #endregion Usings
 
-namespace Radegast
+namespace Radegast.Rendering
 {
 
     public partial class SceneWindow : RadegastForm
@@ -96,6 +96,8 @@ namespace Radegast
         OpenTK.Matrix4 ModelMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
         int[] Viewport = new int[4];
+        bool useVBO = true;
+
         #endregion Private fields
 
         #region Construction and disposal
@@ -370,6 +372,7 @@ namespace Radegast
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.ColorMaterial);
                 GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Back);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
 
@@ -649,6 +652,8 @@ namespace Radegast
 
         void LoadCurrentPrims()
         {
+            if (!Client.Network.Connected) return;
+
             ThreadPool.QueueUserWorkItem(sync =>
                 {
                     Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0).ForEach((Primitive mainPrim) =>
@@ -886,10 +891,28 @@ namespace Radegast
                             GL.Color4(faceColor);
                         }
 
-                        GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
-                        GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
-                        GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
-                        GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+                        if (!useVBO)
+                        {
+                            GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
+                            GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
+                            GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
+                            GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+                        }
+                        else
+                        {
+                            data.CheckVBO(face);
+                            GL.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
+                            GL.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
+                            GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
+                            GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
+                            GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
+
+                            GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
+
+                            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+
+                        }
                     }
 
                     // Pop the prim matrix

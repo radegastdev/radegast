@@ -16,7 +16,7 @@ using OpenMetaverse;
 //using OpenTK.Graphics.OpenGL;
 //using OpenTK;
 
-namespace Radegast
+namespace Radegast.Rendering
 {
     public class Frustum
     {

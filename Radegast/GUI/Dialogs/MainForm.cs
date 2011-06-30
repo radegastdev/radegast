@@ -1363,9 +1363,6 @@ namespace Radegast
         // Menu item for testing out stuff
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //instance.MediaManager.PlayUISound(UISounds.IM);
-            //Random r = new Random();
-            //client.Self.RequestMuteList((uint)r.Next());
         }
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1500,7 +1497,7 @@ namespace Radegast
 
         private void tsb3D_Click(object sender, EventArgs e)
         {
-            (new SceneWindow(instance)).Show();
+            (new Rendering.SceneWindow(instance)).Show();
         }
 
     }
