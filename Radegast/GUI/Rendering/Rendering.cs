@@ -923,7 +923,6 @@ namespace Radegast.Rendering
 
         private void Render(bool picking)
         {
-            glControl.MakeCurrent();
             if (picking)
             {
                 GL.ClearColor(1f, 1f, 1f, 1f);
