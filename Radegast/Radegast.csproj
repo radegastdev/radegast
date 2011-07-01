@@ -552,6 +552,8 @@
       <DependentUpon>TeleportNotification.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Rendering\Frustum.cs" />
+    <Compile Include="GUI\Rendering\ImageUtils.cs" />
+    <Compile Include="GUI\Rendering\Perlin.cs" />
     <Compile Include="GUI\Rendering\PrimWorkshop.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -565,6 +567,7 @@
       <DependentUpon>Rendering.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Rendering\RenderingHelpers.cs" />
+    <Compile Include="GUI\Rendering\TerrainSplat.cs" />
     <Compile Include="Netcom\Enums.cs" />
     <Compile Include="Netcom\EventArgs\ChatSentEventArgs.cs" />
     <Compile Include="Netcom\EventArgs\InstantMessageSentEventArgs.cs" />

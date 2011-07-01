@@ -323,6 +323,7 @@ namespace Radegast
             client.Settings.FETCH_MISSING_INVENTORY = true;
             client.Settings.SEND_AGENT_THROTTLE = true;
             client.Settings.SEND_AGENT_UPDATES = true;
+            client.Settings.STORE_LAND_PATCHES = true;
 
             client.Settings.USE_ASSET_CACHE = true;
             client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir, "cache");

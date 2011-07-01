@@ -124,6 +124,7 @@ namespace Radegast.Rendering
             Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
         }
@@ -137,6 +138,7 @@ namespace Radegast.Rendering
             Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
             if (glControl != null)
@@ -161,19 +163,32 @@ namespace Radegast.Rendering
         {
             if (glControl != null && !glControl.IsDisposed && RenderingEnabled)
             {
-                while (glControl.IsIdle)
+                try
                 {
-                    MainRenderLoop();
-                    if (instance.MonoRuntime)
+                    while (glControl != null && glControl.IsIdle)
                     {
-                        Application.DoEvents();
+                        MainRenderLoop();
+                        if (instance.MonoRuntime)
+                        {
+                            Application.DoEvents();
+                        }
                     }
                 }
+                catch (ObjectDisposedException)
+                { }
             }
         }
         #endregion Construction and disposal
 
         #region Network messaage handlers
+        void Terrain_LandPatchReceived(object sender, LandPatchReceivedEventArgs e)
+        {
+            if (e.Simulator.Handle == Client.Network.CurrentSim.Handle)
+            {
+                TerrainModified = true;
+            }
+        }
+
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
             if (InvokeRequired)
@@ -370,7 +385,6 @@ namespace Radegast.Rendering
 
                 GL.ClearDepth(1.0d);
                 GL.Enable(EnableCap.DepthTest);
-                GL.Enable(EnableCap.ColorMaterial);
                 GL.Enable(EnableCap.CullFace);
                 GL.CullFace(CullFaceMode.Back);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
@@ -558,6 +572,50 @@ namespace Radegast.Rendering
         }
         #endregion Mouse handling
 
+        public int GLLoadImage(Bitmap bitmap, bool hasAlpha)
+        {
+            int ret = -1;
+            GL.GenTextures(1, out ret);
+            GL.BindTexture(TextureTarget.Texture2D, ret);
+
+            Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+            BitmapData bitmapData =
+                bitmap.LockBits(
+                rectangle,
+                ImageLockMode.ReadOnly,
+                hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+            GL.TexImage2D(
+                TextureTarget.Texture2D,
+                0,
+                hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
+                bitmap.Width,
+                bitmap.Height,
+                0,
+                hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
+                PixelType.UnsignedByte,
+                bitmapData.Scan0);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            if (hasMipmap)
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            }
+            else
+            {
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            }
+
+            bitmap.UnlockBits(bitmapData);
+            GL.Flush();
+            return ret;
+        }
+
         #region Texture thread
         bool TextureThreadRunning = true;
 
@@ -587,9 +645,6 @@ namespace Radegast.Rendering
 
                 if (LoadTexture(item.TeFace.TextureID, ref item.Data.TextureInfo.Texture, false))
                 {
-                    GL.GenTextures(1, out item.Data.TextureInfo.TexturePointer);
-                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
-
                     Bitmap bitmap = (Bitmap)item.Data.TextureInfo.Texture;
 
                     bool hasAlpha;
@@ -601,49 +656,14 @@ namespace Radegast.Rendering
                     {
                         hasAlpha = false;
                     }
+
                     item.Data.TextureInfo.HasAlpha = hasAlpha;
-
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-                    BitmapData bitmapData =
-                        bitmap.LockBits(
-                        rectangle,
-                        ImageLockMode.ReadOnly,
-                        hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-                    GL.TexImage2D(
-                        TextureTarget.Texture2D,
-                        0,
-                        hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
-                        bitmap.Width,
-                        bitmap.Height,
-                        0,
-                        hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
-                        PixelType.UnsignedByte,
-                        bitmapData.Scan0);
-
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-                    if (hasMipmap)
-                    {
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                    }
-                    else
-                    {
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    }
-
+                    item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, hasAlpha);
                     TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
 
-                    bitmap.UnlockBits(bitmapData);
                     bitmap.Dispose();
                     item.Data.TextureInfo.Texture = null;
-
-                    GL.Flush();
                 }
             }
             Logger.DebugLog("Texture thread exited");
@@ -730,7 +750,7 @@ namespace Radegast.Rendering
         private void SetPerspective()
         {
             float dAspRat = (float)glControl.Width / (float)glControl.Height;
-            GluPerspective(50.0f * Camera.Zoom, dAspRat, 0.1f, (float)Camera.Far);
+            GluPerspective(50.0f * Camera.Zoom, dAspRat, 0.1f, (float)Camera.Far * 3);
         }
 
 
@@ -789,10 +809,146 @@ namespace Radegast.Rendering
             }
         }
 
+        #region Terrian
+        bool TerrainModified = true;
+        float[,] heightTable = new float[256, 256];
+        Face terrainFace;
+        ushort[] terrainIndices;
+        Vertex[] terrainVertices;
+
+        private void UpdateTerrain()
+        {
+            int step = 1;
+
+            for (int x = 0; x < 255; x += step)
+            {
+                for (int y = 0; y < 255; y += step)
+                {
+                    float z = 0;
+                    int patchNr = ((int)x / 16) * 16 + (int)y / 16;
+                    if (Client.Network.CurrentSim.Terrain != null
+                        && Client.Network.CurrentSim.Terrain[patchNr] != null
+                        && Client.Network.CurrentSim.Terrain[patchNr].Data != null)
+                    {
+                        float[] data = Client.Network.CurrentSim.Terrain[patchNr].Data;
+                        z = data[(int)x % 16 * 16 + (int)y % 16];
+                    }
+                    heightTable[x, y] = z;
+                }
+            }
+
+            terrainFace = renderer.TerrainMesh(heightTable, 0f, 255f, 0f, 255f);
+            terrainVertices = terrainFace.Vertices.ToArray();
+            terrainIndices = terrainFace.Indices.ToArray();
+
+            TerrainModified = false;
+        }
+
+        int terrainTexture = -1;
+        bool fetchingTerrainTexture = false;
+        Bitmap terrainImage = null;
+
+        void CheckTerrainTexture()
+        {
+            if (terrainTexture != -1) return;
+
+            if (!fetchingTerrainTexture)
+            {
+                fetchingTerrainTexture = true;
+                ThreadPool.QueueUserWorkItem(sync =>
+                {
+                    Simulator sim = Client.Network.CurrentSim;
+                    terrainImage = TerrainSplat.Splat(instance, heightTable,
+                        new UUID[] { sim.TerrainDetail0, sim.TerrainDetail1, sim.TerrainDetail2, sim.TerrainDetail3 },
+                        new float[] { sim.TerrainStartHeight00, sim.TerrainStartHeight01, sim.TerrainStartHeight10, sim.TerrainStartHeight11 },
+                        new float[] { sim.TerrainHeightRange00, sim.TerrainHeightRange01, sim.TerrainHeightRange10, sim.TerrainHeightRange11 },
+                        Vector3.Zero);
+
+                    fetchingTerrainTexture = false;
+                });
+            }
+            else if (terrainImage != null)
+            {
+                terrainTexture = GLLoadImage(terrainImage, false);
+            }
+
+        }
+
+        int terrainVBO = -1;
+        int terrainIndexVBO = 1;
+
+        private void RenderTerrain()
+        {
+            if (TerrainModified)
+            {
+                UpdateTerrain();
+            }
+
+            CheckTerrainTexture();
+
+            if (terrainTexture == -1)
+            {
+                GL.Disable(EnableCap.Texture2D);
+            }
+            else
+            {
+                GL.Enable(EnableCap.Texture2D);
+                GL.BindTexture(TextureTarget.Texture2D, terrainTexture);
+            }
+
+            if (true || !useVBO)
+            {
+                unsafe
+                {
+                    fixed (float* normalPtr = &terrainVertices[0].Normal.X)
+                    fixed (float* texPtr = &terrainVertices[0].TexCoord.X)
+                    {
+                        GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
+                        GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
+                        GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, terrainVertices);
+                        GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, terrainIndices);
+                    }
+                }
+            }
+            else
+            {
+                if (terrainVBO == -1)
+                {
+                    GL.GenBuffers(1, out terrainVBO);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
+                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * FaceData.VertexSize), terrainVertices, BufferUsageHint.StreamDraw);
+
+                    GL.GenBuffers(1, out terrainIndexVBO);
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StreamDraw);
+                }
+                else
+                {
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
+                }
+                GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            }
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+        #endregion Terrain
+
+        private void ResetMaterial()
+        {
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 0f, 0f, 0f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { 0f, 0f, 0f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0f);
+        }
+
         private void RenderObjects(RenderPass pass)
         {
             lock (Prims)
             {
+                GL.Enable(EnableCap.ColorMaterial);
                 int primNr = 0;
                 foreach (FacetedMesh mesh in Prims.Values)
                 {
@@ -873,14 +1029,13 @@ namespace Radegast.Rendering
                             if (data.TextureInfo.TexturePointer != 0)
                             {
                                 GL.Enable(EnableCap.Texture2D);
+                                GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
                             }
                             else
                             {
                                 GL.Disable(EnableCap.Texture2D);
                             }
 
-                            // Bind the texture
-                            GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
                         }
                         else
                         {
@@ -893,10 +1048,19 @@ namespace Radegast.Rendering
 
                         if (!useVBO)
                         {
-                            GL.NormalPointer(NormalPointerType.Float, 0, data.Normals);
-                            GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
-                            GL.VertexPointer(3, VertexPointerType.Float, 0, data.Vertices);
-                            GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+                            Vertex[] verts = face.Vertices.ToArray();
+
+                            unsafe
+                            {
+                                fixed (float* normalPtr = &verts[0].Normal.X)
+                                fixed (float* texPtr = &verts[0].TexCoord.X)
+                                {
+                                    GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
+                                    GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
+                                    GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, verts);
+                                    GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+                                }
+                            }
                         }
                         else
                         {
@@ -915,9 +1079,14 @@ namespace Radegast.Rendering
                         }
                     }
 
+                    GL.BindTexture(TextureTarget.Texture2D, 0);
+                    GL.Color4(new byte[]{255, 255, 255, 255});
+                    ResetMaterial();
+
                     // Pop the prim matrix
                     GL.PopMatrix();
                 }
+                GL.Disable(EnableCap.ColorMaterial);
             }
         }
 
@@ -975,6 +1144,7 @@ namespace Radegast.Rendering
             }
             else
             {
+                RenderTerrain();
                 RenderObjects(RenderPass.Simple);
                 RenderObjects(RenderPass.Alpha);
                 RenderText();
@@ -1052,6 +1222,9 @@ namespace Radegast.Rendering
             // Don't render avatars for now
             if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID)) return;
 
+            // Skip foliage
+            if (prim.PrimData.PCode != PCode.Prim) return;
+
             if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > 32 && !Prims.ContainsKey(prim.ParentID)) return;
             if (prim.Textures == null) return;
 
@@ -1073,7 +1246,7 @@ namespace Radegast.Rendering
                     if (prim.Sculpt.Type != SculptType.Mesh)
                     { // Regular sculptie
                         Image img = null;
-                        
+
                         lock (sculptCache)
                         {
                             if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
