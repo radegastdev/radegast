@@ -78,6 +78,8 @@ namespace Radegast.Rendering
         /// </summary>
         Dictionary<uint, FacetedMesh> Prims = new Dictionary<uint, FacetedMesh>();
 
+        Dictionary<uint, RenderAvatar> Avatars = new Dictionary<uint, RenderAvatar>();
+
         #endregion Public fields
 
         #region Private fields
@@ -117,6 +119,8 @@ namespace Radegast.Rendering
             // Camera initial setting
             Camera = new Camera();
             InitCamera();
+
+            GLAvatar.loadlindenmeshes("avatar_lad.xml");
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -735,10 +739,17 @@ namespace Radegast.Rendering
             else
             {
                 FacetedMesh parent;
+                RenderAvatar parentav;
                 if (Prims.TryGetValue(prim.ParentID, out parent))
                 {
                     return parent.Prim.Position + prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
                     //return parent.Position * prim.Position * prim.Rotation;
+                }
+                else if(Avatars.TryGetValue(prim.ParentID,out parentav))
+                {
+                    //close enough for the moment, PrimPos is only used for culling so an arse-tachment should be close enough
+                    //return parentav.avatar.Position + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
+                    return Vector3.Zero; // Attachments will be culled and not displayed
                 }
                 else
                 {
@@ -808,6 +819,133 @@ namespace Radegast.Rendering
                 }
             }
         }
+		
+		#region avatars
+
+        private void AddAvatarToScene(Avatar av)
+        {
+            lock (Avatars)
+            {
+                if (Vector3.Distance(PrimPos(av), Client.Self.SimPosition) > 32) return;
+
+                if (Avatars.ContainsKey(av.LocalID))
+                {
+                    // flag we got an update??
+                    updateAVtes(Avatars[av.LocalID]);
+                }
+                else
+                {
+                    GLAvatar ga = new GLAvatar();
+                    RenderAvatar ra = new Rendering.RenderAvatar();
+                    ra.avatar = av;
+                    ra.glavatar = ga;
+                    updateAVtes(ra);
+                    Avatars.Add(av.LocalID, ra);
+                }
+            }
+        }
+
+        private void updateAVtes(RenderAvatar ra)
+        {
+            if (ra.avatar.Textures == null)
+                return;
+
+            int[] tes = { 8, 9, 10, 11, 19, 20 };
+
+            foreach (int fi in tes)
+            {
+                Primitive.TextureEntryFace TEF = ra.avatar.Textures.FaceTextures[fi];
+                if (TEF == null)
+                    continue;
+
+                if (ra.data[fi] == null || ra.data[fi].TextureInfo.TextureID != TEF.TextureID)
+                {
+                    FaceData data = new FaceData();
+                    ra.data[fi] = data;
+                    data.TextureInfo.TextureID = TEF.TextureID;
+                    var textureItem = new TextureLoadItem()
+                    {
+                        Data = data,
+                        Prim = ra.avatar,
+                        TeFace = ra.avatar.Textures.FaceTextures[fi]
+                    };
+
+                    PendingTextures.Enqueue(textureItem);
+                }
+            }
+        }
+
+        private void RenderAvatars(RenderPass pass)
+        {
+            lock (Avatars)
+            {
+                GL.DisableClientState(ArrayCap.NormalArray);
+
+                foreach (RenderAvatar av in Avatars.Values)
+                {
+                    // Push the world matrix
+                    //GL.PushMatrix();
+
+                    if (GLAvatar._meshes.Count > 0)
+                    {
+                        foreach (GLMesh mesh in GLAvatar._meshes.Values)
+                        {
+                            if (!GLAvatar._showSkirt && mesh.Name == "skirtMesh")
+                                continue;
+
+                            GL.Color3(1f, 1f, 1f);
+
+                            // Individual prim matrix
+                            GL.PushMatrix();
+
+                            // Prim roation and position
+                            GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
+                            GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
+
+                            //Gl.glTranslatef(mesh.Position.X, mesh.Position.Y, mesh.Position.Z);
+
+                            GL.Rotate(mesh.RotationAngles.X, 1f, 0f, 0f);
+                            GL.Rotate(mesh.RotationAngles.Y, 0f, 1f, 0f);
+                            GL.Rotate(mesh.RotationAngles.Z, 0f, 0f, 1f);
+
+                            GL.Scale(mesh.Scale.X, mesh.Scale.Y, mesh.Scale.Z);
+
+                            if (av.data[mesh.teFaceID] == null)
+                            {
+                                GL.Disable(EnableCap.Texture2D);
+                            }
+                            else
+                            {
+                                if (mesh.teFaceID != 0)
+                                {
+                                    GL.Enable(EnableCap.Texture2D);
+                                    GL.BindTexture(TextureTarget.Texture2D, av.data[mesh.teFaceID].TextureInfo.TexturePointer);
+                                }
+                                else
+                                {
+                                    GL.Disable(EnableCap.Texture2D);
+                                }
+                            }
+
+                            GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, mesh.RenderData.TexCoords);
+                            GL.VertexPointer(3, VertexPointerType.Float, 0, mesh.RenderData.Vertices);
+
+                            GL.DrawElements(BeginMode.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
+
+                            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+                            GL.PopMatrix();
+
+                        }
+                    }
+                }
+
+                GL.EnableClientState(ArrayCap.NormalArray);
+
+            }
+        }
+		
+		#endregion avatars
 
         #region Terrian
         bool TerrainModified = true;
@@ -955,7 +1093,9 @@ namespace Radegast.Rendering
                     primNr++;
                     Primitive prim = mesh.Prim;
                     FacetedMesh parent = null;
-                    if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent)) continue;
+                    RenderAvatar parentav = null;
+                    
+                    if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID,out parentav)) continue;
                     Vector3 primPos = PrimPos(prim);
 
                     // Individual prim matrix
@@ -963,9 +1103,39 @@ namespace Radegast.Rendering
 
                     if (prim.ParentID != 0)
                     {
+                        if(parent!=null)
+                        {
                         // Apply prim translation and rotation relative to the root prim
                         GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
                         GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
+                    }
+                        else
+                        {
+                             // Apply prim translation and rotation relative to the root prim
+                            GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
+                            GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
+
+                            int attachment_index = (int)prim.PrimData.AttachmentPoint;
+                            if(attachment_index>GLAvatar.attachment_points.Count())
+                            {
+                                // invalid LL attachment point
+                                continue;
+                            }
+
+                            attachment_point apoint = GLAvatar.attachment_points[attachment_index];
+                            if (apoint.jointmesh == null)
+                            {
+                                //Arse-tachments for us then, things not decoded from avatar_lad fully.
+                            }
+                            else
+                            {
+                                Vector3 point = apoint.getposition();
+                                Quaternion rot = apoint.getrotation();
+
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(rot));
+                            }
+                        }
                     }
 
                     // Prim roation and position
@@ -1146,6 +1316,8 @@ namespace Radegast.Rendering
             {
                 RenderTerrain();
                 RenderObjects(RenderPass.Simple);
+                    RenderAvatars(RenderPass.Simple);
+
                 RenderObjects(RenderPass.Alpha);
                 RenderText();
             }
@@ -1216,16 +1388,19 @@ namespace Radegast.Rendering
             return picked != null;
         }
 
-
         private void UpdatePrimBlocking(Primitive prim)
         {
-            // Don't render avatars for now
-            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID)) return;
+            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID))
+            {
+                AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
+                return;
+            }
+
+            if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > 32 && !Prims.ContainsKey(prim.ParentID) && !Avatars.ContainsKey(prim.ParentID)) return;
 
             // Skip foliage
             if (prim.PrimData.PCode != PCode.Prim) return;
 
-            if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > 32 && !Prims.ContainsKey(prim.ParentID)) return;
             if (prim.Textures == null) return;
 
             FacetedMesh mesh = null;
@@ -1530,4 +1705,5 @@ namespace Radegast.Rendering
         }
         #endregion Context menu
     }
+
 }

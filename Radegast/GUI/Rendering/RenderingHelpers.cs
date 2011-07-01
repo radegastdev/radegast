@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Xml;
 using OpenTK.Graphics.OpenGL;
 using System.Runtime.InteropServices;
 using OpenMetaverse;
@@ -48,6 +49,7 @@ namespace Radegast.Rendering
         public System.Drawing.Image Texture;
         public int TexturePointer;
         public bool HasAlpha;
+        public UUID TextureID;
     }
 
     public class TextureLoadItem
@@ -367,4 +369,278 @@ namespace Radegast.Rendering
             return true;
         }
     }
+
+    public class attachment_point
+    {
+        public string name;
+        public string joint;
+        public Vector3 position;
+        public Vector3 rotation;
+        public int id;
+        public int group;
+
+        public GLMesh jointmesh;
+        public int jointmeshindex;
+
+        public Vector3 getposition()
+        {
+            Vector3 pos;
+            pos = jointmesh.Position + position;
+            return pos;
+        }
+
+        public Quaternion getrotation()
+        {
+            Vector3 rotvec = jointmesh.RotationAngles + rotation;
+            rotvec.Normalize();
+            Quaternion rot = new Quaternion(rotvec.X, rotvec.Y, rotvec.Z);
+            return rot;
+        }
+    }
+
+    /// <summary>
+    /// Subclass of LindenMesh that adds vertex, index, and texture coordinate
+    /// arrays suitable for pushing direct to OpenGL
+    /// </summary>
+    public class GLMesh : LindenMesh
+    {
+        /// <summary>
+        /// Subclass of LODMesh that adds an index array suitable for pushing
+        /// direct to OpenGL
+        /// </summary>
+        /// 
+
+        public int teFaceID;
+
+        new public class LODMesh : LindenMesh.LODMesh
+        {
+            public ushort[] Indices;
+
+            public override void LoadMesh(string filename)
+            {
+                base.LoadMesh(filename);
+
+                // Generate the index array
+                Indices = new ushort[_numFaces * 3];
+                int current = 0;
+                for (int i = 0; i < _numFaces; i++)
+                {
+                    Indices[current++] = (ushort)_faces[i].Indices[0];
+                    Indices[current++] = (ushort)_faces[i].Indices[1];
+                    Indices[current++] = (ushort)_faces[i].Indices[2];
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct GLData
+        {
+            public float[] Vertices;
+            public ushort[] Indices;
+            public float[] TexCoords;
+            public Vector3 Center;
+        }
+
+        public static GLData baseRenderData;
+        public GLData RenderData;
+
+        public GLMesh(string name)
+            : base(name)
+        {
+        }
+
+        public override void LoadMesh(string filename)
+        {
+            base.LoadMesh(filename);
+
+            float minX, minY, minZ;
+            minX = minY = minZ = Single.MaxValue;
+            float maxX, maxY, maxZ;
+            maxX = maxY = maxZ = Single.MinValue;
+
+            // Generate the vertex array
+            RenderData.Vertices = new float[_numVertices * 3];
+            int current = 0;
+            for (int i = 0; i < _numVertices; i++)
+            {
+                RenderData.Vertices[current++] = _vertices[i].Coord.X;
+                RenderData.Vertices[current++] = _vertices[i].Coord.Y;
+                RenderData.Vertices[current++] = _vertices[i].Coord.Z;
+
+                if (_vertices[i].Coord.X < minX)
+                    minX = _vertices[i].Coord.X;
+                else if (_vertices[i].Coord.X > maxX)
+                    maxX = _vertices[i].Coord.X;
+
+                if (_vertices[i].Coord.Y < minY)
+                    minY = _vertices[i].Coord.Y;
+                else if (_vertices[i].Coord.Y > maxY)
+                    maxY = _vertices[i].Coord.Y;
+
+                if (_vertices[i].Coord.Z < minZ)
+                    minZ = _vertices[i].Coord.Z;
+                else if (_vertices[i].Coord.Z > maxZ)
+                    maxZ = _vertices[i].Coord.Z;
+            }
+
+            // Calculate the center-point from the bounding box edges
+            RenderData.Center = new Vector3((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2);
+
+            // Generate the index array
+            RenderData.Indices = new ushort[_numFaces * 3];
+            current = 0;
+            for (int i = 0; i < _numFaces; i++)
+            {
+                RenderData.Indices[current++] = (ushort)_faces[i].Indices[0];
+                RenderData.Indices[current++] = (ushort)_faces[i].Indices[1];
+                RenderData.Indices[current++] = (ushort)_faces[i].Indices[2];
+            }
+
+            // Generate the texcoord array
+            RenderData.TexCoords = new float[_numVertices * 2];
+            current = 0;
+            for (int i = 0; i < _numVertices; i++)
+            {
+                RenderData.TexCoords[current++] = _vertices[i].TexCoord.X;
+                RenderData.TexCoords[current++] = _vertices[i].TexCoord.Y;
+            }
+        }
+
+        public override void LoadLODMesh(int level, string filename)
+        {
+            LODMesh lod = new LODMesh();
+            lod.LoadMesh(filename);
+            _lodMeshes[level] = lod;
+        }
+    }
+
+    public class GLAvatar
+    {
+        public static Dictionary<string, GLMesh> _meshes = new Dictionary<string, GLMesh>();
+        public static bool _wireframe = true;
+        public static bool _showSkirt = false;
+        public static Dictionary<int, attachment_point> attachment_points = new Dictionary<int, attachment_point>();
+
+        public static void loadlindenmeshes(string LODfilename)
+        {
+            string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
+
+            // Parse through avatar_lad.xml to find all of the mesh references
+            XmlDocument lad = new XmlDocument();
+            lad.Load(basedir + LODfilename);
+
+            attachment_points.Clear();
+
+            XmlNodeList attach_points = lad.GetElementsByTagName("attachment_point");
+            foreach (XmlNode apoint in attach_points)
+            {
+                attachment_point point = new attachment_point();
+                point.name = apoint.Attributes.GetNamedItem("name").Value;
+                point.joint = apoint.Attributes.GetNamedItem("joint").Value;
+
+                string pos = apoint.Attributes.GetNamedItem("position").Value;
+                string[] posparts = pos.Split(' ');
+                point.position = new Vector3(float.Parse(posparts[0]), float.Parse(posparts[1]), float.Parse(posparts[2]));
+
+                string rot = apoint.Attributes.GetNamedItem("rotation").Value;
+                string[] rotparts = rot.Split(' ');
+                point.rotation = new Vector3(float.Parse(rotparts[0]), float.Parse(rotparts[1]), float.Parse(rotparts[2]));
+
+                point.id = Int32.Parse(apoint.Attributes.GetNamedItem("id").Value);
+                point.group = Int32.Parse(apoint.Attributes.GetNamedItem("group").Value);
+
+                attachment_points.Add(point.id, point);
+
+            }
+
+            XmlNodeList bones = lad.GetElementsByTagName("bone");
+
+            XmlNodeList meshes = lad.GetElementsByTagName("mesh");
+
+            foreach (XmlNode meshNode in meshes)
+            {
+                string type = meshNode.Attributes.GetNamedItem("type").Value;
+                int lod = Int32.Parse(meshNode.Attributes.GetNamedItem("lod").Value);
+                string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
+                //string minPixelWidth = meshNode.Attributes.GetNamedItem("min_pixel_width").Value;
+
+                GLMesh mesh = (_meshes.ContainsKey(type) ? _meshes[type] : new GLMesh(type));
+
+                switch (mesh.Name)
+                {
+                    case "lowerBodyMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.LowerBaked;
+                        break;
+
+                    case "upperBodyMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.UpperBaked;
+                        break;
+
+                    case "headMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
+
+                        break;
+                    case "hairMesh":
+                    mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
+                    break;
+                    case "eyeBallRightMesh":
+                    case "eyeBallLeftMesh":
+                        mesh.teFaceID = (int)6; //WHY?
+                        break;
+                    case "skirtMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.SkirtBaked;
+                        break;
+                    default:
+                        mesh.teFaceID = 0;
+                        break;
+                }
+
+
+                if (lod == 0)
+                {
+                    mesh.LoadMesh(basedir + fileName);
+                }
+                else
+                {
+                    mesh.LoadLODMesh(lod, basedir + fileName);
+                }
+
+                _meshes[type] = mesh;
+
+                if (lod == 0)
+                {
+                    //Associate each attachment point with the mesh that has its bones/joints
+                    foreach (attachment_point apoint in attachment_points.Values)
+                    {
+                        int index = 0;
+
+                        foreach (string jointname in mesh.SkinJoints)
+                        {
+                            if (jointname == apoint.joint)
+                            {
+                                apoint.jointmesh = mesh;
+                                apoint.jointmeshindex = index;
+                                Logger.Log("Adding " + apoint.name +"with joint "+ jointname + "to mesh " + mesh.Name,Helpers.LogLevel.Info);
+                            }
+                            index++;
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    class RenderAvatar
+    {
+        public GLAvatar glavatar;
+        public Avatar avatar;
+        public FaceData[] data = new FaceData[32];
+
+    }
+
 }
