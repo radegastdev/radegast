@@ -879,7 +879,8 @@ namespace Radegast.Rendering
         {
             lock (Avatars)
             {
-                GL.DisableClientState(ArrayCap.NormalArray);
+                GL.EnableClientState(ArrayCap.VertexArray);
+                GL.EnableClientState(ArrayCap.TextureCoordArray);
 
                 foreach (RenderAvatar av in Avatars.Values)
                 {
@@ -940,11 +941,10 @@ namespace Radegast.Rendering
                     }
                 }
 
-                GL.EnableClientState(ArrayCap.NormalArray);
-
+                GL.DisableClientState(ArrayCap.VertexArray);
+                GL.DisableClientState(ArrayCap.TextureCoordArray);
             }
         }
-		
 		#endregion avatars
 
         #region Terrian
@@ -1017,6 +1017,10 @@ namespace Radegast.Rendering
 
         private void RenderTerrain()
         {
+            GL.EnableClientState(ArrayCap.VertexArray);
+            GL.EnableClientState(ArrayCap.TextureCoordArray);
+            GL.EnableClientState(ArrayCap.NormalArray);
+
             if (TerrainModified)
             {
                 UpdateTerrain();
@@ -1055,21 +1059,36 @@ namespace Radegast.Rendering
                     GL.GenBuffers(1, out terrainVBO);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
                     GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * FaceData.VertexSize), terrainVertices, BufferUsageHint.StreamDraw);
+                }
+                else
+                {
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
+                }
 
+                if (terrainIndexVBO == -1)
+                {
                     GL.GenBuffers(1, out terrainIndexVBO);
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
                     GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StreamDraw);
                 }
                 else
                 {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
                 }
+
+                GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
+                GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
+                GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
+
                 GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             }
             GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.DisableClientState(ArrayCap.VertexArray);
+            GL.DisableClientState(ArrayCap.TextureCoordArray);
+            GL.DisableClientState(ArrayCap.NormalArray);
         }
         #endregion Terrain
 
@@ -1086,6 +1105,10 @@ namespace Radegast.Rendering
         {
             lock (Prims)
             {
+                GL.EnableClientState(ArrayCap.VertexArray);
+                GL.EnableClientState(ArrayCap.TextureCoordArray);
+                GL.EnableClientState(ArrayCap.NormalArray);
+
                 GL.Enable(EnableCap.ColorMaterial);
                 int primNr = 0;
                 foreach (FacetedMesh mesh in Prims.Values)
@@ -1257,6 +1280,9 @@ namespace Radegast.Rendering
                     GL.PopMatrix();
                 }
                 GL.Disable(EnableCap.ColorMaterial);
+                GL.DisableClientState(ArrayCap.VertexArray);
+                GL.DisableClientState(ArrayCap.TextureCoordArray);
+                GL.DisableClientState(ArrayCap.NormalArray);
             }
         }
 
@@ -1295,10 +1321,6 @@ namespace Radegast.Rendering
             // Push the world matrix
             GL.PushMatrix();
 
-            GL.EnableClientState(ArrayCap.VertexArray);
-            GL.EnableClientState(ArrayCap.TextureCoordArray);
-            GL.EnableClientState(ArrayCap.NormalArray);
-
             if (Camera.Modified)
             {
                 GL.GetFloat(GetPName.ProjectionMatrix, out ProjectionMatrix);
@@ -1324,11 +1346,6 @@ namespace Radegast.Rendering
 
             // Pop the world matrix
             GL.PopMatrix();
-
-            GL.DisableClientState(ArrayCap.TextureCoordArray);
-            GL.DisableClientState(ArrayCap.VertexArray);
-            GL.DisableClientState(ArrayCap.NormalArray);
-
             GL.Flush();
         }
 
