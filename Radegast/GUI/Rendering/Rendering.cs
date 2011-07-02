@@ -94,6 +94,7 @@ namespace Radegast.Rendering
         float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
         bool hasMipmap;
         Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 9f, FontStyle.Regular);
+        Font AvatarTagFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold);
         Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
         OpenTK.Matrix4 ModelMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
@@ -605,6 +606,8 @@ namespace Radegast.Rendering
         public void GLHUDBegin()
         {
             GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Lighting);
+            GL.Disable(EnableCap.Light0);
             GL.MatrixMode(MatrixMode.Projection);
             GL.PushMatrix();
             GL.LoadIdentity();
@@ -617,6 +620,8 @@ namespace Radegast.Rendering
         public void GLHUDEnd()
         {
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Lighting);
+            GL.Enable(EnableCap.Light0);
             GL.MatrixMode(MatrixMode.Projection);
             GL.PopMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
@@ -804,6 +809,54 @@ namespace Radegast.Rendering
         private void RenderText()
         {
             GLHUDBegin();
+            
+            lock (Avatars)
+            {
+
+                GL.Color4(0f, 0f, 0f, 0.6f);
+
+                foreach (RenderAvatar av in Avatars.Values)
+                {
+                    Vector3 avPos = PrimPos(av.avatar);
+                    if (Vector3.Distance(avPos, Camera.Position) > 20f) continue;
+
+                    OpenTK.Vector3 tagPos = RHelp.TKVector3(avPos);
+                    tagPos.Z += 2.2f;
+                    OpenTK.Vector3 screenPos;
+                    if (!Math3D.GluProject(tagPos, ModelMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
+
+                    string tagText = instance.Names.Get(av.avatar.ID, av.avatar.Name);
+                    if (!string.IsNullOrEmpty(av.avatar.GroupName))
+                    {
+                        tagText = av.avatar.GroupName + "\n" + tagText;
+                    }
+                    var tSize = Printer.Measure(tagText, AvatarTagFont);
+
+                    // Render tag backround
+                    GL.Begin(BeginMode.Quads);
+                    float halfWidth = tSize.BoundingBox.Width / 2 + 10;
+                    float halfHeight = tSize.BoundingBox.Height / 2 + 5;
+                    GL.Vertex2(screenPos.X - halfWidth, screenPos.Y - halfHeight);
+                    GL.Vertex2(screenPos.X + halfWidth, screenPos.Y - halfHeight);
+                    GL.Vertex2(screenPos.X + halfWidth, screenPos.Y + halfHeight);
+                    GL.Vertex2(screenPos.X - halfWidth, screenPos.Y + halfHeight);
+                    GL.End();
+
+                    screenPos.Y = glControl.Height - screenPos.Y;
+                    screenPos.X -= tSize.BoundingBox.Width / 2;
+                    screenPos.Y -= tSize.BoundingBox.Height / 2;
+
+                    if (screenPos.Y > 0)
+                    {
+                        Printer.Begin();
+                        Printer.Print(tagText, AvatarTagFont, Color.Orange,
+                            new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width, tSize.BoundingBox.Height),
+                            OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                        Printer.End();
+                    }
+                }
+                GL.Color3(1, 1, 1);
+            }
 
             lock (Prims)
             {
