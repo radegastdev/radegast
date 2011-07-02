@@ -74,6 +74,11 @@ namespace Radegast.Rendering
         public bool Wireframe = false;
 
         /// <summary>
+        /// Object from up to this distance from us will be rendered
+        /// </summary>
+        public float DrawDistance = 48f;
+
+        /// <summary>
         /// List of prims in the scene
         /// </summary>
         Dictionary<uint, FacetedMesh> Prims = new Dictionary<uint, FacetedMesh>();
@@ -380,7 +385,6 @@ namespace Radegast.Rendering
                     }
                 }
                 GL.ShadeModel(ShadingModel.Smooth);
-                GL.ClearColor(0f, 0f, 0f, 0f);
 
                 //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
 
@@ -1422,6 +1426,33 @@ namespace Radegast.Rendering
             }
         }
 
+        void DrawWaterQuad(float x, float y, float z)
+        {
+            GL.Vertex3(x, y, z);
+            GL.Vertex3(x + 256f, y, z);
+            GL.Vertex3(x + 256f, y + 256f, z);
+            GL.Vertex3(x, y + 256f, z);
+        }
+
+        public void RenderWater()
+        {
+            float z = Client.Network.CurrentSim.WaterHeight;
+            
+            GL.Disable(EnableCap.Lighting);
+            GL.Enable(EnableCap.ColorMaterial);
+            GL.Color4(0.09f, 0.28f, 0.63f, 0.84f);
+
+            GL.Begin(BeginMode.Quads);
+            for (float x = -256f * 2; x <= 256 * 2; x += 256f)
+                for (float y = -256f * 2; y <= 256 * 2; y += 256f)
+                    DrawWaterQuad(x, y, z);
+            GL.End();
+
+            GL.Color3(1f, 1f, 1f);
+            GL.Enable(EnableCap.Lighting);
+            GL.Disable(EnableCap.ColorMaterial);
+        }
+
         private void Render(bool picking)
         {
             if (picking)
@@ -1478,6 +1509,7 @@ namespace Radegast.Rendering
                 RenderObjects(RenderPass.Simple);
                 RenderAvatars(RenderPass.Simple);
 
+                RenderWater();
                 RenderObjects(RenderPass.Alpha);
                 RenderText();
             }
@@ -1572,13 +1604,13 @@ namespace Radegast.Rendering
 
         private void UpdatePrimBlocking(Primitive prim)
         {
+            if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > DrawDistance && !Prims.ContainsKey(prim.ParentID) && !Avatars.ContainsKey(prim.ParentID)) return;
+
             if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID))
             {
                 AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
                 return;
             }
-
-            if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > 32 && !Prims.ContainsKey(prim.ParentID) && !Avatars.ContainsKey(prim.ParentID)) return;
 
             // Skip foliage
             if (prim.PrimData.PCode != PCode.Prim) return;
