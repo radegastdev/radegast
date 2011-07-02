@@ -105,8 +105,9 @@ namespace Radegast.Rendering
         OpenTK.Matrix4 ProjectionMatrix;
         int[] Viewport = new int[4];
         bool useVBO = true;
-        int lastTimerTick;
-        int advTimerTick;
+        System.Diagnostics.Stopwatch renderTimer;
+        double lastFrameTime = 0d;
+        double advTimerTick = 0d;
 
         #endregion Private fields
 
@@ -123,6 +124,8 @@ namespace Radegast.Rendering
             this.instance = instance;
 
             renderer = new MeshmerizerR();
+            renderTimer = new System.Diagnostics.Stopwatch();
+            renderTimer.Start();
 
             // Camera initial setting
             Camera = new Camera();
@@ -433,7 +436,6 @@ namespace Radegast.Rendering
                 };
                 textureThread.Start();
                 TextureThreadContextReady.WaitOne(1000, false);
-                this.lastTimerTick = Environment.TickCount;
                 glControl.MakeCurrent();
             }
             catch (Exception ex)
@@ -448,6 +450,14 @@ namespace Radegast.Rendering
         private void MainRenderLoop()
         {
             if (!RenderingEnabled) return;
+            lastFrameTime = renderTimer.Elapsed.TotalSeconds;
+
+            // Something went horribly wrong
+            if (lastFrameTime < 0) return;
+
+            // Stopwatch loses resolution if it runs for a long time, reset it
+            renderTimer.Reset();
+            renderTimer.Start();
 
             Render(false);
 
@@ -828,14 +838,12 @@ namespace Radegast.Rendering
             int posX = glControl.Width - 100;
             int posY = 0;
 
-            int elapsedTime = Environment.TickCount - lastTimerTick;
-            lastTimerTick = Environment.TickCount;
             // This is a FIR filter known as a MMA or Modified Mean Average, using a 20 point sampling width
-            advTimerTick = ((19 * advTimerTick) + elapsedTime) / 20;
+            advTimerTick = ((19 * advTimerTick) + lastFrameTime) / 20;
 
             GL.Color4(0f, 0f, 0f, 0.6f);
             Printer.Begin();
-            Printer.Print(String.Format("FPS {0:000.00}",1000.0f/(float)advTimerTick), AvatarTagFont, Color.Orange,
+            Printer.Print(String.Format("FPS {0:000.00}",1d/advTimerTick), AvatarTagFont, Color.Orange,
                 new RectangleF(posX, posY, 100, 50),
                 OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
             Printer.End();
