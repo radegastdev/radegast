@@ -376,19 +376,6 @@ namespace Radegast.Rendering
         {
             try
             {
-                // Double check if we have mipmap ability
-                if (hasMipmap)
-                {
-                    try
-                    {
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                    }
-                    catch
-                    {
-                        Logger.DebugLog("Don't have glGenerateMipmap() after all");
-                        hasMipmap = false;
-                    }
-                }
                 GL.ShadeModel(ShadingModel.Smooth);
 
                 //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
@@ -415,6 +402,20 @@ namespace Radegast.Rendering
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
                 hasMipmap = GL.GetString(StringName.Extensions).Contains("GL_SGIS_generate_mipmap");
+
+                // Double check if we have mipmap ability
+                if (hasMipmap)
+                {
+                    try
+                    {
+                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                    }
+                    catch
+                    {
+                        Logger.DebugLog("Don't have glGenerateMipmap() after all");
+                        hasMipmap = false;
+                    }
+                }
 
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
