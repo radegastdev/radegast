@@ -105,6 +105,8 @@ namespace Radegast.Rendering
         OpenTK.Matrix4 ProjectionMatrix;
         int[] Viewport = new int[4];
         bool useVBO = true;
+        int lastTimerTick;
+        int advTimerTick;
 
         #endregion Private fields
 
@@ -431,6 +433,7 @@ namespace Radegast.Rendering
                 };
                 textureThread.Start();
                 TextureThreadContextReady.WaitOne(1000, false);
+                this.lastTimerTick = Environment.TickCount;
                 glControl.MakeCurrent();
             }
             catch (Exception ex)
@@ -707,6 +710,7 @@ namespace Radegast.Rendering
                 {
                     item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
                     GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
+                    
                     continue;
                 }
 
@@ -818,6 +822,25 @@ namespace Radegast.Rendering
 #pragma warning disable 0612
         OpenTK.Graphics.TextPrinter Printer = new OpenTK.Graphics.TextPrinter(OpenTK.Graphics.TextQuality.High);
 #pragma warning restore 0612
+
+        private void RenderStats()
+        {
+            int posX = glControl.Width - 100;
+            int posY = 0;
+
+            int elapsedTime = Environment.TickCount - lastTimerTick;
+            lastTimerTick = Environment.TickCount;
+            // This is a FIR filter known as a MMA or Modified Mean Average, using a 20 point sampling width
+            advTimerTick = ((19 * advTimerTick) + elapsedTime) / 20;
+
+            GL.Color4(0f, 0f, 0f, 0.6f);
+            Printer.Begin();
+            Printer.Print(String.Format("FPS {0:000.00}",1000.0f/(float)advTimerTick), AvatarTagFont, Color.Orange,
+                new RectangleF(posX, posY, 100, 50),
+                OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+            Printer.End();
+        }
+
         private void RenderText()
         {
             GLHUDBegin();
@@ -1518,11 +1541,13 @@ namespace Radegast.Rendering
                 RenderWater();
                 RenderObjects(RenderPass.Alpha);
                 RenderText();
+                RenderStats();
             }
 
             // Pop the world matrix
             GL.PopMatrix();
             GL.Flush();
+
         }
 
         private void GluPerspective(float fovy, float aspect, float zNear, float zFar)
