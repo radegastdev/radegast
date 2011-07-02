@@ -211,10 +211,10 @@ namespace Radegast.Rendering
                 // Get handles to all of the texture data arrays
                 BitmapData[] datas = new BitmapData[]
                 {
-                    detailTexture[0].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[0].PixelFormat),
-                    detailTexture[1].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[1].PixelFormat),
-                    detailTexture[2].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[2].PixelFormat),
-                    detailTexture[3].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[3].PixelFormat)
+                    detailTexture[0].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[0].PixelFormat),
+                    detailTexture[1].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[1].PixelFormat),
+                    detailTexture[2].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[2].PixelFormat),
+                    detailTexture[3].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[3].PixelFormat)
                 };
 
                 int[] comps = new int[]

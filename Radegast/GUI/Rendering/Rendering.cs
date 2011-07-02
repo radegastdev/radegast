@@ -235,6 +235,7 @@ namespace Radegast.Rendering
 
         void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
+            ResetTerrain();
             lock (sculptCache)
             {
                 foreach (var img in sculptCache.Values)
@@ -568,7 +569,6 @@ namespace Radegast.Rendering
                         {
                             Camera.FocalPoint = PrimPos(picked.Prim);
                             Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
-                            UpdateCamera();
                         }
                     }
                 }
@@ -694,7 +694,6 @@ namespace Radegast.Rendering
         private void frmPrimWorkshop_Shown(object sender, EventArgs e)
         {
             SetupGLControl();
-            UpdateCamera();
             LoadCurrentPrims();
         }
 
@@ -705,18 +704,6 @@ namespace Radegast.Rendering
             {
                 Client.Self.Movement.Camera.LookAt(Camera.Position, Camera.FocalPoint);
                 //Client.Self.Movement.Camera.Far = (float)Camera.Far;
-            }
-
-            if (RenderingEnabled)
-            {
-                GL.PushMatrix();
-                GL.MatrixMode(MatrixMode.Projection);
-                GL.LoadIdentity();
-
-                SetPerspective();
-
-                GL.MatrixMode(MatrixMode.Modelview);
-                GL.PopMatrix();
             }
         }
 
@@ -953,6 +940,37 @@ namespace Radegast.Rendering
         Face terrainFace;
         ushort[] terrainIndices;
         Vertex[] terrainVertices;
+        int terrainTexture = -1;
+        bool fetchingTerrainTexture = false;
+        Bitmap terrainImage = null;
+        int terrainVBO = -1;
+        int terrainIndexVBO = -1;
+
+        private void ResetTerrain()
+        {
+            if (terrainImage != null)
+            {
+                terrainImage.Dispose();
+                terrainImage = null;
+            }
+
+            terrainTexture = -1;
+
+            if (terrainVBO == -1)
+            {
+                GL.DeleteBuffers(1, ref terrainVBO);
+                terrainVBO = -1;
+            }
+
+            if (terrainIndexVBO == -1)
+            {
+                GL.DeleteBuffers(1, ref terrainIndexVBO);
+                terrainIndexVBO = -1;
+            }
+
+            fetchingTerrainTexture = false;
+            TerrainModified = true;
+        }
 
         private void UpdateTerrain()
         {
@@ -982,10 +1000,6 @@ namespace Radegast.Rendering
             TerrainModified = false;
         }
 
-        int terrainTexture = -1;
-        bool fetchingTerrainTexture = false;
-        Bitmap terrainImage = null;
-
         void CheckTerrainTexture()
         {
             if (terrainTexture != -1) return;
@@ -1012,9 +1026,6 @@ namespace Radegast.Rendering
 
         }
 
-        int terrainVBO = -1;
-        int terrainIndexVBO = 1;
-
         private void RenderTerrain()
         {
             GL.EnableClientState(ArrayCap.VertexArray);
@@ -1023,6 +1034,7 @@ namespace Radegast.Rendering
 
             if (TerrainModified)
             {
+                ResetTerrain();
                 UpdateTerrain();
             }
 
@@ -1038,7 +1050,7 @@ namespace Radegast.Rendering
                 GL.BindTexture(TextureTarget.Texture2D, terrainTexture);
             }
 
-            if (true || !useVBO)
+            if (!useVBO)
             {
                 unsafe
                 {
@@ -1058,7 +1070,7 @@ namespace Radegast.Rendering
                 {
                     GL.GenBuffers(1, out terrainVBO);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
-                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * FaceData.VertexSize), terrainVertices, BufferUsageHint.StreamDraw);
+                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * FaceData.VertexSize), terrainVertices, BufferUsageHint.StaticDraw);
                 }
                 else
                 {
@@ -1069,7 +1081,7 @@ namespace Radegast.Rendering
                 {
                     GL.GenBuffers(1, out terrainIndexVBO);
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StreamDraw);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StaticDraw);
                 }
                 else
                 {
@@ -1327,6 +1339,7 @@ namespace Radegast.Rendering
                 GL.GetFloat(GetPName.ModelviewMatrix, out ModelMatrix);
                 GL.GetInteger(GetPName.Viewport, Viewport);
                 Frustum.CalculateFrustum(ProjectionMatrix, ModelMatrix);
+                UpdateCamera();
                 Camera.Modified = false;
             }
 
@@ -1635,7 +1648,6 @@ namespace Radegast.Rendering
         private void btnReset_Click(object sender, EventArgs e)
         {
             InitCamera();
-            UpdateCamera();
             scrollZoom.Value = 0;
         }
 
