@@ -708,18 +708,18 @@ namespace Radegast.Rendering
 
                 if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                 {
-                    item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
-                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
+                    item.Info = TexturesPtrMap[item.TeFace.TextureID];
+                    GL.BindTexture(TextureTarget.Texture2D, item.Info.TexturePointer);
                     
                     continue;
                 }
 
-                if (LoadTexture(item.TeFace.TextureID, ref item.Data.TextureInfo.Texture, false))
+                if (LoadTexture(item.TeFace.TextureID, ref item.Info.Texture, false))
                 {
-                    Bitmap bitmap = (Bitmap)item.Data.TextureInfo.Texture;
+                    Bitmap bitmap = (Bitmap)item.Info.Texture;
 
                     bool hasAlpha;
-                    if (item.Data.TextureInfo.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                    if (item.Info.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     {
                         hasAlpha = true;
                     }
@@ -728,13 +728,13 @@ namespace Radegast.Rendering
                         hasAlpha = false;
                     }
 
-                    item.Data.TextureInfo.HasAlpha = hasAlpha;
+                    item.Info.HasAlpha = hasAlpha;
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, hasAlpha);
-                    TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
+                    item.Info.TexturePointer = GLLoadImage(bitmap, hasAlpha);
+                    TexturesPtrMap[item.TeFace.TextureID] = item.Info;
 
-                    bitmap.Dispose();
-                    item.Data.TextureInfo.Texture = null;
+                    item.Info.Texture.Dispose();
+                    item.Info.Texture = null;
                 }
             }
             Logger.DebugLog("Texture thread exited");
@@ -801,13 +801,13 @@ namespace Radegast.Rendering
                 }
                 else if (Avatars.TryGetValue(prim.ParentID, out parentav))
                 {
-                    //close enough for the moment, PrimPos is only used for culling so an arse-tachment should be close enough
-                    //return parentav.avatar.Position + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
-                    return Vector3.Zero; // Attachments will be culled and not displayed
+                    var avPos = PrimPos(parentav.avatar);
+                    
+                    return avPos + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
                 }
                 else
                 {
-                    return Vector3.Zero;
+                    return new Vector3(99999f, 99999f, 99999f);
                 }
             }
         }
@@ -989,7 +989,7 @@ namespace Radegast.Rendering
                     data.TextureInfo.TextureID = TEF.TextureID;
                     var textureItem = new TextureLoadItem()
                     {
-                        Data = data,
+                        Info = data.TextureInfo,
                         Prim = ra.avatar,
                         TeFace = ra.avatar.Textures.FaceTextures[fi]
                     };
@@ -1713,7 +1713,7 @@ namespace Radegast.Rendering
 
                     var textureItem = new TextureLoadItem()
                     {
-                        Data = data,
+                        Info = data.TextureInfo,
                         Prim = prim,
                         TeFace = teFace
                     };

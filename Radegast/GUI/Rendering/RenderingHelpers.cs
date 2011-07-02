@@ -54,7 +54,7 @@ namespace Radegast.Rendering
 
     public class TextureLoadItem
     {
-        public FaceData Data;
+        public TextureInfo Info;
         public Primitive Prim;
         public Primitive.TextureEntryFace TeFace;
     }
