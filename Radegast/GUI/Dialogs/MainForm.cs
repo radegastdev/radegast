@@ -1313,6 +1313,8 @@ namespace Radegast
 
         private void tbtnMap_Click(object sender, EventArgs e)
         {
+            if (MapTab == null) return; // too soon!
+
             ToggleHidden("map");
             if (!MapTab.Hidden)
                 MapToCurrentLocation();
