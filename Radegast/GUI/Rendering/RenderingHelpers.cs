@@ -580,23 +580,29 @@ namespace Radegast.Rendering
 
                     case "headMesh":
                         mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
-
                         break;
+
                     case "hairMesh":
-                    mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
+                        mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
                     break;
+
+                    case "eyelashMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
+                    break;
+
                     case "eyeBallRightMesh":
                     case "eyeBallLeftMesh":
-                        mesh.teFaceID = (int)6; //WHY?
+                        mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
+
                     case "skirtMesh":
                         mesh.teFaceID = (int)AvatarTextureIndex.SkirtBaked;
                         break;
+
                     default:
                         mesh.teFaceID = 0;
                         break;
                 }
-
 
                 if (lod == 0)
                 {
