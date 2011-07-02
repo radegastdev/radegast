@@ -142,6 +142,9 @@ namespace Radegast.Rendering
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
             Application.Idle -= new EventHandler(Application_Idle);
+
+            PendingTextures.Close();
+
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
@@ -165,6 +168,8 @@ namespace Radegast.Rendering
             }
 
             lock (Prims) Prims.Clear();
+            lock (Avatars) Avatars.Clear();
+
             TexturesPtrMap.Clear();
             GC.Collect();
         }
@@ -815,7 +820,7 @@ namespace Radegast.Rendering
         private void RenderText()
         {
             GLHUDBegin();
-            
+
             lock (Avatars)
             {
 
@@ -1437,7 +1442,7 @@ namespace Radegast.Rendering
         public void RenderWater()
         {
             float z = Client.Network.CurrentSim.WaterHeight;
-            
+
             GL.Disable(EnableCap.Lighting);
             GL.Enable(EnableCap.ColorMaterial);
             GL.Color4(0.09f, 0.28f, 0.63f, 0.84f);
@@ -1602,22 +1607,9 @@ namespace Radegast.Rendering
             return picked != null;
         }
 
-        private void UpdatePrimBlocking(Primitive prim)
+
+        private void MeshPrim(Primitive prim, FacetedMesh mesh)
         {
-            if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > DrawDistance && !Prims.ContainsKey(prim.ParentID) && !Avatars.ContainsKey(prim.ParentID)) return;
-
-            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID))
-            {
-                AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
-                return;
-            }
-
-            // Skip foliage
-            if (prim.PrimData.PCode != PCode.Prim) return;
-
-            if (prim.Textures == null) return;
-
-            FacetedMesh mesh = null;
             FacetedMesh existingMesh = null;
 
             lock (Prims)
@@ -1626,68 +1618,6 @@ namespace Radegast.Rendering
                 {
                     existingMesh = Prims[prim.LocalID];
                 }
-            }
-
-            try
-            {
-                if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
-                {
-                    if (prim.Sculpt.Type != SculptType.Mesh)
-                    { // Regular sculptie
-                        Image img = null;
-
-                        lock (sculptCache)
-                        {
-                            if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
-                            {
-                                img = sculptCache[prim.Sculpt.SculptTexture];
-                            }
-                        }
-
-                        if (img == null)
-                        {
-                            if (LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
-                            {
-                                sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
-                            }
-                            else
-                            {
-                                return;
-                            }
-                        }
-
-                        mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.High);
-                    }
-                    else
-                    { // Mesh
-                        AutoResetEvent gotMesh = new AutoResetEvent(false);
-                        bool meshSuccess = false;
-
-                        Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
-                            {
-                                if (!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, DetailLevel.Highest, out mesh))
-                                {
-                                    Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
-                                }
-                                else
-                                {
-                                    meshSuccess = true;
-                                }
-                                gotMesh.Set();
-                            });
-
-                        if (!gotMesh.WaitOne(20 * 1000, false)) return;
-                        if (!meshSuccess) return;
-                    }
-                }
-                else
-                {
-                    mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
-                }
-            }
-            catch
-            {
-                return;
             }
 
             // Create a FaceData struct for each face that stores the 3D data
@@ -1764,12 +1694,95 @@ namespace Radegast.Rendering
 
                     PendingTextures.Enqueue(textureItem);
                 }
-
             }
 
             lock (Prims)
             {
                 Prims[prim.LocalID] = mesh;
+            }
+        }
+
+        private void UpdatePrimBlocking(Primitive prim)
+        {
+            if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > DrawDistance && !Prims.ContainsKey(prim.ParentID) && !Avatars.ContainsKey(prim.ParentID)) return;
+
+            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID))
+            {
+                AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
+                return;
+            }
+
+            // Skip foliage
+            if (prim.PrimData.PCode != PCode.Prim) return;
+
+            if (prim.Textures == null) return;
+
+            // Regular prim
+            if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
+            {
+                MeshPrim(prim, renderer.GenerateFacetedMesh(prim, DetailLevel.High));
+            }
+            else
+            {
+                try
+                {
+                    FacetedMesh mesh = null;
+
+                    if (prim.Sculpt.Type != SculptType.Mesh)
+                    { // Regular sculptie
+                        Image img = null;
+
+                        lock (sculptCache)
+                        {
+                            if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
+                            {
+                                img = sculptCache[prim.Sculpt.SculptTexture];
+                            }
+                        }
+
+                        if (img == null)
+                        {
+                            if (LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
+                            {
+                                sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+
+                        mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.High);
+                    }
+                    else
+                    { // Mesh
+                        AutoResetEvent gotMesh = new AutoResetEvent(false);
+                        bool meshSuccess = false;
+
+                        Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
+                            {
+                                if (!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, DetailLevel.Highest, out mesh))
+                                {
+                                    Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
+                                }
+                                else
+                                {
+                                    meshSuccess = true;
+                                }
+                                gotMesh.Set();
+                            });
+
+                        if (!gotMesh.WaitOne(20 * 1000, false)) return;
+                        if (!meshSuccess) return;
+                    }
+
+                    if (mesh != null)
+                    {
+                        MeshPrim(prim, mesh);
+                    }
+                }
+                catch
+                { }
             }
         }
 
