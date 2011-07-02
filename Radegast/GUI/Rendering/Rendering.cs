@@ -492,9 +492,18 @@ namespace Radegast.Rendering
             }
             else if (e.Button == MouseButtons.Right)
             {
-                if (TryPick(e.X, e.Y, out RightclickedPrim, out RightclickedFaceID))
+                object picked;
+                if (TryPick(e.X, e.Y, out picked, out RightclickedFaceID))
                 {
-                    ctxObjects.Show(glControl, e.X, e.Y);
+                    if (picked is FacetedMesh)
+                    {
+                        RightclickedPrim = (FacetedMesh)picked;
+                        ctxObjects.Show(glControl, e.X, e.Y);
+                    }
+                    else if (picked is RenderAvatar)
+                    {
+                        // TODO: add context menu when clicked on an avatar
+                    }
                 }
             }
 
@@ -555,26 +564,63 @@ namespace Radegast.Rendering
 
                 if (e.X == downX && e.Y == downY) // click
                 {
-                    FacetedMesh picked;
+                    object clicked;
                     int faceID;
-                    if (TryPick(e.X, e.Y, out picked, out faceID))
+                    if (TryPick(e.X, e.Y, out clicked, out faceID))
                     {
-                        if (ModifierKeys == Keys.None)
+                        if (clicked is FacetedMesh)
                         {
-                            Client.Self.Grab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                            Client.Self.GrabUpdate(picked.Prim.ID, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                            Client.Self.DeGrab(picked.Prim.LocalID);
+                            FacetedMesh picked = (FacetedMesh)clicked;
+
+                            if (ModifierKeys == Keys.None)
+                            {
+                                Client.Self.Grab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                                Client.Self.GrabUpdate(picked.Prim.ID, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                                Client.Self.DeGrab(picked.Prim.LocalID);
+                            }
+                            else if (ModifierKeys == Keys.Alt)
+                            {
+                                Camera.FocalPoint = PrimPos(picked.Prim);
+                                Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
+                            }
                         }
-                        else if (ModifierKeys == Keys.Alt)
+                        else if (clicked is RenderAvatar)
                         {
-                            Camera.FocalPoint = PrimPos(picked.Prim);
-                            Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
+                            RenderAvatar av = (RenderAvatar)clicked;
+                            if (ModifierKeys == Keys.Alt)
+                            {
+                                Vector3 pos = PrimPos(av.avatar);
+                                pos.Z += 1.5f; // focus roughly on the chest area
+                                Camera.FocalPoint = pos;
+                                Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
+                            }
                         }
                     }
                 }
             }
         }
         #endregion Mouse handling
+
+        // Switch to ortho display mode for drawing hud
+        public void GLHUDBegin()
+        {
+            GL.Disable(EnableCap.DepthTest);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PushMatrix();
+            GL.LoadIdentity();
+            GL.Ortho(0, glControl.Width, 0, glControl.Height, -5, 1);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+        }
+
+        // Switch back to frustrum display mode
+        public void GLHUDEnd()
+        {
+            GL.Enable(EnableCap.DepthTest);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.PopMatrix();
+            GL.MatrixMode(MatrixMode.Modelview);
+        }
 
         public int GLLoadImage(Bitmap bitmap, bool hasAlpha)
         {
@@ -732,7 +778,7 @@ namespace Radegast.Rendering
                     return parent.Prim.Position + prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
                     //return parent.Position * prim.Position * prim.Rotation;
                 }
-                else if(Avatars.TryGetValue(prim.ParentID,out parentav))
+                else if (Avatars.TryGetValue(prim.ParentID, out parentav))
                 {
                     //close enough for the moment, PrimPos is only used for culling so an arse-tachment should be close enough
                     //return parentav.avatar.Position + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
@@ -757,6 +803,8 @@ namespace Radegast.Rendering
 #pragma warning restore 0612
         private void RenderText()
         {
+            GLHUDBegin();
+
             lock (Prims)
             {
                 int primNr = 0;
@@ -805,9 +853,10 @@ namespace Radegast.Rendering
                     }
                 }
             }
+            GLHUDEnd();
         }
-		
-		#region avatars
+
+        #region avatars
 
         private void AddAvatarToScene(Avatar av)
         {
@@ -869,15 +918,17 @@ namespace Radegast.Rendering
                 GL.EnableClientState(ArrayCap.VertexArray);
                 GL.EnableClientState(ArrayCap.TextureCoordArray);
 
+                int avatarNr = 0;
                 foreach (RenderAvatar av in Avatars.Values)
                 {
-                    // Push the world matrix
-                    //GL.PushMatrix();
+                    avatarNr++;
 
                     if (GLAvatar._meshes.Count > 0)
                     {
+                        int faceNr = 0;
                         foreach (GLMesh mesh in GLAvatar._meshes.Values)
                         {
+                            faceNr++;
                             if (!GLAvatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
 
@@ -898,20 +949,38 @@ namespace Radegast.Rendering
 
                             GL.Scale(mesh.Scale.X, mesh.Scale.Y, mesh.Scale.Z);
 
-                            if (av.data[mesh.teFaceID] == null)
+                            if (pass == RenderPass.Picking)
                             {
                                 GL.Disable(EnableCap.Texture2D);
+
+                                for (int i = 0; i < av.data.Length; i++)
+                                {
+                                    if (av.data[i] != null)
+                                    {
+                                        av.data[i].PickingID = avatarNr;
+                                    }
+                                }
+                                byte[] primNrBytes = Utils.Int16ToBytes((short)avatarNr);
+                                byte[] faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)faceNr, 254 };
+                                GL.Color4(faceColor);
                             }
                             else
                             {
-                                if (mesh.teFaceID != 0)
+                                if (av.data[mesh.teFaceID] == null)
                                 {
-                                    GL.Enable(EnableCap.Texture2D);
-                                    GL.BindTexture(TextureTarget.Texture2D, av.data[mesh.teFaceID].TextureInfo.TexturePointer);
+                                    GL.Disable(EnableCap.Texture2D);
                                 }
                                 else
                                 {
-                                    GL.Disable(EnableCap.Texture2D);
+                                    if (mesh.teFaceID != 0)
+                                    {
+                                        GL.Enable(EnableCap.Texture2D);
+                                        GL.BindTexture(TextureTarget.Texture2D, av.data[mesh.teFaceID].TextureInfo.TexturePointer);
+                                    }
+                                    else
+                                    {
+                                        GL.Disable(EnableCap.Texture2D);
+                                    }
                                 }
                             }
 
@@ -927,12 +996,12 @@ namespace Radegast.Rendering
                         }
                     }
                 }
-
+                GL.Color3(1f, 1f, 1f);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
             }
         }
-		#endregion avatars
+        #endregion avatars
 
         #region Terrian
         bool TerrainModified = true;
@@ -1042,7 +1111,7 @@ namespace Radegast.Rendering
 
             if (terrainTexture == -1)
             {
-                GL.Disable(EnableCap.Texture2D);
+                return;
             }
             else
             {
@@ -1093,7 +1162,7 @@ namespace Radegast.Rendering
                 GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
 
                 GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                
+
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             }
@@ -1129,8 +1198,8 @@ namespace Radegast.Rendering
                     Primitive prim = mesh.Prim;
                     FacetedMesh parent = null;
                     RenderAvatar parentav = null;
-                    
-                    if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID,out parentav)) continue;
+
+                    if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID, out parentav)) continue;
                     Vector3 primPos = PrimPos(prim);
 
                     // Individual prim matrix
@@ -1138,20 +1207,20 @@ namespace Radegast.Rendering
 
                     if (prim.ParentID != 0)
                     {
-                        if(parent!=null)
+                        if (parent != null)
                         {
-                        // Apply prim translation and rotation relative to the root prim
-                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
-                        GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                    }
+                            // Apply prim translation and rotation relative to the root prim
+                            GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                            GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
+                        }
                         else
                         {
-                             // Apply prim translation and rotation relative to the root prim
+                            // Apply prim translation and rotation relative to the root prim
                             GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
                             GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
 
                             int attachment_index = (int)prim.PrimData.AttachmentPoint;
-                            if(attachment_index>GLAvatar.attachment_points.Count())
+                            if (attachment_index > GLAvatar.attachment_points.Count())
                             {
                                 // invalid LL attachment point
                                 continue;
@@ -1285,7 +1354,7 @@ namespace Radegast.Rendering
                     }
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    GL.Color4(new byte[]{255, 255, 255, 255});
+                    GL.Color4(new byte[] { 255, 255, 255, 255 });
                     ResetMaterial();
 
                     // Pop the prim matrix
@@ -1346,12 +1415,13 @@ namespace Radegast.Rendering
             if (picking)
             {
                 RenderObjects(RenderPass.Picking);
+                RenderAvatars(RenderPass.Picking);
             }
             else
             {
                 RenderTerrain();
                 RenderObjects(RenderPass.Simple);
-                    RenderAvatars(RenderPass.Simple);
+                RenderAvatars(RenderPass.Simple);
 
                 RenderObjects(RenderPass.Alpha);
                 RenderText();
@@ -1369,7 +1439,7 @@ namespace Radegast.Rendering
             GL.Frustum(-fW, fW, -fH, fH, zNear, zFar);
         }
 
-        private bool TryPick(int x, int y, out FacetedMesh picked, out int faceID)
+        private bool TryPick(int x, int y, out object picked, out int faceID)
         {
             // Save old attributes
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -1397,21 +1467,48 @@ namespace Radegast.Rendering
 
             picked = null;
 
-            lock (Prims)
+            if (color[3] == 254) // Avatar
             {
-                foreach (var mesh in Prims.Values)
+                lock (Avatars)
                 {
-                    foreach (var face in mesh.Faces)
+                    foreach (var avatar in Avatars.Values)
                     {
-                        if (face.UserData == null) continue;
-                        if (((FaceData)face.UserData).PickingID == primID)
+                        for (int i = 0; i < avatar.data.Length; i++)
                         {
-                            picked = mesh;
-                            break;
+                            var face = avatar.data[i];
+                            if (face != null && face.PickingID == primID)
+                            {
+                                picked = avatar;
+                                break;
+                            }
                         }
                     }
+                }
 
-                    if (picked != null) break;
+                if (picked != null)
+                {
+                    return true;
+                }
+            }
+
+            if (color[3] == 255) // Prim
+            {
+                lock (Prims)
+                {
+                    foreach (var mesh in Prims.Values)
+                    {
+                        foreach (var face in mesh.Faces)
+                        {
+                            if (face.UserData == null) continue;
+                            if (((FaceData)face.UserData).PickingID == primID)
+                            {
+                                picked = mesh;
+                                break;
+                            }
+                        }
+
+                        if (picked != null) break;
+                    }
                 }
             }
 
