@@ -249,7 +249,9 @@ namespace Radegast.Rendering
         void Objects_KillObject(object sender, KillObjectEventArgs e)
         {
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
+            // TODO: there should be really cleanup of resources when removing prims and avatars
             lock (Prims) Prims.Remove(e.ObjectLocalID);
+            lock (Avatars) Avatars.Remove(e.ObjectLocalID);
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
