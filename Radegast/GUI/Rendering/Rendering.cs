@@ -413,7 +413,17 @@ namespace Radegast.Rendering
                 {
                     try
                     {
+                        int testID = -1;
+                        Bitmap testPic = new Bitmap(1, 1);
+                        BitmapData testData = testPic.LockBits(new Rectangle(0, 0, 1, 1), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                        GL.GenTextures(1, out testID);
+                        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb8, 1, 1, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, testData.Scan0);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
                         GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                        testPic.UnlockBits(testData);
+                        testPic.Dispose();
+                        GL.DeleteTexture(testID);
                     }
                     catch
                     {
@@ -833,7 +843,7 @@ namespace Radegast.Rendering
         private void SetPerspective()
         {
             float dAspRat = (float)glControl.Width / (float)glControl.Height;
-            GluPerspective(50.0f * Camera.Zoom, dAspRat, 0.1f, (float)Camera.Far * 3);
+            GluPerspective(50.0f * Camera.Zoom, dAspRat, 0.1f, 1000f);
         }
 
 
@@ -2000,5 +2010,4 @@ namespace Radegast.Rendering
         }
         #endregion Context menu
     }
-
 }
