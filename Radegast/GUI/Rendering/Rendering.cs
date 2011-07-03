@@ -718,18 +718,18 @@ namespace Radegast.Rendering
 
                 if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                 {
-                    item.Info = TexturesPtrMap[item.TeFace.TextureID];
-                    GL.BindTexture(TextureTarget.Texture2D, item.Info.TexturePointer);
+                    item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
+                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
                     
                     continue;
                 }
 
-                if (LoadTexture(item.TeFace.TextureID, ref item.Info.Texture, false))
+                if (LoadTexture(item.TeFace.TextureID, ref item.Data.TextureInfo.Texture, false))
                 {
-                    Bitmap bitmap = (Bitmap)item.Info.Texture;
+                    Bitmap bitmap = (Bitmap)item.Data.TextureInfo.Texture;
 
                     bool hasAlpha;
-                    if (item.Info.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                    if (item.Data.TextureInfo.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     {
                         hasAlpha = true;
                     }
@@ -738,13 +738,13 @@ namespace Radegast.Rendering
                         hasAlpha = false;
                     }
 
-                    item.Info.HasAlpha = hasAlpha;
+                    item.Data.TextureInfo.HasAlpha = hasAlpha;
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    item.Info.TexturePointer = GLLoadImage(bitmap, hasAlpha);
-                    TexturesPtrMap[item.TeFace.TextureID] = item.Info;
+                    item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, hasAlpha);
+                    TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
 
-                    item.Info.Texture.Dispose();
-                    item.Info.Texture = null;
+                    bitmap.Dispose();
+                    item.Data.TextureInfo.Texture = null;
                 }
             }
             Logger.DebugLog("Texture thread exited");
@@ -997,7 +997,7 @@ namespace Radegast.Rendering
                     data.TextureInfo.TextureID = TEF.TextureID;
                     var textureItem = new TextureLoadItem()
                     {
-                        Info = data.TextureInfo,
+                        Data = data,
                         Prim = ra.avatar,
                         TeFace = ra.avatar.Textures.FaceTextures[fi]
                     };
@@ -1721,7 +1721,7 @@ namespace Radegast.Rendering
 
                     var textureItem = new TextureLoadItem()
                     {
-                        Info = data.TextureInfo,
+                        Data = data,
                         Prim = prim,
                         TeFace = teFace
                     };

@@ -467,20 +467,20 @@ namespace Radegast.Rendering
 
                 if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                 {
-                    item.Info = TexturesPtrMap[item.TeFace.TextureID];
-                    GL.BindTexture(TextureTarget.Texture2D, item.Info.TexturePointer);
+                    item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
+                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
                     continue;
                 }
 
-                if (LoadTexture(item.TeFace.TextureID, ref item.Info.Texture, false))
+                if (LoadTexture(item.TeFace.TextureID, ref item.Data.TextureInfo.Texture, false))
                 {
-                    GL.GenTextures(1, out item.Info.TexturePointer);
-                    GL.BindTexture(TextureTarget.Texture2D, item.Info.TexturePointer);
+                    GL.GenTextures(1, out item.Data.TextureInfo.TexturePointer);
+                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
 
-                    Bitmap bitmap = (Bitmap)item.Info.Texture;
+                    Bitmap bitmap = (Bitmap)item.Data.TextureInfo.Texture;
 
                     bool hasAlpha;
-                    if (item.Info.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                    if (item.Data.TextureInfo.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     {
                         hasAlpha = true;
                     }
@@ -488,7 +488,7 @@ namespace Radegast.Rendering
                     {
                         hasAlpha = false;
                     }
-                    item.Info.HasAlpha = hasAlpha;
+                    item.Data.TextureInfo.HasAlpha = hasAlpha;
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -524,11 +524,11 @@ namespace Radegast.Rendering
                         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                     }
 
-                    TexturesPtrMap[item.TeFace.TextureID] = item.Info;
+                    TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
 
                     bitmap.UnlockBits(bitmapData);
-                    item.Info.Texture.Dispose();
-                    item.Info.Texture = null;
+                    bitmap.Dispose();
+                    item.Data.TextureInfo.Texture = null;
 
                     GL.Flush();
                     SafeInvalidate();
@@ -996,7 +996,7 @@ namespace Radegast.Rendering
 
                     var textureItem = new TextureLoadItem()
                     {
-                        Info = data.TextureInfo,
+                        Data = data,
                         Prim = prim,
                         TeFace = teFace
                     };
