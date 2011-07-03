@@ -1037,6 +1037,21 @@ namespace Radegast.Rendering
                             GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
                             GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
 
+                            
+                            // Special case for eyeballs we need to offset the mesh to the correct position
+                            // We have manually added the eyeball offset based on the headbone when we
+                            // constructed the meshes, but why are the position offsets we got when loading
+                            // the other meshes <0,7,0> ?
+                            if (mesh.Name == "eyeBallRightMesh" || mesh.Name == "eyeBallLeftMesh")
+                            {
+                                // Mesh roation and position
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(mesh.Position));
+                                //TODO save the rot in a Quaternion in the Bone class rather than convert on the fly
+                                Quaternion rot = new Quaternion(mesh.RotationAngles.X, mesh.RotationAngles.Y, mesh.RotationAngles.Z);
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(rot));
+                            }
+
+
                             //Gl.glTranslatef(mesh.Position.X, mesh.Position.Y, mesh.Position.Z);
 
                             GL.Rotate(mesh.RotationAngles.X, 1f, 0f, 0f);
@@ -1339,18 +1354,14 @@ namespace Radegast.Rendering
                             }
 
                             attachment_point apoint = GLAvatar.attachment_points[attachment_index];
-                            if (apoint.jointmesh == null)
-                            {
-                                //Arse-tachments for us then, things not decoded from avatar_lad fully.
-                            }
-                            else
-                            {
-                                Vector3 point = apoint.getposition();
-                                Quaternion rot = apoint.getrotation();
+                            
+                            Vector3 point = Bone.getOffset(apoint.joint);
+                            Vector3 rot = Bone.getRotation(apoint.joint);
+                            //Todo Quaternion should be retured from getRotation()
+                            Quaternion qrot = new Quaternion(rot.X, rot.Y, rot.Z);
 
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(rot));
-                            }
+                            GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
+                            GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
                         }
                     }
 

@@ -451,6 +451,16 @@ namespace Radegast.Rendering
         {
         }
 
+        public void setMeshPos(Vector3 pos)
+        {
+            _position = pos;
+        }
+
+        public void setMeshRot(Vector3 rot)
+        {
+            _rotationAngles = rot;
+        }
+
         public override void LoadMesh(string filename)
         {
             base.LoadMesh(filename);
@@ -525,6 +535,8 @@ namespace Radegast.Rendering
 
         public static void loadlindenmeshes(string LODfilename)
         {
+            Bone.loadbones("avatar_skeleton.xml");
+
             string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
 
             // Parse through avatar_lad.xml to find all of the mesh references
@@ -591,7 +603,14 @@ namespace Radegast.Rendering
                     break;
 
                     case "eyeBallRightMesh":
+                        mesh.setMeshPos(Bone.getOffset("mEyeLeft"));
+                        mesh.setMeshRot(Bone.getRotation("mEyeLeft"));
+                        mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
+                        break;
+
                     case "eyeBallLeftMesh":
+                        mesh.setMeshPos(Bone.getOffset("mEyeRight"));
+                        mesh.setMeshRot(Bone.getRotation("mEyeRight"));
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
@@ -615,27 +634,6 @@ namespace Radegast.Rendering
 
                 _meshes[type] = mesh;
 
-                if (lod == 0)
-                {
-                    //Associate each attachment point with the mesh that has its bones/joints
-                    foreach (attachment_point apoint in attachment_points.Values)
-                    {
-                        int index = 0;
-
-                        foreach (string jointname in mesh.SkinJoints)
-                        {
-                            if (jointname == apoint.joint)
-                            {
-                                apoint.jointmesh = mesh;
-                                apoint.jointmeshindex = index;
-                                Logger.Log("Adding " + apoint.name +"with joint "+ jointname + "to mesh " + mesh.Name,Helpers.LogLevel.Info);
-                            }
-                            index++;
-                        }
-
-                    }
-                }
-
             }
         }
 
@@ -647,6 +645,114 @@ namespace Radegast.Rendering
         public Avatar avatar;
         public FaceData[] data = new FaceData[32];
 
+    }
+
+    public class Bone
+    {
+        public string name;
+        public Vector3 pos;
+        public Vector3 rot;
+        public Vector3 scale;
+        public Vector3 piviot;
+
+        public Bone parent;
+
+        public static Dictionary<string, Bone> mBones = new Dictionary<string, Bone>();
+
+        public static void loadbones(string skeletonfilename)
+        {
+            mBones.Clear();
+            string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
+            XmlDocument skeleton = new XmlDocument();
+            skeleton.Load(basedir + skeletonfilename);
+            XmlNode boneslist = skeleton.GetElementsByTagName("linden_skeleton")[0]; 
+            addbone(boneslist.ChildNodes[0],null);
+        }
+
+        public static void addbone(XmlNode bone, Bone parent)
+        {
+            Bone b = new Bone();
+            b.name = bone.Attributes.GetNamedItem("name").Value;
+
+            string pos = bone.Attributes.GetNamedItem("pos").Value;
+            string[] posparts = pos.Split(' ');
+            b.pos = new Vector3(float.Parse(posparts[0]), float.Parse(posparts[1]), float.Parse(posparts[2]));
+
+            string rot = bone.Attributes.GetNamedItem("rot").Value;
+            string[] rotparts = pos.Split(' ');
+            b.pos = new Vector3(float.Parse(rotparts[0]), float.Parse(rotparts[1]), float.Parse(rotparts[2]));
+
+            string scale = bone.Attributes.GetNamedItem("scale").Value;
+            string[] scaleparts = pos.Split(' ');
+            b.scale = new Vector3(float.Parse(scaleparts[0]), float.Parse(scaleparts[1]), float.Parse(scaleparts[2]));
+
+            //TODO piviot
+
+            b.parent = parent;
+
+            mBones.Add(b.name, b);
+
+            Logger.Log("Found bone " + b.name, Helpers.LogLevel.Info);
+
+            foreach (XmlNode childbone in bone.ChildNodes)
+            {
+                addbone(childbone,b);
+            }
+
+        }
+
+        //TODO check offset and rot calcuations should each offset be multiplied by its parent rotation in
+        // a standard child/parent rot/offset way?
+        public static Vector3 getOffset(string bonename)
+        {
+            Bone b;
+            if (mBones.TryGetValue(bonename, out b))
+            {
+                return (b.getOffset());
+            }
+            else
+            {
+                return Vector3.Zero;
+            }
+        }
+
+        public Vector3 getOffset()
+        {
+            Vector3 totalpos = pos;
+
+            if (parent != null)
+            {
+                totalpos = parent.getOffset() + pos;
+            }
+
+            return totalpos;
+        }
+
+        public static Vector3 getRotation(string bonename)
+        {
+            Bone b;
+            if (mBones.TryGetValue(bonename, out b))
+            {
+                return (b.getRotation());
+            }
+            else
+            {
+                return Vector3.Zero;
+            }
+        }
+
+        public Vector3 getRotation()
+        {
+            Vector3 totalrot = rot;
+
+            if (parent != null)
+            {
+                totalrot = parent.getRotation() + rot;
+            }
+
+            return totalrot;
+        }
+    
     }
 
 }
