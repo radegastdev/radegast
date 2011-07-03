@@ -1113,24 +1113,36 @@ namespace Radegast.Rendering
 
         private void ResetTerrain()
         {
+            ResetTerrain(true);
+        }
+
+        private void ResetTerrain(bool removeImage)
+        {
             if (terrainImage != null)
             {
                 terrainImage.Dispose();
                 terrainImage = null;
             }
 
-            terrainTexture = -1;
-
-            if (terrainVBO == -1)
+            if (terrainVBO != -1)
             {
                 GL.DeleteBuffers(1, ref terrainVBO);
                 terrainVBO = -1;
             }
 
-            if (terrainIndexVBO == -1)
+            if (terrainIndexVBO != -1)
             {
                 GL.DeleteBuffers(1, ref terrainIndexVBO);
                 terrainIndexVBO = -1;
+            }
+
+            if (removeImage)
+            {
+                if (terrainTexture != -1)
+                {
+                    GL.DeleteTexture(terrainTexture);
+                    terrainTexture = -1;
+                }
             }
 
             fetchingTerrainTexture = false;
@@ -1165,10 +1177,8 @@ namespace Radegast.Rendering
             TerrainModified = false;
         }
 
-        void CheckTerrainTexture()
+        void UpdateTerrainTexture()
         {
-            if (terrainTexture != -1) return;
-
             if (!fetchingTerrainTexture)
             {
                 fetchingTerrainTexture = true;
@@ -1184,11 +1194,6 @@ namespace Radegast.Rendering
                     fetchingTerrainTexture = false;
                 });
             }
-            else if (terrainImage != null)
-            {
-                terrainTexture = GLLoadImage(terrainImage, false);
-            }
-
         }
 
         private void RenderTerrain()
@@ -1199,11 +1204,22 @@ namespace Radegast.Rendering
 
             if (TerrainModified)
             {
-                ResetTerrain();
+                ResetTerrain(false);
                 UpdateTerrain();
+                UpdateTerrainTexture();
             }
 
-            CheckTerrainTexture();
+            if (terrainImage != null)
+            {
+                if (terrainTexture != -1)
+                {
+                    GL.DeleteTexture(terrainTexture);
+                }
+
+                terrainTexture = GLLoadImage(terrainImage, false);
+                terrainImage.Dispose();
+                terrainImage = null;
+            }
 
             if (terrainTexture == -1)
             {
