@@ -764,6 +764,14 @@ namespace Radegast.Rendering
                             .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
                             .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
                     });
+
+                    Client.Network.CurrentSim.ObjectsAvatars.ForEach(delegate(Avatar avatar)
+                    {
+                        UpdatePrimBlocking(avatar);
+                        Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => { return p.ParentID == avatar.LocalID; })
+                            .FindAll((Primitive child) => child.ParentID == avatar.LocalID)
+                            .ForEach((Primitive attachedPrim) => UpdatePrimBlocking(attachedPrim));
+                    });
                 }
             );
         }
