@@ -108,6 +108,7 @@ namespace Radegast.Rendering
         System.Diagnostics.Stopwatch renderTimer;
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
+        float minLODFactor = 0.005f;
 
         float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
         float ambient = 0.26f;
@@ -1329,6 +1330,15 @@ namespace Radegast.Rendering
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0f);
         }
 
+        float LODFactor(Vector3 pos, Vector3 primScale, float radius)
+        {
+            float distance = Vector3.Distance(Camera.Position, pos);
+            float scale = primScale.X;
+            if (primScale.Y > scale) scale = primScale.Y;
+            if (primScale.Z > scale) scale = primScale.Z;
+            return scale * radius * radius / distance;
+        }
+
         private void RenderObjects(RenderPass pass)
         {
             lock (Prims)
@@ -1397,6 +1407,11 @@ namespace Radegast.Rendering
                         Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
                         Face face = mesh.Faces[j];
                         FaceData data = (FaceData)face.UserData;
+
+                        // Don't render objects too small to matter
+                        if (LODFactor(primPos, prim.Scale, data.BoundingSphere.R) < minLODFactor) continue;
+
+                        // Don't render objects not in the field of view
                         if (!Frustum.ObjectInFrustum(primPos, data.BoundingSphere, prim.Scale)) continue;
 
                         if (teFace == null)
@@ -2033,6 +2048,11 @@ namespace Radegast.Rendering
         {
             specular = (float)hsSpecular.Value / 100f;
             SetSun();
+        }
+
+        private void hsLOD_Scroll(object sender, ScrollEventArgs e)
+        {
+            minLODFactor = (float)hsLOD.Value / 5000f;
         }
     }
 }

@@ -61,6 +61,7 @@ namespace Radegast.Rendering
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.hsLOD = new System.Windows.Forms.HScrollBar();
             this.hsSpecular = new System.Windows.Forms.HScrollBar();
             this.hsDiffuse = new System.Windows.Forms.HScrollBar();
             this.hsAmbient = new System.Windows.Forms.HScrollBar();
@@ -81,6 +82,7 @@ namespace Radegast.Rendering
             // 
             // gbZoom
             // 
+            this.gbZoom.Controls.Add(this.hsLOD);
             this.gbZoom.Controls.Add(this.hsSpecular);
             this.gbZoom.Controls.Add(this.hsDiffuse);
             this.gbZoom.Controls.Add(this.hsAmbient);
@@ -89,11 +91,20 @@ namespace Radegast.Rendering
             this.gbZoom.Controls.Add(this.cbAA);
             this.gbZoom.Controls.Add(this.chkWireFrame);
             this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbZoom.Location = new System.Drawing.Point(0, 516);
+            this.gbZoom.Location = new System.Drawing.Point(0, 507);
             this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(644, 89);
+            this.gbZoom.Size = new System.Drawing.Size(644, 98);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
+            // 
+            // hsLOD
+            // 
+            this.hsLOD.Location = new System.Drawing.Point(343, 67);
+            this.hsLOD.Name = "hsLOD";
+            this.hsLOD.Size = new System.Drawing.Size(292, 17);
+            this.hsLOD.TabIndex = 24;
+            this.hsLOD.Value = 25;
+            this.hsLOD.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hsLOD_Scroll);
             // 
             // hsSpecular
             // 
@@ -249,6 +260,7 @@ namespace Radegast.Rendering
         private System.Windows.Forms.HScrollBar hsSpecular;
         private System.Windows.Forms.HScrollBar hsDiffuse;
         private System.Windows.Forms.HScrollBar hsAmbient;
+        private System.Windows.Forms.HScrollBar hsLOD;
 
     }
 }

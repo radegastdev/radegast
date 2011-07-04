@@ -338,7 +338,7 @@ namespace Radegast
             else if (e.Status == LoginStatus.Success)
             {
                 InAutoReconnect = false;
-                tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
+                tsb3D.Enabled =  tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
                 tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                     tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
 
@@ -349,7 +349,7 @@ namespace Radegast
 
         private void netcom_ClientLoggedOut(object sender, EventArgs e)
         {
-            tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
+            tsb3D.Enabled = tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
             tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                 tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = false;
 

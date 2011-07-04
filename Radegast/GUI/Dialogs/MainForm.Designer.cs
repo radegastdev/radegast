@@ -608,6 +608,7 @@ namespace Radegast
             // tsb3D
             // 
             this.tsb3D.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tsb3D.Enabled = false;
             this.tsb3D.Image = ((System.Drawing.Image)(resources.GetObject("tsb3D.Image")));
             this.tsb3D.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsb3D.Name = "tsb3D";
