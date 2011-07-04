@@ -375,27 +375,13 @@ namespace Radegast.Rendering
         public string name;
         public string joint;
         public Vector3 position;
-        public Vector3 rotation;
+        public Quaternion rotation;
         public int id;
         public int group;
 
         public GLMesh jointmesh;
         public int jointmeshindex;
 
-        public Vector3 getposition()
-        {
-            Vector3 pos;
-            pos = jointmesh.Position + position;
-            return pos;
-        }
-
-        public Quaternion getrotation()
-        {
-            Vector3 rotvec = jointmesh.RotationAngles + rotation;
-            rotvec.Normalize();
-            Quaternion rot = new Quaternion(rotvec.X, rotvec.Y, rotvec.Z);
-            return rot;
-        }
     }
 
     /// <summary>
@@ -558,7 +544,7 @@ namespace Radegast.Rendering
 
                 string rot = apoint.Attributes.GetNamedItem("rotation").Value;
                 string[] rotparts = rot.Split(' ');
-                point.rotation = new Vector3(float.Parse(rotparts[0]), float.Parse(rotparts[1]), float.Parse(rotparts[2]));
+                point.rotation = Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
 
                 point.id = Int32.Parse(apoint.Attributes.GetNamedItem("id").Value);
                 point.group = Int32.Parse(apoint.Attributes.GetNamedItem("group").Value);
@@ -604,13 +590,13 @@ namespace Radegast.Rendering
 
                     case "eyeBallRightMesh":
                         mesh.setMeshPos(Bone.getOffset("mEyeLeft"));
-                        mesh.setMeshRot(Bone.getRotation("mEyeLeft"));
+                        //mesh.setMeshRot(Bone.getRotation("mEyeLeft"));
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
                     case "eyeBallLeftMesh":
                         mesh.setMeshPos(Bone.getOffset("mEyeRight"));
-                        mesh.setMeshRot(Bone.getRotation("mEyeRight"));
+                        //mesh.setMeshRot(Bone.getRotation("mEyeRight"));
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
@@ -651,7 +637,8 @@ namespace Radegast.Rendering
     {
         public string name;
         public Vector3 pos;
-        public Vector3 rot;
+        //public Vector3 rot;
+        public Quaternion rot;
         public Vector3 scale;
         public Vector3 piviot;
 
@@ -680,7 +667,7 @@ namespace Radegast.Rendering
 
             string rot = bone.Attributes.GetNamedItem("rot").Value;
             string[] rotparts = pos.Split(' ');
-            b.pos = new Vector3(float.Parse(rotparts[0]), float.Parse(rotparts[1]), float.Parse(rotparts[2]));
+            b.rot = Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
 
             string scale = bone.Attributes.GetNamedItem("scale").Value;
             string[] scaleparts = pos.Split(' ');
@@ -728,7 +715,7 @@ namespace Radegast.Rendering
             return totalpos;
         }
 
-        public static Vector3 getRotation(string bonename)
+        public static Quaternion getRotation(string bonename)
         {
             Bone b;
             if (mBones.TryGetValue(bonename, out b))
@@ -737,17 +724,17 @@ namespace Radegast.Rendering
             }
             else
             {
-                return Vector3.Zero;
+                return Quaternion.Identity;
             }
         }
 
-        public Vector3 getRotation()
+        public Quaternion getRotation()
         {
-            Vector3 totalrot = rot;
+            Quaternion totalrot = rot;
 
             if (parent != null)
             {
-                totalrot = parent.getRotation() + rot;
+                totalrot = parent.getRotation() * rot;
             }
 
             return totalrot;

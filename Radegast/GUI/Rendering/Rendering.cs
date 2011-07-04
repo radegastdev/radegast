@@ -424,7 +424,6 @@ namespace Radegast.Rendering
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
                 hasMipmap = GL.GetString(StringName.Extensions).Contains("GL_SGIS_generate_mipmap");
-
                 // Double check if we have mipmap ability
                 if (hasMipmap)
                 {
@@ -775,24 +774,32 @@ namespace Radegast.Rendering
             if (!Client.Network.Connected) return;
 
             ThreadPool.QueueUserWorkItem(sync =>
+            {
+                Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0).ForEach((Primitive mainPrim) =>
                 {
-                    Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0).ForEach((Primitive mainPrim) =>
-                    {
-                        UpdatePrimBlocking(mainPrim);
-                        Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => { return p.ParentID == mainPrim.LocalID; })
-                            .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
-                            .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
-                    });
+                    UpdatePrimBlocking(mainPrim);
+                    Client.Network.CurrentSim.ObjectsPrimitives
+                        .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
+                        .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
+                });
 
-                    Client.Network.CurrentSim.ObjectsAvatars.ForEach(delegate(Avatar avatar)
-                    {
-                        UpdatePrimBlocking(avatar);
-                        Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => { return p.ParentID == avatar.LocalID; })
-                            .FindAll((Primitive child) => child.ParentID == avatar.LocalID)
-                            .ForEach((Primitive attachedPrim) => UpdatePrimBlocking(attachedPrim));
-                    });
-                }
-            );
+                Client.Network.CurrentSim.ObjectsAvatars.ForEach(delegate(Avatar avatar)
+                {
+                    UpdatePrimBlocking(avatar);
+                    Client.Network.CurrentSim.ObjectsPrimitives
+                        .FindAll((Primitive child) => child.ParentID == avatar.LocalID)
+                        .ForEach((Primitive attachedPrim) =>
+                        {
+                            UpdatePrimBlocking(attachedPrim);
+                            Client.Network.CurrentSim.ObjectsPrimitives
+                                .FindAll((Primitive child) => child.ParentID == attachedPrim.LocalID)
+                                .ForEach((Primitive attachedPrimChild) =>
+                                {
+                                    UpdatePrimBlocking(attachedPrimChild);
+                                });
+                        });
+                });
+            });
         }
 
         private void frmPrimWorkshop_Shown(object sender, EventArgs e)
@@ -833,8 +840,23 @@ namespace Radegast.Rendering
                 RenderAvatar parentav;
                 if (Prims.TryGetValue(prim.ParentID, out parent))
                 {
-                    return parent.Prim.Position + prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
-                    //return parent.Position * prim.Position * prim.Rotation;
+                    if (parent.Prim.ParentID == 0)
+                    {
+                        return parent.Prim.Position + prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
+                    }
+                    else
+                    {
+                        // This is an child prim of an attachment
+                        if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav))
+                        {
+                            var avPos = PrimPos(parentav.avatar);
+                            return avPos;
+                        }
+                        else
+                        {
+                            return new Vector3(99999f, 99999f, 99999f);
+                        }
+                    }
                 }
                 else if (Avatars.TryGetValue(prim.ParentID, out parentav))
                 {
@@ -1047,6 +1069,9 @@ namespace Radegast.Rendering
                         {
                             faceNr++;
                             if (!GLAvatar._showSkirt && mesh.Name == "skirtMesh")
+                                continue;
+
+                            if (mesh.Name == "hairMesh") // Don't render the hair mesh for the moment
                                 continue;
 
                             GL.Color3(1f, 1f, 1f);
@@ -1362,38 +1387,92 @@ namespace Radegast.Rendering
                     // Individual prim matrix
                     GL.PushMatrix();
 
-                    if (prim.ParentID != 0)
+                    //TODO we really need a scene graph but for the moment simple if/else logic checks and parent finding are used
+                    if (prim.ParentID != 0) // Does this prim have a parent
                     {
-                        if (parent != null)
+                        if (parent != null) // Check the parent is valid
                         {
-                            // Apply prim translation and rotation relative to the root prim
-                            GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
-                            GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                        }
-                        else
-                        {
-                            // Apply prim translation and rotation relative to the root prim
-                            GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
-                            GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
-
-                            int attachment_index = (int)prim.PrimData.AttachmentPoint;
-                            if (attachment_index > GLAvatar.attachment_points.Count())
+                            if (parent.Prim.ParentID != 0) // Does the parent have a parent? if so it must be an avatar 
                             {
-                                // invalid LL attachment point
-                                continue;
+                                if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav)) // Get the parent avatar
+                                {
+                                    // Child prims of parents that have avatar as parent
+
+                                    if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
+                                    {
+                                        // Child HUD elements
+                                    }
+                                    else
+                                    {
+                                        //This is a child prim attachment
+
+                                        // Apply prim translation and rotation relative to the root prim
+                                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
+                                        GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
+
+                                        int attachment_index = (int)parent.Prim.PrimData.AttachmentPoint;
+                                        if (attachment_index > GLAvatar.attachment_points.Count())
+                                        {
+                                            // invalid LL attachment point
+                                            continue;
+                                        }
+
+                                        attachment_point apoint = GLAvatar.attachment_points[attachment_index];
+
+                                        Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                                        Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+
+                                        GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
+                                        GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
+
+                                        // Apply prim translation and rotation relative to the root prim
+                                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                                        GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
+                                    }
+                                }
                             }
+                            else // This prims parent does not have a parent there for its a regular prim and this must be its child
+                            {
+                                // Regular child prim
+                                // Apply prim translation and rotation relative to the root prim
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
+                            }
+                        }
+                        else // This prim has a parent but does not have a parent in the ObjectsList, its parent is therefor parentav from the avatars list 
+                        {
+                            //Root prims with avatar as parent
+                            
+                            if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
+                            {
+                                // Root HUD elements
+                            }
+                            else
+                            {
+                                // Root attachments
 
-                            attachment_point apoint = GLAvatar.attachment_points[attachment_index];
+                                // Apply prim translation and rotation relative to the root prim
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
 
-                            Vector3 point = Bone.getOffset(apoint.joint);
-                            Vector3 rot = Bone.getRotation(apoint.joint);
-                            //Todo Quaternion should be retured from getRotation()
-                            Quaternion qrot = new Quaternion(rot.X, rot.Y, rot.Z);
+                                int attachment_index = (int)prim.PrimData.AttachmentPoint;
+                                if (attachment_index > GLAvatar.attachment_points.Count())
+                                {
+                                    // invalid LL attachment point
+                                    continue;
+                                }
 
-                            GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
-                            GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
+                                attachment_point apoint = GLAvatar.attachment_points[attachment_index];
+
+                                Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                                Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
+                            }
                         }
                     }
+
 
                     // Prim roation and position
                     GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.Position));
