@@ -1016,14 +1016,13 @@ namespace Radegast.Rendering
                     FaceData data = new FaceData();
                     ra.data[fi] = data;
                     data.TextureInfo.TextureID = TEF.TextureID;
-                    var textureItem = new TextureLoadItem()
+                    
+                    DownloadTexture(new TextureLoadItem()
                     {
                         Data = data,
                         Prim = ra.avatar,
                         TeFace = ra.avatar.Textures.FaceTextures[fi]
-                    };
-
-                    PendingTextures.Enqueue(textureItem);
+                    });
                 }
             }
         }
@@ -1685,6 +1684,17 @@ namespace Radegast.Rendering
             return picked != null;
         }
 
+        public void DownloadTexture(TextureLoadItem item)
+        {
+            if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
+            {
+                item.Data.TextureInfo.TexturePointer = TexturesPtrMap[item.TeFace.TextureID].TexturePointer;
+            }
+            else
+            {
+                PendingTextures.Enqueue(item);
+            }
+        }
 
         private void MeshPrim(Primitive prim, FacetedMesh mesh)
         {
@@ -1763,14 +1773,19 @@ namespace Radegast.Rendering
                 else
                 {
 
-                    var textureItem = new TextureLoadItem()
+                    if (TexturesPtrMap.ContainsKey(teFace.TextureID))
                     {
-                        Data = data,
-                        Prim = prim,
-                        TeFace = teFace
-                    };
-
-                    PendingTextures.Enqueue(textureItem);
+                        data.TextureInfo.TexturePointer = TexturesPtrMap[teFace.TextureID].TexturePointer;
+                    }
+                    else
+                    {
+                        DownloadTexture(new TextureLoadItem()
+                        {
+                            Data = data,
+                            Prim = prim,
+                            TeFace = teFace
+                        });
+                    }
                 }
             }
 
