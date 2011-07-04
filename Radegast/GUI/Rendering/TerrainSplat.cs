@@ -99,9 +99,10 @@ namespace Radegast.Rendering
             }
 
             #region Texture Fetching
-            Parallel.ForEach<UUID>(textureIDs, (textureID) =>
+            for (int i = 0; i < 4; i++)
             {
                 AutoResetEvent textureDone = new AutoResetEvent(false);
+                UUID textureID = textureIDs[i];
 
                 instance.Client.Assets.RequestImage(textureID, (state, assetTexture) =>
                 {
@@ -110,19 +111,13 @@ namespace Radegast.Rendering
                         Image img;
                         ManagedImage mi;
                         OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
-                        for (int i = 0; i < 4; i++)
-                        {
-                            if (textureIDs[i] == textureID)
-                            {
-                                detailTexture[i] = (Bitmap)img;
-                            }
-                        }
+                        detailTexture[i] = (Bitmap)img;
                     }
                     textureDone.Set();
                 });
 
                 textureDone.WaitOne(60 * 1000, false);
-            });
+            }
 
             #endregion Texture Fetching
 
