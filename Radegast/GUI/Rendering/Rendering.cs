@@ -1128,6 +1128,7 @@ namespace Radegast.Rendering
                         }
                     }
                 }
+                GL.Disable(EnableCap.Texture2D);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
             }
@@ -1514,6 +1515,7 @@ namespace Radegast.Rendering
                     // Pop the prim matrix
                     GL.PopMatrix();
                 }
+                GL.Disable(EnableCap.Texture2D);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
                 GL.DisableClientState(ArrayCap.NormalArray);
