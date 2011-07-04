@@ -109,6 +109,7 @@ namespace Radegast.Rendering
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
         float minLODFactor = 0.005f;
+        float timeToFocus = 0.3f;
 
         float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
         float ambient = 0.26f;
@@ -624,6 +625,7 @@ namespace Radegast.Rendering
                             }
                             else if (ModifierKeys == Keys.Alt)
                             {
+                                Camera.TimeToTarget = timeToFocus;
                                 Camera.FocalPoint = PrimPos(picked.Prim);
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             }
@@ -633,6 +635,7 @@ namespace Radegast.Rendering
                             RenderAvatar av = (RenderAvatar)clicked;
                             if (ModifierKeys == Keys.Alt)
                             {
+                                Camera.TimeToTarget = timeToFocus;
                                 Vector3 pos = PrimPos(av.avatar);
                                 pos.Z += 1.5f; // focus roughly on the chest area
                                 Camera.FocalPoint = pos;
@@ -826,6 +829,7 @@ namespace Radegast.Rendering
             Camera.FocalPoint = Client.Self.SimPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
             Camera.Zoom = 1.0f;
             Camera.Far = 128.0f;
+            Camera.EndMove();
         }
 
         Vector3 PrimPos(Primitive prim)
@@ -1651,8 +1655,8 @@ namespace Radegast.Rendering
             }
 
             var mLookAt = OpenTK.Matrix4d.LookAt(
-                    Camera.Position.X, Camera.Position.Y, Camera.Position.Z,
-                    Camera.FocalPoint.X, Camera.FocalPoint.Y, Camera.FocalPoint.Z,
+                    Camera.RenderPosition.X, Camera.RenderPosition.Y, Camera.RenderPosition.Z,
+                    Camera.RenderFocalPoint.X, Camera.RenderFocalPoint.Y, Camera.RenderFocalPoint.Z,
                     0d, 0d, 1d);
             GL.MultMatrix(ref mLookAt);
 
@@ -1669,6 +1673,11 @@ namespace Radegast.Rendering
                 Frustum.CalculateFrustum(ProjectionMatrix, ModelMatrix);
                 UpdateCamera();
                 Camera.Modified = false;
+            }
+
+            if (Camera.TimeToTarget != 0)
+            {
+                Camera.Step(lastFrameTime);
             }
 
             if (picking)

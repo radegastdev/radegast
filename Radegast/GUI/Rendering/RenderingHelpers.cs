@@ -92,22 +92,77 @@ namespace Radegast.Rendering
     /// <summary>
     /// Represents camera object
     /// </summary>
-    public struct Camera
+    public class Camera
     {
         Vector3 mPosition;
         Vector3 mFocalPoint;
         bool mModified;
         
         /// <summary>Camera position</summary>
-        public Vector3 Position { get { return mPosition; } set { mPosition = value; mModified = true; } }
+        public Vector3 Position { get { return mPosition; } set { mPosition = value; Modify(); } }
         /// <summary>Camera target</summary>
-        public Vector3 FocalPoint { get { return mFocalPoint; } set { mFocalPoint = value; mModified = true; } }
+        public Vector3 FocalPoint { get { return mFocalPoint; } set { mFocalPoint = value; Modify(); } }
         /// <summary>Zoom level</summary>
         public float Zoom;
         /// <summary>Draw distance</summary>
         public float Far;
         /// <summary>Has camera been modified</summary>
         public bool Modified { get { return mModified; } set { mModified = value; } }
+
+        public double TimeToTarget = 0d;
+
+        public Vector3 RenderPosition;
+        public Vector3 RenderFocalPoint;
+
+        void Modify()
+        {
+            mModified = true;
+            if (TimeToTarget <= 0)
+            {
+                RenderPosition = Position;
+                RenderFocalPoint = FocalPoint;
+            }
+        }
+
+        public void Step(double time)
+        {
+            TimeToTarget -= time;
+            if (TimeToTarget <= time)
+            {
+                EndMove();
+                return;
+            }
+
+            mModified = true;
+
+            float pctElapsed = (float)(time / TimeToTarget);
+
+            if (RenderPosition != Position)
+            {
+                float distance = Vector3.Distance(RenderPosition, Position);
+                RenderPosition = Vector3.Lerp(RenderPosition, Position, (float)(distance * pctElapsed));
+            }
+
+            if (RenderFocalPoint != FocalPoint)
+            {
+                RenderFocalPoint = Interpolate(RenderFocalPoint, FocalPoint, pctElapsed);
+            }
+        }
+
+        Vector3 Interpolate(Vector3 start, Vector3 end, float fraction)
+        {
+            float distance = Vector3.Distance(start, end);
+            Vector3 direction = end - start;
+            return start + direction * fraction;
+        }
+
+        public void EndMove()
+        {
+            mModified = true;
+            TimeToTarget = 0;
+            RenderPosition = Position;
+            RenderFocalPoint = FocalPoint;
+        }
     }
 
     public static class MeshToOBJ
