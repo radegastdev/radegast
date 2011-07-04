@@ -96,7 +96,7 @@ namespace Radegast.Rendering
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
-        float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
+
         bool hasMipmap;
         Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 9f, FontStyle.Regular);
         Font AvatarTagFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold);
@@ -108,6 +108,14 @@ namespace Radegast.Rendering
         System.Diagnostics.Stopwatch renderTimer;
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
+
+        float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
+        float ambient = 0.26f;
+        float difuse = 0.27f;
+        float specular = 0.20f;
+        OpenTK.Vector4 ambientColor;
+        OpenTK.Vector4 difuseColor;
+        OpenTK.Vector4 specularColor;
 
         #endregion Private fields
 
@@ -377,27 +385,35 @@ namespace Radegast.Rendering
             glControl.Disposed -= glControl_Disposed;
         }
 
+        void SetSun()
+        {
+            ambientColor = new OpenTK.Vector4(ambient, ambient, ambient, difuse);
+            difuseColor = new OpenTK.Vector4(difuse, difuse, difuse, difuse);
+            specularColor = new OpenTK.Vector4(specular, specular, specular, specular);
+            GL.Light(LightName.Light0, LightParameter.Ambient, ambientColor);
+            GL.Light(LightName.Light0, LightParameter.Diffuse, difuseColor);
+            GL.Light(LightName.Light0, LightParameter.Specular, specularColor);
+            GL.Light(LightName.Light0, LightParameter.Position, lightPos);
+        }
+
         void glControl_Load(object sender, EventArgs e)
         {
             try
             {
                 GL.ShadeModel(ShadingModel.Smooth);
 
-                //GL.LightModel(LightModelParameter.LightModelAmbient, new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
-
                 GL.Enable(EnableCap.Lighting);
                 GL.Enable(EnableCap.Light0);
-                GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { 0.5f, 0.5f, 0.5f, 1f });
-                GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { 0.3f, 0.3f, 0.3f, 1f });
-                GL.Light(LightName.Light0, LightParameter.Specular, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
-                GL.Light(LightName.Light0, LightParameter.Position, lightPos);
+                SetSun();
 
                 GL.ClearDepth(1.0d);
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.CullFace);
                 GL.CullFace(CullFaceMode.Back);
+
+                // GL.Color() tracks objects ambient and diffuse color
+                GL.Enable(EnableCap.ColorMaterial);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
-                GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
 
                 GL.DepthMask(true);
                 GL.DepthFunc(DepthFunction.Lequal);
@@ -505,14 +521,6 @@ namespace Radegast.Rendering
 
         private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
-            int newVal = Utils.Clamp(scrollZoom.Value + e.Delta / 10, scrollZoom.Minimum, scrollZoom.Maximum);
-
-            if (scrollZoom.Value != newVal)
-            {
-                Camera.Zoom = 1f - (float)newVal / (float)scrollZoom.Minimum;
-                scrollZoom.Value = newVal;
-                glControl_Resize(null, null);
-            }
         }
 
         FacetedMesh RightclickedPrim;
@@ -730,7 +738,7 @@ namespace Radegast.Rendering
                 {
                     item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
                     GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
-                    
+
                     continue;
                 }
 
@@ -830,7 +838,7 @@ namespace Radegast.Rendering
                 else if (Avatars.TryGetValue(prim.ParentID, out parentav))
                 {
                     var avPos = PrimPos(parentav.avatar);
-                    
+
                     return avPos + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
                 }
                 else
@@ -859,9 +867,8 @@ namespace Radegast.Rendering
             // This is a FIR filter known as a MMA or Modified Mean Average, using a 20 point sampling width
             advTimerTick = ((19 * advTimerTick) + lastFrameTime) / 20;
 
-            GL.Color4(0f, 0f, 0f, 0.6f);
             Printer.Begin();
-            Printer.Print(String.Format("FPS {0:000.00}",1d/advTimerTick), AvatarTagFont, Color.Orange,
+            Printer.Print(String.Format("FPS {0:000.00}", 1d / advTimerTick), AvatarTagFont, Color.Orange,
                 new RectangleF(posX, posY, 100, 50),
                 OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
             Printer.End();
@@ -869,8 +876,6 @@ namespace Radegast.Rendering
 
         private void RenderText()
         {
-            GLHUDBegin();
-
             lock (Avatars)
             {
 
@@ -916,7 +921,6 @@ namespace Radegast.Rendering
                         Printer.End();
                     }
                 }
-                GL.Color3(1, 1, 1);
             }
 
             lock (Prims)
@@ -967,7 +971,6 @@ namespace Radegast.Rendering
                     }
                 }
             }
-            GLHUDEnd();
         }
 
         #region avatars
@@ -1055,7 +1058,7 @@ namespace Radegast.Rendering
                             GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
                             GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
 
-                            
+
                             // Special case for eyeballs we need to offset the mesh to the correct position
                             // We have manually added the eyeball offset based on the headbone when we
                             // constructed the meshes, but why are the position offsets we got when loading
@@ -1125,7 +1128,6 @@ namespace Radegast.Rendering
                         }
                     }
                 }
-                GL.Color3(1f, 1f, 1f);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
             }
@@ -1184,6 +1186,7 @@ namespace Radegast.Rendering
 
         private void UpdateTerrain()
         {
+            if (Client.Network.CurrentSim == null || Client.Network.CurrentSim.Terrain == null) return;
             int step = 1;
 
             for (int x = 0; x < 255; x += step)
@@ -1192,8 +1195,7 @@ namespace Radegast.Rendering
                 {
                     float z = 0;
                     int patchNr = ((int)x / 16) * 16 + (int)y / 16;
-                    if (Client.Network.CurrentSim.Terrain != null
-                        && Client.Network.CurrentSim.Terrain[patchNr] != null
+                    if (Client.Network.CurrentSim.Terrain[patchNr] != null
                         && Client.Network.CurrentSim.Terrain[patchNr].Data != null)
                     {
                         float[] data = Client.Network.CurrentSim.Terrain[patchNr].Data;
@@ -1231,6 +1233,7 @@ namespace Radegast.Rendering
 
         private void RenderTerrain()
         {
+            GL.Color3(1f, 1f, 1f);
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.TextureCoordArray);
             GL.EnableClientState(ArrayCap.NormalArray);
@@ -1335,7 +1338,6 @@ namespace Radegast.Rendering
                 GL.EnableClientState(ArrayCap.TextureCoordArray);
                 GL.EnableClientState(ArrayCap.NormalArray);
 
-                GL.Enable(EnableCap.ColorMaterial);
                 int primNr = 0;
                 foreach (FacetedMesh mesh in Prims.Values)
                 {
@@ -1372,7 +1374,7 @@ namespace Radegast.Rendering
                             }
 
                             attachment_point apoint = GLAvatar.attachment_points[attachment_index];
-                            
+
                             Vector3 point = Bone.getOffset(apoint.joint);
                             Vector3 rot = Bone.getRotation(apoint.joint);
                             //Todo Quaternion should be retured from getRotation()
@@ -1417,15 +1419,15 @@ namespace Radegast.Rendering
                             switch (teFace.Shiny)
                             {
                                 case Shininess.High:
-                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 94f);
+                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.94f);
                                     break;
 
                                 case Shininess.Medium:
-                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 64f);
+                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.64f);
                                     break;
 
                                 case Shininess.Low:
-                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
+                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.24f);
                                     break;
 
 
@@ -1436,10 +1438,9 @@ namespace Radegast.Rendering
                             }
 
                             var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
-
                             GL.Color4(faceColor);
-                            GL.Material(MaterialFace.Front, MaterialParameter.AmbientAndDiffuse, faceColor);
-                            GL.Material(MaterialFace.Front, MaterialParameter.Specular, faceColor);
+
+                            GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 0.5f, 0.5f, 0.5f, 1f });
 
                             if (data.TextureInfo.TexturePointer != 0)
                             {
@@ -1457,7 +1458,6 @@ namespace Radegast.Rendering
                             data.PickingID = primNr;
                             var primNrBytes = Utils.Int16ToBytes((short)primNr);
                             var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
-
                             GL.Color4(faceColor);
                         }
 
@@ -1495,13 +1495,11 @@ namespace Radegast.Rendering
                     }
 
                     GL.BindTexture(TextureTarget.Texture2D, 0);
-                    GL.Color4(new byte[] { 255, 255, 255, 255 });
                     ResetMaterial();
 
                     // Pop the prim matrix
                     GL.PopMatrix();
                 }
-                GL.Disable(EnableCap.ColorMaterial);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
                 GL.DisableClientState(ArrayCap.NormalArray);
@@ -1521,7 +1519,7 @@ namespace Radegast.Rendering
             float z = Client.Network.CurrentSim.WaterHeight;
 
             GL.Disable(EnableCap.Lighting);
-            GL.Enable(EnableCap.ColorMaterial);
+
             GL.Color4(0.09f, 0.28f, 0.63f, 0.84f);
 
             GL.Begin(BeginMode.Quads);
@@ -1530,9 +1528,7 @@ namespace Radegast.Rendering
                     DrawWaterQuad(x, y, z);
             GL.End();
 
-            GL.Color3(1f, 1f, 1f);
             GL.Enable(EnableCap.Lighting);
-            GL.Disable(EnableCap.ColorMaterial);
         }
 
         private void Render(bool picking)
@@ -1565,7 +1561,7 @@ namespace Radegast.Rendering
                     0d, 0d, 1d);
             GL.MultMatrix(ref mLookAt);
 
-            //GL.Light(LightName.Light0, LightParameter.Position, lightPos);
+            GL.Light(LightName.Light0, LightParameter.Position, lightPos);
 
             // Push the world matrix
             GL.PushMatrix();
@@ -1593,8 +1589,11 @@ namespace Radegast.Rendering
 
                 RenderWater();
                 RenderObjects(RenderPass.Alpha);
+
+                GLHUDBegin();
                 RenderText();
                 RenderStats();
+                GLHUDEnd();
             }
 
             // Pop the world matrix
@@ -1910,12 +1909,6 @@ namespace Radegast.Rendering
         #endregion Private methods (the meat)
 
         #region Form controls handlers
-        private void scrollZoom_ValueChanged(object sender, EventArgs e)
-        {
-            Camera.Zoom = 1f - (float)scrollZoom.Value / (float)scrollZoom.Minimum;
-            glControl_Resize(null, null);
-        }
-
         private void chkWireFrame_CheckedChanged(object sender, EventArgs e)
         {
             Wireframe = chkWireFrame.Checked;
@@ -1924,7 +1917,6 @@ namespace Radegast.Rendering
         private void btnReset_Click(object sender, EventArgs e)
         {
             InitCamera();
-            scrollZoom.Value = 0;
         }
 
         private void cbAA_CheckedChanged(object sender, EventArgs e)
@@ -2009,5 +2001,23 @@ namespace Radegast.Rendering
             Close();
         }
         #endregion Context menu
+
+        private void hsAmbient_Scroll(object sender, ScrollEventArgs e)
+        {
+            ambient = (float)hsAmbient.Value / 100f;
+            SetSun();
+        }
+
+        private void hsDiffuse_Scroll(object sender, ScrollEventArgs e)
+        {
+            difuse = (float)hsDiffuse.Value / 100f;
+            SetSun();
+        }
+
+        private void hsSpecular_Scroll(object sender, ScrollEventArgs e)
+        {
+            specular = (float)hsSpecular.Value / 100f;
+            SetSun();
+        }
     }
 }

@@ -60,13 +60,14 @@ namespace Radegast.Rendering
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
-            this.scrollZoom = new System.Windows.Forms.HScrollBar();
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.hsSpecular = new System.Windows.Forms.HScrollBar();
+            this.hsDiffuse = new System.Windows.Forms.HScrollBar();
+            this.hsAmbient = new System.Windows.Forms.HScrollBar();
             this.label2 = new System.Windows.Forms.Label();
             this.btnResetView = new System.Windows.Forms.Button();
             this.cbAA = new System.Windows.Forms.CheckBox();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.ctxObjects = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.touchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,31 +79,48 @@ namespace Radegast.Rendering
             this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
             // 
-            // scrollZoom
-            // 
-            this.scrollZoom.LargeChange = 1;
-            this.scrollZoom.Location = new System.Drawing.Point(428, 8);
-            this.scrollZoom.Maximum = 0;
-            this.scrollZoom.Minimum = -300;
-            this.scrollZoom.Name = "scrollZoom";
-            this.scrollZoom.Size = new System.Drawing.Size(200, 16);
-            this.scrollZoom.TabIndex = 19;
-            this.scrollZoom.ValueChanged += new System.EventHandler(this.scrollZoom_ValueChanged);
-            // 
             // gbZoom
             // 
+            this.gbZoom.Controls.Add(this.hsSpecular);
+            this.gbZoom.Controls.Add(this.hsDiffuse);
+            this.gbZoom.Controls.Add(this.hsAmbient);
             this.gbZoom.Controls.Add(this.label2);
             this.gbZoom.Controls.Add(this.btnResetView);
             this.gbZoom.Controls.Add(this.cbAA);
             this.gbZoom.Controls.Add(this.chkWireFrame);
-            this.gbZoom.Controls.Add(this.label1);
-            this.gbZoom.Controls.Add(this.scrollZoom);
             this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbZoom.Location = new System.Drawing.Point(0, 546);
+            this.gbZoom.Location = new System.Drawing.Point(0, 516);
             this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(644, 59);
+            this.gbZoom.Size = new System.Drawing.Size(644, 89);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
+            // 
+            // hsSpecular
+            // 
+            this.hsSpecular.Location = new System.Drawing.Point(343, 50);
+            this.hsSpecular.Name = "hsSpecular";
+            this.hsSpecular.Size = new System.Drawing.Size(292, 17);
+            this.hsSpecular.TabIndex = 24;
+            this.hsSpecular.Value = 30;
+            this.hsSpecular.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hsSpecular_Scroll);
+            // 
+            // hsDiffuse
+            // 
+            this.hsDiffuse.Location = new System.Drawing.Point(343, 33);
+            this.hsDiffuse.Name = "hsDiffuse";
+            this.hsDiffuse.Size = new System.Drawing.Size(292, 17);
+            this.hsDiffuse.TabIndex = 24;
+            this.hsDiffuse.Value = 25;
+            this.hsDiffuse.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hsDiffuse_Scroll);
+            // 
+            // hsAmbient
+            // 
+            this.hsAmbient.Location = new System.Drawing.Point(343, 16);
+            this.hsAmbient.Name = "hsAmbient";
+            this.hsAmbient.Size = new System.Drawing.Size(292, 17);
+            this.hsAmbient.TabIndex = 24;
+            this.hsAmbient.Value = 20;
+            this.hsAmbient.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hsAmbient_Scroll);
             // 
             // label2
             // 
@@ -143,15 +161,6 @@ namespace Radegast.Rendering
             this.chkWireFrame.Text = "Wireframe";
             this.chkWireFrame.UseVisualStyleBackColor = true;
             this.chkWireFrame.CheckedChanged += new System.EventHandler(this.chkWireFrame_CheckedChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(385, 8);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(34, 13);
-            this.label1.TabIndex = 20;
-            this.label1.Text = "Zoom";
             // 
             // ctxObjects
             // 
@@ -225,12 +234,10 @@ namespace Radegast.Rendering
 
         #endregion
 
-        public System.Windows.Forms.HScrollBar scrollZoom;
         public System.Windows.Forms.GroupBox gbZoom;
         public System.Windows.Forms.ContextMenuStrip ctxObjects;
         public System.Windows.Forms.CheckBox cbAA;
         public System.Windows.Forms.CheckBox chkWireFrame;
-        public System.Windows.Forms.Label label1;
         public System.Windows.Forms.Button btnResetView;
         public System.Windows.Forms.Label label2;
         public System.Windows.Forms.ToolStripMenuItem touchToolStripMenuItem;
@@ -239,6 +246,9 @@ namespace Radegast.Rendering
         public System.Windows.Forms.ToolStripMenuItem takeToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem returnToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.HScrollBar hsSpecular;
+        private System.Windows.Forms.HScrollBar hsDiffuse;
+        private System.Windows.Forms.HScrollBar hsAmbient;
 
     }
 }
