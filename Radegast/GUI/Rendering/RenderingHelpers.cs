@@ -494,20 +494,25 @@ namespace Radegast.Rendering
             public ushort[] Indices;
             public float[] TexCoords;
             public Vector3 Center;
+            public float[] weights; //strictly these are constant and don't need instancing with the GLMesh
+            public string[] skinJoints;  //strictly these are constant and don't need instancing with the GLMesh
         }
 
         public static GLData baseRenderData;
         public GLData RenderData;
         public GLData OrigRenderData;
 
+        public GLAvatar av;
+
         public GLMesh(string name)
             : base(name)
         {
         }
 
-        public GLMesh(GLMesh source)
+        public GLMesh(GLMesh source,GLAvatar av)
             :base(source.Name)
         {
+            this.av = av;
             // Make a new GLMesh copy from the supplied source
             RenderData.Vertices = new float[source.RenderData.Vertices.Length];
             //RenderData.Normals = new float[source.RenderData.Normals.Length];
@@ -519,12 +524,18 @@ namespace Radegast.Rendering
             RenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
             RenderData.Indices = new ushort[source.RenderData.Indices.Length];
 
+            RenderData.weights = new float[source.RenderData.weights.Length];
+            RenderData.skinJoints = new string[source.RenderData.skinJoints.Length];
 
             Array.Copy(source.RenderData.Vertices,RenderData.Vertices,source.RenderData.Vertices.Length);
 //            Array.Copy(source.RenderData.Normals, RenderData.Normals, source.RenderData.Normals.Length);
 
             Array.Copy(source.RenderData.TexCoords, RenderData.TexCoords, source.RenderData.TexCoords.Length);
             Array.Copy(source.RenderData.Indices, RenderData.Indices, source.RenderData.Indices.Length);
+            Array.Copy(source.RenderData.weights, RenderData.weights, source.RenderData.weights.Length);
+            Array.Copy(source.RenderData.skinJoints, RenderData.skinJoints, source.RenderData.skinJoints.Length);
+
+
             RenderData.Center = new Vector3(source.RenderData.Center);
 
             teFaceID = source.teFaceID;
@@ -544,6 +555,7 @@ namespace Radegast.Rendering
             Array.Copy(source.RenderData.Vertices, OrigRenderData.Vertices, source.RenderData.Vertices.Length);
             Array.Copy(source.RenderData.TexCoords, OrigRenderData.TexCoords, source.RenderData.TexCoords.Length);
             Array.Copy(source.RenderData.Indices, OrigRenderData.Indices, source.RenderData.Indices.Length);
+
 
 
         }
@@ -622,6 +634,20 @@ namespace Radegast.Rendering
                     RenderData.TexCoords[current++] = _vertices[i].TexCoord.X;
                     RenderData.TexCoords[current++] = _vertices[i].TexCoord.Y;
             }
+
+            RenderData.weights = new float[_numVertices];
+            for (int i = 0; i < _numVertices; i++)
+            {
+                RenderData.weights[i] = _vertices[i].Weight;
+            }
+
+            RenderData.skinJoints = new string[_skinJoints.Length];
+            for (int i = 0; i < _skinJoints.Length; i++)
+            {
+                RenderData.skinJoints[i] = _skinJoints[i];
+            }
+
+
         }
 
         public override void LoadLODMesh(int level, string filename)
@@ -629,6 +655,52 @@ namespace Radegast.Rendering
             LODMesh lod = new LODMesh();
             lod.LoadMesh(filename);
             _lodMeshes[level] = lod;
+        }
+
+        public void applyjointweights()
+        {
+    
+            /*Each weight actually contains two pieces of information. 
+             * The number to the left of the decimal point is the index of the joint and also 
+             * implicitly indexes to the following joint. The actual weight is to the right of 
+             * the decimal point and interpolates between these two joints. The index is into an 
+             * "expanded" list of joints, not just a linear array of the joints as defined in the 
+             * skeleton file. In particular, any joint that has more than one child will be repeated 
+             * in the list for each of its children.
+             */
+
+            for (int v = 0, x=0; v < RenderData.Vertices.Length / 3; v=v+3, x++)
+            {
+                // yay for efficient code, the render loop will love this
+                int jointindex = (int)RenderData.weights[x]-1;
+                float weight1 = RenderData.weights[x] - jointindex;
+
+
+                //FIX ME Currently getting indexes that are larger than we are expecting
+                if (jointindex==-1 || jointindex > RenderData.skinJoints.Length-1)
+                    continue;
+
+                string jointname = RenderData.skinJoints[jointindex];
+
+               
+                Bone b = av.skel.mBones[jointname];
+
+                Vector3 unity = new Vector3(1, 1, 1);
+                Vector3 scale = (b.scale-unity) * weight1;
+
+                //fix me 
+
+                foreach (Bone child in b.children)
+                {
+                 //   scale = scale + (unity-child.scale) * weight1;
+                }
+
+                RenderData.Vertices[v] = OrigRenderData.Vertices[v];// +scale.X;
+                RenderData.Vertices[v + 1] = OrigRenderData.Vertices[v + 1];// +scale.Y;
+                RenderData.Vertices[v + 2] = OrigRenderData.Vertices[v + 2];// +scale.Z;
+                
+               
+            }
         }
 
         public void morphmesh(Morph morph, float weight)
@@ -650,28 +722,6 @@ namespace Radegast.Rendering
         }
     }
 
-    /*
-    public class extendedVisualParam
-    {
-        public VisualParam baseparam;
-        public Esex sex;
-
-        public enum Esex
-        {
-            SEX_BOTH = 0,
-            SEX_FEMALE = 1,
-            SEX_MALE = 2
-        }
-
-        public extendedVisualParam(VisualParam p)
-        {
-            sex = Esex.SEX_BOTH;
-            baseparam = p;            
-        }
-
-    }
-    */
-
     public class GLAvatar
     {
         private static Dictionary<string, GLMesh> _defaultmeshes = new Dictionary<string, GLMesh>();
@@ -691,7 +741,7 @@ namespace Radegast.Rendering
         {
             foreach (KeyValuePair<string,GLMesh> kvp in _defaultmeshes)
             {
-                GLMesh mesh = new GLMesh(kvp.Value); // Instance our meshes
+                GLMesh mesh = new GLMesh(kvp.Value,this); // Instance our meshes
                 _meshes.Add(kvp.Key, mesh);
                 
             }
@@ -699,6 +749,9 @@ namespace Radegast.Rendering
 
         public static void loadlindenmeshes2(string LODfilename)
         {
+            attachment_points.Clear();
+            
+
             string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
 
             XmlDocument lad = new XmlDocument();
@@ -827,223 +880,18 @@ namespace Radegast.Rendering
 
         }
 
-/*        
-        public static void loadlindenmeshes(string LODfilename)
-        {
-            Bone.loadbones("avatar_skeleton.xml");
-
-            string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
-
-            // Parse through avatar_lad.xml to find all of the mesh references
-            XmlDocument lad = new XmlDocument();
-            lad.Load(basedir + LODfilename);
-
-            attachment_points.Clear();
-
-            XmlNodeList attach_points = lad.GetElementsByTagName("attachment_point");
-            foreach (XmlNode apoint in attach_points)
-            {
-                attachment_point point = new attachment_point();
-                point.name = apoint.Attributes.GetNamedItem("name").Value;
-                point.joint = apoint.Attributes.GetNamedItem("joint").Value;
-
-                string pos = apoint.Attributes.GetNamedItem("position").Value;
-                string[] posparts = pos.Split(' ');
-                point.position = new Vector3(float.Parse(posparts[0]), float.Parse(posparts[1]), float.Parse(posparts[2]));
-
-                string rot = apoint.Attributes.GetNamedItem("rotation").Value;
-                string[] rotparts = rot.Split(' ');
-                point.rotation = Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
-
-                point.id = Int32.Parse(apoint.Attributes.GetNamedItem("id").Value);
-                point.group = Int32.Parse(apoint.Attributes.GetNamedItem("group").Value);
-
-                attachment_points.Add(point.id, point);
-
-            }
-
-            XmlNodeList bones = lad.GetElementsByTagName("bone");
-
-            XmlNodeList meshes = lad.GetElementsByTagName("mesh");
-
-            foreach (XmlNode meshNode in meshes)
-            {
-                string type = meshNode.Attributes.GetNamedItem("type").Value;
-                int lod = Int32.Parse(meshNode.Attributes.GetNamedItem("lod").Value);
-                string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
-                //string minPixelWidth = meshNode.Attributes.GetNamedItem("min_pixel_width").Value;
-
-                GLMesh mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
-             
-                Logger.Log("Now on mesh " + type,Helpers.LogLevel.Info);
-
-                if(lod==0)
-                if (meshNode.HasChildNodes)
-                {
-                    Logger.Log("Has child nodes ", Helpers.LogLevel.Info);
-
-                    XmlNodeList mesh_morphs = meshNode.ChildNodes;
-                    mesh._evp.Clear();
-                    foreach (XmlNode morphNode in mesh_morphs)
-                    {
-
-                        //if (morphNode.Attributes != null && morphNode.Attributes.GetNamedItem("id") != null)
-                        if(morphNode.Name=="param")
-                        {
-                            int id = Int32.Parse(morphNode.Attributes.GetNamedItem("id").Value);
-                            int sex = 0; // 0 both //1 female //2 male
-                            string name = morphNode.Attributes.GetNamedItem("name").Value;
-                            XmlNode sexnode = morphNode.Attributes.GetNamedItem("sex");
-
-                            Logger.Log("Found a morph id " + id.ToString()+" "+name, Helpers.LogLevel.Info);
-
-                            VisualParam vp;
-
-                            
-                            if (!VisualParams.Params.TryGetValue(id,out vp))
-                            {
-                                // Need to generate this one libomv has not had it hard coded
-                                VisualParam p = new VisualParam();
-                                p.Name = morphNode.Attributes.GetNamedItem("name").Value;
-                                p.MaxValue = float.Parse(morphNode.Attributes.GetNamedItem("value_max").Value);
-                                p.MinValue = float.Parse(morphNode.Attributes.GetNamedItem("value_min").Value);
-                                VisualParams.Params[id] = p;
-                            }
-
-                            VisualParamEx evp = new VisualParamEx(vp);
-                            evp.meshname = type;
-                            evp.sex = extendedVisualParam.Esex.SEX_BOTH;
-
-                            if (sexnode != null)
-                            {
-                                if (sexnode.Value == "male")
-                                {
-                                    evp.sex = extendedVisualParam.Esex.SEX_MALE;
-                                }
-                                else
-                                {
-                                    evp.sex = extendedVisualParam.Esex.SEX_FEMALE;
-                                }
-
-                            }
-                            
-                            // Get any driven paramaters
-
-                            if (morphNode.HasChildNodes)
-                            {
-                                XmlNodeList driverNodes = morphNode.ChildNodes;
-                                foreach (XmlNode driverNode in driverNodes)
-                                {
-                                    if (driverNode.Name == "param_driver")
-                                    {
-                                        if (driverNode.HasChildNodes)
-                                        {
-                                            XmlNodeList drivenNodes = driverNode.ChildNodes;
-                                            foreach (XmlNode drivenNode in drivenNodes)
-                                            {
-                                                if (drivenNode.Name == "driven")
-                                                {
-                                                    extendedVisualParam.driven driven = new extendedVisualParam.driven();
-                                                    driven.id = Int32.Parse(drivenNode.Attributes.GetNamedItem("id").Value);
-                                                    XmlNode node = drivenNode.Attributes.GetNamedItem("min1");
-                                                    if (node != null)
-                                                    {
-                                                        driven.min1 = float.Parse(node.Value);
-                                                    }
-                                                    node = drivenNode.Attributes.GetNamedItem("min2");
-                                                    if (node != null)
-                                                    {
-                                                        driven.min2 = float.Parse(node.Value);
-                                                    }
-                                                    node = drivenNode.Attributes.GetNamedItem("max1");
-                                                    if (node != null)
-                                                    {
-                                                        driven.max1 = float.Parse(node.Value);
-                                                    }
-                                                    node = drivenNode.Attributes.GetNamedItem("max2");
-                                                    if (node != null)
-                                                    {
-                                                        driven.max2 = float.Parse(node.Value);
-                                                    }
-                                                    evp.drivenParams.Add(driven);
-
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                            }
-
-
-
-                            mesh._evp.Add(id, evp);
-                        }
-                    }
-                }
-
-                switch (mesh.Name)
-                {
-                    case "lowerBodyMesh":
-                        mesh.teFaceID = (int)AvatarTextureIndex.LowerBaked;
-                        break;
-
-                    case "upperBodyMesh":
-                        mesh.teFaceID = (int)AvatarTextureIndex.UpperBaked;
-                        break;
-
-                    case "headMesh":
-                        mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
-                        break;
-
-                    case "hairMesh":
-                        mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
-                    break;
-
-                    case "eyelashMesh":
-                        mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
-                    break;
-
-                    case "eyeBallRightMesh":
-                        mesh.setMeshPos(Bone.getOffset("mEyeLeft"));
-                        //mesh.setMeshRot(Bone.getRotation("mEyeLeft"));
-                        mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
-                        break;
-
-                    case "eyeBallLeftMesh":
-                        mesh.setMeshPos(Bone.getOffset("mEyeRight"));
-                        //mesh.setMeshRot(Bone.getRotation("mEyeRight"));
-                        mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
-                        break;
-
-                    case "skirtMesh":
-                        mesh.teFaceID = (int)AvatarTextureIndex.SkirtBaked;
-                        break;
-
-                    default:
-                        mesh.teFaceID = 0;
-                        break;
-                }
-
-                if (lod == 0)
-                {
-                    mesh.LoadMesh(basedir + fileName);
-                }
-                else
-                {
-                    mesh.LoadLODMesh(lod, basedir + fileName);
-                }
-
-                _defaultmeshes[type] = mesh;
-
-            }
-        }
-*/
         public void morphtest(Avatar av, int param, float weight)
         {
             VisualParamEx vpx;
             if (VisualParamEx.allParams.TryGetValue(param,out vpx))
             {
+
+                //weight = weight * 2.0f;
+                //weight=weight-1.0f;
+
+                float value = vpx.MinValue + ((vpx.MaxValue - vpx.MinValue) * weight);
+
+               
                 if (vpx.pType == VisualParamEx.ParamType.TYPE_MORPH)
                 {
                     // Its a morph
@@ -1054,7 +902,7 @@ namespace Radegast.Rendering
                         {
                             if (morph.Name == vpx.Name)
                             {
-                                mesh.morphmesh(morph, weight);
+                                mesh.morphmesh(morph, value);
                             }
                         }
                     }
@@ -1097,7 +945,7 @@ namespace Radegast.Rendering
                     {
                         foreach (KeyValuePair<string, Vector3> kvp in vpx.BoneDeforms)
                         {
-                            skel.deformbone(kvp.Key, new Vector3(0,0,0),kvp.Value);
+                            skel.deformbone(kvp.Key, new Vector3(0,0,0),kvp.Value*value);
                         }
                     }
                     else
@@ -1131,7 +979,11 @@ namespace Radegast.Rendering
                 }
             
             }
-            
+
+            foreach (GLMesh mesh in _meshes.Values)
+            {
+                mesh.applyjointweights();
+            }
         }
 
         public void morph(Avatar av)
@@ -1199,12 +1051,26 @@ namespace Radegast.Rendering
 
     public class skeleton
     {
-
         public Dictionary<string, Bone> mBones;
 
         public skeleton()
         {
-            mBones = new Dictionary<string, Bone>(Bone.mBones); //copy from the static defines
+            mBones = new Dictionary<string, Bone>(); //copy from the static defines
+            regenerate(new Bone(Bone.mBones["mPelvis"]), Bone.mBones["mPelvis"]);      
+        }
+
+        public void regenerate(Bone parent,Bone oldbone)
+        {
+            mBones.Add(parent.name, parent);
+
+            foreach (Bone oldchildbone in oldbone.children)
+            {
+                Bone nnb = new Bone(oldchildbone);
+                parent.children.Add(nnb);
+                nnb.parent = parent;
+                regenerate(nnb,oldchildbone);
+            }
+
         }
 
         public void deformbone(string name, Vector3 pos, Vector3 scale)
@@ -1212,8 +1078,13 @@ namespace Radegast.Rendering
             Bone bone;
             if (mBones.TryGetValue(name, out bone))
             {
-                bone.pos = Bone.mBones[name].pos + pos;
-                bone.scale = Bone.mBones[name].scale + scale;
+                bone.pos = Bone.mBones[name].orig_pos + pos;
+                bone.scale = Bone.mBones[name].orig_scale + scale;
+
+                foreach (Bone child in bone.children)
+                {
+                    child.pos *= scale;
+                }
             }
 
         }
@@ -1226,6 +1097,19 @@ namespace Radegast.Rendering
             if (mBones.TryGetValue(bonename, out b))
             {
                 return (b.getOffset());
+            }
+            else
+            {
+                return Vector3.Zero;
+            }
+        }
+
+        public Vector3 getDeltaOffset(string bonename)
+        {
+            Bone b;
+            if (mBones.TryGetValue(bonename, out b))
+            {
+                return (b.getDeltaOffset());
             }
             else
             {
@@ -1253,14 +1137,33 @@ namespace Radegast.Rendering
     {
         public string name;
         public Vector3 pos;
-        //public Vector3 rot;
         public Quaternion rot;
         public Vector3 scale;
         public Vector3 piviot;
 
+        public Vector3 orig_pos;
+        public Quaternion orig_rot;
+        public Vector3 orig_scale;
+        public Vector3 orig_piviot;
+
         public Bone parent;
 
+        public List<Bone> children = new List<Bone>();
+
         public static Dictionary<string, Bone> mBones = new Dictionary<string, Bone>();
+
+        public Bone()
+        {
+        }
+
+        public Bone(Bone source)
+        {
+            name = String.Copy(source.name);
+            pos = new Vector3(source.pos);
+            rot = new Quaternion(source.rot);
+            scale = new Vector3(source.scale);
+            piviot = new Vector3(source.piviot);
+        }
 
         public static void loadbones(string skeletonfilename)
         {
@@ -1280,18 +1183,24 @@ namespace Radegast.Rendering
             string pos = bone.Attributes.GetNamedItem("pos").Value;
             string[] posparts = pos.Split(' ');
             b.pos = new Vector3(float.Parse(posparts[0]), float.Parse(posparts[1]), float.Parse(posparts[2]));
+            b.orig_pos = new Vector3(b.pos);
 
             string rot = bone.Attributes.GetNamedItem("rot").Value;
             string[] rotparts = pos.Split(' ');
             b.rot = Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
+            b.orig_rot = new Quaternion(b.rot);
 
             string scale = bone.Attributes.GetNamedItem("scale").Value;
-            string[] scaleparts = pos.Split(' ');
+            string[] scaleparts = scale.Split(' ');
             b.scale = new Vector3(float.Parse(scaleparts[0]), float.Parse(scaleparts[1]), float.Parse(scaleparts[2]));
+            b.orig_scale = new Vector3(b.scale);
 
             //TODO piviot
 
             b.parent = parent;
+
+            if (parent != null)
+                parent.children.Add(b);
 
             mBones.Add(b.name, b);
 
@@ -1304,6 +1213,18 @@ namespace Radegast.Rendering
 
         }
 
+        public Vector3 getDeltaOffset()
+        {
+            Vector3 totalpos = pos-orig_pos;
+
+            if (parent != null)
+            {
+                totalpos = parent.getDeltaOffset() + totalpos;
+            }
+
+            return totalpos;
+   
+        }
 
         public Vector3 getOffset()
         {

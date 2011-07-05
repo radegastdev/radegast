@@ -61,6 +61,9 @@ namespace Radegast.Rendering
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.button_vparam = new System.Windows.Forms.Button();
+            this.textBox_vparamid = new System.Windows.Forms.TextBox();
+            this.hScrollBar_weight = new System.Windows.Forms.HScrollBar();
             this.hsLOD = new System.Windows.Forms.HScrollBar();
             this.hsSpecular = new System.Windows.Forms.HScrollBar();
             this.hsDiffuse = new System.Windows.Forms.HScrollBar();
@@ -76,9 +79,6 @@ namespace Radegast.Rendering
             this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hScrollBar_weight = new System.Windows.Forms.HScrollBar();
-            this.textBox_vparamid = new System.Windows.Forms.TextBox();
-            this.button_vparam = new System.Windows.Forms.Button();
             this.gbZoom.SuspendLayout();
             this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
@@ -102,6 +102,30 @@ namespace Radegast.Rendering
             this.gbZoom.Size = new System.Drawing.Size(644, 98);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
+            // 
+            // button_vparam
+            // 
+            this.button_vparam.Location = new System.Drawing.Point(265, 67);
+            this.button_vparam.Name = "button_vparam";
+            this.button_vparam.Size = new System.Drawing.Size(75, 23);
+            this.button_vparam.TabIndex = 27;
+            this.button_vparam.Text = "button1";
+            this.button_vparam.UseVisualStyleBackColor = true;
+            this.button_vparam.Click += new System.EventHandler(this.button_vparam_Click);
+            // 
+            // textBox_vparamid
+            // 
+            this.textBox_vparamid.Location = new System.Drawing.Point(211, 67);
+            this.textBox_vparamid.Name = "textBox_vparamid";
+            this.textBox_vparamid.Size = new System.Drawing.Size(49, 20);
+            this.textBox_vparamid.TabIndex = 26;
+            // 
+            // hScrollBar_weight
+            // 
+            this.hScrollBar_weight.Location = new System.Drawing.Point(3, 67);
+            this.hScrollBar_weight.Name = "hScrollBar_weight";
+            this.hScrollBar_weight.Size = new System.Drawing.Size(205, 22);
+            this.hScrollBar_weight.TabIndex = 25;
             // 
             // hsLOD
             // 
@@ -231,31 +255,6 @@ namespace Radegast.Rendering
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-            // 
-            // hScrollBar_weight
-            // 
-            this.hScrollBar_weight.Location = new System.Drawing.Point(15, 67);
-            this.hScrollBar_weight.Name = "hScrollBar_weight";
-            this.hScrollBar_weight.Size = new System.Drawing.Size(193, 22);
-            this.hScrollBar_weight.TabIndex = 25;
-            this.hScrollBar_weight.Value = 25;
-            // 
-            // textBox_vparamid
-            // 
-            this.textBox_vparamid.Location = new System.Drawing.Point(211, 69);
-            this.textBox_vparamid.Name = "textBox_vparamid";
-            this.textBox_vparamid.Size = new System.Drawing.Size(49, 20);
-            this.textBox_vparamid.TabIndex = 26;
-            // 
-            // button_vparam
-            // 
-            this.button_vparam.Location = new System.Drawing.Point(265, 67);
-            this.button_vparam.Name = "button_vparam";
-            this.button_vparam.Size = new System.Drawing.Size(75, 23);
-            this.button_vparam.TabIndex = 27;
-            this.button_vparam.Text = "button1";
-            this.button_vparam.UseVisualStyleBackColor = true;
-            this.button_vparam.Click += new System.EventHandler(this.button_vparam_Click);
             // 
             // SceneWindow
             // 

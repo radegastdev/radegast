@@ -1147,14 +1147,26 @@ namespace Radegast.Rendering
                             // We have manually added the eyeball offset based on the headbone when we
                             // constructed the meshes, but why are the position offsets we got when loading
                             // the other meshes <0,7,0> ?
-                            if (mesh.Name == "eyeBallRightMesh" || mesh.Name == "eyeBallLeftMesh")
+                            if (mesh.Name == "eyeBallLeftMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(mesh.Position));
-                                //TODO save the rot in a Quaternion in the Bone class rather than convert on the fly
-                                Quaternion rot = new Quaternion(mesh.RotationAngles.X, mesh.RotationAngles.Y, mesh.RotationAngles.Z);
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(rot));
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getOffset("mEyeLeft")));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(av.glavatar.skel.getRotation("mEyeLeft")));
                             }
+                            if (mesh.Name == "eyeBallRightMesh")
+                            {
+                                // Mesh roation and position
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getOffset("mEyeRight")));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(av.glavatar.skel.getRotation("mEyeRight")));
+                            }
+
+
+
+                            //Should we be offsetting the base meshs at all?
+                            //if (mesh.Name == "headMesh")
+                            //{
+                            //    GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getDeltaOffset("mHead")));
+                            //}
 
 
                             //Gl.glTranslatef(mesh.Position.X, mesh.Position.Y, mesh.Position.Z);
