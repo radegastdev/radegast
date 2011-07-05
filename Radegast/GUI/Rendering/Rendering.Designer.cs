@@ -76,12 +76,18 @@ namespace Radegast.Rendering
             this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hScrollBar_weight = new System.Windows.Forms.HScrollBar();
+            this.textBox_vparamid = new System.Windows.Forms.TextBox();
+            this.button_vparam = new System.Windows.Forms.Button();
             this.gbZoom.SuspendLayout();
             this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbZoom
             // 
+            this.gbZoom.Controls.Add(this.button_vparam);
+            this.gbZoom.Controls.Add(this.textBox_vparamid);
+            this.gbZoom.Controls.Add(this.hScrollBar_weight);
             this.gbZoom.Controls.Add(this.hsLOD);
             this.gbZoom.Controls.Add(this.hsSpecular);
             this.gbZoom.Controls.Add(this.hsDiffuse);
@@ -226,6 +232,31 @@ namespace Radegast.Rendering
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
+            // hScrollBar_weight
+            // 
+            this.hScrollBar_weight.Location = new System.Drawing.Point(15, 67);
+            this.hScrollBar_weight.Name = "hScrollBar_weight";
+            this.hScrollBar_weight.Size = new System.Drawing.Size(193, 22);
+            this.hScrollBar_weight.TabIndex = 25;
+            this.hScrollBar_weight.Value = 25;
+            // 
+            // textBox_vparamid
+            // 
+            this.textBox_vparamid.Location = new System.Drawing.Point(211, 69);
+            this.textBox_vparamid.Name = "textBox_vparamid";
+            this.textBox_vparamid.Size = new System.Drawing.Size(49, 20);
+            this.textBox_vparamid.TabIndex = 26;
+            // 
+            // button_vparam
+            // 
+            this.button_vparam.Location = new System.Drawing.Point(265, 67);
+            this.button_vparam.Name = "button_vparam";
+            this.button_vparam.Size = new System.Drawing.Size(75, 23);
+            this.button_vparam.TabIndex = 27;
+            this.button_vparam.Text = "button1";
+            this.button_vparam.UseVisualStyleBackColor = true;
+            this.button_vparam.Click += new System.EventHandler(this.button_vparam_Click);
+            // 
             // SceneWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -261,6 +292,9 @@ namespace Radegast.Rendering
         private System.Windows.Forms.HScrollBar hsDiffuse;
         private System.Windows.Forms.HScrollBar hsAmbient;
         private System.Windows.Forms.HScrollBar hsLOD;
+        private System.Windows.Forms.Button button_vparam;
+        private System.Windows.Forms.TextBox textBox_vparamid;
+        private System.Windows.Forms.HScrollBar hScrollBar_weight;
 
     }
 }

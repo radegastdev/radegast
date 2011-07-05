@@ -437,6 +437,16 @@ namespace Radegast.Rendering
         public GLMesh jointmesh;
         public int jointmeshindex;
 
+        public attachment_point(XmlNode node)
+        {
+            name = node.Attributes.GetNamedItem("name").Value;
+            joint = node.Attributes.GetNamedItem("joint").Value;
+            position = VisualParamEx.XmlParseVector(node.Attributes.GetNamedItem("position").Value);
+            rotation = VisualParamEx.XmlParseRotation(node.Attributes.GetNamedItem("rotation").Value);
+            id = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
+            group = Int32.Parse(node.Attributes.GetNamedItem("group").Value);
+        }
+
     }
 
     /// <summary>
@@ -452,6 +462,7 @@ namespace Radegast.Rendering
         /// 
 
         public int teFaceID;
+        public Dictionary<int, VisualParamEx> _evp = new Dictionary<int, VisualParamEx>();
 
         new public class LODMesh : LindenMesh.LODMesh
         {
@@ -479,6 +490,7 @@ namespace Radegast.Rendering
         public struct GLData
         {
             public float[] Vertices;
+            public float[] Normals;
             public ushort[] Indices;
             public float[] TexCoords;
             public Vector3 Center;
@@ -486,10 +498,54 @@ namespace Radegast.Rendering
 
         public static GLData baseRenderData;
         public GLData RenderData;
+        public GLData OrigRenderData;
 
         public GLMesh(string name)
             : base(name)
         {
+        }
+
+        public GLMesh(GLMesh source)
+            :base(source.Name)
+        {
+            // Make a new GLMesh copy from the supplied source
+            RenderData.Vertices = new float[source.RenderData.Vertices.Length];
+            //RenderData.Normals = new float[source.RenderData.Normals.Length];
+            RenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
+            RenderData.Indices = new ushort[source.RenderData.Indices.Length];
+
+            RenderData.Vertices = new float[source.RenderData.Vertices.Length];
+            //RenderData.Normals = new float[source.RenderData.Normals.Length];
+            RenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
+            RenderData.Indices = new ushort[source.RenderData.Indices.Length];
+
+
+            Array.Copy(source.RenderData.Vertices,RenderData.Vertices,source.RenderData.Vertices.Length);
+//            Array.Copy(source.RenderData.Normals, RenderData.Normals, source.RenderData.Normals.Length);
+
+            Array.Copy(source.RenderData.TexCoords, RenderData.TexCoords, source.RenderData.TexCoords.Length);
+            Array.Copy(source.RenderData.Indices, RenderData.Indices, source.RenderData.Indices.Length);
+            RenderData.Center = new Vector3(source.RenderData.Center);
+
+            teFaceID = source.teFaceID;
+
+            _rotationAngles = new Vector3(source.RotationAngles);
+            _scale = new Vector3(source.Scale);
+            _position = new Vector3(source.Position);
+
+            // We should not need to instance these the reference from the top should be constant
+            _evp = source._evp;
+            _morphs = source._morphs;
+
+            OrigRenderData.Indices = new ushort[source.RenderData.Indices.Length];
+            OrigRenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
+            OrigRenderData.Vertices = new float[source.RenderData.Vertices.Length];
+
+            Array.Copy(source.RenderData.Vertices, OrigRenderData.Vertices, source.RenderData.Vertices.Length);
+            Array.Copy(source.RenderData.TexCoords, OrigRenderData.TexCoords, source.RenderData.TexCoords.Length);
+            Array.Copy(source.RenderData.Indices, OrigRenderData.Indices, source.RenderData.Indices.Length);
+
+
         }
 
         public void setMeshPos(Vector3 pos)
@@ -513,13 +569,22 @@ namespace Radegast.Rendering
 
             // Generate the vertex array
             RenderData.Vertices = new float[_numVertices * 3];
+  //          RenderData.Normals = new float[_numVertices * 3];
+
+             Quaternion quat = Quaternion.CreateFromEulers(0, 0, (float)(Math.PI/4.0));
+
             int current = 0;
             for (int i = 0; i < _numVertices; i++)
             {
-                RenderData.Vertices[current++] = _vertices[i].Coord.X;
-                RenderData.Vertices[current++] = _vertices[i].Coord.Y;
-                RenderData.Vertices[current++] = _vertices[i].Coord.Z;
 
+      
+                    //            RenderData.Normals[current] = _vertices[i].Normal.X;
+                    RenderData.Vertices[current++] = _vertices[i].Coord.X;
+                    //          RenderData.Normals[current] = _vertices[i].Normal.Y;
+                    RenderData.Vertices[current++] = _vertices[i].Coord.Y;
+                    //        RenderData.Normals[current] = _vertices[i].Normal.Z;
+                    RenderData.Vertices[current++] = _vertices[i].Coord.Z;
+      
                 if (_vertices[i].Coord.X < minX)
                     minX = _vertices[i].Coord.X;
                 else if (_vertices[i].Coord.X > maxX)
@@ -554,8 +619,8 @@ namespace Radegast.Rendering
             current = 0;
             for (int i = 0; i < _numVertices; i++)
             {
-                RenderData.TexCoords[current++] = _vertices[i].TexCoord.X;
-                RenderData.TexCoords[current++] = _vertices[i].TexCoord.Y;
+                    RenderData.TexCoords[current++] = _vertices[i].TexCoord.X;
+                    RenderData.TexCoords[current++] = _vertices[i].TexCoord.Y;
             }
         }
 
@@ -565,15 +630,204 @@ namespace Radegast.Rendering
             lod.LoadMesh(filename);
             _lodMeshes[level] = lod;
         }
+
+        public void morphmesh(Morph morph, float weight)
+        {
+            for (int v = 0; v < morph.NumVertices; v++)
+            {
+                MorphVertex mvx = morph.Vertices[v];
+
+                uint i = mvx.VertexIndex;
+
+                RenderData.Vertices[i * 3] = OrigRenderData.Vertices[i*3] + mvx.Coord.X * weight;
+                RenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 +1] + mvx.Coord.Y * weight;
+                RenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
+
+                RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i*2] + mvx.TexCoord.X * weight;
+                RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i*2+1] + mvx.TexCoord.Y * weight;
+ 
+            }
+        }
     }
+
+    /*
+    public class extendedVisualParam
+    {
+        public VisualParam baseparam;
+        public Esex sex;
+
+        public enum Esex
+        {
+            SEX_BOTH = 0,
+            SEX_FEMALE = 1,
+            SEX_MALE = 2
+        }
+
+        public extendedVisualParam(VisualParam p)
+        {
+            sex = Esex.SEX_BOTH;
+            baseparam = p;            
+        }
+
+    }
+    */
 
     public class GLAvatar
     {
-        public static Dictionary<string, GLMesh> _meshes = new Dictionary<string, GLMesh>();
-        public static bool _wireframe = true;
-        public static bool _showSkirt = false;
+        private static Dictionary<string, GLMesh> _defaultmeshes = new Dictionary<string, GLMesh>();
+        public Dictionary<string, GLMesh> _meshes = new Dictionary<string, GLMesh>();
+
+        public skeleton skel = new skeleton(); 
         public static Dictionary<int, attachment_point> attachment_points = new Dictionary<int, attachment_point>();
 
+        public bool _wireframe = true;
+        public bool _showSkirt = false;
+
+
+
+        public byte[] VisualAppearanceParameters = new byte[1000];
+
+        public GLAvatar()
+        {
+            foreach (KeyValuePair<string,GLMesh> kvp in _defaultmeshes)
+            {
+                GLMesh mesh = new GLMesh(kvp.Value); // Instance our meshes
+                _meshes.Add(kvp.Key, mesh);
+                
+            }
+        }
+
+        public static void loadlindenmeshes2(string LODfilename)
+        {
+            string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
+
+            XmlDocument lad = new XmlDocument();
+            lad.Load(basedir + LODfilename);
+            
+            //Firstly read the skeleton section this contains attachment point info and the bone deform info for visual params
+            // And load the skeleton file in to the bones class
+
+            XmlNodeList skeleton = lad.GetElementsByTagName("skeleton");
+            string skeletonfilename = skeleton[0].Attributes.GetNamedItem("file_name").Value;
+            Bone.loadbones(skeletonfilename);
+
+            // Next read all the skeleton child nodes, we have attachment points and bone deform params
+            // attachment points are an offset and rotation from a bone location
+            // the name of the bone they reference is the joint paramater
+            // params in the skeleton nodes are bone deforms, eg leg length changes the scale of the leg bones
+
+            foreach (XmlNode skeletonnode in skeleton[0].ChildNodes)
+            {
+                if (skeletonnode.Name == "attachment_point")
+                {
+                    attachment_point point = new attachment_point(skeletonnode);
+                    attachment_points.Add(point.id, point);
+                }
+
+                if (skeletonnode.Name == "param")
+                {
+                    //Bone deform param
+                    VisualParamEx vp = new VisualParamEx(skeletonnode,VisualParamEx.ParamType.TYPE_BONEDEFORM);
+                }
+            }
+
+            //Now we parse the mesh nodes, mesh nodes reference a particular LLM file with a LOD
+            //and also list VisualParams for the various mesh morphs that can be applied
+
+            XmlNodeList meshes = lad.GetElementsByTagName("mesh");
+            foreach (XmlNode meshNode in meshes)
+            {
+                string type = meshNode.Attributes.GetNamedItem("type").Value;
+                int lod = Int32.Parse(meshNode.Attributes.GetNamedItem("lod").Value);
+                string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
+
+                GLMesh mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
+                    
+                if (meshNode.HasChildNodes)
+                {
+                    foreach (XmlNode paramnode in meshNode.ChildNodes)
+                    {
+                        if (paramnode.Name == "param")
+                        {
+                            VisualParamEx vp = new VisualParamEx(paramnode, VisualParamEx.ParamType.TYPE_MORPH);
+
+                            mesh._evp.Add(vp.ParamID, vp); //Not sure we really need this may optimise out later
+                            vp.morphmesh = mesh.Name;
+                        }
+                    }
+                }
+
+                // Set up the texture elemenets for each mesh
+                // And hack the eyeball position
+                switch (mesh.Name)
+                {
+                    case "lowerBodyMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.LowerBaked;
+                        break;
+
+                    case "upperBodyMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.UpperBaked;
+                        break;
+
+                    case "headMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
+                        break;
+
+                    case "hairMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
+                        break;
+
+                    case "eyelashMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
+                        break;
+
+                    case "eyeBallRightMesh":
+                        mesh.setMeshPos( Bone.mBones["mEyeLeft"].getOffset());
+                        //mesh.setMeshRot(Bone.getRotation("mEyeLeft"));
+                        mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
+                        break;
+
+                    case "eyeBallLeftMesh":
+                        mesh.setMeshPos(Bone.mBones["mEyeRight"].getOffset());
+                        //mesh.setMeshRot(Bone.getRotation("mEyeRight"));
+                        mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
+                        break;
+
+                    case "skirtMesh":
+                        mesh.teFaceID = (int)AvatarTextureIndex.SkirtBaked;
+                        break;
+
+                    default:
+                        mesh.teFaceID = 0;
+                        break;
+                }
+
+                if (lod == 0)
+                    mesh.LoadMesh(basedir + fileName);
+                else
+                    mesh.LoadLODMesh(lod, basedir + fileName);
+
+                _defaultmeshes[type] = mesh;
+
+            }
+
+            // Next are the textureing params, skipping for the moment
+
+            // Next are the driver parameters, these are parameters that change multiple real parameters
+
+            XmlNodeList drivers = lad.GetElementsByTagName("driver_parameters");
+
+            foreach (XmlNode node in drivers[0].ChildNodes) //lazy 
+            {
+                if (node.Name == "param")
+                {
+                    VisualParamEx vp = new VisualParamEx(node, VisualParamEx.ParamType.TYPE_DRIVER);
+                }
+            }
+
+        }
+
+/*        
         public static void loadlindenmeshes(string LODfilename)
         {
             Bone.loadbones("avatar_skeleton.xml");
@@ -619,7 +873,114 @@ namespace Radegast.Rendering
                 string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
                 //string minPixelWidth = meshNode.Attributes.GetNamedItem("min_pixel_width").Value;
 
-                GLMesh mesh = (_meshes.ContainsKey(type) ? _meshes[type] : new GLMesh(type));
+                GLMesh mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
+             
+                Logger.Log("Now on mesh " + type,Helpers.LogLevel.Info);
+
+                if(lod==0)
+                if (meshNode.HasChildNodes)
+                {
+                    Logger.Log("Has child nodes ", Helpers.LogLevel.Info);
+
+                    XmlNodeList mesh_morphs = meshNode.ChildNodes;
+                    mesh._evp.Clear();
+                    foreach (XmlNode morphNode in mesh_morphs)
+                    {
+
+                        //if (morphNode.Attributes != null && morphNode.Attributes.GetNamedItem("id") != null)
+                        if(morphNode.Name=="param")
+                        {
+                            int id = Int32.Parse(morphNode.Attributes.GetNamedItem("id").Value);
+                            int sex = 0; // 0 both //1 female //2 male
+                            string name = morphNode.Attributes.GetNamedItem("name").Value;
+                            XmlNode sexnode = morphNode.Attributes.GetNamedItem("sex");
+
+                            Logger.Log("Found a morph id " + id.ToString()+" "+name, Helpers.LogLevel.Info);
+
+                            VisualParam vp;
+
+                            
+                            if (!VisualParams.Params.TryGetValue(id,out vp))
+                            {
+                                // Need to generate this one libomv has not had it hard coded
+                                VisualParam p = new VisualParam();
+                                p.Name = morphNode.Attributes.GetNamedItem("name").Value;
+                                p.MaxValue = float.Parse(morphNode.Attributes.GetNamedItem("value_max").Value);
+                                p.MinValue = float.Parse(morphNode.Attributes.GetNamedItem("value_min").Value);
+                                VisualParams.Params[id] = p;
+                            }
+
+                            VisualParamEx evp = new VisualParamEx(vp);
+                            evp.meshname = type;
+                            evp.sex = extendedVisualParam.Esex.SEX_BOTH;
+
+                            if (sexnode != null)
+                            {
+                                if (sexnode.Value == "male")
+                                {
+                                    evp.sex = extendedVisualParam.Esex.SEX_MALE;
+                                }
+                                else
+                                {
+                                    evp.sex = extendedVisualParam.Esex.SEX_FEMALE;
+                                }
+
+                            }
+                            
+                            // Get any driven paramaters
+
+                            if (morphNode.HasChildNodes)
+                            {
+                                XmlNodeList driverNodes = morphNode.ChildNodes;
+                                foreach (XmlNode driverNode in driverNodes)
+                                {
+                                    if (driverNode.Name == "param_driver")
+                                    {
+                                        if (driverNode.HasChildNodes)
+                                        {
+                                            XmlNodeList drivenNodes = driverNode.ChildNodes;
+                                            foreach (XmlNode drivenNode in drivenNodes)
+                                            {
+                                                if (drivenNode.Name == "driven")
+                                                {
+                                                    extendedVisualParam.driven driven = new extendedVisualParam.driven();
+                                                    driven.id = Int32.Parse(drivenNode.Attributes.GetNamedItem("id").Value);
+                                                    XmlNode node = drivenNode.Attributes.GetNamedItem("min1");
+                                                    if (node != null)
+                                                    {
+                                                        driven.min1 = float.Parse(node.Value);
+                                                    }
+                                                    node = drivenNode.Attributes.GetNamedItem("min2");
+                                                    if (node != null)
+                                                    {
+                                                        driven.min2 = float.Parse(node.Value);
+                                                    }
+                                                    node = drivenNode.Attributes.GetNamedItem("max1");
+                                                    if (node != null)
+                                                    {
+                                                        driven.max1 = float.Parse(node.Value);
+                                                    }
+                                                    node = drivenNode.Attributes.GetNamedItem("max2");
+                                                    if (node != null)
+                                                    {
+                                                        driven.max2 = float.Parse(node.Value);
+                                                    }
+                                                    evp.drivenParams.Add(driven);
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+
+
+
+                            mesh._evp.Add(id, evp);
+                        }
+                    }
+                }
 
                 switch (mesh.Name)
                 {
@@ -673,19 +1034,219 @@ namespace Radegast.Rendering
                     mesh.LoadLODMesh(lod, basedir + fileName);
                 }
 
-                _meshes[type] = mesh;
+                _defaultmeshes[type] = mesh;
 
             }
         }
+*/
+        public void morphtest(Avatar av, int param, float weight)
+        {
+            VisualParamEx vpx;
+            if (VisualParamEx.allParams.TryGetValue(param,out vpx))
+            {
+                if (vpx.pType == VisualParamEx.ParamType.TYPE_MORPH)
+                {
+                    // Its a morph
+                    GLMesh mesh;
+                    if (_meshes.TryGetValue(vpx.morphmesh, out mesh))
+                    {
+                        foreach (LindenMesh.Morph morph in mesh.Morphs) //optimise me to a dictionary
+                        {
+                            if (morph.Name == vpx.Name)
+                            {
+                                mesh.morphmesh(morph, weight);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Not a mesh morph 
 
+                        // Its a volume deform, these appear to be related to collision volumes
+                        /*
+                        if (vpx.VolumeDeforms == null)
+                        {
+                            Logger.Log(String.Format("paramater {0} has invalid mesh {1}", param, vpx.morphmesh), Helpers.LogLevel.Warning);
+                        }
+                        else
+                        {
+                            foreach (KeyValuePair<string, VisualParamEx.VolumeDeform> kvp in vpx.VolumeDeforms)
+                            {
+                                skel.deformbone(kvp.Key, kvp.Value.pos, kvp.Value.scale);
+                            }
+                        }
+                         * */
+
+                     }
+                  
+                }
+                else
+                {
+                    // Its not a morph, it might be a driver though
+                    if (vpx.pType == VisualParamEx.ParamType.TYPE_DRIVER)
+                    {
+                        foreach (VisualParamEx.driven child in vpx.childparams)
+                        {
+                            morphtest(av, child.id, weight); //TO DO use minmax if they are present
+                        }
+                        return;
+                    }
+
+                    //Is this a bone deform?
+                    if (vpx.pType == VisualParamEx.ParamType.TYPE_BONEDEFORM)
+                    {
+                        foreach (KeyValuePair<string, Vector3> kvp in vpx.BoneDeforms)
+                        {
+                            skel.deformbone(kvp.Key, new Vector3(0,0,0),kvp.Value);
+                        }
+                    }
+                    else
+                    {
+                        Logger.Log(String.Format("paramater {0} is not a morph and not a driver", param), Helpers.LogLevel.Warning);
+                    }
+                }
+
+            }
+            else
+            {
+                Logger.Log("Invalid paramater " + param.ToString(), Helpers.LogLevel.Warning);
+            }
+
+            foreach (GLMesh mesh in _meshes.Values)
+            {
+                VisualParamEx evp;
+                if (mesh._evp.TryGetValue(param, out evp))
+                {
+                    foreach (LindenMesh.Morph morph in mesh.Morphs)
+                    {
+                        if (morph.Name == evp.Name)
+                        {
+                            mesh.morphmesh(morph, weight);
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No such visual param in morphs");
+                }
+            
+            }
+            
+        }
+
+        public void morph(Avatar av)
+        {
+            /*
+            return;
+            bool found = false;
+
+            foreach (GLMesh mesh in _meshes.Values)
+            {
+                foreach (extendedVisualParam p in mesh._evp.Values)
+                {
+                    if (mesh.Name == "hairMesh")
+                        continue;
+
+                    if (p.baseparam.ParamID == 0) //Ignore express emotes
+                        continue;
+
+                    if (av.VisualParameters != null)
+                    {
+                        if (p.baseparam.ParamID < av.VisualParameters.Length)
+                        {
+
+                            byte paramdata = av.VisualParameters[p.baseparam.ParamID];
+
+                            if (VisualAppearanceParameters[p.baseparam.ParamID] == paramdata)
+                                continue;
+
+                            VisualAppearanceParameters[p.baseparam.ParamID] = paramdata;
+
+                            foreach (LindenMesh.Morph morph in mesh.Morphs)
+                            {
+                                if (morph.Name == p.baseparam.Name)
+                                {
+                                    bool male = av.VisualParameters[31] > 0;
+
+                                    if (p.sex == extendedVisualParam.Esex.SEX_BOTH || ((male == true) && (p.sex == extendedVisualParam.Esex.SEX_MALE)) || (( male == false) && (p.sex == extendedVisualParam.Esex.SEX_FEMALE)))
+                                    {
+                                        Logger.Log("Param " + p.baseparam.Name + " ID " + (p.baseparam.ParamID).ToString() + " value " + paramdata.ToString(), Helpers.LogLevel.Info);
+                                        //float range = p.baseparam.MaxValue - p.baseparam.MinValue;
+                                        float amount = paramdata / 255f;
+                                        mesh.morphmesh(morph, amount);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+             */
+        }
+             
     }
 
     class RenderAvatar
     {
-        public GLAvatar glavatar;
+        public GLAvatar glavatar = new GLAvatar();
         public Avatar avatar;
         public FaceData[] data = new FaceData[32];
+        public Dictionary<UUID, Animation> animlist = new Dictionary<UUID, Animation>();
+        public Dictionary<WearableType, AppearanceManager.WearableData> Wearables = new Dictionary<WearableType, AppearanceManager.WearableData>();
 
+    }
+
+    public class skeleton
+    {
+
+        public Dictionary<string, Bone> mBones;
+
+        public skeleton()
+        {
+            mBones = new Dictionary<string, Bone>(Bone.mBones); //copy from the static defines
+        }
+
+        public void deformbone(string name, Vector3 pos, Vector3 scale)
+        {
+            Bone bone;
+            if (mBones.TryGetValue(name, out bone))
+            {
+                bone.pos = Bone.mBones[name].pos + pos;
+                bone.scale = Bone.mBones[name].scale + scale;
+            }
+
+        }
+
+        //TODO check offset and rot calcuations should each offset be multiplied by its parent rotation in
+        // a standard child/parent rot/offset way?
+        public Vector3 getOffset(string bonename)
+        {
+            Bone b;
+            if (mBones.TryGetValue(bonename, out b))
+            {
+                return (b.getOffset());
+            }
+            else
+            {
+                return Vector3.Zero;
+            }
+        }
+
+        public Quaternion getRotation(string bonename)
+        {
+            Bone b;
+            if (mBones.TryGetValue(bonename, out b))
+            {
+                return (b.getRotation());
+            }
+            else
+            {
+                return Quaternion.Identity;
+            }
+        }
+
+    
     }
 
     public class Bone
@@ -743,20 +1304,6 @@ namespace Radegast.Rendering
 
         }
 
-        //TODO check offset and rot calcuations should each offset be multiplied by its parent rotation in
-        // a standard child/parent rot/offset way?
-        public static Vector3 getOffset(string bonename)
-        {
-            Bone b;
-            if (mBones.TryGetValue(bonename, out b))
-            {
-                return (b.getOffset());
-            }
-            else
-            {
-                return Vector3.Zero;
-            }
-        }
 
         public Vector3 getOffset()
         {
@@ -796,5 +1343,307 @@ namespace Radegast.Rendering
         }
     
     }
+
+    public class VisualParamEx
+    {
+
+        static public Dictionary<int,VisualParamEx> allParams = new  Dictionary<int,VisualParamEx>();
+        static public Dictionary<int, VisualParamEx> deformParams = new Dictionary<int, VisualParamEx>();
+        static public Dictionary<int, VisualParamEx> morphParams = new Dictionary<int, VisualParamEx>();
+        static public Dictionary<int, VisualParamEx> drivenParams = new Dictionary<int, VisualParamEx>();
+
+        public Dictionary<string, Vector3> BoneDeforms = null;
+        public Dictionary<string, VolumeDeform> VolumeDeforms = null;
+        public List<driven> childparams = null;
+
+        public string morphmesh = null;
+
+        public struct VolumeDeform
+        {
+            public string name;
+            public Vector3 scale;
+            public Vector3 pos;
+        }
+
+        public enum EparamSex
+        {
+            SEX_BOTH = 0,
+            SEX_FEMALE = 1,
+            SEX_MALE = 2
+        }
+
+        public enum ParamType
+        {
+            TYPE_BONEDEFORM,
+            TYPE_MORPH,
+            TYPE_DRIVER,
+            TYPE_BAKE,
+        }
+
+        public struct driven
+        {
+            public int id;
+            public float max1;
+            public float max2;
+            public float min1;
+            public float min2;
+            public bool hasMinMax;
+        }
+
+        public string meshname;
+        
+        /// <summary>Index of this visual param</summary>
+        public int ParamID;
+        /// <summary>Internal name</summary>
+        public string Name;
+        /// <summary>Group ID this parameter belongs to</summary>
+        public int Group;
+        /// <summary>Name of the wearable this parameter belongs to</summary>
+        public string Wearable;
+        /// <summary>Displayable label of this characteristic</summary>
+        public string Label;
+        /// <summary>Displayable label for the minimum value of this characteristic</summary>
+        public string LabelMin;
+        /// <summary>Displayable label for the maximum value of this characteristic</summary>
+        public string LabelMax;
+        /// <summary>Default value</summary>
+        public float DefaultValue;
+        /// <summary>Minimum value</summary>
+        public float MinValue;
+        /// <summary>Maximum value</summary>
+        public float MaxValue;
+        /// <summary>Is this param used for creation of bump layer?</summary>
+        public bool IsBumpAttribute;
+        /// <summary>Alpha blending/bump info</summary>
+        public VisualAlphaParam? AlphaParams;
+        /// <summary>Color information</summary>
+        public VisualColorParam? ColorParams;
+        /// <summary>Array of param IDs that are drivers for this parameter</summary>
+        public int[] Drivers;
+        /// <summary>The Avatar Sex that this parameter applies to</summary>
+        public EparamSex sex;
+
+        public ParamType pType;
+
+        /// <summary>
+        /// Set all the values through the constructor
+        /// </summary>
+        /// <param name="paramID">Index of this visual param</param>
+        /// <param name="name">Internal name</param>
+        /// <param name="group"></param>
+        /// <param name="wearable"></param>
+        /// <param name="label">Displayable label of this characteristic</param>
+        /// <param name="labelMin">Displayable label for the minimum value of this characteristic</param>
+        /// <param name="labelMax">Displayable label for the maximum value of this characteristic</param>
+        /// <param name="def">Default value</param>
+        /// <param name="min">Minimum value</param>
+        /// <param name="max">Maximum value</param>
+        /// <param name="isBumpAttribute">Is this param used for creation of bump layer?</param>
+        /// <param name="drivers">Array of param IDs that are drivers for this parameter</param>
+        /// <param name="alpha">Alpha blending/bump info</param>
+        /// <param name="colorParams">Color information</param>
+        public VisualParamEx(int paramID, string name, int group, string wearable, string label, string labelMin, string labelMax, float def, float min, float max, bool isBumpAttribute, int[] drivers, VisualAlphaParam? alpha, VisualColorParam? colorParams)
+        {
+            ParamID = paramID;
+            Name = name;
+            Group = group;
+            Wearable = wearable;
+            Label = label;
+            LabelMin = labelMin;
+            LabelMax = labelMax;
+            DefaultValue = def;
+            MaxValue = max;
+            MinValue = min;
+            IsBumpAttribute = isBumpAttribute;
+            Drivers = drivers;
+            AlphaParams = alpha;
+            ColorParams = colorParams;
+            sex = EparamSex.SEX_BOTH;
+        }
+
+        public VisualParamEx(XmlNode node, ParamType pt)
+        {
+            pType = pt;
+   
+            ParamID = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
+            Name = node.Attributes.GetNamedItem("name").Value;
+            Group = Int32.Parse(node.Attributes.GetNamedItem("group").Value);
+
+            //These dont exist for facal expresion morphs
+            if(node.Attributes.GetNamedItem("wearable")!=null)
+                Wearable = node.Attributes.GetNamedItem("wearable").Value;
+            
+            MinValue = float.Parse(node.Attributes.GetNamedItem("value_min").Value);
+            MaxValue = float.Parse(node.Attributes.GetNamedItem("value_max").Value);
+
+            // These do not exists for driven parameters
+            if (node.Attributes.GetNamedItem("label_min") != null)
+            {
+                LabelMin = node.Attributes.GetNamedItem("label_min").Value;
+            }
+
+            if (node.Attributes.GetNamedItem("label_max") != null)
+            {
+                LabelMax = node.Attributes.GetNamedItem("label_max").Value;
+            }
+
+            XmlNode sexnode = node.Attributes.GetNamedItem("sex");
+
+            if (sexnode != null)
+            {
+                if (sexnode.Value == "male")
+                {
+                    sex = EparamSex.SEX_MALE;
+                }
+                else
+                {
+                    sex = EparamSex.SEX_FEMALE;
+                }
+
+            }
+
+            //TODO other paramaters but these arew concerned with editing the GUI display so not too fussed at the moment
+
+            try
+            {
+                allParams.Add(ParamID, this);
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Duplicate VisualParam in allParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
+            }
+
+            if (pt == ParamType.TYPE_BONEDEFORM)
+            {
+                // If we are in the skeleton section then we also have bone deforms to parse
+                BoneDeforms = new Dictionary<string, Vector3>();
+                if(node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
+                {
+                    ParseBoneDeforms(node.ChildNodes[0].ChildNodes); 
+                }
+                deformParams.Add(ParamID,this);
+            }
+
+            if (pt == ParamType.TYPE_MORPH)
+            {
+                VolumeDeforms = new Dictionary<string, VolumeDeform>();
+                if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
+                {
+                    ParseVolumeDeforms(node.ChildNodes[0].ChildNodes);
+                }
+
+                try
+                {
+                    morphParams.Add(ParamID, this);
+                }
+                catch (Exception e)
+                {
+                    Logger.Log("Duplicate VisualParam in morphParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
+                }
+
+            }
+
+            if (pt == ParamType.TYPE_DRIVER)
+            {
+                childparams = new List<driven>();
+                if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes) //LAZY
+                {
+                    ParseDrivers(node.ChildNodes[0].ChildNodes);
+                }
+
+                drivenParams.Add(ParamID, this);
+
+            }
+        }
+
+        void ParseBoneDeforms(XmlNodeList deforms)
+        {
+            foreach (XmlNode node in deforms)
+            {
+                if (node.Name == "bone")
+                {
+                    string name = node.Attributes.GetNamedItem("name").Value;
+                    Vector3 scale = XmlParseVector(node.Attributes.GetNamedItem("scale").Value);
+                    BoneDeforms.Add(name, scale);
+                }
+            }
+        }
+
+        void ParseVolumeDeforms(XmlNodeList deforms)
+        {
+            foreach (XmlNode node in deforms)
+            {
+                if (node.Name == "volume_morph")
+                {
+                    VolumeDeform vd = new VolumeDeform();
+                    vd.name = node.Attributes.GetNamedItem("name").Value;
+                    vd.name = vd.name.ToLower();
+
+                    if (node.Attributes.GetNamedItem("scale") != null)
+                    {
+                        vd.scale = XmlParseVector(node.Attributes.GetNamedItem("scale").Value);
+                    }
+                    else
+                    {
+                        vd.scale = new Vector3(0, 0, 0);
+                    }
+
+                    if (node.Attributes.GetNamedItem("pos") != null)
+                    {
+                        vd.pos = XmlParseVector(node.Attributes.GetNamedItem("pos").Value);
+                    }
+                    else
+                    {
+                        vd.pos = new Vector3(0f, 0f, 0f);
+                    }
+
+                    VolumeDeforms.Add(vd.name, vd);
+                }
+            }
+        }
+
+        void ParseDrivers(XmlNodeList drivennodes)
+        {
+            foreach (XmlNode node in drivennodes)
+            {
+                if (node.Name == "driven")
+                {
+                    driven d = new driven();
+
+                    d.id = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
+                    XmlNode param = node.Attributes.GetNamedItem("max1");
+                    if (param != null)
+                    {
+                        d.max1 = float.Parse(param.Value);
+                        d.max2 = float.Parse(node.Attributes.GetNamedItem("max2").Value);
+                        d.min1 = float.Parse(node.Attributes.GetNamedItem("min1").Value);
+                        d.max2 = float.Parse(node.Attributes.GetNamedItem("min2").Value);
+                        d.hasMinMax = true;
+                    }
+                    else
+                    {
+                        d.hasMinMax = false;
+                    }
+
+                    childparams.Add(d);    
+                                   
+                }
+            }
+        }
+
+        public static Vector3 XmlParseVector(string data)
+        {
+            string[] posparts = data.Split(' ');
+            return new Vector3(float.Parse(posparts[0]), float.Parse(posparts[1]), float.Parse(posparts[2]));
+        }
+
+        public static Quaternion XmlParseRotation(string data)
+        {
+            string[] rotparts = data.Split(' ');
+            return Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
+        }
+
+    }
+
 
 }

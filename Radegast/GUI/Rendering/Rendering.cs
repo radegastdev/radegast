@@ -104,7 +104,7 @@ namespace Radegast.Rendering
         OpenTK.Matrix4 ModelMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
         int[] Viewport = new int[4];
-        bool useVBO = true;
+        bool useVBO = false;
         System.Diagnostics.Stopwatch renderTimer;
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
@@ -141,7 +141,7 @@ namespace Radegast.Rendering
             Camera = new Camera();
             InitCamera();
 
-            GLAvatar.loadlindenmeshes("avatar_lad.xml");
+            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -150,9 +150,12 @@ namespace Radegast.Rendering
             Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
+            //Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
+            Client.Avatars.AvatarAppearance += new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
             Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
         }
+
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
@@ -167,6 +170,7 @@ namespace Radegast.Rendering
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
+            //Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
             if (glControl != null)
@@ -296,6 +300,48 @@ namespace Radegast.Rendering
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
             UpdatePrimBlocking(e.Prim);
         }
+
+        void AvatarAnimationChanged(object sender, AvatarAnimationEventArgs e)
+        {
+     
+            // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                if (av.avatar.ID == e.AvatarID)
+                {
+                    foreach(Animation anim in e.Animations)
+                    {
+                        Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, animRecievedCallback);
+                        av.animlist.Add(anim.AnimationID, anim);
+                    }
+                    break;
+                }
+            }
+        }
+
+        void animRecievedCallback(AssetDownload transfer, Asset asset)
+        {
+            if (transfer.Success)
+            {
+                BinBVHAnimationReader b = new BinBVHAnimationReader(asset.AssetData);
+                
+            }
+        }
+
+        void Avatars_AvatarAppearance(object sender, AvatarAppearanceEventArgs e)
+        {
+               // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                if (av.avatar.ID == e.AvatarID)
+                {
+                    av.glavatar.morph(av.avatar);
+                }
+            }
+
+        }
+
+
         #endregion Network messaage handlers
 
         #region glControl setup and disposal
@@ -853,6 +899,8 @@ namespace Radegast.Rendering
                         // This is an child prim of an attachment
                         if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav))
                         {
+                            return new Vector3(99999f, 99999f, 99999f);
+        
                             var avPos = PrimPos(parentav.avatar);
                             return avPos;
                         }
@@ -864,6 +912,8 @@ namespace Radegast.Rendering
                 }
                 else if (Avatars.TryGetValue(prim.ParentID, out parentav))
                 {
+                    return new Vector3(99999f, 99999f, 99999f);
+        
                     var avPos = PrimPos(parentav.avatar);
 
                     return avPos + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
@@ -1016,11 +1066,15 @@ namespace Radegast.Rendering
                 else
                 {
                     GLAvatar ga = new GLAvatar();
+                    
+                    //ga.morph(av);
                     RenderAvatar ra = new Rendering.RenderAvatar();
                     ra.avatar = av;
                     ra.glavatar = ga;
                     updateAVtes(ra);
                     Avatars.Add(av.LocalID, ra);
+                    ra.glavatar.morph(av);
+
                 }
             }
         }
@@ -1060,19 +1114,20 @@ namespace Radegast.Rendering
             {
                 GL.EnableClientState(ArrayCap.VertexArray);
                 GL.EnableClientState(ArrayCap.TextureCoordArray);
+                //GL.EnableClientState(ArrayCap.NormalArray);
 
                 int avatarNr = 0;
                 foreach (RenderAvatar av in Avatars.Values)
                 {
                     avatarNr++;
 
-                    if (GLAvatar._meshes.Count > 0)
+                    if (av.glavatar._meshes.Count > 0)
                     {
                         int faceNr = 0;
-                        foreach (GLMesh mesh in GLAvatar._meshes.Values)
+                        foreach (GLMesh mesh in av.glavatar._meshes.Values)
                         {
                             faceNr++;
-                            if (!GLAvatar._showSkirt && mesh.Name == "skirtMesh")
+                            if (!av.glavatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
 
                             if (mesh.Name == "hairMesh") // Don't render the hair mesh for the moment
@@ -1147,6 +1202,7 @@ namespace Radegast.Rendering
 
                             GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, mesh.RenderData.TexCoords);
                             GL.VertexPointer(3, VertexPointerType.Float, 0, mesh.RenderData.Vertices);
+                            //GL.NormalPointer(NormalPointerType.Float, 0, mesh.RenderData.Normals);
 
                             GL.DrawElements(BeginMode.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
 
@@ -1160,6 +1216,8 @@ namespace Radegast.Rendering
                 GL.Disable(EnableCap.Texture2D);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
+                //GL.DisableClientState(ArrayCap.NormalArray);
+
             }
         }
         #endregion avatars
@@ -1423,8 +1481,10 @@ namespace Radegast.Rendering
 
                                         attachment_point apoint = GLAvatar.attachment_points[attachment_index];
 
-                                        Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                        Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+                                        Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
+                                        Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+                                        //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                                       // Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
 
                                         GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
                                         GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
@@ -1468,9 +1528,11 @@ namespace Radegast.Rendering
 
                                 attachment_point apoint = GLAvatar.attachment_points[attachment_index];
 
-                                Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
-
+                                //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                                //Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+                                Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
+                                Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+                                
                                 GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
                                 GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
                             }
@@ -2143,6 +2205,19 @@ namespace Radegast.Rendering
         private void hsLOD_Scroll(object sender, ScrollEventArgs e)
         {
             minLODFactor = (float)hsLOD.Value / 5000f;
+        }
+
+        private void button_vparam_Click(object sender, EventArgs e)
+        {
+            int paramid = int.Parse(textBox_vparamid.Text);
+            float weight = (float)hScrollBar_weight.Value/100f;
+
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                av.glavatar.morphtest(av.avatar,paramid,weight);
+
+            }
+
         }
     }
 }
