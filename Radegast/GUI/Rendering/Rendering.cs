@@ -1510,6 +1510,9 @@ namespace Radegast.Rendering
                         if (teFace == null)
                             continue;
 
+                        int lightsEnabled;
+                        GL.GetInteger(GetPName.Lighting, out lightsEnabled);
+
                         if (pass != RenderPass.Picking)
                         {
                             bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.TextureInfo.HasAlpha;
@@ -1519,6 +1522,11 @@ namespace Radegast.Rendering
 
                             // Don't render transparent faces
                             if (teFace.RGBA.A <= 0.01f) continue;
+
+                            if (teFace.Fullbright && lightsEnabled != 0)
+                            {
+                                GL.Disable(EnableCap.Lighting);
+                            }
 
                             switch (teFace.Shiny)
                             {
@@ -1612,6 +1620,11 @@ namespace Radegast.Rendering
                             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
+                        }
+
+                        if (teFace.Fullbright && lightsEnabled != 0)
+                        {
+                            GL.Enable(EnableCap.Lighting);
                         }
                     }
 
