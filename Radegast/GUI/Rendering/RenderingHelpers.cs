@@ -23,7 +23,8 @@ namespace Radegast.Rendering
         public TextureInfo TextureInfo = new TextureInfo();
         public BoundingSphere BoundingSphere = new BoundingSphere();
         public static int VertexSize = 32; // sizeof (vertex), 2  x vector3 + 1 x vector2 = 8 floats x 4 bytes = 32 bytes 
-        
+        public TextureAnimationInfo AnimInfo;
+
         public void CheckVBO(Face face)
         {
             if (VertexVBO == -1)
@@ -43,6 +44,215 @@ namespace Radegast.Rendering
             }
         }
     }
+
+    public class TextureAnimationInfo
+    {
+        public Primitive.TextureAnimation PrimAnimInfo;
+        public float CurrentFrame;
+        public double CurrentTime;
+        public bool PingPong;
+        float LastTime = 0f;
+        float TotalTime = 0f;
+
+        public void Step(double lastFrameTime)
+        {
+            float numFrames = 1f;
+            float fullLength = 1f;
+
+            if (PrimAnimInfo.Length > 0)
+            {
+                numFrames = PrimAnimInfo.Length;
+            }
+            else
+            {
+                numFrames = Math.Max(1f, (float)(PrimAnimInfo.SizeX * PrimAnimInfo.SizeY));
+            }
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.PING_PONG) != 0)
+            {
+                if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
+                {
+                    fullLength = 2f * numFrames;
+                }
+                else if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.LOOP) != 0)
+                {
+                    fullLength = 2f * numFrames - 2f;
+                    fullLength = Math.Max(1f, fullLength);
+                }
+                else
+                {
+                    fullLength = 2f * numFrames - 1f;
+                    fullLength = Math.Max(1f, fullLength);
+                }
+            }
+            else
+            {
+                fullLength = numFrames;
+            }
+
+            float frameCounter;
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
+            {
+                frameCounter = (float)lastFrameTime * PrimAnimInfo.Rate + LastTime;
+            }
+            else
+            {
+                TotalTime += (float)lastFrameTime;
+                frameCounter = TotalTime * PrimAnimInfo.Rate;
+            }
+            LastTime = frameCounter;
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.LOOP) != 0)
+            {
+                frameCounter %= fullLength;
+            }
+            else
+            {
+                frameCounter = Math.Min(fullLength - 1f, frameCounter);
+            }
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) == 0)
+            {
+                frameCounter = (float)Math.Floor(frameCounter + 0.01f);
+            }
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.PING_PONG) != 0)
+            {
+                if (frameCounter > numFrames)
+                {
+                    if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
+                    {
+                        frameCounter = numFrames - (frameCounter - numFrames);
+                    }
+                    else
+                    {
+                        frameCounter = (numFrames - 1.99f) - (frameCounter - numFrames);
+                    }
+                }
+            }
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.REVERSE) != 0)
+            {
+                if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
+                {
+                    frameCounter = numFrames - frameCounter;
+                }
+                else
+                {
+                    frameCounter = (numFrames - 0.99f) - frameCounter;
+                }
+            }
+
+            frameCounter += PrimAnimInfo.Start;
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) == 0)
+            {
+                frameCounter = (float)Math.Round(frameCounter);
+            }
+
+
+            GL.MatrixMode(MatrixMode.Texture);
+            GL.LoadIdentity();
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.ROTATE) != 0)
+            {
+                GL.Translate(0.5f, 0.5f, 0f);
+                GL.Rotate(Utils.RAD_TO_DEG * frameCounter, OpenTK.Vector3d.UnitZ);
+                GL.Translate(-0.5f, -0.5f, 0f);
+            }
+            else if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SCALE) != 0)
+            {
+                GL.Scale(frameCounter, frameCounter, 0);
+            }
+            else // Translate
+            {
+                float sizeX = Math.Max(1f, (float)PrimAnimInfo.SizeX);
+                float sizeY = Math.Max(1f, (float)PrimAnimInfo.SizeY);
+
+                GL.Scale(1f / sizeX, 1f / sizeY, 0);
+                GL.Translate(frameCounter % sizeX, Math.Floor(frameCounter / sizeY), 0);
+            }
+
+            GL.MatrixMode(MatrixMode.Modelview);
+        }
+
+        [Obsolete("Use Step() instead")]
+        public void ExperimentalStep(double time)
+        {
+            int reverseFactor = 1;
+            float rate = PrimAnimInfo.Rate;
+
+            if (rate < 0)
+            {
+                rate = -rate;
+                reverseFactor = -reverseFactor;
+            }
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.REVERSE) != 0)
+            {
+                reverseFactor = -reverseFactor;
+            }
+
+            CurrentTime += time;
+            double totalTime = 1 / rate;
+
+            uint x = Math.Max(1, PrimAnimInfo.SizeX);
+            uint y = Math.Max(1, PrimAnimInfo.SizeY);
+            uint nrFrames = x * y;
+
+            if (PrimAnimInfo.Length > 0 && PrimAnimInfo.Length < nrFrames)
+            {
+                nrFrames = (uint)PrimAnimInfo.Length;
+            }
+
+            GL.MatrixMode(MatrixMode.Texture);
+            GL.LoadIdentity();
+
+            if (CurrentTime >= totalTime)
+            {
+                CurrentTime = 0;
+                CurrentFrame++;
+                if (CurrentFrame > nrFrames) CurrentFrame = (uint)PrimAnimInfo.Start;
+                if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.PING_PONG) != 0)
+                {
+                    PingPong = !PingPong;
+                }
+            }
+
+            float smoothOffset = 0f;
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
+            {
+                smoothOffset = (float)(CurrentTime / totalTime) * reverseFactor;
+            }
+
+            float f = CurrentFrame;
+            if (reverseFactor < 0)
+            {
+                f = nrFrames - CurrentFrame;
+            }
+
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.ROTATE) == 0) // not rotaating
+            {
+                GL.Scale(1f / x, 1f / y, 0f);
+                GL.Translate((f % x) + smoothOffset, f / y, 0);
+            }
+            else
+            {
+                smoothOffset = (float)(CurrentTime * PrimAnimInfo.Rate);
+                double startAngle = PrimAnimInfo.Start;
+                double endAngle = PrimAnimInfo.Length;
+                double angle = startAngle + (endAngle - startAngle) * smoothOffset;
+                GL.Translate(0.5f, 0.5f, 0f);
+                GL.Rotate(Utils.RAD_TO_DEG * angle, OpenTK.Vector3d.UnitZ);
+                GL.Translate(-0.5f, -0.5f, 0f);
+            }
+
+            GL.MatrixMode(MatrixMode.Modelview);
+        }
+
+    }
+
 
     public class TextureInfo
     {
@@ -97,7 +307,7 @@ namespace Radegast.Rendering
         Vector3 mPosition;
         Vector3 mFocalPoint;
         bool mModified;
-        
+
         /// <summary>Camera position</summary>
         public Vector3 Position { get { return mPosition; } set { mPosition = value; Modify(); } }
         /// <summary>Camera target</summary>
@@ -637,11 +847,11 @@ namespace Radegast.Rendering
 
                     case "hairMesh":
                         mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
-                    break;
+                        break;
 
                     case "eyelashMesh":
                         mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
-                    break;
+                        break;
 
                     case "eyeBallRightMesh":
                         mesh.setMeshPos(Bone.getOffset("mEyeLeft"));
@@ -707,8 +917,8 @@ namespace Radegast.Rendering
             string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
             XmlDocument skeleton = new XmlDocument();
             skeleton.Load(basedir + skeletonfilename);
-            XmlNode boneslist = skeleton.GetElementsByTagName("linden_skeleton")[0]; 
-            addbone(boneslist.ChildNodes[0],null);
+            XmlNode boneslist = skeleton.GetElementsByTagName("linden_skeleton")[0];
+            addbone(boneslist.ChildNodes[0], null);
         }
 
         public static void addbone(XmlNode bone, Bone parent)
@@ -738,7 +948,7 @@ namespace Radegast.Rendering
 
             foreach (XmlNode childbone in bone.ChildNodes)
             {
-                addbone(childbone,b);
+                addbone(childbone, b);
             }
 
         }
@@ -794,7 +1004,7 @@ namespace Radegast.Rendering
 
             return totalrot;
         }
-    
+
     }
 
 }

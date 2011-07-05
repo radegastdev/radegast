@@ -167,7 +167,10 @@ namespace Radegast.Rendering
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
-            Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            if (instance.Netcom != null)
+            {
+                Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            }
 
             if (glControl != null)
             {
@@ -1043,7 +1046,7 @@ namespace Radegast.Rendering
                     FaceData data = new FaceData();
                     ra.data[fi] = data;
                     data.TextureInfo.TextureID = TEF.TextureID;
-                    
+
                     DownloadTexture(new TextureLoadItem()
                     {
                         Data = data,
@@ -1446,7 +1449,7 @@ namespace Radegast.Rendering
                         else // This prim has a parent but does not have a parent in the ObjectsList, its parent is therefor parentav from the avatars list 
                         {
                             //Root prims with avatar as parent
-                            
+
                             if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
                             {
                                 // Root HUD elements
@@ -1484,6 +1487,9 @@ namespace Radegast.Rendering
 
                     // Prim scaling
                     GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
+
+                    // Do we have animated texture on this face
+                    bool animatedTexture = false;
 
                     // Draw the prim faces
                     for (int j = 0; j < mesh.Faces.Count; j++)
@@ -1542,6 +1548,23 @@ namespace Radegast.Rendering
 
                             if (data.TextureInfo.TexturePointer != 0)
                             {
+                                // Is this face using texture animation
+                                if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
+                                    && (prim.TextureAnim.Face == j || prim.TextureAnim.Face == 255))
+                                {
+                                    if (data.AnimInfo == null)
+                                    {
+                                        data.AnimInfo = new TextureAnimationInfo();
+                                    }
+                                    data.AnimInfo.PrimAnimInfo = prim.TextureAnim;
+                                    data.AnimInfo.Step(lastFrameTime);
+                                    animatedTexture = true;
+                                }
+                                else if (data.AnimInfo != null) // Face texture not animated. Do we have previous anim setting?
+                                {
+                                    data.AnimInfo = null;
+                                }
+
                                 GL.Enable(EnableCap.Texture2D);
                                 GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
                             }
@@ -1595,6 +1618,14 @@ namespace Radegast.Rendering
                     GL.BindTexture(TextureTarget.Texture2D, 0);
                     ResetMaterial();
 
+                    // Reset texture coordinates if we modified them in texture animation
+                    if (animatedTexture)
+                    {
+                        GL.MatrixMode(MatrixMode.Texture);
+                        GL.LoadIdentity();
+                        GL.MatrixMode(MatrixMode.Modelview);
+                    }
+
                     // Pop the prim matrix
                     GL.PopMatrix();
                 }
@@ -1617,8 +1648,6 @@ namespace Radegast.Rendering
         {
             float z = Client.Network.CurrentSim.WaterHeight;
 
-            GL.Disable(EnableCap.Lighting);
-
             GL.Color4(0.09f, 0.28f, 0.63f, 0.84f);
 
             GL.Begin(BeginMode.Quads);
@@ -1626,8 +1655,6 @@ namespace Radegast.Rendering
                 for (float y = -256f * 2; y <= 256 * 2; y += 256f)
                     DrawWaterQuad(x, y, z);
             GL.End();
-
-            GL.Enable(EnableCap.Lighting);
         }
 
         private void Render(bool picking)
@@ -1691,8 +1718,10 @@ namespace Radegast.Rendering
                 RenderObjects(RenderPass.Simple);
                 RenderAvatars(RenderPass.Simple);
 
+                GL.Disable(EnableCap.Lighting);
                 RenderWater();
                 RenderObjects(RenderPass.Alpha);
+                GL.Enable(EnableCap.Lighting);
 
                 GLHUDBegin();
                 RenderText();
@@ -1849,6 +1878,17 @@ namespace Radegast.Rendering
 
                 // Indices for this face
                 data.Indices = face.Indices.ToArray();
+
+                // With linear texture animation in effect, texture repeats and offset are ignored
+                if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
+                    && (prim.TextureAnim.Flags & Primitive.TextureAnimMode.ROTATE) == 0
+                    && (prim.TextureAnim.Face == 255 || prim.TextureAnim.Face == j))
+                {
+                    teFace.RepeatU = 1;
+                    teFace.RepeatV = 1;
+                    teFace.OffsetU = 0;
+                    teFace.OffsetV = 0;
+                }
 
                 // Texture transform for this face
                 renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
