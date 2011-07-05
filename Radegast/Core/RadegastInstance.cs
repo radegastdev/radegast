@@ -313,7 +313,7 @@ namespace Radegast
 
         private void InitializeClient(GridClient client)
         {
-            client.Settings.MULTIPLE_SIMS = true;
+            client.Settings.MULTIPLE_SIMS = false;
 
             client.Settings.USE_INTERPOLATION_TIMER = false;
             client.Settings.ALWAYS_REQUEST_OBJECTS = true;
