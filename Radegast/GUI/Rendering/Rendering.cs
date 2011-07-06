@@ -716,7 +716,6 @@ namespace Radegast.Rendering
             }
 
             bitmap.UnlockBits(bitmapData);
-            GL.Flush();
             return ret;
         }
 
@@ -1744,8 +1743,6 @@ namespace Radegast.Rendering
 
             // Pop the world matrix
             GL.PopMatrix();
-            GL.Flush();
-
         }
 
         private void GluPerspective(float fovy, float aspect, float zNear, float zFar)
@@ -1901,6 +1898,14 @@ namespace Radegast.Rendering
                     teFace.RepeatV = 1;
                     teFace.OffsetU = 0;
                     teFace.OffsetV = 0;
+                }
+
+                // Need to adjust UV for spheres as they are sort of half-prim
+                if (prim.PrimData.ProfileCurve == ProfileCurve.HalfCircle)
+                {
+                    teFace = new Primitive.TextureEntryFace(teFace);
+                    teFace.RepeatV *= 2;
+                    teFace.OffsetV += 0.5f;
                 }
 
                 // Texture transform for this face
