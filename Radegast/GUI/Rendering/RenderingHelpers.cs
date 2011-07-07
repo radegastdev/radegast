@@ -374,6 +374,53 @@ namespace Radegast.Rendering
             return mat;
         }
 
+        public static float[] CreateSRTMatrix(Vector3 scale, Quaternion q, Vector3 pos)
+        {
+            float[] mat = new float[16];
+
+            // Transpose the quaternion (don't ask me why)
+            q.X = q.X * -1f;
+            q.Y = q.Y * -1f;
+            q.Z = q.Z * -1f;
+
+            float x2 = q.X + q.X;
+            float y2 = q.Y + q.Y;
+            float z2 = q.Z + q.Z;
+            float xx = q.X * x2;
+            float xy = q.X * y2;
+            float xz = q.X * z2;
+            float yy = q.Y * y2;
+            float yz = q.Y * z2;
+            float zz = q.Z * z2;
+            float wx = q.W * x2;
+            float wy = q.W * y2;
+            float wz = q.W * z2;
+
+            mat[0] = (1.0f - (yy + zz))*scale.X;
+            mat[1] = (xy - wz)*scale.X;
+            mat[2] = (xz + wy) * scale.X;
+            mat[3] = 0.0f;
+
+            mat[4] = (xy + wz) * scale.Y;
+            mat[5] = (1.0f - (xx + zz)) * scale.Y;
+            mat[6] = (yz - wx) * scale.Y;
+            mat[7] = 0.0f;
+
+            mat[8] = (xz - wy) * scale.Z;
+            mat[9] = (yz + wx) * scale.Z;
+            mat[10] = (1.0f - (xx + yy)) * scale.Z;
+            mat[11] = 0.0f;
+
+            //Positional parts
+            mat[12] = pos.X;
+            mat[13] = pos.Y;
+            mat[14] = pos.Z;
+            mat[15] = 1.0f;
+
+            return mat;
+        }
+
+
         public static float[] CreateScaleMatrix(Vector3 v)
         {
             float[] mat = new float[16];
@@ -385,6 +432,22 @@ namespace Radegast.Rendering
 
             return mat;
         }
+
+        public static float[] Lerp(float[] matrix1, float[] matrix2, float amount)
+        {
+
+            float[] lerp = new float[16];
+            //Probably not doing this as a loop is cheaper(unrolling)
+            //also for performance we probably should not create new objects
+            // but meh.
+            for (int x = 0; x < 16; x++)
+            {
+                lerp[x] = matrix1[x] + ((matrix2[x] - matrix1[x]) * amount);
+            }
+
+            return lerp;
+        }
+
 
         public static bool GluProject(OpenTK.Vector3 objPos, OpenTK.Matrix4 modelMatrix, OpenTK.Matrix4 projMatrix, int[] viewport, out OpenTK.Vector3 screenPos)
         {
@@ -514,13 +577,9 @@ namespace Radegast.Rendering
         {
             this.av = av;
             // Make a new GLMesh copy from the supplied source
+    
             RenderData.Vertices = new float[source.RenderData.Vertices.Length];
-            //RenderData.Normals = new float[source.RenderData.Normals.Length];
-            RenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
-            RenderData.Indices = new ushort[source.RenderData.Indices.Length];
-
-            RenderData.Vertices = new float[source.RenderData.Vertices.Length];
-            //RenderData.Normals = new float[source.RenderData.Normals.Length];
+            RenderData.Normals = new float[source.RenderData.Normals.Length];
             RenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
             RenderData.Indices = new ushort[source.RenderData.Indices.Length];
 
@@ -528,7 +587,7 @@ namespace Radegast.Rendering
             RenderData.skinJoints = new string[source.RenderData.skinJoints.Length];
 
             Array.Copy(source.RenderData.Vertices,RenderData.Vertices,source.RenderData.Vertices.Length);
-//            Array.Copy(source.RenderData.Normals, RenderData.Normals, source.RenderData.Normals.Length);
+            Array.Copy(source.RenderData.Normals, RenderData.Normals, source.RenderData.Normals.Length);
 
             Array.Copy(source.RenderData.TexCoords, RenderData.TexCoords, source.RenderData.TexCoords.Length);
             Array.Copy(source.RenderData.Indices, RenderData.Indices, source.RenderData.Indices.Length);
@@ -581,7 +640,7 @@ namespace Radegast.Rendering
 
             // Generate the vertex array
             RenderData.Vertices = new float[_numVertices * 3];
-  //          RenderData.Normals = new float[_numVertices * 3];
+            RenderData.Normals = new float[_numVertices * 3];
 
              Quaternion quat = Quaternion.CreateFromEulers(0, 0, (float)(Math.PI/4.0));
 
@@ -589,12 +648,11 @@ namespace Radegast.Rendering
             for (int i = 0; i < _numVertices; i++)
             {
 
-      
-                    //            RenderData.Normals[current] = _vertices[i].Normal.X;
+                    RenderData.Normals[current] = _vertices[i].Normal.X;
                     RenderData.Vertices[current++] = _vertices[i].Coord.X;
-                    //          RenderData.Normals[current] = _vertices[i].Normal.Y;
+                    RenderData.Normals[current] = _vertices[i].Normal.Y;
                     RenderData.Vertices[current++] = _vertices[i].Coord.Y;
-                    //        RenderData.Normals[current] = _vertices[i].Normal.Z;
+                    RenderData.Normals[current] = _vertices[i].Normal.Z;
                     RenderData.Vertices[current++] = _vertices[i].Coord.Z;
       
                 if (_vertices[i].Coord.X < minX)
@@ -641,8 +699,8 @@ namespace Radegast.Rendering
                 RenderData.weights[i] = _vertices[i].Weight;
             }
 
-            RenderData.skinJoints = new string[_skinJoints.Length];
-            for (int i = 0; i < _skinJoints.Length; i++)
+            RenderData.skinJoints = new string[_skinJoints.Length+3];
+            for (int i = 1; i < _skinJoints.Length; i++)
             {
                 RenderData.skinJoints[i] = _skinJoints[i];
             }
@@ -669,37 +727,97 @@ namespace Radegast.Rendering
              * in the list for each of its children.
              */
 
-            for (int v = 0, x=0; v < RenderData.Vertices.Length / 3; v=v+3, x++)
+            float weight=-9999;
+            int jointindex=0;
+            float factor;
+
+            Bone ba = null;
+            Bone bb = null;
+
+            for (int v = 0, x=0; v < RenderData.Vertices.Length; v=v+3, x++)
             {
-                // yay for efficient code, the render loop will love this
-                int jointindex = (int)RenderData.weights[x]-1;
-                float weight1 = RenderData.weights[x] - jointindex;
-
-
-                //FIX ME Currently getting indexes that are larger than we are expecting
-                if (jointindex==-1 || jointindex > RenderData.skinJoints.Length-1)
-                    continue;
-
-                string jointname = RenderData.skinJoints[jointindex];
-
-               
-                Bone b = av.skel.mBones[jointname];
-
-                Vector3 unity = new Vector3(1, 1, 1);
-                Vector3 scale = (b.scale-unity) * weight1;
-
-                //fix me 
-
-                foreach (Bone child in b.children)
+                if (weight != RenderData.weights[x])
                 {
-                 //   scale = scale + (unity-child.scale) * weight1;
+
+                    jointindex = (int)Math.Floor(weight = RenderData.weights[x]);
+                    factor = RenderData.weights[x] - jointindex;
+                    weight = weight - jointindex;
+
+                    string jointname="", jointname2="";
+
+                    if (this.Name == "upperBodyMesh")
+                    {
+                        jointname = skeleton.mUpperMeshMapping[jointindex];
+                        jointindex++;
+                        jointname2 = skeleton.mUpperMeshMapping[jointindex];
+                    }
+                    else if (Name == "lowerBodyMesh")
+                    {
+                        jointname = skeleton.mLowerMeshMapping[jointindex];
+                        jointindex++;
+                        jointname2 = skeleton.mLowerMeshMapping[jointindex];
+                    }
+                    else if (Name == "headMesh")
+                    {
+                        jointname = skeleton.mHeadMeshMapping[jointindex];
+                        jointindex++;
+                        jointname2 = skeleton.mHeadMeshMapping[jointindex];
+                    }
+                    else
+                    {
+                        return; // not interested in this mesh
+                    }
+                    
+                    
+                    if (jointname == "")
+                    {
+                        //Don't yet handle this, its a split joint to two children
+                        continue;
+                    }
+                    else
+                    {
+                        ba = av.skel.mBones[jointname];
+                    }
+
+                    if(jointname2=="")
+                    {
+                        bb=null;
+                    }
+                    else
+                    {
+                        bb = av.skel.mBones[jointname2];  
+                    }
                 }
 
-                RenderData.Vertices[v] = OrigRenderData.Vertices[v];// +scale.X;
-                RenderData.Vertices[v + 1] = OrigRenderData.Vertices[v + 1];// +scale.Y;
-                RenderData.Vertices[v + 2] = OrigRenderData.Vertices[v + 2];// +scale.Z;
+                //Special cases 0 is not used
+                // ON upper torso 5 and 10 are not used
+                // 4 is neck and 6 and 11 are the left and right collar bones
+
+                //the bone rotations are stored with each bone as a SRT 4x4 matrix
+                //it is suspose to be a case of just mulutiplying the bone chain together
+
+                Matrix4 deform;
+                Matrix4 ma = ba.getdeform();
+              
+                if (bb != null)
+                {
+                    Matrix4 mb = bb.getdeform();
+                    deform = Matrix4.Lerp(ma, mb, weight);
+                }
+                else
+                {
+                    deform = ba.getdeform();
+                }
+
+                Vector3 pos = new Vector3(OrigRenderData.Vertices[v], OrigRenderData.Vertices[v + 1], OrigRenderData.Vertices[v + 2]);
+                pos = pos - (ba.getOffset() - ba.getOrigOffset());
+                Vector3 newpos = pos * deform;
+                newpos = newpos + (ba.getOffset()-ba.getOrigOffset());
+
+                RenderData.Vertices[v] = newpos.X;
+                RenderData.Vertices[v + 1] = newpos.Y;
+                RenderData.Vertices[v + 2] = newpos.Z;
                 
-               
             }
         }
 
@@ -945,7 +1063,7 @@ namespace Radegast.Rendering
                     {
                         foreach (KeyValuePair<string, Vector3> kvp in vpx.BoneDeforms)
                         {
-                            skel.deformbone(kvp.Key, new Vector3(0,0,0),kvp.Value*value);
+                            skel.deformbone(kvp.Key, new Vector3(0,0,0),kvp.Value*value,Quaternion.Identity);
                         }
                     }
                     else
@@ -988,55 +1106,20 @@ namespace Radegast.Rendering
 
         public void morph(Avatar av)
         {
-            /*
-            return;
-            bool found = false;
 
-            foreach (GLMesh mesh in _meshes.Values)
+            if (av.VisualParameters == null)
+                return;
+
+            int x = 0;
+            foreach (byte vpvalue in av.VisualParameters)
             {
-                foreach (extendedVisualParam p in mesh._evp.Values)
-                {
-                    if (mesh.Name == "hairMesh")
-                        continue;
 
-                    if (p.baseparam.ParamID == 0) //Ignore express emotes
-                        continue;
-
-                    if (av.VisualParameters != null)
-                    {
-                        if (p.baseparam.ParamID < av.VisualParameters.Length)
-                        {
-
-                            byte paramdata = av.VisualParameters[p.baseparam.ParamID];
-
-                            if (VisualAppearanceParameters[p.baseparam.ParamID] == paramdata)
-                                continue;
-
-                            VisualAppearanceParameters[p.baseparam.ParamID] = paramdata;
-
-                            foreach (LindenMesh.Morph morph in mesh.Morphs)
-                            {
-                                if (morph.Name == p.baseparam.Name)
-                                {
-                                    bool male = av.VisualParameters[31] > 0;
-
-                                    if (p.sex == extendedVisualParam.Esex.SEX_BOTH || ((male == true) && (p.sex == extendedVisualParam.Esex.SEX_MALE)) || (( male == false) && (p.sex == extendedVisualParam.Esex.SEX_FEMALE)))
-                                    {
-                                        Logger.Log("Param " + p.baseparam.Name + " ID " + (p.baseparam.ParamID).ToString() + " value " + paramdata.ToString(), Helpers.LogLevel.Info);
-                                        //float range = p.baseparam.MaxValue - p.baseparam.MinValue;
-                                        float amount = paramdata / 255f;
-                                        mesh.morphmesh(morph, amount);
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                }
+                VisualParamEx vpe = VisualParamEx.allParams[x];
+                float value = vpe.MinValue + (vpe.MaxValue - vpe.MinValue) * (vpvalue / 255.0f);
+                this.morphtest(av, x, value);
+                x++;
             }
-             */
         }
-             
     }
 
     class RenderAvatar
@@ -1052,41 +1135,57 @@ namespace Radegast.Rendering
     public class skeleton
     {
         public Dictionary<string, Bone> mBones;
+        public static Dictionary<int, string> mUpperMeshMapping = new Dictionary<int, string>();
+        public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
+        public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
 
         public skeleton()
         {
-            mBones = new Dictionary<string, Bone>(); //copy from the static defines
-            regenerate(new Bone(Bone.mBones["mPelvis"]), Bone.mBones["mPelvis"]);      
-        }
+            mBones = new Dictionary<string, Bone>(Bone.mBones); //copy from the static defines
 
-        public void regenerate(Bone parent,Bone oldbone)
-        {
-            mBones.Add(parent.name, parent);
-
-            foreach (Bone oldchildbone in oldbone.children)
+            //FUDGE
+            if (mUpperMeshMapping.Count == 0)
             {
-                Bone nnb = new Bone(oldchildbone);
-                parent.children.Add(nnb);
-                nnb.parent = parent;
-                regenerate(nnb,oldchildbone);
-            }
+                mUpperMeshMapping.Add(1, "mPelvis");
+                mUpperMeshMapping.Add(2, "mTorso");
+                mUpperMeshMapping.Add(3, "mChest");
+                mUpperMeshMapping.Add(4, "mNeck");
+                mUpperMeshMapping.Add(5, "");
+                mUpperMeshMapping.Add(6, "mCollarLeft");
+                mUpperMeshMapping.Add(7, "mShoulderLeft");
+                mUpperMeshMapping.Add(8, "mElbowLeft");
+                mUpperMeshMapping.Add(9, "mWristLeft");
+                mUpperMeshMapping.Add(10, "");
+                mUpperMeshMapping.Add(11, "mCollarRight");
+                mUpperMeshMapping.Add(12, "mShoulderRight");
+                mUpperMeshMapping.Add(13, "mElbowRight");
+                mUpperMeshMapping.Add(14, "mWristRight");
+                mUpperMeshMapping.Add(15, "");
 
+                mLowerMeshMapping.Add(1,"mPelvis");
+                mLowerMeshMapping.Add(2, "mHipRight");
+                mLowerMeshMapping.Add(3, "mKneeRight");
+                mLowerMeshMapping.Add(4, "mAnkleRight");
+                mLowerMeshMapping.Add(5, "");
+                mLowerMeshMapping.Add(6, "mHipLeft");
+                mLowerMeshMapping.Add(7, "mKneeLeft");
+                mLowerMeshMapping.Add(8, "mAnkleLeft");
+                mLowerMeshMapping.Add(9, "");
+
+                mHeadMeshMapping.Add(1, "mNeck");
+                mHeadMeshMapping.Add(2, "mHead");
+                mHeadMeshMapping.Add(3, "");
+
+            }
         }
 
-        public void deformbone(string name, Vector3 pos, Vector3 scale)
+        public void deformbone(string name, Vector3 pos, Vector3 scale, Quaternion rotation)
         {
             Bone bone;
             if (mBones.TryGetValue(name, out bone))
             {
-                bone.pos = Bone.mBones[name].orig_pos + pos;
-                bone.scale = Bone.mBones[name].orig_scale + scale;
-
-                foreach (Bone child in bone.children)
-                {
-                    child.pos *= scale;
-                }
+                bone.deformbone(pos, scale, rotation);
             }
-
         }
 
         //TODO check offset and rot calcuations should each offset be multiplied by its parent rotation in
@@ -1097,19 +1196,6 @@ namespace Radegast.Rendering
             if (mBones.TryGetValue(bonename, out b))
             {
                 return (b.getOffset());
-            }
-            else
-            {
-                return Vector3.Zero;
-            }
-        }
-
-        public Vector3 getDeltaOffset(string bonename)
-        {
-            Bone b;
-            if (mBones.TryGetValue(bonename, out b))
-            {
-                return (b.getDeltaOffset());
             }
             else
             {
@@ -1129,8 +1215,6 @@ namespace Radegast.Rendering
                 return Quaternion.Identity;
             }
         }
-
-    
     }
 
     public class Bone
@@ -1146,11 +1230,15 @@ namespace Radegast.Rendering
         public Vector3 orig_scale;
         public Vector3 orig_piviot;
 
+        Matrix4 mDeformMatrix=Matrix4.Identity;
+
         public Bone parent;
 
         public List<Bone> children = new List<Bone>();
 
         public static Dictionary<string, Bone> mBones = new Dictionary<string, Bone>();
+        public static Dictionary<int, Bone> mIndexedBones = new Dictionary<int, Bone>();
+        static int boneaddindex = 0;
 
         public Bone()
         {
@@ -1163,6 +1251,13 @@ namespace Radegast.Rendering
             rot = new Quaternion(source.rot);
             scale = new Vector3(source.scale);
             piviot = new Vector3(source.piviot);
+
+            orig_piviot = source.orig_piviot;
+            orig_pos = source.orig_pos;
+            orig_rot = source.orig_rot;
+            orig_scale = source.orig_scale;
+
+            mDeformMatrix = new Matrix4(source.mDeformMatrix);
         }
 
         public static void loadbones(string skeletonfilename)
@@ -1177,6 +1272,10 @@ namespace Radegast.Rendering
 
         public static void addbone(XmlNode bone, Bone parent)
         {
+
+            if (bone.Name != "bone")
+                return;
+
             Bone b = new Bone();
             b.name = bone.Attributes.GetNamedItem("name").Value;
 
@@ -1186,7 +1285,7 @@ namespace Radegast.Rendering
             b.orig_pos = new Vector3(b.pos);
 
             string rot = bone.Attributes.GetNamedItem("rot").Value;
-            string[] rotparts = pos.Split(' ');
+            string[] rotparts = rot.Split(' ');
             b.rot = Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
             b.orig_rot = new Quaternion(b.rot);
 
@@ -1194,6 +1293,9 @@ namespace Radegast.Rendering
             string[] scaleparts = scale.Split(' ');
             b.scale = new Vector3(float.Parse(scaleparts[0]), float.Parse(scaleparts[1]), float.Parse(scaleparts[2]));
             b.orig_scale = new Vector3(b.scale);
+
+            float[] deform = Math3D.CreateSRTMatrix(new Vector3(1,1,1), b.rot, new Vector3(0,0,0));
+            b.mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
 
             //TODO piviot
 
@@ -1203,6 +1305,7 @@ namespace Radegast.Rendering
                 parent.children.Add(b);
 
             mBones.Add(b.name, b);
+            mIndexedBones.Add(boneaddindex++, b);
 
             Logger.Log("Found bone " + b.name, Helpers.LogLevel.Info);
 
@@ -1213,29 +1316,58 @@ namespace Radegast.Rendering
 
         }
 
-        public Vector3 getDeltaOffset()
+        public void deformbone(Vector3 pos, Vector3 scale, Quaternion rot)
         {
-            Vector3 totalpos = pos-orig_pos;
+            float[] deform = Math3D.CreateSRTMatrix(scale, rot, this.getOrigOffset());
+            mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
+            this.pos = Bone.mBones[name].orig_pos + pos;
+            this.scale = Bone.mBones[name].orig_scale * scale;
+            this.rot = Bone.mBones[name].orig_rot * rot;
+        }
 
-            if (parent != null)
+        public Matrix4 getdeform()
+        {
+            if (this.parent != null)
             {
-                totalpos = parent.getDeltaOffset() + totalpos;
+                return mDeformMatrix * parent.getdeform();
             }
-
-            return totalpos;
-   
+            else
+            {
+                return mDeformMatrix;
+            }
         }
 
         public Vector3 getOffset()
         {
-            Vector3 totalpos = pos;
-
             if (parent != null)
             {
-                totalpos = parent.getOffset() + pos;
+                Quaternion totalrot = getRotation();
+                Vector3 parento = parent.getOffset();
+                Vector3 mepre = pos * scale;
+                mepre = mepre * totalrot;
+                return parento+ mepre;
             }
+            else
+            {
+                return (pos * scale) *getRotation();
+            }
+        }
 
-            return totalpos;
+        public Vector3 getMyOffset()
+        {
+            return pos * scale;
+        }
+
+        public Vector3 getOrigOffset()
+        {
+            if (parent != null)
+            {
+                return ((parent.getOrigOffset()) + orig_pos);
+            }
+            else
+            {
+                return orig_pos;
+            }
         }
 
         public static Quaternion getRotation(string bonename)
@@ -1257,7 +1389,7 @@ namespace Radegast.Rendering
 
             if (parent != null)
             {
-                totalrot = parent.getRotation() * rot;
+                totalrot = rot* parent.getRotation();
             }
 
             return totalrot;
@@ -1563,6 +1695,51 @@ namespace Radegast.Rendering
             string[] rotparts = data.Split(' ');
             return Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
         }
+
+    }
+
+    class Tests
+    {
+        static public void runtest()
+        {
+            Vector3 i = new Vector3(1, 1, 1);
+            Vector3 o;
+            float[] deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.Identity, new Vector3(0, 0, 0));
+            Matrix4 mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
+            o = i * mDeformMatrix;
+
+            Console.WriteLine(String.Format("Input {0}, output {1}",i,o));
+
+            if (i != new Vector3(1, 1, 1))
+                throw (new Exception("Test failed"));
+
+            // End of test
+
+            i = new Vector3(0, 10, 0);
+
+            deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.CreateFromEulers(0,0,(float)(Math.PI*90.0f/180.0f)), new Vector3(0, 0, 0));
+            mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
+            o = i * mDeformMatrix;
+            Console.WriteLine(String.Format("Input {0}, output {1}",i,o));
+
+
+            deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.CreateFromEulers(0, 0, (float)(Math.PI * 90.0f / 180.0f)), new Vector3(0, 0, 0));
+            mDeformMatrix = new Matrix4(deform[0], deform[4], deform[8], deform[12], deform[1], deform[5], deform[9], deform[13], deform[2], deform[6], deform[10], deform[14], deform[3], deform[7], deform[11], deform[15]);
+            o = i * mDeformMatrix;
+            Console.WriteLine(String.Format("Input {0}, output {1}",i,o));
+
+            deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.Identity, new Vector3(20, 0, 0));
+//            mDeformMatrix = new Matrix4(deform[0], deform[4], deform[8], deform[12], deform[1], deform[5], deform[9], deform[13], deform[2], deform[6], deform[10], deform[14], deform[3], deform[7], deform[11], deform[15]);
+            mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
+
+            Matrix4 mDeformMatrix2 = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
+
+
+            Matrix4 xx = mDeformMatrix2 * mDeformMatrix;
+            Console.WriteLine(String.Format("Input {0}, output {1}", i, o));
+
+        }
+
 
     }
 

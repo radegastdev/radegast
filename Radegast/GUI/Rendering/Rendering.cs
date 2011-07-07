@@ -1108,13 +1108,56 @@ namespace Radegast.Rendering
             }
         }
 
+        private void RenderAvatarsSkeleton(RenderPass pass)
+        {
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                // Individual prim matrix
+                GL.PushMatrix();
+
+                // Prim roation and position
+                Vector3 pos = av.avatar.Position;
+                pos.X += 1;
+                GL.MultMatrix(Math3D.CreateTranslationMatrix(pos));
+                GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
+
+                GL.Begin(BeginMode.Lines);
+
+                GL.Color3(1.0, 0.0, 0.0);
+                
+                foreach (Bone b in av.glavatar.skel.mBones.Values)
+                {
+                    Vector3 newpos = b.getOffset();
+
+                    if (b.parent != null)
+                    {
+                        Vector3 parentpos = b.parent.getOffset();
+                        GL.Vertex3(parentpos.X,parentpos.Y,parentpos.Z);
+                    }
+                    else
+                    {                       
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    }
+
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                }
+                
+                GL.Color3(0.0, 1.0, 0.0);
+
+                GL.End();
+
+                GL.PopMatrix();
+            }
+        }
+
         private void RenderAvatars(RenderPass pass)
         {
             lock (Avatars)
             {
                 GL.EnableClientState(ArrayCap.VertexArray);
                 GL.EnableClientState(ArrayCap.TextureCoordArray);
-                //GL.EnableClientState(ArrayCap.NormalArray);
+                GL.EnableClientState(ArrayCap.NormalArray);
 
                 int avatarNr = 0;
                 foreach (RenderAvatar av in Avatars.Values)
@@ -1139,9 +1182,9 @@ namespace Radegast.Rendering
                             GL.PushMatrix();
 
                             // Prim roation and position
-                            GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
-                            GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
-
+                            //GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
+                            //GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
+                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1,1,1),av.avatar.Rotation,av.avatar.Position));
 
                             // Special case for eyeballs we need to offset the mesh to the correct position
                             // We have manually added the eyeball offset based on the headbone when we
@@ -1214,7 +1257,7 @@ namespace Radegast.Rendering
 
                             GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, mesh.RenderData.TexCoords);
                             GL.VertexPointer(3, VertexPointerType.Float, 0, mesh.RenderData.Vertices);
-                            //GL.NormalPointer(NormalPointerType.Float, 0, mesh.RenderData.Normals);
+                            GL.NormalPointer(NormalPointerType.Float, 0, mesh.RenderData.Normals);
 
                             GL.DrawElements(BeginMode.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
 
@@ -1226,10 +1269,10 @@ namespace Radegast.Rendering
                     }
                 }
                 GL.Disable(EnableCap.Texture2D);
+                GL.DisableClientState(ArrayCap.NormalArray);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
-                //GL.DisableClientState(ArrayCap.NormalArray);
-
+                
             }
         }
         #endregion avatars
@@ -1763,6 +1806,7 @@ namespace Radegast.Rendering
             {
                 RenderTerrain();
                 RenderObjects(RenderPass.Simple);
+                RenderAvatarsSkeleton(RenderPass.Simple);
                 RenderAvatars(RenderPass.Simple);
 
                 RenderWater();
@@ -2221,15 +2265,24 @@ namespace Radegast.Rendering
 
         private void button_vparam_Click(object sender, EventArgs e)
         {
-            int paramid = int.Parse(textBox_vparamid.Text);
-            float weight = (float)hScrollBar_weight.Value/100f;
+            //int paramid = int.Parse(textBox_vparamid.Text);
+            //float weight = (float)hScrollBar_weight.Value/100f;
+            float weight = float.Parse(textBox_vparamid.Text);
 
             foreach (RenderAvatar av in Avatars.Values)
             {
-                av.glavatar.morphtest(av.avatar,paramid,weight);
+                //av.glavatar.morphtest(av.avatar,paramid,weight);
+                av.glavatar.skel.deformbone("mShoulderLeft", new Vector3(0, 0, 0), new Vector3(1, 1, 1), Quaternion.CreateFromEulers((float)(Math.PI * (weight / 180)), 0.0f, 0.0f));
 
-            }
+                foreach (GLMesh mesh in av.glavatar._meshes.Values)
+               {
+                    mesh.applyjointweights();
+                }
 
+           }
         }
+
+       
+
     }
 }
