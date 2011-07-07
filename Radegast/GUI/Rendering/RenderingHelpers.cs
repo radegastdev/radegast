@@ -1318,7 +1318,7 @@ namespace Radegast.Rendering
 
         public void deformbone(Vector3 pos, Vector3 scale, Quaternion rot)
         {
-            float[] deform = Math3D.CreateSRTMatrix(scale, rot, this.getOrigOffset());
+            float[] deform = Math3D.CreateSRTMatrix(scale, rot, pos);
             mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
             this.pos = Bone.mBones[name].orig_pos + pos;
             this.scale = Bone.mBones[name].orig_scale * scale;
