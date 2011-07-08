@@ -793,31 +793,34 @@ namespace Radegast.Rendering
                 // ON upper torso 5 and 10 are not used
                 // 4 is neck and 6 and 11 are the left and right collar bones
 
-                //the bone rotations are stored with each bone as a SRT 4x4 matrix
-                //it is suspose to be a case of just mulutiplying the bone chain together
+                Vector3 lerp;
 
-                Matrix4 deform;
-                Matrix4 ma = ba.getdeform();
-              
+                Vector3 offset;
+                Quaternion rot = ba.getRotation();
+
                 if (bb != null)
                 {
-                    Matrix4 mb = bb.getdeform();
-                    deform = Matrix4.Lerp(ma, mb, weight);
+                    Vector3 oa = ba.getOffset() - ba.getOrigOffset();
+                    Vector3 ob = bb.getOffset() - bb.getOrigOffset();
+                    lerp = Vector3.Lerp(oa, ob, weight);
+                    offset = Vector3.Lerp(ba.getOffset(), bb.getOffset(), weight);
                 }
                 else
                 {
-                    deform = ba.getdeform();
+                    lerp = ba.getOffset()- ba.getOrigOffset();
+                    offset = ba.getOffset();
+                    rot = ba.getRotation();
                 }
 
                 Vector3 pos = new Vector3(OrigRenderData.Vertices[v], OrigRenderData.Vertices[v + 1], OrigRenderData.Vertices[v + 2]);
-                pos = pos - (ba.getOffset() - ba.getOrigOffset());
-                Vector3 newpos = pos * deform;
-                newpos = newpos + (ba.getOffset()-ba.getOrigOffset());
-
-                RenderData.Vertices[v] = newpos.X;
-                RenderData.Vertices[v + 1] = newpos.Y;
-                RenderData.Vertices[v + 2] = newpos.Z;
-                
+                pos = pos + lerp; 
+                pos = pos - offset;
+                pos = pos * rot;
+                pos = pos + offset;
+               
+                RenderData.Vertices[v] = pos.X;
+                RenderData.Vertices[v + 1] = pos.Y;
+                RenderData.Vertices[v + 2] = pos.Z;
             }
         }
 
@@ -1294,7 +1297,8 @@ namespace Radegast.Rendering
             b.scale = new Vector3(float.Parse(scaleparts[0]), float.Parse(scaleparts[1]), float.Parse(scaleparts[2]));
             b.orig_scale = new Vector3(b.scale);
 
-            float[] deform = Math3D.CreateSRTMatrix(new Vector3(1,1,1), b.rot, new Vector3(0,0,0));
+
+            float[] deform = Math3D.CreateSRTMatrix(new Vector3(1,1,1), b.rot, b.orig_pos);
             b.mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
 
             //TODO piviot
@@ -1318,7 +1322,7 @@ namespace Radegast.Rendering
 
         public void deformbone(Vector3 pos, Vector3 scale, Quaternion rot)
         {
-            float[] deform = Math3D.CreateSRTMatrix(scale, rot, pos);
+            float[] deform = Math3D.CreateSRTMatrix(scale, rot, this.orig_pos);
             mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
             this.pos = Bone.mBones[name].orig_pos + pos;
             this.scale = Bone.mBones[name].orig_scale * scale;
@@ -1341,7 +1345,7 @@ namespace Radegast.Rendering
         {
             if (parent != null)
             {
-                Quaternion totalrot = getRotation();
+                Quaternion totalrot = getParentRot(); // we don't want this joints rotation included
                 Vector3 parento = parent.getOffset();
                 Vector3 mepre = pos * scale;
                 mepre = mepre * totalrot;
@@ -1381,6 +1385,20 @@ namespace Radegast.Rendering
             {
                 return Quaternion.Identity;
             }
+        }
+
+
+        public Quaternion getParentRot()
+        {
+            Quaternion totalrot = Quaternion.Identity;
+
+            if (parent != null)
+            {
+                totalrot = parent.getRotation();
+            }
+
+            return totalrot;
+
         }
 
         public Quaternion getRotation()
@@ -1695,53 +1713,5 @@ namespace Radegast.Rendering
             string[] rotparts = data.Split(' ');
             return Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
         }
-
     }
-
-    class Tests
-    {
-        static public void runtest()
-        {
-            Vector3 i = new Vector3(1, 1, 1);
-            Vector3 o;
-            float[] deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.Identity, new Vector3(0, 0, 0));
-            Matrix4 mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
-            o = i * mDeformMatrix;
-
-            Console.WriteLine(String.Format("Input {0}, output {1}",i,o));
-
-            if (i != new Vector3(1, 1, 1))
-                throw (new Exception("Test failed"));
-
-            // End of test
-
-            i = new Vector3(0, 10, 0);
-
-            deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.CreateFromEulers(0,0,(float)(Math.PI*90.0f/180.0f)), new Vector3(0, 0, 0));
-            mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
-            o = i * mDeformMatrix;
-            Console.WriteLine(String.Format("Input {0}, output {1}",i,o));
-
-
-            deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.CreateFromEulers(0, 0, (float)(Math.PI * 90.0f / 180.0f)), new Vector3(0, 0, 0));
-            mDeformMatrix = new Matrix4(deform[0], deform[4], deform[8], deform[12], deform[1], deform[5], deform[9], deform[13], deform[2], deform[6], deform[10], deform[14], deform[3], deform[7], deform[11], deform[15]);
-            o = i * mDeformMatrix;
-            Console.WriteLine(String.Format("Input {0}, output {1}",i,o));
-
-            deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), Quaternion.Identity, new Vector3(20, 0, 0));
-//            mDeformMatrix = new Matrix4(deform[0], deform[4], deform[8], deform[12], deform[1], deform[5], deform[9], deform[13], deform[2], deform[6], deform[10], deform[14], deform[3], deform[7], deform[11], deform[15]);
-            mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
-
-            Matrix4 mDeformMatrix2 = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
-
-
-            Matrix4 xx = mDeformMatrix2 * mDeformMatrix;
-            Console.WriteLine(String.Format("Input {0}, output {1}", i, o));
-
-        }
-
-
-    }
-
-
 }

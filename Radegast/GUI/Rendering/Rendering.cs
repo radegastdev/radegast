@@ -1141,7 +1141,60 @@ namespace Radegast.Rendering
 
                     GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
 
+                    //Mark the joints
+
+                   
+                    newpos.X += 0.01f;
+                    newpos.Y += 0.01f;
+                    newpos.Z += 0.01f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                  
+                    newpos.Y -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Z -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y -= 0.01f;
+                    newpos.Z += 0.01f;
+                    newpos.X -= 0.01f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+
+
                 }
+
+
                 
                 GL.Color3(0.0, 1.0, 0.0);
 
@@ -2267,12 +2320,14 @@ namespace Radegast.Rendering
         {
             //int paramid = int.Parse(textBox_vparamid.Text);
             //float weight = (float)hScrollBar_weight.Value/100f;
-            float weight = float.Parse(textBox_vparamid.Text);
+            float weightx = float.Parse(textBox_x.Text);
+            float weighty = float.Parse(textBox_y.Text);
+            float weightz = float.Parse(textBox_z.Text);
 
             foreach (RenderAvatar av in Avatars.Values)
             {
                 //av.glavatar.morphtest(av.avatar,paramid,weight);
-                av.glavatar.skel.deformbone("mShoulderLeft", new Vector3(0, 0, 0), new Vector3(1, 1, 1), Quaternion.CreateFromEulers((float)(Math.PI * (weight / 180)), 0.0f, 0.0f));
+                av.glavatar.skel.deformbone(comboBox1.Text, new Vector3(0, 0, 0), new Vector3(1, 1, 1), Quaternion.CreateFromEulers((float)(Math.PI * (weightx / 180)), (float)(Math.PI * (weighty / 180)), (float)(Math.PI * (weightz / 180))));
 
                 foreach (GLMesh mesh in av.glavatar._meshes.Values)
                {
@@ -2280,6 +2335,11 @@ namespace Radegast.Rendering
                 }
 
            }
+        }
+
+        private void textBox_vparamid_TextChanged(object sender, EventArgs e)
+        {
+
         }
 
        
