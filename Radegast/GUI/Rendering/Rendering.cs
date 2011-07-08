@@ -143,6 +143,16 @@ namespace Radegast.Rendering
 
             GLAvatar.loadlindenmeshes2("avatar_lad.xml");
 
+            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+            {
+                comboBox_morph.Items.Add(vpe.Name);
+            }
+
+            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+            {
+                comboBox_driver.Items.Add(vpe.Name);
+            }
+
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
@@ -2327,7 +2337,7 @@ namespace Radegast.Rendering
             foreach (RenderAvatar av in Avatars.Values)
             {
                 //av.glavatar.morphtest(av.avatar,paramid,weight);
-                av.glavatar.skel.deformbone(comboBox1.Text, new Vector3(0, 0, 0), new Vector3(1, 1, 1), Quaternion.CreateFromEulers((float)(Math.PI * (weightx / 180)), (float)(Math.PI * (weighty / 180)), (float)(Math.PI * (weightz / 180))));
+                av.glavatar.skel.deformbone(comboBox1.Text, new Vector3(0, 0, 0), new Vector3(float.Parse(textBox_sx.Text), float.Parse(textBox_sy.Text), float.Parse(textBox_sz.Text)), Quaternion.CreateFromEulers((float)(Math.PI * (weightx / 180)), (float)(Math.PI * (weighty / 180)), (float)(Math.PI * (weightz / 180))));
 
                 foreach (GLMesh mesh in av.glavatar._meshes.Values)
                {
@@ -2339,6 +2349,92 @@ namespace Radegast.Rendering
 
         private void textBox_vparamid_TextChanged(object sender, EventArgs e)
         {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            string bone = comboBox1.Text;
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                Bone b;
+                if (av.glavatar.skel.mBones.TryGetValue(bone, out b))
+                {
+                    textBox_sx.Text = b.scale.X.ToString();
+                    textBox_sy.Text = b.scale.Y.ToString();
+                    textBox_sz.Text = b.scale.Z.ToString();
+
+                    float x,y,z;
+                    b.rot.GetEulerAngles(out x, out y, out z);
+                    textBox_x.Text = x.ToString();
+                    textBox_y.Text = y.ToString();
+                    textBox_z.Text = z.ToString();
+
+                }
+
+            }
+            
+
+        }
+
+        private void textBox_y_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox_z_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox_morph_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                int id = -1;
+                foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+                {
+                    if (vpe.Name == comboBox_morph.Text)
+                    {
+                        id = vpe.ParamID;
+                        break;
+                    }
+
+                }
+                av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_morphamount.Text));
+            }
+
+                    
+
+        }
+
+        private void gbZoom_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button_driver_Click(object sender, EventArgs e)
+        {
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                int id = -1;
+                foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+                {
+                    if (vpe.Name == comboBox_driver.Text)
+                    {
+                        id = vpe.ParamID;
+                        break;
+                    }
+
+                }
+                av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_driveramount.Text));
+            }
 
         }
 

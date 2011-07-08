@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml;
+using System.Threading;
 using OpenTK.Graphics.OpenGL;
 using System.Runtime.InteropServices;
 using OpenMetaverse;
@@ -564,6 +565,7 @@ namespace Radegast.Rendering
         public static GLData baseRenderData;
         public GLData RenderData;
         public GLData OrigRenderData;
+        public GLData MorphRenderData;
 
         public GLAvatar av;
 
@@ -611,7 +613,11 @@ namespace Radegast.Rendering
             OrigRenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
             OrigRenderData.Vertices = new float[source.RenderData.Vertices.Length];
 
+            MorphRenderData.Vertices = new float[source.RenderData.Vertices.Length];
+
             Array.Copy(source.RenderData.Vertices, OrigRenderData.Vertices, source.RenderData.Vertices.Length);
+            Array.Copy(source.RenderData.Vertices, MorphRenderData.Vertices, source.RenderData.Vertices.Length);
+
             Array.Copy(source.RenderData.TexCoords, OrigRenderData.TexCoords, source.RenderData.TexCoords.Length);
             Array.Copy(source.RenderData.Indices, OrigRenderData.Indices, source.RenderData.Indices.Length);
 
@@ -812,7 +818,7 @@ namespace Radegast.Rendering
                     rot = ba.getRotation();
                 }
 
-                Vector3 pos = new Vector3(OrigRenderData.Vertices[v], OrigRenderData.Vertices[v + 1], OrigRenderData.Vertices[v + 2]);
+                Vector3 pos = new Vector3(MorphRenderData.Vertices[v], MorphRenderData.Vertices[v + 1], MorphRenderData.Vertices[v + 2]);
                 pos = pos + lerp; 
                 pos = pos - offset;
                 pos = pos * rot;
@@ -832,12 +838,12 @@ namespace Radegast.Rendering
 
                 uint i = mvx.VertexIndex;
 
-                RenderData.Vertices[i * 3] = OrigRenderData.Vertices[i*3] + mvx.Coord.X * weight;
-                RenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 +1] + mvx.Coord.Y * weight;
-                RenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
+                MorphRenderData.Vertices[i * 3] = OrigRenderData.Vertices[i*3] + mvx.Coord.X * weight;
+                MorphRenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 + 1] + mvx.Coord.Y * weight;
+                MorphRenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
 
-                RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i*2] + mvx.TexCoord.X * weight;
-                RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i*2+1] + mvx.TexCoord.Y * weight;
+                RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2] + mvx.TexCoord.X * weight;
+                RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1] + mvx.TexCoord.Y * weight;
  
             }
         }
@@ -1113,15 +1119,21 @@ namespace Radegast.Rendering
             if (av.VisualParameters == null)
                 return;
 
-            int x = 0;
-            foreach (byte vpvalue in av.VisualParameters)
+            ThreadPool.QueueUserWorkItem(sync =>
             {
-
-                VisualParamEx vpe = VisualParamEx.allParams[x];
-                float value = vpe.MinValue + (vpe.MaxValue - vpe.MinValue) * (vpvalue / 255.0f);
-                this.morphtest(av, x, value);
-                x++;
-            }
+                int x = 0;
+                
+                foreach (byte vpvalue in av.VisualParameters)
+                {
+                    if (VisualParamEx.deformParams.ContainsKey(x))
+                    {
+                        VisualParamEx vpe = VisualParamEx.allParams[x];
+                        float value = (vpvalue / 255.0f);
+                        this.morphtest(av, x, value);
+                    }
+                    x++;
+                }
+            });
         }
     }
 
