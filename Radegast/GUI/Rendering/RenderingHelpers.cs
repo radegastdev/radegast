@@ -864,6 +864,7 @@ namespace Radegast.Rendering
         public VisualParamEx.EparamSex msex;
 
         public byte[] VisualAppearanceParameters = new byte[1024];
+        bool vpsent = false;
 
         public GLAvatar()
         {
@@ -1185,7 +1186,7 @@ namespace Radegast.Rendering
 
                 foreach (byte vpvalue in av.VisualParameters)
                 {
-                    if (av.vpsent==true && VisualAppearanceParameters[x] == vpvalue)
+                    if (vpsent==true && VisualAppearanceParameters[x] == vpvalue)
                     {
                         x++;
                         continue;
@@ -1213,7 +1214,7 @@ namespace Radegast.Rendering
                     x++;
                 }
 
-                av.vpsent = true;
+                vpsent = true;
 
                 foreach (GLMesh mesh in _meshes.Values)
                 {
