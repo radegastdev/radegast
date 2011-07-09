@@ -2403,6 +2403,12 @@ namespace Radegast.Rendering
 
                 }
                 av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_morphamount.Text));
+
+                foreach (GLMesh mesh in av.glavatar._meshes.Values)
+                {
+                    mesh.applyjointweights();
+                }
+
             }
 
                     
