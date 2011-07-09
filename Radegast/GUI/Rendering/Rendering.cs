@@ -141,7 +141,17 @@ namespace Radegast.Rendering
             Camera = new Camera();
             InitCamera();
 
-            GLAvatar.loadlindenmeshes("avatar_lad.xml");
+            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
+
+            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+            {
+                comboBox_morph.Items.Add(vpe.Name);
+            }
+
+            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+            {
+                comboBox_driver.Items.Add(vpe.Name);
+            }
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -150,9 +160,12 @@ namespace Radegast.Rendering
             Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
+            //Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
+            Client.Avatars.AvatarAppearance += new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
             Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
         }
+
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
@@ -167,6 +180,9 @@ namespace Radegast.Rendering
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
+            Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            //Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
+
             if (instance.Netcom != null)
             {
                 Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
@@ -299,6 +315,47 @@ namespace Radegast.Rendering
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
             UpdatePrimBlocking(e.Prim);
         }
+
+        void AvatarAnimationChanged(object sender, AvatarAnimationEventArgs e)
+        {
+     
+            // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                if (av.avatar.ID == e.AvatarID)
+                {
+                    foreach(Animation anim in e.Animations)
+                    {
+                        Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, animRecievedCallback);
+                        av.animlist.Add(anim.AnimationID, anim);
+                    }
+                    break;
+                }
+            }
+        }
+
+        void animRecievedCallback(AssetDownload transfer, Asset asset)
+        {
+            if (transfer.Success)
+            {
+                BinBVHAnimationReader b = new BinBVHAnimationReader(asset.AssetData);
+                
+            }
+        }
+
+        void Avatars_AvatarAppearance(object sender, AvatarAppearanceEventArgs e)
+        {
+               // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                if (av.avatar.ID == e.AvatarID)
+                {
+                    av.glavatar.morph(av.avatar);
+                }
+            }
+        }
+
+
         #endregion Network messaage handlers
 
         #region glControl setup and disposal
@@ -1014,11 +1071,15 @@ namespace Radegast.Rendering
                 else
                 {
                     GLAvatar ga = new GLAvatar();
+                    
+                    //ga.morph(av);
                     RenderAvatar ra = new Rendering.RenderAvatar();
                     ra.avatar = av;
                     ra.glavatar = ga;
                     updateAVtes(ra);
                     Avatars.Add(av.LocalID, ra);
+                    ra.glavatar.morph(av);
+
                 }
             }
         }
@@ -1052,25 +1113,122 @@ namespace Radegast.Rendering
             }
         }
 
+        private void RenderAvatarsSkeleton(RenderPass pass)
+        {
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                // Individual prim matrix
+                GL.PushMatrix();
+
+                // Prim roation and position
+                Vector3 pos = av.avatar.Position;
+                pos.X += 1;
+                GL.MultMatrix(Math3D.CreateTranslationMatrix(pos));
+                GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
+
+                GL.Begin(BeginMode.Lines);
+
+                GL.Color3(1.0, 0.0, 0.0);
+                
+                foreach (Bone b in av.glavatar.skel.mBones.Values)
+                {
+                    Vector3 newpos = b.getOffset();
+
+                    if (b.parent != null)
+                    {
+                        Vector3 parentpos = b.parent.getOffset();
+                        GL.Vertex3(parentpos.X,parentpos.Y,parentpos.Z);
+                    }
+                    else
+                    {                       
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    }
+
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    //Mark the joints
+
+                   
+                    newpos.X += 0.01f;
+                    newpos.Y += 0.01f;
+                    newpos.Z += 0.01f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                  
+                    newpos.Y -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Z -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X -= 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.X += 0.02f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                    newpos.Y -= 0.01f;
+                    newpos.Z += 0.01f;
+                    newpos.X -= 0.01f;
+                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+
+
+                }
+
+
+                
+                GL.Color3(0.0, 1.0, 0.0);
+
+                GL.End();
+
+                GL.PopMatrix();
+            }
+        }
+
         private void RenderAvatars(RenderPass pass)
         {
             lock (Avatars)
             {
                 GL.EnableClientState(ArrayCap.VertexArray);
                 GL.EnableClientState(ArrayCap.TextureCoordArray);
+                GL.EnableClientState(ArrayCap.NormalArray);
 
                 int avatarNr = 0;
                 foreach (RenderAvatar av in Avatars.Values)
                 {
                     avatarNr++;
 
-                    if (GLAvatar._meshes.Count > 0)
+                    if (av.glavatar._meshes.Count > 0)
                     {
                         int faceNr = 0;
-                        foreach (GLMesh mesh in GLAvatar._meshes.Values)
+                        foreach (GLMesh mesh in av.glavatar._meshes.Values)
                         {
                             faceNr++;
-                            if (!GLAvatar._showSkirt && mesh.Name == "skirtMesh")
+                            if (!av.glavatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
 
                             if (mesh.Name == "hairMesh") // Don't render the hair mesh for the moment
@@ -1082,22 +1240,34 @@ namespace Radegast.Rendering
                             GL.PushMatrix();
 
                             // Prim roation and position
-                            GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
-                            GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
-
+                            //GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
+                            //GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
+                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1,1,1),av.avatar.Rotation,av.avatar.Position));
 
                             // Special case for eyeballs we need to offset the mesh to the correct position
                             // We have manually added the eyeball offset based on the headbone when we
                             // constructed the meshes, but why are the position offsets we got when loading
                             // the other meshes <0,7,0> ?
-                            if (mesh.Name == "eyeBallRightMesh" || mesh.Name == "eyeBallLeftMesh")
+                            if (mesh.Name == "eyeBallLeftMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(mesh.Position));
-                                //TODO save the rot in a Quaternion in the Bone class rather than convert on the fly
-                                Quaternion rot = new Quaternion(mesh.RotationAngles.X, mesh.RotationAngles.Y, mesh.RotationAngles.Z);
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(rot));
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getOffset("mEyeLeft")));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(av.glavatar.skel.getRotation("mEyeLeft")));
                             }
+                            if (mesh.Name == "eyeBallRightMesh")
+                            {
+                                // Mesh roation and position
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getOffset("mEyeRight")));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(av.glavatar.skel.getRotation("mEyeRight")));
+                            }
+
+
+
+                            //Should we be offsetting the base meshs at all?
+                            //if (mesh.Name == "headMesh")
+                            //{
+                            //    GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getDeltaOffset("mHead")));
+                            //}
 
 
                             //Gl.glTranslatef(mesh.Position.X, mesh.Position.Y, mesh.Position.Z);
@@ -1145,6 +1315,7 @@ namespace Radegast.Rendering
 
                             GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, mesh.RenderData.TexCoords);
                             GL.VertexPointer(3, VertexPointerType.Float, 0, mesh.RenderData.Vertices);
+                            GL.NormalPointer(NormalPointerType.Float, 0, mesh.RenderData.Normals);
 
                             GL.DrawElements(BeginMode.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
 
@@ -1156,8 +1327,10 @@ namespace Radegast.Rendering
                     }
                 }
                 GL.Disable(EnableCap.Texture2D);
+                GL.DisableClientState(ArrayCap.NormalArray);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
+                
             }
         }
         #endregion avatars
@@ -1421,8 +1594,10 @@ namespace Radegast.Rendering
 
                                         attachment_point apoint = GLAvatar.attachment_points[attachment_index];
 
-                                        Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                        Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+                                        Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
+                                        Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+                                        //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                                       // Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
 
                                         GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
                                         GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
@@ -1466,9 +1641,11 @@ namespace Radegast.Rendering
 
                                 attachment_point apoint = GLAvatar.attachment_points[attachment_index];
 
-                                Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
-
+                                //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                                //Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+                                Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
+                                Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+                                
                                 GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
                                 GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
                             }
@@ -1724,6 +1901,7 @@ namespace Radegast.Rendering
             {
                 RenderTerrain();
                 RenderObjects(RenderPass.Simple);
+                RenderAvatarsSkeleton(RenderPass.Simple);
                 RenderAvatars(RenderPass.Simple);
 
                 GL.Disable(EnableCap.Lighting);
@@ -2210,5 +2388,132 @@ namespace Radegast.Rendering
         {
             minLODFactor = (float)hsLOD.Value / 5000f;
         }
+
+        private void button_vparam_Click(object sender, EventArgs e)
+        {
+            //int paramid = int.Parse(textBox_vparamid.Text);
+            //float weight = (float)hScrollBar_weight.Value/100f;
+            float weightx = float.Parse(textBox_x.Text);
+            float weighty = float.Parse(textBox_y.Text);
+            float weightz = float.Parse(textBox_z.Text);
+
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                //av.glavatar.morphtest(av.avatar,paramid,weight);
+                av.glavatar.skel.deformbone(comboBox1.Text, new Vector3(0, 0, 0), new Vector3(float.Parse(textBox_sx.Text), float.Parse(textBox_sy.Text), float.Parse(textBox_sz.Text)), Quaternion.CreateFromEulers((float)(Math.PI * (weightx / 180)), (float)(Math.PI * (weighty / 180)), (float)(Math.PI * (weightz / 180))));
+
+                foreach (GLMesh mesh in av.glavatar._meshes.Values)
+                {
+                    mesh.applyjointweights();
+                }
+
+           }
+        }
+
+        private void textBox_vparamid_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            string bone = comboBox1.Text;
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                Bone b;
+                if (av.glavatar.skel.mBones.TryGetValue(bone, out b))
+                {
+                    textBox_sx.Text = (b.scale.X-1.0f).ToString();
+                    textBox_sy.Text = (b.scale.Y-1.0f).ToString();
+                    textBox_sz.Text = (b.scale.Z-1.0f).ToString();
+
+                    float x,y,z;
+                    b.rot.GetEulerAngles(out x, out y, out z);
+                    textBox_x.Text = x.ToString();
+                    textBox_y.Text = y.ToString();
+                    textBox_z.Text = z.ToString();
+
+                }
+
+            }
+            
+
+        }
+
+        private void textBox_y_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox_z_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox_morph_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                int id = -1;
+                foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+                {
+                    if (vpe.Name == comboBox_morph.Text)
+                    {
+                        id = vpe.ParamID;
+                        break;
+                    }
+
+                }
+                av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_morphamount.Text));
+
+                foreach (GLMesh mesh in av.glavatar._meshes.Values)
+                {
+                    mesh.applyjointweights();
+                }
+
+            }
+
+                    
+
+        }
+
+        private void gbZoom_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button_driver_Click(object sender, EventArgs e)
+        {
+            foreach (RenderAvatar av in Avatars.Values)
+            {
+                int id = -1;
+                foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+                {
+                    if (vpe.Name == comboBox_driver.Text)
+                    {
+                        id = vpe.ParamID;
+                        break;
+                    }
+
+                }
+                av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_driveramount.Text));
+
+                foreach (GLMesh mesh in av.glavatar._meshes.Values)
+                {
+                    mesh.applyjointweights();
+                }
+
+            }
+
+        }
+
+       
+
     }
 }

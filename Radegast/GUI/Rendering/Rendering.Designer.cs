@@ -61,6 +61,21 @@ namespace Radegast.Rendering
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox_morphamount = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.comboBox_morph = new System.Windows.Forms.ComboBox();
+            this.textBox_sz = new System.Windows.Forms.TextBox();
+            this.textBox_sy = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox_sx = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.textBox_z = new System.Windows.Forms.TextBox();
+            this.textBox_y = new System.Windows.Forms.TextBox();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.button_vparam = new System.Windows.Forms.Button();
+            this.textBox_x = new System.Windows.Forms.TextBox();
             this.hsLOD = new System.Windows.Forms.HScrollBar();
             this.hsSpecular = new System.Windows.Forms.HScrollBar();
             this.hsDiffuse = new System.Windows.Forms.HScrollBar();
@@ -76,12 +91,35 @@ namespace Radegast.Rendering
             this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_driver = new System.Windows.Forms.Button();
+            this.textBox_driveramount = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.comboBox_driver = new System.Windows.Forms.ComboBox();
             this.gbZoom.SuspendLayout();
             this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbZoom
             // 
+            this.gbZoom.Controls.Add(this.button_driver);
+            this.gbZoom.Controls.Add(this.textBox_driveramount);
+            this.gbZoom.Controls.Add(this.label6);
+            this.gbZoom.Controls.Add(this.comboBox_driver);
+            this.gbZoom.Controls.Add(this.button1);
+            this.gbZoom.Controls.Add(this.textBox_morphamount);
+            this.gbZoom.Controls.Add(this.label5);
+            this.gbZoom.Controls.Add(this.comboBox_morph);
+            this.gbZoom.Controls.Add(this.textBox_sz);
+            this.gbZoom.Controls.Add(this.textBox_sy);
+            this.gbZoom.Controls.Add(this.label4);
+            this.gbZoom.Controls.Add(this.textBox_sx);
+            this.gbZoom.Controls.Add(this.label3);
+            this.gbZoom.Controls.Add(this.label1);
+            this.gbZoom.Controls.Add(this.textBox_z);
+            this.gbZoom.Controls.Add(this.textBox_y);
+            this.gbZoom.Controls.Add(this.comboBox1);
+            this.gbZoom.Controls.Add(this.button_vparam);
+            this.gbZoom.Controls.Add(this.textBox_x);
             this.gbZoom.Controls.Add(this.hsLOD);
             this.gbZoom.Controls.Add(this.hsSpecular);
             this.gbZoom.Controls.Add(this.hsDiffuse);
@@ -91,11 +129,193 @@ namespace Radegast.Rendering
             this.gbZoom.Controls.Add(this.cbAA);
             this.gbZoom.Controls.Add(this.chkWireFrame);
             this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbZoom.Location = new System.Drawing.Point(0, 507);
+            this.gbZoom.Location = new System.Drawing.Point(0, 441);
             this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(644, 98);
+            this.gbZoom.Size = new System.Drawing.Size(644, 163);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
+            this.gbZoom.Enter += new System.EventHandler(this.gbZoom_Enter);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(277, 114);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 42;
+            this.button1.Text = "Apply";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // textBox_morphamount
+            // 
+            this.textBox_morphamount.Location = new System.Drawing.Point(204, 116);
+            this.textBox_morphamount.Name = "textBox_morphamount";
+            this.textBox_morphamount.Size = new System.Drawing.Size(67, 20);
+            this.textBox_morphamount.TabIndex = 41;
+            this.textBox_morphamount.Text = "0";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(9, 118);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(37, 13);
+            this.label5.TabIndex = 40;
+            this.label5.Text = "Morph";
+            // 
+            // comboBox_morph
+            // 
+            this.comboBox_morph.FormattingEnabled = true;
+            this.comboBox_morph.Items.AddRange(new object[] {
+            "mPelvis",
+            "mTorso",
+            "mChest",
+            "mNeck",
+            "mHead",
+            "mCollarLeft",
+            "mCollarRight",
+            "mShoulderLeft",
+            "mShoulderRight",
+            "mElbowLeft",
+            "mElbowRight",
+            "mWristRight",
+            "mWristLeft",
+            "mHipRight",
+            "mHipLeft",
+            "mKneeRight",
+            "mKneeLeft",
+            "mAnkleRight",
+            "mAnkleLeft",
+            "mFootLeft",
+            "mFootRight",
+            "mToeLeft",
+            "mToeRight"});
+            this.comboBox_morph.Location = new System.Drawing.Point(74, 115);
+            this.comboBox_morph.Name = "comboBox_morph";
+            this.comboBox_morph.Size = new System.Drawing.Size(121, 21);
+            this.comboBox_morph.TabIndex = 39;
+            this.comboBox_morph.SelectedIndexChanged += new System.EventHandler(this.comboBox_morph_SelectedIndexChanged);
+            // 
+            // textBox_sz
+            // 
+            this.textBox_sz.Location = new System.Drawing.Point(466, 90);
+            this.textBox_sz.Name = "textBox_sz";
+            this.textBox_sz.Size = new System.Drawing.Size(32, 20);
+            this.textBox_sz.TabIndex = 38;
+            this.textBox_sz.Text = "0";
+            // 
+            // textBox_sy
+            // 
+            this.textBox_sy.Location = new System.Drawing.Point(428, 91);
+            this.textBox_sy.Name = "textBox_sy";
+            this.textBox_sy.Size = new System.Drawing.Size(32, 20);
+            this.textBox_sy.TabIndex = 37;
+            this.textBox_sy.Text = "0";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(353, 94);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(34, 13);
+            this.label4.TabIndex = 36;
+            this.label4.Text = "Scale";
+            // 
+            // textBox_sx
+            // 
+            this.textBox_sx.Location = new System.Drawing.Point(390, 91);
+            this.textBox_sx.Name = "textBox_sx";
+            this.textBox_sx.Size = new System.Drawing.Size(32, 20);
+            this.textBox_sx.TabIndex = 33;
+            this.textBox_sx.Text = "0";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(201, 92);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(24, 13);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "Rot";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 92);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(59, 13);
+            this.label1.TabIndex = 31;
+            this.label1.Text = "Bone/Joint";
+            // 
+            // textBox_z
+            // 
+            this.textBox_z.Location = new System.Drawing.Point(315, 90);
+            this.textBox_z.Name = "textBox_z";
+            this.textBox_z.Size = new System.Drawing.Size(32, 20);
+            this.textBox_z.TabIndex = 30;
+            this.textBox_z.Text = "0";
+            this.textBox_z.TextChanged += new System.EventHandler(this.textBox_z_TextChanged);
+            // 
+            // textBox_y
+            // 
+            this.textBox_y.Location = new System.Drawing.Point(277, 90);
+            this.textBox_y.Name = "textBox_y";
+            this.textBox_y.Size = new System.Drawing.Size(32, 20);
+            this.textBox_y.TabIndex = 29;
+            this.textBox_y.Text = "0";
+            this.textBox_y.TextChanged += new System.EventHandler(this.textBox_y_TextChanged);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "mPelvis",
+            "mTorso",
+            "mChest",
+            "mNeck",
+            "mHead",
+            "mCollarLeft",
+            "mCollarRight",
+            "mShoulderLeft",
+            "mShoulderRight",
+            "mElbowLeft",
+            "mElbowRight",
+            "mWristRight",
+            "mWristLeft",
+            "mHipRight",
+            "mHipLeft",
+            "mKneeRight",
+            "mKneeLeft",
+            "mAnkleRight",
+            "mAnkleLeft",
+            "mFootLeft",
+            "mFootRight",
+            "mToeLeft",
+            "mToeRight"});
+            this.comboBox1.Location = new System.Drawing.Point(74, 88);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 28;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // button_vparam
+            // 
+            this.button_vparam.Location = new System.Drawing.Point(514, 88);
+            this.button_vparam.Name = "button_vparam";
+            this.button_vparam.Size = new System.Drawing.Size(75, 23);
+            this.button_vparam.TabIndex = 27;
+            this.button_vparam.Text = "Apply";
+            this.button_vparam.UseVisualStyleBackColor = true;
+            this.button_vparam.Click += new System.EventHandler(this.button_vparam_Click);
+            // 
+            // textBox_x
+            // 
+            this.textBox_x.Location = new System.Drawing.Point(239, 89);
+            this.textBox_x.Name = "textBox_x";
+            this.textBox_x.Size = new System.Drawing.Size(32, 20);
+            this.textBox_x.TabIndex = 26;
+            this.textBox_x.Text = "0";
+            this.textBox_x.TextChanged += new System.EventHandler(this.textBox_vparamid_TextChanged);
             // 
             // hsLOD
             // 
@@ -226,11 +446,46 @@ namespace Radegast.Rendering
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
+            // button_driver
+            // 
+            this.button_driver.Location = new System.Drawing.Point(277, 140);
+            this.button_driver.Name = "button_driver";
+            this.button_driver.Size = new System.Drawing.Size(75, 23);
+            this.button_driver.TabIndex = 46;
+            this.button_driver.Text = "Driver";
+            this.button_driver.UseVisualStyleBackColor = true;
+            this.button_driver.Click += new System.EventHandler(this.button_driver_Click);
+            // 
+            // textBox_driveramount
+            // 
+            this.textBox_driveramount.Location = new System.Drawing.Point(204, 142);
+            this.textBox_driveramount.Name = "textBox_driveramount";
+            this.textBox_driveramount.Size = new System.Drawing.Size(67, 20);
+            this.textBox_driveramount.TabIndex = 45;
+            this.textBox_driveramount.Text = "0";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 144);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.TabIndex = 44;
+            this.label6.Text = "Driver";
+            // 
+            // comboBox_driver
+            // 
+            this.comboBox_driver.FormattingEnabled = true;
+            this.comboBox_driver.Location = new System.Drawing.Point(74, 141);
+            this.comboBox_driver.Name = "comboBox_driver";
+            this.comboBox_driver.Size = new System.Drawing.Size(121, 21);
+            this.comboBox_driver.TabIndex = 43;
+            // 
             // SceneWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(644, 605);
+            this.ClientSize = new System.Drawing.Size(644, 604);
             this.Controls.Add(this.gbZoom);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SceneWindow";
@@ -261,6 +516,25 @@ namespace Radegast.Rendering
         private System.Windows.Forms.HScrollBar hsDiffuse;
         private System.Windows.Forms.HScrollBar hsAmbient;
         private System.Windows.Forms.HScrollBar hsLOD;
+        private System.Windows.Forms.Button button_vparam;
+        private System.Windows.Forms.TextBox textBox_x;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.TextBox textBox_z;
+        private System.Windows.Forms.TextBox textBox_y;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox textBox_sx;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox textBox_sz;
+        private System.Windows.Forms.TextBox textBox_sy;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox_morphamount;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox comboBox_morph;
+        private System.Windows.Forms.Button button_driver;
+        private System.Windows.Forms.TextBox textBox_driveramount;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox comboBox_driver;
 
     }
 }
