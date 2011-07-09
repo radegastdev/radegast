@@ -1115,97 +1115,100 @@ namespace Radegast.Rendering
 
         private void RenderAvatarsSkeleton(RenderPass pass)
         {
-            foreach (RenderAvatar av in Avatars.Values)
+            lock (Avatars)
             {
-                // Individual prim matrix
-                GL.PushMatrix();
-
-                // Prim roation and position
-                Vector3 pos = av.avatar.Position;
-                pos.X += 1;
-                GL.MultMatrix(Math3D.CreateTranslationMatrix(pos));
-                GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
-
-                GL.Begin(BeginMode.Lines);
-
-                GL.Color3(1.0, 0.0, 0.0);
-                
-                foreach (Bone b in av.glavatar.skel.mBones.Values)
+                foreach (RenderAvatar av in Avatars.Values)
                 {
-                    Vector3 newpos = b.getOffset();
+                    // Individual prim matrix
+                    GL.PushMatrix();
 
-                    if (b.parent != null)
+                    // Prim roation and position
+                    Vector3 pos = av.avatar.Position;
+                    pos.X += 1;
+                    GL.MultMatrix(Math3D.CreateTranslationMatrix(pos));
+                    GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
+
+                    GL.Begin(BeginMode.Lines);
+
+                    GL.Color3(1.0, 0.0, 0.0);
+
+                    foreach (Bone b in av.glavatar.skel.mBones.Values)
                     {
-                        Vector3 parentpos = b.parent.getOffset();
-                        GL.Vertex3(parentpos.X,parentpos.Y,parentpos.Z);
-                    }
-                    else
-                    {                       
+                        Vector3 newpos = b.getOffset();
+
+                        if (b.parent != null)
+                        {
+                            Vector3 parentpos = b.parent.getOffset();
+                            GL.Vertex3(parentpos.X, parentpos.Y, parentpos.Z);
+                        }
+                        else
+                        {
+                            GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        }
+
                         GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        //Mark the joints
+
+
+                        newpos.X += 0.01f;
+                        newpos.Y += 0.01f;
+                        newpos.Z += 0.01f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.X -= 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.Y -= 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.X += 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.Y += 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.Z -= 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.Y -= 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.X -= 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.Y += 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.X += 0.02f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+                        newpos.Y -= 0.01f;
+                        newpos.Z += 0.01f;
+                        newpos.X -= 0.01f;
+                        GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
+
+
+
                     }
 
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    //Mark the joints
-
-                   
-                    newpos.X += 0.01f;
-                    newpos.Y += 0.01f;
-                    newpos.Z += 0.01f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.X -= 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                  
-                    newpos.Y -= 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.X += 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.Y += 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.Z -= 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.Y -= 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.X -= 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.Y += 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.X += 0.02f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
-
-                    newpos.Y -= 0.01f;
-                    newpos.Z += 0.01f;
-                    newpos.X -= 0.01f;
-                    GL.Vertex3(newpos.X, newpos.Y, newpos.Z);
 
 
+                    GL.Color3(0.0, 1.0, 0.0);
 
+                    GL.End();
+
+                    GL.PopMatrix();
                 }
-
-
-                
-                GL.Color3(0.0, 1.0, 0.0);
-
-                GL.End();
-
-                GL.PopMatrix();
             }
         }
 
