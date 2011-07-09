@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.IO;
@@ -860,9 +861,9 @@ namespace Radegast.Rendering
         public bool _wireframe = true;
         public bool _showSkirt = false;
 
+        public VisualParamEx.EparamSex msex;
 
-
-        public byte[] VisualAppearanceParameters = new byte[1000];
+        public byte[] VisualAppearanceParameters = new byte[1024];
 
         public GLAvatar()
         {
@@ -874,16 +875,28 @@ namespace Radegast.Rendering
             }
         }
 
+        public static void dumptweaks()
+        {
+
+            for(int x=0;x<VisualParamEx.tweakable_params.Count;x++)
+            {
+                VisualParamEx vpe = (VisualParamEx)VisualParamEx.tweakable_params.GetByIndex(x);
+                Console.WriteLine(string.Format("{0} is {1}",x,vpe.Name));
+            }
+
+
+        }
+
         public static void loadlindenmeshes2(string LODfilename)
         {
             attachment_points.Clear();
-            
+
 
             string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
 
             XmlDocument lad = new XmlDocument();
             lad.Load(basedir + LODfilename);
-            
+
             //Firstly read the skeleton section this contains attachment point info and the bone deform info for visual params
             // And load the skeleton file in to the bones class
 
@@ -907,7 +920,7 @@ namespace Radegast.Rendering
                 if (skeletonnode.Name == "param")
                 {
                     //Bone deform param
-                    VisualParamEx vp = new VisualParamEx(skeletonnode,VisualParamEx.ParamType.TYPE_BONEDEFORM);
+                    VisualParamEx vp = new VisualParamEx(skeletonnode, VisualParamEx.ParamType.TYPE_BONEDEFORM);
                 }
             }
 
@@ -922,7 +935,7 @@ namespace Radegast.Rendering
                 string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
 
                 GLMesh mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
-                    
+
                 if (meshNode.HasChildNodes)
                 {
                     foreach (XmlNode paramnode in meshNode.ChildNodes)
@@ -962,7 +975,7 @@ namespace Radegast.Rendering
                         break;
 
                     case "eyeBallRightMesh":
-                        mesh.setMeshPos( Bone.mBones["mEyeLeft"].getOffset());
+                        mesh.setMeshPos(Bone.mBones["mEyeLeft"].getOffset());
                         //mesh.setMeshRot(Bone.getRotation("mEyeLeft"));
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
@@ -993,6 +1006,40 @@ namespace Radegast.Rendering
 
             // Next are the textureing params, skipping for the moment
 
+            XmlNodeList colors = lad.GetElementsByTagName("global_color");
+            {
+                foreach (XmlNode globalcolornode in colors)
+                {
+                    foreach (XmlNode node in globalcolornode.ChildNodes)
+                    {
+                        if (node.Name == "param")
+                        {
+                            VisualParamEx vp = new VisualParamEx(node, VisualParamEx.ParamType.TYPE_COLOR);
+                        }
+                    }
+                }
+            }
+
+            // Get layer paramaters, a bit of a verbose way to do it but we probably want to get access
+            // to some of the other data not just the <param> tag
+
+            XmlNodeList layer_sets = lad.GetElementsByTagName("layer_set");
+            {
+                foreach (XmlNode layer_set in layer_sets)
+                {
+                    foreach (XmlNode layer in layer_set.ChildNodes)
+                    {
+                        foreach (XmlNode layernode in layer.ChildNodes)
+                        {
+                            if (layernode.Name == "param")
+                            {
+                                VisualParamEx vp = new VisualParamEx(layernode, VisualParamEx.ParamType.TYPE_COLOR);
+                            }
+                        }
+                    }
+                }
+            }
+
             // Next are the driver parameters, these are parameters that change multiple real parameters
 
             XmlNodeList drivers = lad.GetElementsByTagName("driver_parameters");
@@ -1012,6 +1059,8 @@ namespace Radegast.Rendering
             VisualParamEx vpx;
             if (VisualParamEx.allParams.TryGetValue(param,out vpx))
             {
+
+                Logger.Log(string.Format("Applying visual parameter {0} id {1} value {2}", vpx.Name, vpx.ParamID, weight), Helpers.LogLevel.Info); 
 
                 //weight = weight * 2.0f;
                 //weight=weight-1.0f;
@@ -1087,6 +1136,7 @@ namespace Radegast.Rendering
                 Logger.Log("Invalid paramater " + param.ToString(), Helpers.LogLevel.Warning);
             }
 
+            /*
             foreach (GLMesh mesh in _meshes.Values)
             {
                 VisualParamEx evp;
@@ -1106,11 +1156,7 @@ namespace Radegast.Rendering
                 }
             
             }
-
-            foreach (GLMesh mesh in _meshes.Values)
-            {
-                mesh.applyjointweights();
-            }
+             */
         }
 
         public void morph(Avatar av)
@@ -1119,19 +1165,59 @@ namespace Radegast.Rendering
             if (av.VisualParameters == null)
                 return;
 
+
             ThreadPool.QueueUserWorkItem(sync =>
             {
                 int x = 0;
-                
+
+                if (av.VisualParameters.Length > 123)
+                {
+                    if (av.VisualParameters[31] > 0.5)
+                    {
+                        msex = VisualParamEx.EparamSex.SEX_MALE;
+                    }
+                    else
+                    {
+                        msex = VisualParamEx.EparamSex.SEX_FEMALE;
+                    }
+                }
+                 
+
                 foreach (byte vpvalue in av.VisualParameters)
                 {
-                    if (VisualParamEx.deformParams.ContainsKey(x))
+                    if (av.vpsent==true && VisualAppearanceParameters[x] == vpvalue)
                     {
-                        VisualParamEx vpe = VisualParamEx.allParams[x];
-                        float value = (vpvalue / 255.0f);
-                        this.morphtest(av, x, value);
+                        x++;
+                        continue;
                     }
+
+                    VisualAppearanceParameters[x] = vpvalue;
+
+                    if (x >= VisualParamEx.tweakable_params.Count)
+                    {
+                        Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
+                        break;
+                    }
+
+                    VisualParamEx vpe = (VisualParamEx)VisualParamEx.tweakable_params.GetByIndex(x);
+
+                    if (vpe.sex != VisualParamEx.EparamSex.SEX_BOTH && vpe.sex != msex)
+                    {
+                        x++;
+                        continue;
+                    }
+
+                    float value = (vpvalue / 255.0f);
+                    this.morphtest(av, vpe.ParamID, value);
+                    
                     x++;
+                }
+
+                av.vpsent = true;
+
+                foreach (GLMesh mesh in _meshes.Values)
+                {
+                    mesh.applyjointweights();
                 }
             });
         }
@@ -1153,6 +1239,8 @@ namespace Radegast.Rendering
         public static Dictionary<int, string> mUpperMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
+
+
 
         public skeleton()
         {
@@ -1337,7 +1425,7 @@ namespace Radegast.Rendering
             float[] deform = Math3D.CreateSRTMatrix(scale, rot, this.orig_pos);
             mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
             this.pos = Bone.mBones[name].orig_pos + pos;
-            this.scale = Bone.mBones[name].orig_scale * scale;
+            this.scale = Bone.mBones[name].orig_scale + scale;
             this.rot = Bone.mBones[name].orig_rot * rot;
         }
 
@@ -1434,12 +1522,20 @@ namespace Radegast.Rendering
         static public Dictionary<int, VisualParamEx> deformParams = new Dictionary<int, VisualParamEx>();
         static public Dictionary<int, VisualParamEx> morphParams = new Dictionary<int, VisualParamEx>();
         static public Dictionary<int, VisualParamEx> drivenParams = new Dictionary<int, VisualParamEx>();
+        static public SortedList tweakable_params = new SortedList();
 
         public Dictionary<string, Vector3> BoneDeforms = null;
         public Dictionary<string, VolumeDeform> VolumeDeforms = null;
         public List<driven> childparams = null;
 
         public string morphmesh = null;
+
+        enum GroupType
+        {
+            VISUAL_PARAM_GROUP_TWEAKABLE = 0,
+            VISUAL_PARAM_GROUP_ANIMATABLE,
+            VISUAL_PARAM_GROUP_TWEAKABLE_NO_TRANSMIT,
+        }
 
         public struct VolumeDeform
         {
@@ -1460,7 +1556,8 @@ namespace Radegast.Rendering
             TYPE_BONEDEFORM,
             TYPE_MORPH,
             TYPE_DRIVER,
-            TYPE_BAKE,
+            TYPE_COLOR,
+            TYPE_LAYER
         }
 
         public struct driven
@@ -1507,6 +1604,8 @@ namespace Radegast.Rendering
         public EparamSex sex;
 
         public ParamType pType;
+
+        public static int count = 0;
 
         /// <summary>
         /// Set all the values through the constructor
@@ -1585,6 +1684,18 @@ namespace Radegast.Rendering
 
             }
 
+            Group = int.Parse(node.Attributes.GetNamedItem("group").Value);
+
+            if (Group == (int)GroupType.VISUAL_PARAM_GROUP_TWEAKABLE)
+            {
+                if(!tweakable_params.ContainsKey(ParamID)) //stupid duplicate shared params
+                {
+                    tweakable_params.Add(this.ParamID, this);
+                }
+                Logger.Log(String.Format("Adding tweakable paramater ID {0} {1}", count, this.Name),Helpers.LogLevel.Info);
+                count++;
+            }
+
             //TODO other paramaters but these arew concerned with editing the GUI display so not too fussed at the moment
 
             try
@@ -1637,6 +1748,22 @@ namespace Radegast.Rendering
                 drivenParams.Add(ParamID, this);
 
             }
+
+            if (pt == ParamType.TYPE_COLOR)
+            {
+                if (node.HasChildNodes)
+                {
+                    foreach (XmlNode colorchild in node.ChildNodes)
+                    {
+                        if (colorchild.Name == "param_color")
+                        {
+                            //TODO extract <value color="50, 25, 5, 255" />
+                        }
+                    }
+
+                }
+            }
+        
         }
 
         void ParseBoneDeforms(XmlNodeList deforms)

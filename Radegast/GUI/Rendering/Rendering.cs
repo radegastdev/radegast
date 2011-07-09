@@ -104,7 +104,7 @@ namespace Radegast.Rendering
         OpenTK.Matrix4 ModelMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
         int[] Viewport = new int[4];
-        bool useVBO = false;
+        bool useVBO = true;
         System.Diagnostics.Stopwatch renderTimer;
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
@@ -348,7 +348,6 @@ namespace Radegast.Rendering
                     av.glavatar.morph(av.avatar);
                 }
             }
-
         }
 
 
@@ -909,8 +908,6 @@ namespace Radegast.Rendering
                         // This is an child prim of an attachment
                         if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav))
                         {
-                            return new Vector3(99999f, 99999f, 99999f);
-        
                             var avPos = PrimPos(parentav.avatar);
                             return avPos;
                         }
@@ -922,8 +919,6 @@ namespace Radegast.Rendering
                 }
                 else if (Avatars.TryGetValue(prim.ParentID, out parentav))
                 {
-                    return new Vector3(99999f, 99999f, 99999f);
-        
                     var avPos = PrimPos(parentav.avatar);
 
                     return avPos + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
@@ -2340,7 +2335,7 @@ namespace Radegast.Rendering
                 av.glavatar.skel.deformbone(comboBox1.Text, new Vector3(0, 0, 0), new Vector3(float.Parse(textBox_sx.Text), float.Parse(textBox_sy.Text), float.Parse(textBox_sz.Text)), Quaternion.CreateFromEulers((float)(Math.PI * (weightx / 180)), (float)(Math.PI * (weighty / 180)), (float)(Math.PI * (weightz / 180))));
 
                 foreach (GLMesh mesh in av.glavatar._meshes.Values)
-               {
+                {
                     mesh.applyjointweights();
                 }
 
@@ -2361,9 +2356,9 @@ namespace Radegast.Rendering
                 Bone b;
                 if (av.glavatar.skel.mBones.TryGetValue(bone, out b))
                 {
-                    textBox_sx.Text = b.scale.X.ToString();
-                    textBox_sy.Text = b.scale.Y.ToString();
-                    textBox_sz.Text = b.scale.Z.ToString();
+                    textBox_sx.Text = (b.scale.X-1.0f).ToString();
+                    textBox_sy.Text = (b.scale.Y-1.0f).ToString();
+                    textBox_sz.Text = (b.scale.Z-1.0f).ToString();
 
                     float x,y,z;
                     b.rot.GetEulerAngles(out x, out y, out z);
@@ -2434,6 +2429,12 @@ namespace Radegast.Rendering
 
                 }
                 av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_driveramount.Text));
+
+                foreach (GLMesh mesh in av.glavatar._meshes.Values)
+                {
+                    mesh.applyjointweights();
+                }
+
             }
 
         }
