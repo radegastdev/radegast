@@ -739,20 +739,18 @@ namespace Radegast.Rendering
 
                 if (!PendingTextures.Dequeue(Timeout.Infinite, ref item)) continue;
 
-                if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
-                {
-                    item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
-                    GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
+                // Already have this one loaded
+                if (item.Data.TextureInfo.TexturePointer != 0) continue;
 
-                    continue;
-                }
-
-                if (LoadTexture(item.TeFace.TextureID, ref item.Data.TextureInfo.Texture, false))
+                if (item.TextureData != null)
                 {
-                    Bitmap bitmap = (Bitmap)item.Data.TextureInfo.Texture;
+                    ManagedImage mi;
+                    Image img;
+                    OpenJPEG.DecodeToImage(item.TextureData, out mi, out img);
+                    Bitmap bitmap = (Bitmap)img;
 
                     bool hasAlpha;
-                    if (item.Data.TextureInfo.Texture.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                    if (bitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     {
                         hasAlpha = true;
                     }
@@ -764,10 +762,8 @@ namespace Radegast.Rendering
                     item.Data.TextureInfo.HasAlpha = hasAlpha;
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, hasAlpha);
-                    TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
-
                     bitmap.Dispose();
-                    item.Data.TextureInfo.Texture = null;
+                    item.TextureData = null;
                 }
             }
             Logger.DebugLog("Texture thread exited");
@@ -1830,13 +1826,32 @@ namespace Radegast.Rendering
 
         public void DownloadTexture(TextureLoadItem item)
         {
-            if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
+            lock (TexturesPtrMap)
             {
-                item.Data.TextureInfo.TexturePointer = TexturesPtrMap[item.TeFace.TextureID].TexturePointer;
-            }
-            else
-            {
-                PendingTextures.Enqueue(item);
+                if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
+                {
+                    item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
+                }
+                else
+                {
+                    TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
+
+                    if (item.TextureData == null)
+                    {
+                        Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
+                        {
+                            if (state == TextureRequestState.Finished)
+                            {
+                                item.TextureData = asset.AssetData;
+                                PendingTextures.Enqueue(item);
+                            }
+                        });
+                    }
+                    else
+                    {
+                        PendingTextures.Enqueue(item);
+                    }
+                }
             }
         }
 
@@ -1936,19 +1951,12 @@ namespace Radegast.Rendering
                 else
                 {
 
-                    if (TexturesPtrMap.ContainsKey(teFace.TextureID))
+                    DownloadTexture(new TextureLoadItem()
                     {
-                        data.TextureInfo.TexturePointer = TexturesPtrMap[teFace.TextureID].TexturePointer;
-                    }
-                    else
-                    {
-                        DownloadTexture(new TextureLoadItem()
-                        {
-                            Data = data,
-                            Prim = prim,
-                            TeFace = teFace
-                        });
-                    }
+                        Data = data,
+                        Prim = prim,
+                        TeFace = teFace
+                    });
                 }
             }
 

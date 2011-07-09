@@ -267,6 +267,7 @@ namespace Radegast.Rendering
         public FaceData Data;
         public Primitive Prim;
         public Primitive.TextureEntryFace TeFace;
+        public byte[] TextureData = null;
     }
 
     public enum RenderPass
