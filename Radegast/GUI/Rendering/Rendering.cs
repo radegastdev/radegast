@@ -831,15 +831,17 @@ namespace Radegast.Rendering
 
             ThreadPool.QueueUserWorkItem(sync =>
             {
-                Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0).ForEach((Primitive mainPrim) =>
+                List<Primitive> mainPrims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0);
+                foreach(Primitive mainPrim in mainPrims)
                 {
                     UpdatePrimBlocking(mainPrim);
                     Client.Network.CurrentSim.ObjectsPrimitives
                         .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
                         .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
-                });
+                }
 
-                Client.Network.CurrentSim.ObjectsAvatars.ForEach(delegate(Avatar avatar)
+                List<Avatar> avis = Client.Network.CurrentSim.ObjectsAvatars.FindAll((Avatar a) => true);
+                foreach(Avatar avatar in avis)
                 {
                     UpdatePrimBlocking(avatar);
                     Client.Network.CurrentSim.ObjectsPrimitives
@@ -854,7 +856,7 @@ namespace Radegast.Rendering
                                     UpdatePrimBlocking(attachedPrimChild);
                                 });
                         });
-                });
+                }
             });
         }
 
