@@ -286,6 +286,42 @@ namespace Radegast.Rendering
 
     public static class RHelp
     {
+        static float t1 = 0.04f;
+        static float t2 = t1 / 5.7f;
+
+        public static Vector3 Smoothed1stOrder(Vector3 curPos, Vector3 targetPos, double lastFrameTime)
+        {
+            int numIterations = (int)(lastFrameTime * 100);
+            do
+            {
+                curPos += (targetPos - curPos) * t1;
+                numIterations--;
+            }
+            while (numIterations > 0);
+            if (Vector3.DistanceSquared(curPos, targetPos) < 0.000001)
+            {
+                curPos = targetPos;
+            }
+            return curPos;
+        }
+
+        public static Vector3 Smoothed2ndOrder(Vector3 curPos, Vector3 targetPos, ref Vector3 accel, double lastFrameTime)
+        {
+            int numIterations = (int)(lastFrameTime * 100);
+            do
+            {
+                accel += (targetPos - accel - curPos) * t1;
+                curPos += accel * t2;
+                numIterations--;
+            }
+            while (numIterations > 0);
+            if (Vector3.DistanceSquared(curPos, targetPos) < 0.000001)
+            {
+                curPos = targetPos;
+            }
+            return curPos;
+        }
+
         public static OpenTK.Vector2 TKVector3(Vector2 v)
         {
             return new OpenTK.Vector2(v.X, v.Y);
@@ -330,14 +366,24 @@ namespace Radegast.Rendering
         void Modify()
         {
             mModified = true;
-            if (TimeToTarget <= 0)
-            {
-                RenderPosition = Position;
-                RenderFocalPoint = FocalPoint;
-            }
         }
 
         public void Step(double time)
+        {
+            if (RenderPosition != Position)
+            {
+                RenderPosition = RHelp.Smoothed1stOrder(RenderPosition, Position, time);
+                Modified = true;
+            }
+            if (RenderFocalPoint != FocalPoint)
+            {
+                RenderFocalPoint = RHelp.Smoothed1stOrder(RenderFocalPoint, FocalPoint, time);
+                Modified = true;
+            }
+        }
+
+        [Obsolete("Use Step(), left in here for reference")]
+        public void Step2(double time)
         {
             TimeToTarget -= time;
             if (TimeToTarget <= time)
@@ -1076,6 +1122,7 @@ namespace Radegast.Rendering
 
         public byte[] VisualAppearanceParameters = new byte[1024];
         bool vpsent = false;
+        static bool lindenMeshesLoaded = false;
 
         public GLAvatar()
         {
@@ -1101,6 +1148,9 @@ namespace Radegast.Rendering
 
         public static void loadlindenmeshes2(string LODfilename)
         {
+            // Already have mashes loaded?
+            if (lindenMeshesLoaded) return;
+
             attachment_points.Clear();
 
 
@@ -1264,6 +1314,7 @@ namespace Radegast.Rendering
                 }
             }
 
+            lindenMeshesLoaded = true;
         }
 
         public void morphtest(Avatar av, int param, float weight)

@@ -318,13 +318,13 @@ namespace Radegast.Rendering
 
         void AvatarAnimationChanged(object sender, AvatarAnimationEventArgs e)
         {
-     
+
             // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
             foreach (RenderAvatar av in Avatars.Values)
             {
                 if (av.avatar.ID == e.AvatarID)
                 {
-                    foreach(Animation anim in e.Animations)
+                    foreach (Animation anim in e.Animations)
                     {
                         Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, animRecievedCallback);
                         av.animlist.Add(anim.AnimationID, anim);
@@ -339,13 +339,13 @@ namespace Radegast.Rendering
             if (transfer.Success)
             {
                 BinBVHAnimationReader b = new BinBVHAnimationReader(asset.AssetData);
-                
+
             }
         }
 
         void Avatars_AvatarAppearance(object sender, AvatarAppearanceEventArgs e)
         {
-               // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
+            // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
             foreach (RenderAvatar av in Avatars.Values)
             {
                 if (av.avatar.ID == e.AvatarID)
@@ -631,7 +631,7 @@ namespace Radegast.Rendering
                         direction.Normalize();
                         Vector3 vy = direction % new Vector3(0f, 0f, 1f);
                         Vector3 vx = vy % direction;
-                        Vector3 vxy = vx * deltaY * pixelToM + vy * deltaX * pixelToM;
+                        Vector3 vxy = vx * deltaY * pixelToM * 3 + vy * deltaX * pixelToM * 3;
                         Camera.Position += vxy;
                         Camera.FocalPoint += vxy;
                     }
@@ -685,7 +685,6 @@ namespace Radegast.Rendering
                             }
                             else if (ModifierKeys == Keys.Alt)
                             {
-                                Camera.TimeToTarget = timeToFocus;
                                 Camera.FocalPoint = PrimPos(picked.Prim);
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             }
@@ -695,7 +694,6 @@ namespace Radegast.Rendering
                             RenderAvatar av = (RenderAvatar)clicked;
                             if (ModifierKeys == Keys.Alt)
                             {
-                                Camera.TimeToTarget = timeToFocus;
                                 Vector3 pos = PrimPos(av.avatar);
                                 pos.Z += 1.5f; // focus roughly on the chest area
                                 Camera.FocalPoint = pos;
@@ -1071,7 +1069,7 @@ namespace Radegast.Rendering
                 else
                 {
                     GLAvatar ga = new GLAvatar();
-                    
+
                     //ga.morph(av);
                     RenderAvatar ra = new Rendering.RenderAvatar();
                     ra.avatar = av;
@@ -1245,7 +1243,7 @@ namespace Radegast.Rendering
                             // Prim roation and position
                             //GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
                             //GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
-                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1,1,1),av.avatar.Rotation,av.avatar.Position));
+                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, av.avatar.Position));
 
                             // Special case for eyeballs we need to offset the mesh to the correct position
                             // We have manually added the eyeball offset based on the headbone when we
@@ -1333,7 +1331,7 @@ namespace Radegast.Rendering
                 GL.DisableClientState(ArrayCap.NormalArray);
                 GL.DisableClientState(ArrayCap.VertexArray);
                 GL.DisableClientState(ArrayCap.TextureCoordArray);
-                
+
             }
         }
         #endregion avatars
@@ -1600,7 +1598,7 @@ namespace Radegast.Rendering
                                         Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
                                         Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
                                         //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                       // Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+                                        // Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
 
                                         GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
                                         GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
@@ -1648,7 +1646,7 @@ namespace Radegast.Rendering
                                 //Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
                                 Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
                                 Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
-                                
+
                                 GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
                                 GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
                             }
@@ -1888,10 +1886,6 @@ namespace Radegast.Rendering
                 Frustum.CalculateFrustum(ProjectionMatrix, ModelMatrix);
                 UpdateCamera();
                 Camera.Modified = false;
-            }
-
-            if (Camera.TimeToTarget != 0)
-            {
                 Camera.Step(lastFrameTime);
             }
 
@@ -2410,7 +2404,7 @@ namespace Radegast.Rendering
                     mesh.applyjointweights();
                 }
 
-           }
+            }
         }
 
         private void textBox_vparamid_TextChanged(object sender, EventArgs e)
@@ -2427,11 +2421,11 @@ namespace Radegast.Rendering
                 Bone b;
                 if (av.glavatar.skel.mBones.TryGetValue(bone, out b))
                 {
-                    textBox_sx.Text = (b.scale.X-1.0f).ToString();
-                    textBox_sy.Text = (b.scale.Y-1.0f).ToString();
-                    textBox_sz.Text = (b.scale.Z-1.0f).ToString();
+                    textBox_sx.Text = (b.scale.X - 1.0f).ToString();
+                    textBox_sy.Text = (b.scale.Y - 1.0f).ToString();
+                    textBox_sz.Text = (b.scale.Z - 1.0f).ToString();
 
-                    float x,y,z;
+                    float x, y, z;
                     b.rot.GetEulerAngles(out x, out y, out z);
                     textBox_x.Text = x.ToString();
                     textBox_y.Text = y.ToString();
@@ -2440,7 +2434,7 @@ namespace Radegast.Rendering
                 }
 
             }
-            
+
 
         }
 
@@ -2482,7 +2476,7 @@ namespace Radegast.Rendering
 
             }
 
-                    
+
 
         }
 
@@ -2516,7 +2510,7 @@ namespace Radegast.Rendering
 
         }
 
-       
+
 
     }
 }
