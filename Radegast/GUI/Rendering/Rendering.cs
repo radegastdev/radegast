@@ -81,8 +81,8 @@ namespace Radegast.Rendering
         /// <summary>
         /// List of prims in the scene
         /// </summary>
-        Dictionary<uint, FacetedMesh> Prims = new Dictionary<uint, FacetedMesh>();
-
+        Dictionary<uint, RenderPrimitive> Prims = new Dictionary<uint, RenderPrimitive>();
+        List<RenderPrimitive> SortedPrims;
         Dictionary<uint, RenderAvatar> Avatars = new Dictionary<uint, RenderAvatar>();
 
         #endregion Public fields
@@ -109,7 +109,6 @@ namespace Radegast.Rendering
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
         float minLODFactor = 0.005f;
-        float timeToFocus = 0.3f;
 
         float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
         float ambient = 0.26f;
@@ -899,7 +898,7 @@ namespace Radegast.Rendering
             }
             else
             {
-                FacetedMesh parent;
+                RenderPrimitive parent;
                 RenderAvatar parentav;
                 if (Prims.TryGetValue(prim.ParentID, out parent))
                 {
@@ -1012,7 +1011,7 @@ namespace Radegast.Rendering
             lock (Prims)
             {
                 int primNr = 0;
-                foreach (FacetedMesh mesh in Prims.Values)
+                foreach (RenderPrimitive mesh in Prims.Values)
                 {
                     primNr++;
                     Primitive prim = mesh.Prim;
@@ -1556,11 +1555,11 @@ namespace Radegast.Rendering
                 GL.EnableClientState(ArrayCap.NormalArray);
 
                 int primNr = 0;
-                foreach (FacetedMesh mesh in Prims.Values)
+                foreach (RenderPrimitive mesh in Prims.Values)
                 {
                     primNr++;
                     Primitive prim = mesh.Prim;
-                    FacetedMesh parent = null;
+                    RenderPrimitive parent = null;
                     RenderAvatar parentav = null;
 
                     if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID, out parentav)) continue;
@@ -2036,9 +2035,9 @@ namespace Radegast.Rendering
             }
         }
 
-        private void MeshPrim(Primitive prim, FacetedMesh mesh)
+        private void MeshPrim(Primitive prim, RenderPrimitive mesh)
         {
-            FacetedMesh existingMesh = null;
+            RenderPrimitive existingMesh = null;
 
             lock (Prims)
             {
@@ -2127,7 +2126,7 @@ namespace Radegast.Rendering
                     )
                 {
                     FaceData existingData = (FaceData)existingMesh.Faces[j].UserData;
-                    data.TextureInfo.TexturePointer = existingData.TextureInfo.TexturePointer;
+                    data.TextureInfo = existingData.TextureInfo;
                 }
                 else
                 {
@@ -2165,7 +2164,11 @@ namespace Radegast.Rendering
             // Regular prim
             if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
             {
-                MeshPrim(prim, renderer.GenerateFacetedMesh(prim, DetailLevel.High));
+                FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
+                RenderPrimitive rPrim = new RenderPrimitive();
+                rPrim.Faces = mesh.Faces;
+                rPrim.Prim = prim;
+                MeshPrim(prim, rPrim);
             }
             else
             {
@@ -2223,7 +2226,10 @@ namespace Radegast.Rendering
 
                     if (mesh != null)
                     {
-                        MeshPrim(prim, mesh);
+                        RenderPrimitive rPrim = new RenderPrimitive();
+                        rPrim.Faces = mesh.Faces;
+                        rPrim.Prim = prim;
+                        MeshPrim(prim, rPrim);
                     }
                 }
                 catch

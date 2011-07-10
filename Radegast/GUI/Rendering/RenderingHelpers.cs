@@ -26,6 +26,8 @@ namespace Radegast.Rendering
         public BoundingSphere BoundingSphere = new BoundingSphere();
         public static int VertexSize = 32; // sizeof (vertex), 2  x vector3 + 1 x vector2 = 8 floats x 4 bytes = 32 bytes 
         public TextureAnimationInfo AnimInfo;
+        public bool Occluded = false;
+        public int QueryID = 0;
 
         public void CheckVBO(Face face)
         {
@@ -277,6 +279,29 @@ namespace Radegast.Rendering
         Picking,
         Simple,
         Alpha
+    }
+
+    public class RenderPrimitive : IComparable, IDisposable
+    {
+        public Primitive Prim;
+        public List<Face> Faces;
+        public float DistanceSquared;
+        public BoundingSphere Bounding;
+
+        public virtual void Dispose()
+        {
+        }
+
+        public virtual int CompareTo(object other)
+        {
+            RenderPrimitive o = (RenderPrimitive)other;
+            if (this.DistanceSquared < o.DistanceSquared)
+                return -1;
+            else if (this.DistanceSquared > o.DistanceSquared)
+                return 1;
+            else
+                return 0;
+        }
     }
 
     public static class Render
