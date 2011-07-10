@@ -170,23 +170,35 @@ namespace Radegast.Rendering
         public Vector3 Max = new Vector3(-99999, -99999, -99999);
         public float R = 0;
 
-        //public void CreateBoundingVolume(FaceData mesh)
-        //{
-        //    for (int q = 0; q < mesh.VertexBuffer.Length; q++)
-        //    {
-        //        if (mesh.VertexBuffer[q].Position.X < Min.X) Min.X = mesh.VertexBuffer[q].Position.X;
-        //        if (mesh.VertexBuffer[q].Position.Y < Min.Y) Min.Y = mesh.VertexBuffer[q].Position.Y;
-        //        if (mesh.VertexBuffer[q].Position.Z < Min.Z) Min.Z = mesh.VertexBuffer[q].Position.Z;
+        public void CreateBoundingVolume(OpenMetaverse.Rendering.Face mesh)
+        {
+            for (int q = 0; q < mesh.Vertices.Count; q++)
+            {
+                if (mesh.Vertices[q].Position.X < Min.X) Min.X = mesh.Vertices[q].Position.X;
+                if (mesh.Vertices[q].Position.Y < Min.Y) Min.Y = mesh.Vertices[q].Position.Y;
+                if (mesh.Vertices[q].Position.Z < Min.Z) Min.Z = mesh.Vertices[q].Position.Z;
 
-        //        if (mesh.VertexBuffer[q].Position.X > Max.X) Max.X = mesh.VertexBuffer[q].Position.X;
-        //        if (mesh.VertexBuffer[q].Position.Y > Max.Y) Max.Y = mesh.VertexBuffer[q].Position.Y;
-        //        if (mesh.VertexBuffer[q].Position.Z > Max.Z) Max.Z = mesh.VertexBuffer[q].Position.Z;
-        //    }
+                if (mesh.Vertices[q].Position.X > Max.X) Max.X = mesh.Vertices[q].Position.X;
+                if (mesh.Vertices[q].Position.Y > Max.Y) Max.Y = mesh.Vertices[q].Position.Y;
+                if (mesh.Vertices[q].Position.Z > Max.Z) Max.Z = mesh.Vertices[q].Position.Z;
+            }
 
-        //    Vector3 dist = Max - Min;
-        //    R = dist.Length;
-        //    mesh.ObjCenter = Min + (dist / 2); // objektin keskikohta
-        //}
+            Vector3 dist = Max - Min;
+            R = Vector3.Distance(Min, Max);
+            mesh.Center = Min + (dist / 2);
+        }
+
+        public void AddVolume(BoundingSphere vol)
+        {
+            if (vol.Min.X < this.Min.X) this.Min.X = vol.Min.X;
+            if (vol.Min.Y < this.Min.Y) this.Min.Y = vol.Min.Y;
+            if (vol.Min.Z < this.Min.Z) this.Min.Z = vol.Min.Z;
+
+            if (vol.Max.X > this.Max.X) this.Max.X = vol.Max.X;
+            if (vol.Max.Y > this.Max.Y) this.Max.Y = vol.Max.Y;
+            if (vol.Max.Z > this.Max.Z) this.Max.Z = vol.Max.Z;
+            R = Vector3.Distance(Min, Max);
+        }
 
         //public void CreateBoundingVolume(Model mesh, Vector3 min, Vector3 max)
         //{

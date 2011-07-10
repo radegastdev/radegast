@@ -23,7 +23,7 @@ namespace Radegast.Rendering
         public int VertexVBO = -1;
         public int IndexVBO = -1;
         public TextureInfo TextureInfo = new TextureInfo();
-        public BoundingSphere BoundingSphere = new BoundingSphere();
+        public BoundingSphere BoundingVolume = new BoundingSphere();
         public static int VertexSize = 32; // sizeof (vertex), 2  x vector3 + 1 x vector2 = 8 floats x 4 bytes = 32 bytes 
         public TextureAnimationInfo AnimInfo;
         public bool Occluded = false;
@@ -286,7 +286,7 @@ namespace Radegast.Rendering
         public Primitive Prim;
         public List<Face> Faces;
         public float DistanceSquared;
-        public BoundingSphere Bounding;
+        public BoundingSphere BoundingVolume;
 
         public virtual void Dispose()
         {

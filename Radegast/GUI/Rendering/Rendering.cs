@@ -587,7 +587,7 @@ namespace Radegast.Rendering
         {
         }
 
-        FacetedMesh RightclickedPrim;
+        RenderPrimitive RightclickedPrim;
         int RightclickedFaceID;
 
         private void glControl_MouseDown(object sender, MouseEventArgs e)
@@ -603,9 +603,9 @@ namespace Radegast.Rendering
                 object picked;
                 if (TryPick(e.X, e.Y, out picked, out RightclickedFaceID))
                 {
-                    if (picked is FacetedMesh)
+                    if (picked is RenderPrimitive)
                     {
-                        RightclickedPrim = (FacetedMesh)picked;
+                        RightclickedPrim = (RenderPrimitive)picked;
                         ctxObjects.Show(glControl, e.X, e.Y);
                     }
                     else if (picked is RenderAvatar)
@@ -676,9 +676,9 @@ namespace Radegast.Rendering
                     int faceID;
                     if (TryPick(e.X, e.Y, out clicked, out faceID))
                     {
-                        if (clicked is FacetedMesh)
+                        if (clicked is RenderPrimitive)
                         {
-                            FacetedMesh picked = (FacetedMesh)clicked;
+                            RenderPrimitive picked = (RenderPrimitive)clicked;
 
                             if (ModifierKeys == Keys.None)
                             {
@@ -1674,13 +1674,13 @@ namespace Radegast.Rendering
                     {
                         Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
                         Face face = mesh.Faces[j];
-                        FaceData data = (FaceData)face.UserData;
+                        FaceData data = (FaceData)mesh.Faces[j].UserData;
 
                         // Don't render objects too small to matter
-                        if (LODFactor(primPos, prim.Scale, data.BoundingSphere.R) < minLODFactor) continue;
+                        if (LODFactor(primPos, prim.Scale, data.BoundingVolume.R) < minLODFactor) continue;
 
                         // Don't render objects not in the field of view
-                        if (!Frustum.ObjectInFrustum(primPos, data.BoundingSphere, prim.Scale)) continue;
+                        if (!Frustum.ObjectInFrustum(primPos, data.BoundingVolume, prim.Scale)) continue;
 
                         if (teFace == null)
                             teFace = mesh.Prim.Textures.DefaultTexture;
@@ -2035,7 +2035,7 @@ namespace Radegast.Rendering
             }
         }
 
-        private void MeshPrim(Primitive prim, RenderPrimitive mesh)
+        private void MeshPrim(Primitive prim, RenderPrimitive rprim)
         {
             RenderPrimitive existingMesh = null;
 
@@ -2047,42 +2047,18 @@ namespace Radegast.Rendering
                 }
             }
 
-            // Create a FaceData struct for each face that stores the 3D data
-            // in a OpenGL friendly format
-            for (int j = 0; j < mesh.Faces.Count; j++)
+            // Calculate bounding volumes for each prim and adjust textures
+            rprim.BoundingVolume = new BoundingSphere();
+            for (int j = 0; j < rprim.Faces.Count; j++)
             {
                 Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
                 if (teFace == null) continue;
 
-                Face face = mesh.Faces[j];
+                Face face = rprim.Faces[j];
                 FaceData data = new FaceData();
 
-                // Vertices for this face
-                data.Vertices = new float[face.Vertices.Count * 3];
-                data.Normals = new float[face.Vertices.Count * 3];
-                for (int k = 0; k < face.Vertices.Count; k++)
-                {
-                    data.Vertices[k * 3 + 0] = face.Vertices[k].Position.X;
-                    data.Vertices[k * 3 + 1] = face.Vertices[k].Position.Y;
-                    data.Vertices[k * 3 + 2] = face.Vertices[k].Position.Z;
-
-                    if (data.Vertices[k * 3 + 0] < data.BoundingSphere.Min.X) data.BoundingSphere.Min.X = data.Vertices[k * 3 + 0];
-                    if (data.Vertices[k * 3 + 1] < data.BoundingSphere.Min.Y) data.BoundingSphere.Min.Y = data.Vertices[k * 3 + 1];
-                    if (data.Vertices[k * 3 + 2] < data.BoundingSphere.Min.Z) data.BoundingSphere.Min.Z = data.Vertices[k * 3 + 2];
-
-                    if (data.Vertices[k * 3 + 0] > data.BoundingSphere.Max.X) data.BoundingSphere.Max.X = data.Vertices[k * 3 + 0];
-                    if (data.Vertices[k * 3 + 1] > data.BoundingSphere.Max.Y) data.BoundingSphere.Max.Y = data.Vertices[k * 3 + 1];
-                    if (data.Vertices[k * 3 + 2] > data.BoundingSphere.Max.Z) data.BoundingSphere.Max.Z = data.Vertices[k * 3 + 2];
-
-                    data.Normals[k * 3 + 0] = face.Vertices[k].Normal.X;
-                    data.Normals[k * 3 + 1] = face.Vertices[k].Normal.Y;
-                    data.Normals[k * 3 + 2] = face.Vertices[k].Normal.Z;
-                }
-
-                data.BoundingSphere.R = (data.BoundingSphere.Max - data.BoundingSphere.Min).Length();
-
-                // Indices for this face
-                data.Indices = face.Indices.ToArray();
+                data.BoundingVolume.CreateBoundingVolume(face);
+                rprim.BoundingVolume.AddVolume(data.BoundingVolume);
 
                 // With linear texture animation in effect, texture repeats and offset are ignored
                 if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
@@ -2106,18 +2082,9 @@ namespace Radegast.Rendering
                 // Texture transform for this face
                 renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
 
-                // Texcoords for this face
-                data.TexCoords = new float[face.Vertices.Count * 2];
-                for (int k = 0; k < face.Vertices.Count; k++)
-                {
-                    data.TexCoords[k * 2 + 0] = face.Vertices[k].TexCoord.X;
-                    data.TexCoords[k * 2 + 1] = face.Vertices[k].TexCoord.Y;
-                }
-
                 // Set the UserData for this face to our FaceData struct
                 face.UserData = data;
-                mesh.Faces[j] = face;
-
+                rprim.Faces[j] = face;
 
                 if (existingMesh != null &&
                     j < existingMesh.Faces.Count &&
@@ -2142,7 +2109,7 @@ namespace Radegast.Rendering
 
             lock (Prims)
             {
-                Prims[prim.LocalID] = mesh;
+                Prims[prim.LocalID] = rprim;
             }
         }
 
