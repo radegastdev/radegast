@@ -169,6 +169,7 @@ namespace Radegast.Rendering
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
+            RenderingEnabled = false;
             Application.Idle -= new EventHandler(Application_Idle);
 
             PendingTextures.Close();
@@ -180,8 +181,8 @@ namespace Radegast.Rendering
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
-            Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             //Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
+            Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
 
             if (instance.Netcom != null)
             {
@@ -484,7 +485,10 @@ namespace Radegast.Rendering
 
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-                hasMipmap = GL.GetString(StringName.Extensions).Contains("GL_SGIS_generate_mipmap");
+                string glExtensions = GL.GetString(StringName.Extensions);
+                hasMipmap = glExtensions.Contains("GL_SGIS_generate_mipmap");
+                useVBO = glExtensions.Contains("ARB_vertex_buffer_object");
+
                 // Double check if we have mipmap ability
                 if (hasMipmap)
                 {

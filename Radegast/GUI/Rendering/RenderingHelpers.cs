@@ -34,7 +34,7 @@ namespace Radegast.Rendering
                 Vertex[] vArray = face.Vertices.ToArray();
                 GL.GenBuffers(1, out VertexVBO);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VertexVBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vArray.Length * VertexSize), vArray, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vArray.Length * VertexSize), vArray, BufferUsageHint.StaticDraw);
             }
 
             if (IndexVBO == -1)
@@ -42,7 +42,7 @@ namespace Radegast.Rendering
                 ushort[] iArray = face.Indices.ToArray();
                 GL.GenBuffers(1, out IndexVBO);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, IndexVBO);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(iArray.Length * sizeof(ushort)), iArray, BufferUsageHint.StreamDraw);
+                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(iArray.Length * sizeof(ushort)), iArray, BufferUsageHint.StaticDraw);
             }
         }
     }
