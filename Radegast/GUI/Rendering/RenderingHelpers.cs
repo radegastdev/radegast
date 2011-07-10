@@ -286,7 +286,7 @@ namespace Radegast.Rendering
 
     public static class RHelp
     {
-        static float t1 = 0.04f;
+        static float t1 = 0.075f;
         static float t2 = t1 / 5.7f;
 
         public static Vector3 Smoothed1stOrder(Vector3 curPos, Vector3 targetPos, double lastFrameTime)

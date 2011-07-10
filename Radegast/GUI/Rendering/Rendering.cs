@@ -631,7 +631,7 @@ namespace Radegast.Rendering
                         direction.Normalize();
                         Vector3 vy = direction % new Vector3(0f, 0f, 1f);
                         Vector3 vx = vy % direction;
-                        Vector3 vxy = vx * deltaY * pixelToM * 3 + vy * deltaX * pixelToM * 3;
+                        Vector3 vxy = vx * deltaY * pixelToM * 2 + vy * deltaX * pixelToM * 2;
                         Camera.Position += vxy;
                         Camera.FocalPoint += vxy;
                     }
