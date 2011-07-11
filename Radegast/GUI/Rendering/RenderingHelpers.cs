@@ -298,6 +298,11 @@ namespace Radegast.Rendering
         public BoundingVolume BoundingVolume;
         public bool PositionUpdated;
         public SceneObjectType Type = SceneObjectType.None;
+        public int SimpleQueryID = 0;
+        public int AlphaQueryID = 0;
+        public bool SimpleOccluded = false;
+        public bool AlphaOccluded = false;
+        public virtual Primitive BasePrim { get; set; }
 
         public virtual int CompareTo(object other)
         {
@@ -323,6 +328,12 @@ namespace Radegast.Rendering
 
         public virtual void Dispose()
         {
+        }
+
+        public override Primitive BasePrim
+        {
+            get { return Prim; }
+            set { Prim = value; }
         }
 
         public override string ToString()
@@ -1540,11 +1551,17 @@ namespace Radegast.Rendering
         }
     }
 
-    class RenderAvatar : SceneObject
+    public class RenderAvatar : SceneObject
     {
         public RenderAvatar()
         {
             Type = SceneObjectType.Avatar;
+        }
+
+        public override Primitive BasePrim
+        {
+            get { return avatar; }
+            set { if (value is Avatar) avatar = (Avatar)value; }
         }
 
         public GLAvatar glavatar = new GLAvatar();

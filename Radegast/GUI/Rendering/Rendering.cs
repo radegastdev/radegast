@@ -85,6 +85,22 @@ namespace Radegast.Rendering
         List<SceneObject> SortedObjects;
         Dictionary<uint, RenderAvatar> Avatars = new Dictionary<uint, RenderAvatar>();
 
+        /// <summary>
+        /// Render prims
+        /// </summary>
+        public bool PrimitiveRenderingEnabled = true;
+
+        /// <summary>
+        /// Render avatars
+        /// </summary>
+        public bool AvatarRenderingEnabled = true;
+
+        /// <summary>
+        /// Enable occlusion culling
+        /// </summary>
+        bool OcclusionCullingEnabled = false;
+
+
         #endregion Public fields
 
         #region Private fields
@@ -139,6 +155,18 @@ namespace Radegast.Rendering
             // Camera initial setting
             Camera = new Camera();
             InitCamera();
+
+            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
+
+            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+            {
+                comboBox_morph.Items.Add(vpe.Name);
+            }
+
+            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+            {
+                comboBox_driver.Items.Add(vpe.Name);
+            }
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -676,7 +704,7 @@ namespace Radegast.Rendering
                             }
                             else if (ModifierKeys == Keys.Alt)
                             {
-                                Camera.FocalPoint = PrimPos(picked.Prim);
+                                Camera.FocalPoint = picked.SimPosition;
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             }
                         }
@@ -685,7 +713,7 @@ namespace Radegast.Rendering
                             RenderAvatar av = (RenderAvatar)clicked;
                             if (ModifierKeys == Keys.Alt)
                             {
-                                Vector3 pos = PrimPos(av.avatar);
+                                Vector3 pos = av.SimPosition;
                                 pos.Z += 1.5f; // focus roughly on the chest area
                                 Camera.FocalPoint = pos;
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
@@ -851,53 +879,44 @@ namespace Radegast.Rendering
 
             ThreadPool.QueueUserWorkItem(sync =>
             {
-                List<Primitive> mainPrims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0);
-                foreach (Primitive mainPrim in mainPrims)
+                if (PrimitiveRenderingEnabled)
                 {
-                    UpdatePrimBlocking(mainPrim);
-                    Client.Network.CurrentSim.ObjectsPrimitives
-                        .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
-                        .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
+                    List<Primitive> mainPrims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0);
+                    foreach (Primitive mainPrim in mainPrims)
+                    {
+                        UpdatePrimBlocking(mainPrim);
+                        Client.Network.CurrentSim.ObjectsPrimitives
+                            .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
+                            .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
+                    }
                 }
 
-                List<Avatar> avis = Client.Network.CurrentSim.ObjectsAvatars.FindAll((Avatar a) => true);
-                foreach (Avatar avatar in avis)
+                if (AvatarRenderingEnabled)
                 {
-                    UpdatePrimBlocking(avatar);
-                    Client.Network.CurrentSim.ObjectsPrimitives
-                        .FindAll((Primitive child) => child.ParentID == avatar.LocalID)
-                        .ForEach((Primitive attachedPrim) =>
-                        {
-                            UpdatePrimBlocking(attachedPrim);
-                            Client.Network.CurrentSim.ObjectsPrimitives
-                                .FindAll((Primitive child) => child.ParentID == attachedPrim.LocalID)
-                                .ForEach((Primitive attachedPrimChild) =>
-                                {
-                                    UpdatePrimBlocking(attachedPrimChild);
-                                });
-                        });
+                    List<Avatar> avis = Client.Network.CurrentSim.ObjectsAvatars.FindAll((Avatar a) => true);
+                    foreach (Avatar avatar in avis)
+                    {
+                        UpdatePrimBlocking(avatar);
+                        Client.Network.CurrentSim.ObjectsPrimitives
+                            .FindAll((Primitive child) => child.ParentID == avatar.LocalID)
+                            .ForEach((Primitive attachedPrim) =>
+                            {
+                                UpdatePrimBlocking(attachedPrim);
+                                Client.Network.CurrentSim.ObjectsPrimitives
+                                    .FindAll((Primitive child) => child.ParentID == attachedPrim.LocalID)
+                                    .ForEach((Primitive attachedPrimChild) =>
+                                    {
+                                        UpdatePrimBlocking(attachedPrimChild);
+                                    });
+                            });
+                    }
                 }
             });
         }
 
         private void frmPrimWorkshop_Shown(object sender, EventArgs e)
         {
-            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
-
-            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
-            {
-                comboBox_morph.Items.Add(vpe.Name);
-            }
-
-            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
-            {
-                comboBox_driver.Items.Add(vpe.Name);
-            }
-            Application.DoEvents();
-
             SetupGLControl();
-            Application.DoEvents();
-
             LoadCurrentPrims();
         }
 
@@ -970,16 +989,7 @@ namespace Radegast.Rendering
                 }
                 else
                 {
-                    Primitive parentPrim = null;
-                    if (p is RenderPrimitive)
-                    {
-                        parentPrim = ((RenderPrimitive)p).Prim;
-                    }
-                    else if (p is RenderAvatar)
-                    {
-                        parentPrim = ((RenderAvatar)p).avatar;
-                    }
-
+                    Primitive parentPrim = p.BasePrim;
                     PrimPosAndRot(parentPrim, out parentPos, out parentRot);
                     p.SimPosition = parentPos;
                     p.SimRotation = parentRot;
@@ -1295,6 +1305,8 @@ namespace Radegast.Rendering
 
         private void RenderAvatars(RenderPass pass)
         {
+            if (!AvatarRenderingEnabled) return;
+
             lock (Avatars)
             {
                 GL.EnableClientState(ArrayCap.VertexArray);
@@ -1709,25 +1721,24 @@ namespace Radegast.Rendering
         }
 
 
-        void RenderBoundingBox(RenderPrimitive prim)
+        void RenderBoundingBox(SceneObject prim)
         {
+            Vector3 scale = prim.BasePrim.Scale;
             BoundingVolume bbox = prim.BoundingVolume;
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Disable(EnableCap.Fog);
             GL.Disable(EnableCap.Texture2D);
-            GL.Disable(EnableCap.Dither);
             GL.Disable(EnableCap.Lighting);
-            GL.Disable(EnableCap.LineStipple);
-            GL.Disable(EnableCap.PolygonStipple);
             GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.Blend);
             GL.Disable(EnableCap.AlphaTest);
+            
+            GL.DepthMask(false);
+            GL.ColorMask(false, false, false, false);
 
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.PushMatrix();
             GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.SimPosition));
             GL.MultMatrix(Math3D.CreateRotationMatrix(prim.SimRotation));
-            GL.Scale(prim.Prim.Scale.X, prim.Prim.Scale.Y, prim.Prim.Scale.Z);
+            GL.Scale(scale.X, scale.Y, scale.Z);
             GL.Color3(1f, 0f, 0f);
             GL.Begin(BeginMode.Quads);
             var bmin = bbox.Min;
@@ -1771,19 +1782,16 @@ namespace Radegast.Rendering
 
             GL.End();
             GL.PopMatrix();
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+
+            GL.ColorMask(true, true, true, true);
+            GL.DepthMask(true);
+
             GL.PopAttrib();
         }
 
         void RenderPrim(RenderPrimitive mesh, RenderPass pass, int primNr)
         {
             Primitive prim = mesh.Prim;
-
-            // Don't render objects too small to matter
-            if (LODFactor(mesh.DistanceSquared, prim.Scale, mesh.BoundingVolume.R) < minLODFactor) return;
-
-            // Don't render objects not in the field of view
-            if (!Frustum.ObjectInFrustum(mesh.SimPosition, mesh.BoundingVolume, prim.Scale)) return;
 
             // Individual prim matrix
             GL.PushMatrix();
@@ -1966,13 +1974,7 @@ namespace Radegast.Rendering
             {
                 if (!obj.PositionUpdated)
                 {
-                    Primitive prim = null;
-                    if (obj is RenderPrimitive)
-                        prim = ((RenderPrimitive)obj).Prim;
-                    else if (obj is RenderAvatar)
-                        prim = ((RenderAvatar)obj).avatar;
-
-                    PrimPosAndRot(prim, out obj.SimPosition, out obj.SimRotation);
+                    PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
                     obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
                     obj.PositionUpdated = true;
                 }
@@ -1985,6 +1987,8 @@ namespace Radegast.Rendering
 
         private void RenderObjects(RenderPass pass)
         {
+            if (!PrimitiveRenderingEnabled) return;
+
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.TextureCoordArray);
             GL.EnableClientState(ArrayCap.NormalArray);
@@ -1997,9 +2001,44 @@ namespace Radegast.Rendering
                 for (int i = 0; i < nrPrims; i++)
                 {
                     //RenderBoundingBox(SortedPrims[i]);
+
                     if (SortedObjects[i] is RenderPrimitive)
                     {
-                        RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
+                        // Don't render objects too small to matter
+                        if (LODFactor(SortedObjects[i].DistanceSquared, SortedObjects[i].BasePrim.Scale, SortedObjects[i].BoundingVolume.R) < minLODFactor) continue;
+
+                        // Don't render objects not in the field of view
+                        if (!Frustum.ObjectInFrustum(SortedObjects[i].SimPosition, SortedObjects[i].BoundingVolume, SortedObjects[i].BasePrim.Scale)) continue;
+
+                        if (!OcclusionCullingEnabled)
+                        {
+                            RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
+                        }
+                        else
+                        {
+                            SortedObjects[i].SimpleOccluded = false;
+                            if (SortedObjects[i].SimpleQueryID == 0)
+                            {
+                                GL.GenQueries(1, out SortedObjects[i].SimpleQueryID);
+                            }
+                            else
+                            {
+                                int res;
+                                GL.GetQueryObject(SortedObjects[i].SimpleQueryID, GetQueryObjectParam.QueryResult, out res);
+                                SortedObjects[i].SimpleOccluded = res == 0;
+                            }
+
+                            GL.BeginQuery(QueryTarget.SamplesPassed, SortedObjects[i].SimpleQueryID);
+                            if (SortedObjects[i].SimpleOccluded)
+                            {
+                                RenderBoundingBox(SortedObjects[i]);
+                            }
+                            else
+                            {
+                                RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
+                            }
+                            GL.EndQuery(QueryTarget.SamplesPassed);
+                        }
                     }
                 }
             }
@@ -2009,7 +2048,16 @@ namespace Radegast.Rendering
                 {
                     if (SortedObjects[i] is RenderPrimitive)
                     {
-                        RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
+                        // Don't render objects too small to matter
+                        if (LODFactor(SortedObjects[i].DistanceSquared, SortedObjects[i].BasePrim.Scale, SortedObjects[i].BoundingVolume.R) < minLODFactor) continue;
+
+                        // Don't render objects not in the field of view
+                        if (!Frustum.ObjectInFrustum(SortedObjects[i].SimPosition, SortedObjects[i].BoundingVolume, SortedObjects[i].BasePrim.Scale)) continue;
+
+                        if (SortedObjects[i] is RenderPrimitive)
+                        {
+                            RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
+                        }
                     }
                 }
             }
@@ -2312,7 +2360,7 @@ namespace Radegast.Rendering
         {
             if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > DrawDistance && !Prims.ContainsKey(prim.ParentID) && !Avatars.ContainsKey(prim.ParentID)) return;
 
-            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID))
+            if (AvatarRenderingEnabled && Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID))
             {
                 AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
                 return;
@@ -2320,6 +2368,7 @@ namespace Radegast.Rendering
 
             // Skip foliage
             if (prim.PrimData.PCode != PCode.Prim) return;
+            if (!PrimitiveRenderingEnabled) return;
 
             if (prim.Textures == null) return;
 
@@ -2684,6 +2733,10 @@ namespace Radegast.Rendering
 
         }
 
+        private void cbOcclusion_CheckedChanged(object sender, EventArgs e)
+        {
+            OcclusionCullingEnabled = cbOcclusion.Checked;
+        }
 
 
     }

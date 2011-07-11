@@ -61,6 +61,11 @@ namespace Radegast.Rendering
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.cbOcclusion = new System.Windows.Forms.CheckBox();
+            this.button_driver = new System.Windows.Forms.Button();
+            this.textBox_driveramount = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.comboBox_driver = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.textBox_morphamount = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -91,16 +96,13 @@ namespace Radegast.Rendering
             this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button_driver = new System.Windows.Forms.Button();
-            this.textBox_driveramount = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.comboBox_driver = new System.Windows.Forms.ComboBox();
             this.gbZoom.SuspendLayout();
             this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbZoom
             // 
+            this.gbZoom.Controls.Add(this.cbOcclusion);
             this.gbZoom.Controls.Add(this.button_driver);
             this.gbZoom.Controls.Add(this.textBox_driveramount);
             this.gbZoom.Controls.Add(this.label6);
@@ -131,10 +133,56 @@ namespace Radegast.Rendering
             this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.gbZoom.Location = new System.Drawing.Point(0, 441);
             this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(644, 163);
+            this.gbZoom.Size = new System.Drawing.Size(886, 163);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
             this.gbZoom.Enter += new System.EventHandler(this.gbZoom_Enter);
+            // 
+            // cbOcclusion
+            // 
+            this.cbOcclusion.AutoSize = true;
+            this.cbOcclusion.Location = new System.Drawing.Point(638, 19);
+            this.cbOcclusion.Name = "cbOcclusion";
+            this.cbOcclusion.Size = new System.Drawing.Size(107, 17);
+            this.cbOcclusion.TabIndex = 47;
+            this.cbOcclusion.Text = "Occlusion Culling";
+            this.cbOcclusion.UseVisualStyleBackColor = true;
+            this.cbOcclusion.CheckedChanged += new System.EventHandler(this.cbOcclusion_CheckedChanged);
+            // 
+            // button_driver
+            // 
+            this.button_driver.Location = new System.Drawing.Point(277, 140);
+            this.button_driver.Name = "button_driver";
+            this.button_driver.Size = new System.Drawing.Size(75, 23);
+            this.button_driver.TabIndex = 46;
+            this.button_driver.Text = "Driver";
+            this.button_driver.UseVisualStyleBackColor = true;
+            this.button_driver.Click += new System.EventHandler(this.button_driver_Click);
+            // 
+            // textBox_driveramount
+            // 
+            this.textBox_driveramount.Location = new System.Drawing.Point(204, 142);
+            this.textBox_driveramount.Name = "textBox_driveramount";
+            this.textBox_driveramount.Size = new System.Drawing.Size(67, 20);
+            this.textBox_driveramount.TabIndex = 45;
+            this.textBox_driveramount.Text = "0";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(9, 144);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(35, 13);
+            this.label6.TabIndex = 44;
+            this.label6.Text = "Driver";
+            // 
+            // comboBox_driver
+            // 
+            this.comboBox_driver.FormattingEnabled = true;
+            this.comboBox_driver.Location = new System.Drawing.Point(74, 141);
+            this.comboBox_driver.Name = "comboBox_driver";
+            this.comboBox_driver.Size = new System.Drawing.Size(121, 21);
+            this.comboBox_driver.TabIndex = 43;
             // 
             // button1
             // 
@@ -446,46 +494,11 @@ namespace Radegast.Rendering
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
-            // button_driver
-            // 
-            this.button_driver.Location = new System.Drawing.Point(277, 140);
-            this.button_driver.Name = "button_driver";
-            this.button_driver.Size = new System.Drawing.Size(75, 23);
-            this.button_driver.TabIndex = 46;
-            this.button_driver.Text = "Driver";
-            this.button_driver.UseVisualStyleBackColor = true;
-            this.button_driver.Click += new System.EventHandler(this.button_driver_Click);
-            // 
-            // textBox_driveramount
-            // 
-            this.textBox_driveramount.Location = new System.Drawing.Point(204, 142);
-            this.textBox_driveramount.Name = "textBox_driveramount";
-            this.textBox_driveramount.Size = new System.Drawing.Size(67, 20);
-            this.textBox_driveramount.TabIndex = 45;
-            this.textBox_driveramount.Text = "0";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 144);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(35, 13);
-            this.label6.TabIndex = 44;
-            this.label6.Text = "Driver";
-            // 
-            // comboBox_driver
-            // 
-            this.comboBox_driver.FormattingEnabled = true;
-            this.comboBox_driver.Location = new System.Drawing.Point(74, 141);
-            this.comboBox_driver.Name = "comboBox_driver";
-            this.comboBox_driver.Size = new System.Drawing.Size(121, 21);
-            this.comboBox_driver.TabIndex = 43;
-            // 
             // SceneWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(644, 604);
+            this.ClientSize = new System.Drawing.Size(886, 604);
             this.Controls.Add(this.gbZoom);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SceneWindow";
@@ -535,6 +548,7 @@ namespace Radegast.Rendering
         private System.Windows.Forms.TextBox textBox_driveramount;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox comboBox_driver;
+        private System.Windows.Forms.CheckBox cbOcclusion;
 
     }
 }
