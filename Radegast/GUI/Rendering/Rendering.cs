@@ -1775,10 +1775,6 @@ namespace Radegast.Rendering
         void RenderPrim(RenderPrimitive mesh, RenderPass pass, int primNr)
         {
             Primitive prim = mesh.Prim;
-            RenderPrimitive parent = null;
-            RenderAvatar parentav = null;
-
-            if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID, out parentav)) return;
 
             // Don't render objects too small to matter
             if (LODFactor(mesh.DistanceSquared, prim.Scale, mesh.BoundingVolume.R) < minLODFactor) return;
@@ -1789,100 +1785,9 @@ namespace Radegast.Rendering
             // Individual prim matrix
             GL.PushMatrix();
 
-            //TODO we really need a scene graph but for the moment simple if/else logic checks and parent finding are used
-            if (prim.ParentID != 0) // Does this prim have a parent
-            {
-                if (parent != null) // Check the parent is valid
-                {
-                    if (parent.Prim.ParentID != 0) // Does the parent have a parent? if so it must be an avatar 
-                    {
-                        if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav)) // Get the parent avatar
-                        {
-                            // Child prims of parents that have avatar as parent
-
-                            if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
-                            {
-                                // Child HUD elements
-                            }
-                            else
-                            {
-                                //This is a child prim attachment
-
-                                // Apply prim translation and rotation relative to the root prim
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
-
-                                int attachment_index = (int)parent.Prim.PrimData.AttachmentPoint;
-                                if (attachment_index > GLAvatar.attachment_points.Count())
-                                {
-                                    // invalid LL attachment point
-                                    return;
-                                }
-
-                                attachment_point apoint = GLAvatar.attachment_points[attachment_index];
-
-                                Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
-                                Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
-                                //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                // Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
-
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
-
-                                // Apply prim translation and rotation relative to the root prim
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                            }
-                        }
-                    }
-                    else // This prims parent does not have a parent there for its a regular prim and this must be its child
-                    {
-                        // Regular child prim
-                        // Apply prim translation and rotation relative to the root prim
-                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
-                        GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                    }
-                }
-                else // This prim has a parent but does not have a parent in the ObjectsList, its parent is therefor parentav from the avatars list 
-                {
-                    //Root prims with avatar as parent
-
-                    if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
-                    {
-                        // Root HUD elements
-                    }
-                    else
-                    {
-                        // Root attachments
-
-                        // Apply prim translation and rotation relative to the root prim
-                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
-                        GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
-
-                        int attachment_index = (int)prim.PrimData.AttachmentPoint;
-                        if (attachment_index > GLAvatar.attachment_points.Count())
-                        {
-                            // invalid LL attachment point
-                            return;
-                        }
-
-                        attachment_point apoint = GLAvatar.attachment_points[attachment_index];
-
-                        //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                        //Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
-                        Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
-                        Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
-
-                        GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
-                        GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
-                    }
-                }
-            }
-
-
             // Prim roation and position
-            GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.Position));
-            GL.MultMatrix(Math3D.CreateRotationMatrix(prim.Rotation));
+            GL.MultMatrix(Math3D.CreateTranslationMatrix(mesh.SimPosition));
+            GL.MultMatrix(Math3D.CreateRotationMatrix(mesh.SimRotation));
 
             // Prim scaling
             GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
