@@ -76,7 +76,7 @@ namespace Radegast.Rendering
         /// <summary>
         /// Object from up to this distance from us will be rendered
         /// </summary>
-        public float DrawDistance = 48f;
+        public float DrawDistance = 96f;
 
         /// <summary>
         /// List of prims in the scene
@@ -108,7 +108,7 @@ namespace Radegast.Rendering
         System.Diagnostics.Stopwatch renderTimer;
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
-        float minLODFactor = 0.005f;
+        float minLODFactor = 0.01f;
 
         float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
         float ambient = 0.26f;
@@ -804,9 +804,9 @@ namespace Radegast.Rendering
                 {
                     ManagedImage mi;
                     Image img;
-                    OpenJPEG.DecodeToImage(item.TextureData, out mi, out img);
+                    if (!OpenJPEG.DecodeToImage(item.TextureData, out mi, out img)) continue;
                     Bitmap bitmap = (Bitmap)img;
-
+                    
                     bool hasAlpha;
                     if (bitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     {
@@ -1546,6 +1546,149 @@ namespace Radegast.Rendering
             return scale * radius * radius / distance;
         }
 
+        void RenderSphere(float cx, float cy, float cz, float r, int p)
+        {
+            GL.PushAttrib(AttribMask.AllAttribBits);
+            GL.Disable(EnableCap.Fog);
+            GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.Dither);
+            GL.Disable(EnableCap.Lighting);
+            GL.Disable(EnableCap.LineStipple);
+            GL.Disable(EnableCap.PolygonStipple);
+            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.AlphaTest);
+            GL.Disable(EnableCap.DepthTest);
+
+            const float TWOPI = 6.28318530717958f;
+            const float PIDIV2 = 1.57079632679489f;
+
+            float theta1 = 0.0f;
+            float theta2 = 0.0f;
+            float theta3 = 0.0f;
+
+            float ex = 0.0f;
+            float ey = 0.0f;
+            float ez = 0.0f;
+
+            float px = 0.0f;
+            float py = 0.0f;
+            float pz = 0.0f;
+
+            // Disallow a negative number for radius.
+            if (r < 0)
+                r = -r;
+
+            // Disallow a negative number for precision.
+            if (p < 0)
+                p = -p;
+
+            // If the sphere is too small, just render a OpenGL point instead.
+            if (p < 4 || r <= 0)
+            {
+                GL.Begin(BeginMode.Points);
+                GL.Vertex3(cx, cy, cz);
+                GL.End();
+                return;
+            }
+
+            for (int i = 0; i < p / 2; ++i)
+            {
+                theta1 = i * TWOPI / p - PIDIV2;
+                theta2 = (i + 1) * TWOPI / p - PIDIV2;
+
+                GL.Begin(BeginMode.TriangleStrip);
+                {
+                    for (int j = 0; j <= p; ++j)
+                    {
+                        theta3 = j * TWOPI / p;
+
+                        ex = (float)(Math.Cos(theta2) * Math.Cos(theta3));
+                        ey = (float)Math.Sin(theta2);
+                        ez = (float)(Math.Cos(theta2) * Math.Sin(theta3));
+                        px = cx + r * ex;
+                        py = cy + r * ey;
+                        pz = cz + r * ez;
+
+                        GL.Normal3(ex, ey, ez);
+                        GL.TexCoord2(-(j / (float)p), 2 * (i + 1) / (float)p);
+                        GL.Vertex3(px, py, pz);
+
+                        ex = (float)(Math.Cos(theta1) * Math.Cos(theta3));
+                        ey = (float)Math.Sin(theta1);
+                        ez = (float)(Math.Cos(theta1) * Math.Sin(theta3));
+                        px = cx + r * ex;
+                        py = cy + r * ey;
+                        pz = cz + r * ez;
+
+                        GL.Normal3(ex, ey, ez);
+                        GL.TexCoord2(-(j / (float)p), 2 * i / (float)p);
+                        GL.Vertex3(px, py, pz);
+                    }
+                }
+                GL.End();
+            }
+            GL.PopAttrib();
+        }
+
+
+        void RenderBoundingBox(BoundingVolume bbox)
+        {
+            GL.PushAttrib(AttribMask.AllAttribBits);
+            GL.Disable(EnableCap.Fog);
+            GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.Dither);
+            GL.Disable(EnableCap.Lighting);
+            GL.Disable(EnableCap.LineStipple);
+            GL.Disable(EnableCap.PolygonStipple);
+            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.AlphaTest);
+
+            GL.Begin(BeginMode.Quads);
+            var bmin = bbox.Min;
+            var bmax = bbox.Max;
+
+            //front
+            GL.Vertex3(bmin.X, bmin.Y, bmin.Z);
+            GL.Vertex3(bmax.X, bmin.Y, bmin.Z);
+            GL.Vertex3(bmax.X, bmax.Y, bmin.Z);
+            GL.Vertex3(bmin.X, bmax.Y, bmin.Z);
+
+            // back
+            GL.Vertex3(bmin.X, bmin.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmin.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmax.Y, bmax.Z);
+            GL.Vertex3(bmin.X, bmax.Y, bmax.Z);
+
+            // up
+            GL.Vertex3(bmin.X, bmax.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmax.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmax.Y, bmin.Z);
+            GL.Vertex3(bmin.X, bmax.Y, bmin.Z);
+
+            // down
+            GL.Vertex3(bmin.X, bmin.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmin.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmin.Y, bmin.Z);
+            GL.Vertex3(bmin.X, bmin.Y, bmin.Z);
+
+            // left side
+            GL.Vertex3(bmin.X, bmin.Y, bmax.Z);
+            GL.Vertex3(bmin.X, bmax.Y, bmax.Z);
+            GL.Vertex3(bmin.X, bmax.Y, bmin.Z);
+            GL.Vertex3(bmin.X, bmin.Y, bmin.Z);
+
+            // rigth side
+            GL.Vertex3(bmax.X, bmin.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmax.Y, bmax.Z);
+            GL.Vertex3(bmax.X, bmax.Y, bmin.Z);
+            GL.Vertex3(bmax.X, bmin.Y, bmin.Z);
+
+            GL.End();
+            GL.PopAttrib();
+        }
+
         private void RenderObjects(RenderPass pass)
         {
             lock (Prims)
@@ -1564,6 +1707,12 @@ namespace Radegast.Rendering
 
                     if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID, out parentav)) continue;
                     Vector3 primPos = PrimPos(prim);
+
+                    // Don't render objects too small to matter
+                    if (LODFactor(primPos, prim.Scale, mesh.BoundingVolume.R) < minLODFactor) continue;
+
+                    // Don't render objects not in the field of view
+                    if (!Frustum.ObjectInFrustum(primPos, mesh.BoundingVolume, prim.Scale)) continue;
 
                     // Individual prim matrix
                     GL.PushMatrix();
@@ -1675,12 +1824,6 @@ namespace Radegast.Rendering
                         Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
                         Face face = mesh.Faces[j];
                         FaceData data = (FaceData)mesh.Faces[j].UserData;
-
-                        // Don't render objects too small to matter
-                        if (LODFactor(primPos, prim.Scale, data.BoundingVolume.R) < minLODFactor) continue;
-
-                        // Don't render objects not in the field of view
-                        if (!Frustum.ObjectInFrustum(primPos, data.BoundingVolume, prim.Scale)) continue;
 
                         if (teFace == null)
                             teFace = mesh.Prim.Textures.DefaultTexture;
@@ -2048,7 +2191,7 @@ namespace Radegast.Rendering
             }
 
             // Calculate bounding volumes for each prim and adjust textures
-            rprim.BoundingVolume = new BoundingSphere();
+            rprim.BoundingVolume = new BoundingVolume();
             for (int j = 0; j < rprim.Faces.Count; j++)
             {
                 Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);

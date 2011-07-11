@@ -148,12 +148,12 @@ namespace Radegast.Rendering
             return d + radius; // palauta matka kameraan
         }
 
-        public static bool ObjectInFrustum(Vector3 position, BoundingSphere bound, Vector3 scale)
+        public static bool ObjectInFrustum(Vector3 position, BoundingVolume bound, Vector3 scale)
         {
             return ObjectInFrustum(position.X, position.Y, position.Z, bound, scale);
         }
 
-        public static bool ObjectInFrustum(float x, float y, float z, BoundingSphere bound, Vector3 scale)
+        public static bool ObjectInFrustum(float x, float y, float z, BoundingVolume bound, Vector3 scale)
         {
             if (bound == null) return true;
             float max = scale.X;
@@ -164,7 +164,7 @@ namespace Radegast.Rendering
         }
     }
 
-    public class BoundingSphere
+    public class BoundingVolume
     {
         public Vector3 Min = new Vector3(99999, 99999, 99999);
         public Vector3 Max = new Vector3(-99999, -99999, -99999);
@@ -184,11 +184,11 @@ namespace Radegast.Rendering
             }
 
             Vector3 dist = Max - Min;
-            R = Vector3.Distance(Min, Max);
+            R = dist.Length();
             mesh.Center = Min + (dist / 2);
         }
 
-        public void AddVolume(BoundingSphere vol)
+        public void AddVolume(BoundingVolume vol)
         {
             if (vol.Min.X < this.Min.X) this.Min.X = vol.Min.X;
             if (vol.Min.Y < this.Min.Y) this.Min.Y = vol.Min.Y;
@@ -197,7 +197,8 @@ namespace Radegast.Rendering
             if (vol.Max.X > this.Max.X) this.Max.X = vol.Max.X;
             if (vol.Max.Y > this.Max.Y) this.Max.Y = vol.Max.Y;
             if (vol.Max.Z > this.Max.Z) this.Max.Z = vol.Max.Z;
-            R = Vector3.Distance(Min, Max);
+            Vector3 dist = Max - Min;
+            R = dist.Length();
         }
 
         //public void CreateBoundingVolume(Model mesh, Vector3 min, Vector3 max)
