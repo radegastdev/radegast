@@ -287,6 +287,7 @@ namespace Radegast.Rendering
     {
         public Primitive Prim;
         public List<Face> Faces;
+        public Vector3 SimPosition;
         public float DistanceSquared;
         public BoundingVolume BoundingVolume;
 
@@ -303,6 +304,13 @@ namespace Radegast.Rendering
                 return 1;
             else
                 return 0;
+        }
+
+        public override string ToString()
+        {
+            uint id = Prim == null ? 0 : Prim.LocalID;
+            double distance = Math.Sqrt(DistanceSquared);
+            return string.Format("LocalID: {0}, distance {0.00}", id, distance);
         }
     }
 

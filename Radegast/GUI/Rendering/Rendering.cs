@@ -108,7 +108,7 @@ namespace Radegast.Rendering
         System.Diagnostics.Stopwatch renderTimer;
         double lastFrameTime = 0d;
         double advTimerTick = 0d;
-        float minLODFactor = 0.01f;
+        float minLODFactor = 0.0001f;
 
         float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
         float ambient = 0.26f;
@@ -841,7 +841,7 @@ namespace Radegast.Rendering
                     {
                         img = OpenMetaverse.Imaging.LoadTGAClass.LoadTGA(byteData);
                     }
-                    
+
                     Bitmap bitmap = (Bitmap)img;
 
                     item.Data.TextureInfo.HasAlpha = hasAlpha;
@@ -864,7 +864,7 @@ namespace Radegast.Rendering
             ThreadPool.QueueUserWorkItem(sync =>
             {
                 List<Primitive> mainPrims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0);
-                foreach(Primitive mainPrim in mainPrims)
+                foreach (Primitive mainPrim in mainPrims)
                 {
                     UpdatePrimBlocking(mainPrim);
                     Client.Network.CurrentSim.ObjectsPrimitives
@@ -873,7 +873,7 @@ namespace Radegast.Rendering
                 }
 
                 List<Avatar> avis = Client.Network.CurrentSim.ObjectsAvatars.FindAll((Avatar a) => true);
-                foreach(Avatar avatar in avis)
+                foreach (Avatar avatar in avis)
                 {
                     UpdatePrimBlocking(avatar);
                     Client.Network.CurrentSim.ObjectsPrimitives
@@ -1566,9 +1566,8 @@ namespace Radegast.Rendering
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0f);
         }
 
-        float LODFactor(Vector3 pos, Vector3 primScale, float radius)
+        float LODFactor(float distance, Vector3 primScale, float radius)
         {
-            float distance = Vector3.Distance(Camera.Position, pos);
             float scale = primScale.X;
             if (primScale.Y > scale) scale = primScale.Y;
             if (primScale.Z > scale) scale = primScale.Z;
@@ -1718,285 +1717,315 @@ namespace Radegast.Rendering
             GL.PopAttrib();
         }
 
-        private void RenderObjects(RenderPass pass)
+        void RenderPrim(RenderPrimitive mesh, RenderPass pass, int primNr)
         {
-            lock (Prims)
+            Primitive prim = mesh.Prim;
+            RenderPrimitive parent = null;
+            RenderAvatar parentav = null;
+
+            if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID, out parentav)) return;
+
+            // Don't render objects too small to matter
+            if (LODFactor(mesh.DistanceSquared, prim.Scale, mesh.BoundingVolume.R) < minLODFactor) return;
+
+            // Don't render objects not in the field of view
+            if (!Frustum.ObjectInFrustum(mesh.SimPosition, mesh.BoundingVolume, prim.Scale)) return;
+
+            // Individual prim matrix
+            GL.PushMatrix();
+
+            //TODO we really need a scene graph but for the moment simple if/else logic checks and parent finding are used
+            if (prim.ParentID != 0) // Does this prim have a parent
             {
-                GL.EnableClientState(ArrayCap.VertexArray);
-                GL.EnableClientState(ArrayCap.TextureCoordArray);
-                GL.EnableClientState(ArrayCap.NormalArray);
-
-                int primNr = 0;
-                foreach (RenderPrimitive mesh in Prims.Values)
+                if (parent != null) // Check the parent is valid
                 {
-                    primNr++;
-                    Primitive prim = mesh.Prim;
-                    RenderPrimitive parent = null;
-                    RenderAvatar parentav = null;
-
-                    if (prim.ParentID != 0 && !Prims.TryGetValue(prim.ParentID, out parent) && !Avatars.TryGetValue(prim.ParentID, out parentav)) continue;
-                    Vector3 primPos = PrimPos(prim);
-
-                    // Don't render objects too small to matter
-                    if (LODFactor(primPos, prim.Scale, mesh.BoundingVolume.R) < minLODFactor) continue;
-
-                    // Don't render objects not in the field of view
-                    if (!Frustum.ObjectInFrustum(primPos, mesh.BoundingVolume, prim.Scale)) continue;
-
-                    // Individual prim matrix
-                    GL.PushMatrix();
-
-                    //TODO we really need a scene graph but for the moment simple if/else logic checks and parent finding are used
-                    if (prim.ParentID != 0) // Does this prim have a parent
+                    if (parent.Prim.ParentID != 0) // Does the parent have a parent? if so it must be an avatar 
                     {
-                        if (parent != null) // Check the parent is valid
+                        if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav)) // Get the parent avatar
                         {
-                            if (parent.Prim.ParentID != 0) // Does the parent have a parent? if so it must be an avatar 
-                            {
-                                if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav)) // Get the parent avatar
-                                {
-                                    // Child prims of parents that have avatar as parent
-
-                                    if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
-                                    {
-                                        // Child HUD elements
-                                    }
-                                    else
-                                    {
-                                        //This is a child prim attachment
-
-                                        // Apply prim translation and rotation relative to the root prim
-                                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
-                                        GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
-
-                                        int attachment_index = (int)parent.Prim.PrimData.AttachmentPoint;
-                                        if (attachment_index > GLAvatar.attachment_points.Count())
-                                        {
-                                            // invalid LL attachment point
-                                            continue;
-                                        }
-
-                                        attachment_point apoint = GLAvatar.attachment_points[attachment_index];
-
-                                        Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
-                                        Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
-                                        //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                        // Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
-
-                                        GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
-                                        GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
-
-                                        // Apply prim translation and rotation relative to the root prim
-                                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
-                                        GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                                    }
-                                }
-                            }
-                            else // This prims parent does not have a parent there for its a regular prim and this must be its child
-                            {
-                                // Regular child prim
-                                // Apply prim translation and rotation relative to the root prim
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
-                            }
-                        }
-                        else // This prim has a parent but does not have a parent in the ObjectsList, its parent is therefor parentav from the avatars list 
-                        {
-                            //Root prims with avatar as parent
+                            // Child prims of parents that have avatar as parent
 
                             if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
                             {
-                                // Root HUD elements
+                                // Child HUD elements
                             }
                             else
                             {
-                                // Root attachments
+                                //This is a child prim attachment
 
                                 // Apply prim translation and rotation relative to the root prim
                                 GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
                                 GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
 
-                                int attachment_index = (int)prim.PrimData.AttachmentPoint;
+                                int attachment_index = (int)parent.Prim.PrimData.AttachmentPoint;
                                 if (attachment_index > GLAvatar.attachment_points.Count())
                                 {
                                     // invalid LL attachment point
-                                    continue;
+                                    return;
                                 }
 
                                 attachment_point apoint = GLAvatar.attachment_points[attachment_index];
 
-                                //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
-                                //Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
                                 Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
                                 Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+                                //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                                // Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
 
                                 GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
                                 GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
+
+                                // Apply prim translation and rotation relative to the root prim
+                                GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                                GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
                             }
                         }
                     }
-
-
-                    // Prim roation and position
-                    GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.Position));
-                    GL.MultMatrix(Math3D.CreateRotationMatrix(prim.Rotation));
-
-                    // Prim scaling
-                    GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
-
-                    // Do we have animated texture on this face
-                    bool animatedTexture = false;
-
-                    // Draw the prim faces
-                    for (int j = 0; j < mesh.Faces.Count; j++)
+                    else // This prims parent does not have a parent there for its a regular prim and this must be its child
                     {
-                        Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
-                        Face face = mesh.Faces[j];
-                        FaceData data = (FaceData)mesh.Faces[j].UserData;
-                        
-                        if (teFace == null)
-                            teFace = mesh.Prim.Textures.DefaultTexture;
-
-                        if (teFace == null)
-                            continue;
-
-                        // Don't render transparent faces
-                        if (data.TextureInfo.FullAlpha || teFace.RGBA.A <= 0.01f) continue;
-
-                        int lightsEnabled;
-                        GL.GetInteger(GetPName.Lighting, out lightsEnabled);
-
-                        if (pass != RenderPass.Picking)
-                        {
-                            bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.TextureInfo.HasAlpha;
-
-                            if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
-                            if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
-
-                            if (teFace.Fullbright && lightsEnabled != 0)
-                            {
-                                GL.Disable(EnableCap.Lighting);
-                            }
-
-                            switch (teFace.Shiny)
-                            {
-                                case Shininess.High:
-                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.94f);
-                                    break;
-
-                                case Shininess.Medium:
-                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.64f);
-                                    break;
-
-                                case Shininess.Low:
-                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.24f);
-                                    break;
-
-
-                                case Shininess.None:
-                                default:
-                                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
-                                    break;
-                            }
-
-                            var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
-                            GL.Color4(faceColor);
-
-                            GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 0.5f, 0.5f, 0.5f, 1f });
-
-                            if (data.TextureInfo.TexturePointer != 0)
-                            {
-                                // Is this face using texture animation
-                                if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
-                                    && (prim.TextureAnim.Face == j || prim.TextureAnim.Face == 255))
-                                {
-                                    if (data.AnimInfo == null)
-                                    {
-                                        data.AnimInfo = new TextureAnimationInfo();
-                                    }
-                                    data.AnimInfo.PrimAnimInfo = prim.TextureAnim;
-                                    data.AnimInfo.Step(lastFrameTime);
-                                    animatedTexture = true;
-                                }
-                                else if (data.AnimInfo != null) // Face texture not animated. Do we have previous anim setting?
-                                {
-                                    data.AnimInfo = null;
-                                }
-
-                                GL.Enable(EnableCap.Texture2D);
-                                GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
-                            }
-                            else
-                            {
-                                GL.Disable(EnableCap.Texture2D);
-                            }
-
-                        }
-                        else
-                        {
-                            data.PickingID = primNr;
-                            var primNrBytes = Utils.Int16ToBytes((short)primNr);
-                            var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
-                            GL.Color4(faceColor);
-                        }
-
-                        if (!useVBO)
-                        {
-                            Vertex[] verts = face.Vertices.ToArray();
-
-                            unsafe
-                            {
-                                fixed (float* normalPtr = &verts[0].Normal.X)
-                                fixed (float* texPtr = &verts[0].TexCoord.X)
-                                {
-                                    GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
-                                    GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
-                                    GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, verts);
-                                    GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            data.CheckVBO(face);
-                            GL.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
-                            GL.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
-                            GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
-                            GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
-                            GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
-
-                            GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
-
-                            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-
-                        }
-
-                        if (teFace.Fullbright && lightsEnabled != 0)
-                        {
-                            GL.Enable(EnableCap.Lighting);
-                        }
+                        // Regular child prim
+                        // Apply prim translation and rotation relative to the root prim
+                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parent.Prim.Position));
+                        GL.MultMatrix(Math3D.CreateRotationMatrix(parent.Prim.Rotation));
                     }
-
-                    GL.BindTexture(TextureTarget.Texture2D, 0);
-                    ResetMaterial();
-
-                    // Reset texture coordinates if we modified them in texture animation
-                    if (animatedTexture)
-                    {
-                        GL.MatrixMode(MatrixMode.Texture);
-                        GL.LoadIdentity();
-                        GL.MatrixMode(MatrixMode.Modelview);
-                    }
-
-                    // Pop the prim matrix
-                    GL.PopMatrix();
                 }
-                GL.Disable(EnableCap.Texture2D);
-                GL.DisableClientState(ArrayCap.VertexArray);
-                GL.DisableClientState(ArrayCap.TextureCoordArray);
-                GL.DisableClientState(ArrayCap.NormalArray);
+                else // This prim has a parent but does not have a parent in the ObjectsList, its parent is therefor parentav from the avatars list 
+                {
+                    //Root prims with avatar as parent
+
+                    if (prim.PrimData.AttachmentPoint >= AttachmentPoint.HUDCenter2 && prim.PrimData.AttachmentPoint <= AttachmentPoint.HUDBottomRight)
+                    {
+                        // Root HUD elements
+                    }
+                    else
+                    {
+                        // Root attachments
+
+                        // Apply prim translation and rotation relative to the root prim
+                        GL.MultMatrix(Math3D.CreateTranslationMatrix(parentav.avatar.Position));
+                        GL.MultMatrix(Math3D.CreateRotationMatrix(parentav.avatar.Rotation));
+
+                        int attachment_index = (int)prim.PrimData.AttachmentPoint;
+                        if (attachment_index > GLAvatar.attachment_points.Count())
+                        {
+                            // invalid LL attachment point
+                            return;
+                        }
+
+                        attachment_point apoint = GLAvatar.attachment_points[attachment_index];
+
+                        //Vector3 point = Bone.getOffset(apoint.joint) + apoint.position;
+                        //Quaternion qrot = Bone.getRotation(apoint.joint) * apoint.rotation;
+                        Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
+                        Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+
+                        GL.MultMatrix(Math3D.CreateTranslationMatrix(point));
+                        GL.MultMatrix(Math3D.CreateRotationMatrix(qrot));
+                    }
+                }
             }
+
+
+            // Prim roation and position
+            GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.Position));
+            GL.MultMatrix(Math3D.CreateRotationMatrix(prim.Rotation));
+
+            // Prim scaling
+            GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
+
+            // Do we have animated texture on this face
+            bool animatedTexture = false;
+
+            // Draw the prim faces
+            for (int j = 0; j < mesh.Faces.Count; j++)
+            {
+                Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
+                Face face = mesh.Faces[j];
+                FaceData data = (FaceData)mesh.Faces[j].UserData;
+
+                if (teFace == null)
+                    teFace = mesh.Prim.Textures.DefaultTexture;
+
+                if (teFace == null)
+                    continue;
+
+                // Don't render transparent faces
+                if (data.TextureInfo.FullAlpha || teFace.RGBA.A <= 0.01f) continue;
+
+                int lightsEnabled;
+                GL.GetInteger(GetPName.Lighting, out lightsEnabled);
+
+                if (pass != RenderPass.Picking)
+                {
+                    bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.TextureInfo.HasAlpha;
+
+                    if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
+                    if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
+
+                    if (teFace.Fullbright && lightsEnabled != 0)
+                    {
+                        GL.Disable(EnableCap.Lighting);
+                    }
+
+                    switch (teFace.Shiny)
+                    {
+                        case Shininess.High:
+                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.94f);
+                            break;
+
+                        case Shininess.Medium:
+                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.64f);
+                            break;
+
+                        case Shininess.Low:
+                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.24f);
+                            break;
+
+
+                        case Shininess.None:
+                        default:
+                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
+                            break;
+                    }
+
+                    var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
+                    GL.Color4(faceColor);
+
+                    GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 0.5f, 0.5f, 0.5f, 1f });
+
+                    if (data.TextureInfo.TexturePointer != 0)
+                    {
+                        // Is this face using texture animation
+                        if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
+                            && (prim.TextureAnim.Face == j || prim.TextureAnim.Face == 255))
+                        {
+                            if (data.AnimInfo == null)
+                            {
+                                data.AnimInfo = new TextureAnimationInfo();
+                            }
+                            data.AnimInfo.PrimAnimInfo = prim.TextureAnim;
+                            data.AnimInfo.Step(lastFrameTime);
+                            animatedTexture = true;
+                        }
+                        else if (data.AnimInfo != null) // Face texture not animated. Do we have previous anim setting?
+                        {
+                            data.AnimInfo = null;
+                        }
+
+                        GL.Enable(EnableCap.Texture2D);
+                        GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
+                    }
+                    else
+                    {
+                        GL.Disable(EnableCap.Texture2D);
+                    }
+
+                }
+                else
+                {
+                    data.PickingID = primNr;
+                    var primNrBytes = Utils.Int16ToBytes((short)primNr);
+                    var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
+                    GL.Color4(faceColor);
+                }
+
+                if (!useVBO)
+                {
+                    Vertex[] verts = face.Vertices.ToArray();
+
+                    unsafe
+                    {
+                        fixed (float* normalPtr = &verts[0].Normal.X)
+                        fixed (float* texPtr = &verts[0].TexCoord.X)
+                        {
+                            GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
+                            GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
+                            GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, verts);
+                            GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+                        }
+                    }
+                }
+                else
+                {
+                    data.CheckVBO(face);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
+                    GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
+                    GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
+                    GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
+
+                    GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
+
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+
+                }
+
+                if (teFace.Fullbright && lightsEnabled != 0)
+                {
+                    GL.Enable(EnableCap.Lighting);
+                }
+            }
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            ResetMaterial();
+
+            // Reset texture coordinates if we modified them in texture animation
+            if (animatedTexture)
+            {
+                GL.MatrixMode(MatrixMode.Texture);
+                GL.LoadIdentity();
+                GL.MatrixMode(MatrixMode.Modelview);
+            }
+
+            // Pop the prim matrix
+            GL.PopMatrix();
+        }
+
+        void SortPrims()
+        {
+            lock (Prims)
+            {
+                SortedPrims = new List<RenderPrimitive>(Prims.Count);
+                foreach (RenderPrimitive prim in Prims.Values)
+                {
+                    prim.SimPosition = PrimPos(prim.Prim);
+                    prim.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, prim.SimPosition);
+                    SortedPrims.Add(prim);
+                }
+                // RenderPrimitive class has IComparable implementation
+                // that allows sorting by distance
+                SortedPrims.Sort();
+            }
+        }
+
+        private void RenderObjects(RenderPass pass)
+        {
+            GL.EnableClientState(ArrayCap.VertexArray);
+            GL.EnableClientState(ArrayCap.TextureCoordArray);
+            GL.EnableClientState(ArrayCap.NormalArray);
+
+            // When rendering alpha faces, draw from back towards the camers
+            // otherwise from those closest to camera, to the farthest
+            int nrPrims = SortedPrims.Count;
+            if (pass == RenderPass.Picking || pass == RenderPass.Simple)
+            {
+                for (int i = 0; i < nrPrims; i++)
+                {
+                    RenderPrim(SortedPrims[i], pass, i);
+                }
+            }
+            else if (pass == RenderPass.Alpha)
+            {
+                for (int i = nrPrims - 1; i >= 0; i--)
+                {
+                    RenderPrim(SortedPrims[i], pass, i);
+                }
+            }
+
+            GL.Disable(EnableCap.Texture2D);
+            GL.DisableClientState(ArrayCap.VertexArray);
+            GL.DisableClientState(ArrayCap.TextureCoordArray);
+            GL.DisableClientState(ArrayCap.NormalArray);
         }
 
         void DrawWaterQuad(float x, float y, float z)
@@ -2065,6 +2094,8 @@ namespace Radegast.Rendering
                 Camera.Modified = false;
                 Camera.Step(lastFrameTime);
             }
+
+            SortPrims();
 
             if (picking)
             {
