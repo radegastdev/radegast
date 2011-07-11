@@ -140,18 +140,6 @@ namespace Radegast.Rendering
             Camera = new Camera();
             InitCamera();
 
-            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
-
-            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
-            {
-                comboBox_morph.Items.Add(vpe.Name);
-            }
-
-            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
-            {
-                comboBox_driver.Items.Add(vpe.Name);
-            }
-
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
@@ -894,7 +882,22 @@ namespace Radegast.Rendering
 
         private void frmPrimWorkshop_Shown(object sender, EventArgs e)
         {
+            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
+
+            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+            {
+                comboBox_morph.Items.Add(vpe.Name);
+            }
+
+            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+            {
+                comboBox_driver.Items.Add(vpe.Name);
+            }
+            Application.DoEvents();
+
             SetupGLControl();
+            Application.DoEvents();
+
             LoadCurrentPrims();
         }
 
