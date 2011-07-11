@@ -1323,7 +1323,7 @@ namespace Radegast.Rendering
                             // Prim roation and position
                             //GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
                             //GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
-                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, av.avatar.Position));
+                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.SimRotation, av.SimPosition));
 
                             // Special case for eyeballs we need to offset the mesh to the correct position
                             // We have manually added the eyeball offset based on the headbone when we
