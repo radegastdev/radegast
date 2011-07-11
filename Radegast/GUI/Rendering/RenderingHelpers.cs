@@ -263,6 +263,8 @@ namespace Radegast.Rendering
         public System.Drawing.Image Texture;
         public int TexturePointer;
         public bool HasAlpha;
+        public bool FullAlpha;
+        public bool IsMask;
         public UUID TextureID;
     }
 

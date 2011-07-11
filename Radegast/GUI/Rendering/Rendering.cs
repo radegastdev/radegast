@@ -76,7 +76,7 @@ namespace Radegast.Rendering
         /// <summary>
         /// Object from up to this distance from us will be rendered
         /// </summary>
-        public float DrawDistance = 96f;
+        public float DrawDistance = 48f;
 
         /// <summary>
         /// List of prims in the scene
@@ -804,20 +804,49 @@ namespace Radegast.Rendering
                 {
                     ManagedImage mi;
                     Image img;
-                    if (!OpenJPEG.DecodeToImage(item.TextureData, out mi, out img)) continue;
-                    Bitmap bitmap = (Bitmap)img;
-                    
-                    bool hasAlpha;
-                    if (bitmap.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                    if (!OpenJPEG.DecodeToImage(item.TextureData, out mi)) continue;
+
+                    bool hasAlpha = false;
+                    bool fullAlpha = false;
+                    bool isMask = false;
+                    if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
                     {
-                        hasAlpha = true;
-                    }
-                    else
-                    {
-                        hasAlpha = false;
+                        fullAlpha = true;
+                        isMask = true;
+
+                        // Do we really have alpha, is it all full alpha, or is it a mask
+                        for (int i = 0; i < mi.Alpha.Length; i++)
+                        {
+                            if (mi.Alpha[i] < 255)
+                            {
+                                hasAlpha = true;
+                            }
+                            if (mi.Alpha[i] != 0)
+                            {
+                                fullAlpha = false;
+                            }
+                            if (mi.Alpha[i] != 0 && mi.Alpha[i] != 255)
+                            {
+                                isMask = false;
+                            }
+                        }
+
+                        if (!hasAlpha)
+                        {
+                            mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                        }
                     }
 
+                    using (MemoryStream byteData = new MemoryStream(mi.ExportTGA()))
+                    {
+                        img = OpenMetaverse.Imaging.LoadTGAClass.LoadTGA(byteData);
+                    }
+                    
+                    Bitmap bitmap = (Bitmap)img;
+
                     item.Data.TextureInfo.HasAlpha = hasAlpha;
+                    item.Data.TextureInfo.FullAlpha = fullAlpha;
+                    item.Data.TextureInfo.IsMask = isMask;
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, hasAlpha);
                     bitmap.Dispose();
@@ -1824,12 +1853,15 @@ namespace Radegast.Rendering
                         Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
                         Face face = mesh.Faces[j];
                         FaceData data = (FaceData)mesh.Faces[j].UserData;
-
+                        
                         if (teFace == null)
                             teFace = mesh.Prim.Textures.DefaultTexture;
 
                         if (teFace == null)
                             continue;
+
+                        // Don't render transparent faces
+                        if (data.TextureInfo.FullAlpha || teFace.RGBA.A <= 0.01f) continue;
 
                         int lightsEnabled;
                         GL.GetInteger(GetPName.Lighting, out lightsEnabled);
@@ -1840,9 +1872,6 @@ namespace Radegast.Rendering
 
                             if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
                             if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
-
-                            // Don't render transparent faces
-                            if (teFace.RGBA.A <= 0.01f) continue;
 
                             if (teFace.Fullbright && lightsEnabled != 0)
                             {
