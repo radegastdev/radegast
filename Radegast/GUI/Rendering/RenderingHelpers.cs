@@ -288,6 +288,7 @@ namespace Radegast.Rendering
         public Primitive Prim;
         public List<Face> Faces;
         public Vector3 SimPosition;
+        public Quaternion SimRotation;
         public float DistanceSquared;
         public BoundingVolume BoundingVolume;
 

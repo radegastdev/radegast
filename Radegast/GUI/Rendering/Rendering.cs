@@ -921,44 +921,78 @@ namespace Radegast.Rendering
 
         Vector3 PrimPos(Primitive prim)
         {
+            Vector3 pos;
+            Quaternion rot;
+            PrimPosAndRot(prim, out pos, out rot);
+            return pos;
+        }
+
+        object GetParent(uint localID)
+        {
+            RenderPrimitive parent;
+            RenderAvatar avi;
+            if (Prims.TryGetValue(localID, out parent))
+            {
+                return parent;
+            }
+            else if (Avatars.TryGetValue(localID, out avi))
+            {
+                return avi;
+            }
+            return null;
+        }
+
+        void PrimPosAndRot(Primitive prim, out Vector3 pos, out Quaternion rot)
+        {
             if (prim.ParentID == 0)
             {
-                return prim.Position;
+                pos = prim.Position;
+                rot = prim.Rotation;
+                return;
             }
             else
             {
-                RenderPrimitive parent;
-                RenderAvatar parentav;
-                if (Prims.TryGetValue(prim.ParentID, out parent))
-                {
-                    if (parent.Prim.ParentID == 0)
-                    {
-                        return parent.Prim.Position + prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
-                    }
-                    else
-                    {
-                        // This is an child prim of an attachment
-                        if (Avatars.TryGetValue(parent.Prim.ParentID, out parentav))
-                        {
-                            var avPos = PrimPos(parentav.avatar);
-                            return avPos;
-                        }
-                        else
-                        {
-                            return new Vector3(99999f, 99999f, 99999f);
-                        }
-                    }
-                }
-                else if (Avatars.TryGetValue(prim.ParentID, out parentav))
-                {
-                    var avPos = PrimPos(parentav.avatar);
+                pos = new Vector3(99999f, 99999f, 99999f);
+                rot = Quaternion.Identity;
 
-                    return avPos + prim.Position * Matrix4.CreateFromQuaternion(parentav.avatar.Rotation);
-                }
-                else
+                object p = GetParent(prim.ParentID);
+                if (p == null) return;
+
+                Primitive parentPrim = null;
+                if (p is RenderPrimitive)
                 {
-                    return new Vector3(99999f, 99999f, 99999f);
+                    parentPrim = ((RenderPrimitive)p).Prim;
                 }
+                else if (p is RenderAvatar)
+                {
+                    parentPrim = ((RenderAvatar)p).avatar;
+                }
+
+                Vector3 parentPos;
+                Quaternion parentRot;
+                PrimPosAndRot(parentPrim, out parentPos, out parentRot);
+
+                if (p is RenderPrimitive)
+                {
+                    pos = parentPos + prim.Position * parentRot;
+                    rot = parentRot * prim.Rotation;
+                }
+                else if (p is RenderAvatar)
+                {
+                    RenderAvatar parentav = (RenderAvatar)p;
+
+                    int attachment_index = (int)prim.PrimData.AttachmentPoint;
+                    // Check for invalid LL attachment point
+                    if (attachment_index > GLAvatar.attachment_points.Count()) return;
+
+                    attachment_point apoint = GLAvatar.attachment_points[attachment_index];
+                    Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
+                    Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+
+                    pos = parentPos + point * parentRot + prim.Position * (parentRot * qrot);
+                    rot = qrot * parentRot * prim.Rotation;
+                }
+                return;
             }
         }
 
@@ -1660,8 +1694,9 @@ namespace Radegast.Rendering
         }
 
 
-        void RenderBoundingBox(BoundingVolume bbox)
+        void RenderBoundingBox(RenderPrimitive prim)
         {
+            BoundingVolume bbox = prim.BoundingVolume;
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Disable(EnableCap.Fog);
             GL.Disable(EnableCap.Texture2D);
@@ -1673,6 +1708,12 @@ namespace Radegast.Rendering
             GL.Disable(EnableCap.Blend);
             GL.Disable(EnableCap.AlphaTest);
 
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            GL.PushMatrix();
+            GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.SimPosition));
+            GL.MultMatrix(Math3D.CreateRotationMatrix(prim.SimRotation));
+            GL.Scale(prim.Prim.Scale.X, prim.Prim.Scale.Y, prim.Prim.Scale.Z);
+            GL.Color3(1f, 0f, 0f);
             GL.Begin(BeginMode.Quads);
             var bmin = bbox.Min;
             var bmax = bbox.Max;
@@ -1714,6 +1755,8 @@ namespace Radegast.Rendering
             GL.Vertex3(bmax.X, bmin.Y, bmin.Z);
 
             GL.End();
+            GL.PopMatrix();
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.PopAttrib();
         }
 
@@ -1988,7 +2031,7 @@ namespace Radegast.Rendering
                 SortedPrims = new List<RenderPrimitive>(Prims.Count);
                 foreach (RenderPrimitive prim in Prims.Values)
                 {
-                    prim.SimPosition = PrimPos(prim.Prim);
+                    PrimPosAndRot(prim.Prim, out prim.SimPosition, out prim.SimRotation);
                     prim.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, prim.SimPosition);
                     SortedPrims.Add(prim);
                 }
@@ -2011,6 +2054,7 @@ namespace Radegast.Rendering
             {
                 for (int i = 0; i < nrPrims; i++)
                 {
+                    //RenderBoundingBox(SortedPrims[i]);
                     RenderPrim(SortedPrims[i], pass, i);
                 }
             }
