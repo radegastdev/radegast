@@ -283,28 +283,46 @@ namespace Radegast.Rendering
         Alpha
     }
 
-    public class RenderPrimitive : IComparable, IDisposable
+    public enum SceneObjectType
     {
-        public Primitive Prim;
-        public List<Face> Faces;
+        None,
+        Primitive,
+        Avatar,
+    }
+
+    public abstract class SceneObject: IComparable
+    {
         public Vector3 SimPosition;
         public Quaternion SimRotation;
         public float DistanceSquared;
         public BoundingVolume BoundingVolume;
-
-        public virtual void Dispose()
-        {
-        }
+        public bool PositionUpdated;
+        public SceneObjectType Type = SceneObjectType.None;
 
         public virtual int CompareTo(object other)
         {
-            RenderPrimitive o = (RenderPrimitive)other;
+            SceneObject o = (SceneObject)other;
             if (this.DistanceSquared < o.DistanceSquared)
                 return -1;
             else if (this.DistanceSquared > o.DistanceSquared)
                 return 1;
             else
                 return 0;
+        }
+    }
+
+    public class RenderPrimitive : SceneObject, IDisposable
+    {
+        public Primitive Prim;
+        public List<Face> Faces;
+
+        public RenderPrimitive()
+        {
+            Type = SceneObjectType.Primitive;
+        }
+
+        public virtual void Dispose()
+        {
         }
 
         public override string ToString()
@@ -1522,8 +1540,13 @@ namespace Radegast.Rendering
         }
     }
 
-    class RenderAvatar
+    class RenderAvatar : SceneObject
     {
+        public RenderAvatar()
+        {
+            Type = SceneObjectType.Avatar;
+        }
+
         public GLAvatar glavatar = new GLAvatar();
         public Avatar avatar;
         public FaceData[] data = new FaceData[32];

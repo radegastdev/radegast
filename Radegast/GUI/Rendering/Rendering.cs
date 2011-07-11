@@ -82,7 +82,7 @@ namespace Radegast.Rendering
         /// List of prims in the scene
         /// </summary>
         Dictionary<uint, RenderPrimitive> Prims = new Dictionary<uint, RenderPrimitive>();
-        List<RenderPrimitive> SortedPrims;
+        List<SceneObject> SortedObjects;
         Dictionary<uint, RenderAvatar> Avatars = new Dictionary<uint, RenderAvatar>();
 
         #endregion Public fields
@@ -927,7 +927,7 @@ namespace Radegast.Rendering
             return pos;
         }
 
-        object GetParent(uint localID)
+        SceneObject GetParent(uint localID)
         {
             RenderPrimitive parent;
             RenderAvatar avi;
@@ -955,22 +955,34 @@ namespace Radegast.Rendering
                 pos = new Vector3(99999f, 99999f, 99999f);
                 rot = Quaternion.Identity;
 
-                object p = GetParent(prim.ParentID);
+                SceneObject p = GetParent(prim.ParentID);
                 if (p == null) return;
-
-                Primitive parentPrim = null;
-                if (p is RenderPrimitive)
-                {
-                    parentPrim = ((RenderPrimitive)p).Prim;
-                }
-                else if (p is RenderAvatar)
-                {
-                    parentPrim = ((RenderAvatar)p).avatar;
-                }
 
                 Vector3 parentPos;
                 Quaternion parentRot;
-                PrimPosAndRot(parentPrim, out parentPos, out parentRot);
+                if (p.PositionUpdated)
+                {
+                    parentPos = p.SimPosition;
+                    parentRot = p.SimRotation;
+                }
+                else
+                {
+                    Primitive parentPrim = null;
+                    if (p is RenderPrimitive)
+                    {
+                        parentPrim = ((RenderPrimitive)p).Prim;
+                    }
+                    else if (p is RenderAvatar)
+                    {
+                        parentPrim = ((RenderAvatar)p).avatar;
+                    }
+
+                    PrimPosAndRot(parentPrim, out parentPos, out parentRot);
+                    p.SimPosition = parentPos;
+                    p.SimRotation = parentRot;
+                    p.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, p.SimPosition);
+                    p.PositionUpdated = true;
+                }
 
                 if (p is RenderPrimitive)
                 {
@@ -2024,21 +2036,43 @@ namespace Radegast.Rendering
             GL.PopMatrix();
         }
 
-        void SortPrims()
+        void SortObjects()
         {
+            SortedObjects = new List<SceneObject>(Prims.Count);
+            lock (Avatars)
+            {
+                SortedObjects.AddRange(Avatars.Values.ToArray());
+            }
+
             lock (Prims)
             {
-                SortedPrims = new List<RenderPrimitive>(Prims.Count);
-                foreach (RenderPrimitive prim in Prims.Values)
-                {
-                    PrimPosAndRot(prim.Prim, out prim.SimPosition, out prim.SimRotation);
-                    prim.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, prim.SimPosition);
-                    SortedPrims.Add(prim);
-                }
-                // RenderPrimitive class has IComparable implementation
-                // that allows sorting by distance
-                SortedPrims.Sort();
+                SortedObjects.AddRange(Prims.Values.ToArray());
             }
+
+            foreach (SceneObject obj in SortedObjects)
+            {
+                obj.PositionUpdated = false;
+            }
+
+            foreach (SceneObject obj in SortedObjects)
+            {
+                if (!obj.PositionUpdated)
+                {
+                    Primitive prim = null;
+                    if (obj is RenderPrimitive)
+                        prim = ((RenderPrimitive)obj).Prim;
+                    else if (obj is RenderAvatar)
+                        prim = ((RenderAvatar)obj).avatar;
+
+                    PrimPosAndRot(prim, out obj.SimPosition, out obj.SimRotation);
+                    obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
+                    obj.PositionUpdated = true;
+                }
+            }
+
+            // RenderPrimitive class has IComparable implementation
+            // that allows sorting by distance
+            SortedObjects.Sort();
         }
 
         private void RenderObjects(RenderPass pass)
@@ -2049,20 +2083,26 @@ namespace Radegast.Rendering
 
             // When rendering alpha faces, draw from back towards the camers
             // otherwise from those closest to camera, to the farthest
-            int nrPrims = SortedPrims.Count;
+            int nrPrims = SortedObjects.Count;
             if (pass == RenderPass.Picking || pass == RenderPass.Simple)
             {
                 for (int i = 0; i < nrPrims; i++)
                 {
                     //RenderBoundingBox(SortedPrims[i]);
-                    RenderPrim(SortedPrims[i], pass, i);
+                    if (SortedObjects[i] is RenderPrimitive)
+                    {
+                        RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
+                    }
                 }
             }
             else if (pass == RenderPass.Alpha)
             {
                 for (int i = nrPrims - 1; i >= 0; i--)
                 {
-                    RenderPrim(SortedPrims[i], pass, i);
+                    if (SortedObjects[i] is RenderPrimitive)
+                    {
+                        RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
+                    }
                 }
             }
 
@@ -2139,7 +2179,7 @@ namespace Radegast.Rendering
                 Camera.Step(lastFrameTime);
             }
 
-            SortPrims();
+            SortObjects();
 
             if (picking)
             {
