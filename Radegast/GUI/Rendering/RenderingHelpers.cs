@@ -26,7 +26,6 @@ namespace Radegast.Rendering
         public BoundingVolume BoundingVolume = new BoundingVolume();
         public static int VertexSize = 32; // sizeof (vertex), 2  x vector3 + 1 x vector2 = 8 floats x 4 bytes = 32 bytes 
         public TextureAnimationInfo AnimInfo;
-        public bool Occluded = false;
         public int QueryID = 0;
 
         public void CheckVBO(Face face)
@@ -298,10 +297,6 @@ namespace Radegast.Rendering
         public BoundingVolume BoundingVolume;
         public bool PositionUpdated;
         public SceneObjectType Type = SceneObjectType.None;
-        public int SimpleQueryID = 0;
-        public int AlphaQueryID = 0;
-        public bool SimpleOccluded = false;
-        public bool AlphaOccluded = false;
         public virtual Primitive BasePrim { get; set; }
 
         public virtual int CompareTo(object other)

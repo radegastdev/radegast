@@ -76,7 +76,17 @@ namespace Radegast.Rendering
         /// <summary>
         /// Object from up to this distance from us will be rendered
         /// </summary>
-        public float DrawDistance = 48f;
+        public float DrawDistance
+        {
+            get { return drawDistance; }
+            set
+            {
+                drawDistance = value;
+                drawDistanceSquared = value * value;
+                if (Camera != null)
+                    Camera.Far = value;
+            }
+        }
 
         /// <summary>
         /// List of prims in the scene
@@ -96,10 +106,9 @@ namespace Radegast.Rendering
         public bool AvatarRenderingEnabled = true;
 
         /// <summary>
-        /// Enable occlusion culling
+        /// Show avatar skeloton
         /// </summary>
-        bool OcclusionCullingEnabled = false;
-
+        public bool RenderAvatarSkeleton = false;
 
         #endregion Public fields
 
@@ -133,6 +142,8 @@ namespace Radegast.Rendering
         OpenTK.Vector4 ambientColor;
         OpenTK.Vector4 difuseColor;
         OpenTK.Vector4 specularColor;
+        float drawDistance = 48f;
+        float drawDistanceSquared = 48f * 48f;
 
         #endregion Private fields
 
@@ -167,6 +178,9 @@ namespace Radegast.Rendering
             {
                 comboBox_driver.Items.Add(vpe.Name);
             }
+
+            tbDrawDistance.Value = (int)DrawDistance;
+            lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -926,7 +940,7 @@ namespace Radegast.Rendering
             if (Client != null)
             {
                 Client.Self.Movement.Camera.LookAt(Camera.Position, Camera.FocalPoint);
-                //Client.Self.Movement.Camera.Far = (float)Camera.Far;
+                Client.Self.Movement.Camera.Far = Camera.Far = DrawDistance;
             }
         }
 
@@ -937,7 +951,7 @@ namespace Radegast.Rendering
             Camera.Position = camPos;
             Camera.FocalPoint = Client.Self.SimPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
             Camera.Zoom = 1.0f;
-            Camera.Far = 128.0f;
+            Camera.Far = DrawDistance;
             Camera.EndMove();
         }
 
@@ -1206,6 +1220,8 @@ namespace Radegast.Rendering
 
         private void RenderAvatarsSkeleton(RenderPass pass)
         {
+            if (!RenderAvatarSkeleton) return;
+
             lock (Avatars)
             {
                 foreach (RenderAvatar av in Avatars.Values)
@@ -1731,7 +1747,7 @@ namespace Radegast.Rendering
             GL.Disable(EnableCap.Lighting);
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.AlphaTest);
-            
+
             GL.DepthMask(false);
             GL.ColorMask(false, false, false, false);
 
@@ -1894,7 +1910,7 @@ namespace Radegast.Rendering
                 else
                 {
                     data.PickingID = primNr;
-                    var primNrBytes = Utils.Int16ToBytes((short)primNr);
+                    var primNrBytes = Utils.UInt16ToBytes((ushort)primNr);
                     var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
                     GL.Color4(faceColor);
                 }
@@ -1993,72 +2009,39 @@ namespace Radegast.Rendering
             GL.EnableClientState(ArrayCap.TextureCoordArray);
             GL.EnableClientState(ArrayCap.NormalArray);
 
-            // When rendering alpha faces, draw from back towards the camers
-            // otherwise from those closest to camera, to the farthest
-            int nrPrims = SortedObjects.Count;
-            if (pass == RenderPass.Picking || pass == RenderPass.Simple)
+            Vector3 myPos = Vector3.Zero;
+            RenderAvatar me;
+            if (Avatars.TryGetValue(Client.Self.LocalID, out me))
             {
-                for (int i = 0; i < nrPrims; i++)
-                {
-                    //RenderBoundingBox(SortedPrims[i]);
-
-                    if (SortedObjects[i] is RenderPrimitive)
-                    {
-                        // Don't render objects too small to matter
-                        if (LODFactor(SortedObjects[i].DistanceSquared, SortedObjects[i].BasePrim.Scale, SortedObjects[i].BoundingVolume.R) < minLODFactor) continue;
-
-                        // Don't render objects not in the field of view
-                        if (!Frustum.ObjectInFrustum(SortedObjects[i].SimPosition, SortedObjects[i].BoundingVolume, SortedObjects[i].BasePrim.Scale)) continue;
-
-                        if (!OcclusionCullingEnabled)
-                        {
-                            RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
-                        }
-                        else
-                        {
-                            SortedObjects[i].SimpleOccluded = false;
-                            if (SortedObjects[i].SimpleQueryID == 0)
-                            {
-                                GL.GenQueries(1, out SortedObjects[i].SimpleQueryID);
-                            }
-                            else
-                            {
-                                int res;
-                                GL.GetQueryObject(SortedObjects[i].SimpleQueryID, GetQueryObjectParam.QueryResult, out res);
-                                SortedObjects[i].SimpleOccluded = res == 0;
-                            }
-
-                            GL.BeginQuery(QueryTarget.SamplesPassed, SortedObjects[i].SimpleQueryID);
-                            if (SortedObjects[i].SimpleOccluded)
-                            {
-                                RenderBoundingBox(SortedObjects[i]);
-                            }
-                            else
-                            {
-                                RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
-                            }
-                            GL.EndQuery(QueryTarget.SamplesPassed);
-                        }
-                    }
-                }
+                myPos = me.SimPosition;
             }
-            else if (pass == RenderPass.Alpha)
+            else
             {
-                for (int i = nrPrims - 1; i >= 0; i--)
+                myPos = Client.Self.SimPosition;
+            }
+
+            int nrPrims = SortedObjects.Count;
+            for (int i = 0; i < nrPrims; i++)
+            {
+                //RenderBoundingBox(SortedPrims[i]);
+
+                // When rendering alpha faces, draw from back towards the camers
+                // otherwise from those closest to camera, to the farthest
+                int ix = pass == RenderPass.Alpha ? nrPrims - i - 1 : i;
+                SceneObject obj = SortedObjects[ix];
+
+                if (obj is RenderPrimitive)
                 {
-                    if (SortedObjects[i] is RenderPrimitive)
-                    {
-                        // Don't render objects too small to matter
-                        if (LODFactor(SortedObjects[i].DistanceSquared, SortedObjects[i].BasePrim.Scale, SortedObjects[i].BoundingVolume.R) < minLODFactor) continue;
+                    // Don't render objects that are outside the draw distane
+                    if (Vector3.DistanceSquared(myPos, obj.SimPosition) > drawDistanceSquared) continue;
 
-                        // Don't render objects not in the field of view
-                        if (!Frustum.ObjectInFrustum(SortedObjects[i].SimPosition, SortedObjects[i].BoundingVolume, SortedObjects[i].BasePrim.Scale)) continue;
+                    // Don't render objects too small to matter
+                    if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
-                        if (SortedObjects[i] is RenderPrimitive)
-                        {
-                            RenderPrim((RenderPrimitive)SortedObjects[i], pass, i);
-                        }
-                    }
+                    // Don't render objects not in the field of view
+                    if (!Frustum.ObjectInFrustum(obj.SimPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
+
+                    RenderPrim((RenderPrimitive)obj, pass, ix);
                 }
             }
 
@@ -2150,8 +2133,10 @@ namespace Radegast.Rendering
                 RenderAvatars(RenderPass.Simple);
 
                 GL.Disable(EnableCap.Lighting);
+                GL.DepthMask(false);
                 RenderWater();
                 RenderObjects(RenderPass.Alpha);
+                GL.DepthMask(true);
                 GL.Enable(EnableCap.Lighting);
 
                 GLHUDBegin();
@@ -2261,13 +2246,16 @@ namespace Radegast.Rendering
 
                     if (item.TextureData == null)
                     {
-                        Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
+                        ThreadPool.QueueUserWorkItem(sync =>
                         {
-                            if (state == TextureRequestState.Finished)
+                            Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
                             {
-                                item.TextureData = asset.AssetData;
-                                PendingTextures.Enqueue(item);
-                            }
+                                if (state == TextureRequestState.Finished)
+                                {
+                                    item.TextureData = asset.AssetData;
+                                    PendingTextures.Enqueue(item);
+                                }
+                            });
                         });
                     }
                     else
@@ -2358,9 +2346,7 @@ namespace Radegast.Rendering
 
         private void UpdatePrimBlocking(Primitive prim)
         {
-            if (Vector3.Distance(PrimPos(prim), Client.Self.SimPosition) > DrawDistance && !Prims.ContainsKey(prim.ParentID) && !Avatars.ContainsKey(prim.ParentID)) return;
-
-            if (AvatarRenderingEnabled && Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(prim.LocalID))
+            if (AvatarRenderingEnabled && prim.PrimData.PCode == PCode.Avatar)
             {
                 AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
                 return;
@@ -2733,9 +2719,11 @@ namespace Radegast.Rendering
 
         }
 
-        private void cbOcclusion_CheckedChanged(object sender, EventArgs e)
+        private void tbDrawDistance_Scroll(object sender, EventArgs e)
         {
-            OcclusionCullingEnabled = cbOcclusion.Checked;
+            DrawDistance = (float)tbDrawDistance.Value;
+            lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
+            UpdateCamera();
         }
 
 

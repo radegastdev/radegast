@@ -365,7 +365,7 @@ namespace Radegast
 
         void netcom_ClientConnected(object sender, EventArgs e)
         {
-            client.Self.Movement.Camera.Far = 256f;
+            client.Self.Movement.Camera.Far = 48;
             effectSource = client.Self.AgentID;
 
             if (lookAtTimer == null)

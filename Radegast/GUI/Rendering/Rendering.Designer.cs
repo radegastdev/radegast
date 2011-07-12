@@ -61,7 +61,7 @@ namespace Radegast.Rendering
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
             this.gbZoom = new System.Windows.Forms.GroupBox();
-            this.cbOcclusion = new System.Windows.Forms.CheckBox();
+            this.tbDrawDistance = new System.Windows.Forms.TrackBar();
             this.button_driver = new System.Windows.Forms.Button();
             this.textBox_driveramount = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -96,13 +96,16 @@ namespace Radegast.Rendering
             this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblDrawDistance = new System.Windows.Forms.Label();
             this.gbZoom.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).BeginInit();
             this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbZoom
             // 
-            this.gbZoom.Controls.Add(this.cbOcclusion);
+            this.gbZoom.Controls.Add(this.lblDrawDistance);
+            this.gbZoom.Controls.Add(this.tbDrawDistance);
             this.gbZoom.Controls.Add(this.button_driver);
             this.gbZoom.Controls.Add(this.textBox_driveramount);
             this.gbZoom.Controls.Add(this.label6);
@@ -138,16 +141,17 @@ namespace Radegast.Rendering
             this.gbZoom.TabStop = false;
             this.gbZoom.Enter += new System.EventHandler(this.gbZoom_Enter);
             // 
-            // cbOcclusion
+            // tbDrawDistance
             // 
-            this.cbOcclusion.AutoSize = true;
-            this.cbOcclusion.Location = new System.Drawing.Point(638, 19);
-            this.cbOcclusion.Name = "cbOcclusion";
-            this.cbOcclusion.Size = new System.Drawing.Size(107, 17);
-            this.cbOcclusion.TabIndex = 47;
-            this.cbOcclusion.Text = "Occlusion Culling";
-            this.cbOcclusion.UseVisualStyleBackColor = true;
-            this.cbOcclusion.CheckedChanged += new System.EventHandler(this.cbOcclusion_CheckedChanged);
+            this.tbDrawDistance.Location = new System.Drawing.Point(358, 117);
+            this.tbDrawDistance.Maximum = 176;
+            this.tbDrawDistance.Minimum = 32;
+            this.tbDrawDistance.Name = "tbDrawDistance";
+            this.tbDrawDistance.Size = new System.Drawing.Size(277, 45);
+            this.tbDrawDistance.TabIndex = 47;
+            this.tbDrawDistance.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.tbDrawDistance.Value = 32;
+            this.tbDrawDistance.Scroll += new System.EventHandler(this.tbDrawDistance_Scroll);
             // 
             // button_driver
             // 
@@ -494,6 +498,16 @@ namespace Radegast.Rendering
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
+            // lblDrawDistance
+            // 
+            this.lblDrawDistance.AutoSize = true;
+            this.lblDrawDistance.Location = new System.Drawing.Point(542, 140);
+            this.lblDrawDistance.Name = "lblDrawDistance";
+            this.lblDrawDistance.Size = new System.Drawing.Size(93, 13);
+            this.lblDrawDistance.TabIndex = 48;
+            this.lblDrawDistance.Text = "Draw distance: 48";
+            this.lblDrawDistance.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // SceneWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -506,6 +520,7 @@ namespace Radegast.Rendering
             this.Shown += new System.EventHandler(this.frmPrimWorkshop_Shown);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).EndInit();
             this.ctxObjects.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -548,7 +563,8 @@ namespace Radegast.Rendering
         private System.Windows.Forms.TextBox textBox_driveramount;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox comboBox_driver;
-        private System.Windows.Forms.CheckBox cbOcclusion;
+        private System.Windows.Forms.TrackBar tbDrawDistance;
+        private System.Windows.Forms.Label lblDrawDistance;
 
     }
 }
