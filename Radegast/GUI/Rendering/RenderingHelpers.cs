@@ -327,6 +327,9 @@ namespace Radegast.Rendering
         /// </summary>
         public virtual void Initialize()
         {
+            RenderPosition = SimPosition;
+            RenderRotation = SimRotation;
+            Initialized = true;
         }
 
         /// <summary>
@@ -359,6 +362,10 @@ namespace Radegast.Rendering
     {
         public Primitive Prim;
         public List<Face> Faces;
+        /// <summary>Is this object attached to an avatar</summary>
+        public bool Attached;
+        /// <summary>Do we know if object is attached</summary>
+        public bool AttachedStateKnown;
 
         public RenderPrimitive()
         {
@@ -373,18 +380,32 @@ namespace Radegast.Rendering
 
         public override void Initialize()
         {
-            RenderPosition = SimPosition;
-            RenderRotation = SimRotation;
-            Initialized = true;
+            AttachedStateKnown = false;
+            base.Initialize();
         }
 
         public override void Step(double time)
         {
+            // Don't interpolate positions of attached objects
+            if (Attached)
+            {
+                RenderPosition = SimPosition;
+                RenderRotation = SimRotation;
+                return;
+            }
+
             if (RenderPosition != SimPosition)
             {
                 RenderPosition = RHelp.Smoothed1stOrder(RenderPosition, SimPosition, time);
             }
-            if (RenderRotation != SimRotation)
+            if (Prim.AngularVelocity != Vector3.Zero)
+            {
+                Vector3 angVel = Prim.AngularVelocity;
+                float angle = (float)time * angVel.Length();
+                Quaternion dQ = Quaternion.CreateFromAxisAngle(angVel, angle);
+                RenderRotation = dQ * RenderRotation;
+            }
+            else if (RenderRotation != SimRotation)
             {
                 RenderRotation = SimRotation;
             }
@@ -1616,6 +1637,16 @@ namespace Radegast.Rendering
         {
             get { return avatar; }
             set { if (value is Avatar) avatar = (Avatar)value; }
+        }
+
+        public override void Step(double time)
+        {
+            if (RenderPosition != SimPosition)
+            {
+                RenderPosition = RHelp.Smoothed1stOrder(RenderPosition, SimPosition, time);
+            }
+            RenderRotation = SimRotation;
+            base.Step(time);
         }
 
         public GLAvatar glavatar = new GLAvatar();

@@ -963,6 +963,19 @@ namespace Radegast.Rendering
             return pos;
         }
 
+        bool IsAttached(uint parentLocalID)
+        {
+            if (parentLocalID == 0) return false;
+            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(parentLocalID))
+            {
+                return true;
+            }
+            else
+            {
+                return IsAttached(Client.Network.CurrentSim.ObjectsPrimitives[parentLocalID].ParentID);
+            }
+        }
+
         SceneObject GetSceneObject(uint localID)
         {
             RenderPrimitive parent;
@@ -1009,6 +1022,17 @@ namespace Radegast.Rendering
                     p.SimRotation = parentRot;
                     p.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, p.SimPosition);
                     p.PositionCalculated = true;
+                }
+
+                if (p is RenderPrimitive && ((RenderPrimitive)p).Attached)
+                {
+                    parentPos = p.SimPosition;
+                    parentRot = p.SimRotation;
+                }
+                else
+                {
+                    parentPos = p.RenderPosition;
+                    parentRot = p.RenderRotation;
                 }
 
                 if (p is RenderPrimitive)
@@ -1332,6 +1356,9 @@ namespace Radegast.Rendering
                 int avatarNr = 0;
                 foreach (RenderAvatar av in Avatars.Values)
                 {
+                    // Init interpolation state
+                    if (!av.Initialized) av.Initialize();
+
                     avatarNr++;
 
                     if (av.glavatar._meshes.Count > 0)
@@ -1354,7 +1381,7 @@ namespace Radegast.Rendering
                             // Prim roation and position
                             //GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
                             //GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
-                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.SimRotation, av.SimPosition));
+                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.RenderRotation, av.RenderPosition));
 
                             // Special case for eyeballs we need to offset the mesh to the correct position
                             // We have manually added the eyeball offset based on the headbone when we
@@ -1811,7 +1838,16 @@ namespace Radegast.Rendering
             if (!mesh.Initialized) mesh.Initialize();
 
             // Do any position interpolation
-            mesh.Step(lastFrameTime);
+            SceneObject parent = GetSceneObject(mesh.Prim.ParentID);
+            if (parent != null)
+            {
+                if (!mesh.AttachedStateKnown)
+                {
+                    mesh.Attached = IsAttached(mesh.BasePrim.ParentID);
+                    mesh.AttachedStateKnown = true;
+                }
+                mesh.Step(lastFrameTime);
+            }
 
             Primitive prim = mesh.Prim;
 
@@ -1995,8 +2031,32 @@ namespace Radegast.Rendering
                 obj.PositionCalculated = false;
             }
 
+            // First calculate positions and rotations of root objects
+            // Perform any position interpolation
             foreach (SceneObject obj in SortedObjects)
             {
+                if (obj.BasePrim.ParentID != 0) continue;
+
+                if (obj is RenderPrimitive)
+                {
+                    ((RenderPrimitive)obj).Attached = false;
+                }
+                
+                obj.Step(lastFrameTime);
+
+                if (!obj.PositionCalculated)
+                {
+                    PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
+                    obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
+                    obj.PositionCalculated = true;
+                }
+            }
+
+            // Calculate position and rotations of child objects
+            foreach (SceneObject obj in SortedObjects)
+            {
+                if (obj.BasePrim.ParentID == 0) continue;
+
                 if (!obj.PositionCalculated)
                 {
                     PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
@@ -2368,7 +2428,11 @@ namespace Radegast.Rendering
             if (prim.Textures == null) return;
 
             RenderPrimitive rPrim = null;
-            if (!Prims.TryGetValue(prim.LocalID, out rPrim))
+            if (Prims.TryGetValue(prim.LocalID, out rPrim))
+            {
+                rPrim.AttachedStateKnown = false;
+            }
+            else
             {
                 rPrim = new RenderPrimitive();
             }
