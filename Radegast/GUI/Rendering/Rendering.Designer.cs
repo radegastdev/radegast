@@ -61,6 +61,7 @@ namespace Radegast.Rendering
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
             this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.lblDrawDistance = new System.Windows.Forms.Label();
             this.tbDrawDistance = new System.Windows.Forms.TrackBar();
             this.button_driver = new System.Windows.Forms.Button();
             this.textBox_driveramount = new System.Windows.Forms.TextBox();
@@ -96,7 +97,7 @@ namespace Radegast.Rendering
             this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lblDrawDistance = new System.Windows.Forms.Label();
+            this.cbMisc = new System.Windows.Forms.CheckBox();
             this.gbZoom.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).BeginInit();
             this.ctxObjects.SuspendLayout();
@@ -104,6 +105,7 @@ namespace Radegast.Rendering
             // 
             // gbZoom
             // 
+            this.gbZoom.Controls.Add(this.cbMisc);
             this.gbZoom.Controls.Add(this.lblDrawDistance);
             this.gbZoom.Controls.Add(this.tbDrawDistance);
             this.gbZoom.Controls.Add(this.button_driver);
@@ -140,6 +142,16 @@ namespace Radegast.Rendering
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
             this.gbZoom.Enter += new System.EventHandler(this.gbZoom_Enter);
+            // 
+            // lblDrawDistance
+            // 
+            this.lblDrawDistance.AutoSize = true;
+            this.lblDrawDistance.Location = new System.Drawing.Point(542, 140);
+            this.lblDrawDistance.Name = "lblDrawDistance";
+            this.lblDrawDistance.Size = new System.Drawing.Size(93, 13);
+            this.lblDrawDistance.TabIndex = 48;
+            this.lblDrawDistance.Text = "Draw distance: 48";
+            this.lblDrawDistance.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // tbDrawDistance
             // 
@@ -498,15 +510,18 @@ namespace Radegast.Rendering
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
-            // lblDrawDistance
+            // cbMisc
             // 
-            this.lblDrawDistance.AutoSize = true;
-            this.lblDrawDistance.Location = new System.Drawing.Point(542, 140);
-            this.lblDrawDistance.Name = "lblDrawDistance";
-            this.lblDrawDistance.Size = new System.Drawing.Size(93, 13);
-            this.lblDrawDistance.TabIndex = 48;
-            this.lblDrawDistance.Text = "Draw distance: 48";
-            this.lblDrawDistance.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.cbMisc.AutoSize = true;
+            this.cbMisc.Checked = true;
+            this.cbMisc.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbMisc.Location = new System.Drawing.Point(358, 142);
+            this.cbMisc.Name = "cbMisc";
+            this.cbMisc.Size = new System.Drawing.Size(48, 17);
+            this.cbMisc.TabIndex = 49;
+            this.cbMisc.Text = "Misc";
+            this.cbMisc.UseVisualStyleBackColor = true;
+            this.cbMisc.CheckedChanged += new System.EventHandler(this.cbMisc_CheckedChanged);
             // 
             // SceneWindow
             // 
@@ -565,6 +580,7 @@ namespace Radegast.Rendering
         private System.Windows.Forms.ComboBox comboBox_driver;
         private System.Windows.Forms.TrackBar tbDrawDistance;
         private System.Windows.Forms.Label lblDrawDistance;
+        private System.Windows.Forms.CheckBox cbMisc;
 
     }
 }

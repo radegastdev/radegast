@@ -289,16 +289,60 @@ namespace Radegast.Rendering
         Avatar,
     }
 
-    public abstract class SceneObject: IComparable
+    /// <summary>
+    /// Base class for all scene objects
+    /// </summary>
+    public abstract class SceneObject : IComparable, IDisposable
     {
+        /// <summary>Actual position of the object in the region</summary>
         public Vector3 SimPosition;
+        /// <summary>Actual rotation of the object in the region</summary>
         public Quaternion SimRotation;
+        /// <summary>Rendered position of the object in the region</summary>
+        public Vector3 RenderPosition;
+        /// <summary>Rendered rotationm of the object in the region</summary>
+        public Quaternion RenderRotation;
+        /// <summary>Per frame calculated square of the distance from camera</summary>
         public float DistanceSquared;
+        /// <summary>Bounding volume of the object</summary>
         public BoundingVolume BoundingVolume;
-        public bool PositionUpdated;
+        /// <summary>Was the sim position and distance from camera calculated during this frame</summary>
+        public bool PositionCalculated;
+        /// <summary>Scene object type</summary>
         public SceneObjectType Type = SceneObjectType.None;
+        /// <summary>Libomv primitive</summary>
         public virtual Primitive BasePrim { get; set; }
+        /// <summary>Were initial initialization tasks done</summary>
+        public bool Initialized;
 
+        /// <summary>
+        /// Cleanup resources used
+        /// </summary>
+        public virtual void Dispose()
+        {
+        }
+
+        /// <summary>
+        /// Task performed the fist time object is set for rendering
+        /// </summary>
+        public virtual void Initialize()
+        {
+        }
+
+        /// <summary>
+        /// Perform per frame tasks
+        /// </summary>
+        /// <param name="time">Time since the last call (last frame time in seconds)</param>
+        public virtual void Step(double time)
+        {
+        }
+
+        /// <summary>
+        /// Implementation of the IComparable interface
+        /// used for sorting by distance
+        /// </summary>
+        /// <param name="other">Object we are comparing to</param>
+        /// <returns>Result of the comparison</returns>
         public virtual int CompareTo(object other)
         {
             SceneObject o = (SceneObject)other;
@@ -311,7 +355,7 @@ namespace Radegast.Rendering
         }
     }
 
-    public class RenderPrimitive : SceneObject, IDisposable
+    public class RenderPrimitive : SceneObject
     {
         public Primitive Prim;
         public List<Face> Faces;
@@ -321,14 +365,29 @@ namespace Radegast.Rendering
             Type = SceneObjectType.Primitive;
         }
 
-        public virtual void Dispose()
-        {
-        }
-
         public override Primitive BasePrim
         {
             get { return Prim; }
             set { Prim = value; }
+        }
+
+        public override void Initialize()
+        {
+            RenderPosition = SimPosition;
+            RenderRotation = SimRotation;
+            Initialized = true;
+        }
+
+        public override void Step(double time)
+        {
+            if (RenderPosition != SimPosition)
+            {
+                RenderPosition = RHelp.Smoothed1stOrder(RenderPosition, SimPosition, time);
+            }
+            if (RenderRotation != SimRotation)
+            {
+                RenderRotation = SimRotation;
+            }
         }
 
         public override string ToString()
@@ -715,8 +774,8 @@ namespace Radegast.Rendering
             float wy = q.W * y2;
             float wz = q.W * z2;
 
-            mat[0] = (1.0f - (yy + zz))*scale.X;
-            mat[1] = (xy - wz)*scale.X;
+            mat[0] = (1.0f - (yy + zz)) * scale.X;
+            mat[1] = (xy - wz) * scale.X;
             mat[2] = (xz + wy) * scale.X;
             mat[3] = 0.0f;
 
@@ -892,12 +951,12 @@ namespace Radegast.Rendering
         {
         }
 
-        public GLMesh(GLMesh source,GLAvatar av)
-            :base(source.Name)
+        public GLMesh(GLMesh source, GLAvatar av)
+            : base(source.Name)
         {
             this.av = av;
             // Make a new GLMesh copy from the supplied source
-    
+
             RenderData.Vertices = new float[source.RenderData.Vertices.Length];
             RenderData.Normals = new float[source.RenderData.Normals.Length];
             RenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
@@ -906,7 +965,7 @@ namespace Radegast.Rendering
             RenderData.weights = new float[source.RenderData.weights.Length];
             RenderData.skinJoints = new string[source.RenderData.skinJoints.Length];
 
-            Array.Copy(source.RenderData.Vertices,RenderData.Vertices,source.RenderData.Vertices.Length);
+            Array.Copy(source.RenderData.Vertices, RenderData.Vertices, source.RenderData.Vertices.Length);
             Array.Copy(source.RenderData.Normals, RenderData.Normals, source.RenderData.Normals.Length);
 
             Array.Copy(source.RenderData.TexCoords, RenderData.TexCoords, source.RenderData.TexCoords.Length);
@@ -966,19 +1025,19 @@ namespace Radegast.Rendering
             RenderData.Vertices = new float[_numVertices * 3];
             RenderData.Normals = new float[_numVertices * 3];
 
-             Quaternion quat = Quaternion.CreateFromEulers(0, 0, (float)(Math.PI/4.0));
+            Quaternion quat = Quaternion.CreateFromEulers(0, 0, (float)(Math.PI / 4.0));
 
             int current = 0;
             for (int i = 0; i < _numVertices; i++)
             {
 
-                    RenderData.Normals[current] = _vertices[i].Normal.X;
-                    RenderData.Vertices[current++] = _vertices[i].Coord.X;
-                    RenderData.Normals[current] = _vertices[i].Normal.Y;
-                    RenderData.Vertices[current++] = _vertices[i].Coord.Y;
-                    RenderData.Normals[current] = _vertices[i].Normal.Z;
-                    RenderData.Vertices[current++] = _vertices[i].Coord.Z;
-      
+                RenderData.Normals[current] = _vertices[i].Normal.X;
+                RenderData.Vertices[current++] = _vertices[i].Coord.X;
+                RenderData.Normals[current] = _vertices[i].Normal.Y;
+                RenderData.Vertices[current++] = _vertices[i].Coord.Y;
+                RenderData.Normals[current] = _vertices[i].Normal.Z;
+                RenderData.Vertices[current++] = _vertices[i].Coord.Z;
+
                 if (_vertices[i].Coord.X < minX)
                     minX = _vertices[i].Coord.X;
                 else if (_vertices[i].Coord.X > maxX)
@@ -1013,8 +1072,8 @@ namespace Radegast.Rendering
             current = 0;
             for (int i = 0; i < _numVertices; i++)
             {
-                    RenderData.TexCoords[current++] = _vertices[i].TexCoord.X;
-                    RenderData.TexCoords[current++] = _vertices[i].TexCoord.Y;
+                RenderData.TexCoords[current++] = _vertices[i].TexCoord.X;
+                RenderData.TexCoords[current++] = _vertices[i].TexCoord.Y;
             }
 
             RenderData.weights = new float[_numVertices];
@@ -1023,7 +1082,7 @@ namespace Radegast.Rendering
                 RenderData.weights[i] = _vertices[i].Weight;
             }
 
-            RenderData.skinJoints = new string[_skinJoints.Length+3];
+            RenderData.skinJoints = new string[_skinJoints.Length + 3];
             for (int i = 1; i < _skinJoints.Length; i++)
             {
                 RenderData.skinJoints[i] = _skinJoints[i];
@@ -1041,7 +1100,7 @@ namespace Radegast.Rendering
 
         public void applyjointweights()
         {
-    
+
             /*Each weight actually contains two pieces of information. 
              * The number to the left of the decimal point is the index of the joint and also 
              * implicitly indexes to the following joint. The actual weight is to the right of 
@@ -1051,14 +1110,14 @@ namespace Radegast.Rendering
              * in the list for each of its children.
              */
 
-            float weight=-9999;
-            int jointindex=0;
+            float weight = -9999;
+            int jointindex = 0;
             float factor;
 
             Bone ba = null;
             Bone bb = null;
 
-            for (int v = 0, x=0; v < RenderData.Vertices.Length; v=v+3, x++)
+            for (int v = 0, x = 0; v < RenderData.Vertices.Length; v = v + 3, x++)
             {
                 if (weight != RenderData.weights[x])
                 {
@@ -1067,7 +1126,7 @@ namespace Radegast.Rendering
                     factor = RenderData.weights[x] - jointindex;
                     weight = weight - jointindex;
 
-                    string jointname="", jointname2="";
+                    string jointname = "", jointname2 = "";
 
                     if (this.Name == "upperBodyMesh")
                     {
@@ -1091,8 +1150,8 @@ namespace Radegast.Rendering
                     {
                         return; // not interested in this mesh
                     }
-                    
-                    
+
+
                     if (jointname == "")
                     {
                         //Don't yet handle this, its a split joint to two children
@@ -1103,13 +1162,13 @@ namespace Radegast.Rendering
                         ba = av.skel.mBones[jointname];
                     }
 
-                    if(jointname2=="")
+                    if (jointname2 == "")
                     {
-                        bb=null;
+                        bb = null;
                     }
                     else
                     {
-                        bb = av.skel.mBones[jointname2];  
+                        bb = av.skel.mBones[jointname2];
                     }
                 }
 
@@ -1131,17 +1190,17 @@ namespace Radegast.Rendering
                 }
                 else
                 {
-                    lerp = ba.getOffset()- ba.getOrigOffset();
+                    lerp = ba.getOffset() - ba.getOrigOffset();
                     offset = ba.getOffset();
                     rot = ba.getRotation();
                 }
 
                 Vector3 pos = new Vector3(MorphRenderData.Vertices[v], MorphRenderData.Vertices[v + 1], MorphRenderData.Vertices[v + 2]);
-                pos = pos + lerp; 
+                pos = pos + lerp;
                 pos = pos - offset;
                 pos = pos * rot;
                 pos = pos + offset;
-               
+
                 RenderData.Vertices[v] = pos.X;
                 RenderData.Vertices[v + 1] = pos.Y;
                 RenderData.Vertices[v + 2] = pos.Z;
@@ -1156,13 +1215,13 @@ namespace Radegast.Rendering
 
                 uint i = mvx.VertexIndex;
 
-                MorphRenderData.Vertices[i * 3] = OrigRenderData.Vertices[i*3] + mvx.Coord.X * weight;
+                MorphRenderData.Vertices[i * 3] = OrigRenderData.Vertices[i * 3] + mvx.Coord.X * weight;
                 MorphRenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 + 1] + mvx.Coord.Y * weight;
                 MorphRenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
 
                 RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2] + mvx.TexCoord.X * weight;
                 RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1] + mvx.TexCoord.Y * weight;
- 
+
             }
         }
     }
@@ -1172,7 +1231,7 @@ namespace Radegast.Rendering
         private static Dictionary<string, GLMesh> _defaultmeshes = new Dictionary<string, GLMesh>();
         public Dictionary<string, GLMesh> _meshes = new Dictionary<string, GLMesh>();
 
-        public skeleton skel = new skeleton(); 
+        public skeleton skel = new skeleton();
         public static Dictionary<int, attachment_point> attachment_points = new Dictionary<int, attachment_point>();
 
         public bool _wireframe = true;
@@ -1186,21 +1245,21 @@ namespace Radegast.Rendering
 
         public GLAvatar()
         {
-            foreach (KeyValuePair<string,GLMesh> kvp in _defaultmeshes)
+            foreach (KeyValuePair<string, GLMesh> kvp in _defaultmeshes)
             {
-                GLMesh mesh = new GLMesh(kvp.Value,this); // Instance our meshes
+                GLMesh mesh = new GLMesh(kvp.Value, this); // Instance our meshes
                 _meshes.Add(kvp.Key, mesh);
-                
+
             }
         }
 
         public static void dumptweaks()
         {
 
-            for(int x=0;x<VisualParamEx.tweakable_params.Count;x++)
+            for (int x = 0; x < VisualParamEx.tweakable_params.Count; x++)
             {
                 VisualParamEx vpe = (VisualParamEx)VisualParamEx.tweakable_params.GetByIndex(x);
-                Console.WriteLine(string.Format("{0} is {1}",x,vpe.Name));
+                Console.WriteLine(string.Format("{0} is {1}", x, vpe.Name));
             }
 
 
@@ -1380,17 +1439,17 @@ namespace Radegast.Rendering
         public void morphtest(Avatar av, int param, float weight)
         {
             VisualParamEx vpx;
-            if (VisualParamEx.allParams.TryGetValue(param,out vpx))
+            if (VisualParamEx.allParams.TryGetValue(param, out vpx))
             {
 
-                Logger.Log(string.Format("Applying visual parameter {0} id {1} value {2}", vpx.Name, vpx.ParamID, weight), Helpers.LogLevel.Info); 
+                Logger.Log(string.Format("Applying visual parameter {0} id {1} value {2}", vpx.Name, vpx.ParamID, weight), Helpers.LogLevel.Info);
 
                 //weight = weight * 2.0f;
                 //weight=weight-1.0f;
 
                 float value = vpx.MinValue + ((vpx.MaxValue - vpx.MinValue) * weight);
 
-               
+
                 if (vpx.pType == VisualParamEx.ParamType.TYPE_MORPH)
                 {
                     // Its a morph
@@ -1424,8 +1483,8 @@ namespace Radegast.Rendering
                         }
                          * */
 
-                     }
-                  
+                    }
+
                 }
                 else
                 {
@@ -1444,7 +1503,7 @@ namespace Radegast.Rendering
                     {
                         foreach (KeyValuePair<string, Vector3> kvp in vpx.BoneDeforms)
                         {
-                            skel.deformbone(kvp.Key, new Vector3(0,0,0),kvp.Value*value,Quaternion.Identity);
+                            skel.deformbone(kvp.Key, new Vector3(0, 0, 0), kvp.Value * value, Quaternion.Identity);
                         }
                     }
                     else
@@ -1504,11 +1563,11 @@ namespace Radegast.Rendering
                         msex = VisualParamEx.EparamSex.SEX_FEMALE;
                     }
                 }
-                 
+
 
                 foreach (byte vpvalue in av.VisualParameters)
                 {
-                    if (vpsent==true && VisualAppearanceParameters[x] == vpvalue)
+                    if (vpsent == true && VisualAppearanceParameters[x] == vpvalue)
                     {
                         x++;
                         continue;
@@ -1532,7 +1591,7 @@ namespace Radegast.Rendering
 
                     float value = (vpvalue / 255.0f);
                     this.morphtest(av, vpe.ParamID, value);
-                    
+
                     x++;
                 }
 
@@ -1599,7 +1658,7 @@ namespace Radegast.Rendering
                 mUpperMeshMapping.Add(14, "mWristRight");
                 mUpperMeshMapping.Add(15, "");
 
-                mLowerMeshMapping.Add(1,"mPelvis");
+                mLowerMeshMapping.Add(1, "mPelvis");
                 mLowerMeshMapping.Add(2, "mHipRight");
                 mLowerMeshMapping.Add(3, "mKneeRight");
                 mLowerMeshMapping.Add(4, "mAnkleRight");
@@ -1667,7 +1726,7 @@ namespace Radegast.Rendering
         public Vector3 orig_scale;
         public Vector3 orig_piviot;
 
-        Matrix4 mDeformMatrix=Matrix4.Identity;
+        Matrix4 mDeformMatrix = Matrix4.Identity;
 
         public Bone parent;
 
@@ -1732,7 +1791,7 @@ namespace Radegast.Rendering
             b.orig_scale = new Vector3(b.scale);
 
 
-            float[] deform = Math3D.CreateSRTMatrix(new Vector3(1,1,1), b.rot, b.orig_pos);
+            float[] deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), b.rot, b.orig_pos);
             b.mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
 
             //TODO piviot
@@ -1783,11 +1842,11 @@ namespace Radegast.Rendering
                 Vector3 parento = parent.getOffset();
                 Vector3 mepre = pos * scale;
                 mepre = mepre * totalrot;
-                return parento+ mepre;
+                return parento + mepre;
             }
             else
             {
-                return (pos * scale) *getRotation();
+                return (pos * scale) * getRotation();
             }
         }
 
@@ -1841,7 +1900,7 @@ namespace Radegast.Rendering
 
             if (parent != null)
             {
-                totalrot = rot* parent.getRotation();
+                totalrot = rot * parent.getRotation();
             }
 
             return totalrot;
@@ -1852,7 +1911,7 @@ namespace Radegast.Rendering
     public class VisualParamEx
     {
 
-        static public Dictionary<int,VisualParamEx> allParams = new  Dictionary<int,VisualParamEx>();
+        static public Dictionary<int, VisualParamEx> allParams = new Dictionary<int, VisualParamEx>();
         static public Dictionary<int, VisualParamEx> deformParams = new Dictionary<int, VisualParamEx>();
         static public Dictionary<int, VisualParamEx> morphParams = new Dictionary<int, VisualParamEx>();
         static public Dictionary<int, VisualParamEx> drivenParams = new Dictionary<int, VisualParamEx>();
@@ -1905,7 +1964,7 @@ namespace Radegast.Rendering
         }
 
         public string meshname;
-        
+
         /// <summary>Index of this visual param</summary>
         public int ParamID;
         /// <summary>Internal name</summary>
@@ -1980,15 +2039,15 @@ namespace Radegast.Rendering
         public VisualParamEx(XmlNode node, ParamType pt)
         {
             pType = pt;
-   
+
             ParamID = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
             Name = node.Attributes.GetNamedItem("name").Value;
             Group = Int32.Parse(node.Attributes.GetNamedItem("group").Value);
 
             //These dont exist for facal expresion morphs
-            if(node.Attributes.GetNamedItem("wearable")!=null)
+            if (node.Attributes.GetNamedItem("wearable") != null)
                 Wearable = node.Attributes.GetNamedItem("wearable").Value;
-            
+
             MinValue = float.Parse(node.Attributes.GetNamedItem("value_min").Value);
             MaxValue = float.Parse(node.Attributes.GetNamedItem("value_max").Value);
 
@@ -2022,11 +2081,11 @@ namespace Radegast.Rendering
 
             if (Group == (int)GroupType.VISUAL_PARAM_GROUP_TWEAKABLE)
             {
-                if(!tweakable_params.ContainsKey(ParamID)) //stupid duplicate shared params
+                if (!tweakable_params.ContainsKey(ParamID)) //stupid duplicate shared params
                 {
                     tweakable_params.Add(this.ParamID, this);
                 }
-                Logger.Log(String.Format("Adding tweakable paramater ID {0} {1}", count, this.Name),Helpers.LogLevel.Info);
+                Logger.Log(String.Format("Adding tweakable paramater ID {0} {1}", count, this.Name), Helpers.LogLevel.Info);
                 count++;
             }
 
@@ -2045,11 +2104,11 @@ namespace Radegast.Rendering
             {
                 // If we are in the skeleton section then we also have bone deforms to parse
                 BoneDeforms = new Dictionary<string, Vector3>();
-                if(node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
+                if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
                 {
-                    ParseBoneDeforms(node.ChildNodes[0].ChildNodes); 
+                    ParseBoneDeforms(node.ChildNodes[0].ChildNodes);
                 }
-                deformParams.Add(ParamID,this);
+                deformParams.Add(ParamID, this);
             }
 
             if (pt == ParamType.TYPE_MORPH)
@@ -2097,7 +2156,7 @@ namespace Radegast.Rendering
 
                 }
             }
-        
+
         }
 
         void ParseBoneDeforms(XmlNodeList deforms)
@@ -2169,8 +2228,8 @@ namespace Radegast.Rendering
                         d.hasMinMax = false;
                     }
 
-                    childparams.Add(d);    
-                                   
+                    childparams.Add(d);
+
                 }
             }
         }

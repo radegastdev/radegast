@@ -963,7 +963,7 @@ namespace Radegast.Rendering
             return pos;
         }
 
-        SceneObject GetParent(uint localID)
+        SceneObject GetSceneObject(uint localID)
         {
             RenderPrimitive parent;
             RenderAvatar avi;
@@ -991,12 +991,12 @@ namespace Radegast.Rendering
                 pos = new Vector3(99999f, 99999f, 99999f);
                 rot = Quaternion.Identity;
 
-                SceneObject p = GetParent(prim.ParentID);
+                SceneObject p = GetSceneObject(prim.ParentID);
                 if (p == null) return;
 
                 Vector3 parentPos;
                 Quaternion parentRot;
-                if (p.PositionUpdated)
+                if (p.PositionCalculated)
                 {
                     parentPos = p.SimPosition;
                     parentRot = p.SimRotation;
@@ -1008,7 +1008,7 @@ namespace Radegast.Rendering
                     p.SimPosition = parentPos;
                     p.SimRotation = parentRot;
                     p.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, p.SimPosition);
-                    p.PositionUpdated = true;
+                    p.PositionCalculated = true;
                 }
 
                 if (p is RenderPrimitive)
@@ -1166,7 +1166,7 @@ namespace Radegast.Rendering
         {
             lock (Avatars)
             {
-                if (Vector3.Distance(PrimPos(av), Client.Self.SimPosition) > 32) return;
+                if (Vector3.Distance(PrimPos(av), Client.Self.SimPosition) > DrawDistance) return;
 
                 if (Avatars.ContainsKey(av.LocalID))
                 {
@@ -1807,14 +1807,20 @@ namespace Radegast.Rendering
 
         void RenderPrim(RenderPrimitive mesh, RenderPass pass, int primNr)
         {
+            // Do the stuff we need to do the first time we encouter the object
+            if (!mesh.Initialized) mesh.Initialize();
+
+            // Do any position interpolation
+            mesh.Step(lastFrameTime);
+
             Primitive prim = mesh.Prim;
 
             // Individual prim matrix
             GL.PushMatrix();
 
             // Prim roation and position
-            GL.MultMatrix(Math3D.CreateTranslationMatrix(mesh.SimPosition));
-            GL.MultMatrix(Math3D.CreateRotationMatrix(mesh.SimRotation));
+            GL.MultMatrix(Math3D.CreateTranslationMatrix(mesh.RenderPosition));
+            GL.MultMatrix(Math3D.CreateRotationMatrix(mesh.RenderRotation));
 
             // Prim scaling
             GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
@@ -1828,6 +1834,9 @@ namespace Radegast.Rendering
                 Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
                 Face face = mesh.Faces[j];
                 FaceData data = (FaceData)mesh.Faces[j].UserData;
+
+                if (data == null)
+                    continue;
 
                 if (teFace == null)
                     teFace = mesh.Prim.Textures.DefaultTexture;
@@ -1983,16 +1992,16 @@ namespace Radegast.Rendering
 
             foreach (SceneObject obj in SortedObjects)
             {
-                obj.PositionUpdated = false;
+                obj.PositionCalculated = false;
             }
 
             foreach (SceneObject obj in SortedObjects)
             {
-                if (!obj.PositionUpdated)
+                if (!obj.PositionCalculated)
                 {
                     PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
                     obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
-                    obj.PositionUpdated = true;
+                    obj.PositionCalculated = true;
                 }
             }
 
@@ -2358,11 +2367,16 @@ namespace Radegast.Rendering
 
             if (prim.Textures == null) return;
 
+            RenderPrimitive rPrim = null;
+            if (!Prims.TryGetValue(prim.LocalID, out rPrim))
+            {
+                rPrim = new RenderPrimitive();
+            }
+
             // Regular prim
             if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
             {
                 FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
-                RenderPrimitive rPrim = new RenderPrimitive();
                 rPrim.Faces = mesh.Faces;
                 rPrim.Prim = prim;
                 MeshPrim(prim, rPrim);
@@ -2423,7 +2437,6 @@ namespace Radegast.Rendering
 
                     if (mesh != null)
                     {
-                        RenderPrimitive rPrim = new RenderPrimitive();
                         rPrim.Faces = mesh.Faces;
                         rPrim.Prim = prim;
                         MeshPrim(prim, rPrim);
@@ -2724,6 +2737,12 @@ namespace Radegast.Rendering
             DrawDistance = (float)tbDrawDistance.Value;
             lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
             UpdateCamera();
+        }
+
+        bool miscEnabled = true;
+        private void cbMisc_CheckedChanged(object sender, EventArgs e)
+        {
+            miscEnabled = cbMisc.Checked;
         }
 
 
