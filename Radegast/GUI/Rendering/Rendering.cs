@@ -1256,8 +1256,8 @@ namespace Radegast.Rendering
                     // Prim roation and position
                     Vector3 pos = av.avatar.Position;
                     pos.X += 1;
-                    GL.MultMatrix(Math3D.CreateTranslationMatrix(pos));
-                    GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
+
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1,1,1),av.avatar.Rotation,pos));
 
                     GL.Begin(BeginMode.Lines);
 
@@ -1379,8 +1379,6 @@ namespace Radegast.Rendering
                             GL.PushMatrix();
 
                             // Prim roation and position
-                            //GL.MultMatrix(Math3D.CreateTranslationMatrix(av.avatar.Position));
-                            //GL.MultMatrix(Math3D.CreateRotationMatrix(av.avatar.Rotation));
                             GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.RenderRotation, av.RenderPosition));
 
                             // Special case for eyeballs we need to offset the mesh to the correct position
@@ -1390,17 +1388,13 @@ namespace Radegast.Rendering
                             if (mesh.Name == "eyeBallLeftMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getOffset("mEyeLeft")));
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(av.glavatar.skel.getRotation("mEyeLeft")));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.getRotation("mEyeLeft"), av.glavatar.skel.getOffset("mEyeLeft")));
                             }
                             if (mesh.Name == "eyeBallRightMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getOffset("mEyeRight")));
-                                GL.MultMatrix(Math3D.CreateRotationMatrix(av.glavatar.skel.getRotation("mEyeRight")));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.getRotation("mEyeRight"), av.glavatar.skel.getOffset("mEyeRight")));
                             }
-
-
 
                             //Should we be offsetting the base meshs at all?
                             //if (mesh.Name == "headMesh")
@@ -1408,14 +1402,6 @@ namespace Radegast.Rendering
                             //    GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getDeltaOffset("mHead")));
                             //}
 
-
-                            //Gl.glTranslatef(mesh.Position.X, mesh.Position.Y, mesh.Position.Z);
-
-                            GL.Rotate(mesh.RotationAngles.X, 1f, 0f, 0f);
-                            GL.Rotate(mesh.RotationAngles.Y, 0f, 1f, 0f);
-                            GL.Rotate(mesh.RotationAngles.Z, 0f, 0f, 1f);
-
-                            GL.Scale(mesh.Scale.X, mesh.Scale.Y, mesh.Scale.Z);
 
                             if (pass == RenderPass.Picking)
                             {
@@ -1779,9 +1765,7 @@ namespace Radegast.Rendering
             GL.ColorMask(false, false, false, false);
 
             GL.PushMatrix();
-            GL.MultMatrix(Math3D.CreateTranslationMatrix(prim.SimPosition));
-            GL.MultMatrix(Math3D.CreateRotationMatrix(prim.SimRotation));
-            GL.Scale(scale.X, scale.Y, scale.Z);
+            GL.MultMatrix(Math3D.CreateSRTMatrix(scale, prim.SimRotation, prim.SimPosition));
             GL.Color3(1f, 0f, 0f);
             GL.Begin(BeginMode.Quads);
             var bmin = bbox.Min;
@@ -1856,12 +1840,8 @@ namespace Radegast.Rendering
             // Individual prim matrix
             GL.PushMatrix();
 
-            // Prim roation and position
-            GL.MultMatrix(Math3D.CreateTranslationMatrix(mesh.RenderPosition));
-            GL.MultMatrix(Math3D.CreateRotationMatrix(mesh.RenderRotation));
-
-            // Prim scaling
-            GL.Scale(prim.Scale.X, prim.Scale.Y, prim.Scale.Z);
+            // Prim roation and position and scale
+            GL.MultMatrix(Math3D.CreateSRTMatrix(prim.Scale, mesh.SimRotation, mesh.SimPosition));
 
             // Do we have animated texture on this face
             bool animatedTexture = false;
