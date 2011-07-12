@@ -1780,7 +1780,7 @@ namespace Radegast.Rendering
             GL.ColorMask(false, false, false, false);
 
             GL.PushMatrix();
-            GL.MultMatrix(Math3D.CreateSRTMatrix(scale, prim.SimRotation, prim.SimPosition));
+            GL.MultMatrix(Math3D.CreateSRTMatrix(scale, prim.RenderRotation, prim.RenderPosition));
             GL.Color3(1f, 0f, 0f);
             GL.Begin(BeginMode.Quads);
             var bmin = bbox.Min;
@@ -1856,7 +1856,7 @@ namespace Radegast.Rendering
             GL.PushMatrix();
 
             // Prim roation and position and scale
-            GL.MultMatrix(Math3D.CreateSRTMatrix(prim.Scale, mesh.SimRotation, mesh.SimPosition));
+            GL.MultMatrix(Math3D.CreateSRTMatrix(prim.Scale, mesh.RenderRotation, mesh.RenderPosition));
 
             // Do we have animated texture on this face
             bool animatedTexture = false;
