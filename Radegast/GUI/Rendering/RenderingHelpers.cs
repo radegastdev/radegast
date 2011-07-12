@@ -1664,6 +1664,11 @@ namespace Radegast.Rendering
         public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
 
+        public static Dictionary<UUID, BinBVHAnimationReader> mKnownAnimations = new Dictionary<UUID, BinBVHAnimationReader>();
+        public Dictionary<UUID, Animation> animlist = new Dictionary<UUID, Animation>();
+
+        public bool mNeedsUpdate = false;
+        public bool mNeedsMeshRebuild = false;
 
 
         public skeleton()
@@ -1741,6 +1746,68 @@ namespace Radegast.Rendering
             {
                 return Quaternion.Identity;
             }
+        }
+
+        // Add animations to the global decoded list
+        // TODO garbage collect unused animations somehow
+        public static void addanimation(OpenMetaverse.Assets.Asset asset)
+        {
+            BinBVHAnimationReader b = new BinBVHAnimationReader(asset.AssetData);
+            if (!mKnownAnimations.ContainsKey(asset.AssetID))
+            {
+                Logger.Log("Adding new decoded animaton known animations " + asset.AssetID.ToString(), Helpers.LogLevel.Info);
+                mKnownAnimations.Add(asset.AssetID, b);
+            }
+        }
+
+        public bool addplayinganimation(Animation anim)
+        {
+
+            if (!animlist.ContainsKey(anim.AnimationID))
+            {
+                Logger.Log("Adding new playing animaton " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
+                animlist.Add(anim.AnimationID, anim);
+            }
+
+            mNeedsUpdate = true;
+
+            if (skeleton.mKnownAnimations.ContainsKey(anim.AnimationID))
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        public void firstkeyframe()
+        {
+            if (mNeedsUpdate == false)
+                return;
+
+            foreach (Animation anim in this.animlist.Values) // TODO priority sort
+            {
+                BinBVHAnimationReader b;
+                if (skeleton.mKnownAnimations.TryGetValue(anim.AnimationID, out b))
+                {
+                    foreach (binBVHJoint joint in b.joints)
+                    {
+                        //actually get the last for a pose the last frame is probably the static one once
+                        //we have reached position
+                        binBVHJointKey rot = joint.rotationkeys[joint.rotationkeys.Length-1];
+
+                        Vector3 pos = new Vector3(0, 0, 0);
+                        //binBVHJointKey pos = joint.positionkeys[0];
+
+                        deformbone(joint.Name, new Vector3(0, 0, 0), pos, new Quaternion(rot.key_element.X, rot.key_element.Y, rot.key_element.Z));
+
+                    }
+
+                    mNeedsMeshRebuild = true;
+                }
+            }
+
+            mNeedsUpdate = false;
         }
     }
 

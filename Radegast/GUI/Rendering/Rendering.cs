@@ -189,7 +189,7 @@ namespace Radegast.Rendering
             Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
-            //Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
+            Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance += new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
             Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
@@ -210,7 +210,7 @@ namespace Radegast.Rendering
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
-            //Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
+            Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
 
             if (instance.Netcom != null)
@@ -356,8 +356,11 @@ namespace Radegast.Rendering
                 {
                     foreach (Animation anim in e.Animations)
                     {
-                        Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, animRecievedCallback);
-                        av.animlist.Add(anim.AnimationID, anim);
+                        if (av.glavatar.skel.addplayinganimation(anim))
+                        {
+                            Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
+                            Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, animRecievedCallback);
+                        }
                     }
                     break;
                 }
@@ -368,8 +371,7 @@ namespace Radegast.Rendering
         {
             if (transfer.Success)
             {
-                BinBVHAnimationReader b = new BinBVHAnimationReader(asset.AssetData);
-
+                skeleton.addanimation(asset);
             }
         }
 
@@ -1359,6 +1361,12 @@ namespace Radegast.Rendering
                     // Init interpolation state
                     if (!av.Initialized) av.Initialize();
 
+                    // need to rebuild mesh as animations may have changed rotations
+                    if (av.glavatar.skel.mNeedsMeshRebuild)
+                    {
+                        av.glavatar.skel.mNeedsMeshRebuild = false;
+                    }
+
                     avatarNr++;
 
                     if (av.glavatar._meshes.Count > 0)
@@ -1366,6 +1374,11 @@ namespace Radegast.Rendering
                         int faceNr = 0;
                         foreach (GLMesh mesh in av.glavatar._meshes.Values)
                         {
+                            if (av.glavatar.skel.mNeedsMeshRebuild)
+                            {
+                                mesh.applyjointweights();
+                            }
+
                             faceNr++;
                             if (!av.glavatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
@@ -1449,6 +1462,8 @@ namespace Radegast.Rendering
                             GL.PopMatrix();
 
                         }
+
+                        av.glavatar.skel.mNeedsMeshRebuild = false;
                     }
                 }
                 GL.Disable(EnableCap.Texture2D);
