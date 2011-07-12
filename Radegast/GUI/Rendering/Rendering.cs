@@ -512,7 +512,7 @@ namespace Radegast.Rendering
                 GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
                 GL.MatrixMode(MatrixMode.Projection);
 
-                GL.Enable(EnableCap.Blend);
+                GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
                 string glExtensions = GL.GetString(StringName.Extensions);
                 hasMipmap = glExtensions.Contains("GL_SGIS_generate_mipmap");
@@ -1849,6 +1849,8 @@ namespace Radegast.Rendering
                 mesh.Step(lastFrameTime);
             }
 
+            if (!AvatarRenderingEnabled && mesh.Attached) return;
+
             Primitive prim = mesh.Prim;
 
             // Individual prim matrix
@@ -1888,7 +1890,7 @@ namespace Radegast.Rendering
 
                 if (pass != RenderPass.Picking)
                 {
-                    bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.TextureInfo.HasAlpha;
+                    bool belongToAlphaPass = (teFace.RGBA.A < 0.99f) || (data.TextureInfo.HasAlpha && !data.TextureInfo.IsMask);
 
                     if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
                     if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
@@ -2196,22 +2198,26 @@ namespace Radegast.Rendering
             }
             else
             {
+                // Alpha mask elements, no blending, alpha test for A > 0.5
+                GL.Enable(EnableCap.AlphaTest);
                 RenderTerrain();
                 RenderObjects(RenderPass.Simple);
                 RenderAvatarsSkeleton(RenderPass.Simple);
                 RenderAvatars(RenderPass.Simple);
+                GL.Disable(EnableCap.AlphaTest);
 
-                GL.Disable(EnableCap.Lighting);
+                // Alpha blending elements, disable writing to depth buffer
+                GL.Enable(EnableCap.Blend);
                 GL.DepthMask(false);
                 RenderWater();
                 RenderObjects(RenderPass.Alpha);
                 GL.DepthMask(true);
-                GL.Enable(EnableCap.Lighting);
 
                 GLHUDBegin();
                 RenderText();
                 RenderStats();
                 GLHUDEnd();
+                GL.Disable(EnableCap.Blend);
             }
 
             // Pop the world matrix
@@ -2807,6 +2813,7 @@ namespace Radegast.Rendering
         private void cbMisc_CheckedChanged(object sender, EventArgs e)
         {
             miscEnabled = cbMisc.Checked;
+            AvatarRenderingEnabled = miscEnabled;
         }
 
 
