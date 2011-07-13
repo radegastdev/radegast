@@ -356,7 +356,7 @@ namespace Radegast.Rendering
                 if (av.avatar.ID == e.AvatarID)
                 {
                     foreach (Animation anim in e.Animations)
-                    {
+                    {          
                         if (av.glavatar.skel.addplayinganimation(anim))
                         {
                             Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
@@ -1271,11 +1271,11 @@ namespace Radegast.Rendering
 
                     foreach (Bone b in av.glavatar.skel.mBones.Values)
                     {
-                        Vector3 newpos = b.getOffset();
+                        Vector3 newpos = b.getTotalOffset();
 
                         if (b.parent != null)
                         {
-                            Vector3 parentpos = b.parent.getOffset();
+                            Vector3 parentpos = b.parent.getTotalOffset();
                             GL.Vertex3(parentpos.X, parentpos.Y, parentpos.Z);
                         }
                         else
@@ -1402,12 +1402,12 @@ namespace Radegast.Rendering
                             if (mesh.Name == "eyeBallLeftMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.getRotation("mEyeLeft"), av.glavatar.skel.getOffset("mEyeLeft")));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.mLeftEye.getTotalRotation(), av.glavatar.skel.mLeftEye.getTotalOffset()));
                             }
                             if (mesh.Name == "eyeBallRightMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.getRotation("mEyeRight"), av.glavatar.skel.getOffset("mEyeRight")));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.mRightEye.getTotalRotation(), av.glavatar.skel.mRightEye.getTotalOffset()));
                             }
 
                             //Should we be offsetting the base meshs at all?

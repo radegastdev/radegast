@@ -1198,28 +1198,30 @@ namespace Radegast.Rendering
                 // 4 is neck and 6 and 11 are the left and right collar bones
 
                 Vector3 lerp;
-
                 Vector3 offset;
-                Quaternion rot = ba.getRotation();
+                Quaternion rot = ba.getTotalRotation();
 
                 if (bb != null)
                 {
-                    Vector3 oa = ba.getOffset() - ba.getOrigOffset();
-                    Vector3 ob = bb.getOffset() - bb.getOrigOffset();
-                    lerp = Vector3.Lerp(oa, ob, weight);
-                    offset = Vector3.Lerp(ba.getOffset(), bb.getOffset(), weight);
+                    lerp = Vector3.Lerp(ba.getDeltaOffset(), bb.getDeltaOffset(), weight);
+                    offset = Vector3.Lerp(ba.getTotalOffset(), bb.getTotalOffset(), weight);   
                 }
                 else
                 {
-                    lerp = ba.getOffset() - ba.getOrigOffset();
-                    offset = ba.getOffset();
-                    rot = ba.getRotation();
+                    lerp = ba.getDeltaOffset();
+                    offset = ba.getTotalOffset();
+                    rot = ba.getTotalRotation();
                 }
 
                 Vector3 pos = new Vector3(MorphRenderData.Vertices[v], MorphRenderData.Vertices[v + 1], MorphRenderData.Vertices[v + 2]);
-                pos = pos + lerp;
+                
+                //move back to mesh local coords
                 pos = pos - offset;
+                // apply LERPd offset
+                pos = pos + lerp;
+                // rotate our offset by total rotation
                 pos = pos * rot;
+                //move back to avatar local coords
                 pos = pos + offset;
 
                 RenderData.Vertices[v] = pos.X;
@@ -1377,13 +1379,13 @@ namespace Radegast.Rendering
                         break;
 
                     case "eyeBallRightMesh":
-                        mesh.setMeshPos(Bone.mBones["mEyeLeft"].getOffset());
+                        mesh.setMeshPos(Bone.mBones["mEyeLeft"].getTotalOffset());
                         //mesh.setMeshRot(Bone.getRotation("mEyeLeft"));
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
                     case "eyeBallLeftMesh":
-                        mesh.setMeshPos(Bone.mBones["mEyeRight"].getOffset());
+                        mesh.setMeshPos(Bone.mBones["mEyeRight"].getTotalOffset());
                         //mesh.setMeshRot(Bone.getRotation("mEyeRight"));
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
@@ -1686,6 +1688,8 @@ namespace Radegast.Rendering
         public bool mNeedsUpdate = false;
         public bool mNeedsMeshRebuild = false;
 
+        public Bone mLeftEye = null;
+        public Bone mRightEye = null;
 
         public skeleton()
         {
@@ -1725,6 +1729,10 @@ namespace Radegast.Rendering
                 mHeadMeshMapping.Add(3, "");
 
             }
+
+            mLeftEye = mBones["mEyeLeft"];
+            mRightEye = mBones["mEyeRight"];
+
         }
 
         public void deformbone(string name, Vector3 pos, Vector3 scale, Quaternion rotation)
@@ -1743,7 +1751,7 @@ namespace Radegast.Rendering
             Bone b;
             if (mBones.TryGetValue(bonename, out b))
             {
-                return (b.getOffset());
+                return (b.getTotalOffset());
             }
             else
             {
@@ -1756,7 +1764,7 @@ namespace Radegast.Rendering
             Bone b;
             if (mBones.TryGetValue(bonename, out b))
             {
-                return (b.getRotation());
+                return (b.getTotalRotation());
             }
             else
             {
@@ -1850,6 +1858,15 @@ namespace Radegast.Rendering
         public static Dictionary<int, Bone> mIndexedBones = new Dictionary<int, Bone>();
         static int boneaddindex = 0;
 
+        private bool rotdirty = true;
+        private bool posdirty = true;
+        
+        private Vector3 mTotalPos;
+        private Quaternion mTotalRot;
+
+        private Vector3 mDeltaPos;
+        private Quaternion mDeltaRot;
+
         public Bone()
         {
         }
@@ -1904,7 +1921,6 @@ namespace Radegast.Rendering
             b.scale = new Vector3(float.Parse(scaleparts[0]), float.Parse(scaleparts[1]), float.Parse(scaleparts[2]));
             b.orig_scale = new Vector3(b.scale);
 
-
             float[] deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), b.rot, b.orig_pos);
             b.mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
 
@@ -1934,6 +1950,19 @@ namespace Radegast.Rendering
             this.pos = Bone.mBones[name].orig_pos + pos;
             this.scale = Bone.mBones[name].orig_scale + scale;
             this.rot = Bone.mBones[name].orig_rot * rot;
+
+            markdirty();        
+        }
+
+        // If we deform a bone mark this bone and all its children as dirty.  
+        public void markdirty()
+        {
+            rotdirty = true;
+            posdirty = true;
+            foreach (Bone childbone in children)
+            {
+                childbone.markdirty();
+            }
         }
 
         public Matrix4 getdeform()
@@ -1948,7 +1977,7 @@ namespace Radegast.Rendering
             }
         }
 
-        public Vector3 getOffset()
+        private Vector3 getOffset()
         {
             if (parent != null)
             {
@@ -1956,7 +1985,13 @@ namespace Radegast.Rendering
                 Vector3 parento = parent.getOffset();
                 Vector3 mepre = pos * scale;
                 mepre = mepre * totalrot;
-                return parento + mepre;
+                mTotalPos = parento + mepre;
+                posdirty = false;
+
+                Vector3 orig = getOrigOffset();
+                mDeltaPos = mTotalPos - orig;
+
+                return mTotalPos;
             }
             else
             {
@@ -1969,11 +2004,37 @@ namespace Radegast.Rendering
             return pos * scale;
         }
 
-        public Vector3 getOrigOffset()
+        // Try to save some cycles by not recalculating positions and rotations every time
+        public Vector3 getTotalOffset()
+        {
+            if (posdirty == false)
+            {
+                return mTotalPos;
+            }
+            else
+            {          
+                return getOffset();
+            }
+        }
+
+        public Vector3 getDeltaOffset()
+        {
+            if (posdirty == false)
+            {
+                return mDeltaPos;
+            }
+            else
+            {
+                getOffset(); 
+                return mDeltaPos;
+            }
+        }
+
+        private Vector3 getOrigOffset()
         {
             if (parent != null)
             {
-                return ((parent.getOrigOffset()) + orig_pos);
+                return (parent.getOrigOffset()) + orig_pos;
             }
             else
             {
@@ -1981,7 +2042,7 @@ namespace Radegast.Rendering
             }
         }
 
-        public static Quaternion getRotation(string bonename)
+        private static Quaternion getRotation(string bonename)
         {
             Bone b;
             if (mBones.TryGetValue(bonename, out b))
@@ -1995,7 +2056,7 @@ namespace Radegast.Rendering
         }
 
 
-        public Quaternion getParentRot()
+        private Quaternion getParentRot()
         {
             Quaternion totalrot = Quaternion.Identity;
 
@@ -2008,7 +2069,7 @@ namespace Radegast.Rendering
 
         }
 
-        public Quaternion getRotation()
+        private Quaternion getRotation()
         {
             Quaternion totalrot = rot;
 
@@ -2017,9 +2078,23 @@ namespace Radegast.Rendering
                 totalrot = rot * parent.getRotation();
             }
 
+            mTotalRot = totalrot;
+            rotdirty = false;
+
             return totalrot;
         }
 
+        public Quaternion getTotalRotation()
+        {
+            if (rotdirty == false)
+            {
+                return mTotalRot;
+            }
+            else
+            {
+                return getRotation();
+            }
+        }
     }
 
     public class VisualParamEx
