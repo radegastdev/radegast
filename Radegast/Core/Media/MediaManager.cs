@@ -188,17 +188,19 @@ namespace Radegast.Media
                 FMOD.CAPS caps = FMOD.CAPS.NONE;
                 FMOD.SPEAKERMODE speakermode = FMOD.SPEAKERMODE._5POINT1;
 
-                // Get the capabilities of the driver.
-                int minfrequency = 0, maxfrequency = 0;
-                StringBuilder name = new StringBuilder(128);
-                FMODExec(system.getDriverCaps(0, ref caps,
-                    ref minfrequency,
-                    ref maxfrequency,
-                    ref speakermode)
-                );
-
-                // Set FMOD speaker mode to what the driver supports.
-                FMODExec(system.setSpeakerMode(speakermode));
+                // Fancy param checking on Linux can cause init to fail
+                try
+                {
+                    // Get the capabilities of the driver.
+                    int minfrequency = 0, maxfrequency = 0;
+                    FMODExec(system.getDriverCaps(0, ref caps,
+                        ref minfrequency,
+                        ref maxfrequency,
+                        ref speakermode));
+                    // Set FMOD speaker mode to what the driver supports.
+                   FMODExec(system.setSpeakerMode(speakermode));
+                }
+                catch {}
 
                 // Forcing the ALSA sound system on Linux seems to avoid a CPU loop
                 if (System.Environment.OSVersion.Platform == PlatformID.Unix)
@@ -212,22 +214,27 @@ namespace Radegast.Media
                     FMODExec(system.setDSPBufferSize(1024, 10));
                 }
 
-                // Get driver information so we can check for a wierd one.
-                FMOD.GUID guid = new FMOD.GUID();
-                FMODExec(system.getDriverInfo(0, name, 128, ref guid));
-
-                // Sigmatel sound devices crackle for some reason if the format is pcm 16bit.
-                // pcm floating point output seems to solve it.
-                if (name.ToString().IndexOf("SigmaTel") != -1)
+                try
                 {
-                    FMODExec(system.setSoftwareFormat(
-                        48000,
-                        FMOD.SOUND_FORMAT.PCMFLOAT,
-                        0, 0,
-                        FMOD.DSP_RESAMPLER.LINEAR)
-                    );
+                    StringBuilder name = new StringBuilder(128);   
+                    // Get driver information so we can check for a wierd one.
+                    FMOD.GUID guid = new FMOD.GUID();
+                    FMODExec(system.getDriverInfo(0, name, 128, ref guid));
+    
+                    // Sigmatel sound devices crackle for some reason if the format is pcm 16bit.
+                    // pcm floating point output seems to solve it.
+                    if (name.ToString().IndexOf("SigmaTel") != -1)
+                    {
+                        FMODExec(system.setSoftwareFormat(
+                            48000,
+                            FMOD.SOUND_FORMAT.PCMFLOAT,
+                            0, 0,
+                            FMOD.DSP_RESAMPLER.LINEAR)
+                        );
+                    }
                 }
-
+                catch {}
+                
                 // Try to initialize with all those settings, and Max 32 channels.
                 FMOD.RESULT result = system.init(32, FMOD.INITFLAG.NORMAL, (IntPtr)null);
                 if (result == FMOD.RESULT.ERR_OUTPUT_CREATEBUFFER)
@@ -373,10 +380,10 @@ namespace Radegast.Media
                 {
                     FMODExec(system.set3DListenerAttributes(
                         0,
-                        ref listenerpos,	// Position
-                        ref ZeroVector,		// Velocity
-                        ref forward,		// Facing direction
-                        ref UpVector));	// Top of head
+                        ref listenerpos,    // Position
+                        ref ZeroVector,        // Velocity
+                        ref forward,        // Facing direction
+                        ref UpVector));    // Top of head
 
                     FMODExec(system.update());
                 }));
