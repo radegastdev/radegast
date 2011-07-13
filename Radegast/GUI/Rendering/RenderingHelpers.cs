@@ -1628,8 +1628,24 @@ namespace Radegast.Rendering
 
     public class RenderAvatar : SceneObject
     {
+        public static readonly BoundingVolume AvatarBoundingVolume;
+
+        // Static constructor
+        static RenderAvatar()
+        {
+            AvatarBoundingVolume = new BoundingVolume();
+            // Bounding sphere for avatar is 1m in diametar
+            // Bounding box 1m cube
+            // These values get scaled with Avatar.Scale by the time we perform culling
+            AvatarBoundingVolume.R = 1f;
+            AvatarBoundingVolume.Min = new Vector3(-0.5f, -0.5f, -0.5f);
+            AvatarBoundingVolume.Max = new Vector3(0.5f, 0.5f, 0.5f);
+        }
+
+        // Default constructor
         public RenderAvatar()
         {
+            BoundingVolume = AvatarBoundingVolume;
             Type = SceneObjectType.Avatar;
         }
 

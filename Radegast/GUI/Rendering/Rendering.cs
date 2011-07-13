@@ -93,6 +93,7 @@ namespace Radegast.Rendering
         /// </summary>
         Dictionary<uint, RenderPrimitive> Prims = new Dictionary<uint, RenderPrimitive>();
         List<SceneObject> SortedObjects;
+        List<RenderAvatar> VisibleAvatars;
         Dictionary<uint, RenderAvatar> Avatars = new Dictionary<uint, RenderAvatar>();
 
         /// <summary>
@@ -1074,17 +1075,20 @@ namespace Radegast.Rendering
 
         private void RenderStats()
         {
-            int posX = glControl.Width - 100;
-            int posY = 0;
-
             // This is a FIR filter known as a MMA or Modified Mean Average, using a 20 point sampling width
             advTimerTick = ((19 * advTimerTick) + lastFrameTime) / 20;
+            // Stats in window title for now
+            Text = String.Format("Scene Viewer: FPS {0:000.00} Texture decode queue: {1}", 1d / advTimerTick, PendingTextures.Count);
+#if TURNS_OUT_PRINTER_IS_EXPENISVE
+            int posX = glControl.Width - 100;
+            int posY = 0;
 
             Printer.Begin();
             Printer.Print(String.Format("FPS {0:000.00}", 1d / advTimerTick), AvatarTagFont, Color.Orange,
                 new RectangleF(posX, posY, 100, 50),
                 OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
             Printer.End();
+#endif
         }
 
         private void RenderText()
@@ -1092,12 +1096,12 @@ namespace Radegast.Rendering
             lock (Avatars)
             {
 
-                GL.Color4(0f, 0f, 0f, 0.6f);
+                GL.Color4(0f, 0f, 0f, 0.4f);
 
-                foreach (RenderAvatar av in Avatars.Values)
+                foreach (RenderAvatar av in VisibleAvatars)
                 {
-                    Vector3 avPos = PrimPos(av.avatar);
-                    if (Vector3.Distance(avPos, Camera.Position) > 20f) continue;
+                    Vector3 avPos = av.RenderPosition;
+                    if (av.DistanceSquared > 400f) continue;
 
                     OpenTK.Vector3 tagPos = RHelp.TKVector3(avPos);
                     tagPos.Z += 2.2f;
@@ -1113,7 +1117,7 @@ namespace Radegast.Rendering
 
                     // Render tag backround
                     GL.Begin(BeginMode.Quads);
-                    float halfWidth = tSize.BoundingBox.Width / 2 + 10;
+                    float halfWidth = tSize.BoundingBox.Width / 2 + 12;
                     float halfHeight = tSize.BoundingBox.Height / 2 + 5;
                     GL.Vertex2(screenPos.X - halfWidth, screenPos.Y - halfHeight);
                     GL.Vertex2(screenPos.X + halfWidth, screenPos.Y - halfHeight);
@@ -1123,7 +1127,7 @@ namespace Radegast.Rendering
 
                     screenPos.Y = glControl.Height - screenPos.Y;
                     screenPos.X -= tSize.BoundingBox.Width / 2;
-                    screenPos.Y -= tSize.BoundingBox.Height / 2;
+                    screenPos.Y -= tSize.BoundingBox.Height / 2 + 2;
 
                     if (screenPos.Y > 0)
                     {
@@ -1259,7 +1263,7 @@ namespace Radegast.Rendering
                     Vector3 pos = av.avatar.Position;
                     pos.X += 1;
 
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1,1,1),av.avatar.Rotation,pos));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, pos));
 
                     GL.Begin(BeginMode.Lines);
 
@@ -1356,11 +1360,8 @@ namespace Radegast.Rendering
                 GL.EnableClientState(ArrayCap.NormalArray);
 
                 int avatarNr = 0;
-                foreach (RenderAvatar av in Avatars.Values)
+                foreach (RenderAvatar av in VisibleAvatars)
                 {
-                    // Init interpolation state
-                    if (!av.Initialized) av.Initialize();
-
                     // need to rebuild mesh as animations may have changed rotations
                     if (av.glavatar.skel.mNeedsMeshRebuild)
                     {
@@ -1833,21 +1834,6 @@ namespace Radegast.Rendering
 
         void RenderPrim(RenderPrimitive mesh, RenderPass pass, int primNr)
         {
-            // Do the stuff we need to do the first time we encouter the object
-            if (!mesh.Initialized) mesh.Initialize();
-
-            // Do any position interpolation
-            SceneObject parent = GetSceneObject(mesh.Prim.ParentID);
-            if (parent != null)
-            {
-                if (!mesh.AttachedStateKnown)
-                {
-                    mesh.Attached = IsAttached(mesh.BasePrim.ParentID);
-                    mesh.AttachedStateKnown = true;
-                }
-                mesh.Step(lastFrameTime);
-            }
-
             if (!AvatarRenderingEnabled && mesh.Attached) return;
 
             Primitive prim = mesh.Prim;
@@ -2010,55 +1996,83 @@ namespace Radegast.Rendering
             GL.PopMatrix();
         }
 
-        void SortObjects()
+        void SortCullInterpolate()
         {
-            SortedObjects = new List<SceneObject>(Prims.Count);
-            lock (Avatars)
-            {
-                SortedObjects.AddRange(Avatars.Values.ToArray());
-            }
+            SortedObjects = new List<SceneObject>();
+            VisibleAvatars = new List<RenderAvatar>();
 
             lock (Prims)
             {
-                SortedObjects.AddRange(Prims.Values.ToArray());
-            }
-
-            foreach (SceneObject obj in SortedObjects)
-            {
-                obj.PositionCalculated = false;
-            }
-
-            // First calculate positions and rotations of root objects
-            // Perform any position interpolation
-            foreach (SceneObject obj in SortedObjects)
-            {
-                if (obj.BasePrim.ParentID != 0) continue;
-
-                if (obj is RenderPrimitive)
+                foreach (RenderPrimitive obj in Prims.Values)
                 {
-                    ((RenderPrimitive)obj).Attached = false;
+                    obj.PositionCalculated = false;
                 }
-                
-                obj.Step(lastFrameTime);
 
-                if (!obj.PositionCalculated)
+                // Calculate positions and rotations of root prims
+                // Perform interpolation om objects that survive culling
+                foreach (RenderPrimitive obj in Prims.Values)
                 {
-                    PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
-                    obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
-                    obj.PositionCalculated = true;
+                    if (obj.BasePrim.ParentID != 0) continue;
+
+                    if (!obj.PositionCalculated)
+                    {
+                        PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
+                        obj.PositionCalculated = true;
+                    }
+
+                    if (!obj.Initialized) obj.Initialize();
+                    if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
+                    if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
+
+                    obj.Attached = false;
+                    obj.Step(lastFrameTime);
+                    SortedObjects.Add(obj);
                 }
-            }
 
-            // Calculate position and rotations of child objects
-            foreach (SceneObject obj in SortedObjects)
-            {
-                if (obj.BasePrim.ParentID == 0) continue;
-
-                if (!obj.PositionCalculated)
+                // Calculate avatar positions and perform interpolation tasks
+                lock (Avatars)
                 {
-                    PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
-                    obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
-                    obj.PositionCalculated = true;
+                    foreach (RenderAvatar obj in Avatars.Values)
+                    {
+                        PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
+                        obj.PositionCalculated = true;
+                        if (!obj.Initialized) obj.Initialize();
+
+                        if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
+                        if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
+
+                        obj.Step(lastFrameTime);
+                        VisibleAvatars.Add(obj);
+                        // SortedObjects.Add(obj);
+                    }
+                }
+
+                // Calculate position and rotations of child objects
+                foreach (RenderPrimitive obj in Prims.Values)
+                {
+                    if (obj.BasePrim.ParentID == 0) continue;
+
+                    if (!obj.PositionCalculated)
+                    {
+                        PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
+                        obj.PositionCalculated = true;
+                    }
+
+                    if (!obj.Initialized) obj.Initialize();
+                    if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
+                    if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
+
+                    if (!obj.AttachedStateKnown)
+                    {
+                        obj.Attached = IsAttached(obj.BasePrim.ParentID);
+                        obj.AttachedStateKnown = true;
+                    }
+
+                    obj.Step(lastFrameTime);
+                    SortedObjects.Add(obj);
                 }
             }
 
@@ -2100,12 +2114,6 @@ namespace Radegast.Rendering
                 {
                     // Don't render objects that are outside the draw distane
                     if (Vector3.DistanceSquared(myPos, obj.SimPosition) > drawDistanceSquared) continue;
-
-                    // Don't render objects too small to matter
-                    if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
-
-                    // Don't render objects not in the field of view
-                    if (!Frustum.ObjectInFrustum(obj.SimPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
 
                     RenderPrim((RenderPrimitive)obj, pass, ix);
                 }
@@ -2184,7 +2192,7 @@ namespace Radegast.Rendering
                 Camera.Step(lastFrameTime);
             }
 
-            SortObjects();
+            SortCullInterpolate();
 
             if (picking)
             {
@@ -2338,16 +2346,6 @@ namespace Radegast.Rendering
 
         private void MeshPrim(Primitive prim, RenderPrimitive rprim)
         {
-            RenderPrimitive existingMesh = null;
-
-            lock (Prims)
-            {
-                if (Prims.ContainsKey(prim.LocalID))
-                {
-                    existingMesh = Prims[prim.LocalID];
-                }
-            }
-
             // Calculate bounding volumes for each prim and adjust textures
             rprim.BoundingVolume = new BoundingVolume();
             for (int j = 0; j < rprim.Faces.Count; j++)
@@ -2387,25 +2385,12 @@ namespace Radegast.Rendering
                 face.UserData = data;
                 rprim.Faces[j] = face;
 
-                if (existingMesh != null &&
-                    j < existingMesh.Faces.Count &&
-                    existingMesh.Faces[j].TextureFace.TextureID == teFace.TextureID &&
-                    ((FaceData)existingMesh.Faces[j].UserData).TextureInfo.TexturePointer != 0
-                    )
+                DownloadTexture(new TextureLoadItem()
                 {
-                    FaceData existingData = (FaceData)existingMesh.Faces[j].UserData;
-                    data.TextureInfo = existingData.TextureInfo;
-                }
-                else
-                {
-
-                    DownloadTexture(new TextureLoadItem()
-                    {
-                        Data = data,
-                        Prim = prim,
-                        TeFace = teFace
-                    });
-                }
+                    Data = data,
+                    Prim = prim,
+                    TeFace = teFace
+                });
             }
 
             lock (Prims)
