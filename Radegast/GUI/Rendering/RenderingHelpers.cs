@@ -329,7 +329,10 @@ namespace Radegast.Rendering
         {
             RenderPosition = SimPosition;
             RenderRotation = SimRotation;
-            Initialized = true;
+            if (SimPosition != RHelp.InvalidPosition)
+            {
+                Initialized = true;
+            }
         }
 
         /// <summary>
@@ -426,6 +429,7 @@ namespace Radegast.Rendering
 
     public static class RHelp
     {
+        public static readonly Vector3 InvalidPosition = new Vector3(99999f, 99999f, 99999f);
         static float t1 = 0.075f;
         static float t2 = t1 / 5.7f;
 

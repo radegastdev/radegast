@@ -1004,7 +1004,7 @@ namespace Radegast.Rendering
             }
             else
             {
-                pos = new Vector3(99999f, 99999f, 99999f);
+                pos = RHelp.InvalidPosition;
                 rot = Quaternion.Identity;
 
                 SceneObject p = GetSceneObject(prim.ParentID);
