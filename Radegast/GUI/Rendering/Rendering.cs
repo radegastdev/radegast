@@ -2379,6 +2379,13 @@ namespace Radegast.Rendering
                     teFace.OffsetV += 0.5f;
                 }
 
+                // Sculpt UV map seems to come out vertically flipped from the PrimMesher. Fix it
+                if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
+                {
+                    teFace = new Primitive.TextureEntryFace(teFace);
+                    teFace.RepeatV *= -1;
+                }
+
                 // Texture transform for this face
                 renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
 
