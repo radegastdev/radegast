@@ -1697,7 +1697,23 @@ namespace Radegast.Rendering
 
         public skeleton()
         {
-            mBones = new Dictionary<string, Bone>(Bone.mBones); //copy from the static defines
+
+            mBones = new Dictionary<string, Bone>();
+
+            foreach (Bone src in Bone.mBones.Values)
+            {
+                Bone newbone = new Bone(src);
+                mBones.Add(newbone.name, newbone);
+            }
+
+            //rebuild the skeleton structure on the new copy
+            foreach (Bone src in mBones.Values)
+            {
+                if (src.mParentBone != null)
+                {
+                    src.parent = mBones[src.mParentBone];
+                }
+            }
 
             //FUDGE
             if (mUpperMeshMapping.Count == 0)
@@ -1871,6 +1887,8 @@ namespace Radegast.Rendering
         private Vector3 mDeltaPos;
         private Quaternion mDeltaRot;
 
+        public string mParentBone = null;
+
         public Bone()
         {
         }
@@ -1887,6 +1905,8 @@ namespace Radegast.Rendering
             orig_pos = source.orig_pos;
             orig_rot = source.orig_rot;
             orig_scale = source.orig_scale;
+
+            mParentBone = source.mParentBone;
 
             mDeformMatrix = new Matrix4(source.mDeformMatrix);
         }
@@ -1931,9 +1951,11 @@ namespace Radegast.Rendering
             //TODO piviot
 
             b.parent = parent;
-
             if (parent != null)
+            {
+                b.mParentBone = parent.name;
                 parent.children.Add(b);
+            }               
 
             mBones.Add(b.name, b);
             mIndexedBones.Add(boneaddindex++, b);
