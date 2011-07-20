@@ -192,10 +192,10 @@ namespace Radegast.Rendering
             Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance += new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
+            Client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
             Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
         }
-
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
@@ -213,6 +213,7 @@ namespace Radegast.Rendering
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
+            Client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
 
             if (instance.Netcom != null)
             {
@@ -388,6 +389,17 @@ namespace Radegast.Rendering
             }
         }
 
+        void Appearance_AppearanceSet(object sender, AppearanceSetEventArgs e)
+        {
+            if (e.Success)
+            {
+                RenderAvatar me;
+                if (Avatars.TryGetValue(Client.Self.LocalID, out me))
+                {
+                    me.glavatar.morph(me.avatar);
+                }
+            }
+        }
 
         #endregion Network messaage handlers
 
@@ -1133,31 +1145,32 @@ namespace Radegast.Rendering
                     {
                         Printer.Begin();
                         Printer.Print(tagText, AvatarTagFont, Color.Orange,
-                            new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width, tSize.BoundingBox.Height),
+                            new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width + 2, tSize.BoundingBox.Height + 2),
                             OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
                         Printer.End();
                     }
                 }
             }
 
-            lock (Prims)
+            lock (SortedObjects)
             {
                 int primNr = 0;
-                foreach (RenderPrimitive mesh in Prims.Values)
+                foreach (SceneObject obj in SortedObjects)
                 {
+                    if (!(obj is RenderPrimitive)) continue;
+
+                    RenderPrimitive prim = (RenderPrimitive)obj;
                     primNr++;
-                    Primitive prim = mesh.Prim;
-                    if (!string.IsNullOrEmpty(prim.Text))
+
+                    if (!string.IsNullOrEmpty(prim.BasePrim.Text))
                     {
-                        string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
-                        var newPrimPos = PrimPos(prim);
-                        OpenTK.Vector3 primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
-                        var distance = Vector3.Distance(newPrimPos, Camera.Position);
+                        string text = System.Text.RegularExpressions.Regex.Replace(prim.BasePrim.Text, "(\r?\n)+", "\n");
+                        OpenTK.Vector3 primPos = RHelp.TKVector3(prim.RenderPosition);
 
                         // Display hovertext only on objects that are withing 12m of the camera
-                        if (distance > 12) continue;
+                        if (prim.DistanceSquared > (12 * 12)) continue;
 
-                        primPos.Z += prim.Scale.Z * 0.8f;
+                        primPos.Z += prim.BasePrim.Scale.Z * 0.8f;
 
                         // Convert objects world position to 2D screen position in pixels
                         OpenTK.Vector3 screenPos;
@@ -1166,7 +1179,7 @@ namespace Radegast.Rendering
 
                         Printer.Begin();
 
-                        Color color = Color.FromArgb((int)(prim.TextColor.A * 255), (int)(prim.TextColor.R * 255), (int)(prim.TextColor.G * 255), (int)(prim.TextColor.B * 255));
+                        Color color = Color.FromArgb((int)(prim.BasePrim.TextColor.A * 255), (int)(prim.BasePrim.TextColor.R * 255), (int)(prim.BasePrim.TextColor.G * 255), (int)(prim.BasePrim.TextColor.B * 255));
 
                         var size = Printer.Measure(text, HoverTextFont);
                         screenPos.X -= size.BoundingBox.Width / 2;
@@ -1178,10 +1191,10 @@ namespace Radegast.Rendering
                             // Shadow
                             if (color != Color.Black)
                             {
-                                Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                                Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
                             }
                             // Text
-                            Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width, size.BoundingBox.Height), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
                         }
 
                         Printer.End();
