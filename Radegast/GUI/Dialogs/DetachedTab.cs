@@ -29,18 +29,25 @@
 // $Id$
 //
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Radegast
 {
     public partial class frmDetachedTab : RadegastForm
     {
+        public bool DockedToMain;
+
         private RadegastInstance instance;
         private RadegastTab tab;
 
         //For reattachment
         private ToolStrip strip;
         private Panel container;
+
+        int mainTop;
+        int mainLeft;
+        Size mainSize;
 
         public frmDetachedTab(RadegastInstance instance, RadegastTab tab)
             :base(instance)
@@ -55,13 +62,33 @@ namespace Radegast
             tab.Control.Visible = true;
             tab.Control.BringToFront();
 
-            this.Text = tab.Label + " - " + Properties.Resources.ProgramName;
             SettingsKeyBase = "tab_window_" + tab.Control.GetType().Name;
             AutoSavePosition = true;
+            instance.MainForm.Move += new EventHandler(MainForm_ResizeEnd);
+            SaveMainFormPos();
+            Owner = instance.MainForm;
         }
 
         void frmDetachedTab_Disposed(object sender, EventArgs e)
         {
+            instance.MainForm.Move -= new EventHandler(MainForm_ResizeEnd);
+        }
+
+        void SaveMainFormPos()
+        {
+            mainTop = instance.MainForm.Top;
+            mainLeft = instance.MainForm.Left;
+            mainSize = instance.MainForm.Size;
+        }
+
+        void MainForm_ResizeEnd(object sender, EventArgs e)
+        {
+            if (DockedToMain)
+            {
+                Left += (instance.MainForm.Left - mainLeft);
+                Top += (instance.MainForm.Top - mainTop);
+            }
+            SaveMainFormPos();
         }
 
         private void frmDetachedTab_FormClosing(object sender, FormClosingEventArgs e)
@@ -85,6 +112,47 @@ namespace Radegast
         {
             get { return container; }
             set { container = value; }
+        }
+
+        private void UpdatePos()
+        {
+            Rectangle mainRect = new Rectangle(new Point(mainLeft, mainTop), mainSize);
+            Rectangle myRect = new Rectangle(new Point(Left, Top), Size);
+            
+            bool oldDocked = DockedToMain; 
+
+            if (mainRect == Rectangle.Union(mainRect, myRect))
+            {
+                DockedToMain = true;
+                ShowInTaskbar = false;
+                Text = tab.Label;
+            }
+            else
+            {
+                DockedToMain = false;
+                ShowInTaskbar = true;
+                this.Text = tab.Label + " - " + Properties.Resources.ProgramName;
+            }
+        }
+
+        private void frmDetachedTab_Shown(object sender, EventArgs e)
+        {
+            UpdatePos();
+        }
+
+        private void frmDetachedTab_ResizeEnd(object sender, EventArgs e)
+        {
+            UpdatePos();
+        }
+
+        private void frmDetachedTab_Deactivate(object sender, EventArgs e)
+        {
+            Opacity = 0.5;
+        }
+
+        private void frmDetachedTab_Activated(object sender, EventArgs e)
+        {
+            Opacity = 1;
         }
     }
 }

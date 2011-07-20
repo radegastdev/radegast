@@ -723,6 +723,7 @@ namespace Radegast
             button.Image = null;
             button.AutoToolTip = false;
             button.Tag = name.ToLower();
+            button.AllowDrop = true;
             button.Click += new EventHandler(TabButtonClick);
 
             RadegastTab tab = new RadegastTab(instance, button, control, name.ToLower(), label);
@@ -740,6 +741,21 @@ namespace Radegast
                 try { OnTabAdded(this, new TabEventArgs(tab)); }
                 catch (Exception) { }
             }
+
+            button.MouseDown += (msender, margs) =>
+            {
+                if (margs.Button == MouseButtons.Middle)
+                {
+                    if (tab.AllowClose)
+                    {
+                        tab.Close();
+                    }
+                    else if (tab.AllowHide)
+                    {
+                        tab.Hide();
+                    }
+                }
+            };
 
             return tab;
         }
