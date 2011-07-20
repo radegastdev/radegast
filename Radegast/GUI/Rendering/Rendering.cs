@@ -630,6 +630,7 @@ namespace Radegast.Rendering
 
         private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
+            Camera.Position += (Camera.Position - Camera.FocalPoint) * (e.Delta / -500f);
         }
 
         RenderPrimitive RightclickedPrim;
@@ -898,6 +899,8 @@ namespace Radegast.Rendering
                     item.TextureData = null;
                 }
             }
+            context.Dispose();
+            window.Dispose();
             Logger.DebugLog("Texture thread exited");
         }
         #endregion Texture thread
@@ -2210,8 +2213,10 @@ namespace Radegast.Rendering
 
             if (picking)
             {
+                GL.Disable(EnableCap.Lighting);
                 RenderObjects(RenderPass.Picking);
                 RenderAvatars(RenderPass.Picking);
+                GL.Enable(EnableCap.Lighting);
             }
             else
             {
@@ -2278,9 +2283,9 @@ namespace Radegast.Rendering
 
             if (color[3] == 254) // Avatar
             {
-                lock (Avatars)
+                lock (VisibleAvatars)
                 {
-                    foreach (var avatar in Avatars.Values)
+                    foreach (var avatar in VisibleAvatars)
                     {
                         for (int i = 0; i < avatar.data.Length; i++)
                         {
@@ -2302,16 +2307,19 @@ namespace Radegast.Rendering
 
             if (color[3] == 255) // Prim
             {
-                lock (Prims)
+                lock (SortedObjects)
                 {
-                    foreach (var mesh in Prims.Values)
+                    foreach (SceneObject obj in SortedObjects)
                     {
-                        foreach (var face in mesh.Faces)
+                        if (!(obj is RenderPrimitive)) continue;
+                        RenderPrimitive prim = (RenderPrimitive)obj;
+
+                        foreach (var face in prim.Faces)
                         {
                             if (face.UserData == null) continue;
                             if (((FaceData)face.UserData).PickingID == primID)
                             {
-                                picked = mesh;
+                                picked = prim;
                                 break;
                             }
                         }
