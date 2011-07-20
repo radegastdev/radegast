@@ -80,6 +80,7 @@ namespace Radegast
             this.pnlTos = new System.Windows.Forms.Panel();
             this.cbTOS = new System.Windows.Forms.CheckBox();
             this.txtTOS = new System.Windows.Forms.TextBox();
+            this.cbRemember = new System.Windows.Forms.CheckBox();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -90,6 +91,7 @@ namespace Radegast
             // pnlLoginPrompt
             // 
             this.pnlLoginPrompt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlLoginPrompt.Controls.Add(this.cbRemember);
             this.pnlLoginPrompt.Controls.Add(this.label6);
             this.pnlLoginPrompt.Controls.Add(this.txtCustomLoginUri);
             this.pnlLoginPrompt.Controls.Add(this.cbxGrid);
@@ -190,16 +192,16 @@ namespace Radegast
             this.cbxLocation.Items.AddRange(new object[] {
             "My Home",
             "My Last Location"});
-            this.cbxLocation.Location = new System.Drawing.Point(56, 43);
+            this.cbxLocation.Location = new System.Drawing.Point(275, 43);
             this.cbxLocation.Name = "cbxLocation";
-            this.cbxLocation.Size = new System.Drawing.Size(494, 21);
+            this.cbxLocation.Size = new System.Drawing.Size(275, 21);
             this.cbxLocation.TabIndex = 6;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label3.Location = new System.Drawing.Point(3, 46);
+            this.label3.Location = new System.Drawing.Point(219, 46);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(47, 13);
             this.label3.TabIndex = 5;
@@ -329,6 +331,19 @@ namespace Radegast
             this.txtTOS.Size = new System.Drawing.Size(682, 302);
             this.txtTOS.TabIndex = 0;
             // 
+            // cbRemember
+            // 
+            this.cbRemember.AutoSize = true;
+            this.cbRemember.Checked = true;
+            this.cbRemember.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbRemember.Location = new System.Drawing.Point(6, 45);
+            this.cbRemember.Name = "cbRemember";
+            this.cbRemember.Size = new System.Drawing.Size(197, 17);
+            this.cbRemember.TabIndex = 5;
+            this.cbRemember.Text = "Remember username and password";
+            this.cbRemember.UseVisualStyleBackColor = true;
+            this.cbRemember.CheckedChanged += new System.EventHandler(this.cbRemember_CheckedChanged);
+            // 
             // LoginConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -375,6 +390,7 @@ namespace Radegast
         public System.Windows.Forms.TextBox txtTOS;
         public System.Windows.Forms.CheckBox cbTOS;
         public System.Windows.Forms.Label lblVersion;
+        public System.Windows.Forms.CheckBox cbRemember;
 
     }
 }

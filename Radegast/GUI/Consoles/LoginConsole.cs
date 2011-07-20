@@ -55,6 +55,11 @@ namespace Radegast
             else
                 pnlSplash.BackgroundImage = Properties.Resources.radegast_main_screen2;
 
+            if (!instance.GlobalSettings.ContainsKey("remember_login"))
+            {
+                instance.GlobalSettings["remember_login"] = true;
+            }
+
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
 
             lblVersion.Text = Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev;
@@ -109,18 +114,29 @@ namespace Radegast
         {
             Settings s = instance.GlobalSettings;
 
-            s["username"] = txtUsername.Text;
+            if (cbRemember.Checked)
+            {
+                s["username"] = txtUsername.Text;
 
-            if (netcom.LoginOptions.IsPasswordMD5)
-                s["password"] = OSD.FromString(txtPassword.Text);
-            else
-                s["password"] = OSD.FromString(Utils.MD5(txtPassword.Text));
+                if (netcom.LoginOptions.IsPasswordMD5)
+                    s["password"] = OSD.FromString(txtPassword.Text);
+                else
+                    s["password"] = OSD.FromString(Utils.MD5(txtPassword.Text));
+            }
 
             s["login_location_type"] = OSD.FromInteger(cbxLocation.SelectedIndex);
             s["login_location"] = OSD.FromString(cbxLocation.Text);
 
             s["login_grid"] = OSD.FromInteger(cbxGrid.SelectedIndex);
             s["login_uri"] = OSD.FromString(txtCustomLoginUri.Text);
+            s["remember_login"] = cbRemember.Checked;
+        }
+
+        private void ClearConfig()
+        {
+            Settings s = instance.GlobalSettings;
+            s["username"] = string.Empty;
+            s["password"] = string.Empty;
         }
 
         private void InitializeConfig()
@@ -229,6 +245,8 @@ namespace Radegast
                 txtCustomLoginUri.Text = MainProgram.CommandLine.LoginUri;
                 cbxGrid.SelectedIndex = cbxGrid.Items.Count - 1;
             }
+
+            cbRemember.Checked = s["remember_login"];
 
             // Start logging in if autologin enabled from command line
             if (MainProgram.CommandLine.AutoLogin)
@@ -422,6 +440,15 @@ namespace Radegast
         private void cbTOS_CheckedChanged(object sender, EventArgs e)
         {
             btnLogin.Enabled = cbTOS.Checked;
+        }
+
+        private void cbRemember_CheckedChanged(object sender, EventArgs e)
+        {
+            instance.GlobalSettings["remember_login"] = cbRemember.Checked;
+            if (!cbRemember.Checked)
+            {
+                ClearConfig();
+            }
         }
 
     }
