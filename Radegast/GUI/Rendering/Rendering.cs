@@ -357,7 +357,7 @@ namespace Radegast.Rendering
                 if (av.avatar.ID == e.AvatarID)
                 {
                     foreach (Animation anim in e.Animations)
-                    {          
+                    {
                         if (av.glavatar.skel.addplayinganimation(anim))
                         {
                             Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
@@ -734,7 +734,7 @@ namespace Radegast.Rendering
                             }
                             else if (ModifierKeys == Keys.Alt)
                             {
-                                Camera.FocalPoint = picked.SimPosition;
+                                Camera.FocalPoint = picked.RenderPosition;
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             }
                         }
@@ -743,7 +743,7 @@ namespace Radegast.Rendering
                             RenderAvatar av = (RenderAvatar)clicked;
                             if (ModifierKeys == Keys.Alt)
                             {
-                                Vector3 pos = av.SimPosition;
+                                Vector3 pos = av.RenderPosition;
                                 pos.Z += 1.5f; // focus roughly on the chest area
                                 Camera.FocalPoint = pos;
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
@@ -977,7 +977,7 @@ namespace Radegast.Rendering
         {
             Vector3 pos;
             Quaternion rot;
-            PrimPosAndRot(prim, out pos, out rot);
+            PrimPosAndRot(GetSceneObject(prim.LocalID), out pos, out rot);
             return pos;
         }
 
@@ -1009,12 +1009,19 @@ namespace Radegast.Rendering
             return null;
         }
 
-        void PrimPosAndRot(Primitive prim, out Vector3 pos, out Quaternion rot)
+        void PrimPosAndRot(SceneObject prim, out Vector3 pos, out Quaternion rot)
         {
-            if (prim.ParentID == 0)
+            if (prim == null)
             {
-                pos = prim.Position;
-                rot = prim.Rotation;
+                pos = RHelp.InvalidPosition;
+                rot = Quaternion.Identity;
+                return;
+            }
+
+            if (prim.BasePrim.ParentID == 0)
+            {
+                pos = prim.InterpolatedPosition;
+                rot = prim.InterpolatedRotation;
                 return;
             }
             else
@@ -1022,47 +1029,29 @@ namespace Radegast.Rendering
                 pos = RHelp.InvalidPosition;
                 rot = Quaternion.Identity;
 
-                SceneObject p = GetSceneObject(prim.ParentID);
+                SceneObject p = GetSceneObject(prim.BasePrim.ParentID);
                 if (p == null) return;
 
-                Vector3 parentPos;
-                Quaternion parentRot;
-                if (p.PositionCalculated)
+                if (!p.PositionCalculated)
                 {
-                    parentPos = p.SimPosition;
-                    parentRot = p.SimRotation;
-                }
-                else
-                {
-                    Primitive parentPrim = p.BasePrim;
-                    PrimPosAndRot(parentPrim, out parentPos, out parentRot);
-                    p.SimPosition = parentPos;
-                    p.SimRotation = parentRot;
-                    p.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, p.SimPosition);
+                    PrimPosAndRot(p, out p.RenderPosition, out p.RenderRotation);
+                    p.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, p.RenderPosition);
                     p.PositionCalculated = true;
                 }
 
-                if (p is RenderPrimitive && ((RenderPrimitive)p).Attached)
-                {
-                    parentPos = p.SimPosition;
-                    parentRot = p.SimRotation;
-                }
-                else
-                {
-                    parentPos = p.RenderPosition;
-                    parentRot = p.RenderRotation;
-                }
+                Vector3 parentPos = p.RenderPosition;
+                Quaternion parentRot = p.RenderRotation;
 
                 if (p is RenderPrimitive)
                 {
-                    pos = parentPos + prim.Position * parentRot;
-                    rot = parentRot * prim.Rotation;
+                    pos = parentPos + prim.InterpolatedPosition * parentRot;
+                    rot = parentRot * prim.InterpolatedRotation;
                 }
                 else if (p is RenderAvatar)
                 {
                     RenderAvatar parentav = (RenderAvatar)p;
 
-                    int attachment_index = (int)prim.PrimData.AttachmentPoint;
+                    int attachment_index = (int)prim.BasePrim.PrimData.AttachmentPoint;
                     // Check for invalid LL attachment point
                     if (attachment_index > GLAvatar.attachment_points.Count()) return;
 
@@ -1070,8 +1059,8 @@ namespace Radegast.Rendering
                     Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
                     Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
 
-                    pos = parentPos + point * parentRot + prim.Position * (parentRot * qrot);
-                    rot = qrot * parentRot * prim.Rotation;
+                    pos = parentPos + point * parentRot + prim.InterpolatedPosition * (parentRot * qrot);
+                    rot = qrot * parentRot * prim.InterpolatedRotation;
                 }
                 return;
             }
@@ -1212,8 +1201,6 @@ namespace Radegast.Rendering
         {
             lock (Avatars)
             {
-                if (Vector3.Distance(PrimPos(av), Client.Self.SimPosition) > DrawDistance) return;
-
                 if (Avatars.ContainsKey(av.LocalID))
                 {
                     // flag we got an update??
@@ -2030,20 +2017,20 @@ namespace Radegast.Rendering
                 foreach (RenderPrimitive obj in Prims.Values)
                 {
                     if (obj.BasePrim.ParentID != 0) continue;
+                    if (!obj.Initialized) obj.Initialize();
+                    obj.Step(lastFrameTime);
 
                     if (!obj.PositionCalculated)
                     {
-                        PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
-                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
+                        PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.RenderPosition);
                         obj.PositionCalculated = true;
                     }
 
-                    if (!obj.Initialized) obj.Initialize();
                     if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
                     if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
                     obj.Attached = false;
-                    obj.Step(lastFrameTime);
                     SortedObjects.Add(obj);
                 }
 
@@ -2052,15 +2039,15 @@ namespace Radegast.Rendering
                 {
                     foreach (RenderAvatar obj in Avatars.Values)
                     {
-                        PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
-                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
-                        obj.PositionCalculated = true;
                         if (!obj.Initialized) obj.Initialize();
+                        obj.Step(lastFrameTime);
+                        PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.RenderPosition);
+                        obj.PositionCalculated = true;
 
                         if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
                         if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
-                        obj.Step(lastFrameTime);
                         VisibleAvatars.Add(obj);
                         // SortedObjects.Add(obj);
                     }
@@ -2070,15 +2057,16 @@ namespace Radegast.Rendering
                 foreach (RenderPrimitive obj in Prims.Values)
                 {
                     if (obj.BasePrim.ParentID == 0) continue;
+                    if (!obj.Initialized) obj.Initialize();
+                    obj.Step(lastFrameTime);
 
                     if (!obj.PositionCalculated)
                     {
-                        PrimPosAndRot(obj.BasePrim, out obj.SimPosition, out obj.SimRotation);
-                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.SimPosition);
+                        PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.RenderPosition);
                         obj.PositionCalculated = true;
                     }
 
-                    if (!obj.Initialized) obj.Initialize();
                     if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
                     if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
@@ -2088,7 +2076,6 @@ namespace Radegast.Rendering
                         obj.AttachedStateKnown = true;
                     }
 
-                    obj.Step(lastFrameTime);
                     SortedObjects.Add(obj);
                 }
             }
@@ -2110,7 +2097,7 @@ namespace Radegast.Rendering
             RenderAvatar me;
             if (Avatars.TryGetValue(Client.Self.LocalID, out me))
             {
-                myPos = me.SimPosition;
+                myPos = me.RenderPosition;
             }
             else
             {
@@ -2130,7 +2117,7 @@ namespace Radegast.Rendering
                 if (obj is RenderPrimitive)
                 {
                     // Don't render objects that are outside the draw distane
-                    if (Vector3.DistanceSquared(myPos, obj.SimPosition) > drawDistanceSquared) continue;
+                    if (Vector3.DistanceSquared(myPos, obj.RenderPosition) > drawDistanceSquared) continue;
 
                     RenderPrim((RenderPrimitive)obj, pass, ix);
                 }

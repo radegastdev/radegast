@@ -294,10 +294,11 @@ namespace Radegast.Rendering
     /// </summary>
     public abstract class SceneObject : IComparable, IDisposable
     {
-        /// <summary>Actual position of the object in the region</summary>
-        public Vector3 SimPosition;
-        /// <summary>Actual rotation of the object in the region</summary>
-        public Quaternion SimRotation;
+        #region Public fields
+        /// <summary>Interpolated local position of the object</summary>
+        public Vector3 InterpolatedPosition;
+        /// <summary>Interpolated local rotation of the object/summary>
+        public Quaternion InterpolatedRotation;
         /// <summary>Rendered position of the object in the region</summary>
         public Vector3 RenderPosition;
         /// <summary>Rendered rotationm of the object in the region</summary>
@@ -314,6 +315,7 @@ namespace Radegast.Rendering
         public virtual Primitive BasePrim { get; set; }
         /// <summary>Were initial initialization tasks done</summary>
         public bool Initialized;
+        #endregion Public fields
 
         /// <summary>
         /// Cleanup resources used
@@ -327,12 +329,9 @@ namespace Radegast.Rendering
         /// </summary>
         public virtual void Initialize()
         {
-            RenderPosition = SimPosition;
-            RenderRotation = SimRotation;
-            if (SimPosition != RHelp.InvalidPosition)
-            {
-                Initialized = true;
-            }
+            RenderPosition = InterpolatedPosition = BasePrim.Position;
+            RenderRotation = InterpolatedRotation = BasePrim.Rotation;
+            Initialized = true;
         }
 
         /// <summary>
@@ -341,6 +340,31 @@ namespace Radegast.Rendering
         /// <param name="time">Time since the last call (last frame time in seconds)</param>
         public virtual void Step(float time)
         {
+            // Linear velocity and acceleration
+            if (BasePrim.Velocity != Vector3.Zero)
+            {
+                InterpolatedPosition += BasePrim.Velocity * 0.98f * time;
+                BasePrim.Velocity += BasePrim.Acceleration * time;
+            }
+            else if (InterpolatedPosition != BasePrim.Position)
+            {
+                InterpolatedPosition = RHelp.Smoothed1stOrder(InterpolatedPosition, BasePrim.Position, time);
+            }
+
+            // Angular velocity (target omega)
+            if (BasePrim.AngularVelocity != Vector3.Zero)
+            {
+                Vector3 angVel = BasePrim.AngularVelocity;
+                float angle = time * angVel.Length();
+                Quaternion dQ = Quaternion.CreateFromAxisAngle(angVel, angle);
+                InterpolatedRotation = dQ * InterpolatedRotation;
+            }
+            else if (InterpolatedRotation != BasePrim.Rotation)
+            {
+                InterpolatedRotation = Quaternion.Slerp(InterpolatedRotation, BasePrim.Rotation, time * 10f);
+                if (Math.Abs(1f - Quaternion.Dot(InterpolatedRotation, BasePrim.Rotation)) < 0.0001)
+                    InterpolatedRotation = BasePrim.Rotation;
+            }
         }
 
         /// <summary>
@@ -385,35 +409,6 @@ namespace Radegast.Rendering
         {
             AttachedStateKnown = false;
             base.Initialize();
-        }
-
-        public override void Step(float time)
-        {
-            // Don't interpolate positions of attached objects
-            if (Attached)
-            {
-                RenderPosition = SimPosition;
-                RenderRotation = SimRotation;
-                return;
-            }
-
-            if (RenderPosition != SimPosition)
-            {
-                RenderPosition = RHelp.Smoothed1stOrder(RenderPosition, SimPosition, time);
-            }
-            if (Prim.AngularVelocity != Vector3.Zero)
-            {
-                Vector3 angVel = Prim.AngularVelocity;
-                float angle = time * angVel.Length();
-                Quaternion dQ = Quaternion.CreateFromAxisAngle(angVel, angle);
-                RenderRotation = dQ * RenderRotation;
-            }
-            else if (RenderRotation != SimRotation)
-            {
-                RenderRotation = Quaternion.Slerp(RenderRotation, SimRotation, time * 10f);
-                if (Math.Abs(1f - Quaternion.Dot(RenderRotation, SimRotation)) < 0.0001)
-                    RenderRotation = SimRotation;
-            }
         }
 
         public override string ToString()
@@ -1665,11 +1660,6 @@ namespace Radegast.Rendering
 
         public override void Step(float time)
         {
-            if (RenderPosition != SimPosition)
-            {
-                RenderPosition = RHelp.Smoothed1stOrder(RenderPosition, SimPosition, time);
-            }
-            RenderRotation = SimRotation;
             base.Step(time);
         }
 
