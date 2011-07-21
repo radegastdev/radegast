@@ -343,7 +343,8 @@ namespace Radegast.Rendering
             // Linear velocity and acceleration
             if (BasePrim.Velocity != Vector3.Zero)
             {
-                InterpolatedPosition += BasePrim.Velocity * 0.98f * time;
+                BasePrim.Position = InterpolatedPosition = BasePrim.Position + BasePrim.Velocity * time
+                    * 0.98f * RadegastInstance.GlobalInstance.Client.Network.CurrentSim.Stats.Dilation;
                 BasePrim.Velocity += BasePrim.Acceleration * time;
             }
             else if (InterpolatedPosition != BasePrim.Position)
