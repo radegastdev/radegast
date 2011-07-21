@@ -52,12 +52,12 @@ namespace Radegast.Rendering
     {
         public Primitive.TextureAnimation PrimAnimInfo;
         public float CurrentFrame;
-        public double CurrentTime;
+        public float CurrentTime;
         public bool PingPong;
         float LastTime = 0f;
         float TotalTime = 0f;
 
-        public void Step(double lastFrameTime)
+        public void Step(float lastFrameTime)
         {
             float numFrames = 1f;
             float fullLength = 1f;
@@ -96,11 +96,11 @@ namespace Radegast.Rendering
             float frameCounter;
             if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
             {
-                frameCounter = (float)lastFrameTime * PrimAnimInfo.Rate + LastTime;
+                frameCounter = lastFrameTime * PrimAnimInfo.Rate + LastTime;
             }
             else
             {
-                TotalTime += (float)lastFrameTime;
+                TotalTime += lastFrameTime;
                 frameCounter = TotalTime * PrimAnimInfo.Rate;
             }
             LastTime = frameCounter;
@@ -180,7 +180,7 @@ namespace Radegast.Rendering
         }
 
         [Obsolete("Use Step() instead")]
-        public void ExperimentalStep(double time)
+        public void ExperimentalStep(float time)
         {
             int reverseFactor = 1;
             float rate = PrimAnimInfo.Rate;
@@ -197,7 +197,7 @@ namespace Radegast.Rendering
             }
 
             CurrentTime += time;
-            double totalTime = 1 / rate;
+            float totalTime = 1 / rate;
 
             uint x = Math.Max(1, PrimAnimInfo.SizeX);
             uint y = Math.Max(1, PrimAnimInfo.SizeY);
@@ -226,7 +226,7 @@ namespace Radegast.Rendering
 
             if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
             {
-                smoothOffset = (float)(CurrentTime / totalTime) * reverseFactor;
+                smoothOffset = (CurrentTime / totalTime) * reverseFactor;
             }
 
             float f = CurrentFrame;
@@ -242,10 +242,10 @@ namespace Radegast.Rendering
             }
             else
             {
-                smoothOffset = (float)(CurrentTime * PrimAnimInfo.Rate);
-                double startAngle = PrimAnimInfo.Start;
-                double endAngle = PrimAnimInfo.Length;
-                double angle = startAngle + (endAngle - startAngle) * smoothOffset;
+                smoothOffset = (CurrentTime * PrimAnimInfo.Rate);
+                float startAngle = PrimAnimInfo.Start;
+                float endAngle = PrimAnimInfo.Length;
+                float angle = startAngle + (endAngle - startAngle) * smoothOffset;
                 GL.Translate(0.5f, 0.5f, 0f);
                 GL.Rotate(Utils.RAD_TO_DEG * angle, OpenTK.Vector3d.UnitZ);
                 GL.Translate(-0.5f, -0.5f, 0f);
@@ -339,7 +339,7 @@ namespace Radegast.Rendering
         /// Perform per frame tasks
         /// </summary>
         /// <param name="time">Time since the last call (last frame time in seconds)</param>
-        public virtual void Step(double time)
+        public virtual void Step(float time)
         {
         }
 
@@ -387,7 +387,7 @@ namespace Radegast.Rendering
             base.Initialize();
         }
 
-        public override void Step(double time)
+        public override void Step(float time)
         {
             // Don't interpolate positions of attached objects
             if (Attached)
@@ -404,20 +404,22 @@ namespace Radegast.Rendering
             if (Prim.AngularVelocity != Vector3.Zero)
             {
                 Vector3 angVel = Prim.AngularVelocity;
-                float angle = (float)time * angVel.Length();
+                float angle = time * angVel.Length();
                 Quaternion dQ = Quaternion.CreateFromAxisAngle(angVel, angle);
                 RenderRotation = dQ * RenderRotation;
             }
             else if (RenderRotation != SimRotation)
             {
-                RenderRotation = SimRotation;
+                RenderRotation = Quaternion.Slerp(RenderRotation, SimRotation, time * 10f);
+                if (Math.Abs(1f - Quaternion.Dot(RenderRotation, SimRotation)) < 0.0001)
+                    RenderRotation = SimRotation;
             }
         }
 
         public override string ToString()
         {
             uint id = Prim == null ? 0 : Prim.LocalID;
-            double distance = Math.Sqrt(DistanceSquared);
+            float distance = (float)Math.Sqrt(DistanceSquared);
             return string.Format("LocalID: {0}, distance {0.00}", id, distance);
         }
     }
@@ -433,7 +435,7 @@ namespace Radegast.Rendering
         static float t1 = 0.075f;
         static float t2 = t1 / 5.7f;
 
-        public static Vector3 Smoothed1stOrder(Vector3 curPos, Vector3 targetPos, double lastFrameTime)
+        public static Vector3 Smoothed1stOrder(Vector3 curPos, Vector3 targetPos, float lastFrameTime)
         {
             int numIterations = (int)(lastFrameTime * 100);
             do
@@ -442,14 +444,14 @@ namespace Radegast.Rendering
                 numIterations--;
             }
             while (numIterations > 0);
-            if (Vector3.DistanceSquared(curPos, targetPos) < 0.000001)
+            if (Vector3.DistanceSquared(curPos, targetPos) < 0.00001f)
             {
                 curPos = targetPos;
             }
             return curPos;
         }
 
-        public static Vector3 Smoothed2ndOrder(Vector3 curPos, Vector3 targetPos, ref Vector3 accel, double lastFrameTime)
+        public static Vector3 Smoothed2ndOrder(Vector3 curPos, Vector3 targetPos, ref Vector3 accel, float lastFrameTime)
         {
             int numIterations = (int)(lastFrameTime * 100);
             do
@@ -459,7 +461,7 @@ namespace Radegast.Rendering
                 numIterations--;
             }
             while (numIterations > 0);
-            if (Vector3.DistanceSquared(curPos, targetPos) < 0.000001)
+            if (Vector3.DistanceSquared(curPos, targetPos) < 0.00001f)
             {
                 curPos = targetPos;
             }
@@ -502,7 +504,7 @@ namespace Radegast.Rendering
         /// <summary>Has camera been modified</summary>
         public bool Modified { get { return mModified; } set { mModified = value; } }
 
-        public double TimeToTarget = 0d;
+        public float TimeToTarget = 0f;
 
         public Vector3 RenderPosition;
         public Vector3 RenderFocalPoint;
@@ -512,7 +514,7 @@ namespace Radegast.Rendering
             mModified = true;
         }
 
-        public void Step(double time)
+        public void Step(float time)
         {
             if (RenderPosition != Position)
             {
@@ -527,7 +529,7 @@ namespace Radegast.Rendering
         }
 
         [Obsolete("Use Step(), left in here for reference")]
-        public void Step2(double time)
+        public void Step2(float time)
         {
             TimeToTarget -= time;
             if (TimeToTarget <= time)
@@ -538,12 +540,12 @@ namespace Radegast.Rendering
 
             mModified = true;
 
-            float pctElapsed = (float)(time / TimeToTarget);
+            float pctElapsed = time / TimeToTarget;
 
             if (RenderPosition != Position)
             {
                 float distance = Vector3.Distance(RenderPosition, Position);
-                RenderPosition = Vector3.Lerp(RenderPosition, Position, (float)(distance * pctElapsed));
+                RenderPosition = Vector3.Lerp(RenderPosition, Position, distance * pctElapsed);
             }
 
             if (RenderFocalPoint != FocalPoint)
@@ -1661,7 +1663,7 @@ namespace Radegast.Rendering
             set { if (value is Avatar) avatar = (Avatar)value; }
         }
 
-        public override void Step(double time)
+        public override void Step(float time)
         {
             if (RenderPosition != SimPosition)
             {

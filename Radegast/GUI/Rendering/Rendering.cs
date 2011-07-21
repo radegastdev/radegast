@@ -132,8 +132,8 @@ namespace Radegast.Rendering
         int[] Viewport = new int[4];
         bool useVBO = true;
         System.Diagnostics.Stopwatch renderTimer;
-        double lastFrameTime = 0d;
-        double advTimerTick = 0d;
+        float lastFrameTime = 0f;
+        float advTimerTick = 0f;
         float minLODFactor = 0.0001f;
 
         float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
@@ -585,7 +585,7 @@ namespace Radegast.Rendering
         private void MainRenderLoop()
         {
             if (!RenderingEnabled) return;
-            lastFrameTime = renderTimer.Elapsed.TotalSeconds;
+            lastFrameTime = (float)renderTimer.Elapsed.TotalSeconds;
 
             // Something went horribly wrong
             if (lastFrameTime < 0) return;
