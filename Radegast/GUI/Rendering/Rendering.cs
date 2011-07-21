@@ -1949,6 +1949,7 @@ namespace Radegast.Rendering
                 if (!useVBO)
                 {
                     Vertex[] verts = face.Vertices.ToArray();
+                    ushort[] indices = face.Indices.ToArray();
 
                     unsafe
                     {
@@ -1958,7 +1959,7 @@ namespace Radegast.Rendering
                             GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
                             GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
                             GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, verts);
-                            GL.DrawElements(BeginMode.Triangles, data.Indices.Length, DrawElementsType.UnsignedShort, data.Indices);
+                            GL.DrawElements(BeginMode.Triangles, indices.Length, DrawElementsType.UnsignedShort, indices);
                         }
                     }
                 }
