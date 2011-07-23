@@ -995,8 +995,7 @@ namespace Radegast.Rendering
             Array.Copy(source.RenderData.Indices, RenderData.Indices, source.RenderData.Indices.Length);
             Array.Copy(source.RenderData.weights, RenderData.weights, source.RenderData.weights.Length);
             Array.Copy(source.RenderData.skinJoints, RenderData.skinJoints, source.RenderData.skinJoints.Length);
-
-
+            
             RenderData.Center = new Vector3(source.RenderData.Center);
 
             teFaceID = source.teFaceID;
@@ -1182,6 +1181,7 @@ namespace Radegast.Rendering
                     }
                     else
                     {
+                        
                         ba = av.skel.mBones[jointname];
                     }
 
@@ -1232,6 +1232,26 @@ namespace Radegast.Rendering
             }
         }
 
+        public void resetallmorphs()
+        {
+            for (int i = 0; i < OrigRenderData.Vertices.Length/3; i++)
+            {
+     
+                MorphRenderData.Vertices[i * 3] = OrigRenderData.Vertices[i * 3];
+                MorphRenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 + 1];
+                MorphRenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2];
+
+                //MorphRenderData.Normals[i * 3] = OrigRenderData.Normals[i * 3];
+                //MorphRenderData.Normals[(i * 3) + 1] = OrigRenderData.Normals[i * 3 + 1];
+                //MorphRenderData.Normals[(i * 3) + 2] = OrigRenderData.Normals[i * 3 + 2];
+
+                RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2] ;
+                RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1];
+
+            }
+
+        }
+
         public void morphmesh(Morph morph, float weight)
         {
             for (int v = 0; v < morph.NumVertices; v++)
@@ -1240,9 +1260,13 @@ namespace Radegast.Rendering
 
                 uint i = mvx.VertexIndex;
 
-                MorphRenderData.Vertices[i * 3] = OrigRenderData.Vertices[i * 3] + mvx.Coord.X * weight;
-                MorphRenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 + 1] + mvx.Coord.Y * weight;
-                MorphRenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
+                MorphRenderData.Vertices[i * 3] = MorphRenderData.Vertices[i * 3] + mvx.Coord.X * weight;
+                MorphRenderData.Vertices[(i * 3) + 1] = MorphRenderData.Vertices[i * 3 + 1] + mvx.Coord.Y * weight;
+                MorphRenderData.Vertices[(i * 3) + 2] = MorphRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
+
+                //MorphRenderData.Normals[i * 3] = MorphRenderData.Normals[i * 3] + mvx.Normal.X * weight;
+                //MorphRenderData.Normals[(i * 3)+1] = MorphRenderData.Normals[(i * 3)+1] + mvx.Normal.Y * weight;
+                //MorphRenderData.Normals[(i * 3)+2] = MorphRenderData.Normals[(i * 3)+2] + mvx.Normal.Z * weight;
 
                 RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2] + mvx.TexCoord.X * weight;
                 RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1] + mvx.TexCoord.Y * weight;
@@ -1474,7 +1498,6 @@ namespace Radegast.Rendering
 
                 float value = vpx.MinValue + ((vpx.MaxValue - vpx.MinValue) * weight);
 
-
                 if (vpx.pType == VisualParamEx.ParamType.TYPE_MORPH)
                 {
                     // Its a morph
@@ -1485,7 +1508,12 @@ namespace Radegast.Rendering
                         {
                             if (morph.Name == vpx.Name)
                             {
+                                if (mesh.Name == "skirtMesh" && _showSkirt == false)
+                                    return;
+
                                 mesh.morphmesh(morph, value);
+
+                                return;
                             }
                         }
                     }
@@ -1530,10 +1558,11 @@ namespace Radegast.Rendering
                         {
                             skel.deformbone(kvp.Key, new Vector3(0, 0, 0), kvp.Value * value, Quaternion.Identity);
                         }
+                        return;
                     }
                     else
                     {
-                        Logger.Log(String.Format("paramater {0} is not a morph and not a driver", param), Helpers.LogLevel.Warning);
+                        //Logger.Log(String.Format("paramater {0} is not a morph and not a driver", param), Helpers.LogLevel.Warning);
                     }
                 }
 
@@ -1542,28 +1571,6 @@ namespace Radegast.Rendering
             {
                 Logger.Log("Invalid paramater " + param.ToString(), Helpers.LogLevel.Warning);
             }
-
-            /*
-            foreach (GLMesh mesh in _meshes.Values)
-            {
-                VisualParamEx evp;
-                if (mesh._evp.TryGetValue(param, out evp))
-                {
-                    foreach (LindenMesh.Morph morph in mesh.Morphs)
-                    {
-                        if (morph.Name == evp.Name)
-                        {
-                            mesh.morphmesh(morph, weight);
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("No such visual param in morphs");
-                }
-            
-            }
-             */
         }
 
         public void morph(Avatar av)
@@ -1572,14 +1579,13 @@ namespace Radegast.Rendering
             if (av.VisualParameters == null)
                 return;
 
-
             ThreadPool.QueueUserWorkItem(sync =>
             {
                 int x = 0;
 
                 if (av.VisualParameters.Length > 123)
                 {
-                    if (av.VisualParameters[31] > 0.5)
+                    if (av.VisualParameters[31] > 127)
                     {
                         msex = VisualParamEx.EparamSex.SEX_MALE;
                     }
@@ -1589,20 +1595,27 @@ namespace Radegast.Rendering
                     }
                 }
 
+                foreach (GLMesh mesh in _meshes.Values)
+                {
+                    mesh.resetallmorphs();
+                }
 
                 foreach (byte vpvalue in av.VisualParameters)
                 {
+                    /*
                     if (vpsent == true && VisualAppearanceParameters[x] == vpvalue)
                     {
-                        x++;
-                        continue;
+                     
+                       x++;
+                       continue;
                     }
+                    */
 
                     VisualAppearanceParameters[x] = vpvalue;
 
                     if (x >= VisualParamEx.tweakable_params.Count)
                     {
-                        Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
+                        //Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
                         break;
                     }
 
@@ -1618,6 +1631,8 @@ namespace Radegast.Rendering
                     this.morphtest(av, vpe.ParamID, value);
 
                     x++;
+                  //  if (x > 100)
+                    //    break;
                 }
 
                 vpsent = true;
@@ -1705,6 +1720,7 @@ namespace Radegast.Rendering
                 if (src.mParentBone != null)
                 {
                     src.parent = mBones[src.mParentBone];
+                    src.parent.children.Add(src);
                 }
             }
 
@@ -2293,7 +2309,7 @@ namespace Radegast.Rendering
                 {
                     tweakable_params.Add(this.ParamID, this);
                 }
-                Logger.Log(String.Format("Adding tweakable paramater ID {0} {1}", count, this.Name), Helpers.LogLevel.Info);
+                //Logger.Log(String.Format("Adding tweakable paramater ID {0} {1}", count, this.Name), Helpers.LogLevel.Info);
                 count++;
             }
 
