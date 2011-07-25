@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.IO.Compression;
 using System.Xml;
 using System.Threading;
 using OpenTK.Graphics.OpenGL;
@@ -273,6 +274,7 @@ namespace Radegast.Rendering
         public Primitive Prim;
         public Primitive.TextureEntryFace TeFace;
         public byte[] TextureData = null;
+        public byte[] TGAData = null;
     }
 
     public enum RenderPass
@@ -478,6 +480,112 @@ namespace Radegast.Rendering
         {
             return new OpenTK.Vector4(v.X, v.Y, v.Z, v.W);
         }
+
+        #region Cached image save and load
+        public static readonly string RAD_IMG_MAGIC = "radegast_img";
+
+        public static bool LoadCachedImage(UUID textureID, out byte[] tgaData, out bool hasAlpha, out bool fullAlpha, out bool isMask)
+        {
+            tgaData = null;
+            hasAlpha = fullAlpha = isMask = false;
+
+            try
+            {
+                string fname = System.IO.Path.Combine(RadegastInstance.GlobalInstance.Client.Settings.ASSET_CACHE_DIR, string.Format("{0}.rzi", textureID));
+                //string fname = System.IO.Path.Combine(".", string.Format("{0}.rzi", textureID));
+
+                using (var f = File.Open(fname, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    byte[] header = new byte[36];
+                    int i = 0;
+                    f.Read(header, 0, header.Length);
+
+                    // check if the file is starting with magic string
+                    if (RAD_IMG_MAGIC != Utils.BytesToString(header, 0, RAD_IMG_MAGIC.Length))
+                        return false;
+                    i += RAD_IMG_MAGIC.Length;
+
+                    if (header[i++] != 1) // check version
+                        return false;
+
+                    hasAlpha = header[i++] == 1;
+                    fullAlpha = header[i++] == 1;
+                    isMask = header[i++] == 1;
+
+                    int uncompressedSize = Utils.BytesToInt(header, i);
+                    i += 4;
+
+                    textureID = new UUID(header, i);
+                    i += 16;
+
+                    tgaData = new byte[uncompressedSize];
+                    using (var compressed = new DeflateStream(f, CompressionMode.Decompress))
+                    {
+                        int read = 0;
+                        while ((read = compressed.Read(tgaData, read, uncompressedSize - read)) > 0) ;
+                    }
+                }
+
+                return true;
+            }
+            catch (FileNotFoundException) { }
+            catch (Exception ex)
+            {
+                Logger.DebugLog(string.Format("Failed to load radegast cache file {0}: {1}", textureID, ex.Message));
+            }
+            return false;
+        }
+
+        public static bool SaveCachedImage(byte[] tgaData, UUID textureID, bool hasAlpha, bool fullAlpha, bool isMask)
+        {
+            try
+            {
+                string fname = System.IO.Path.Combine(RadegastInstance.GlobalInstance.Client.Settings.ASSET_CACHE_DIR, string.Format("{0}.rzi", textureID));
+                //string fname = System.IO.Path.Combine(".", string.Format("{0}.rzi", textureID));
+
+                using (var f = File.Open(fname, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    int i = 0;
+                    // magic header
+                    f.Write(Utils.StringToBytes(RAD_IMG_MAGIC), 0, RAD_IMG_MAGIC.Length);
+                    i += RAD_IMG_MAGIC.Length;
+
+                    // version
+                    f.WriteByte((byte)1);
+                    i++;
+
+                    // texture info
+                    f.WriteByte(hasAlpha ? (byte)1 : (byte)0);
+                    f.WriteByte(fullAlpha ? (byte)1 : (byte)0);
+                    f.WriteByte(isMask ? (byte)1 : (byte)0);
+                    i += 3;
+
+                    // texture size
+                    byte[] uncompressedSize = Utils.IntToBytes(tgaData.Length);
+                    f.Write(uncompressedSize, 0, uncompressedSize.Length);
+                    i += uncompressedSize.Length;
+
+                    // texture id
+                    byte[] id = new byte[16];
+                    textureID.ToBytes(id, 0);
+                    f.Write(id, 0, 16);
+                    i += 16;
+
+                    // compressed texture data
+                    using (var compressed = new DeflateStream(f, CompressionMode.Compress))
+                    {
+                        compressed.Write(tgaData, 0, tgaData.Length);
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.DebugLog(string.Format("Failed to save radegast cache file {0}: {1}", textureID, ex.Message));
+                return false;
+            }
+        }
+        #endregion Cached image save and load
     }
 
     /// <summary>

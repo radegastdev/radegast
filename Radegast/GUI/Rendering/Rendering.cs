@@ -117,7 +117,6 @@ namespace Radegast.Rendering
 
         Camera Camera;
         Dictionary<UUID, TextureInfo> TexturesPtrMap = new Dictionary<UUID, TextureInfo>();
-        RadegastInstance instance;
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
@@ -145,6 +144,7 @@ namespace Radegast.Rendering
         OpenTK.Vector4 specularColor;
         float drawDistance = 48f;
         float drawDistanceSquared = 48f * 48f;
+        bool useDecodedImageCache = true;
 
         GridClient Client;
         RadegastInstance Instance;
@@ -160,7 +160,7 @@ namespace Radegast.Rendering
 
             this.Instance = instance;
             this.Client = instance.Client;
-            
+
             UseMultiSampling = cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];
             cbAA.CheckedChanged += cbAA_CheckedChanged;
 
@@ -642,7 +642,7 @@ namespace Radegast.Rendering
                 if (msToSleep < 10) msToSleep = 10;
                 Thread.Sleep(msToSleep);
             }
-            
+
             Render(false);
 
             glControl.SwapBuffers();
@@ -891,10 +891,14 @@ namespace Radegast.Rendering
                 // Already have this one loaded
                 if (item.Data.TextureInfo.TexturePointer != 0) continue;
 
-                if (item.TextureData != null)
+                byte[] imageBytes = null;
+                if (item.TGAData != null)
+                {
+                    imageBytes = item.TGAData;
+                }
+                else if (item.TextureData != null)
                 {
                     ManagedImage mi;
-                    Image img;
                     if (!OpenJPEG.DecodeToImage(item.TextureData, out mi)) continue;
 
                     bool hasAlpha = false;
@@ -928,21 +932,36 @@ namespace Radegast.Rendering
                         }
                     }
 
-                    using (MemoryStream byteData = new MemoryStream(mi.ExportTGA()))
+                    item.Data.TextureInfo.HasAlpha = hasAlpha;
+                    item.Data.TextureInfo.FullAlpha = fullAlpha;
+                    item.Data.TextureInfo.IsMask = isMask;
+
+                    imageBytes = mi.ExportTGA();
+                    if (useDecodedImageCache)
+                    {
+                        RHelp.SaveCachedImage(imageBytes, item.TeFace.TextureID, hasAlpha, fullAlpha, isMask);
+                    }
+                }
+
+                if (imageBytes != null)
+                {
+                    Image img;
+
+                    using (MemoryStream byteData = new MemoryStream(imageBytes))
                     {
                         img = OpenMetaverse.Imaging.LoadTGAClass.LoadTGA(byteData);
                     }
 
                     Bitmap bitmap = (Bitmap)img;
 
-                    item.Data.TextureInfo.HasAlpha = hasAlpha;
-                    item.Data.TextureInfo.FullAlpha = fullAlpha;
-                    item.Data.TextureInfo.IsMask = isMask;
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, hasAlpha);
+                    item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, item.Data.TextureInfo.HasAlpha);
                     bitmap.Dispose();
-                    item.TextureData = null;
                 }
+
+                item.TextureData = null;
+                item.TGAData = null;
+                imageBytes = null;
             }
             context.Dispose();
             window.Dispose();
@@ -2409,20 +2428,26 @@ namespace Radegast.Rendering
                 else
                 {
                     TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
-
-                    if (item.TextureData == null)
+                    if (item.TextureData == null && item.TGAData == null)
                     {
-                        ThreadPool.QueueUserWorkItem(sync =>
+                        if (useDecodedImageCache && RHelp.LoadCachedImage(item.TeFace.TextureID, out item.TGAData, out item.Data.TextureInfo.HasAlpha, out item.Data.TextureInfo.FullAlpha, out item.Data.TextureInfo.IsMask))
                         {
-                            Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
+                            PendingTextures.Enqueue(item);
+                        }
+                        else
+                        {
+                            ThreadPool.QueueUserWorkItem(sync =>
                             {
-                                if (state == TextureRequestState.Finished)
+                                Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
                                 {
-                                    item.TextureData = asset.AssetData;
-                                    PendingTextures.Enqueue(item);
-                                }
+                                    if (state == TextureRequestState.Finished)
+                                    {
+                                        item.TextureData = asset.AssetData;
+                                        PendingTextures.Enqueue(item);
+                                    }
+                                });
                             });
-                        });
+                        }
                     }
                     else
                     {
@@ -2461,15 +2486,15 @@ namespace Radegast.Rendering
                 // Need to adjust UV for spheres as they are sort of half-prim
                 if (prim.PrimData.ProfileCurve == ProfileCurve.HalfCircle)
                 {
-                    teFace = new Primitive.TextureEntryFace(teFace);
+                    teFace = (Primitive.TextureEntryFace)teFace.Clone();
                     teFace.RepeatV *= 2;
                     teFace.OffsetV += 0.5f;
                 }
 
-                // Sculpt UV map seems to come out vertically flipped from the PrimMesher. Fix it
-                if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero)
+                // Sculpt UV vertically flipped compared to prims. Flip back
+                if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && prim.Sculpt.Type != SculptType.Mesh)
                 {
-                    teFace = new Primitive.TextureEntryFace(teFace);
+                    teFace = (Primitive.TextureEntryFace)teFace.Clone();
                     teFace.RepeatV *= -1;
                 }
 
@@ -2602,27 +2627,40 @@ namespace Radegast.Rendering
             try
             {
                 gotImage.Reset();
-                instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
-                    {
-                        if (state == TextureRequestState.Finished)
+                bool hasAlpha, fullAlpha, isMask;
+                byte[] tgaData;
+                if (useDecodedImageCache && RHelp.LoadCachedImage(textureID, out tgaData, out hasAlpha, out fullAlpha, out isMask))
+                {
+                    img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
+                }
+                else
+                {
+                    instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
                         {
-                            ManagedImage mi;
-                            OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
-
-                            if (removeAlpha)
+                            if (state == TextureRequestState.Finished)
                             {
-                                if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                ManagedImage mi;
+                                OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
+
+                                if (removeAlpha)
                                 {
-                                    mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                    if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                    {
+                                        mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                    }
+                                }
+                                tgaData = mi.ExportTGA();
+                                img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
+                                if (useDecodedImageCache)
+                                {
+                                    RHelp.SaveCachedImage(tgaData, textureID, (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0, false, false);
                                 }
                             }
-
-                            img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
+                            gotImage.Set();
                         }
-                        gotImage.Set();
-                    }
-                );
-                gotImage.WaitOne(30 * 1000, false);
+                    );
+                    gotImage.WaitOne(30 * 1000, false);
+                }
                 if (img != null)
                 {
                     texture = img;
