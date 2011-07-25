@@ -334,8 +334,8 @@ namespace Radegast.Rendering
                     {
                         Thread.Sleep(3000);
                         InitCamera();
-                        LoadCurrentPrims();
                         RenderingEnabled = true;
+                        LoadCurrentPrims();
                     });
                     break;
             }
@@ -628,6 +628,31 @@ namespace Radegast.Rendering
             renderTimer.Reset();
             renderTimer.Start();
 
+            // Determine if we need to throttle frame rate
+            bool throttle = false;
+
+            // Some other app has focus
+            if (Form.ActiveForm == null)
+            {
+                throttle = true;
+            }
+            else
+            {
+                // If we're docked but not active tab, throttle
+                if (!this.RadegastTab.Selected && !this.RadegastTab.Detached)
+                {
+                    throttle = true;
+                }
+            }
+
+            // Limit FPS to max 15
+            if (throttle)
+            {
+                int msToSleep = 66 - ((int)(lastFrameTime / 1000));
+                if (msToSleep < 10) msToSleep = 10;
+                Thread.Sleep(msToSleep);
+            }
+            
             Render(false);
 
             glControl.SwapBuffers();
