@@ -102,9 +102,9 @@ namespace Radegast
 
         private void frmDetachedTab_FormClosing(object sender, FormClosingEventArgs e)
         {
+            tab.Control.TextChanged -= new EventHandler(Control_TextChanged);
             if (tab.Detached)
             {
-                tab.Control.TextChanged -= new EventHandler(Control_TextChanged);
                 if (tab.CloseOnDetachedClose)
                     tab.Close();
                 else

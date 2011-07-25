@@ -561,7 +561,7 @@
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Rendering\Rendering.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="GUI\Rendering\Rendering.Designer.cs">
       <DependentUpon>Rendering.cs</DependentUpon>

@@ -50,7 +50,7 @@ using OpenMetaverse.StructuredData;
 namespace Radegast.Rendering
 {
 
-    public partial class SceneWindow : RadegastForm
+    public partial class SceneWindow : DettachableControl
     {
         #region Public fields
         /// <summary>
@@ -146,15 +146,21 @@ namespace Radegast.Rendering
         float drawDistance = 48f;
         float drawDistanceSquared = 48f * 48f;
 
+        GridClient Client;
+        RadegastInstance Instance;
+
         #endregion Private fields
 
         #region Construction and disposal
         public SceneWindow(RadegastInstance instance)
-            : base(instance)
+            : base()
         {
             InitializeComponent();
             Disposed += new EventHandler(frmPrimWorkshop_Disposed);
-            AutoSavePosition = true;
+
+            this.Instance = instance;
+            this.Client = instance.Client;
+
             UseMultiSampling = cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];
             cbAA.CheckedChanged += cbAA_CheckedChanged;
 
@@ -624,7 +630,7 @@ namespace Radegast.Rendering
             Camera.Position += (Camera.Position - Camera.FocalPoint) * (e.Delta / -500f);
         }
 
-        RenderPrimitive RightclickedPrim;
+        SceneObject RightclickedObject;
         int RightclickedFaceID;
 
         private void glControl_MouseDown(object sender, MouseEventArgs e)
@@ -638,20 +644,16 @@ namespace Radegast.Rendering
             else if (e.Button == MouseButtons.Right)
             {
                 object picked;
+                RightclickedObject = null;
                 if (TryPick(e.X, e.Y, out picked, out RightclickedFaceID))
                 {
-                    if (picked is RenderPrimitive)
+                    if (picked is SceneObject)
                     {
-                        RightclickedPrim = (RenderPrimitive)picked;
-                        ctxObjects.Show(glControl, e.X, e.Y);
-                    }
-                    else if (picked is RenderAvatar)
-                    {
-                        // TODO: add context menu when clicked on an avatar
+                        RightclickedObject = (SceneObject)picked;
                     }
                 }
+                ctxMenu.Show(glControl, e.X, e.Y);
             }
-
         }
 
         private void glControl_MouseMove(object sender, MouseEventArgs e)
@@ -2602,77 +2604,117 @@ namespace Radegast.Rendering
         #endregion Form controls handlers
 
         #region Context menu
-        private void ctxObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        /// <summary>
+        /// Dynamically construct the context menu when we right click on the screen
+        /// </summary>
+        /// <param name="csender"></param>
+        /// <param name="ce"></param>
+        private void ctxObjects_Opening(object csender, System.ComponentModel.CancelEventArgs ce)
         {
-            if (instance.State.IsSitting)
+            // Clear all context menu items
+            ctxMenu.Items.Clear();
+            ToolStripMenuItem item;
+
+            // Was it prim that was right clicked
+            if (RightclickedObject != null && RightclickedObject is RenderPrimitive)
             {
-                sitToolStripMenuItem.Text = "Stand up";
+                RenderPrimitive prim = (RenderPrimitive)RightclickedObject;
+
+                // Sit/stand up button handling
+                item = new ToolStripMenuItem("Sit", null, (sender, e) =>
+                {
+                    if (!instance.State.IsSitting)
+                    {
+                        instance.State.SetSitting(true, prim.Prim.ID);
+                    }
+                    else
+                    {
+                        instance.State.SetSitting(false, UUID.Zero);
+                    }
+                });
+
+                if (instance.State.IsSitting)
+                {
+                    item.Text = "Stand up";
+                }
+                else if (prim.Prim.Properties != null
+                    && !string.IsNullOrEmpty(prim.Prim.Properties.SitName))
+                {
+                    item.Text = prim.Prim.Properties.SitName;
+                }
+                ctxMenu.Items.Add(item);
+
+                // Is the prim touchable
+                if ((prim.Prim.Flags & PrimFlags.Touch) != 0)
+                {
+                    item = new ToolStripMenuItem("Touch", null, (sender, e) =>
+                    {
+                        Client.Self.Grab(prim.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                        Thread.Sleep(100);
+                        Client.Self.DeGrab(prim.Prim.LocalID);
+                    });
+
+                    if (prim.Prim.Properties != null
+                        && !string.IsNullOrEmpty(prim.Prim.Properties.TouchName))
+                    {
+                        item.Text = prim.Prim.Properties.TouchName;
+                    }
+                    ctxMenu.Items.Add(item);
+                }
+
+                // Can I modify this object?
+                if ((prim.Prim.Flags & PrimFlags.ObjectModify) != 0)
+                {
+                    // Take button
+                    item = new ToolStripMenuItem("Take", null, (sender, e) =>
+                    {
+                        instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
+                        Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID);
+                    });
+                    ctxMenu.Items.Add(item);
+
+                    // Delete button
+                    item = new ToolStripMenuItem("Delete", null, (sender, e) =>
+                    {
+                        instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
+                        Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
+                    });
+                    ctxMenu.Items.Add(item);
+
+
+                }
             }
-            else if (RightclickedPrim.Prim.Properties != null
-                && !string.IsNullOrEmpty(RightclickedPrim.Prim.Properties.SitName))
+
+            // If we are not the sole menu item, add separator
+            if (ctxMenu.Items.Count > 0)
             {
-                sitToolStripMenuItem.Text = RightclickedPrim.Prim.Properties.SitName;
+                ctxMenu.Items.Add(new ToolStripSeparator());
+            }
+
+
+            // Dock/undock menu item
+            bool docked = !instance.TabConsole.Tabs["scene_window"].Detached;
+            if (docked)
+            {
+                item = new ToolStripMenuItem("Undock", null, (sender, e) =>
+                {
+                    instance.TabConsole.SelectDefaultTab();
+                    instance.TabConsole.Tabs["scene_window"].Detach(instance);
+                });
             }
             else
             {
-                sitToolStripMenuItem.Text = "Sit";
+                item = new ToolStripMenuItem("Dock", null, (sender, e) =>
+                {
+                    Control p = Parent;
+                    instance.TabConsole.Tabs["scene_window"].AttachTo(instance.TabConsole.tstTabs, instance.TabConsole.toolStripContainer1.ContentPanel);
+                    if (p is Form)
+                    {
+                        ((Form)p).Close();
+                    }
+                });
             }
-
-            if (RightclickedPrim.Prim.Properties != null
-                && !string.IsNullOrEmpty(RightclickedPrim.Prim.Properties.TouchName))
-            {
-                touchToolStripMenuItem.Text = RightclickedPrim.Prim.Properties.TouchName;
-            }
-            else
-            {
-                touchToolStripMenuItem.Text = "Touch";
-            }
-        }
-
-        private void touchToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            Client.Self.Grab(RightclickedPrim.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-            Thread.Sleep(100);
-            Client.Self.DeGrab(RightclickedPrim.Prim.LocalID);
-        }
-
-        private void sitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!instance.State.IsSitting)
-            {
-                instance.State.SetSitting(true, RightclickedPrim.Prim.ID);
-            }
-            else
-            {
-                instance.State.SetSitting(false, UUID.Zero);
-            }
-        }
-
-        private void takeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-            Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID);
-            Close();
-        }
-
-        private void returnToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-            Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID, DeRezDestination.ReturnToOwner, UUID.Zero, UUID.Random());
-            Close();
-        }
-
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (RightclickedPrim.Prim.Properties != null && RightclickedPrim.Prim.Properties.OwnerID != Client.Self.AgentID)
-                returnToolStripMenuItem_Click(sender, e);
-            else
-            {
-                instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-                Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
-            }
-            Close();
+            ctxMenu.Items.Add(item);
         }
         #endregion Context menu
 

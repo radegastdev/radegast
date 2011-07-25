@@ -59,7 +59,6 @@ namespace Radegast.Rendering
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SceneWindow));
             this.gbZoom = new System.Windows.Forms.GroupBox();
             this.cbMisc = new System.Windows.Forms.CheckBox();
             this.lblDrawDistance = new System.Windows.Forms.Label();
@@ -91,16 +90,9 @@ namespace Radegast.Rendering
             this.btnResetView = new System.Windows.Forms.Button();
             this.cbAA = new System.Windows.Forms.CheckBox();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
-            this.ctxObjects = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.touchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.takeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.returnToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.gbZoom.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).BeginInit();
-            this.ctxObjects.SuspendLayout();
             this.SuspendLayout();
             // 
             // gbZoom
@@ -136,9 +128,9 @@ namespace Radegast.Rendering
             this.gbZoom.Controls.Add(this.cbAA);
             this.gbZoom.Controls.Add(this.chkWireFrame);
             this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbZoom.Location = new System.Drawing.Point(0, 441);
+            this.gbZoom.Location = new System.Drawing.Point(0, 337);
             this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(886, 163);
+            this.gbZoom.Size = new System.Drawing.Size(779, 163);
             this.gbZoom.TabIndex = 8;
             this.gbZoom.TabStop = false;
             this.gbZoom.Enter += new System.EventHandler(this.gbZoom_Enter);
@@ -470,73 +462,23 @@ namespace Radegast.Rendering
             this.chkWireFrame.UseVisualStyleBackColor = true;
             this.chkWireFrame.CheckedChanged += new System.EventHandler(this.chkWireFrame_CheckedChanged);
             // 
-            // ctxObjects
+            // ctxMenu
             // 
-            this.ctxObjects.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.touchToolStripMenuItem,
-            this.sitToolStripMenuItem,
-            this.toolStripMenuItem1,
-            this.takeToolStripMenuItem,
-            this.returnToolStripMenuItem,
-            this.deleteToolStripMenuItem});
-            this.ctxObjects.Name = "ctxObjects";
-            this.ctxObjects.Size = new System.Drawing.Size(110, 120);
-            this.ctxObjects.Opening += new System.ComponentModel.CancelEventHandler(this.ctxObjects_Opening);
-            // 
-            // touchToolStripMenuItem
-            // 
-            this.touchToolStripMenuItem.Name = "touchToolStripMenuItem";
-            this.touchToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.touchToolStripMenuItem.Text = "Touch";
-            this.touchToolStripMenuItem.Click += new System.EventHandler(this.touchToolStripMenuItem_Click);
-            // 
-            // sitToolStripMenuItem
-            // 
-            this.sitToolStripMenuItem.Name = "sitToolStripMenuItem";
-            this.sitToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.sitToolStripMenuItem.Text = "Sit";
-            this.sitToolStripMenuItem.Click += new System.EventHandler(this.sitToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(106, 6);
-            // 
-            // takeToolStripMenuItem
-            // 
-            this.takeToolStripMenuItem.Name = "takeToolStripMenuItem";
-            this.takeToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.takeToolStripMenuItem.Text = "Take";
-            this.takeToolStripMenuItem.Click += new System.EventHandler(this.takeToolStripMenuItem_Click);
-            // 
-            // returnToolStripMenuItem
-            // 
-            this.returnToolStripMenuItem.Name = "returnToolStripMenuItem";
-            this.returnToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.returnToolStripMenuItem.Text = "Return";
-            this.returnToolStripMenuItem.Click += new System.EventHandler(this.returnToolStripMenuItem_Click);
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.ctxMenu.Name = "ctxObjects";
+            this.ctxMenu.Size = new System.Drawing.Size(61, 4);
+            this.ctxMenu.Opening += new System.ComponentModel.CancelEventHandler(this.ctxObjects_Opening);
             // 
             // SceneWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(886, 604);
             this.Controls.Add(this.gbZoom);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SceneWindow";
-            this.Text = "Scene Viewer";
+            this.Size = new System.Drawing.Size(779, 500);
             this.Load += new System.EventHandler(this.ControlLoaded);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).EndInit();
-            this.ctxObjects.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -544,17 +486,11 @@ namespace Radegast.Rendering
         #endregion
 
         public System.Windows.Forms.GroupBox gbZoom;
-        public System.Windows.Forms.ContextMenuStrip ctxObjects;
+        public System.Windows.Forms.ContextMenuStrip ctxMenu;
         public System.Windows.Forms.CheckBox cbAA;
         public System.Windows.Forms.CheckBox chkWireFrame;
         public System.Windows.Forms.Button btnResetView;
         public System.Windows.Forms.Label label2;
-        public System.Windows.Forms.ToolStripMenuItem touchToolStripMenuItem;
-        public System.Windows.Forms.ToolStripMenuItem sitToolStripMenuItem;
-        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        public System.Windows.Forms.ToolStripMenuItem takeToolStripMenuItem;
-        public System.Windows.Forms.ToolStripMenuItem returnToolStripMenuItem;
-        public System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.HScrollBar hsSpecular;
         private System.Windows.Forms.HScrollBar hsDiffuse;
         private System.Windows.Forms.HScrollBar hsAmbient;
