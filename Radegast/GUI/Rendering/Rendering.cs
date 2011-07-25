@@ -182,7 +182,6 @@ namespace Radegast.Rendering
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
             Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            Client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance += new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
@@ -203,7 +202,6 @@ namespace Radegast.Rendering
             Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
             Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
-            Client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
@@ -315,34 +313,14 @@ namespace Radegast.Rendering
             Dispose();
         }
 
-        void Self_TeleportProgress(object sender, TeleportEventArgs e)
-        {
-            switch (e.Status)
-            {
-                case TeleportStatus.Progress:
-                case TeleportStatus.Start:
-                    RenderingEnabled = false;
-                    break;
-
-                case TeleportStatus.Cancelled:
-                case TeleportStatus.Failed:
-                    RenderingEnabled = true;
-                    break;
-
-                case TeleportStatus.Finished:
-                    ThreadPool.QueueUserWorkItem(sync =>
-                    {
-                        Thread.Sleep(3000);
-                        InitCamera();
-                        RenderingEnabled = true;
-                        LoadCurrentPrims();
-                    });
-                    break;
-            }
-        }
-
         void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Network_SimChanged(sender, e)));
+                return;
+            }
+
             ResetTerrain();
             lock (sculptCache)
             {
@@ -351,11 +329,23 @@ namespace Radegast.Rendering
                 sculptCache.Clear();
             }
             lock (Prims) Prims.Clear();
+            lock (Avatars) Avatars.Clear();
+            LoadCurrentPrims();
+            InitCamera();
         }
 
         void Objects_KillObject(object sender, KillObjectEventArgs e)
         {
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Objects_KillObject(sender, e)));
+                }
+                return;
+            }
+
             // TODO: there should be really cleanup of resources when removing prims and avatars
             lock (Prims) Prims.Remove(e.ObjectLocalID);
             lock (Avatars) Avatars.Remove(e.ObjectLocalID);
@@ -1014,6 +1004,8 @@ namespace Radegast.Rendering
 
         private void AvatarDataInitialzied()
         {
+            if (IsDisposed) return;
+
             // Ensure that this is done on the main thread
             if (InvokeRequired)
             {
