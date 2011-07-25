@@ -61,12 +61,21 @@ namespace Radegast
             Controls.Add(tab.Control);
             tab.Control.Visible = true;
             tab.Control.BringToFront();
-
+            tab.Control.TextChanged += new EventHandler(Control_TextChanged);
             SettingsKeyBase = "tab_window_" + tab.Control.GetType().Name;
             AutoSavePosition = true;
             instance.MainForm.Move += new EventHandler(MainForm_ResizeEnd);
             SaveMainFormPos();
-            Owner = instance.MainForm;
+            if (tab.Floater)
+            {
+                Owner = instance.MainForm;
+            }
+
+        }
+
+        void Control_TextChanged(object sender, EventArgs e)
+        {
+            Text = tab.Control.Text;
         }
 
         void frmDetachedTab_Disposed(object sender, EventArgs e)
@@ -95,10 +104,11 @@ namespace Radegast
         {
             if (tab.Detached)
             {
-                //if (tab.AllowClose)
-                //    tab.Close();
-                //else
-                tab.AttachTo(strip, container);
+                tab.Control.TextChanged -= new EventHandler(Control_TextChanged);
+                if (tab.CloseOnDetachedClose)
+                    tab.Close();
+                else
+                    tab.AttachTo(strip, container);
             }
         }
 
@@ -121,7 +131,7 @@ namespace Radegast
             
             bool oldDocked = DockedToMain; 
 
-            if (mainRect == Rectangle.Union(mainRect, myRect))
+            if (tab.Floater && mainRect == Rectangle.Union(mainRect, myRect))
             {
                 DockedToMain = true;
                 ShowInTaskbar = false;
@@ -130,7 +140,8 @@ namespace Radegast
             else
             {
                 DockedToMain = false;
-                ShowInTaskbar = true;
+                if (!ShowInTaskbar)
+                    ShowInTaskbar = true;
                 this.Text = tab.Label + " - " + Properties.Resources.ProgramName;
             }
         }
@@ -147,12 +158,18 @@ namespace Radegast
 
         private void frmDetachedTab_Deactivate(object sender, EventArgs e)
         {
-            Opacity = 0.5;
+            if (tab.Floater)
+            {
+                Opacity = 0.5;
+            }
         }
 
         private void frmDetachedTab_Activated(object sender, EventArgs e)
         {
-            Opacity = 1;
+            if (tab.Floater)
+            {
+                Opacity = 1;
+            }
         }
     }
 }

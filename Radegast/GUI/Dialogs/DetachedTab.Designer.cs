@@ -67,12 +67,8 @@ namespace Radegast
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(508, 362);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "frmDetachedTab";
-            this.ShowInTaskbar = false;
             this.Text = "DetachedTab";
             this.Deactivate += new System.EventHandler(this.frmDetachedTab_Deactivate);
             this.Shown += new System.EventHandler(this.frmDetachedTab_Shown);

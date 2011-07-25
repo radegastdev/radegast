@@ -168,18 +168,6 @@ namespace Radegast.Rendering
             Camera = new Camera();
             InitCamera();
 
-            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
-
-            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
-            {
-                comboBox_morph.Items.Add(vpe.Name);
-            }
-
-            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
-            {
-                comboBox_driver.Items.Add(vpe.Name);
-            }
-
             tbDrawDistance.Value = (int)DrawDistance;
             lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
 
@@ -246,7 +234,7 @@ namespace Radegast.Rendering
             {
                 try
                 {
-                    while (glControl != null && glControl.IsIdle)
+                    while (glControl != null && glControl.IsIdle && RenderingEnabled)
                     {
                         MainRenderLoop();
                         if (instance.MonoRuntime)
@@ -561,17 +549,20 @@ namespace Radegast.Rendering
                 // Call the resizing function which sets up the GL drawing window
                 // and will also invalidate the GL control
                 glControl_Resize(null, null);
+                RenderingEnabled = false;
 
                 glControl.Context.MakeCurrent(null);
                 TextureThreadContextReady.Reset();
                 var textureThread = new Thread(() => TextureThread())
                 {
                     IsBackground = true,
-                    Name = "TextureLoadingThread"
+                    Name = "TextureDecodingThread"
                 };
                 textureThread.Start();
                 TextureThreadContextReady.WaitOne(1000, false);
                 glControl.MakeCurrent();
+                RenderingEnabled = true;
+                LoadCurrentPrims();
             }
             catch (Exception ex)
             {
@@ -946,13 +937,44 @@ namespace Radegast.Rendering
             });
         }
 
-        private void frmPrimWorkshop_Shown(object sender, EventArgs e)
+        private void ControlLoaded(object sender, EventArgs e)
         {
-            SetupGLControl();
-            LoadCurrentPrims();
+            ThreadPool.QueueUserWorkItem(sync =>
+            {
+                InitAvatarData();
+                AvatarDataInitialzied();
+            });
         }
 
         #region Private methods (the meat)
+
+        private void AvatarDataInitialzied()
+        {
+            // Ensure that this is done on the main thread
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(() => AvatarDataInitialzied()));
+                return;
+            }
+
+            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+            {
+                comboBox_morph.Items.Add(vpe.Name);
+            }
+
+            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+            {
+                comboBox_driver.Items.Add(vpe.Name);
+            }
+
+            SetupGLControl();
+        }
+
+        private void InitAvatarData()
+        {
+            GLAvatar.loadlindenmeshes2("avatar_lad.xml");
+        }
+
         private void UpdateCamera()
         {
             if (Client != null)
@@ -2418,6 +2440,8 @@ namespace Radegast.Rendering
 
         private void UpdatePrimBlocking(Primitive prim)
         {
+            if (!RenderingEnabled) return;
+
             if (AvatarRenderingEnabled && prim.PrimData.PCode == PCode.Avatar)
             {
                 AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);

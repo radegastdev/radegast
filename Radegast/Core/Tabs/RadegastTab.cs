@@ -36,6 +36,9 @@ namespace Radegast
 {
     public partial class RadegastTab
     {
+        public bool Floater = true;
+        public bool CloseOnDetachedClose = false;
+
         private RadegastInstance instance;
         private ToolStripButton button;
         private Control control;

@@ -235,7 +235,7 @@ namespace Radegast.Rendering
                 f = nrFrames - CurrentFrame;
             }
 
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.ROTATE) == 0) // not rotaating
+            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.ROTATE) == 0) // not rotating
             {
                 GL.Scale(1f / x, 1f / y, 0f);
                 GL.Translate((f % x) + smoothOffset, f / y, 0);
