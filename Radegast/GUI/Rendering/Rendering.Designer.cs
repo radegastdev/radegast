@@ -59,7 +59,7 @@ namespace Radegast.Rendering
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.gbZoom = new System.Windows.Forms.GroupBox();
+            this.pnlDebug = new System.Windows.Forms.GroupBox();
             this.cbMisc = new System.Windows.Forms.CheckBox();
             this.lblDrawDistance = new System.Windows.Forms.Label();
             this.tbDrawDistance = new System.Windows.Forms.TrackBar();
@@ -91,49 +91,48 @@ namespace Radegast.Rendering
             this.cbAA = new System.Windows.Forms.CheckBox();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.gbZoom.SuspendLayout();
+            this.pnlDebug.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).BeginInit();
             this.SuspendLayout();
             // 
-            // gbZoom
+            // pnlDebug
             // 
-            this.gbZoom.Controls.Add(this.cbMisc);
-            this.gbZoom.Controls.Add(this.lblDrawDistance);
-            this.gbZoom.Controls.Add(this.tbDrawDistance);
-            this.gbZoom.Controls.Add(this.button_driver);
-            this.gbZoom.Controls.Add(this.textBox_driveramount);
-            this.gbZoom.Controls.Add(this.label6);
-            this.gbZoom.Controls.Add(this.comboBox_driver);
-            this.gbZoom.Controls.Add(this.button1);
-            this.gbZoom.Controls.Add(this.textBox_morphamount);
-            this.gbZoom.Controls.Add(this.label5);
-            this.gbZoom.Controls.Add(this.comboBox_morph);
-            this.gbZoom.Controls.Add(this.textBox_sz);
-            this.gbZoom.Controls.Add(this.textBox_sy);
-            this.gbZoom.Controls.Add(this.label4);
-            this.gbZoom.Controls.Add(this.textBox_sx);
-            this.gbZoom.Controls.Add(this.label3);
-            this.gbZoom.Controls.Add(this.label1);
-            this.gbZoom.Controls.Add(this.textBox_z);
-            this.gbZoom.Controls.Add(this.textBox_y);
-            this.gbZoom.Controls.Add(this.comboBox1);
-            this.gbZoom.Controls.Add(this.button_vparam);
-            this.gbZoom.Controls.Add(this.textBox_x);
-            this.gbZoom.Controls.Add(this.hsLOD);
-            this.gbZoom.Controls.Add(this.hsSpecular);
-            this.gbZoom.Controls.Add(this.hsDiffuse);
-            this.gbZoom.Controls.Add(this.hsAmbient);
-            this.gbZoom.Controls.Add(this.label2);
-            this.gbZoom.Controls.Add(this.btnResetView);
-            this.gbZoom.Controls.Add(this.cbAA);
-            this.gbZoom.Controls.Add(this.chkWireFrame);
-            this.gbZoom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gbZoom.Location = new System.Drawing.Point(0, 337);
-            this.gbZoom.Name = "gbZoom";
-            this.gbZoom.Size = new System.Drawing.Size(779, 163);
-            this.gbZoom.TabIndex = 8;
-            this.gbZoom.TabStop = false;
-            this.gbZoom.Enter += new System.EventHandler(this.gbZoom_Enter);
+            this.pnlDebug.Controls.Add(this.cbMisc);
+            this.pnlDebug.Controls.Add(this.lblDrawDistance);
+            this.pnlDebug.Controls.Add(this.tbDrawDistance);
+            this.pnlDebug.Controls.Add(this.button_driver);
+            this.pnlDebug.Controls.Add(this.textBox_driveramount);
+            this.pnlDebug.Controls.Add(this.label6);
+            this.pnlDebug.Controls.Add(this.comboBox_driver);
+            this.pnlDebug.Controls.Add(this.button1);
+            this.pnlDebug.Controls.Add(this.textBox_morphamount);
+            this.pnlDebug.Controls.Add(this.label5);
+            this.pnlDebug.Controls.Add(this.comboBox_morph);
+            this.pnlDebug.Controls.Add(this.textBox_sz);
+            this.pnlDebug.Controls.Add(this.textBox_sy);
+            this.pnlDebug.Controls.Add(this.label4);
+            this.pnlDebug.Controls.Add(this.textBox_sx);
+            this.pnlDebug.Controls.Add(this.label3);
+            this.pnlDebug.Controls.Add(this.label1);
+            this.pnlDebug.Controls.Add(this.textBox_z);
+            this.pnlDebug.Controls.Add(this.textBox_y);
+            this.pnlDebug.Controls.Add(this.comboBox1);
+            this.pnlDebug.Controls.Add(this.button_vparam);
+            this.pnlDebug.Controls.Add(this.textBox_x);
+            this.pnlDebug.Controls.Add(this.hsLOD);
+            this.pnlDebug.Controls.Add(this.hsSpecular);
+            this.pnlDebug.Controls.Add(this.hsDiffuse);
+            this.pnlDebug.Controls.Add(this.hsAmbient);
+            this.pnlDebug.Controls.Add(this.label2);
+            this.pnlDebug.Controls.Add(this.btnResetView);
+            this.pnlDebug.Controls.Add(this.cbAA);
+            this.pnlDebug.Controls.Add(this.chkWireFrame);
+            this.pnlDebug.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlDebug.Location = new System.Drawing.Point(0, 337);
+            this.pnlDebug.Name = "pnlDebug";
+            this.pnlDebug.Size = new System.Drawing.Size(779, 163);
+            this.pnlDebug.TabIndex = 8;
+            this.pnlDebug.TabStop = false;
             // 
             // cbMisc
             // 
@@ -472,12 +471,12 @@ namespace Radegast.Rendering
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.gbZoom);
+            this.Controls.Add(this.pnlDebug);
             this.Name = "SceneWindow";
             this.Size = new System.Drawing.Size(779, 500);
             this.Load += new System.EventHandler(this.ControlLoaded);
-            this.gbZoom.ResumeLayout(false);
-            this.gbZoom.PerformLayout();
+            this.pnlDebug.ResumeLayout(false);
+            this.pnlDebug.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).EndInit();
             this.ResumeLayout(false);
 
@@ -485,7 +484,7 @@ namespace Radegast.Rendering
 
         #endregion
 
-        public System.Windows.Forms.GroupBox gbZoom;
+        public System.Windows.Forms.GroupBox pnlDebug;
         public System.Windows.Forms.ContextMenuStrip ctxMenu;
         public System.Windows.Forms.CheckBox cbAA;
         public System.Windows.Forms.CheckBox chkWireFrame;

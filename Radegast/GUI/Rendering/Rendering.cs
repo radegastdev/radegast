@@ -50,7 +50,7 @@ using OpenMetaverse.StructuredData;
 namespace Radegast.Rendering
 {
 
-    public partial class SceneWindow : DettachableControl
+    public partial class SceneWindow : RadegastTabControl
     {
         #region Public fields
         /// <summary>
@@ -153,14 +153,14 @@ namespace Radegast.Rendering
 
         #region Construction and disposal
         public SceneWindow(RadegastInstance instance)
-            : base()
+            : base(instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(frmPrimWorkshop_Disposed);
 
             this.Instance = instance;
             this.Client = instance.Client;
-
+            
             UseMultiSampling = cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];
             cbAA.CheckedChanged += cbAA_CheckedChanged;
 
@@ -254,6 +254,43 @@ namespace Radegast.Rendering
             }
         }
         #endregion Construction and disposal
+
+        #region Tab Events
+        public void RegisterTabEvents()
+        {
+            this.RadegastTab.TabAttached += new EventHandler(RadegastTab_TabAttached);
+            this.RadegastTab.TabDetached += new EventHandler(RadegastTab_TabDetached);
+            this.RadegastTab.TabClosed += new EventHandler(RadegastTab_TabClosed);
+        }
+
+        public void UnregisterTabEvents()
+        {
+            this.RadegastTab.TabAttached -= new EventHandler(RadegastTab_TabAttached);
+            this.RadegastTab.TabDetached -= new EventHandler(RadegastTab_TabDetached);
+            this.RadegastTab.TabClosed -= new EventHandler(RadegastTab_TabClosed);
+        }
+
+        void RadegastTab_TabDetached(object sender, EventArgs e)
+        {
+            instance.GlobalSettings["scene_window_docked"] = false;
+            pnlDebug.Visible = true;
+        }
+
+        void RadegastTab_TabAttached(object sender, EventArgs e)
+        {
+            instance.GlobalSettings["scene_window_docked"] = true;
+            pnlDebug.Visible = false;
+        }
+
+        void RadegastTab_TabClosed(object sender, EventArgs e)
+        {
+            if (this.RadegastTab != null)
+            {
+                UnregisterTabEvents();
+            }
+        }
+
+        #endregion Tab Events
 
         #region Network messaage handlers
         void Terrain_LandPatchReceived(object sender, LandPatchReceivedEventArgs e)
@@ -2878,7 +2915,5 @@ namespace Radegast.Rendering
             miscEnabled = cbMisc.Checked;
             AvatarRenderingEnabled = miscEnabled;
         }
-
-
     }
 }

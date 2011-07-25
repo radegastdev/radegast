@@ -1510,23 +1510,16 @@ namespace Radegast
                 instance.TabConsole.AddTab("scene_window", "Scene Viewer", control);
                 instance.TabConsole.Tabs["scene_window"].Floater = false;
                 instance.TabConsole.Tabs["scene_window"].CloseOnDetachedClose = true;
-
-                instance.TabConsole.Tabs["scene_window"].TabAttached += (xsender, xe) =>
-                {
-                    instance.GlobalSettings["scene_window_docked"] = true;
-                };
-
-                instance.TabConsole.Tabs["scene_window"].TabDetached += (xsender, xe) =>
-                {
-                    instance.GlobalSettings["scene_window_docked"] = false;
-                };
+                control.RegisterTabEvents();
 
                 if (instance.GlobalSettings["scene_window_docked"])
                 {
+                    control.pnlDebug.Visible = false;
                     instance.TabConsole.Tabs["scene_window"].Select();
                 }
                 else
                 {
+                    control.pnlDebug.Visible = true;
                     instance.TabConsole.Tabs["scene_window"].Detach(instance);
                 }
             }
