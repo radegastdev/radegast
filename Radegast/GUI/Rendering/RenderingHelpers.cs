@@ -2427,7 +2427,7 @@ namespace Radegast.Rendering
             {
                 allParams.Add(ParamID, this);
             }
-            catch (Exception e)
+            catch
             {
                 Logger.Log("Duplicate VisualParam in allParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
             }
@@ -2455,7 +2455,7 @@ namespace Radegast.Rendering
                 {
                     morphParams.Add(ParamID, this);
                 }
-                catch (Exception e)
+                catch
                 {
                     Logger.Log("Duplicate VisualParam in morphParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
                 }
