@@ -2786,10 +2786,10 @@ namespace Radegast.Rendering
             else
             {
                 rPrim = new RenderPrimitive();
+                rPrim.Meshed = false;
             }
 
             rPrim.Prim = prim;
-            rPrim.Meshed = false;
             lock (Prims) Prims[prim.LocalID] = rPrim;
         }
 
