@@ -1424,7 +1424,10 @@ namespace Radegast.Rendering
                     if (jointname == "")
                     {
                         //Don't yet handle this, its a split joint to two children
-                        continue;
+                        ba = av.skel.mBones[jointname2];
+                        bb = null;
+
+                        //continue;
                     }
                     else
                     {
@@ -1738,10 +1741,16 @@ namespace Radegast.Rendering
             if (VisualParamEx.allParams.TryGetValue(param, out vpx))
             {
 
-                Logger.Log(string.Format("Applying visual parameter {0} id {1} value {2}", vpx.Name, vpx.ParamID, weight), Helpers.LogLevel.Info);
+                //Logger.Log(string.Format("Applying visual parameter {0} id {1} value {2}", vpx.Name, vpx.ParamID, weight), Helpers.LogLevel.Info);
 
                 //weight = weight * 2.0f;
                 //weight=weight-1.0f;
+
+                if (weight < 0)
+                    weight = 0;
+
+                if (weight > 1.0)
+                    weight = 1;
 
                 float value = vpx.MinValue + ((vpx.MaxValue - vpx.MinValue) * weight);
 
@@ -1941,8 +1950,11 @@ namespace Radegast.Rendering
         public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
 
-        public static Dictionary<UUID, BinBVHAnimationReader> mKnownAnimations = new Dictionary<UUID, BinBVHAnimationReader>();
-        public Dictionary<UUID, Animation> animlist = new Dictionary<UUID, Animation>();
+        public BinBVHAnimationReader[] mPlayingAnimations = new BinBVHAnimationReader[6];
+
+        public static Dictionary<UUID, RenderAvatar> mAnimationTransactions = new Dictionary<UUID, RenderAvatar>();
+
+        public static Dictionary<UUID, BinBVHAnimationReader> mAnimationCache = new Dictionary<UUID, BinBVHAnimationReader>();
 
         public bool mNeedsUpdate = false;
         public bool mNeedsMeshRebuild = false;
@@ -1950,8 +1962,22 @@ namespace Radegast.Rendering
         public Bone mLeftEye = null;
         public Bone mRightEye = null;
 
+        public struct binBVHJointState
+        {
+            public float currenttime_rot;
+            public int lastkeyframe_rot;
+            public int nextkeyframe_rot;
+
+            public float currenttime_pos;
+            public int lastkeyframe_pos;
+            public int nextkeyframe_pos;
+        }
+
+
         public skeleton()
         {
+
+            
 
             mBones = new Dictionary<string, Bone>();
 
@@ -2050,62 +2076,187 @@ namespace Radegast.Rendering
 
         // Add animations to the global decoded list
         // TODO garbage collect unused animations somehow
-        public static void addanimation(OpenMetaverse.Assets.Asset asset)
+        public static void addanimation(OpenMetaverse.Assets.Asset asset,UUID tid, BinBVHAnimationReader b)
         {
-            BinBVHAnimationReader b = new BinBVHAnimationReader(asset.AssetData);
-            if (!mKnownAnimations.ContainsKey(asset.AssetID))
-            {
-                Logger.Log("Adding new decoded animaton known animations " + asset.AssetID.ToString(), Helpers.LogLevel.Info);
-                mKnownAnimations.Add(asset.AssetID, b);
-            }
-        }
-
-        public bool addplayinganimation(Animation anim)
-        {
-
-            if (!animlist.ContainsKey(anim.AnimationID))
-            {
-                Logger.Log("Adding new playing animaton " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
-                animlist.Add(anim.AnimationID, anim);
-            }
-
-            mNeedsUpdate = true;
-
-            if (skeleton.mKnownAnimations.ContainsKey(anim.AnimationID))
-            {
-                return false;
-            }
-
-            return true;
-
-        }
-
-        public void firstkeyframe()
-        {
-            if (mNeedsUpdate == false)
+            RenderAvatar av;
+            mAnimationTransactions.TryGetValue(tid, out av);
+            if (av == null)
                 return;
 
-            foreach (Animation anim in this.animlist.Values) // TODO priority sort
+            mAnimationTransactions.Remove(tid);
+
+            if (asset != null)
             {
-                BinBVHAnimationReader b;
-                if (skeleton.mKnownAnimations.TryGetValue(anim.AnimationID, out b))
-                {
-                    foreach (binBVHJoint joint in b.joints)
-                    {
-                        //actually get the last for a pose the last frame is probably the static one once
-                        //we have reached position
-                        binBVHJointKey rot = joint.rotationkeys[joint.rotationkeys.Length - 1];
-
-                        Vector3 pos = new Vector3(0, 0, 0);
-                        //binBVHJointKey pos = joint.positionkeys[0];
-
-                        deformbone(joint.Name, new Vector3(0, 0, 0), pos, new Quaternion(rot.key_element.X, rot.key_element.Y, rot.key_element.Z));
-
-                    }
-
-                    mNeedsMeshRebuild = true;
-                }
+                b = new BinBVHAnimationReader(asset.AssetData);
+                mAnimationCache[asset.AssetID] = b;
+                Logger.Log("Adding new decoded animaton known animations " + asset.AssetID.ToString(), Helpers.LogLevel.Info);
             }
+            
+            int pos=0;
+            foreach (binBVHJoint joint in b.joints)
+            {
+                binBVHJointState state;
+
+                state.lastkeyframe_rot = 0;
+                state.nextkeyframe_rot = 1;
+
+                state.lastkeyframe_pos = 0;
+                state.nextkeyframe_pos = 1;
+
+                state.currenttime_rot = 0;
+                state.currenttime_pos = 0;
+
+                b.joints[pos].Tag = state;
+                pos++;
+            }
+
+            if (b.Priority >= 0 && b.Priority <= 5)
+                av.glavatar.skel.mPlayingAnimations[b.Priority] = b;
+        }
+
+        public void animate(float lastframetime)
+        {
+
+                foreach (BinBVHAnimationReader b in mPlayingAnimations) // TODO priority sort
+                {
+                    if (b == null)
+                        continue;
+
+                        int jpos = 0;
+                        foreach (binBVHJoint joint in b.joints)
+                        {
+
+
+                            binBVHJointState state = (binBVHJointState) b.joints[jpos].Tag;
+
+                            state.currenttime_rot += lastframetime;
+                            state.currenttime_pos += lastframetime;
+
+                            //fudge
+                            if (b.joints[jpos].rotationkeys.Length == 1)
+                            {
+                                state.nextkeyframe_rot = 0;
+                            }
+
+                            Vector3 poslerp = Vector3.Zero;
+
+                            if (b.joints[jpos].positionkeys.Length > 2)
+                            {
+                                binBVHJointKey pos2 = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
+
+
+                                if (state.currenttime_pos > pos2.time)
+                                {
+                                    state.lastkeyframe_pos++;
+                                    state.nextkeyframe_pos++;
+
+                                    if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                    {
+                                        if (b.Loop == true)
+                                        {
+                                            state.nextkeyframe_pos = 0;
+                                            state.currenttime_pos = 0;
+                                        }
+                                        else
+                                        {
+                                            state.nextkeyframe_pos = joint.positionkeys.Length - 1;
+                                        }
+                                    }
+
+                                    if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                    {
+                                        if (b.Loop == true)
+                                        {
+                                            state.lastkeyframe_pos = 0;
+                                            state.currenttime_pos = 0;
+
+                                        }
+                                        else
+                                        {
+                                            state.lastkeyframe_pos = joint.positionkeys.Length - 1;
+                                        }
+                                    }
+                                }
+
+                                binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
+
+
+                                float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
+
+                                if (delta < 0)
+                                    delta = 0;
+
+                                if (delta > 1)
+                                    delta = 1;
+
+                                poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta) *-1;
+
+                            }
+
+
+                            Vector3 rotlerp = Vector3.Zero;
+                            if (b.joints[jpos].rotationkeys.Length > 0)
+                            {
+                                binBVHJointKey rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+
+                                if (state.currenttime_rot > rot2.time)
+                                {
+                                    state.lastkeyframe_rot++;
+                                    state.nextkeyframe_rot++;
+
+                                    if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                    {
+                                        if (b.Loop == true)
+                                        {
+                                            state.nextkeyframe_rot = 0;
+                                            state.currenttime_rot = 0;
+                                        }
+                                        else
+                                        {
+                                            state.nextkeyframe_rot = joint.rotationkeys.Length - 1;
+                                        }
+                                    }
+
+                                    if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                    {
+                                        if (b.Loop == true)
+                                        {
+                                            state.lastkeyframe_rot = 0;
+                                            state.currenttime_rot = 0;
+
+                                        }
+                                        else
+                                        {
+                                            state.lastkeyframe_rot = joint.rotationkeys.Length - 1;
+                                        }
+                                    }
+                                }
+                              
+                                binBVHJointKey rot = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
+                                rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+
+                                float deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
+
+                               
+                                if (deltarot < 0)
+                                    deltarot = 0;
+
+                                if (deltarot > 1)
+                                    deltarot = 1;
+
+                                rotlerp = Vector3.Lerp(rot.key_element, rot2.key_element, deltarot);
+
+                            }
+
+                            b.joints[jpos].Tag = (object)state;
+                        
+                            deformbone(joint.Name, poslerp, new Vector3(0, 0, 0), new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
+
+                            jpos++;
+                        }
+
+                        mNeedsMeshRebuild = true;
+                    }
 
             mNeedsUpdate = false;
         }
@@ -2227,8 +2378,8 @@ namespace Radegast.Rendering
 
         public void deformbone(Vector3 pos, Vector3 scale, Quaternion rot)
         {
-            float[] deform = Math3D.CreateSRTMatrix(scale, rot, this.orig_pos);
-            mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
+            //float[] deform = Math3D.CreateSRTMatrix(scale, rot, this.orig_pos);
+            //mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
             this.pos = Bone.mBones[name].orig_pos + pos;
             this.scale = Bone.mBones[name].orig_scale + scale;
             this.rot = Bone.mBones[name].orig_rot * rot;
@@ -2268,16 +2419,22 @@ namespace Radegast.Rendering
                 Vector3 mepre = pos * scale;
                 mepre = mepre * totalrot;
                 mTotalPos = parento + mepre;
-                posdirty = false;
-
+              
                 Vector3 orig = getOrigOffset();
                 mDeltaPos = mTotalPos - orig;
+
+                posdirty = false;
 
                 return mTotalPos;
             }
             else
             {
-                return (pos * scale) * getRotation();
+                Vector3 orig = getOrigOffset();
+                mTotalPos = (pos * scale);
+                mDeltaPos = mTotalPos - orig;
+                posdirty = false;
+                return mTotalPos;
+              
             }
         }
 
@@ -2316,7 +2473,7 @@ namespace Radegast.Rendering
         {
             if (parent != null)
             {
-                return (parent.getOrigOffset()) + orig_pos;
+                return (parent.getOrigOffset() + orig_pos);
             }
             else
             {

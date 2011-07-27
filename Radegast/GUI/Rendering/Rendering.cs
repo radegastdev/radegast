@@ -406,11 +406,19 @@ namespace Radegast.Rendering
                 {
                     foreach (Animation anim in e.Animations)
                     {
-                        if (av.glavatar.skel.addplayinganimation(anim))
+                        UUID tid = UUID.Random();
+                        skeleton.mAnimationTransactions.Add(tid, av);
+
+                        BinBVHAnimationReader bvh;
+                        if(skeleton.mAnimationCache.TryGetValue(anim.AnimationID,out bvh))
                         {
-                            Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
-                            Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, animRecievedCallback);
+                            skeleton.addanimation(null, tid, bvh);
+                            break;
                         }
+
+                        Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
+                       
+                        Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false,SourceType.Asset,tid, animRecievedCallback);  
                     }
                     break;
                 }
@@ -420,8 +428,8 @@ namespace Radegast.Rendering
         void animRecievedCallback(AssetDownload transfer, Asset asset)
         {
             if (transfer.Success)
-            {
-                skeleton.addanimation(asset);
+            {        
+                skeleton.addanimation(asset,transfer.ID, null);
             }
         }
 
@@ -1200,7 +1208,7 @@ namespace Radegast.Rendering
 
                     attachment_point apoint = GLAvatar.attachment_points[attachment_index];
                     Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
-                    Quaternion qrot = parentav.glavatar.skel.getRotation(apoint.joint) * apoint.rotation;
+                    Quaternion qrot = apoint.rotation * parentav.glavatar.skel.getRotation(apoint.joint);
 
                     pos = parentPos + point * parentRot + prim.InterpolatedPosition * (parentRot * qrot);
                     rot = qrot * parentRot * prim.InterpolatedRotation;
@@ -1411,7 +1419,7 @@ namespace Radegast.Rendering
 
                     // Prim roation and position
                     Vector3 pos = av.avatar.Position;
-                    pos.X += 1;
+                    pos.X += 1;               
 
                     GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, pos));
 
@@ -1517,6 +1525,8 @@ namespace Radegast.Rendering
                     {
                         av.glavatar.skel.mNeedsMeshRebuild = false;
                     }
+
+                    av.glavatar.skel.animate(lastFrameTime);
 
                     avatarNr++;
 
