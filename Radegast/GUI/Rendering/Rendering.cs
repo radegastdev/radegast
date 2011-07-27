@@ -93,6 +93,7 @@ namespace Radegast.Rendering
         /// </summary>
         Dictionary<uint, RenderPrimitive> Prims = new Dictionary<uint, RenderPrimitive>();
         List<SceneObject> SortedObjects;
+        List<SceneObject> OccludedObjects;
         List<RenderAvatar> VisibleAvatars;
         Dictionary<uint, RenderAvatar> Avatars = new Dictionary<uint, RenderAvatar>();
 
@@ -104,12 +105,22 @@ namespace Radegast.Rendering
         /// <summary>
         /// Render avatars
         /// </summary>
-        public bool AvatarRenderingEnabled = true;
+        public bool AvatarRenderingEnabled = false;
 
         /// <summary>
         /// Show avatar skeloton
         /// </summary>
         public bool RenderAvatarSkeleton = false;
+
+        /// <summary>
+        /// Should we try to optimize by not drawing objects occluded behind other objects
+        /// </summary>
+        public bool OcclusionCullingEnabled = true;
+
+        /// <summary>
+        /// Cache images after jpeg2000 decode. Uses a lot of disk space and can cause disk trashing
+        /// </summary>
+        public bool CacheDecodedTextures = false;
 
         #endregion Public fields
 
@@ -144,7 +155,6 @@ namespace Radegast.Rendering
         OpenTK.Vector4 specularColor;
         float drawDistance = 48f;
         float drawDistanceSquared = 48f * 48f;
-        bool useDecodedImageCache = true;
 
         GridClient Client;
         RadegastInstance Instance;
@@ -937,7 +947,7 @@ namespace Radegast.Rendering
                     item.Data.TextureInfo.IsMask = isMask;
 
                     imageBytes = mi.ExportTGA();
-                    if (useDecodedImageCache)
+                    if (CacheDecodedTextures)
                     {
                         RHelp.SaveCachedImage(imageBytes, item.TeFace.TextureID, hasAlpha, fullAlpha, isMask);
                     }
@@ -1865,73 +1875,6 @@ namespace Radegast.Rendering
             GL.PopAttrib();
         }
 
-
-        void RenderBoundingBox(SceneObject prim)
-        {
-            Vector3 scale = prim.BasePrim.Scale;
-            BoundingVolume bbox = prim.BoundingVolume;
-            GL.PushAttrib(AttribMask.AllAttribBits);
-            GL.Disable(EnableCap.Fog);
-            GL.Disable(EnableCap.Texture2D);
-            GL.Disable(EnableCap.Lighting);
-            GL.Disable(EnableCap.CullFace);
-            GL.Disable(EnableCap.AlphaTest);
-
-            GL.DepthMask(false);
-            GL.ColorMask(false, false, false, false);
-
-            GL.PushMatrix();
-            GL.MultMatrix(Math3D.CreateSRTMatrix(scale, prim.RenderRotation, prim.RenderPosition));
-            GL.Color3(1f, 0f, 0f);
-            GL.Begin(BeginMode.Quads);
-            var bmin = bbox.Min;
-            var bmax = bbox.Max;
-
-            //front
-            GL.Vertex3(bmin.X, bmin.Y, bmin.Z);
-            GL.Vertex3(bmax.X, bmin.Y, bmin.Z);
-            GL.Vertex3(bmax.X, bmax.Y, bmin.Z);
-            GL.Vertex3(bmin.X, bmax.Y, bmin.Z);
-
-            // back
-            GL.Vertex3(bmin.X, bmin.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmin.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmax.Y, bmax.Z);
-            GL.Vertex3(bmin.X, bmax.Y, bmax.Z);
-
-            // up
-            GL.Vertex3(bmin.X, bmax.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmax.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmax.Y, bmin.Z);
-            GL.Vertex3(bmin.X, bmax.Y, bmin.Z);
-
-            // down
-            GL.Vertex3(bmin.X, bmin.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmin.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmin.Y, bmin.Z);
-            GL.Vertex3(bmin.X, bmin.Y, bmin.Z);
-
-            // left side
-            GL.Vertex3(bmin.X, bmin.Y, bmax.Z);
-            GL.Vertex3(bmin.X, bmax.Y, bmax.Z);
-            GL.Vertex3(bmin.X, bmax.Y, bmin.Z);
-            GL.Vertex3(bmin.X, bmin.Y, bmin.Z);
-
-            // rigth side
-            GL.Vertex3(bmax.X, bmin.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmax.Y, bmax.Z);
-            GL.Vertex3(bmax.X, bmax.Y, bmin.Z);
-            GL.Vertex3(bmax.X, bmin.Y, bmin.Z);
-
-            GL.End();
-            GL.PopMatrix();
-
-            GL.ColorMask(true, true, true, true);
-            GL.DepthMask(true);
-
-            GL.PopAttrib();
-        }
-
         void RenderPrim(RenderPrimitive mesh, RenderPass pass, int primNr)
         {
             if (!AvatarRenderingEnabled && mesh.Attached) return;
@@ -1946,6 +1889,16 @@ namespace Radegast.Rendering
 
             // Do we have animated texture on this face
             bool animatedTexture = false;
+
+            // Initialise flags tracking what type of faces this prim has
+            if (pass == RenderPass.Simple)
+            {
+                mesh.HasSimpleFaces = false;
+            }
+            else if (pass == RenderPass.Alpha)
+            {
+                mesh.HasAlphaFaces = false;
+            }
 
             // Draw the prim faces
             for (int j = 0; j < mesh.Faces.Count; j++)
@@ -1974,6 +1927,15 @@ namespace Radegast.Rendering
 
                     if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
                     if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
+
+                    if (pass == RenderPass.Simple)
+                    {
+                        mesh.HasSimpleFaces = true;
+                    }
+                    else if (pass == RenderPass.Alpha)
+                    {
+                        mesh.HasAlphaFaces = true;
+                    }
 
                     if (teFace.Fullbright)
                     {
@@ -2102,6 +2064,10 @@ namespace Radegast.Rendering
         {
             SortedObjects = new List<SceneObject>();
             VisibleAvatars = new List<RenderAvatar>();
+            if (OcclusionCullingEnabled)
+            {
+                OccludedObjects = new List<SceneObject>();
+            }
 
             lock (Prims)
             {
@@ -2129,7 +2095,14 @@ namespace Radegast.Rendering
                     if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
                     obj.Attached = false;
-                    SortedObjects.Add(obj);
+                    if (OcclusionCullingEnabled && obj.Occluded())
+                    {
+                        OccludedObjects.Add(obj);
+                    }
+                    else
+                    {
+                        SortedObjects.Add(obj);
+                    }
                 }
 
                 // Calculate avatar positions and perform interpolation tasks
@@ -2174,13 +2147,100 @@ namespace Radegast.Rendering
                         obj.AttachedStateKnown = true;
                     }
 
-                    SortedObjects.Add(obj);
+                    if (OcclusionCullingEnabled && obj.Occluded())
+                    {
+                        OccludedObjects.Add(obj);
+                    }
+                    else
+                    {
+                        SortedObjects.Add(obj);
+                    }
                 }
             }
 
             // RenderPrimitive class has IComparable implementation
             // that allows sorting by distance
             SortedObjects.Sort();
+        }
+
+        void RenderBoundingBox(SceneObject prim)
+        {
+            Vector3 scale = prim.BasePrim.Scale;
+
+            GL.PushMatrix();
+            GL.MultMatrix(Math3D.CreateSRTMatrix(scale, prim.RenderRotation, prim.RenderPosition));
+
+            if (useVBO)
+            {
+                GL.DrawElements(BeginMode.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+            }
+            else
+            {
+                GL.VertexPointer(3, VertexPointerType.Float, 0, RHelp.CubeVertices);
+                GL.DrawElements(BeginMode.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, RHelp.CubeIndices);
+            }
+            GL.PopMatrix();
+        }
+
+        int boundingBoxVBO = -1;
+        int boundingBoxVIndexVBO = -1;
+
+        private void RenderOccludedObjects()
+        {
+            if (!OcclusionCullingEnabled) return;
+
+            GL.EnableClientState(ArrayCap.VertexArray);
+            GL.ColorMask(false, false, false, false);
+            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Lighting);
+
+            if (useVBO)
+            {
+                if (boundingBoxVBO == -1)
+                {
+                    GL.GenBuffers(1, out boundingBoxVBO);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, boundingBoxVBO);
+                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * RHelp.CubeVertices.Length), RHelp.CubeVertices, BufferUsageHint.StaticDraw);
+                }
+                else
+                {
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, boundingBoxVBO);
+                }
+
+                if (boundingBoxVIndexVBO == -1)
+                {
+                    GL.GenBuffers(1, out boundingBoxVIndexVBO);
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, boundingBoxVIndexVBO);
+                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(sizeof(ushort) * RHelp.CubeIndices.Length), RHelp.CubeIndices, BufferUsageHint.StaticDraw);
+                }
+                else
+                {
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, boundingBoxVIndexVBO);
+                }
+
+                GL.VertexPointer(3, VertexPointerType.Float, 0, (IntPtr)0);
+            }
+
+            foreach (SceneObject obj in OccludedObjects)
+            {
+                if ((!obj.HasAlphaFaces && !obj.HasSimpleFaces)) continue;
+                obj.HasSimpleFaces = true;
+                obj.HasAlphaFaces = false;
+                obj.StartSimpleQuery();
+                RenderBoundingBox(obj);
+                obj.EndSimpleQuery();
+            }
+
+            if (useVBO)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            }
+
+            GL.ColorMask(true, true, true, true);
+            GL.DisableClientState(ArrayCap.VertexArray);
+            GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.Lighting);
         }
 
         private void RenderObjects(RenderPass pass)
@@ -2216,8 +2276,9 @@ namespace Radegast.Rendering
                 {
                     // Don't render objects that are outside the draw distane
                     if (Vector3.DistanceSquared(myPos, obj.RenderPosition) > drawDistanceSquared) continue;
-
+                    obj.StartQuery(pass);
                     RenderPrim((RenderPrimitive)obj, pass, ix);
+                    obj.EndQuery(pass);
                 }
             }
 
@@ -2313,9 +2374,11 @@ namespace Radegast.Rendering
                 RenderAvatars(RenderPass.Simple);
                 GL.Disable(EnableCap.AlphaTest);
 
+                GL.DepthMask(false);
+                RenderOccludedObjects();
+
                 // Alpha blending elements, disable writing to depth buffer
                 GL.Enable(EnableCap.Blend);
-                GL.DepthMask(false);
                 RenderWater();
                 RenderObjects(RenderPass.Alpha);
                 GL.DepthMask(true);
@@ -2430,7 +2493,7 @@ namespace Radegast.Rendering
                     TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
                     if (item.TextureData == null && item.TGAData == null)
                     {
-                        if (useDecodedImageCache && RHelp.LoadCachedImage(item.TeFace.TextureID, out item.TGAData, out item.Data.TextureInfo.HasAlpha, out item.Data.TextureInfo.FullAlpha, out item.Data.TextureInfo.IsMask))
+                        if (CacheDecodedTextures && RHelp.LoadCachedImage(item.TeFace.TextureID, out item.TGAData, out item.Data.TextureInfo.HasAlpha, out item.Data.TextureInfo.FullAlpha, out item.Data.TextureInfo.IsMask))
                         {
                             PendingTextures.Enqueue(item);
                         }
@@ -2629,7 +2692,7 @@ namespace Radegast.Rendering
                 gotImage.Reset();
                 bool hasAlpha, fullAlpha, isMask;
                 byte[] tgaData;
-                if (useDecodedImageCache && RHelp.LoadCachedImage(textureID, out tgaData, out hasAlpha, out fullAlpha, out isMask))
+                if (RHelp.LoadCachedImage(textureID, out tgaData, out hasAlpha, out fullAlpha, out isMask))
                 {
                     img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
                 }
@@ -2651,10 +2714,7 @@ namespace Radegast.Rendering
                                 }
                                 tgaData = mi.ExportTGA();
                                 img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
-                                if (useDecodedImageCache)
-                                {
-                                    RHelp.SaveCachedImage(tgaData, textureID, (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0, false, false);
-                                }
+                                RHelp.SaveCachedImage(tgaData, textureID, (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0, false, false);
                             }
                             gotImage.Set();
                         }
@@ -2968,7 +3028,7 @@ namespace Radegast.Rendering
         private void cbMisc_CheckedChanged(object sender, EventArgs e)
         {
             miscEnabled = cbMisc.Checked;
-            AvatarRenderingEnabled = miscEnabled;
+            OcclusionCullingEnabled = miscEnabled;
         }
     }
 }

@@ -317,6 +317,11 @@ namespace Radegast.Rendering
         public virtual Primitive BasePrim { get; set; }
         /// <summary>Were initial initialization tasks done</summary>
         public bool Initialized;
+        public int AlphaQueryID = -1;
+        public int SimpleQueryID = -1;
+        public bool HasAlphaFaces;
+        public bool HasSimpleFaces;
+
         #endregion Public fields
 
         /// <summary>
@@ -385,6 +390,102 @@ namespace Radegast.Rendering
                 return 1;
             else
                 return 0;
+        }
+
+        public void StartQuery(RenderPass pass)
+        {
+            if (pass == RenderPass.Simple)
+            {
+                StartSimpleQuery();
+            }
+            else if (pass == RenderPass.Alpha)
+            {
+                StartAlphaQuery();
+            }
+        }
+
+        public void EndQuery(RenderPass pass)
+        {
+            if (pass == RenderPass.Simple)
+            {
+                EndSimpleQuery();
+            }
+            else if (pass == RenderPass.Alpha)
+            {
+                EndAlphaQuery();
+            }
+        }
+
+        public void StartAlphaQuery()
+        {
+            if (AlphaQueryID == -1)
+            {
+                GL.GenQueries(1, out AlphaQueryID);
+            }
+            if (AlphaQueryID > 0)
+            {
+                GL.BeginQuery(QueryTarget.SamplesPassed, AlphaQueryID);
+            }
+        }
+
+        public void EndAlphaQuery()
+        {
+            if (AlphaQueryID > 0)
+            {
+                GL.EndQuery(QueryTarget.SamplesPassed);
+            }
+        }
+
+        public void StartSimpleQuery()
+        {
+            if (SimpleQueryID == -1)
+            {
+                GL.GenQueries(1, out SimpleQueryID);
+            }
+            if (SimpleQueryID > 0)
+            {
+                GL.BeginQuery(QueryTarget.SamplesPassed, SimpleQueryID);
+            }
+        }
+
+        public void EndSimpleQuery()
+        {
+            if (SimpleQueryID > 0)
+            {
+                GL.EndQuery(QueryTarget.SamplesPassed);
+            }
+        }
+
+        public bool Occluded()
+        {
+            if ((SimpleQueryID == -1 && AlphaQueryID == -1))
+            {
+                return false;
+            }
+
+            if ((!HasAlphaFaces && !HasSimpleFaces)) return true;
+
+            int samples = 1;
+            if (HasSimpleFaces && SimpleQueryID > 0)
+            {
+                GL.GetQueryObject(SimpleQueryID, GetQueryObjectParam.QueryResult, out samples);
+            }
+            if (HasSimpleFaces && samples > 0)
+            {
+                return false;
+            }
+
+            samples = 1;
+            if (HasAlphaFaces && AlphaQueryID > 0)
+            {
+                GL.GetQueryObject(AlphaQueryID, GetQueryObjectParam.QueryResult, out samples);
+            }
+            if (HasAlphaFaces && samples > 0)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 
@@ -586,6 +687,38 @@ namespace Radegast.Rendering
             }
         }
         #endregion Cached image save and load
+
+        #region Static vertices and indices for a cube (used for bounding box drawing)
+        /**********************************************
+          5 --- 4
+         /|    /|
+        1 --- 0 |
+        | 6 --| 7
+        |/    |/
+        2 --- 3
+        ***********************************************/
+        public static readonly float[] CubeVertices = new float[]
+        {
+             0.5f,  0.5f,  0.5f, // 0
+	        -0.5f,  0.5f,  0.5f, // 1
+	        -0.5f, -0.5f,  0.5f, // 2
+	         0.5f, -0.5f,  0.5f, // 3
+	         0.5f,  0.5f, -0.5f, // 4
+	        -0.5f,  0.5f, -0.5f, // 5
+	        -0.5f, -0.5f, -0.5f, // 6
+	         0.5f, -0.5f, -0.5f  // 7
+        };
+
+        public static readonly ushort[] CubeIndices = new ushort[]
+        {
+            0, 1, 2, 3,     // Front Face
+	        4, 5, 6, 7,     // Back Face
+	        1, 2, 6, 5,     // Left Face
+	        0, 3, 7, 4,     // Right Face
+	        0, 1, 5, 4,     // Top Face
+	        2, 3, 7, 6      // Bottom Face
+        };
+        #endregion Static vertices and indices for a cube (used for bounding box drawing)
     }
 
     /// <summary>
@@ -1103,7 +1236,7 @@ namespace Radegast.Rendering
             Array.Copy(source.RenderData.Indices, RenderData.Indices, source.RenderData.Indices.Length);
             Array.Copy(source.RenderData.weights, RenderData.weights, source.RenderData.weights.Length);
             Array.Copy(source.RenderData.skinJoints, RenderData.skinJoints, source.RenderData.skinJoints.Length);
-            
+
             RenderData.Center = new Vector3(source.RenderData.Center);
 
             teFaceID = source.teFaceID;
@@ -1289,7 +1422,7 @@ namespace Radegast.Rendering
                     }
                     else
                     {
-                        
+
                         ba = av.skel.mBones[jointname];
                     }
 
@@ -1314,7 +1447,7 @@ namespace Radegast.Rendering
                 if (bb != null)
                 {
                     lerp = Vector3.Lerp(ba.getDeltaOffset(), bb.getDeltaOffset(), weight);
-                    offset = Vector3.Lerp(ba.getTotalOffset(), bb.getTotalOffset(), weight);   
+                    offset = Vector3.Lerp(ba.getTotalOffset(), bb.getTotalOffset(), weight);
                 }
                 else
                 {
@@ -1324,7 +1457,7 @@ namespace Radegast.Rendering
                 }
 
                 Vector3 pos = new Vector3(MorphRenderData.Vertices[v], MorphRenderData.Vertices[v + 1], MorphRenderData.Vertices[v + 2]);
-                
+
                 //move back to mesh local coords
                 pos = pos - offset;
                 // apply LERPd offset
@@ -1342,9 +1475,9 @@ namespace Radegast.Rendering
 
         public void resetallmorphs()
         {
-            for (int i = 0; i < OrigRenderData.Vertices.Length/3; i++)
+            for (int i = 0; i < OrigRenderData.Vertices.Length / 3; i++)
             {
-     
+
                 MorphRenderData.Vertices[i * 3] = OrigRenderData.Vertices[i * 3];
                 MorphRenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 + 1];
                 MorphRenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2];
@@ -1353,7 +1486,7 @@ namespace Radegast.Rendering
                 //MorphRenderData.Normals[(i * 3) + 1] = OrigRenderData.Normals[i * 3 + 1];
                 //MorphRenderData.Normals[(i * 3) + 2] = OrigRenderData.Normals[i * 3 + 2];
 
-                RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2] ;
+                RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2];
                 RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1];
 
             }
@@ -1739,7 +1872,7 @@ namespace Radegast.Rendering
                     this.morphtest(av, vpe.ParamID, value);
 
                     x++;
-                  //  if (x > 100)
+                    //  if (x > 100)
                     //    break;
                 }
 
@@ -1955,7 +2088,7 @@ namespace Radegast.Rendering
                     {
                         //actually get the last for a pose the last frame is probably the static one once
                         //we have reached position
-                        binBVHJointKey rot = joint.rotationkeys[joint.rotationkeys.Length-1];
+                        binBVHJointKey rot = joint.rotationkeys[joint.rotationkeys.Length - 1];
 
                         Vector3 pos = new Vector3(0, 0, 0);
                         //binBVHJointKey pos = joint.positionkeys[0];
@@ -1997,7 +2130,7 @@ namespace Radegast.Rendering
 
         private bool rotdirty = true;
         private bool posdirty = true;
-        
+
         private Vector3 mTotalPos;
         private Quaternion mTotalRot;
 
@@ -2072,7 +2205,7 @@ namespace Radegast.Rendering
             {
                 b.mParentBone = parent.name;
                 parent.children.Add(b);
-            }               
+            }
 
             mBones.Add(b.name, b);
             mIndexedBones.Add(boneaddindex++, b);
@@ -2094,7 +2227,7 @@ namespace Radegast.Rendering
             this.scale = Bone.mBones[name].orig_scale + scale;
             this.rot = Bone.mBones[name].orig_rot * rot;
 
-            markdirty();        
+            markdirty();
         }
 
         // If we deform a bone mark this bone and all its children as dirty.  
@@ -2155,7 +2288,7 @@ namespace Radegast.Rendering
                 return mTotalPos;
             }
             else
-            {          
+            {
                 return getOffset();
             }
         }
@@ -2168,7 +2301,7 @@ namespace Radegast.Rendering
             }
             else
             {
-                getOffset(); 
+                getOffset();
                 return mDeltaPos;
             }
         }
