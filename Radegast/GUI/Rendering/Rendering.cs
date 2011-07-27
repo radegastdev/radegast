@@ -906,8 +906,12 @@ namespace Radegast.Rendering
                 {
                     imageBytes = item.TGAData;
                 }
-                else if (item.TextureData != null)
+                else if (item.TextureData != null || item.LoadAssetFromCache)
                 {
+                    if (item.LoadAssetFromCache)
+                    {
+                        item.TextureData = Client.Assets.Cache.GetCachedAssetBytes(item.Data.TextureInfo.TextureID);
+                    }
                     ManagedImage mi;
                     if (!OpenJPEG.DecodeToImage(item.TextureData, out mi)) continue;
 
@@ -1903,15 +1907,12 @@ namespace Radegast.Rendering
             // Draw the prim faces
             for (int j = 0; j < mesh.Faces.Count; j++)
             {
-                Primitive.TextureEntryFace teFace = mesh.Prim.Textures.FaceTextures[j];
+                Primitive.TextureEntryFace teFace = mesh.Prim.Textures.GetFace((uint)j);
                 Face face = mesh.Faces[j];
                 FaceData data = (FaceData)mesh.Faces[j].UserData;
 
                 if (data == null)
                     continue;
-
-                if (teFace == null)
-                    teFace = mesh.Prim.Textures.DefaultTexture;
 
                 if (teFace == null)
                     continue;
@@ -1969,7 +1970,27 @@ namespace Radegast.Rendering
 
                     GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 0.5f, 0.5f, 0.5f, 1f });
 
-                    if (data.TextureInfo.TexturePointer != 0)
+                    if (data.TextureInfo.TexturePointer == 0 && TexturesPtrMap.ContainsKey(teFace.TextureID))
+                    {
+                        data.TextureInfo = TexturesPtrMap[teFace.TextureID];
+                    }
+
+                    if (data.TextureInfo.TexturePointer == 0)
+                    {
+                        GL.Disable(EnableCap.Texture2D);
+                        if (texturesRequestedThisFrame < 2 && !data.TextureInfo.FetchFailed)
+                        {
+                            texturesRequestedThisFrame++;
+
+                            DownloadTexture(new TextureLoadItem()
+                            {
+                                Prim = prim,
+                                TeFace = teFace,
+                                Data = data
+                            });
+                        }
+                    }
+                    else 
                     {
                         // Is this face using texture animation
                         if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
@@ -1990,10 +2011,6 @@ namespace Radegast.Rendering
 
                         GL.Enable(EnableCap.Texture2D);
                         GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
-                    }
-                    else
-                    {
-                        GL.Disable(EnableCap.Texture2D);
                     }
 
                 }
@@ -2309,6 +2326,8 @@ namespace Radegast.Rendering
             GL.End();
         }
 
+        int texturesRequestedThisFrame;
+
         private void Render(bool picking)
         {
             if (picking)
@@ -2366,6 +2385,8 @@ namespace Radegast.Rendering
             }
             else
             {
+                texturesRequestedThisFrame = 0;
+
                 // Alpha mask elements, no blending, alpha test for A > 0.5
                 GL.Enable(EnableCap.AlphaTest);
                 RenderTerrain();
@@ -2491,24 +2512,35 @@ namespace Radegast.Rendering
                 else
                 {
                     TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
+
                     if (item.TextureData == null && item.TGAData == null)
                     {
                         if (CacheDecodedTextures && RHelp.LoadCachedImage(item.TeFace.TextureID, out item.TGAData, out item.Data.TextureInfo.HasAlpha, out item.Data.TextureInfo.FullAlpha, out item.Data.TextureInfo.IsMask))
                         {
                             PendingTextures.Enqueue(item);
                         }
-                        else
+                        else if (Client.Assets.Cache.HasAsset(item.Data.TextureInfo.TextureID))
                         {
-                            ThreadPool.QueueUserWorkItem(sync =>
+                            item.LoadAssetFromCache = true;
+                            PendingTextures.Enqueue(item);
+                        }
+                        else if (!item.Data.TextureInfo.FetchFailed)
+                        {
+                            Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
                             {
-                                Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
+                                switch (state)
                                 {
-                                    if (state == TextureRequestState.Finished)
-                                    {
+                                    case TextureRequestState.Finished:
                                         item.TextureData = asset.AssetData;
                                         PendingTextures.Enqueue(item);
-                                    }
-                                });
+                                        break;
+
+                                    case TextureRequestState.Aborted:
+                                    case TextureRequestState.NotFound:
+                                    case TextureRequestState.Timeout:
+                                        item.Data.TextureInfo.FetchFailed = true;
+                                        break;
+                                }
                             });
                         }
                     }
@@ -2568,12 +2600,12 @@ namespace Radegast.Rendering
                 face.UserData = data;
                 rprim.Faces[j] = face;
 
-                DownloadTexture(new TextureLoadItem()
-                {
-                    Data = data,
-                    Prim = prim,
-                    TeFace = teFace
-                });
+                //DownloadTexture(new TextureLoadItem()
+                //{
+                //    Data = data,
+                //    Prim = prim,
+                //    TeFace = teFace
+                //});
             }
 
             lock (Prims)

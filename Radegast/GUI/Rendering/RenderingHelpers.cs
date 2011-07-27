@@ -266,6 +266,7 @@ namespace Radegast.Rendering
         public bool FullAlpha;
         public bool IsMask;
         public UUID TextureID;
+        public bool FetchFailed;
     }
 
     public class TextureLoadItem
@@ -275,6 +276,7 @@ namespace Radegast.Rendering
         public Primitive.TextureEntryFace TeFace;
         public byte[] TextureData = null;
         public byte[] TGAData = null;
+        public bool LoadAssetFromCache = false;
     }
 
     public enum RenderPass
