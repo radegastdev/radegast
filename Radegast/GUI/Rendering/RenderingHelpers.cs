@@ -499,6 +499,10 @@ namespace Radegast.Rendering
         public bool Attached;
         /// <summary>Do we know if object is attached</summary>
         public bool AttachedStateKnown;
+        /// <summary>Are meshes constructed and ready for this prim</summary>
+        public bool Meshed;
+        /// <summary>Process of creating a mesh is underway</summary>
+        public bool Meshing;
 
         public RenderPrimitive()
         {

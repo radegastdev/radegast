@@ -105,7 +105,7 @@ namespace Radegast.Rendering
         /// <summary>
         /// Render avatars
         /// </summary>
-        public bool AvatarRenderingEnabled = false;
+        public bool AvatarRenderingEnabled = true;
 
         /// <summary>
         /// Show avatar skeloton
@@ -131,6 +131,11 @@ namespace Radegast.Rendering
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
+        
+        delegate void GenericTask();
+        BlockingQueue<GenericTask> PendingTasks = new BlockingQueue<GenericTask>();
+        Thread genericTaskThread;
+
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
 
         bool hasMipmap;
@@ -176,6 +181,11 @@ namespace Radegast.Rendering
 
             this.instance = instance;
 
+            genericTaskThread = new Thread(new ThreadStart(GenericTaskRunner));
+            genericTaskThread.IsBackground = true;
+            genericTaskThread.Name = "Generic task queue";
+            genericTaskThread.Start();
+
             renderer = new MeshmerizerR();
             renderTimer = new System.Diagnostics.Stopwatch();
             renderTimer.Start();
@@ -216,6 +226,13 @@ namespace Radegast.Rendering
             Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
             Client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
+
+            PendingTasks.Close();
+            if (genericTaskThread != null)
+            {
+                genericTaskThread.Join(2000);
+                genericTaskThread = null;
+            }
 
             if (instance.Netcom != null)
             {
@@ -970,6 +987,7 @@ namespace Radegast.Rendering
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, item.Data.TextureInfo.HasAlpha);
+                    GL.Flush();
                     bitmap.Dispose();
                 }
 
@@ -982,6 +1000,20 @@ namespace Radegast.Rendering
             Logger.DebugLog("Texture thread exited");
         }
         #endregion Texture thread
+
+        void GenericTaskRunner()
+        {
+            PendingTasks.Open();
+            Logger.DebugLog("Started generic task thread");
+
+            while (true)
+            {
+                GenericTask task = null;
+                if (!PendingTasks.Dequeue(Timeout.Infinite, ref task)) break;
+                task.Invoke();
+            }
+            Logger.DebugLog("Generic task thread exited");
+        }
 
         void LoadCurrentPrims()
         {
@@ -1193,7 +1225,11 @@ namespace Radegast.Rendering
             // This is a FIR filter known as a MMA or Modified Mean Average, using a 20 point sampling width
             advTimerTick = ((19 * advTimerTick) + lastFrameTime) / 20;
             // Stats in window title for now
-            Text = String.Format("Scene Viewer: FPS {0:000.00} Texture decode queue: {1}", 1d / advTimerTick, PendingTextures.Count);
+            Text = String.Format("Scene Viewer: FPS {0:000.00} Texture decode queue: {1}, Sculpt queue: {2}",
+                1d / advTimerTick,
+                PendingTextures.Count,
+                PendingTasks.Count);
+
 #if TURNS_OUT_PRINTER_IS_EXPENISVE
             int posX = glControl.Width - 100;
             int posY = 0;
@@ -2099,6 +2135,17 @@ namespace Radegast.Rendering
                 {
                     if (obj.BasePrim.ParentID != 0) continue;
                     if (!obj.Initialized) obj.Initialize();
+
+                    if (!obj.Meshed)
+                    {
+                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
+                        {
+                            meshingsRequestedThisFrame++;
+                            MeshPrim(obj);
+                        }
+                        continue;
+                    }
+
                     obj.Step(lastFrameTime);
 
                     if (!obj.PositionCalculated)
@@ -2146,6 +2193,17 @@ namespace Radegast.Rendering
                 {
                     if (obj.BasePrim.ParentID == 0) continue;
                     if (!obj.Initialized) obj.Initialize();
+
+                    if (!obj.Meshed)
+                    {
+                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
+                        {
+                            meshingsRequestedThisFrame++;
+                            MeshPrim(obj);
+                        }
+                        continue;
+                    }
+
                     obj.Step(lastFrameTime);
 
                     if (!obj.PositionCalculated)
@@ -2327,6 +2385,7 @@ namespace Radegast.Rendering
         }
 
         int texturesRequestedThisFrame;
+        int meshingsRequestedThisFrame;
 
         private void Render(bool picking)
         {
@@ -2386,6 +2445,7 @@ namespace Radegast.Rendering
             else
             {
                 texturesRequestedThisFrame = 0;
+                meshingsRequestedThisFrame = 0;
 
                 // Alpha mask elements, no blending, alpha test for A > 0.5
                 GL.Enable(EnableCap.AlphaTest);
@@ -2552,8 +2612,10 @@ namespace Radegast.Rendering
             }
         }
 
-        private void MeshPrim(Primitive prim, RenderPrimitive rprim)
+        private void CalculateBoundingBox(RenderPrimitive rprim)
         {
+            Primitive prim = rprim.BasePrim;
+
             // Calculate bounding volumes for each prim and adjust textures
             rprim.BoundingVolume = new BoundingVolume();
             for (int j = 0; j < rprim.Faces.Count; j++)
@@ -2599,18 +2661,94 @@ namespace Radegast.Rendering
                 // Set the UserData for this face to our FaceData struct
                 face.UserData = data;
                 rprim.Faces[j] = face;
-
-                //DownloadTexture(new TextureLoadItem()
-                //{
-                //    Data = data,
-                //    Prim = prim,
-                //    TeFace = teFace
-                //});
             }
+        }
 
-            lock (Prims)
+        private void MeshPrim(RenderPrimitive rprim)
+        {
+            if (rprim.Meshing) return;
+
+            rprim.Meshing = true;
+            Primitive prim = rprim.BasePrim;
+
+            // Regular prim
+            if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
             {
-                Prims[prim.LocalID] = rprim;
+                FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
+                rprim.Faces = mesh.Faces;
+                CalculateBoundingBox(rprim);
+                rprim.Meshed = true;
+                rprim.Meshing = false;
+            }
+            else
+            {
+                PendingTasks.Enqueue(new GenericTask(() =>
+                {
+                    FacetedMesh mesh = null;
+
+                    try
+                    {
+                        if (prim.Sculpt.Type != SculptType.Mesh)
+                        { // Regular sculptie
+                            Image img = null;
+
+                            lock (sculptCache)
+                            {
+                                if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
+                                {
+                                    img = sculptCache[prim.Sculpt.SculptTexture];
+                                }
+                            }
+
+                            if (img == null)
+                            {
+                                if (LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
+                                {
+                                    sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
+                                }
+                                else
+                                {
+                                    return;
+                                }
+                            }
+
+                            mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.High);
+                        }
+                        else
+                        { // Mesh
+                            AutoResetEvent gotMesh = new AutoResetEvent(false);
+
+                            Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
+                            {
+                                if (!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, DetailLevel.Highest, out mesh))
+                                {
+                                    Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
+                                }
+                                gotMesh.Set();
+                            });
+
+                            gotMesh.WaitOne(20 * 1000, false);
+                        }
+                    }
+                    catch
+                    { }
+
+                    if (mesh != null)
+                    {
+                        rprim.Faces = mesh.Faces;
+                        CalculateBoundingBox(rprim);
+                        rprim.Meshed = true;
+                        rprim.Meshing = false;
+                    }
+                    else
+                    {
+                        lock (Prims)
+                        {
+                            Prims.Remove(rprim.BasePrim.LocalID);
+                        }
+                    }
+                }));
+                return;
             }
         }
 
@@ -2640,78 +2778,9 @@ namespace Radegast.Rendering
                 rPrim = new RenderPrimitive();
             }
 
-            // Regular prim
-            if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
-            {
-                FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
-                rPrim.Faces = mesh.Faces;
-                rPrim.Prim = prim;
-                MeshPrim(prim, rPrim);
-            }
-            else
-            {
-                try
-                {
-                    FacetedMesh mesh = null;
-
-                    if (prim.Sculpt.Type != SculptType.Mesh)
-                    { // Regular sculptie
-                        Image img = null;
-
-                        lock (sculptCache)
-                        {
-                            if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
-                            {
-                                img = sculptCache[prim.Sculpt.SculptTexture];
-                            }
-                        }
-
-                        if (img == null)
-                        {
-                            if (LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
-                            {
-                                sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
-                            }
-                            else
-                            {
-                                return;
-                            }
-                        }
-
-                        mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.High);
-                    }
-                    else
-                    { // Mesh
-                        AutoResetEvent gotMesh = new AutoResetEvent(false);
-                        bool meshSuccess = false;
-
-                        Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
-                            {
-                                if (!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, DetailLevel.Highest, out mesh))
-                                {
-                                    Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
-                                }
-                                else
-                                {
-                                    meshSuccess = true;
-                                }
-                                gotMesh.Set();
-                            });
-
-                        if (!gotMesh.WaitOne(20 * 1000, false)) return;
-                        if (!meshSuccess) return;
-                    }
-
-                    if (mesh != null)
-                    {
-                        rPrim.Faces = mesh.Faces;
-                        rPrim.Prim = prim;
-                        MeshPrim(prim, rPrim);
-                    }
-                }
-                catch
-                { }
-            }
+            rPrim.Prim = prim;
+            rPrim.Meshed = false;
+            lock (Prims) Prims[prim.LocalID] = rPrim;
         }
 
         private bool LoadTexture(UUID textureID, ref Image texture, bool removeAlpha)
