@@ -2155,6 +2155,14 @@ namespace Radegast.Rendering
                         }
                         continue;
                     }
+                    else if (obj.LastMeshHash != obj.GetMeshHash())
+                    {
+                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
+                        {
+                            meshingsRequestedThisFrame++;
+                            MeshPrim(obj);
+                        }
+                    }
 
                     obj.Step(lastFrameTime);
 
@@ -2212,6 +2220,14 @@ namespace Radegast.Rendering
                             MeshPrim(obj);
                         }
                         continue;
+                    }
+                    else if (obj.LastMeshHash != obj.GetMeshHash())
+                    {
+                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
+                        {
+                            meshingsRequestedThisFrame++;
+                            MeshPrim(obj);
+                        }
                     }
 
                     obj.Step(lastFrameTime);
@@ -2689,6 +2705,7 @@ namespace Radegast.Rendering
                 CalculateBoundingBox(rprim);
                 rprim.Meshed = true;
                 rprim.Meshing = false;
+                rprim.LastMeshHash = rprim.GetMeshHash();
             }
             else
             {
@@ -2749,6 +2766,7 @@ namespace Radegast.Rendering
                         CalculateBoundingBox(rprim);
                         rprim.Meshed = true;
                         rprim.Meshing = false;
+                        rprim.LastMeshHash = rprim.GetMeshHash();
                     }
                     else
                     {
