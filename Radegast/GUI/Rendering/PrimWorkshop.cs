@@ -967,7 +967,7 @@ namespace Radegast.Rendering
 
                 // Texture transform for this face
                 Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
-                renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
+                renderer.TransformTexCoords(face.Vertices, face.Center, teFace, prim.Scale);
 
                 // Texcoords for this face
                 data.TexCoords = new float[face.Vertices.Count * 2];

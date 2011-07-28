@@ -131,7 +131,7 @@ namespace Radegast.Rendering
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
-        
+
         delegate void GenericTask();
         BlockingQueue<GenericTask> PendingTasks = new BlockingQueue<GenericTask>();
         Thread genericTaskThread;
@@ -410,15 +410,15 @@ namespace Radegast.Rendering
                         skeleton.mAnimationTransactions.Add(tid, av);
 
                         BinBVHAnimationReader bvh;
-                        if(skeleton.mAnimationCache.TryGetValue(anim.AnimationID,out bvh))
+                        if (skeleton.mAnimationCache.TryGetValue(anim.AnimationID, out bvh))
                         {
                             skeleton.addanimation(null, tid, bvh);
                             break;
                         }
 
                         Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
-                       
-                        Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false,SourceType.Asset,tid, animRecievedCallback);  
+
+                        Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, animRecievedCallback);
                     }
                     break;
                 }
@@ -428,8 +428,8 @@ namespace Radegast.Rendering
         void animRecievedCallback(AssetDownload transfer, Asset asset)
         {
             if (transfer.Success)
-            {        
-                skeleton.addanimation(asset,transfer.ID, null);
+            {
+                skeleton.addanimation(asset, transfer.ID, null);
             }
         }
 
@@ -1419,7 +1419,7 @@ namespace Radegast.Rendering
 
                     // Prim roation and position
                     Vector3 pos = av.avatar.Position;
-                    pos.X += 1;               
+                    pos.X += 1;
 
                     GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, pos));
 
@@ -2036,7 +2036,7 @@ namespace Radegast.Rendering
                             });
                         }
                     }
-                    else 
+                    else
                     {
                         // Is this face using texture animation
                         if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
@@ -2682,7 +2682,7 @@ namespace Radegast.Rendering
                 }
 
                 // Texture transform for this face
-                renderer.TransformTexCoords(face.Vertices, face.Center, teFace);
+                renderer.TransformTexCoords(face.Vertices, face.Center, teFace, prim.Scale);
 
                 // Set the UserData for this face to our FaceData struct
                 face.UserData = data;
@@ -2703,9 +2703,9 @@ namespace Radegast.Rendering
                 FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
                 rprim.Faces = mesh.Faces;
                 CalculateBoundingBox(rprim);
-                rprim.Meshed = true;
-                rprim.Meshing = false;
                 rprim.LastMeshHash = rprim.GetMeshHash();
+                rprim.Meshing = false;
+                rprim.Meshed = true;
             }
             else
             {
@@ -2764,9 +2764,9 @@ namespace Radegast.Rendering
                     {
                         rprim.Faces = mesh.Faces;
                         CalculateBoundingBox(rprim);
-                        rprim.Meshed = true;
-                        rprim.Meshing = false;
                         rprim.LastMeshHash = rprim.GetMeshHash();
+                        rprim.Meshing = false;
+                        rprim.Meshed = true;
                     }
                     else
                     {
