@@ -202,7 +202,9 @@
         <Match path="." pattern="*.html" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.xml" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.txt" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
-        <Match path="openmetaverse_data" pattern="*.*" recurse="true" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="openmetaverse_data" pattern="*.*" recurse="true" buildAction="Content" copyToOutput="PreserveNewest">
+          <Exclude name=".svn"/>
+        </Match>
 		<Match path="character" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
