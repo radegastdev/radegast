@@ -2888,4 +2888,71 @@ namespace Radegast.Rendering
             return Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
         }
     }
+
+    /*
+     *  Helper classs for reading the static VFS file, call 
+     *  staticVFS.readVFSheaders() with the path to the static_data.db2 and static_index.db2 files
+     *  and it will pass and dump in to openmetaverse_data for you
+     *  This should only be needed to be used if LL update the static VFS in order to refresh our data
+     */
+
+    class VFSblock
+    {
+        public int mLocation;
+        public int mLength;
+        public int mAccessTime;
+        public UUID mFileID;
+        public int mSize;
+        public AssetType mAssetType;
+
+        public int readblock(byte[] blockdata, int offset)
+        {
+             
+             BitPack input = new BitPack(blockdata, offset);
+             mLocation = input.UnpackInt();
+             mLength = input.UnpackInt();
+             mAccessTime = input.UnpackInt();
+             mFileID = input.UnpackUUID();
+             int filetype = input.UnpackShort();
+             mAssetType = (AssetType)filetype;
+             mSize = input.UnpackInt();
+             offset += 34;
+
+             Logger.Log(String.Format("Found header for {0} type {1} length {2} at {3}", mFileID, mAssetType, mSize, mLocation),Helpers.LogLevel.Info);
+           
+             return offset;
+        }
+
+    }
+
+    public class staticVFS
+    {
+        public static void readVFSheaders(string datafile, string indexfile)
+        {
+            FileStream datastream;
+            FileStream indexstream;
+
+            datastream = File.Open(datafile, FileMode.Open);
+            indexstream = File.Open(indexfile, FileMode.Open);
+
+            int offset=0;
+
+            byte[] blockdata = new byte[indexstream.Length];
+            indexstream.Read(blockdata, 0, (int)indexstream.Length);
+
+            while (offset < indexstream.Length)
+            {
+                VFSblock block = new VFSblock();
+                offset = block.readblock(blockdata, offset);
+
+                FileStream writer = File.Open(OpenMetaverse.Settings.RESOURCE_DIR+System.IO.Path.DirectorySeparatorChar+block.mFileID.ToString(),FileMode.Create);
+                byte[] data = new byte[block.mSize];
+                datastream.Seek(block.mLocation, SeekOrigin.Begin);
+                datastream.Read(data, 0, block.mSize);
+                writer.Write(data, 0, block.mSize);
+                writer.Close();
+            }
+           
+        }
+    }
 }
