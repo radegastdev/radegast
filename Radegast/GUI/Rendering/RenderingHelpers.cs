@@ -515,11 +515,11 @@ namespace Radegast.Rendering
         {
             if (Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
             {
-                return Prim.Sculpt.GetHashCode();
+                return Prim.Sculpt.GetHashCode() ^ Prim.Textures.GetHashCode();
             }
             else
             {
-                return Prim.PrimData.GetHashCode();
+                return Prim.PrimData.GetHashCode() ^ Prim.Textures.GetHashCode();
             }
         }
 
