@@ -398,14 +398,15 @@ namespace Radegast.Rendering
 
         void AvatarAnimationChanged(object sender, AvatarAnimationEventArgs e)
         {
-
             // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
             foreach (RenderAvatar av in Avatars.Values)
             {
                 if (av.avatar.ID == e.AvatarID)
                 {
+                    av.glavatar.skel.flushanimations();
                     foreach (Animation anim in e.Animations)
                     {
+                       
                         UUID tid = UUID.Random();
                         skeleton.mAnimationTransactions.Add(tid, av);
 
@@ -413,7 +414,7 @@ namespace Radegast.Rendering
                         if (skeleton.mAnimationCache.TryGetValue(anim.AnimationID, out bvh))
                         {
                             skeleton.addanimation(null, tid, bvh);
-                            break;
+                            continue;
                         }
 
                         Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);

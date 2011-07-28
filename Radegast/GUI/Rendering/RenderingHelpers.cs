@@ -1960,11 +1960,12 @@ namespace Radegast.Rendering
     public class skeleton
     {
         public Dictionary<string, Bone> mBones;
+        public Dictionary<string, int> mPriority = new Dictionary<string, int>();
         public static Dictionary<int, string> mUpperMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
 
-        public BinBVHAnimationReader[] mPlayingAnimations = new BinBVHAnimationReader[6];
+        public List<BinBVHAnimationReader> mAnimations = new List<BinBVHAnimationReader>();
 
         public static Dictionary<UUID, RenderAvatar> mAnimationTransactions = new Dictionary<UUID, RenderAvatar>();
 
@@ -1985,6 +1986,9 @@ namespace Radegast.Rendering
             public float currenttime_pos;
             public int lastkeyframe_pos;
             public int nextkeyframe_pos;
+
+            public int loopinframe;
+            public int loopoutframe;
         }
 
 
@@ -2088,6 +2092,15 @@ namespace Radegast.Rendering
             }
         }
 
+
+        public void flushanimations()
+        {
+            lock (mAnimations)
+            {
+                mAnimations.Clear();
+            }
+        }
+
         // Add animations to the global decoded list
         // TODO garbage collect unused animations somehow
         public static void addanimation(OpenMetaverse.Assets.Asset asset,UUID tid, BinBVHAnimationReader b)
@@ -2120,18 +2133,46 @@ namespace Radegast.Rendering
                 state.currenttime_rot = 0;
                 state.currenttime_pos = 0;
 
+                state.loopinframe = 0;
+                state.loopoutframe = joint.rotationkeys.Length - 1;
+
+                if (b.Loop == true)
+                {
+                    int frame=0;
+                    foreach( binBVHJointKey key in joint.rotationkeys)
+                    {
+                        if (key.time == b.InPoint)
+                        {
+                            state.loopinframe = frame;
+                        }
+
+                        if (key.time == b.OutPoint)
+                        {
+                            state.loopoutframe = frame;
+                        }
+
+                        frame++;
+
+                    }
+
+                }
+
                 b.joints[pos].Tag = state;
                 pos++;
             }
 
-            if (b.Priority >= 0 && b.Priority <= 5)
-                av.glavatar.skel.mPlayingAnimations[b.Priority] = b;
+            lock (av.glavatar.skel.mAnimations)
+            {
+                av.glavatar.skel.mAnimations.Add(b);
+            }
         }
 
         public void animate(float lastframetime)
         {
+            mPriority.Clear();
 
-                foreach (BinBVHAnimationReader b in mPlayingAnimations) // TODO priority sort
+            lock(mAnimations)
+            foreach (BinBVHAnimationReader b in mAnimations) 
                 {
                     if (b == null)
                         continue;
@@ -2139,8 +2180,18 @@ namespace Radegast.Rendering
                         int jpos = 0;
                         foreach (binBVHJoint joint in b.joints)
                         {
+                            int prio=0;
+      
+                            //Quick hack to stack animations in the correct order
+                            //TODO we need to do this per joint as they all have their own priorities as well ;-(
+                            if (mPriority.TryGetValue(joint.Name, out prio))
+                            {
+                                if (prio > b.Priority)
+                                    continue;
+                            }
 
-
+                            mPriority[joint.Name] = b.Priority;
+                
                             binBVHJointState state = (binBVHJointState) b.joints[jpos].Tag;
 
                             state.currenttime_rot += lastframetime;
@@ -2164,18 +2215,25 @@ namespace Radegast.Rendering
                                     state.lastkeyframe_pos++;
                                     state.nextkeyframe_pos++;
 
-                                    if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                    if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length || (state.nextkeyframe_pos >=state.loopoutframe && b.Loop==true))
                                     {
                                         if (b.Loop == true)
                                         {
-                                            state.nextkeyframe_pos = 0;
-                                            state.currenttime_pos = 0;
+                                            state.nextkeyframe_pos = state.loopinframe;
+                                            state.currenttime_pos = b.InPoint;
+
+                                            if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                            {
+                                                state.lastkeyframe_pos = state.loopinframe;
+                                            }
                                         }
                                         else
                                         {
                                             state.nextkeyframe_pos = joint.positionkeys.Length - 1;
                                         }
                                     }
+
+                                   
 
                                     if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
                                     {
@@ -2188,6 +2246,8 @@ namespace Radegast.Rendering
                                         else
                                         {
                                             state.lastkeyframe_pos = joint.positionkeys.Length - 1;
+                                            if (state.lastkeyframe_pos < 0)//eeww
+                                                state.lastkeyframe_pos = 0; 
                                         }
                                     }
                                 }
@@ -2218,12 +2278,20 @@ namespace Radegast.Rendering
                                     state.lastkeyframe_rot++;
                                     state.nextkeyframe_rot++;
 
-                                    if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                    if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length || (state.nextkeyframe_rot >= state.loopoutframe && b.Loop == true))
                                     {
                                         if (b.Loop == true)
                                         {
-                                            state.nextkeyframe_rot = 0;
-                                            state.currenttime_rot = 0;
+                                            state.nextkeyframe_rot = state.loopinframe;
+                                            state.currenttime_rot = b.InPoint;
+
+                                            if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                            {
+                                                state.lastkeyframe_rot = state.loopinframe;
+                                               
+                 
+                                            }
+
                                         }
                                         else
                                         {
