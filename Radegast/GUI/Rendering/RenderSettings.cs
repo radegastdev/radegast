@@ -39,6 +39,6 @@ namespace Radegast.Rendering
         public static bool UseVBO;
         public static bool UseFBO;
         public static bool HasMipmap;
-        public static bool ShadersSupported;
+        public static bool HasShaders;
     }
 }

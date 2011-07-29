@@ -585,8 +585,9 @@ namespace Radegast.Rendering
                 GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
                 string glExtensions = GL.GetString(StringName.Extensions);
-                hasMipmap = glExtensions.Contains("GL_SGIS_generate_mipmap");
-                useVBO = glExtensions.Contains("ARB_vertex_buffer_object");
+                RenderSettings.HasMipmap = glExtensions.Contains("GL_SGIS_generate_mipmap");
+                RenderSettings.UseVBO = glExtensions.Contains("ARB_vertex_buffer_object");
+                RenderSettings.HasShaders = glExtensions.Contains("vertex_shader") && glExtensions.Contains("fragment_shader");
 
                 // Double check if we have mipmap ability
                 if (RenderSettings.HasMipmap)
