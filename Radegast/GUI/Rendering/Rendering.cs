@@ -404,7 +404,7 @@ namespace Radegast.Rendering
                     av.glavatar.skel.flushanimations();
                     foreach (Animation anim in e.Animations)
                     {
-                       
+
                         UUID tid = UUID.Random();
                         skeleton.mAnimationTransactions.Add(tid, av);
 
@@ -1520,15 +1520,13 @@ namespace Radegast.Rendering
                 int avatarNr = 0;
                 foreach (RenderAvatar av in VisibleAvatars)
                 {
-                    // need to rebuild mesh as animations may have changed rotations
-                    if (av.glavatar.skel.mNeedsMeshRebuild)
-                    {
-                        av.glavatar.skel.mNeedsMeshRebuild = false;
-                    }
-
-                    av.glavatar.skel.animate(lastFrameTime);
-
                     avatarNr++;
+
+                    // Whole avatar position
+                    GL.PushMatrix();
+
+                    // Prim roation and position
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition));
 
                     if (av.glavatar._meshes.Count > 0)
                     {
@@ -1549,11 +1547,8 @@ namespace Radegast.Rendering
 
                             GL.Color3(1f, 1f, 1f);
 
-                            // Individual prim matrix
+                            // Individual part mesh matrix
                             GL.PushMatrix();
-
-                            // Prim roation and position
-                            GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.RenderRotation, av.RenderPosition));
 
                             // Special case for eyeballs we need to offset the mesh to the correct position
                             // We have manually added the eyeball offset based on the headbone when we
@@ -1562,12 +1557,12 @@ namespace Radegast.Rendering
                             if (mesh.Name == "eyeBallLeftMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.mLeftEye.getTotalRotation(), av.glavatar.skel.mLeftEye.getTotalOffset()));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.glavatar.skel.mLeftEye.getTotalRotation(), av.glavatar.skel.mLeftEye.getTotalOffset()));
                             }
                             if (mesh.Name == "eyeBallRightMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.glavatar.skel.mRightEye.getTotalRotation(), av.glavatar.skel.mRightEye.getTotalOffset()));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.glavatar.skel.mRightEye.getTotalRotation(), av.glavatar.skel.mRightEye.getTotalOffset()));
                             }
 
                             //Should we be offsetting the base meshs at all?
@@ -1626,7 +1621,11 @@ namespace Radegast.Rendering
 
                         av.glavatar.skel.mNeedsMeshRebuild = false;
                     }
+
+                    // Whole avatar position
+                    GL.PopMatrix();
                 }
+
                 GL.Disable(EnableCap.Texture2D);
                 GL.DisableClientState(ArrayCap.NormalArray);
                 GL.DisableClientState(ArrayCap.VertexArray);

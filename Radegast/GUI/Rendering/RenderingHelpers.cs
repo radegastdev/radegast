@@ -372,7 +372,7 @@ namespace Radegast.Rendering
             else if (InterpolatedRotation != BasePrim.Rotation)
             {
                 InterpolatedRotation = Quaternion.Slerp(InterpolatedRotation, BasePrim.Rotation, time * 10f);
-                if (Math.Abs(1f - Quaternion.Dot(InterpolatedRotation, BasePrim.Rotation)) < 0.0001)
+                if (1f - Math.Abs(Quaternion.Dot(InterpolatedRotation, BasePrim.Rotation)) < 0.0001)
                     InterpolatedRotation = BasePrim.Rotation;
             }
         }
@@ -1946,6 +1946,7 @@ namespace Radegast.Rendering
 
         public override void Step(float time)
         {
+            glavatar.skel.animate(time);
             base.Step(time);
         }
 
