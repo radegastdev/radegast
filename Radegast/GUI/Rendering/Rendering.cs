@@ -739,7 +739,6 @@ namespace Radegast.Rendering
                     Vector3 diffPos = (newPos - lastCachedClientCameraPos);
                     Camera.Position += diffPos;
                     Camera.FocalPoint += diffPos;
-                    Camera.EndMove();
                 }
                 else
                     InitCamera();//Reset the camera, we don't have a previous position

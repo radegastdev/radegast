@@ -354,10 +354,7 @@ namespace Radegast.Rendering
             {
                 BasePrim.Position = InterpolatedPosition = BasePrim.Position + BasePrim.Velocity * time
                     * 0.98f * RadegastInstance.GlobalInstance.Client.Network.CurrentSim.Stats.Dilation;
-                if(BasePrim.Acceleration != Vector3.Zero)
-                    BasePrim.Velocity += BasePrim.Acceleration * time;
-                else
-                    BasePrim.Velocity *= time;
+                BasePrim.Velocity += BasePrim.Acceleration * time;
             }
             else if (InterpolatedPosition != BasePrim.Position)
             {
