@@ -379,7 +379,14 @@ namespace Radegast.Rendering
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
-            UpdatePrimBlocking(e.Prim);
+            if(e.Prim.ID == Client.Self.AgentID)
+                UpdateCameraClientMovement (e.Update.Position);//Update our camera with the new pos (if nessessary)
+
+            //If it is an avatar, we don't need to deal with the terse update stuff, unless it sends textures to us
+            if(e.Prim.PrimData.PCode == PCode.Avatar && e.Update.Textures == null)
+                return;
+
+             UpdatePrimBlocking(e.Prim);
         }
 
         void Objects_ObjectUpdate(object sender, PrimEventArgs e)
@@ -711,10 +718,33 @@ namespace Radegast.Rendering
         #region Mouse handling
         bool dragging = false;
         int dragX, dragY, downX, downY;
+        /// <summary>
+        /// The camera doesn't move when ctrl-alt has been used, so don't move it if the user moves around
+        /// </summary>
+        bool cameraLocked = false;
+        private Vector3 lastCachedClientCameraPos = Vector3.Zero;
 
         private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
             Camera.Position += (Camera.Position - Camera.FocalPoint) * (e.Delta / -500f);
+        }
+
+        private void UpdateCameraClientMovement(Vector3 newPos)
+        {
+            if(!cameraLocked)
+            {
+                if(lastCachedClientCameraPos != Vector3.Zero)
+                {
+                    //Add in the changes to the position, but don't reset the camera
+                    Vector3 diffPos = (newPos - lastCachedClientCameraPos);
+                    Camera.Position += diffPos;
+                    Camera.FocalPoint += diffPos;
+                    Camera.EndMove();
+                }
+                else
+                    InitCamera();//Reset the camera, we don't have a previous position
+                lastCachedClientCameraPos = newPos;
+            }
         }
 
         SceneObject RightclickedObject;
