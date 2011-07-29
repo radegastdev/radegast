@@ -825,6 +825,35 @@ namespace Radegast.Rendering
             RenderPosition = Position;
             RenderFocalPoint = FocalPoint;
         }
+
+        public void Pan(float deltaX, float deltaY)
+        {
+            Vector3 direction = Position - FocalPoint;
+            direction.Normalize();
+            Vector3 vy = direction % Vector3.UnitZ;
+            Vector3 vx = vy % direction;
+            Vector3 vxy = vx * deltaY + vy * deltaX;
+            Position += vxy;
+            FocalPoint += vxy;
+        }
+
+        public void Rotate(float delta, bool horizontal)
+        {
+            Vector3 direction = Position - FocalPoint;
+            if (horizontal)
+            {
+                Position = FocalPoint + direction * new Quaternion(0f, 0f, (float)Math.Sin(delta), (float)Math.Cos(delta));
+            }
+            else
+            {
+                Position = FocalPoint + direction * Quaternion.CreateFromAxisAngle(direction % Vector3.UnitZ, delta);
+            }
+        }
+
+        public void MoveToTarget(float delta)
+        {
+            Position += (Position - FocalPoint) * delta;
+        }
     }
 
     public static class MeshToOBJ

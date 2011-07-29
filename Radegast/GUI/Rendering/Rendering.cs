@@ -732,7 +732,7 @@ namespace Radegast.Rendering
 
         private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
-            Camera.Position += (Camera.Position - Camera.FocalPoint) * (e.Delta / -500f);
+            Camera.MoveToTarget(e.Delta / -500f);
         }
 
         SceneObject RightclickedObject;
@@ -774,33 +774,22 @@ namespace Radegast.Rendering
                     // Pan
                     if (ModifierKeys == Keys.Control || ModifierKeys == (Keys.Alt | Keys.Control | Keys.Shift))
                     {
-                        Vector3 direction = Camera.Position - Camera.FocalPoint;
-                        direction.Normalize();
-                        Vector3 vy = direction % new Vector3(0f, 0f, 1f);
-                        Vector3 vx = vy % direction;
-                        Vector3 vxy = vx * deltaY * pixelToM * 2 + vy * deltaX * pixelToM * 2;
-                        Camera.Position += vxy;
-                        Camera.FocalPoint += vxy;
+                        Camera.Pan(deltaX * pixelToM * 2, deltaY * pixelToM * 2);
                     }
 
                     // Alt-zoom (up down move camera closer to target, left right rotate around target)
                     if (ModifierKeys == Keys.Alt)
                     {
-                        Camera.Position += (Camera.Position - Camera.FocalPoint) * deltaY * pixelToM;
-                        var dx = -(deltaX * pixelToM);
-                        Camera.Position = Camera.FocalPoint + (Camera.Position - Camera.FocalPoint) * new Quaternion(0f, 0f, (float)Math.Sin(dx), (float)Math.Cos(dx));
+                        Camera.MoveToTarget(deltaY * pixelToM);
+                        Camera.Rotate(-deltaX * pixelToM, true);
                     }
 
                     // Rotate camera in a vertical circle around target on up down mouse movement
                     if (ModifierKeys == (Keys.Alt | Keys.Control))
                     {
-                        Camera.Position = Camera.FocalPoint +
-                            (Camera.Position - Camera.FocalPoint)
-                            * Quaternion.CreateFromAxisAngle((Camera.Position - Camera.FocalPoint) % new Vector3(0f, 0f, 1f), deltaY * pixelToM);
-                        var dx = -(deltaX * pixelToM);
-                        Camera.Position = Camera.FocalPoint + (Camera.Position - Camera.FocalPoint) * new Quaternion(0f, 0f, (float)Math.Sin(dx), (float)Math.Cos(dx));
+                        Camera.Rotate(deltaY * pixelToM, false);
+                        Camera.Rotate(-deltaX * pixelToM, true);
                     }
-
                 }
 
                 dragX = e.X;
@@ -1133,13 +1122,12 @@ namespace Radegast.Rendering
 
         void InitCamera()
         {
-            Vector3 camPos = Client.Self.SimPosition + new Vector3(-2, 0, 0) * Client.Self.Movement.BodyRotation;
+            Vector3 camPos = Client.Self.SimPosition + new Vector3(-4, 0, 1) * Client.Self.Movement.BodyRotation;
             camPos.Z += 2f;
             Camera.Position = camPos;
             Camera.FocalPoint = Client.Self.SimPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
             Camera.Zoom = 1.0f;
             Camera.Far = DrawDistance;
-            Camera.EndMove();
         }
 
         Vector3 PrimPos(Primitive prim)
@@ -1686,6 +1674,90 @@ namespace Radegast.Rendering
             }
         }
         #endregion avatars
+
+        #region Keyboard
+        void CheckKeyboard(float time)
+        {
+            if (ModifierKeys == Keys.None)
+            {
+                // Movement forwards and backwards and body rotation
+                Client.Self.Movement.AtPos = Instance.Keyboard.IsKeyDown(Keys.Up);
+                Client.Self.Movement.AtNeg = Instance.Keyboard.IsKeyDown(Keys.Down);
+                Client.Self.Movement.TurnLeft = Instance.Keyboard.IsKeyDown(Keys.Left);
+                Client.Self.Movement.TurnRight = Instance.Keyboard.IsKeyDown(Keys.Right);
+
+                if (Client.Self.Movement.TurnLeft)
+                {
+                    Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, time);
+                }
+                else if (client.Self.Movement.TurnRight)
+                {
+                    Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -time);
+                }
+
+                if (Instance.Keyboard.IsKeyDown(Keys.Escape))
+                {
+                    InitCamera();
+                }
+            }
+            else if (ModifierKeys == Keys.Shift)
+            {
+                // Strafe
+                Client.Self.Movement.LeftNeg = Instance.Keyboard.IsKeyDown(Keys.Right);
+                Client.Self.Movement.LeftPos = Instance.Keyboard.IsKeyDown(Keys.Left);
+            }
+            else if (ModifierKeys == Keys.Alt)
+            {
+                // Camera horizontal rotation
+                if (Instance.Keyboard.IsKeyDown(Keys.Left))
+                {
+                    Camera.Rotate(-time, true);   
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.Right))
+                {
+                    Camera.Rotate(time, true);
+                } // Camera vertical rotation
+                else if (Instance.Keyboard.IsKeyDown(Keys.PageDown))
+                {
+                    Camera.Rotate(-time, false);
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.PageUp))
+                {
+                    Camera.Rotate(time, false);
+                } // Camera zoom
+                else if (Instance.Keyboard.IsKeyDown(Keys.Down))
+                {
+                    Camera.MoveToTarget(time);
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.Up))
+                {
+                    Camera.MoveToTarget(-time);
+                }
+            }
+            else if (ModifierKeys == Keys.Control)
+            {
+                // Camera pan
+                float timeFactor = 3f;
+
+                if (Instance.Keyboard.IsKeyDown(Keys.Left))
+                {
+                    Camera.Pan(time * timeFactor, 0f);
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.Right))
+                {
+                    Camera.Pan(-time * timeFactor, 0f);
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.Up))
+                {
+                    Camera.Pan(0f, time * timeFactor);
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.Down))
+                {
+                    Camera.Pan(0f, -time * timeFactor);
+                }
+            }
+        }
+        #endregion Keyboard
 
         #region Terrian
         bool TerrainModified = true;
@@ -2539,30 +2611,7 @@ namespace Radegast.Rendering
                 texturesRequestedThisFrame = 0;
                 meshingsRequestedThisFrame = 0;
 
-                #region Motion control
-                if (ModifierKeys == Keys.None)
-                {
-                    Client.Self.Movement.AtPos = Instance.Keyboard.IsKeyDown(Keys.Up);
-                    Client.Self.Movement.AtNeg = Instance.Keyboard.IsKeyDown(Keys.Down);
-                    Client.Self.Movement.TurnLeft = Instance.Keyboard.IsKeyDown(Keys.Left);
-                    Client.Self.Movement.TurnRight = Instance.Keyboard.IsKeyDown(Keys.Right);
-
-                    if (Client.Self.Movement.TurnLeft)
-                    {
-                        Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, lastFrameTime);
-                    }
-                    else if (client.Self.Movement.TurnRight)
-                    {
-                        Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -lastFrameTime);
-                    }
-                }
-                else if (ModifierKeys == Keys.Shift)
-                {
-                    Client.Self.Movement.LeftNeg = Instance.Keyboard.IsKeyDown(Keys.Left);
-                    Client.Self.Movement.LeftPos = Instance.Keyboard.IsKeyDown(Keys.Right);
-                }
-
-                #endregion Motion control
+                CheckKeyboard(lastFrameTime);
 
                 // Alpha mask elements, no blending, alpha test for A > 0.5
                 GL.Enable(EnableCap.AlphaTest);
