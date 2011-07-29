@@ -127,6 +127,11 @@ namespace Radegast.Rendering
         #region Private fields
 
         Camera Camera;
+        SceneObject trackedObject;
+        Vector3 lastTrackedObjectPos = RHelp.InvalidPosition;
+        RenderAvatar myself;
+        bool cameraLocked = false;
+
         Dictionary<UUID, TextureInfo> TexturesPtrMap = new Dictionary<UUID, TextureInfo>();
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
@@ -379,8 +384,10 @@ namespace Radegast.Rendering
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
-            if(e.Prim.ID == Client.Self.AgentID)
-                UpdateCameraClientMovement (e.Update.Position);//Update our camera with the new pos (if nessessary)
+            if (e.Prim.ID == Client.Self.AgentID)
+            {
+                trackedObject = myself;
+            }
 
             //If it is an avatar, we don't need to deal with the terse update stuff, unless it sends textures to us
             if(e.Prim.PrimData.PCode == PCode.Avatar && e.Update.Textures == null)
@@ -721,29 +728,11 @@ namespace Radegast.Rendering
         /// <summary>
         /// The camera doesn't move when ctrl-alt has been used, so don't move it if the user moves around
         /// </summary>
-        bool cameraLocked = false;
         private Vector3 lastCachedClientCameraPos = Vector3.Zero;
 
         private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
             Camera.Position += (Camera.Position - Camera.FocalPoint) * (e.Delta / -500f);
-        }
-
-        private void UpdateCameraClientMovement(Vector3 newPos)
-        {
-            if(!cameraLocked)
-            {
-                if(lastCachedClientCameraPos != Vector3.Zero)
-                {
-                    //Add in the changes to the position, but don't reset the camera
-                    Vector3 diffPos = (newPos - lastCachedClientCameraPos);
-                    Camera.Position += diffPos;
-                    Camera.FocalPoint += diffPos;
-                }
-                else
-                    InitCamera();//Reset the camera, we don't have a previous position
-                lastCachedClientCameraPos = newPos;
-            }
         }
 
         SceneObject RightclickedObject;
@@ -1432,7 +1421,10 @@ namespace Radegast.Rendering
                     updateAVtes(ra);
                     Avatars.Add(av.LocalID, ra);
                     ra.glavatar.morph(av);
-
+                    if (av.LocalID == Client.Self.LocalID)
+                    {
+                        myself = ra;
+                    }
                 }
             }
         }
@@ -2506,6 +2498,21 @@ namespace Radegast.Rendering
 
             // Push the world matrix
             GL.PushMatrix();
+
+            if (!cameraLocked && trackedObject != null)
+            {
+                if (lastTrackedObjectPos == RHelp.InvalidPosition)
+                {
+                    lastTrackedObjectPos = trackedObject.RenderPosition;
+                } 
+                else if (lastTrackedObjectPos != trackedObject.RenderPosition)
+                {
+                    Vector3 diffPos = (trackedObject.RenderPosition - lastTrackedObjectPos);
+                    Camera.Position += diffPos;
+                    Camera.FocalPoint += diffPos;
+                    lastTrackedObjectPos = trackedObject.RenderPosition;
+                }
+            }
 
             if (Camera.Modified)
             {
