@@ -138,14 +138,12 @@ namespace Radegast.Rendering
 
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
 
-        bool hasMipmap;
         Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 9f, FontStyle.Regular);
         Font AvatarTagFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold);
         Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
         OpenTK.Matrix4 ModelMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
         int[] Viewport = new int[4];
-        bool useVBO = true;
         System.Diagnostics.Stopwatch renderTimer;
         float lastFrameTime = 0f;
         float advTimerTick = 0f;
@@ -591,7 +589,7 @@ namespace Radegast.Rendering
                 useVBO = glExtensions.Contains("ARB_vertex_buffer_object");
 
                 // Double check if we have mipmap ability
-                if (hasMipmap)
+                if (RenderSettings.HasMipmap)
                 {
                     try
                     {
@@ -610,7 +608,7 @@ namespace Radegast.Rendering
                     catch
                     {
                         Logger.DebugLog("Don't have glGenerateMipmap() after all");
-                        hasMipmap = false;
+                        RenderSettings.HasMipmap = false;
                     }
                 }
 
@@ -889,7 +887,7 @@ namespace Radegast.Rendering
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            if (hasMipmap)
+            if (RenderSettings.HasMipmap)
             {
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
@@ -1770,7 +1768,7 @@ namespace Radegast.Rendering
                 GL.BindTexture(TextureTarget.Texture2D, terrainTexture);
             }
 
-            if (!useVBO)
+            if (!RenderSettings.UseVBO)
             {
                 unsafe
                 {
@@ -2069,7 +2067,7 @@ namespace Radegast.Rendering
                     GL.Color4(faceColor);
                 }
 
-                if (!useVBO)
+                if (!RenderSettings.UseVBO)
                 {
                     Vertex[] verts = face.Vertices.ToArray();
                     ushort[] indices = face.Indices.ToArray();
@@ -2272,7 +2270,7 @@ namespace Radegast.Rendering
             GL.PushMatrix();
             GL.MultMatrix(Math3D.CreateSRTMatrix(scale, prim.RenderRotation, prim.RenderPosition));
 
-            if (useVBO)
+            if (RenderSettings.UseVBO)
             {
                 GL.DrawElements(BeginMode.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
             }
@@ -2296,7 +2294,7 @@ namespace Radegast.Rendering
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.Lighting);
 
-            if (useVBO)
+            if (RenderSettings.UseVBO)
             {
                 if (boundingBoxVBO == -1)
                 {
@@ -2333,7 +2331,7 @@ namespace Radegast.Rendering
                 obj.EndSimpleQuery();
             }
 
-            if (useVBO)
+            if (RenderSettings.UseVBO)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);

@@ -567,6 +567,7 @@
       <DependentUpon>Rendering.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Rendering\RenderingHelpers.cs" />
+    <Compile Include="GUI\Rendering\RenderSettings.cs" />
     <Compile Include="GUI\Rendering\TerrainSplat.cs" />
     <Compile Include="Netcom\Enums.cs" />
     <Compile Include="Netcom\EventArgs\ChatSentEventArgs.cs" />
