@@ -133,6 +133,7 @@
     <Compile Include="Core\Contexts\IContextAction.cs" />
     <Compile Include="Core\Contexts\RezInventoryObjectAction.cs" />
     <Compile Include="Core\GridManager.cs" />
+    <Compile Include="Core\Keyboard.cs" />
     <Compile Include="Core\Media\BufferSound.cs" />
     <Compile Include="Core\Media\MediaManager.cs" />
     <Compile Include="Core\Media\MediaObject.cs" />

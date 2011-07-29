@@ -2539,6 +2539,31 @@ namespace Radegast.Rendering
                 texturesRequestedThisFrame = 0;
                 meshingsRequestedThisFrame = 0;
 
+                #region Motion control
+                if (ModifierKeys == Keys.None)
+                {
+                    Client.Self.Movement.AtPos = Instance.Keyboard.IsKeyDown(Keys.Up);
+                    Client.Self.Movement.AtNeg = Instance.Keyboard.IsKeyDown(Keys.Down);
+                    Client.Self.Movement.TurnLeft = Instance.Keyboard.IsKeyDown(Keys.Left);
+                    Client.Self.Movement.TurnRight = Instance.Keyboard.IsKeyDown(Keys.Right);
+
+                    if (Client.Self.Movement.TurnLeft)
+                    {
+                        Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, lastFrameTime);
+                    }
+                    else if (client.Self.Movement.TurnRight)
+                    {
+                        Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -lastFrameTime);
+                    }
+                }
+                else if (ModifierKeys == Keys.Shift)
+                {
+                    Client.Self.Movement.LeftNeg = Instance.Keyboard.IsKeyDown(Keys.Left);
+                    Client.Self.Movement.LeftPos = Instance.Keyboard.IsKeyDown(Keys.Right);
+                }
+
+                #endregion Motion control
+
                 // Alpha mask elements, no blending, alpha test for A > 0.5
                 GL.Enable(EnableCap.AlphaTest);
                 RenderTerrain();

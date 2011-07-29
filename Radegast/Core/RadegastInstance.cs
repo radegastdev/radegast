@@ -212,6 +212,8 @@ namespace Radegast
             }
         }
 
+        public Keyboard Keyboard;
+
         #region Events
 
         #region ClientChanged event
@@ -286,6 +288,9 @@ namespace Radegast
 
             // Are we running mono?
             monoRuntime = Type.GetType("Mono.Runtime") != null;
+
+            Keyboard = new Keyboard();
+            Application.AddMessageFilter(Keyboard);
 
             netcom = new RadegastNetcom(this);
             state = new StateManager(this);
