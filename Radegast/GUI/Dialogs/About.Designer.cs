@@ -128,8 +128,8 @@ namespace Radegast
             this.txtWrittenBy.Size = new System.Drawing.Size(162, 85);
             this.txtWrittenBy.TabIndex = 1;
             this.txtWrittenBy.TabStop = false;
-            this.txtWrittenBy.Text = "Written by Latif Khalifa\r\n\r\nwith contributions from\r\n- Douglas R. Miles\r\n- Mojito" +
-                " Sorbet";
+            this.txtWrittenBy.Text = "Written by Latif Khalifa\r\nwith contributions from\r\n- Douglas R. Miles\r\n- Mojito S" +
+                "orbet\r\n- Robin Cornelius\r\n- Revolution Smythe";
             // 
             // btnClose
             // 
