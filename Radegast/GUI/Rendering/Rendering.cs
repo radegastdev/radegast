@@ -1160,19 +1160,27 @@ namespace Radegast.Rendering
             return null;
         }
 
-        void PrimPosAndRot(SceneObject prim, out Vector3 pos, out Quaternion rot)
+        /// <summary>
+        /// Calculates finar rendering position for objects on the scene
+        /// </summary>
+        /// <param name="obj">SceneObject whose position is calculated</param>
+        /// <param name="pos">Rendering position</param>
+        /// <param name="rot">Rendering rotation</param>
+        void PrimPosAndRot(SceneObject obj, out Vector3 pos, out Quaternion rot)
         {
-            if (prim == null)
+            // Sanity check
+            if (obj == null)
             {
                 pos = RHelp.InvalidPosition;
                 rot = Quaternion.Identity;
                 return;
             }
 
-            if (prim.BasePrim.ParentID == 0)
+            if (obj.BasePrim.ParentID == 0)
             {
-                pos = prim.InterpolatedPosition;
-                rot = prim.InterpolatedRotation;
+                // We are the root prim, return our interpolated position
+                pos = obj.InterpolatedPosition;
+                rot = obj.InterpolatedRotation;
                 return;
             }
             else
@@ -1180,9 +1188,11 @@ namespace Radegast.Rendering
                 pos = RHelp.InvalidPosition;
                 rot = Quaternion.Identity;
 
-                SceneObject p = GetSceneObject(prim.BasePrim.ParentID);
+                // Not root, find our parent
+                SceneObject p = GetSceneObject(obj.BasePrim.ParentID);
                 if (p == null) return;
 
+                // If we don't know parent position, recursively find out
                 if (!p.PositionCalculated)
                 {
                     PrimPosAndRot(p, out p.RenderPosition, out p.RenderRotation);
@@ -1195,23 +1205,44 @@ namespace Radegast.Rendering
 
                 if (p is RenderPrimitive)
                 {
-                    pos = parentPos + prim.InterpolatedPosition * parentRot;
-                    rot = parentRot * prim.InterpolatedRotation;
+                    // Child prim (our parent is another prim here)
+                    pos = parentPos + obj.InterpolatedPosition * parentRot;
+                    rot = parentRot * obj.InterpolatedRotation;
                 }
                 else if (p is RenderAvatar)
                 {
+                    // Calculating position and rotation of the root prim of an attachment here
+                    // (our parent is an avatar here)
                     RenderAvatar parentav = (RenderAvatar)p;
 
-                    int attachment_index = (int)prim.BasePrim.PrimData.AttachmentPoint;
-                    // Check for invalid LL attachment point
+                    // Check for invalid attachment point
+                    int attachment_index = (int)obj.BasePrim.PrimData.AttachmentPoint;
                     if (attachment_index > GLAvatar.attachment_points.Count()) return;
-
                     attachment_point apoint = GLAvatar.attachment_points[attachment_index];
-                    Vector3 point = parentav.glavatar.skel.getOffset(apoint.joint) + apoint.position;
-                    Quaternion qrot = apoint.rotation * parentav.glavatar.skel.getRotation(apoint.joint);
+                    skeleton skel = parentav.glavatar.skel;
+                    if (!skel.mBones.ContainsKey(apoint.joint)) return;
 
-                    pos = parentPos + point * parentRot + prim.InterpolatedPosition * (parentRot * qrot);
-                    rot = qrot * parentRot * prim.InterpolatedRotation;
+                    // Bone position and rotation
+                    Bone bone = skel.mBones[apoint.joint];
+                    Vector3 bpos = bone.getTotalOffset();
+                    Quaternion brot = bone.getTotalRotation();
+
+                    // Start with avatar positon
+                    pos = parentPos;
+                    rot = parentRot;
+
+                    // Translate and rotate to the joint calculated position
+                    pos += bpos * rot;
+                    rot *= brot;
+
+                    // Translate and rotate built in joint offset
+                    pos += apoint.position * rot;
+                    rot *= apoint.rotation;
+
+                    // Translate and rotate from the offset from the attachment point
+                    // set in teh appearance editor
+                    pos += obj.BasePrim.Position * rot;
+                    rot *= obj.BasePrim.Rotation;
                 }
                 return;
             }
