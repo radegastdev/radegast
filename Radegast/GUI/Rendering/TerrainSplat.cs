@@ -82,12 +82,12 @@ namespace Radegast.Rendering
         /// <returns>A composited 256x256 RGB texture ready for rendering</returns>
         /// <remarks>Based on the algorithm described at http://opensimulator.org/wiki/Terrain_Splatting
         /// </remarks>
-        public static Bitmap Splat(RadegastInstance instance, float[,] heightmap, UUID[] textureIDs, float[] startHeights, float[] heightRanges, Vector3 regionPosition)
+        public static Bitmap Splat(RadegastInstance instance, float[,] heightmap, UUID[] textureIDs, float[] startHeights, float[] heightRanges)
         {
             Debug.Assert(textureIDs.Length == 4);
             Debug.Assert(startHeights.Length == 4);
             Debug.Assert(heightRanges.Length == 4);
-            int outputSize = 256;
+            int outputSize = 2048;
 
             Bitmap[] detailTexture = new Bitmap[4];
 
@@ -104,17 +104,7 @@ namespace Radegast.Rendering
                 AutoResetEvent textureDone = new AutoResetEvent(false);
                 UUID textureID = textureIDs[i];
 
-                instance.Client.Assets.RequestImage(textureID, (state, assetTexture) =>
-                {
-                    if (state == TextureRequestState.Finished && assetTexture != null && assetTexture.AssetData != null)
-                    {
-                        Image img;
-                        ManagedImage mi;
-                        OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
-                        detailTexture[i] = (Bitmap)img;
-                    }
-                    textureDone.Set();
-                });
+                instance.Client.Assets.RequestImage(textureID, TextureDownloadCallback(detailTexture, i, textureDone));
 
                 textureDone.WaitOne(60 * 1000, false);
             }
@@ -136,7 +126,7 @@ namespace Radegast.Rendering
                 }
                 else if (detailTexture[i].Width != outputSize || detailTexture[i].Height != outputSize)
                 {
-                    detailTexture[i] = ResizeBitmap(detailTexture[i], outputSize, outputSize);
+                    detailTexture[i] = ResizeBitmap(detailTexture[i], 256, 256);
                 }
             }
 
@@ -178,8 +168,8 @@ namespace Radegast.Rendering
                     // The magic values were taken from http://opensimulator.org/wiki/Terrain_Splatting
                     Vector3 vec = new Vector3
                     (
-                        ((float)regionPosition.X + newX) * 0.20319f,
-                        ((float)regionPosition.Y + newY) * 0.20319f,
+                        newX * 0.20319f,
+                        newY * 0.20319f,
                         height * 0.25f
                     );
 
@@ -206,10 +196,10 @@ namespace Radegast.Rendering
                 // Get handles to all of the texture data arrays
                 BitmapData[] datas = new BitmapData[]
                 {
-                    detailTexture[0].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[0].PixelFormat),
-                    detailTexture[1].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[1].PixelFormat),
-                    detailTexture[2].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[2].PixelFormat),
-                    detailTexture[3].LockBits(new Rectangle(0, 0, outputSize, outputSize), ImageLockMode.ReadOnly, detailTexture[3].PixelFormat)
+                    detailTexture[0].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[0].PixelFormat),
+                    detailTexture[1].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[1].PixelFormat),
+                    detailTexture[2].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[2].PixelFormat),
+                    detailTexture[3].LockBits(new Rectangle(0, 0, 256, 256), ImageLockMode.ReadOnly, detailTexture[3].PixelFormat)
                 };
 
                 int[] comps = new int[]
@@ -220,6 +210,22 @@ namespace Radegast.Rendering
                     (datas[3].PixelFormat == PixelFormat.Format32bppArgb) ? 4 : 3
                 };
 
+                int[] strides = new int[]
+                {
+                    datas[0].Stride,
+                    datas[1].Stride,
+                    datas[2].Stride,
+                    datas[3].Stride
+                };
+
+                IntPtr[] scans = new IntPtr[]
+                {
+                    datas[0].Scan0,
+                    datas[1].Scan0,
+                    datas[2].Scan0,
+                    datas[3].Scan0
+                };
+
                 int ratio = outputSize / RegionSize;
 
                 for (int y = 0; y < outputSize; y++)
@@ -227,29 +233,57 @@ namespace Radegast.Rendering
                     for (int x = 0; x < outputSize; x++)
                     {
                         float layer = layermap[(y / ratio) * RegionSize + x / ratio];
+                        float layerx = layermap[(y / ratio) * RegionSize + Math.Min(outputSize - 1, (x + 1)) / ratio];
+                        float layerxx = layermap[(y / ratio) * RegionSize + Math.Max(0, (x - 1)) / ratio];
+                        float layery = layermap[Math.Min(outputSize - 1, (y + 1)) / ratio * RegionSize + x / ratio];
+                        float layeryy = layermap[(Math.Max(0, (y - 1)) / ratio) * RegionSize + x / ratio];
 
                         // Select two textures
                         int l0 = (int)Math.Floor(layer);
                         int l1 = Math.Min(l0 + 1, 3);
 
-                        byte* ptrA = (byte*)datas[l0].Scan0 + y * datas[l0].Stride + x * comps[l0];
-                        byte* ptrB = (byte*)datas[l1].Scan0 + y * datas[l1].Stride + x * comps[l1];
+                        byte* ptrA = (byte*)scans[l0] + (y % 256) * strides[l0] + (x % 256) * comps[l0];
+                        byte* ptrB = (byte*)scans[l1] + (y % 256) * strides[l1] + (x % 256) * comps[l1];
                         byte* ptrO = (byte*)outputData.Scan0 + y * outputData.Stride + x * 3;
 
                         float aB = *(ptrA + 0);
                         float aG = *(ptrA + 1);
                         float aR = *(ptrA + 2);
 
+                        int lX = (int)Math.Floor(layerx);
+                        byte* ptrX = (byte*)scans[lX] + (y % 256) * strides[lX] + (x % 256) * comps[lX];
+                        int lXX = (int)Math.Floor(layerxx);
+                        byte* ptrXX = (byte*)scans[lXX] + (y % 256) * strides[lXX] + (x % 256) * comps[lXX];
+                        int lY = (int)Math.Floor(layery);
+                        byte* ptrY = (byte*)scans[lY] + (y % 256) * strides[lY] + (x % 256) * comps[lY];
+                        int lYY = (int)Math.Floor(layeryy);
+                        byte* ptrYY = (byte*)scans[lYY] + (y % 256) * strides[lYY] + (x % 256) * comps[lYY];
+
                         float bB = *(ptrB + 0);
                         float bG = *(ptrB + 1);
                         float bR = *(ptrB + 2);
 
                         float layerDiff = layer - l0;
-
+                        float xlayerDiff = layerx - layer;
+                        float xxlayerDiff = layerxx - layer;
+                        float ylayerDiff = layery - layer;
+                        float yylayerDiff = layeryy - layer;
                         // Interpolate between the two selected textures
-                        *(ptrO + 0) = (byte)Math.Floor(aB + layerDiff * (bB - aB));
-                        *(ptrO + 1) = (byte)Math.Floor(aG + layerDiff * (bG - aG));
-                        *(ptrO + 2) = (byte)Math.Floor(aR + layerDiff * (bR - aR));
+                        *(ptrO + 0) = (byte)Math.Floor(aB + layerDiff * (bB - aB) + 
+                            xlayerDiff * (*ptrX - aB) + 
+                            xxlayerDiff * (*(ptrXX) - aB) + 
+                            ylayerDiff * (*ptrY - aB) + 
+                            yylayerDiff * (*(ptrYY) - aB));
+                        *(ptrO + 1) = (byte)Math.Floor(aG + layerDiff * (bG - aG) + 
+                            xlayerDiff * (*(ptrX + 1) - aG) +
+                            xxlayerDiff * (*(ptrXX + 1) - aG) + 
+                            ylayerDiff * (*(ptrY + 1) - aG) +
+                            yylayerDiff * (*(ptrYY + 1) - aG));
+                        *(ptrO + 2) = (byte)Math.Floor(aR + layerDiff * (bR - aR) +
+                            xlayerDiff * (*(ptrX + 2) - aR) + 
+                            xxlayerDiff * (*(ptrXX + 2) - aR) +
+                            ylayerDiff * (*(ptrY + 2) - aR) + 
+                            yylayerDiff * (*(ptrYY + 2) - aR));
                     }
                 }
 
@@ -270,11 +304,45 @@ namespace Radegast.Rendering
             return output;
         }
 
+        private static TextureDownloadCallback TextureDownloadCallback(Bitmap[] detailTexture, int i, AutoResetEvent textureDone)
+        {
+            return (state, assetTexture) =>
+            {
+                if (state == TextureRequestState.Finished && assetTexture != null && assetTexture.AssetData != null)
+                {
+                    Image img;
+                    ManagedImage mi;
+                    OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
+                    detailTexture[i] = (Bitmap)img;
+                }
+                textureDone.Set();
+            };
+        }
+
         public static Bitmap ResizeBitmap(Bitmap b, int nWidth, int nHeight)
         {
             Bitmap result = new Bitmap(nWidth, nHeight);
             using (Graphics g = Graphics.FromImage((Image)result))
+            {
                 g.DrawImage(b, 0, 0, nWidth, nHeight);
+            }
+            b.Dispose();
+            return result;
+        }
+
+        public static Bitmap TileBitmap(Bitmap b, int tiles)
+        {
+            Bitmap result = new Bitmap(b.Width * tiles, b.Width * tiles);
+            using (Graphics g = Graphics.FromImage((Image)result))
+            {
+                for (int x = 0; x < tiles; x++)
+                {
+                    for (int y = 0; y < tiles; y++)
+                    {
+                        g.DrawImage(b, x * 256, y * 256, x * 256 + 256, y * 256 + 256);
+                    }
+                }
+            }
             b.Dispose();
             return result;
         }
