@@ -1676,6 +1676,12 @@ namespace Radegast.Rendering
         #endregion avatars
 
         #region Keyboard
+        private int upKeyHeld = 0;
+        ///<summary>
+        ///The time before we fly instead of trying to jump
+        ///</summary>
+        private const int upKeyHeldBeforeFly = 100;
+
         void CheckKeyboard(float time)
         {
             if (ModifierKeys == Keys.None)
@@ -1685,6 +1691,39 @@ namespace Radegast.Rendering
                 Client.Self.Movement.AtNeg = Instance.Keyboard.IsKeyDown(Keys.Down);
                 Client.Self.Movement.TurnLeft = Instance.Keyboard.IsKeyDown(Keys.Left);
                 Client.Self.Movement.TurnRight = Instance.Keyboard.IsKeyDown(Keys.Right);
+
+                if(Client.Self.Movement.Fly)
+                {
+                    //Find whether we are going up or down
+                    Client.Self.Movement.UpPos = Instance.Keyboard.IsKeyDown(Keys.PageUp);
+                    Client.Self.Movement.UpNeg = Instance.Keyboard.IsKeyDown(Keys.PageDown);
+                    //The nudge positions are required to land (at least Neg is, unclear whether we should send Pos)
+                    Client.Self.Movement.NudgeUpPos = Client.Self.Movement.UpPos;
+                    Client.Self.Movement.NudgeUpNeg = Client.Self.Movement.UpNeg;
+                    if(Client.Self.Velocity.Z > 0 && Client.Self.Movement.UpNeg)//HACK: Sometimes, stop fly fails
+                        Client.Self.Fly(false);//We've hit something, stop flying
+                }
+                else
+                {
+                    //Don't send the nudge pos flags, we don't need them
+                    Client.Self.Movement.NudgeUpPos = false;
+                    Client.Self.Movement.NudgeUpNeg = false;
+                    Client.Self.Movement.UpPos = Instance.Keyboard.IsKeyDown(Keys.PageUp);
+                    Client.Self.Movement.UpNeg = Instance.Keyboard.IsKeyDown(Keys.PageDown);
+                }
+                if(Instance.Keyboard.IsKeyDown(Keys.Home))//Flip fly settings
+                    Client.Self.Movement.Fly = !Client.Self.Movement.Fly;
+
+                if(!Client.Self.Movement.Fly && 
+                    Instance.Keyboard.IsKeyDown(Keys.PageUp))
+                {
+                    upKeyHeld++;
+                    if(upKeyHeld > upKeyHeldBeforeFly)//Wait for a bit before we fly, they may be trying to jump
+                        Client.Self.Movement.Fly = true;
+                }
+                else
+                    upKeyHeld = 0;//Reset the count
+
 
                 if (Client.Self.Movement.TurnLeft)
                 {
