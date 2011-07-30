@@ -1342,18 +1342,18 @@ namespace Radegast.Rendering
 #endif
         }
 
-        private void RenderText()
+        private void RenderText(RenderPass pass)
         {
             lock (Avatars)
             {
-
                 GL.Color4(0f, 0f, 0f, 0.4f);
-
                 foreach (RenderAvatar av in VisibleAvatars)
                 {
                     Vector3 avPos = av.RenderPosition;
                     if (av.DistanceSquared > 400f) continue;
 
+                    byte[] faceColor = null;
+                    
                     OpenTK.Vector3 tagPos = RHelp.TKVector3(avPos);
                     tagPos.Z += 2.2f;
                     OpenTK.Vector3 screenPos;
@@ -1361,11 +1361,25 @@ namespace Radegast.Rendering
 
                     string tagText = instance.Names.Get(av.avatar.ID, av.avatar.Name);
                     if (!string.IsNullOrEmpty(av.avatar.GroupName))
-                    {
                         tagText = av.avatar.GroupName + "\n" + tagText;
-                    }
-                    var tSize = Printer.Measure(tagText, AvatarTagFont);
 
+                    var tSize = Printer.Measure(tagText, AvatarTagFont);
+                    if (pass == RenderPass.Picking)
+                    {
+                        //Send avatar anyway, we're attached to it
+                        int faceID = 0;
+                        foreach (FaceData f in av.data)
+                        {
+                            if (f != null)
+                            {
+                                byte[] primNrBytes = Utils.Int16ToBytes((short)f.PickingID);
+                                faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)faceID, 254 };
+                                GL.Color4(faceColor);
+                                break;
+                            }
+                            faceID++;
+                        }
+                    }
                     // Render tag backround
                     GL.Begin(BeginMode.Quads);
                     float halfWidth = tSize.BoundingBox.Width / 2 + 12;
@@ -1383,7 +1397,10 @@ namespace Radegast.Rendering
                     if (screenPos.Y > 0)
                     {
                         Printer.Begin();
-                        Printer.Print(tagText, AvatarTagFont, Color.Orange,
+                        Color textColor = pass == RenderPass.Simple ? 
+                            Color.Orange : 
+                            Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]);
+                        Printer.Print(tagText, AvatarTagFont, textColor,
                             new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width + 2, tSize.BoundingBox.Height + 2),
                             OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
                         Printer.End();
@@ -1426,14 +1443,31 @@ namespace Radegast.Rendering
 
                         if (screenPos.Y > 0)
                         {
-
-                            // Shadow
-                            if (color != Color.Black)
+                            if (pass == RenderPass.Picking)
                             {
-                                Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                                //Send the prim anyway, we're attached to it
+                                int faceID = 0;
+                                foreach (Face f in prim.Faces)
+                                {
+                                    if (f.UserData != null)
+                                    {
+                                        byte[] primNrBytes = Utils.Int16ToBytes((short)((FaceData)f.UserData).PickingID);
+                                        byte[] faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)faceID, 255 };
+                                        Printer.Print(text, HoverTextFont, Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]), new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                                        break;
+                                    }
+                                    faceID++;
+                                }
                             }
-                            // Text
-                            Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            else
+                            {
+                                // Shadow
+                                if (color != Color.Black)
+                                    Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+
+                                // Text
+                                Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            }
                         }
 
                         Printer.End();
@@ -2708,6 +2742,9 @@ namespace Radegast.Rendering
                 GL.Disable(EnableCap.Lighting);
                 RenderObjects(RenderPass.Picking);
                 RenderAvatars(RenderPass.Picking);
+                GLHUDBegin();
+                RenderText(RenderPass.Picking);
+                GLHUDEnd();
                 GL.Enable(EnableCap.Lighting);
             }
             else
@@ -2735,7 +2772,7 @@ namespace Radegast.Rendering
                 GL.DepthMask(true);
 
                 GLHUDBegin();
-                RenderText();
+                RenderText(RenderPass.Simple);
                 RenderStats();
                 GLHUDEnd();
                 GL.Disable(EnableCap.Blend);
@@ -2803,7 +2840,6 @@ namespace Radegast.Rendering
                     return true;
                 }
             }
-
             if (color[3] == 255) // Prim
             {
                 lock (SortedObjects)
