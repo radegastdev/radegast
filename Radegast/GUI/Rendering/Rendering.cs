@@ -745,23 +745,18 @@ namespace Radegast.Rendering
                 dragging = true;
                 downX = dragX = e.X;
                 downY = dragY = e.Y;
-                object picked;
-                RenderPrimitive LeftclickedObject = null;
-                int LeftclickedFaceID;
-                //TODO: Needs (probably) to be moved into the render loop, then checked for movement so that we can send grabUpdate properly
-                /*if(TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
+                if(ModifierKeys == Keys.None)
                 {
-                    if(picked is RenderPrimitive)
+                    object picked;
+                    int LeftclickedFaceID;
+                    if(TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
                     {
-                        LeftclickedObject = (RenderPrimitive)picked;
-                        if((LeftclickedObject.Prim.Flags & PrimFlags.Touch) != 0)
+                        if(picked is RenderPrimitive)
                         {
-                            Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                            Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
-                            Client.Self.DeGrab(LeftclickedObject.Prim.LocalID);
+                            TryTouchObject((RenderPrimitive)picked);
                         }
                     }
-                }*/
+                }
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -778,6 +773,42 @@ namespace Radegast.Rendering
             }
         }
 
+        private RenderPrimitive m_currentlyTouchingObject = null;
+        private void TryTouchObject (RenderPrimitive LeftclickedObject)
+        {
+            if((LeftclickedObject.Prim.Flags & PrimFlags.Touch) != 0)
+            {
+                if(m_currentlyTouchingObject != null)
+                {
+                    if(m_currentlyTouchingObject.Prim.LocalID != LeftclickedObject.Prim.LocalID)
+                    {
+                        //Changed what we are touching... stop touching the old one
+                        TryEndTouchObject();
+
+                        //Then set the new one and touch it for the first time
+                        m_currentlyTouchingObject = LeftclickedObject;
+                        Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                        Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
+                    }
+                    else
+                        Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
+                }
+                else
+                {
+                    m_currentlyTouchingObject = LeftclickedObject;
+                    Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                    Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
+                }
+            }
+        }
+
+        private void TryEndTouchObject ()
+        {
+            if(m_currentlyTouchingObject != null)
+                Client.Self.DeGrab(m_currentlyTouchingObject.Prim.LocalID);
+            m_currentlyTouchingObject = null;
+        }
+
         private void glControl_MouseMove(object sender, MouseEventArgs e)
         {
             if (dragging)
@@ -785,9 +816,22 @@ namespace Radegast.Rendering
                 int deltaX = e.X - dragX;
                 int deltaY = e.Y - dragY;
                 float pixelToM = 1f / 75f;
-
                 if (e.Button == MouseButtons.Left)
                 {
+                    if(ModifierKeys == Keys.None)
+                    {
+                        //Only touch if we arn't doing anything else
+                        object picked;
+                        int LeftclickedFaceID;
+                        if(TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
+                        {
+                            if(picked is RenderPrimitive)
+                                TryTouchObject((RenderPrimitive)picked);
+                        }
+                        else
+                            TryEndTouchObject();
+                    }
+
                     // Pan
                     if (ModifierKeys == Keys.Control || ModifierKeys == (Keys.Alt | Keys.Control | Keys.Shift))
                     {
@@ -816,36 +860,30 @@ namespace Radegast.Rendering
 
         private void glControl_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if(e.Button == MouseButtons.Left)
             {
                 dragging = false;
-
-                if (e.X == downX && e.Y == downY) // click
+                object clicked;
+                int faceID;
+                if(ModifierKeys == Keys.None)
+                    TryEndTouchObject();//Stop touching no matter whether we are touching anything
+                if(e.X == downX && e.Y == downY) // click
                 {
-                    object clicked;
-                    int faceID;
-                    if (TryPick(e.X, e.Y, out clicked, out faceID))
+                    if(TryPick(e.X, e.Y, out clicked, out faceID))
                     {
-                        if (clicked is RenderPrimitive)
+                        if(clicked is RenderPrimitive)
                         {
                             RenderPrimitive picked = (RenderPrimitive)clicked;
-
-                            if (ModifierKeys == Keys.None)
-                            {
-                                Client.Self.Grab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                                Client.Self.GrabUpdate(picked.Prim.ID, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                                Client.Self.DeGrab(picked.Prim.LocalID);
-                            }
-                            else if (ModifierKeys == Keys.Alt)
+                            if(ModifierKeys == Keys.Alt)
                             {
                                 Camera.FocalPoint = picked.RenderPosition;
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             }
                         }
-                        else if (clicked is RenderAvatar)
+                        else if(clicked is RenderAvatar)
                         {
                             RenderAvatar av = (RenderAvatar)clicked;
-                            if (ModifierKeys == Keys.Alt)
+                            if(ModifierKeys == Keys.Alt)
                             {
                                 Vector3 pos = av.RenderPosition;
                                 pos.Z += 1.5f; // focus roughly on the chest area
