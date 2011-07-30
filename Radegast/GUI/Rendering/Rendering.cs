@@ -745,6 +745,23 @@ namespace Radegast.Rendering
                 dragging = true;
                 downX = dragX = e.X;
                 downY = dragY = e.Y;
+                object picked;
+                RenderPrimitive LeftclickedObject = null;
+                int LeftclickedFaceID;
+                //TODO: Needs (probably) to be moved into the render loop, then checked for movement so that we can send grabUpdate properly
+                /*if(TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
+                {
+                    if(picked is RenderPrimitive)
+                    {
+                        LeftclickedObject = (RenderPrimitive)picked;
+                        if((LeftclickedObject.Prim.Flags & PrimFlags.Touch) != 0)
+                        {
+                            Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                            Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
+                            Client.Self.DeGrab(LeftclickedObject.Prim.LocalID);
+                        }
+                    }
+                }*/
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -1676,11 +1693,12 @@ namespace Radegast.Rendering
         #endregion avatars
 
         #region Keyboard
-        private int upKeyHeld = 0;
+        private float upKeyHeld = 0;
+        private bool isHoldingHome = false;
         ///<summary>
-        ///The time before we fly instead of trying to jump
+        ///The time before we fly instead of trying to jump (in seconds)
         ///</summary>
-        private const int upKeyHeldBeforeFly = 100;
+        private const float upKeyHeldBeforeFly = 0.5f;
 
         void CheckKeyboard(float time)
         {
@@ -1712,12 +1730,22 @@ namespace Radegast.Rendering
                     Client.Self.Movement.UpNeg = Instance.Keyboard.IsKeyDown(Keys.PageDown);
                 }
                 if(Instance.Keyboard.IsKeyDown(Keys.Home))//Flip fly settings
-                    Client.Self.Movement.Fly = !Client.Self.Movement.Fly;
+                {
+                    //Holding the home key only makes it change once, 
+                    // not flip over and over, so keep track of it
+                    if(!isHoldingHome)
+                    {
+                        Client.Self.Movement.Fly = !Client.Self.Movement.Fly;
+                        isHoldingHome = true;
+                    }
+                }
+                else
+                    isHoldingHome = false;
 
                 if(!Client.Self.Movement.Fly && 
                     Instance.Keyboard.IsKeyDown(Keys.PageUp))
                 {
-                    upKeyHeld++;
+                    upKeyHeld += time;
                     if(upKeyHeld > upKeyHeldBeforeFly)//Wait for a bit before we fly, they may be trying to jump
                         Client.Self.Movement.Fly = true;
                 }
@@ -2747,6 +2775,9 @@ namespace Radegast.Rendering
                     {
                         if (!(obj is RenderPrimitive)) continue;
                         RenderPrimitive prim = (RenderPrimitive)obj;
+
+                        if(obj.BasePrim.LocalID == 0)
+                            continue;
 
                         foreach (var face in prim.Faces)
                         {
