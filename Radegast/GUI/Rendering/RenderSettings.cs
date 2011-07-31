@@ -31,6 +31,7 @@
 
 using System;
 using OpenMetaverse;
+using OpenMetaverse.Rendering;
 
 namespace Radegast.Rendering
 {
@@ -40,5 +41,8 @@ namespace Radegast.Rendering
         public static bool UseFBO;
         public static bool HasMipmap;
         public static bool HasShaders;
+        public static DetailLevel PrimRenderDetail = DetailLevel.High;
+        public static DetailLevel SculptRenderDetail = DetailLevel.High;
+        public static DetailLevel MeshRenderDetail = DetailLevel.Highest;
     }
 }

@@ -2416,14 +2416,6 @@ namespace Radegast.Rendering
                         }
                         continue;
                     }
-                    else if (obj.LastMeshHash != obj.GetMeshHash())
-                    {
-                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
-                        {
-                            meshingsRequestedThisFrame++;
-                            MeshPrim(obj);
-                        }
-                    }
 
                     obj.Step(lastFrameTime);
 
@@ -2481,14 +2473,6 @@ namespace Radegast.Rendering
                             MeshPrim(obj);
                         }
                         continue;
-                    }
-                    else if (obj.LastMeshHash != obj.GetMeshHash())
-                    {
-                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
-                        {
-                            meshingsRequestedThisFrame++;
-                            MeshPrim(obj);
-                        }
                     }
 
                     obj.Step(lastFrameTime);
@@ -2983,10 +2967,9 @@ namespace Radegast.Rendering
             // Regular prim
             if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
             {
-                FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, DetailLevel.High);
+                FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, RenderSettings.PrimRenderDetail);
                 rprim.Faces = mesh.Faces;
                 CalculateBoundingBox(rprim);
-                rprim.LastMeshHash = rprim.GetMeshHash();
                 rprim.Meshing = false;
                 rprim.Meshed = true;
             }
@@ -3022,7 +3005,7 @@ namespace Radegast.Rendering
                                 }
                             }
 
-                            mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, DetailLevel.High);
+                            mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, RenderSettings.SculptRenderDetail);
                         }
                         else
                         { // Mesh
@@ -3030,7 +3013,7 @@ namespace Radegast.Rendering
 
                             Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
                             {
-                                if (!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, DetailLevel.Highest, out mesh))
+                                if(!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, RenderSettings.MeshRenderDetail, out mesh))
                                 {
                                     Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
                                 }
@@ -3047,7 +3030,6 @@ namespace Radegast.Rendering
                     {
                         rprim.Faces = mesh.Faces;
                         CalculateBoundingBox(rprim);
-                        rprim.LastMeshHash = rprim.GetMeshHash();
                         rprim.Meshing = false;
                         rprim.Meshed = true;
                     }
@@ -3090,7 +3072,7 @@ namespace Radegast.Rendering
                 rPrim.Meshed = false;
             }
 
-            rPrim.Prim = prim;
+            rPrim.BasePrim = prim;
             lock (Prims) Prims[prim.LocalID] = rPrim;
         }
 

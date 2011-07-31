@@ -503,30 +503,38 @@ namespace Radegast.Rendering
         public bool Meshed;
         /// <summary>Process of creating a mesh is underway</summary>
         public bool Meshing;
-        /// <summary>Hash code for mesh to detect when mesh is regenerated</summary>
-        public int LastMeshHash;
 
         public RenderPrimitive()
         {
             Type = SceneObjectType.Primitive;
         }
 
-        public int GetMeshHash()
-        {
-            if (Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
-            {
-                return Prim.Sculpt.GetHashCode() ^ Prim.Textures.GetHashCode();
-            }
-            else
-            {
-                return Prim.PrimData.GetHashCode() ^ Prim.Textures.GetHashCode();
-            }
-        }
-
         public override Primitive BasePrim
         {
             get { return Prim; }
-            set { Prim = value; }
+            set 
+            {
+                if(Meshed)
+                {
+                    if(Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
+                    {
+                        if(!Prim.Sculpt.Equals(value.Sculpt) || Prim.Textures.Equals(value.Textures))
+                        {
+                            Meshed = false;
+                            Faces.Clear();
+                        }
+                    }
+                    else
+                    {
+                        if(!Prim.PrimData.Equals(value.Sculpt) || Prim.Textures.Equals(value.Textures))
+                        {
+                            Meshed = false;
+                            Faces.Clear();
+                        }
+                    }
+                }
+                Prim = value;
+            }
         }
 
         public override void Initialize()
