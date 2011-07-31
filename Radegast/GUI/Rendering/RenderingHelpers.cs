@@ -518,7 +518,7 @@ namespace Radegast.Rendering
                 {
                     if(Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
                     {
-                        if(!Prim.Sculpt.Equals(value.Sculpt) || Prim.Textures.Equals(value.Textures))
+                        if(!Prim.Sculpt.Equals(value.Sculpt) || !Prim.Textures.Equals(value.Textures))
                         {
                             Meshed = false;
                             Faces.Clear();
@@ -526,7 +526,12 @@ namespace Radegast.Rendering
                     }
                     else
                     {
-                        if(!Prim.PrimData.Equals(value.Sculpt) || Prim.Textures.Equals(value.Textures))
+                        if(!Prim.PrimData.Equals(value.PrimData))
+                        {
+                            Meshed = false;
+                            Faces.Clear();
+                        }
+                        else if(!Prim.Textures.Equals(value.Textures))
                         {
                             Meshed = false;
                             Faces.Clear();

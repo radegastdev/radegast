@@ -2409,7 +2409,7 @@ namespace Radegast.Rendering
 
                     if (!obj.Meshed)
                     {
-                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
+                        if(!obj.Meshing && meshingsRequestedThisFrame < RenderSettings.MeshesPerFrame)
                         {
                             meshingsRequestedThisFrame++;
                             MeshPrim(obj);
@@ -2467,7 +2467,7 @@ namespace Radegast.Rendering
 
                     if (!obj.Meshed)
                     {
-                        if (!obj.Meshing && meshingsRequestedThisFrame < 2)
+                        if (!obj.Meshing && meshingsRequestedThisFrame < RenderSettings.MeshesPerFrame)
                         {
                             meshingsRequestedThisFrame++;
                             MeshPrim(obj);
@@ -2657,6 +2657,7 @@ namespace Radegast.Rendering
 
         int texturesRequestedThisFrame;
         int meshingsRequestedThisFrame;
+        int meshingsRequestedLastFrame;
 
         private void Render(bool picking)
         {
@@ -2734,6 +2735,7 @@ namespace Radegast.Rendering
             else
             {
                 texturesRequestedThisFrame = 0;
+                meshingsRequestedLastFrame = meshingsRequestedThisFrame;
                 meshingsRequestedThisFrame = 0;
 
                 CheckKeyboard(lastFrameTime);
@@ -2965,9 +2967,24 @@ namespace Radegast.Rendering
             Primitive prim = rprim.BasePrim;
 
             // Regular prim
-            if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
+            if(prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
             {
-                FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, RenderSettings.PrimRenderDetail);
+                DetailLevel detailLevel = RenderSettings.PrimRenderDetail;
+                if(RenderSettings.AllowQuickAndDirtyMeshing)
+                {
+                    if(prim.Flexible == null && prim.Type == PrimType.Box &&
+                        prim.PrimData.ProfileHollow == 0 &&
+                        prim.PrimData.PathTwist == 0 &&
+                        prim.PrimData.PathTaperX == 0 &&
+                        prim.PrimData.PathTaperY == 0 &&
+                        prim.PrimData.PathSkew == 0 &&
+                        prim.PrimData.PathShearX == 0 &&
+                        prim.PrimData.PathShearY == 0 &&
+                        prim.PrimData.PathRevolutions == 1 &&
+                        prim.PrimData.PathRadiusOffset == 0)
+                        detailLevel = DetailLevel.Low;//Its a box or something else that can use lower meshing
+                }
+                FacetedMesh mesh = renderer.GenerateFacetedMesh(prim, detailLevel);
                 rprim.Faces = mesh.Faces;
                 CalculateBoundingBox(rprim);
                 rprim.Meshing = false;
@@ -2975,74 +2992,79 @@ namespace Radegast.Rendering
             }
             else
             {
-                PendingTasks.Enqueue(new GenericTask(() =>
-                {
-                    FacetedMesh mesh = null;
-
-                    try
-                    {
-                        if (prim.Sculpt.Type != SculptType.Mesh)
-                        { // Regular sculptie
-                            Image img = null;
-
-                            lock (sculptCache)
-                            {
-                                if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
-                                {
-                                    img = sculptCache[prim.Sculpt.SculptTexture];
-                                }
-                            }
-
-                            if (img == null)
-                            {
-                                if (LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
-                                {
-                                    sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
-                                }
-                                else
-                                {
-                                    return;
-                                }
-                            }
-
-                            mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, RenderSettings.SculptRenderDetail);
-                        }
-                        else
-                        { // Mesh
-                            AutoResetEvent gotMesh = new AutoResetEvent(false);
-
-                            Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
-                            {
-                                if(!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, RenderSettings.MeshRenderDetail, out mesh))
-                                {
-                                    Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
-                                }
-                                gotMesh.Set();
-                            });
-
-                            gotMesh.WaitOne(20 * 1000, false);
-                        }
-                    }
-                    catch
-                    { }
-
-                    if (mesh != null)
-                    {
-                        rprim.Faces = mesh.Faces;
-                        CalculateBoundingBox(rprim);
-                        rprim.Meshing = false;
-                        rprim.Meshed = true;
-                    }
-                    else
-                    {
-                        lock (Prims)
-                        {
-                            Prims.Remove(rprim.BasePrim.LocalID);
-                        }
-                    }
-                }));
+                PendingTasks.Enqueue(GenerateSculptOrMeshPrim(rprim, prim));
                 return;
             }
+        }
+
+        private GenericTask GenerateSculptOrMeshPrim (RenderPrimitive rprim, Primitive prim)
+        {
+            return new GenericTask(() =>
+            {
+                FacetedMesh mesh = null;
+
+                try
+                {
+                    if(prim.Sculpt.Type != SculptType.Mesh)
+                    { // Regular sculptie
+                        Image img = null;
+
+                        lock(sculptCache)
+                        {
+                            if(sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
+                            {
+                                img = sculptCache[prim.Sculpt.SculptTexture];
+                            }
+                        }
+
+                        if(img == null)
+                        {
+                            if(LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
+                            {
+                                sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+
+                        mesh = renderer.GenerateFacetedSculptMesh(prim, (Bitmap)img, RenderSettings.SculptRenderDetail);
+                    }
+                    else
+                    { // Mesh
+                        AutoResetEvent gotMesh = new AutoResetEvent(false);
+
+                        Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
+                        {
+                            if(!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, RenderSettings.MeshRenderDetail, out mesh))
+                            {
+                                Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
+                            }
+                            gotMesh.Set();
+                        });
+
+                        gotMesh.WaitOne(20 * 1000, false);
+                    }
+                }
+                catch
+                { }
+
+                if(mesh != null)
+                {
+                    rprim.Faces = mesh.Faces;
+                    CalculateBoundingBox(rprim);
+                    rprim.Meshing = false;
+                    rprim.Meshed = true;
+                }
+                else
+                {
+                    lock(Prims)
+                    {
+                        Prims.Remove(rprim.BasePrim.LocalID);
+                    }
+                }
+            });
         }
 
         private void UpdatePrimBlocking(Primitive prim)

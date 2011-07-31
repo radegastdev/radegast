@@ -44,5 +44,7 @@ namespace Radegast.Rendering
         public static DetailLevel PrimRenderDetail = DetailLevel.High;
         public static DetailLevel SculptRenderDetail = DetailLevel.High;
         public static DetailLevel MeshRenderDetail = DetailLevel.Highest;
+        public static bool AllowQuickAndDirtyMeshing = true;
+        public static int MeshesPerFrame = 2;
     }
 }
