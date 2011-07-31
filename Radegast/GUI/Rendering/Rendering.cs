@@ -113,11 +113,6 @@ namespace Radegast.Rendering
         public bool RenderAvatarSkeleton = false;
 
         /// <summary>
-        /// Should we try to optimize by not drawing objects occluded behind other objects
-        /// </summary>
-        public bool OcclusionCullingEnabled = true;
-
-        /// <summary>
         /// Cache images after jpeg2000 decode. Uses a lot of disk space and can cause disk trashing
         /// </summary>
         public bool CacheDecodedTextures = false;
@@ -2386,7 +2381,7 @@ namespace Radegast.Rendering
         {
             SortedObjects = new List<SceneObject>();
             VisibleAvatars = new List<RenderAvatar>();
-            if (OcclusionCullingEnabled)
+            if (RenderSettings.OcclusionCullingEnabled)
             {
                 OccludedObjects = new List<SceneObject>();
             }
@@ -2429,7 +2424,7 @@ namespace Radegast.Rendering
                     if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
                     obj.Attached = false;
-                    if (OcclusionCullingEnabled && obj.Occluded())
+                    if (obj.Occluded())
                     {
                         OccludedObjects.Add(obj);
                     }
@@ -2493,7 +2488,7 @@ namespace Radegast.Rendering
                         obj.AttachedStateKnown = true;
                     }
 
-                    if (OcclusionCullingEnabled && obj.Occluded())
+                    if (obj.Occluded())
                     {
                         OccludedObjects.Add(obj);
                     }
@@ -2533,7 +2528,7 @@ namespace Radegast.Rendering
 
         private void RenderOccludedObjects()
         {
-            if (!OcclusionCullingEnabled) return;
+            if (!RenderSettings.OcclusionCullingEnabled) return;
 
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.ColorMask(false, false, false, false);
@@ -3444,7 +3439,7 @@ namespace Radegast.Rendering
         private void cbMisc_CheckedChanged(object sender, EventArgs e)
         {
             miscEnabled = cbMisc.Checked;
-            OcclusionCullingEnabled = miscEnabled;
+            RenderSettings.OcclusionCullingEnabled = miscEnabled;
         }
     }
 }

@@ -396,6 +396,8 @@ namespace Radegast.Rendering
 
         public void StartQuery(RenderPass pass)
         {
+            if (!RenderSettings.OcclusionCullingEnabled) return;
+
             if (pass == RenderPass.Simple)
             {
                 StartSimpleQuery();
@@ -408,6 +410,8 @@ namespace Radegast.Rendering
 
         public void EndQuery(RenderPass pass)
         {
+            if (!RenderSettings.OcclusionCullingEnabled) return;
+
             if (pass == RenderPass.Simple)
             {
                 EndSimpleQuery();
@@ -420,6 +424,8 @@ namespace Radegast.Rendering
 
         public void StartAlphaQuery()
         {
+            if (!RenderSettings.OcclusionCullingEnabled) return;
+
             if (AlphaQueryID == -1)
             {
                 GL.GenQueries(1, out AlphaQueryID);
@@ -432,6 +438,8 @@ namespace Radegast.Rendering
 
         public void EndAlphaQuery()
         {
+            if (!RenderSettings.OcclusionCullingEnabled) return;
+
             if (AlphaQueryID > 0)
             {
                 GL.EndQuery(QueryTarget.SamplesPassed);
@@ -440,6 +448,8 @@ namespace Radegast.Rendering
 
         public void StartSimpleQuery()
         {
+            if (!RenderSettings.OcclusionCullingEnabled) return;
+
             if (SimpleQueryID == -1)
             {
                 GL.GenQueries(1, out SimpleQueryID);
@@ -452,6 +462,8 @@ namespace Radegast.Rendering
 
         public void EndSimpleQuery()
         {
+            if (!RenderSettings.OcclusionCullingEnabled) return;
+
             if (SimpleQueryID > 0)
             {
                 GL.EndQuery(QueryTarget.SamplesPassed);
@@ -460,6 +472,8 @@ namespace Radegast.Rendering
 
         public bool Occluded()
         {
+            if (!RenderSettings.OcclusionCullingEnabled) return false;
+
             if ((SimpleQueryID == -1 && AlphaQueryID == -1))
             {
                 return false;

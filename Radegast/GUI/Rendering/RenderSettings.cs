@@ -47,5 +47,7 @@ namespace Radegast.Rendering
         public static bool AllowQuickAndDirtyMeshing = true;
         public static int MeshesPerFrame = 2;
         public static int TexturesToDownloadPerFrame = 2;
+        /// <summary>Should we try to optimize by not drawing objects occluded behind other objects</summary>
+        public static bool OcclusionCullingEnabled = true;
     }
 }
