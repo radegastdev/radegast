@@ -493,6 +493,7 @@ namespace Radegast.Rendering
 
     public class RenderPrimitive : SceneObject
     {
+        #region Public fields
         public Primitive Prim;
         public List<Face> Faces;
         /// <summary>Is this object attached to an avatar</summary>
@@ -503,6 +504,13 @@ namespace Radegast.Rendering
         public bool Meshed;
         /// <summary>Process of creating a mesh is underway</summary>
         public bool Meshing;
+        #endregion Public fields
+
+        #region Private fields
+        int prevTEHash;
+        int prevSculptHash;
+        int prevShapeHash;
+        #endregion Private fields
 
         public RenderPrimitive()
         {
@@ -512,33 +520,39 @@ namespace Radegast.Rendering
         public override Primitive BasePrim
         {
             get { return Prim; }
-            set 
+            set
             {
-                if(Meshed)
+                Prim = value;
+
+                int TEHash = Prim.Textures == null ? 0 : Prim.Textures.GetHashCode();
+                int sculptHash, shapeHash;
+
+                if (Meshed)
                 {
-                    if(Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
+                    if (Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
                     {
-                        if(!Prim.Sculpt.Equals(value.Sculpt) || !Prim.Textures.Equals(value.Textures))
+                        sculptHash = Prim.Sculpt.GetHashCode();
+                        if (Prim.Sculpt.GetHashCode() != prevSculptHash || TEHash != prevTEHash)
                         {
                             Meshed = false;
-                            Faces.Clear();
                         }
+                        prevSculptHash = sculptHash;
                     }
                     else
                     {
-                        if(!Prim.PrimData.Equals(value.PrimData))
+                        shapeHash = Prim.PrimData.GetHashCode();
+                        if (shapeHash != prevShapeHash)
                         {
                             Meshed = false;
-                            Faces.Clear();
                         }
-                        else if(!Prim.Textures.Equals(value.Textures))
+                        else if (TEHash != prevTEHash)
                         {
                             Meshed = false;
-                            Faces.Clear();
                         }
+                        prevShapeHash = shapeHash;
                     }
                 }
-                Prim = value;
+                prevTEHash = TEHash;
             }
         }
 
@@ -554,11 +568,6 @@ namespace Radegast.Rendering
             float distance = (float)Math.Sqrt(DistanceSquared);
             return string.Format("LocalID: {0}, distance {0.00}", id, distance);
         }
-    }
-
-    public static class Render
-    {
-        public static IRendering Plugin;
     }
 
     public static class RHelp
@@ -2038,7 +2047,7 @@ namespace Radegast.Rendering
         public skeleton()
         {
 
-            
+
 
             mBones = new Dictionary<string, Bone>();
 
@@ -2146,7 +2155,7 @@ namespace Radegast.Rendering
 
         // Add animations to the global decoded list
         // TODO garbage collect unused animations somehow
-        public static void addanimation(OpenMetaverse.Assets.Asset asset,UUID tid, BinBVHAnimationReader b)
+        public static void addanimation(OpenMetaverse.Assets.Asset asset, UUID tid, BinBVHAnimationReader b)
         {
             RenderAvatar av;
             mAnimationTransactions.TryGetValue(tid, out av);
@@ -2161,8 +2170,8 @@ namespace Radegast.Rendering
                 mAnimationCache[asset.AssetID] = b;
                 Logger.Log("Adding new decoded animaton known animations " + asset.AssetID.ToString(), Helpers.LogLevel.Info);
             }
-            
-            int pos=0;
+
+            int pos = 0;
             foreach (binBVHJoint joint in b.joints)
             {
                 binBVHJointState state;
@@ -2181,8 +2190,8 @@ namespace Radegast.Rendering
 
                 if (b.Loop == true)
                 {
-                    int frame=0;
-                    foreach( binBVHJointKey key in joint.rotationkeys)
+                    int frame = 0;
+                    foreach (binBVHJointKey key in joint.rotationkeys)
                     {
                         if (key.time == b.InPoint)
                         {
@@ -2214,174 +2223,174 @@ namespace Radegast.Rendering
         {
             mPriority.Clear();
 
-            lock(mAnimations)
-            foreach (BinBVHAnimationReader b in mAnimations) 
+            lock (mAnimations)
+                foreach (BinBVHAnimationReader b in mAnimations)
                 {
                     if (b == null)
                         continue;
 
-                        int jpos = 0;
-                        foreach (binBVHJoint joint in b.joints)
+                    int jpos = 0;
+                    foreach (binBVHJoint joint in b.joints)
+                    {
+                        int prio = 0;
+
+                        //Quick hack to stack animations in the correct order
+                        //TODO we need to do this per joint as they all have their own priorities as well ;-(
+                        if (mPriority.TryGetValue(joint.Name, out prio))
                         {
-                            int prio=0;
-      
-                            //Quick hack to stack animations in the correct order
-                            //TODO we need to do this per joint as they all have their own priorities as well ;-(
-                            if (mPriority.TryGetValue(joint.Name, out prio))
-                            {
-                                if (prio > b.Priority)
-                                    continue;
-                            }
-
-                            mPriority[joint.Name] = b.Priority;
-                
-                            binBVHJointState state = (binBVHJointState) b.joints[jpos].Tag;
-
-                            state.currenttime_rot += lastframetime;
-                            state.currenttime_pos += lastframetime;
-
-                            //fudge
-                            if (b.joints[jpos].rotationkeys.Length == 1)
-                            {
-                                state.nextkeyframe_rot = 0;
-                            }
-
-                            Vector3 poslerp = Vector3.Zero;
-
-                            if (b.joints[jpos].positionkeys.Length > 2)
-                            {
-                                binBVHJointKey pos2 = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
-
-
-                                if (state.currenttime_pos > pos2.time)
-                                {
-                                    state.lastkeyframe_pos++;
-                                    state.nextkeyframe_pos++;
-
-                                    if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length || (state.nextkeyframe_pos >=state.loopoutframe && b.Loop==true))
-                                    {
-                                        if (b.Loop == true)
-                                        {
-                                            state.nextkeyframe_pos = state.loopinframe;
-                                            state.currenttime_pos = b.InPoint;
-
-                                            if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
-                                            {
-                                                state.lastkeyframe_pos = state.loopinframe;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            state.nextkeyframe_pos = joint.positionkeys.Length - 1;
-                                        }
-                                    }
-
-                                   
-
-                                    if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
-                                    {
-                                        if (b.Loop == true)
-                                        {
-                                            state.lastkeyframe_pos = 0;
-                                            state.currenttime_pos = 0;
-
-                                        }
-                                        else
-                                        {
-                                            state.lastkeyframe_pos = joint.positionkeys.Length - 1;
-                                            if (state.lastkeyframe_pos < 0)//eeww
-                                                state.lastkeyframe_pos = 0; 
-                                        }
-                                    }
-                                }
-
-                                binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
-
-
-                                float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
-
-                                if (delta < 0)
-                                    delta = 0;
-
-                                if (delta > 1)
-                                    delta = 1;
-
-                                poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta) *-1;
-
-                            }
-
-
-                            Vector3 rotlerp = Vector3.Zero;
-                            if (b.joints[jpos].rotationkeys.Length > 0)
-                            {
-                                binBVHJointKey rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
-
-                                if (state.currenttime_rot > rot2.time)
-                                {
-                                    state.lastkeyframe_rot++;
-                                    state.nextkeyframe_rot++;
-
-                                    if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length || (state.nextkeyframe_rot >= state.loopoutframe && b.Loop == true))
-                                    {
-                                        if (b.Loop == true)
-                                        {
-                                            state.nextkeyframe_rot = state.loopinframe;
-                                            state.currenttime_rot = b.InPoint;
-
-                                            if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
-                                            {
-                                                state.lastkeyframe_rot = state.loopinframe;
-                                               
-                 
-                                            }
-
-                                        }
-                                        else
-                                        {
-                                            state.nextkeyframe_rot = joint.rotationkeys.Length - 1;
-                                        }
-                                    }
-
-                                    if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
-                                    {
-                                        if (b.Loop == true)
-                                        {
-                                            state.lastkeyframe_rot = 0;
-                                            state.currenttime_rot = 0;
-
-                                        }
-                                        else
-                                        {
-                                            state.lastkeyframe_rot = joint.rotationkeys.Length - 1;
-                                        }
-                                    }
-                                }
-                              
-                                binBVHJointKey rot = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
-                                rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
-
-                                float deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
-
-                               
-                                if (deltarot < 0)
-                                    deltarot = 0;
-
-                                if (deltarot > 1)
-                                    deltarot = 1;
-
-                                rotlerp = Vector3.Lerp(rot.key_element, rot2.key_element, deltarot);
-
-                            }
-
-                            b.joints[jpos].Tag = (object)state;
-                        
-                            deformbone(joint.Name, poslerp, new Vector3(0, 0, 0), new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
-
-                            jpos++;
+                            if (prio > b.Priority)
+                                continue;
                         }
 
-                        mNeedsMeshRebuild = true;
+                        mPriority[joint.Name] = b.Priority;
+
+                        binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
+
+                        state.currenttime_rot += lastframetime;
+                        state.currenttime_pos += lastframetime;
+
+                        //fudge
+                        if (b.joints[jpos].rotationkeys.Length == 1)
+                        {
+                            state.nextkeyframe_rot = 0;
+                        }
+
+                        Vector3 poslerp = Vector3.Zero;
+
+                        if (b.joints[jpos].positionkeys.Length > 2)
+                        {
+                            binBVHJointKey pos2 = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
+
+
+                            if (state.currenttime_pos > pos2.time)
+                            {
+                                state.lastkeyframe_pos++;
+                                state.nextkeyframe_pos++;
+
+                                if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length || (state.nextkeyframe_pos >= state.loopoutframe && b.Loop == true))
+                                {
+                                    if (b.Loop == true)
+                                    {
+                                        state.nextkeyframe_pos = state.loopinframe;
+                                        state.currenttime_pos = b.InPoint;
+
+                                        if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                        {
+                                            state.lastkeyframe_pos = state.loopinframe;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        state.nextkeyframe_pos = joint.positionkeys.Length - 1;
+                                    }
+                                }
+
+
+
+                                if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                {
+                                    if (b.Loop == true)
+                                    {
+                                        state.lastkeyframe_pos = 0;
+                                        state.currenttime_pos = 0;
+
+                                    }
+                                    else
+                                    {
+                                        state.lastkeyframe_pos = joint.positionkeys.Length - 1;
+                                        if (state.lastkeyframe_pos < 0)//eeww
+                                            state.lastkeyframe_pos = 0;
+                                    }
+                                }
+                            }
+
+                            binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
+
+
+                            float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
+
+                            if (delta < 0)
+                                delta = 0;
+
+                            if (delta > 1)
+                                delta = 1;
+
+                            poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta) * -1;
+
+                        }
+
+
+                        Vector3 rotlerp = Vector3.Zero;
+                        if (b.joints[jpos].rotationkeys.Length > 0)
+                        {
+                            binBVHJointKey rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+
+                            if (state.currenttime_rot > rot2.time)
+                            {
+                                state.lastkeyframe_rot++;
+                                state.nextkeyframe_rot++;
+
+                                if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length || (state.nextkeyframe_rot >= state.loopoutframe && b.Loop == true))
+                                {
+                                    if (b.Loop == true)
+                                    {
+                                        state.nextkeyframe_rot = state.loopinframe;
+                                        state.currenttime_rot = b.InPoint;
+
+                                        if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                        {
+                                            state.lastkeyframe_rot = state.loopinframe;
+
+
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        state.nextkeyframe_rot = joint.rotationkeys.Length - 1;
+                                    }
+                                }
+
+                                if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                {
+                                    if (b.Loop == true)
+                                    {
+                                        state.lastkeyframe_rot = 0;
+                                        state.currenttime_rot = 0;
+
+                                    }
+                                    else
+                                    {
+                                        state.lastkeyframe_rot = joint.rotationkeys.Length - 1;
+                                    }
+                                }
+                            }
+
+                            binBVHJointKey rot = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
+                            rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+
+                            float deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
+
+
+                            if (deltarot < 0)
+                                deltarot = 0;
+
+                            if (deltarot > 1)
+                                deltarot = 1;
+
+                            rotlerp = Vector3.Lerp(rot.key_element, rot2.key_element, deltarot);
+
+                        }
+
+                        b.joints[jpos].Tag = (object)state;
+
+                        deformbone(joint.Name, poslerp, new Vector3(0, 0, 0), new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
+
+                        jpos++;
                     }
+
+                    mNeedsMeshRebuild = true;
+                }
 
             mNeedsUpdate = false;
         }
@@ -2544,7 +2553,7 @@ namespace Radegast.Rendering
                 Vector3 mepre = pos * scale;
                 mepre = mepre * totalrot;
                 mTotalPos = parento + mepre;
-              
+
                 Vector3 orig = getOrigOffset();
                 mDeltaPos = mTotalPos - orig;
 
@@ -2559,7 +2568,7 @@ namespace Radegast.Rendering
                 mDeltaPos = mTotalPos - orig;
                 posdirty = false;
                 return mTotalPos;
-              
+
             }
         }
 
@@ -3018,20 +3027,20 @@ namespace Radegast.Rendering
 
         public int readblock(byte[] blockdata, int offset)
         {
-             
-             BitPack input = new BitPack(blockdata, offset);
-             mLocation = input.UnpackInt();
-             mLength = input.UnpackInt();
-             mAccessTime = input.UnpackInt();
-             mFileID = input.UnpackUUID();
-             int filetype = input.UnpackShort();
-             mAssetType = (AssetType)filetype;
-             mSize = input.UnpackInt();
-             offset += 34;
 
-             Logger.Log(String.Format("Found header for {0} type {1} length {2} at {3}", mFileID, mAssetType, mSize, mLocation),Helpers.LogLevel.Info);
-           
-             return offset;
+            BitPack input = new BitPack(blockdata, offset);
+            mLocation = input.UnpackInt();
+            mLength = input.UnpackInt();
+            mAccessTime = input.UnpackInt();
+            mFileID = input.UnpackUUID();
+            int filetype = input.UnpackShort();
+            mAssetType = (AssetType)filetype;
+            mSize = input.UnpackInt();
+            offset += 34;
+
+            Logger.Log(String.Format("Found header for {0} type {1} length {2} at {3}", mFileID, mAssetType, mSize, mLocation), Helpers.LogLevel.Info);
+
+            return offset;
         }
 
     }
@@ -3046,7 +3055,7 @@ namespace Radegast.Rendering
             datastream = File.Open(datafile, FileMode.Open);
             indexstream = File.Open(indexfile, FileMode.Open);
 
-            int offset=0;
+            int offset = 0;
 
             byte[] blockdata = new byte[indexstream.Length];
             indexstream.Read(blockdata, 0, (int)indexstream.Length);
@@ -3056,14 +3065,14 @@ namespace Radegast.Rendering
                 VFSblock block = new VFSblock();
                 offset = block.readblock(blockdata, offset);
 
-                FileStream writer = File.Open(OpenMetaverse.Settings.RESOURCE_DIR+System.IO.Path.DirectorySeparatorChar+block.mFileID.ToString(),FileMode.Create);
+                FileStream writer = File.Open(OpenMetaverse.Settings.RESOURCE_DIR + System.IO.Path.DirectorySeparatorChar + block.mFileID.ToString(), FileMode.Create);
                 byte[] data = new byte[block.mSize];
                 datastream.Seek(block.mLocation, SeekOrigin.Begin);
                 datastream.Read(data, 0, block.mSize);
                 writer.Write(data, 0, block.mSize);
                 writer.Close();
             }
-           
+
         }
     }
 }

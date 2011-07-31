@@ -725,10 +725,6 @@ namespace Radegast.Rendering
         #region Mouse handling
         bool dragging = false;
         int dragX, dragY, downX, downY;
-        /// <summary>
-        /// The camera doesn't move when ctrl-alt has been used, so don't move it if the user moves around
-        /// </summary>
-        private Vector3 lastCachedClientCameraPos = Vector3.Zero;
 
         private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -2416,8 +2412,9 @@ namespace Radegast.Rendering
                             meshingsRequestedThisFrame++;
                             MeshPrim(obj);
                         }
-                        continue;
                     }
+
+                    if (obj.Faces == null) continue;
 
                     obj.Step(lastFrameTime);
 
@@ -2448,7 +2445,7 @@ namespace Radegast.Rendering
                     foreach (RenderAvatar obj in Avatars.Values)
                     {
                         if (!obj.Initialized) obj.Initialize();
-                        obj.Step(lastFrameTime);
+                        if (AvatarRenderingEnabled) obj.Step(lastFrameTime);
                         PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
                         obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.RenderPosition);
                         obj.PositionCalculated = true;
@@ -2474,8 +2471,9 @@ namespace Radegast.Rendering
                             meshingsRequestedThisFrame++;
                             MeshPrim(obj);
                         }
-                        continue;
                     }
+
+                    if (obj.Faces == null) continue;
 
                     obj.Step(lastFrameTime);
 
