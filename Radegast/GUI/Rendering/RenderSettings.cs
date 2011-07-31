@@ -46,5 +46,6 @@ namespace Radegast.Rendering
         public static DetailLevel MeshRenderDetail = DetailLevel.Highest;
         public static bool AllowQuickAndDirtyMeshing = true;
         public static int MeshesPerFrame = 2;
+        public static int TexturesToDownloadPerFrame = 2;
     }
 }

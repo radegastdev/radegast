@@ -2214,9 +2214,9 @@ namespace Radegast.Rendering
             // Draw the prim faces
             for (int j = 0; j < mesh.Faces.Count; j++)
             {
-                Primitive.TextureEntryFace teFace = mesh.Prim.Textures.GetFace((uint)j);
+                Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
                 Face face = mesh.Faces[j];
-                FaceData data = (FaceData)mesh.Faces[j].UserData;
+                FaceData data = (FaceData)face.UserData;
 
                 if (data == null)
                     continue;
@@ -2225,13 +2225,15 @@ namespace Radegast.Rendering
                     continue;
 
                 // Don't render transparent faces
-                if (data.TextureInfo.FullAlpha || teFace.RGBA.A <= 0.01f) continue;
+                Color4 RGBA = teFace.RGBA;
+
+                if (data.TextureInfo.FullAlpha || RGBA.A <= 0.01f) continue;
 
                 bool switchedLightsOff = false;
 
                 if (pass != RenderPass.Picking)
                 {
-                    bool belongToAlphaPass = (teFace.RGBA.A < 0.99f) || (data.TextureInfo.HasAlpha && !data.TextureInfo.IsMask);
+                    bool belongToAlphaPass = (RGBA.A < 0.99f) || (data.TextureInfo.HasAlpha && !data.TextureInfo.IsMask);
 
                     if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
                     if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
@@ -2272,7 +2274,7 @@ namespace Radegast.Rendering
                             break;
                     }
 
-                    var faceColor = new float[] { teFace.RGBA.R, teFace.RGBA.G, teFace.RGBA.B, teFace.RGBA.A };
+                    var faceColor = new float[] { RGBA.R, RGBA.G, RGBA.B, RGBA.A };
                     GL.Color4(faceColor);
 
                     GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 0.5f, 0.5f, 0.5f, 1f });
@@ -2285,7 +2287,7 @@ namespace Radegast.Rendering
                     if (data.TextureInfo.TexturePointer == 0)
                     {
                         GL.Disable(EnableCap.Texture2D);
-                        if (texturesRequestedThisFrame < 2 && !data.TextureInfo.FetchFailed)
+                        if(texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame && !data.TextureInfo.FetchFailed)
                         {
                             texturesRequestedThisFrame++;
 
