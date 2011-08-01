@@ -1314,13 +1314,13 @@ namespace Radegast.Rendering
         /// <returns></returns>
         private float FindClosestDistanceSquared(Vector3 calcPos, SceneObject p)
         {
-            if (!RenderSettings.HeavierDistanceChecking)
+            if (p.BoundingVolume == null || p.BoundingVolume.R < 5f || !RenderSettings.HeavierDistanceChecking)
                 return Vector3.DistanceSquared(calcPos, p.RenderPosition);
 
             Vector3 posToCheckFrom = Vector3.Zero;
             //Get the bounding boxes for this prim
-            Vector3 boundingBoxMin = p.RenderPosition - (p.BasePrim.Scale / 2);
-            Vector3 boundingBoxMax = p.RenderPosition + (p.BasePrim.Scale / 2);
+            Vector3 boundingBoxMin = p.RenderPosition - p.BoundingVolume.Min * p.BasePrim.Scale;
+            Vector3 boundingBoxMax = p.RenderPosition + p.BoundingVolume.Max * p.BasePrim.Scale;
             if (calcPos.X > boundingBoxMin.X &&
                     calcPos.X < boundingBoxMax.X)
             {
@@ -3581,7 +3581,7 @@ namespace Radegast.Rendering
         private void cbMisc_CheckedChanged(object sender, EventArgs e)
         {
             miscEnabled = cbMisc.Checked;
-            RenderSettings.OcclusionCullingEnabled = miscEnabled;
+            RenderSettings.HeavierDistanceChecking = miscEnabled;
         }
 
         #endregion
