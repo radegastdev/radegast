@@ -385,10 +385,10 @@ namespace Radegast.Rendering
             }
 
             //If it is an avatar, we don't need to deal with the terse update stuff, unless it sends textures to us
-            if(e.Prim.PrimData.PCode == PCode.Avatar && e.Update.Textures == null)
+            if (e.Prim.PrimData.PCode == PCode.Avatar && e.Update.Textures == null)
                 return;
 
-             UpdatePrimBlocking(e.Prim);
+            UpdatePrimBlocking(e.Prim);
         }
 
         void Objects_ObjectUpdate(object sender, PrimEventArgs e)
@@ -736,13 +736,13 @@ namespace Radegast.Rendering
                 dragging = true;
                 downX = dragX = e.X;
                 downY = dragY = e.Y;
-                if(ModifierKeys == Keys.None)
+                if (ModifierKeys == Keys.None)
                 {
                     object picked;
                     int LeftclickedFaceID;
-                    if(TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
+                    if (TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
                     {
-                        if(picked is RenderPrimitive)
+                        if (picked is RenderPrimitive)
                         {
                             TryTouchObject((RenderPrimitive)picked);
                         }
@@ -765,13 +765,13 @@ namespace Radegast.Rendering
         }
 
         private RenderPrimitive m_currentlyTouchingObject = null;
-        private void TryTouchObject (RenderPrimitive LeftclickedObject)
+        private void TryTouchObject(RenderPrimitive LeftclickedObject)
         {
-            if((LeftclickedObject.Prim.Flags & PrimFlags.Touch) != 0)
+            if ((LeftclickedObject.Prim.Flags & PrimFlags.Touch) != 0)
             {
-                if(m_currentlyTouchingObject != null)
+                if (m_currentlyTouchingObject != null)
                 {
-                    if(m_currentlyTouchingObject.Prim.LocalID != LeftclickedObject.Prim.LocalID)
+                    if (m_currentlyTouchingObject.Prim.LocalID != LeftclickedObject.Prim.LocalID)
                     {
                         //Changed what we are touching... stop touching the old one
                         TryEndTouchObject();
@@ -793,9 +793,9 @@ namespace Radegast.Rendering
             }
         }
 
-        private void TryEndTouchObject ()
+        private void TryEndTouchObject()
         {
-            if(m_currentlyTouchingObject != null)
+            if (m_currentlyTouchingObject != null)
                 Client.Self.DeGrab(m_currentlyTouchingObject.Prim.LocalID);
             m_currentlyTouchingObject = null;
         }
@@ -809,14 +809,14 @@ namespace Radegast.Rendering
                 float pixelToM = 1f / 75f;
                 if (e.Button == MouseButtons.Left)
                 {
-                    if(ModifierKeys == Keys.None)
+                    if (ModifierKeys == Keys.None)
                     {
                         //Only touch if we arn't doing anything else
                         object picked;
                         int LeftclickedFaceID;
-                        if(TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
+                        if (TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
                         {
-                            if(picked is RenderPrimitive)
+                            if (picked is RenderPrimitive)
                                 TryTouchObject((RenderPrimitive)picked);
                         }
                         else
@@ -851,30 +851,35 @@ namespace Radegast.Rendering
 
         private void glControl_MouseUp(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 dragging = false;
                 object clicked;
                 int faceID;
-                if(ModifierKeys == Keys.None)
+                if (ModifierKeys == Keys.None)
                     TryEndTouchObject();//Stop touching no matter whether we are touching anything
-                if(e.X == downX && e.Y == downY) // click
+                if (e.X == downX && e.Y == downY) // click
                 {
-                    if(TryPick(e.X, e.Y, out clicked, out faceID))
+                    if (TryPick(e.X, e.Y, out clicked, out faceID))
                     {
-                        if(clicked is RenderPrimitive)
+                        if (ModifierKeys == Keys.Alt && clicked is Vector3)
+                        {
+                            Camera.FocalPoint = (Vector3)clicked;
+                            Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
+                        }
+                        else if (clicked is RenderPrimitive)
                         {
                             RenderPrimitive picked = (RenderPrimitive)clicked;
-                            if(ModifierKeys == Keys.Alt)
+                            if (ModifierKeys == Keys.Alt)
                             {
                                 Camera.FocalPoint = picked.RenderPosition;
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             }
                         }
-                        else if(clicked is RenderAvatar)
+                        else if (clicked is RenderAvatar)
                         {
                             RenderAvatar av = (RenderAvatar)clicked;
-                            if(ModifierKeys == Keys.Alt)
+                            if (ModifierKeys == Keys.Alt)
                             {
                                 Vector3 pos = av.RenderPosition;
                                 pos.Z += 1.5f; // focus roughly on the chest area
@@ -1307,16 +1312,16 @@ namespace Radegast.Rendering
         /// <param name="vector3"></param>
         /// <param name="p"></param>
         /// <returns></returns>
-        private float FindClosestDistanceSquared (Vector3 calcPos, SceneObject p)
+        private float FindClosestDistanceSquared(Vector3 calcPos, SceneObject p)
         {
-            if(!RenderSettings.HeavierDistanceChecking)
+            if (!RenderSettings.HeavierDistanceChecking)
                 return Vector3.DistanceSquared(calcPos, p.RenderPosition);
 
             Vector3 posToCheckFrom = Vector3.Zero;
             //Get the bounding boxes for this prim
             Vector3 boundingBoxMin = p.RenderPosition - (p.BasePrim.Scale / 2);
             Vector3 boundingBoxMax = p.RenderPosition + (p.BasePrim.Scale / 2);
-            if(calcPos.X > boundingBoxMin.X &&
+            if (calcPos.X > boundingBoxMin.X &&
                     calcPos.X < boundingBoxMax.X)
             {
                 //Between the two
@@ -1326,7 +1331,7 @@ namespace Radegast.Rendering
             {
                 float minX = Abs(boundingBoxMin.X - calcPos.X);
                 float maxX = Abs(boundingBoxMax.X - calcPos.X);
-                if(maxX > minX)
+                if (maxX > minX)
                 {
                     //The min is closer in the X direction
                     posToCheckFrom.X = boundingBoxMin.X;
@@ -1338,7 +1343,7 @@ namespace Radegast.Rendering
                 }
             }
 
-            if(calcPos.Y > boundingBoxMin.Y &&
+            if (calcPos.Y > boundingBoxMin.Y &&
                     calcPos.Y < boundingBoxMax.Y)
             {
                 //Between the two
@@ -1348,7 +1353,7 @@ namespace Radegast.Rendering
             {
                 float minY = Abs(boundingBoxMin.Y - calcPos.Y);
                 float maxY = Abs(boundingBoxMax.Y - calcPos.Y);
-                if(maxY > minY)
+                if (maxY > minY)
                 {
                     //The min is closer in the Y direction
                     posToCheckFrom.Y = boundingBoxMin.Y;
@@ -1360,7 +1365,7 @@ namespace Radegast.Rendering
                 }
             }
 
-            if(calcPos.Z > boundingBoxMin.Z &&
+            if (calcPos.Z > boundingBoxMin.Z &&
                     calcPos.Z < boundingBoxMax.Z)
             {
                 //Between the two
@@ -1370,7 +1375,7 @@ namespace Radegast.Rendering
             {
                 float minZ = Abs(boundingBoxMin.Z - calcPos.Z);
                 float maxZ = Abs(boundingBoxMax.Z - calcPos.Z);
-                if(maxZ > minZ)
+                if (maxZ > minZ)
                 {
                     //The min is closer in the Z direction
                     posToCheckFrom.Z = boundingBoxMin.Z;
@@ -1384,9 +1389,9 @@ namespace Radegast.Rendering
             return Vector3.DistanceSquared(calcPos, posToCheckFrom);
         }
 
-        private float Abs (float p)
+        private float Abs(float p)
         {
-            if(p < 0)
+            if (p < 0)
                 p *= -1;
             return p;
         }
@@ -1435,7 +1440,7 @@ namespace Radegast.Rendering
                     if (av.DistanceSquared > 400f) continue;
 
                     byte[] faceColor = null;
-                    
+
                     OpenTK.Vector3 tagPos = RHelp.TKVector3(avPos);
                     tagPos.Z += 2.2f;
                     OpenTK.Vector3 screenPos;
@@ -1479,8 +1484,8 @@ namespace Radegast.Rendering
                     if (screenPos.Y > 0)
                     {
                         Printer.Begin();
-                        Color textColor = pass == RenderPass.Simple ? 
-                            Color.Orange : 
+                        Color textColor = pass == RenderPass.Simple ?
+                            Color.Orange :
                             Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]);
                         Printer.Print(tagText, AvatarTagFont, textColor,
                             new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width + 2, tSize.BoundingBox.Height + 2),
@@ -1864,7 +1869,7 @@ namespace Radegast.Rendering
                 Client.Self.Movement.TurnLeft = Instance.Keyboard.IsKeyDown(Keys.Left);
                 Client.Self.Movement.TurnRight = Instance.Keyboard.IsKeyDown(Keys.Right);
 
-                if(Client.Self.Movement.Fly)
+                if (Client.Self.Movement.Fly)
                 {
                     //Find whether we are going up or down
                     Client.Self.Movement.UpPos = Instance.Keyboard.IsKeyDown(Keys.PageUp);
@@ -1872,7 +1877,7 @@ namespace Radegast.Rendering
                     //The nudge positions are required to land (at least Neg is, unclear whether we should send Pos)
                     Client.Self.Movement.NudgeUpPos = Client.Self.Movement.UpPos;
                     Client.Self.Movement.NudgeUpNeg = Client.Self.Movement.UpNeg;
-                    if(Client.Self.Velocity.Z > 0 && Client.Self.Movement.UpNeg)//HACK: Sometimes, stop fly fails
+                    if (Client.Self.Velocity.Z > 0 && Client.Self.Movement.UpNeg)//HACK: Sometimes, stop fly fails
                         Client.Self.Fly(false);//We've hit something, stop flying
                 }
                 else
@@ -1883,11 +1888,11 @@ namespace Radegast.Rendering
                     Client.Self.Movement.UpPos = Instance.Keyboard.IsKeyDown(Keys.PageUp);
                     Client.Self.Movement.UpNeg = Instance.Keyboard.IsKeyDown(Keys.PageDown);
                 }
-                if(Instance.Keyboard.IsKeyDown(Keys.Home))//Flip fly settings
+                if (Instance.Keyboard.IsKeyDown(Keys.Home))//Flip fly settings
                 {
                     //Holding the home key only makes it change once, 
                     // not flip over and over, so keep track of it
-                    if(!isHoldingHome)
+                    if (!isHoldingHome)
                     {
                         Client.Self.Movement.Fly = !Client.Self.Movement.Fly;
                         isHoldingHome = true;
@@ -1896,11 +1901,11 @@ namespace Radegast.Rendering
                 else
                     isHoldingHome = false;
 
-                if(!Client.Self.Movement.Fly && 
+                if (!Client.Self.Movement.Fly &&
                     Instance.Keyboard.IsKeyDown(Keys.PageUp))
                 {
                     upKeyHeld += time;
-                    if(upKeyHeld > upKeyHeldBeforeFly)//Wait for a bit before we fly, they may be trying to jump
+                    if (upKeyHeld > upKeyHeldBeforeFly)//Wait for a bit before we fly, they may be trying to jump
                         Client.Self.Movement.Fly = true;
                 }
                 else
@@ -1932,7 +1937,7 @@ namespace Radegast.Rendering
                 // Camera horizontal rotation
                 if (Instance.Keyboard.IsKeyDown(Keys.Left))
                 {
-                    Camera.Rotate(-time, true);   
+                    Camera.Rotate(-time, true);
                 }
                 else if (Instance.Keyboard.IsKeyDown(Keys.Right))
                 {
@@ -1985,7 +1990,7 @@ namespace Radegast.Rendering
         float[,] heightTable = new float[256, 256];
         Face terrainFace;
         ushort[] terrainIndices;
-        Vertex[] terrainVertices;
+        ColorVertex[] terrainVertices;
         int terrainTexture = -1;
         bool fetchingTerrainTexture = false;
         Bitmap terrainImage = null;
@@ -2052,9 +2057,23 @@ namespace Radegast.Rendering
             }
 
             terrainFace = renderer.TerrainMesh(heightTable, 0f, 255f, 0f, 255f);
-            terrainVertices = terrainFace.Vertices.ToArray();
+            terrainVertices = new ColorVertex[terrainFace.Vertices.Count];
+            for (int i = 0; i < terrainFace.Vertices.Count; i++)
+            {
+                byte[] part = Utils.IntToBytes(i);
+                terrainVertices[i] = new ColorVertex()
+                {
+                    Vertex = terrainFace.Vertices[i],
+                    Color = new Color4b()
+                    {
+                        R = part[0],
+                        G = part[1],
+                        B = part[2],
+                        A = 253 // terrain picking
+                    }
+                };
+            }
             terrainIndices = terrainFace.Indices.ToArray();
-
             TerrainModified = false;
         }
 
@@ -2076,12 +2095,17 @@ namespace Radegast.Rendering
             }
         }
 
-        private void RenderTerrain()
+        private void RenderTerrain(RenderPass pass)
         {
             GL.Color3(1f, 1f, 1f);
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.TextureCoordArray);
             GL.EnableClientState(ArrayCap.NormalArray);
+            if (pass == RenderPass.Picking)
+            {
+                GL.EnableClientState(ArrayCap.ColorArray);
+                GL.ShadeModel(ShadingModel.Flat);
+            }
 
             if (TerrainModified)
             {
@@ -2102,11 +2126,7 @@ namespace Radegast.Rendering
                 terrainImage = null;
             }
 
-            if (terrainTexture == -1)
-            {
-                return;
-            }
-            else
+            if (pass != RenderPass.Picking && terrainTexture != -1)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.BindTexture(TextureTarget.Texture2D, terrainTexture);
@@ -2116,12 +2136,17 @@ namespace Radegast.Rendering
             {
                 unsafe
                 {
-                    fixed (float* normalPtr = &terrainVertices[0].Normal.X)
-                    fixed (float* texPtr = &terrainVertices[0].TexCoord.X)
+                    fixed (float* normalPtr = &terrainVertices[0].Vertex.Normal.X)
+                    fixed (float* texPtr = &terrainVertices[0].Vertex.TexCoord.X)
+                    fixed (byte* colorPtr = &terrainVertices[0].Color.R)
                     {
-                        GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
-                        GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
-                        GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, terrainVertices);
+                        GL.NormalPointer(NormalPointerType.Float, ColorVertex.Size, (IntPtr)normalPtr);
+                        GL.TexCoordPointer(2, TexCoordPointerType.Float, ColorVertex.Size, (IntPtr)texPtr);
+                        GL.VertexPointer(3, VertexPointerType.Float, ColorVertex.Size, terrainVertices);
+                        if (pass == RenderPass.Picking)
+                        {
+                            GL.ColorPointer(4, ColorPointerType.UnsignedByte, ColorVertex.Size, (IntPtr)colorPtr);
+                        }
                         GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, terrainIndices);
                     }
                 }
@@ -2132,7 +2157,7 @@ namespace Radegast.Rendering
                 {
                     GL.GenBuffers(1, out terrainVBO);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
-                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * FaceData.VertexSize), terrainVertices, BufferUsageHint.StaticDraw);
+                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * ColorVertex.Size), terrainVertices, BufferUsageHint.StaticDraw);
                 }
                 else
                 {
@@ -2150,16 +2175,29 @@ namespace Radegast.Rendering
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
                 }
 
-                GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
-                GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
-                GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
+                GL.NormalPointer(NormalPointerType.Float, ColorVertex.Size, (IntPtr)12);
+                GL.TexCoordPointer(2, TexCoordPointerType.Float, ColorVertex.Size, (IntPtr)(24));
+                if (pass == RenderPass.Picking)
+                {
+                    GL.ColorPointer(4, ColorPointerType.UnsignedByte, ColorVertex.Size, (IntPtr)32);
+                }
+                GL.VertexPointer(3, VertexPointerType.Float, ColorVertex.Size, (IntPtr)(0));
 
                 GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             }
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+
+            if (pass == RenderPass.Picking)
+            {
+                GL.DisableClientState(ArrayCap.ColorArray);
+                GL.ShadeModel(ShadingModel.Smooth);
+            }
+            else
+            {
+                GL.BindTexture(TextureTarget.Texture2D, 0);
+            }
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.DisableClientState(ArrayCap.TextureCoordArray);
             GL.DisableClientState(ArrayCap.NormalArray);
@@ -2369,7 +2407,7 @@ namespace Radegast.Rendering
                     if (data.TextureInfo.TexturePointer == 0)
                     {
                         GL.Disable(EnableCap.Texture2D);
-                        if(texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame && !data.TextureInfo.FetchFailed)
+                        if (texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame && !data.TextureInfo.FetchFailed)
                         {
                             texturesRequestedThisFrame++;
 
@@ -2493,7 +2531,7 @@ namespace Radegast.Rendering
 
                     if (!obj.Meshed)
                     {
-                        if(!obj.Meshing && meshingsRequestedThisFrame < RenderSettings.MeshesPerFrame)
+                        if (!obj.Meshing && meshingsRequestedThisFrame < RenderSettings.MeshesPerFrame)
                         {
                             meshingsRequestedThisFrame++;
                             MeshPrim(obj);
@@ -2785,7 +2823,7 @@ namespace Radegast.Rendering
                 if (lastTrackedObjectPos == RHelp.InvalidPosition)
                 {
                     lastTrackedObjectPos = trackedObject.RenderPosition;
-                } 
+                }
                 else if (lastTrackedObjectPos != trackedObject.RenderPosition)
                 {
                     Vector3 diffPos = (trackedObject.RenderPosition - lastTrackedObjectPos);
@@ -2811,6 +2849,7 @@ namespace Radegast.Rendering
             if (picking)
             {
                 GL.Disable(EnableCap.Lighting);
+                RenderTerrain(RenderPass.Picking);
                 RenderObjects(RenderPass.Picking);
                 RenderAvatars(RenderPass.Picking);
                 GLHUDBegin();
@@ -2826,9 +2865,10 @@ namespace Radegast.Rendering
 
                 CheckKeyboard(lastFrameTime);
 
+                RenderTerrain(RenderPass.Simple);
+
                 // Alpha mask elements, no blending, alpha test for A > 0.5
                 GL.Enable(EnableCap.AlphaTest);
-                RenderTerrain();
                 RenderObjects(RenderPass.Simple);
                 RenderAvatarsSkeleton(RenderPass.Simple);
                 RenderAvatars(RenderPass.Simple);
@@ -2889,7 +2929,16 @@ namespace Radegast.Rendering
 
             picked = null;
 
-            if (color[3] == 254) // Avatar
+            if (color[3] == 253) // Terrain
+            {
+                int vertexIndex = Utils.BytesToInt(new byte[] { color[0], color[1], color[2], 0 });
+                if (vertexIndex < terrainVertices.Length)
+                {
+                    picked = terrainVertices[vertexIndex].Vertex.Position;
+                    return true;
+                }
+            }
+            else if (color[3] == 254) // Avatar
             {
                 lock (VisibleAvatars)
                 {
@@ -2912,7 +2961,7 @@ namespace Radegast.Rendering
                     return true;
                 }
             }
-            if (color[3] == 255) // Prim
+            else if (color[3] == 255) // Prim
             {
                 lock (SortedObjects)
                 {
@@ -2921,7 +2970,7 @@ namespace Radegast.Rendering
                         if (!(obj is RenderPrimitive)) continue;
                         RenderPrimitive prim = (RenderPrimitive)obj;
 
-                        if(obj.BasePrim.LocalID == 0)
+                        if (obj.BasePrim.LocalID == 0)
                             continue;
 
                         foreach (var face in prim.Faces)
@@ -3053,12 +3102,12 @@ namespace Radegast.Rendering
             Primitive prim = rprim.BasePrim;
 
             // Regular prim
-            if(prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
+            if (prim.Sculpt == null || prim.Sculpt.SculptTexture == UUID.Zero)
             {
                 DetailLevel detailLevel = RenderSettings.PrimRenderDetail;
-                if(RenderSettings.AllowQuickAndDirtyMeshing)
+                if (RenderSettings.AllowQuickAndDirtyMeshing)
                 {
-                    if(prim.Flexible == null && prim.Type == PrimType.Box &&
+                    if (prim.Flexible == null && prim.Type == PrimType.Box &&
                         prim.PrimData.ProfileHollow == 0 &&
                         prim.PrimData.PathTwist == 0 &&
                         prim.PrimData.PathTaperX == 0 &&
@@ -3083,7 +3132,7 @@ namespace Radegast.Rendering
             }
         }
 
-        private GenericTask GenerateSculptOrMeshPrim (RenderPrimitive rprim, Primitive prim)
+        private GenericTask GenerateSculptOrMeshPrim(RenderPrimitive rprim, Primitive prim)
         {
             return new GenericTask(() =>
             {
@@ -3091,21 +3140,21 @@ namespace Radegast.Rendering
 
                 try
                 {
-                    if(prim.Sculpt.Type != SculptType.Mesh)
+                    if (prim.Sculpt.Type != SculptType.Mesh)
                     { // Regular sculptie
                         Image img = null;
 
-                        lock(sculptCache)
+                        lock (sculptCache)
                         {
-                            if(sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
+                            if (sculptCache.ContainsKey(prim.Sculpt.SculptTexture))
                             {
                                 img = sculptCache[prim.Sculpt.SculptTexture];
                             }
                         }
 
-                        if(img == null)
+                        if (img == null)
                         {
-                            if(LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
+                            if (LoadTexture(prim.Sculpt.SculptTexture, ref img, true))
                             {
                                 sculptCache[prim.Sculpt.SculptTexture] = (Bitmap)img;
                             }
@@ -3123,7 +3172,7 @@ namespace Radegast.Rendering
 
                         Client.Assets.RequestMesh(prim.Sculpt.SculptTexture, (success, meshAsset) =>
                         {
-                            if(!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, RenderSettings.MeshRenderDetail, out mesh))
+                            if (!success || !FacetedMesh.TryDecodeFromAsset(prim, meshAsset, RenderSettings.MeshRenderDetail, out mesh))
                             {
                                 Logger.Log("Failed to fetch or decode the mesh asset", Helpers.LogLevel.Warning, Client);
                             }
@@ -3136,7 +3185,7 @@ namespace Radegast.Rendering
                 catch
                 { }
 
-                if(mesh != null)
+                if (mesh != null)
                 {
                     rprim.Faces = mesh.Faces;
                     CalculateBoundingBox(rprim);
@@ -3145,7 +3194,7 @@ namespace Radegast.Rendering
                 }
                 else
                 {
-                    lock(Prims)
+                    lock (Prims)
                     {
                         Prims.Remove(rprim.BasePrim.LocalID);
                     }
