@@ -1555,6 +1555,7 @@ namespace Radegast.Rendering
                 {
                     lerp = Vector3.Lerp(ba.getDeltaOffset(), bb.getDeltaOffset(), weight);
                     offset = Vector3.Lerp(ba.getTotalOffset(), bb.getTotalOffset(), weight);
+                    rot = Quaternion.Slerp(ba.getTotalRotation(), bb.getTotalRotation(), weight);
                 }
                 else
                 {
