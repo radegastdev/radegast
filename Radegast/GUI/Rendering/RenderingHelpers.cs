@@ -1549,7 +1549,7 @@ namespace Radegast.Rendering
 
                 Vector3 lerp;
                 Vector3 offset;
-                Quaternion rot = ba.getTotalRotation();
+                Quaternion rot;
 
                 if (bb != null)
                 {
@@ -2682,7 +2682,7 @@ namespace Radegast.Rendering
 
             if (parent != null)
             {
-                totalrot = rot * parent.getRotation();
+                totalrot =  parent.getRotation() * rot;
             }
 
             mTotalRot = totalrot;
