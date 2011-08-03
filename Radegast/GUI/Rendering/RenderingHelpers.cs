@@ -1547,33 +1547,69 @@ namespace Radegast.Rendering
                 // ON upper torso 5 and 10 are not used
                 // 4 is neck and 6 and 11 are the left and right collar bones
 
-                Vector3 lerp;
-                Vector3 offset;
-                Quaternion rot;
+
+                //TODO use the SRT matrix to do this!
+
+                Vector3 lerpa;
+                Vector3 offseta;
+                Quaternion rota;
+
+                Vector3 lerpb;
+                Vector3 offsetb;
+                Quaternion rotb;
+
+                Vector3 pos;
+
+                Vector3 posa = new Vector3(MorphRenderData.Vertices[v], MorphRenderData.Vertices[v + 1], MorphRenderData.Vertices[v + 2]);
+
 
                 if (bb != null)
                 {
-                    lerp = Vector3.Lerp(ba.getDeltaOffset(), bb.getDeltaOffset(), weight);
-                    offset = Vector3.Lerp(ba.getTotalOffset(), bb.getTotalOffset(), weight);
-                    rot = Quaternion.Slerp(ba.getTotalRotation(), bb.getTotalRotation(), weight);
+                    lerpa = ba.getDeltaOffset();
+                    offseta = ba.getTotalOffset();
+                    rota = ba.getTotalRotation();
+
+                    lerpb = bb.getDeltaOffset();
+                    offsetb = bb.getTotalOffset();
+                    rotb = bb.getTotalRotation();
+
+                    Vector3 posb = new Vector3(MorphRenderData.Vertices[v], MorphRenderData.Vertices[v + 1], MorphRenderData.Vertices[v + 2]);
+
+                    //move back to mesh local coords
+                    posa = posa - offseta;
+                    // apply rotated offset
+                    posa = (posa + lerpa)*rota;
+                    //move back to avatar local coords
+                    posa = posa + offseta;
+
+                    //move back to mesh local coords
+                    posb = posb - offsetb;
+                    // apply rotated offset
+                    posb = (posb + lerpb)*rotb;
+                    //move back to avatar local coords
+                    posb = posb + offsetb;
+
+                    //LERP the two points to produce smooth skinning ;-)
+                    pos = Vector3.Lerp(posa, posb, weight);
+
                 }
                 else
                 {
-                    lerp = ba.getDeltaOffset();
-                    offset = ba.getTotalOffset();
-                    rot = ba.getTotalRotation();
+                    lerpa = ba.getDeltaOffset();
+                    offseta = ba.getTotalOffset();
+                    rota = ba.getTotalRotation();
+
+                    //move back to mesh local coords
+                    posa = posa - offseta;
+                    // apply rotated offset
+                    posa = (posa + lerpa)*rota;
+                    //move back to avatar local coords
+                    posa = posa + offseta;
+
+                    //Only one bone contributing so its 100% that one.
+                    pos = posa;
+                    
                 }
-
-                Vector3 pos = new Vector3(MorphRenderData.Vertices[v], MorphRenderData.Vertices[v + 1], MorphRenderData.Vertices[v + 2]);
-
-                //move back to mesh local coords
-                pos = pos - offset;
-                // apply LERPd offset
-                pos = pos + lerp;
-                // rotate our offset by total rotation
-                pos = pos * rot;
-                //move back to avatar local coords
-                pos = pos + offset;
 
                 RenderData.Vertices[v] = pos.X;
                 RenderData.Vertices[v + 1] = pos.Y;
