@@ -51,5 +51,7 @@ namespace Radegast.Rendering
         public static bool OcclusionCullingEnabled = true;
         /// <summary>Should we try to make sure that large prims that are > our draw distance are in view when we are standing on them</summary>
         public static bool HeavierDistanceChecking = true;
+        /// <summary>Minimum time between rebuilding terrain mesh and texture</summary>
+        public static float MinimumTimeBetweenTerrainUpdated = 15f;
     }
 }
