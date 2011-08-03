@@ -2008,12 +2008,7 @@ namespace Radegast.Rendering
         static RenderAvatar()
         {
             AvatarBoundingVolume = new BoundingVolume();
-            // Bounding sphere for avatar is 1m in diametar
-            // Bounding box 1m cube
-            // These values get scaled with Avatar.Scale by the time we perform culling
-            AvatarBoundingVolume.R = 1f;
-            AvatarBoundingVolume.Min = new Vector3(-0.5f, -0.5f, -0.5f);
-            AvatarBoundingVolume.Max = new Vector3(0.5f, 0.5f, 0.5f);
+            AvatarBoundingVolume.FromScale(Vector3.One);
         }
 
         // Default constructor
@@ -2026,7 +2021,14 @@ namespace Radegast.Rendering
         public override Primitive BasePrim
         {
             get { return avatar; }
-            set { if (value is Avatar) avatar = (Avatar)value; }
+            set
+            {
+                if (value is Avatar)
+                {
+                    avatar = (Avatar)value;
+                    AvatarBoundingVolume.CalcScaled(avatar.Scale);
+                }
+            }
         }
 
         public override void Step(float time)

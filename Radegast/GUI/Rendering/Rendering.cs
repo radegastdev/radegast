@@ -1319,8 +1319,8 @@ namespace Radegast.Rendering
 
             Vector3 posToCheckFrom = Vector3.Zero;
             //Get the bounding boxes for this prim
-            Vector3 boundingBoxMin = p.RenderPosition + p.BoundingVolume.Min * p.BasePrim.Scale;
-            Vector3 boundingBoxMax = p.RenderPosition + p.BoundingVolume.Max * p.BasePrim.Scale;
+            Vector3 boundingBoxMin = p.RenderPosition + p.BoundingVolume.ScaledMin;
+            Vector3 boundingBoxMax = p.RenderPosition + p.BoundingVolume.ScaledMax;
             if (calcPos.X > boundingBoxMin.X &&
                     calcPos.X < boundingBoxMax.X)
             {
@@ -2211,7 +2211,7 @@ namespace Radegast.Rendering
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             }
-            
+
             if (pass == RenderPass.Picking)
             {
                 GL.DisableClientState(ArrayCap.ColorArray);
@@ -2236,12 +2236,9 @@ namespace Radegast.Rendering
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0f);
         }
 
-        float LODFactor(float distance, Vector3 primScale, float radius)
+        float LODFactor(float distance, float radius)
         {
-            float scale = primScale.X;
-            if (primScale.Y > scale) scale = primScale.Y;
-            if (primScale.Z > scale) scale = primScale.Z;
-            return scale * radius * radius / distance;
+            return radius * radius / distance;
         }
 
         void RenderSphere(float cx, float cy, float cz, float r, int p)
@@ -2552,6 +2549,15 @@ namespace Radegast.Rendering
                     if (obj.BasePrim.ParentID != 0) continue;
                     if (!obj.Initialized) obj.Initialize();
 
+                    obj.Step(lastFrameTime);
+
+                    PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
+                    obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
+                    obj.PositionCalculated = true;
+
+                    if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume)) continue;
+                    if (LODFactor(obj.DistanceSquared, obj.BoundingVolume.ScaledR) < minLODFactor) continue;
+
                     if (!obj.Meshed)
                     {
                         if (!obj.Meshing && meshingsRequestedThisFrame < RenderSettings.MeshesPerFrame)
@@ -2562,18 +2568,6 @@ namespace Radegast.Rendering
                     }
 
                     if (obj.Faces == null) continue;
-
-                    obj.Step(lastFrameTime);
-
-                    if (!obj.PositionCalculated)
-                    {
-                        PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
-                        obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
-                        obj.PositionCalculated = true;
-                    }
-
-                    if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
-                    if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
                     obj.Attached = false;
                     if (obj.Occluded())
@@ -2597,8 +2591,7 @@ namespace Radegast.Rendering
                         obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
                         obj.PositionCalculated = true;
 
-                        if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
-                        if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
+                        if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume)) continue;
 
                         VisibleAvatars.Add(obj);
                         // SortedObjects.Add(obj);
@@ -2611,6 +2604,18 @@ namespace Radegast.Rendering
                     if (obj.BasePrim.ParentID == 0) continue;
                     if (!obj.Initialized) obj.Initialize();
 
+                    obj.Step(lastFrameTime);
+
+                    if (!obj.PositionCalculated)
+                    {
+                        PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
+                        obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
+                        obj.PositionCalculated = true;
+                    }
+
+                    if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume)) continue;
+                    if (LODFactor(obj.DistanceSquared, obj.BoundingVolume.ScaledR) < minLODFactor) continue;
+
                     if (!obj.Meshed)
                     {
                         if (!obj.Meshing && meshingsRequestedThisFrame < RenderSettings.MeshesPerFrame)
@@ -2621,18 +2626,6 @@ namespace Radegast.Rendering
                     }
 
                     if (obj.Faces == null) continue;
-
-                    obj.Step(lastFrameTime);
-
-                    if (!obj.PositionCalculated)
-                    {
-                        PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
-                        obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
-                        obj.PositionCalculated = true;
-                    }
-
-                    if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume, obj.BasePrim.Scale)) continue;
-                    if (LODFactor(obj.DistanceSquared, obj.BasePrim.Scale, obj.BoundingVolume.R) < minLODFactor) continue;
 
                     if (!obj.AttachedStateKnown)
                     {
@@ -3079,8 +3072,8 @@ namespace Radegast.Rendering
                 Face face = rprim.Faces[j];
                 FaceData data = new FaceData();
 
-                data.BoundingVolume.CreateBoundingVolume(face);
-                rprim.BoundingVolume.AddVolume(data.BoundingVolume);
+                data.BoundingVolume.CreateBoundingVolume(face, prim.Scale);
+                rprim.BoundingVolume.AddVolume(data.BoundingVolume, prim.Scale);
 
                 // With linear texture animation in effect, texture repeats and offset are ignored
                 if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
@@ -3250,6 +3243,8 @@ namespace Radegast.Rendering
             {
                 rPrim = new RenderPrimitive();
                 rPrim.Meshed = false;
+                rPrim.BoundingVolume = new BoundingVolume();
+                rPrim.BoundingVolume.FromScale(prim.Scale);
             }
 
             rPrim.BasePrim = prim;

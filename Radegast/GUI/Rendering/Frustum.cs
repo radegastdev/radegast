@@ -148,29 +148,38 @@ namespace Radegast.Rendering
             return d + radius; // palauta matka kameraan
         }
 
-        public static bool ObjectInFrustum(Vector3 position, BoundingVolume bound, Vector3 scale)
+        public static bool ObjectInFrustum(Vector3 position, BoundingVolume bound)
         {
-            return ObjectInFrustum(position.X, position.Y, position.Z, bound, scale);
+            return ObjectInFrustum(position.X, position.Y, position.Z, bound);
         }
 
-        public static bool ObjectInFrustum(float x, float y, float z, BoundingVolume bound, Vector3 scale)
+        public static bool ObjectInFrustum(float x, float y, float z, BoundingVolume bound)
         {
             if (bound == null) return true;
-            float max = scale.X;
-            if (scale.Y > max) max = scale.Y;
-            if (scale.Z > max) max = scale.Z;
-            if (SphereInFrustum(x, y, z, bound.R * max) == 0) return false;
+            if (SphereInFrustum(x, y, z, bound.ScaledR) == 0) return false;
             return true;
         }
     }
 
     public class BoundingVolume
     {
-        public Vector3 Min = new Vector3(99999, 99999, 99999);
-        public Vector3 Max = new Vector3(-99999, -99999, -99999);
-        public float R = 0;
+        Vector3 Min = new Vector3(99999, 99999, 99999);
+        Vector3 Max = new Vector3(-99999, -99999, -99999);
+        float R = 0f;
 
-        public void CreateBoundingVolume(OpenMetaverse.Rendering.Face mesh)
+        public Vector3 ScaledMin = new Vector3(99999, 99999, 99999);
+        public Vector3 ScaledMax = new Vector3(-99999, -99999, -99999);
+        public float ScaledR = 0f;
+
+        public void CalcScaled(Vector3 scale)
+        {
+            ScaledMin = Min * scale;
+            ScaledMax = Max * scale;
+            Vector3 dist = ScaledMax - ScaledMin;
+            ScaledR = dist.Length();
+        }
+
+        public void CreateBoundingVolume(OpenMetaverse.Rendering.Face mesh, Vector3 scale)
         {
             for (int q = 0; q < mesh.Vertices.Count; q++)
             {
@@ -186,9 +195,18 @@ namespace Radegast.Rendering
             Vector3 dist = Max - Min;
             R = dist.Length();
             mesh.Center = Min + (dist / 2);
+            CalcScaled(scale);
         }
 
-        public void AddVolume(BoundingVolume vol)
+        public void FromScale(Vector3 scale)
+        {
+            ScaledMax = scale / 2f;
+            ScaledMin = -ScaledMax;
+            Vector3 dist = ScaledMax - ScaledMin;
+            ScaledR = dist.Length();
+        }
+
+        public void AddVolume(BoundingVolume vol, Vector3 scale)
         {
             if (vol.Min.X < this.Min.X) this.Min.X = vol.Min.X;
             if (vol.Min.Y < this.Min.Y) this.Min.Y = vol.Min.Y;
@@ -199,6 +217,7 @@ namespace Radegast.Rendering
             if (vol.Max.Z > this.Max.Z) this.Max.Z = vol.Max.Z;
             Vector3 dist = Max - Min;
             R = dist.Length();
+            CalcScaled(scale);
         }
 
         //public void CreateBoundingVolume(Model mesh, Vector3 min, Vector3 max)
