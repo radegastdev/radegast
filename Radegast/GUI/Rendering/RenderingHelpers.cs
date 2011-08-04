@@ -2387,7 +2387,7 @@ namespace Radegast.Rendering
                             if (delta > 1)
                                 delta = 1;
 
-                            poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta) * -1;
+                            poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta);
 
                         }
 

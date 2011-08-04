@@ -1300,6 +1300,8 @@ namespace Radegast.Rendering
                     // set in teh appearance editor
                     pos += obj.BasePrim.Position * rot;
                     rot *= obj.BasePrim.Rotation;
+
+                    pos -= parentav.glavatar.skel.getOffset("mPelvis");
                 }
                 return;
             }
@@ -1635,9 +1637,10 @@ namespace Radegast.Rendering
 
                     // Prim roation and position
                     Vector3 pos = av.avatar.Position;
-                    pos.X += 1;
+           
+                    Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
 
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, pos));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, pos - avataroffset));
 
                     GL.Begin(BeginMode.Lines);
 
@@ -1741,8 +1744,10 @@ namespace Radegast.Rendering
                     // Whole avatar position
                     GL.PushMatrix();
 
+                    Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
+                          
                     // Prim roation and position
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset));
 
                     if (av.glavatar._meshes.Count > 0)
                     {
