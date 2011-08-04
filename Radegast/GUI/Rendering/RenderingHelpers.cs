@@ -2441,9 +2441,12 @@ namespace Radegast.Rendering
                             binBVHJointKey rot = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
                             rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
 
-                            float deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
-
-
+                            float deltarot = 0;
+                            if (state.currenttime_rot != (rot.time - b.joints[jpos].rotationkeys[0].time))
+                            {
+                                deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
+                            }
+                           
                             if (deltarot < 0)
                                 deltarot = 0;
 
