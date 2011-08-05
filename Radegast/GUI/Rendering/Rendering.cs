@@ -13,7 +13,7 @@
 //       documentation and/or other materials provided with the distribution.
 //     * Neither the name of the application "Radegast", nor the names of its
 //       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
+//       this software without specific prior CreateReflectionTexture permission.
 // 
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 // AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -149,7 +149,7 @@ namespace Radegast.Rendering
         float advTimerTick = 0f;
         float minLODFactor = 0.0001f;
 
-        float[] lightPos = new float[] { 128f, 128f, 5000f, 0f };
+        float[] sunPos = new float[] { 128f, 128f, 5000f, 1f };
         float ambient = 0.26f;
         float difuse = 0.27f;
         float specular = 0.20f;
@@ -191,6 +191,7 @@ namespace Radegast.Rendering
             // Camera initial setting
             Camera = new Camera();
             InitCamera();
+            SetWaterPlanes();
 
             tbDrawDistance.Value = (int)DrawDistance;
             lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
@@ -355,6 +356,7 @@ namespace Radegast.Rendering
             }
             lock (Prims) Prims.Clear();
             lock (Avatars) Avatars.Clear();
+            SetWaterPlanes();
             LoadCurrentPrims();
             InitCamera();
         }
@@ -564,7 +566,7 @@ namespace Radegast.Rendering
             GL.Light(LightName.Light0, LightParameter.Ambient, ambientColor);
             GL.Light(LightName.Light0, LightParameter.Diffuse, difuseColor);
             GL.Light(LightName.Light0, LightParameter.Specular, specularColor);
-            GL.Light(LightName.Light0, LightParameter.Position, lightPos);
+            GL.Light(LightName.Light0, LightParameter.Position, sunPos);
         }
 
         void glControl_Load(object sender, EventArgs e)
@@ -638,6 +640,7 @@ namespace Radegast.Rendering
                 textureThread.Start();
                 TextureThreadContextReady.WaitOne(1000, false);
                 glControl.MakeCurrent();
+                InitWater();
                 RenderingEnabled = true;
                 LoadCurrentPrims();
             }
@@ -647,6 +650,7 @@ namespace Radegast.Rendering
                 Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Warning, Client, ex);
             }
         }
+
         #endregion glControl setup and disposal
 
         #region glControl paint and resize events
@@ -2779,39 +2783,27 @@ namespace Radegast.Rendering
             GL.DisableClientState(ArrayCap.NormalArray);
         }
 
-        void DrawWaterQuad(float x, float y, float z)
-        {
-            GL.Vertex3(x, y, z);
-            GL.Vertex3(x + 256f, y, z);
-            GL.Vertex3(x + 256f, y + 256f, z);
-            GL.Vertex3(x, y + 256f, z);
-        }
-
-        public void RenderWater()
-        {
-            float z = Client.Network.CurrentSim.WaterHeight;
-
-            GL.Color4(0.09f, 0.28f, 0.63f, 0.84f);
-
-            GL.Begin(BeginMode.Quads);
-            for (float x = -256f * 2; x <= 256 * 2; x += 256f)
-                for (float y = -256f * 2; y <= 256 * 2; y += 256f)
-                    DrawWaterQuad(x, y, z);
-            GL.End();
-        }
-
         int texturesRequestedThisFrame;
         int meshingsRequestedThisFrame;
         int meshingsRequestedLastFrame;
 
         private void Render(bool picking)
         {
+            SortCullInterpolate();
+
             if (picking)
             {
                 GL.ClearColor(1f, 1f, 1f, 1f);
             }
             else
             {
+                if (RenderSettings.AdvancedWater)
+                {
+                    GL.ClearColor(0.09f, 0.28f, 0.63f, 1f);
+                    CreateReflectionTexture(Client.Network.CurrentSim.WaterHeight, 512);
+                    CreateRefractionDepthTexture(Client.Network.CurrentSim.WaterHeight, 512);
+                    glControl_Resize(null, null);
+                }
                 GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
             }
 
@@ -2828,13 +2820,9 @@ namespace Radegast.Rendering
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
 
-            var mLookAt = OpenTK.Matrix4d.LookAt(
-                    Camera.RenderPosition.X, Camera.RenderPosition.Y, Camera.RenderPosition.Z,
-                    Camera.RenderFocalPoint.X, Camera.RenderFocalPoint.Y, Camera.RenderFocalPoint.Z,
-                    0d, 0d, 1d);
-            GL.MultMatrix(ref mLookAt);
+            Camera.LookAt();
 
-            GL.Light(LightName.Light0, LightParameter.Position, lightPos);
+            GL.Light(LightName.Light0, LightParameter.Position, sunPos);
 
             // Push the world matrix
             GL.PushMatrix();
@@ -2864,8 +2852,6 @@ namespace Radegast.Rendering
                 Camera.Modified = false;
                 Camera.Step(lastFrameTime);
             }
-
-            SortCullInterpolate();
 
             if (picking)
             {

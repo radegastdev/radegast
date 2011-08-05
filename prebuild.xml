@@ -112,7 +112,7 @@
       <Reference name="OpenMetaverseTypes"/>
       <Reference name="OpenMetaverse.StructuredData"/>
       <Reference name="XMLRPC" localCopy="true"/>
-	  <Reference name="zlib.net" localCopy="true"/>
+      <Reference name="zlib.net" localCopy="true"/>
       <Files>
         <Match pattern="*.cs" recurse="true"/>
       </Files>
@@ -181,7 +181,7 @@
       <Reference name="assemblies/fmodex-dotnet.dll" localCopy="true"/>
       <Reference name="assemblies/OpenTK.dll" localCopy="true"/>
       <Reference name="assemblies/OpenTK.GLControl.dll" localCopy="true" />
-	  <Reference name="assemblies/OpenTK.Compatibility.dll" localCopy="true" />
+      <Reference name="assemblies/OpenTK.Compatibility.dll" localCopy="true" />
       <Reference name="assemblies/Tools.dll" localCopy="true" />
       <Reference name="assemblies/log4net.dll" localCopy="true" />
       <Reference name="assemblies/CommandLine.dll" localCopy="true" />
@@ -205,7 +205,8 @@
         <Match path="openmetaverse_data" pattern="*.*" recurse="true" buildAction="Content" copyToOutput="PreserveNewest">
           <Exclude name=".svn"/>
         </Match>
-		<Match path="character" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="character" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="shader_data" pattern="*.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
       </Files>
     </Project>
 

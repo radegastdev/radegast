@@ -53,5 +53,9 @@ namespace Radegast.Rendering
         public static bool HeavierDistanceChecking = true;
         /// <summary>Minimum time between rebuilding terrain mesh and texture</summary>
         public static float MinimumTimeBetweenTerrainUpdated = 15f;
+
+        #region Water
+        public static bool AdvancedWater = false;
+        #endregion Water
     }
 }

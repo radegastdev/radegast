@@ -909,6 +909,18 @@ namespace Radegast.Rendering
         {
             Position += (Position - FocalPoint) * delta;
         }
+
+        /// <summary>
+        /// Sets word in perspective of the camera
+        /// </summary>
+        public void LookAt()
+        {
+            OpenTK.Matrix4 lookAt = OpenTK.Matrix4.LookAt(
+                RenderPosition.X, RenderPosition.Y, RenderPosition.Z,
+                RenderFocalPoint.X, RenderFocalPoint.Y, RenderFocalPoint.Z,
+                0f, 0f, 1f);
+            GL.MultMatrix(ref lookAt);
+        }
     }
 
     public static class MeshToOBJ
@@ -1231,6 +1243,16 @@ namespace Radegast.Rendering
             screenPos.Z = _in.Z;
 
             return true;
+        }
+
+        public static double[] AbovePlane(double height)
+        {
+            return new double[] { 0, 0, 1, -height};
+        }
+
+        public static double[] BelowPlane(double height)
+        {
+            return new double[] { 0, 0, -1, height };
         }
     }
 
