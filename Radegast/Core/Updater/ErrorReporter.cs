@@ -56,7 +56,10 @@ namespace Radegast
             report.AppendLine(ex.Message);
             report.AppendLine(ex.StackTrace);
             report.AppendLine();
-            AddStacktrace(ref report, ex.InnerException);
+            if (ex.InnerException != null && ex.InnerException != ex)
+            {
+                AddStacktrace(ref report, ex.InnerException);
+            }
         }
 
         public void SendExceptionReport(Exception ex)
