@@ -2401,7 +2401,7 @@ namespace Radegast.Rendering
                             binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
 
 
-                            if( (pos2.time - pos.time) != ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time)))
+                            if (state.currenttime_pos != ((pos.time - b.joints[jpos].positionkeys[0].time)))
                             {
 
                                 float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
