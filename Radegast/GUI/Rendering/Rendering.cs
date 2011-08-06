@@ -3590,7 +3590,7 @@ namespace Radegast.Rendering
         private void cbMisc_CheckedChanged(object sender, EventArgs e)
         {
             miscEnabled = cbMisc.Checked;
-            RenderSettings.HeavierDistanceChecking = miscEnabled;
+            RenderSettings.OcclusionCullingEnabled = miscEnabled;
         }
 
         #endregion
