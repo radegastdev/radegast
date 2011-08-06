@@ -1971,8 +1971,16 @@ namespace Radegast.Rendering
             }
             else if (ModifierKeys == (Keys.Alt | Keys.Control))
             {
-                // Camera vertical rotation
-                if (Instance.Keyboard.IsKeyDown(Keys.Down))
+                // Camera horizontal rotation
+                if (Instance.Keyboard.IsKeyDown(Keys.Left))
+                {
+                    Camera.Rotate(-time, true);
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.Right))
+                {
+                    Camera.Rotate(time, true);
+                } // Camera vertical rotation
+                else if (Instance.Keyboard.IsKeyDown(Keys.Down))
                 {
                     Camera.Rotate(-time, false);
                 }
