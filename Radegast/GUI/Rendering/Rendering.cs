@@ -195,6 +195,7 @@ namespace Radegast.Rendering
 
             tbDrawDistance.Value = (int)DrawDistance;
             lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
+            pnlDebug.Visible = Instance.GlobalSettings["scene_viewer_debug_panel"];
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -296,14 +297,12 @@ namespace Radegast.Rendering
 
         void RadegastTab_TabDetached(object sender, EventArgs e)
         {
-            instance.GlobalSettings["scene_window_docked"] = false;
-            pnlDebug.Visible = true;
+            Instance.GlobalSettings["scene_window_docked"] = false;
         }
 
         void RadegastTab_TabAttached(object sender, EventArgs e)
         {
-            instance.GlobalSettings["scene_window_docked"] = true;
-            pnlDebug.Visible = false;
+            Instance.GlobalSettings["scene_window_docked"] = true;
         }
 
         void RadegastTab_TabClosed(object sender, EventArgs e)
@@ -3345,6 +3344,7 @@ namespace Radegast.Rendering
         {
             // Clear all context menu items
             ctxMenu.Items.Clear();
+            ce.Cancel = false;
             ToolStripMenuItem item;
 
             // Was it prim that was right clicked
@@ -3444,6 +3444,25 @@ namespace Radegast.Rendering
                     {
                         ((Form)p).Close();
                     }
+                });
+            }
+            ctxMenu.Items.Add(item);
+
+            // Show hide debug panel
+            if (pnlDebug.Visible)
+            {
+                item = new ToolStripMenuItem("Hide debug panel", null, (sender, e) =>
+                {
+                    pnlDebug.Visible = false;
+                    Instance.GlobalSettings["scene_viewer_debug_panel"] = false;
+                });
+            }
+            else
+            {
+                item = new ToolStripMenuItem("Show debug panel", null, (sender, e) =>
+                {
+                    pnlDebug.Visible = true;
+                    Instance.GlobalSettings["scene_viewer_debug_panel"] = true;
                 });
             }
             ctxMenu.Items.Add(item);

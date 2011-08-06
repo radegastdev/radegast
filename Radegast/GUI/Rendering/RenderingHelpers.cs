@@ -911,7 +911,7 @@ namespace Radegast.Rendering
         }
 
         /// <summary>
-        /// Sets word in perspective of the camera
+        /// Sets the world in perspective of the camera
         /// </summary>
         public void LookAt()
         {

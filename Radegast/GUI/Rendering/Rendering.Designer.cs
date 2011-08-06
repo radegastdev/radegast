@@ -133,6 +133,7 @@ namespace Radegast.Rendering
             this.pnlDebug.Size = new System.Drawing.Size(779, 163);
             this.pnlDebug.TabIndex = 8;
             this.pnlDebug.TabStop = false;
+            this.pnlDebug.Visible = false;
             // 
             // cbMisc
             // 

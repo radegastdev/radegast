@@ -1514,12 +1514,10 @@ namespace Radegast
 
                 if (instance.GlobalSettings["scene_window_docked"])
                 {
-                    control.pnlDebug.Visible = false;
                     instance.TabConsole.Tabs["scene_window"].Select();
                 }
                 else
                 {
-                    control.pnlDebug.Visible = true;
                     instance.TabConsole.Tabs["scene_window"].Detach(instance);
                 }
             }
