@@ -120,8 +120,6 @@ namespace Radegast
             // 
             // tstTabs
             // 
-            this.tstTabs.AllowItemReorder = true;
-            this.tstTabs.CanOverflow = false;
             this.tstTabs.ContextMenuStrip = this.ctxTabs;
             this.tstTabs.Dock = System.Windows.Forms.DockStyle.None;
             this.tstTabs.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
