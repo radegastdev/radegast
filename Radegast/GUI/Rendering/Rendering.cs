@@ -1969,6 +1969,18 @@ namespace Radegast.Rendering
                     Camera.MoveToTarget(-time);
                 }
             }
+            else if (ModifierKeys == (Keys.Alt | Keys.Control))
+            {
+                // Camera vertical rotation
+                if (Instance.Keyboard.IsKeyDown(Keys.Down))
+                {
+                    Camera.Rotate(-time, false);
+                }
+                else if (Instance.Keyboard.IsKeyDown(Keys.Up))
+                {
+                    Camera.Rotate(time, false);
+                }
+            }
             else if (ModifierKeys == Keys.Control)
             {
                 // Camera pan
