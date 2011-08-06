@@ -2401,15 +2401,19 @@ namespace Radegast.Rendering
                             binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
 
 
-                            float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
+                            if( (pos2.time - pos.time) != ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time)))
+                            {
 
-                            if (delta < 0)
-                                delta = 0;
+                                float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
 
-                            if (delta > 1)
-                                delta = 1;
+                                if (delta < 0)
+                                    delta = 0;
 
-                            poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta);
+                                if (delta > 1)
+                                    delta = 1;
+
+                                poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta);
+                            }
 
                         }
 
