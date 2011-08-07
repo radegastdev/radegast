@@ -1229,6 +1229,7 @@ namespace Radegast
 
         private void ctxInv_Opening(object sender, CancelEventArgs e)
         {
+            e.Cancel = false;
             TreeNode node = invTree.SelectedNode;
             if (node == null)
             {

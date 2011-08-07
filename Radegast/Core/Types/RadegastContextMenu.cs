@@ -315,6 +315,7 @@ namespace Radegast
         private void Rad_Menu_Opening(object sender, CancelEventArgs e)
         {
             WriteDebug("Menu_Opening: {0} {1}", sender, e.Cancel);
+            e.Cancel = false;
             if (OnContentMenuOpening != null)
             {
                 try

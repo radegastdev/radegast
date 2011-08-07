@@ -1134,6 +1134,8 @@ namespace Radegast
 
         private void ctxTabs_Opening(object sender, CancelEventArgs e)
         {
+            e.Cancel = false;
+
             Point pt = this.PointToClient(Cursor.Position);
             ToolStripItem stripItem = tstTabs.GetItemAt(pt);
 

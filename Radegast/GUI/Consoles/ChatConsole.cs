@@ -774,6 +774,7 @@ namespace Radegast
 
         private void avatarContext_Opening(object sender, CancelEventArgs e)
         {
+            e.Cancel = false;
             if (lvwObjects.SelectedItems.Count == 0 && !instance.State.IsPointing)
             {
                 e.Cancel = true;

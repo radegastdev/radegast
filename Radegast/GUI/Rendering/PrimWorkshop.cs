@@ -1128,6 +1128,8 @@ namespace Radegast.Rendering
         #region Context menu
         private void ctxObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            e.Cancel = false;
+
             if (instance.State.IsSitting)
             {
                 sitToolStripMenuItem.Text = "Stand up";

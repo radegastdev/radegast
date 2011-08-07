@@ -336,6 +336,8 @@ namespace Radegast
 
         private void ctxContents_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            e.Cancel = false;
+
             if (!(lstContents.Tag is Primitive))
             {
                 e.Cancel = true;
@@ -999,6 +1001,8 @@ namespace Radegast
 
         private void ctxMenuObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            e.Cancel = false;
+
             if (lstPrims.SelectedItems.Count != 1)
             {
                 e.Cancel = true;
