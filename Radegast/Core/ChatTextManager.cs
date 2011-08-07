@@ -347,6 +347,7 @@ namespace Radegast
     public class ChatLineAddedArgs : EventArgs
     {
         ChatBufferItem mItem;
+        public ChatBufferItem Item { get { return mItem; } }
 
         public ChatLineAddedArgs(ChatBufferItem item)
         {

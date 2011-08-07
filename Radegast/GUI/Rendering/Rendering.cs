@@ -120,7 +120,7 @@ namespace Radegast.Rendering
         /// <summary>
         /// Size of OpenGL window we're drawing on
         /// </summary>
-        int[] Viewport = new int[4];
+        public int[] Viewport = new int[4];
 
         #endregion Public fields
 
@@ -934,49 +934,6 @@ namespace Radegast.Rendering
             GL.MatrixMode(MatrixMode.Modelview);
         }
 
-        public int GLLoadImage(Bitmap bitmap, bool hasAlpha)
-        {
-            int ret = -1;
-            GL.GenTextures(1, out ret);
-            GL.BindTexture(TextureTarget.Texture2D, ret);
-
-            Rectangle rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-            BitmapData bitmapData =
-                bitmap.LockBits(
-                rectangle,
-                ImageLockMode.ReadOnly,
-                hasAlpha ? System.Drawing.Imaging.PixelFormat.Format32bppArgb : System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-            GL.TexImage2D(
-                TextureTarget.Texture2D,
-                0,
-                hasAlpha ? PixelInternalFormat.Rgba : PixelInternalFormat.Rgb8,
-                bitmap.Width,
-                bitmap.Height,
-                0,
-                hasAlpha ? OpenTK.Graphics.OpenGL.PixelFormat.Bgra : OpenTK.Graphics.OpenGL.PixelFormat.Bgr,
-                PixelType.UnsignedByte,
-                bitmapData.Scan0);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            if (RenderSettings.HasMipmap)
-            {
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            }
-            else
-            {
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            }
-
-            bitmap.UnlockBits(bitmapData);
-            return ret;
-        }
-
         #region Texture thread
         bool TextureThreadRunning = true;
 
@@ -1068,7 +1025,7 @@ namespace Radegast.Rendering
                     Bitmap bitmap = (Bitmap)img;
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    item.Data.TextureInfo.TexturePointer = GLLoadImage(bitmap, item.Data.TextureInfo.HasAlpha);
+                    item.Data.TextureInfo.TexturePointer = RHelp.GLLoadImage(bitmap, item.Data.TextureInfo.HasAlpha);
                     GL.Flush();
                     bitmap.Dispose();
                 }
@@ -2185,7 +2142,7 @@ namespace Radegast.Rendering
                     GL.DeleteTexture(terrainTexture);
                 }
 
-                terrainTexture = GLLoadImage(terrainImage, false);
+                terrainTexture = RHelp.GLLoadImage(terrainImage, false);
                 terrainImage.Dispose();
                 terrainImage = null;
             }
@@ -2925,7 +2882,7 @@ namespace Radegast.Rendering
                 GLHUDBegin();
                 RenderText(RenderPass.Simple);
                 RenderStats();
-                chatOverlay.RenderChat(lastFrameTime);
+                chatOverlay.RenderChat(lastFrameTime, RenderPass.Simple);
                 GLHUDEnd();
                 GL.Disable(EnableCap.Blend);
             }

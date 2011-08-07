@@ -34,34 +34,211 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Windows.Forms;
+using OpenTK.Graphics.OpenGL;
 
 namespace Radegast.Rendering
 {
     public class ChatOverlay : IDisposable
     {
+        public static Font ChatFont = new Font(FontFamily.GenericSansSerif, 11f, FontStyle.Regular, GraphicsUnit.Point);
+        public static float ChatLineTimeOnScreen = 20f; // time in seconds chat line appears on the screen
+        public static float ChatLineFade = 1.5f; // number of seconds before expiry to start fading chat off
+        public static OpenTK.Graphics.Color4 ChatBackground = new OpenTK.Graphics.Color4(0f, 0f, 0f, 0.5f);
+
         RadegastInstance Instance;
         SceneWindow Window;
         float runningTime;
+        
+        Queue<ChatLine> chatLines;
+        int screenWidth, screenHeight;
 
         public ChatOverlay(RadegastInstance instance, SceneWindow window)
         {
             this.Instance = instance;
             this.Window = window;
             Instance.TabConsole.MainChatManger.ChatLineAdded += new EventHandler<ChatLineAddedArgs>(MainChatManger_ChatLineAdded);
+            chatLines = new Queue<ChatLine>();
         }
 
         public void Dispose()
         {
             Instance.TabConsole.MainChatManger.ChatLineAdded -= new EventHandler<ChatLineAddedArgs>(MainChatManger_ChatLineAdded);
+
+            if (chatLines != null)
+            {
+                lock (chatLines)
+                {
+                    foreach (var line in chatLines)
+                    {
+                        line.Dispose();
+                    }
+                }
+                chatLines = null;
+            }
         }
 
         void MainChatManger_ChatLineAdded(object sender, ChatLineAddedArgs e)
         {
+            lock (chatLines)
+            {
+                chatLines.Enqueue(new ChatLine(e.Item, runningTime));
+            }
         }
 
-        public void RenderChat(float time)
+        public void RenderChat(float time, RenderPass pass)
         {
             runningTime += time;
+            if (chatLines.Count == 0) return;
+
+            int c = 0;
+            int expired = 0;
+            screenWidth = Window.Viewport[2];
+            screenHeight = Window.Viewport[3];
+            ChatLine[] lines;
+
+            lock (chatLines)
+            {
+                lines = chatLines.ToArray();
+                c = lines.Length;
+                for (int i = 0; i < c; i++)
+                {
+                    if ((runningTime - lines[i].TimeAdded) > ChatLineTimeOnScreen)
+                    {
+                        expired++;
+                        ChatLine goner = chatLines.Dequeue();
+                        goner.Dispose();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if (expired > 0)
+                {
+                    lines = chatLines.ToArray();
+                    c = lines.Length;
+                }
+            }
+
+            if (c == 0)
+            {
+                runningTime = 0f;
+                return;
+            }
+
+            int maxWidth = (int)((float)screenWidth * 0.7f);
+
+            int actualMaxWidth = 0;
+            int height = 0;
+            for (int i = 0; i < c; i++)
+            {
+                lines[i].PrepareText(maxWidth);
+                if (lines[i].Width > actualMaxWidth) actualMaxWidth = lines[i].Width;
+                height += lines[i].Height;
+            }
+
+            int x = 5;
+            int y = 5;
+            GL.Enable(EnableCap.Texture2D);
+            GL.Color4(ChatBackground);
+            RHelp.Draw2DBox(x, y, actualMaxWidth + 6, height + 10, 1f);
+            GL.Color4(1f, 1f, 1f, 1f);
+            for (int i = c - 1; i >= 0; i--)
+            {
+                ChatLine line = lines[i];
+                float remain = ChatLineTimeOnScreen - (runningTime - line.TimeAdded);
+                if (remain < ChatLineFade)
+                {
+                    float alpha = remain / ChatLineFade;
+                    GL.Color4(1f, 1f, 1f, alpha);
+                }
+                line.Render(x + 3, y + 5);
+                y += line.Height;
+            }
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.Disable(EnableCap.Texture2D);
+            GL.Color4(1f, 1f, 1f, 1f);
+        }
+    }
+
+    public class ChatLine : IDisposable
+    {
+        public float TimeAdded;
+        public int Width;
+        public int Height;
+
+        int textureID = -1;
+        int widthForTextureGenerated = -1;
+        ChatBufferItem item;
+       
+        public ChatLine(ChatBufferItem item, float timeAdded)
+        {
+            this.item = item;
+            this.TimeAdded = timeAdded;
+        }
+
+        public void Dispose()
+        {
+            if (textureID > 0)
+            {
+                GL.DeleteTexture(textureID);
+                textureID = -1;
+            }
+        }
+
+        public void PrepareText(int maxWidth)
+        {
+            if (maxWidth != widthForTextureGenerated)
+            {
+                string txt = item.From + item.Text;
+
+                // If we're modiefied and have texture already delete it from graphics card
+                if (textureID > 0)
+                {
+                    GL.DeleteTexture(textureID);
+                    textureID = -1;
+                }
+
+                TextFormatFlags flags = TextFormatFlags.Top | TextFormatFlags.Left | TextFormatFlags.WordBreak;
+
+                Size s = TextRenderer.MeasureText(
+                    txt,
+                    ChatOverlay.ChatFont,
+                    new Size(maxWidth, 2000), flags);
+            
+                Width = s.Width;
+                Height = s.Height;
+
+                Bitmap img = new Bitmap(
+                    Width,
+                    Height,
+                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                
+                Graphics g = Graphics.FromImage(img);
+
+                TextRenderer.DrawText(
+                    g,
+                    txt,
+                    ChatOverlay.ChatFont,
+                    new Rectangle(0, 0, img.Width + 2, img.Height + 2),
+                    RHelp.WinColor(new OpenTK.Graphics.Color4(0.95f, 0.95f, 0.95f, 1f)),
+                    Color.Transparent,
+                    flags);
+
+                widthForTextureGenerated = maxWidth;
+                textureID = RHelp.GLLoadImage(img, true);
+                g.Dispose();
+                img.Dispose();
+            }
+        }
+
+        public void Render(int x, int y)
+        {
+            if (textureID == -1) return;
+            GL.BindTexture(TextureTarget.Texture2D, textureID);
+            RHelp.Draw2DBox(x, y, Width, Height, 0f);
         }
     }
 }

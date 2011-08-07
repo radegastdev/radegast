@@ -72,11 +72,11 @@ namespace Radegast.Rendering
         void InitWater()
         {
             Bitmap normal = (Bitmap)Bitmap.FromFile(System.IO.Path.Combine("shader_data", "normalmap.png"));
-            reflectionTexture = GLLoadImage(normal, false);
-            refractionTexture = GLLoadImage(normal, false);
-            normalmap = GLLoadImage(normal, false);
-            depthTexture = GLLoadImage(normal, false);
-            dudvmap = GLLoadImage((Bitmap)Bitmap.FromFile(System.IO.Path.Combine("shader_data", "dudvmap.png")), false);
+            reflectionTexture = RHelp.GLLoadImage(normal, false);
+            refractionTexture = RHelp.GLLoadImage(normal, false);
+            normalmap = RHelp.GLLoadImage(normal, false);
+            depthTexture = RHelp.GLLoadImage(normal, false);
+            dudvmap = RHelp.GLLoadImage((Bitmap)Bitmap.FromFile(System.IO.Path.Combine("shader_data", "dudvmap.png")), false);
             waterProgram.Load("water.vert", "water.frag");
         }
 
