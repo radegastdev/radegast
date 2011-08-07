@@ -117,10 +117,16 @@ namespace Radegast.Rendering
         /// </summary>
         public bool CacheDecodedTextures = false;
 
+        /// <summary>
+        /// Size of OpenGL window we're drawing on
+        /// </summary>
+        int[] Viewport = new int[4];
+
         #endregion Public fields
 
         #region Private fields
 
+        ChatOverlay chatOverlay;
         Camera Camera;
         SceneObject trackedObject;
         Vector3 lastTrackedObjectPos = RHelp.InvalidPosition;
@@ -143,7 +149,6 @@ namespace Radegast.Rendering
         Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
         OpenTK.Matrix4 ModelMatrix;
         OpenTK.Matrix4 ProjectionMatrix;
-        int[] Viewport = new int[4];
         System.Diagnostics.Stopwatch renderTimer;
         float lastFrameTime = 0f;
         float advTimerTick = 0f;
@@ -193,6 +198,9 @@ namespace Radegast.Rendering
             InitCamera();
             SetWaterPlanes();
 
+            chatOverlay = new ChatOverlay(instance, this);
+            cbChatType.SelectedIndex = 1;
+
             tbDrawDistance.Value = (int)DrawDistance;
             lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
             pnlDebug.Visible = Instance.GlobalSettings["scene_viewer_debug_panel"];
@@ -216,6 +224,12 @@ namespace Radegast.Rendering
             Application.Idle -= new EventHandler(Application_Idle);
 
             PendingTextures.Close();
+
+            if (chatOverlay != null)
+            {
+                chatOverlay.Dispose();
+                chatOverlay = null;
+            }
 
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -2911,6 +2925,7 @@ namespace Radegast.Rendering
                 GLHUDBegin();
                 RenderText(RenderPass.Simple);
                 RenderStats();
+                chatOverlay.RenderChat(lastFrameTime);
                 GLHUDEnd();
                 GL.Disable(EnableCap.Blend);
             }
@@ -3632,5 +3647,52 @@ namespace Radegast.Rendering
         }
 
         #endregion
+
+        private void txtChat_TextChanged(object sender, EventArgs e)
+        {
+            if (txtChat.Text.Length > 0)
+            {
+                btnSay.Enabled = cbChatType.Enabled = true;
+                if (!txtChat.Text.StartsWith("/"))
+                {
+                    if (!Instance.State.IsTyping && !Instance.GlobalSettings["no_typing_anim"])
+                    {
+                        Instance.State.SetTyping(true);
+                    }
+                }
+            }
+            else
+            {
+                btnSay.Enabled = cbChatType.Enabled = false;
+                if (!Instance.GlobalSettings["no_typing_anim"])
+                {
+                    Instance.State.SetTyping(false);
+                }
+            }
+        }
+
+        private void txtChat_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter) return;
+            e.Handled = e.SuppressKeyPress = true;
+            ChatConsole chat = (ChatConsole)Instance.TabConsole.Tabs["chat"].Control;
+            
+            if (e.Shift)
+                chat.ProcessChatInput(txtChat.Text, ChatType.Whisper);
+            else if (e.Control)
+                chat.ProcessChatInput(txtChat.Text, ChatType.Shout);
+            else
+                chat.ProcessChatInput(txtChat.Text, ChatType.Normal);
+
+            txtChat.Text = string.Empty;
+        }
+
+        private void btnSay_Click(object sender, EventArgs e)
+        {
+            ChatConsole chat = (ChatConsole)Instance.TabConsole.Tabs["chat"].Control;
+            chat.ProcessChatInput(txtChat.Text, (ChatType)cbChatType.SelectedIndex);
+            txtChat.Select();
+            txtChat.Text = string.Empty;
+        }
     }
 }

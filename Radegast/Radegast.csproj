@@ -552,6 +552,10 @@
     <Compile Include="GUI\Notifications\TeleportNotification.Designer.cs">
       <DependentUpon>TeleportNotification.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Rendering\ChatBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\Rendering\ChatOverlay.cs" />
     <Compile Include="GUI\Rendering\Compat.cs" />
     <Compile Include="GUI\Rendering\Frustum.cs" />
     <Compile Include="GUI\Rendering\ImageUtils.cs" />

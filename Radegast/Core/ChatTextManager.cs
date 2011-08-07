@@ -40,6 +40,8 @@ namespace Radegast
 {
     public class ChatTextManager : IDisposable
     {
+        public event EventHandler<ChatLineAddedArgs> ChatLineAdded;
+
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private GridClient client { get { return instance.Client; } }
@@ -103,7 +105,7 @@ namespace Radegast
             if (e.Message.ToLower().Contains("autopilot canceled")) return; //workaround the stupid autopilot alerts
 
             ChatBufferItem item = new ChatBufferItem(
-                DateTime.Now, "Alert message: " + e.Message, ChatBufferTextStyle.Alert);
+                DateTime.Now, "Alert message", UUID.Zero, ": " + e.Message, ChatBufferTextStyle.Alert);
 
             ProcessBufferItem(item, true);
         }
@@ -116,10 +118,10 @@ namespace Radegast
         public void PrintStartupMessage()
         {
             ChatBufferItem title = new ChatBufferItem(
-                DateTime.Now, Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev, ChatBufferTextStyle.StartupTitle);
+                DateTime.Now, "", UUID.Zero, Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev, ChatBufferTextStyle.StartupTitle);
 
             ChatBufferItem ready = new ChatBufferItem(
-                DateTime.Now, "Ready.", ChatBufferTextStyle.StatusBlue);
+                DateTime.Now, "", UUID.Zero, "Ready.", ChatBufferTextStyle.StatusBlue);
 
             ProcessBufferItem(title, true);
             ProcessBufferItem(ready, true);
@@ -129,6 +131,11 @@ namespace Radegast
 
         public void ProcessBufferItem(ChatBufferItem item, bool addToBuffer)
         {
+            if (ChatLineAdded != null)
+            {
+                ChatLineAdded(this, new ChatLineAddedArgs(item));
+            }
+
             lock (SyncChat)
             {
                 instance.LogClientMessage("chat.txt", item.Text);
@@ -180,7 +187,7 @@ namespace Radegast
                         break;
                 }
 
-                textPrinter.PrintTextLine(item.Text);
+                textPrinter.PrintTextLine(item.From + item.Text);
             }
         }
 
@@ -188,8 +195,6 @@ namespace Radegast
         private void ProcessOutgoingChat(ChatSentEventArgs e)
         {
             StringBuilder sb = new StringBuilder();
-
-            sb.AppendFormat("(channel {0}) {1}", e.Channel, client.Self.Name);
 
             switch (e.Type)
             {
@@ -209,7 +214,7 @@ namespace Radegast
             sb.Append(e.Message);
 
             ChatBufferItem item = new ChatBufferItem(
-                DateTime.Now, sb.ToString(), ChatBufferTextStyle.StatusDarkBlue);
+                DateTime.Now, string.Format("(channel {0}) {1}", e.Channel, client.Self.Name), client.Self.AgentID, sb.ToString(), ChatBufferTextStyle.StatusDarkBlue);
 
             ProcessBufferItem(item, true);
 
@@ -241,17 +246,18 @@ namespace Radegast
 #endif
             }
 
+            ChatBufferItem item = new ChatBufferItem();
+            item.ID = e.SourceID;
+            item.RawMessage = e;
             StringBuilder sb = new StringBuilder();
-            // if (e.SourceType == ChatSourceType.Object) {
-            //    sb.Append(e.Position + " ");
-            // }
+
             if (e.SourceType == ChatSourceType.Agent)
             {
-                sb.Append(instance.Names.Get(e.SourceID, e.FromName));
+                item.From = instance.Names.Get(e.SourceID, e.FromName);
             }
             else
             {
-                sb.Append(e.FromName);
+                item.From = e.FromName;
             }
 
             bool isEmote = e.Message.ToLower().StartsWith("/me ");
@@ -287,7 +293,6 @@ namespace Radegast
                     sb.Append(e.Message);
             }
 
-            ChatBufferItem item = new ChatBufferItem();
             item.Timestamp = DateTime.Now;
             item.Text = sb.ToString();
 
@@ -336,6 +341,16 @@ namespace Radegast
         {
             get { return textPrinter; }
             set { textPrinter = value; }
+        }
+    }
+
+    public class ChatLineAddedArgs : EventArgs
+    {
+        ChatBufferItem mItem;
+
+        public ChatLineAddedArgs(ChatBufferItem item)
+        {
+            mItem = item;
         }
     }
 }

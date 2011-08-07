@@ -91,8 +91,13 @@ namespace Radegast.Rendering
             this.cbAA = new System.Windows.Forms.CheckBox();
             this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.pnlChat = new System.Windows.Forms.Panel();
+            this.cbChatType = new System.Windows.Forms.ComboBox();
+            this.btnSay = new System.Windows.Forms.Button();
+            this.txtChat = new Radegast.Rendering.ChatBox();
             this.pnlDebug.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).BeginInit();
+            this.pnlChat.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlDebug
@@ -468,10 +473,65 @@ namespace Radegast.Rendering
             this.ctxMenu.Size = new System.Drawing.Size(61, 4);
             this.ctxMenu.Opening += new System.ComponentModel.CancelEventHandler(this.ctxObjects_Opening);
             // 
+            // pnlChat
+            // 
+            this.pnlChat.Controls.Add(this.cbChatType);
+            this.pnlChat.Controls.Add(this.btnSay);
+            this.pnlChat.Controls.Add(this.txtChat);
+            this.pnlChat.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlChat.Location = new System.Drawing.Point(0, 314);
+            this.pnlChat.Name = "pnlChat";
+            this.pnlChat.Size = new System.Drawing.Size(779, 23);
+            this.pnlChat.TabIndex = 9;
+            // 
+            // cbChatType
+            // 
+            this.cbChatType.AccessibleName = "Chat type";
+            this.cbChatType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbChatType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbChatType.Enabled = false;
+            this.cbChatType.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cbChatType.FormattingEnabled = true;
+            this.cbChatType.Items.AddRange(new object[] {
+            "Whisper",
+            "Normal",
+            "Shout"});
+            this.cbChatType.Location = new System.Drawing.Point(700, 0);
+            this.cbChatType.Name = "cbChatType";
+            this.cbChatType.Size = new System.Drawing.Size(73, 21);
+            this.cbChatType.TabIndex = 2;
+            // 
+            // btnSay
+            // 
+            this.btnSay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSay.Enabled = false;
+            this.btnSay.FlatAppearance.BorderSize = 0;
+            this.btnSay.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSay.Location = new System.Drawing.Point(650, 0);
+            this.btnSay.Name = "btnSay";
+            this.btnSay.Size = new System.Drawing.Size(50, 22);
+            this.btnSay.TabIndex = 1;
+            this.btnSay.Text = "Say";
+            this.btnSay.UseVisualStyleBackColor = true;
+            this.btnSay.Click += new System.EventHandler(this.btnSay_Click);
+            // 
+            // txtChat
+            // 
+            this.txtChat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtChat.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtChat.Location = new System.Drawing.Point(0, 1);
+            this.txtChat.Name = "txtChat";
+            this.txtChat.Size = new System.Drawing.Size(650, 20);
+            this.txtChat.TabIndex = 0;
+            this.txtChat.TextChanged += new System.EventHandler(this.txtChat_TextChanged);
+            this.txtChat.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtChat_KeyDown);
+            // 
             // SceneWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.pnlChat);
             this.Controls.Add(this.pnlDebug);
             this.Name = "SceneWindow";
             this.Size = new System.Drawing.Size(779, 500);
@@ -479,6 +539,8 @@ namespace Radegast.Rendering
             this.pnlDebug.ResumeLayout(false);
             this.pnlDebug.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).EndInit();
+            this.pnlChat.ResumeLayout(false);
+            this.pnlChat.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -491,32 +553,36 @@ namespace Radegast.Rendering
         public System.Windows.Forms.CheckBox chkWireFrame;
         public System.Windows.Forms.Button btnResetView;
         public System.Windows.Forms.Label label2;
-        private System.Windows.Forms.HScrollBar hsSpecular;
-        private System.Windows.Forms.HScrollBar hsDiffuse;
-        private System.Windows.Forms.HScrollBar hsAmbient;
-        private System.Windows.Forms.HScrollBar hsLOD;
-        private System.Windows.Forms.Button button_vparam;
-        private System.Windows.Forms.TextBox textBox_x;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.TextBox textBox_z;
-        private System.Windows.Forms.TextBox textBox_y;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox_sx;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox_sz;
-        private System.Windows.Forms.TextBox textBox_sy;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox_morphamount;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox comboBox_morph;
-        private System.Windows.Forms.Button button_driver;
-        private System.Windows.Forms.TextBox textBox_driveramount;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox comboBox_driver;
-        private System.Windows.Forms.TrackBar tbDrawDistance;
-        private System.Windows.Forms.Label lblDrawDistance;
-        private System.Windows.Forms.CheckBox cbMisc;
+        public System.Windows.Forms.Panel pnlChat;
+        public Radegast.Rendering.ChatBox txtChat;
+        public System.Windows.Forms.HScrollBar hsSpecular;
+        public System.Windows.Forms.HScrollBar hsDiffuse;
+        public System.Windows.Forms.HScrollBar hsAmbient;
+        public System.Windows.Forms.HScrollBar hsLOD;
+        public System.Windows.Forms.Button button_vparam;
+        public System.Windows.Forms.TextBox textBox_x;
+        public System.Windows.Forms.ComboBox comboBox1;
+        public System.Windows.Forms.TextBox textBox_z;
+        public System.Windows.Forms.TextBox textBox_y;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.TextBox textBox_sx;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.TextBox textBox_sz;
+        public System.Windows.Forms.TextBox textBox_sy;
+        public System.Windows.Forms.Button button1;
+        public System.Windows.Forms.TextBox textBox_morphamount;
+        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.ComboBox comboBox_morph;
+        public System.Windows.Forms.Button button_driver;
+        public System.Windows.Forms.TextBox textBox_driveramount;
+        public System.Windows.Forms.Label label6;
+        public System.Windows.Forms.ComboBox comboBox_driver;
+        public System.Windows.Forms.TrackBar tbDrawDistance;
+        public System.Windows.Forms.Label lblDrawDistance;
+        public System.Windows.Forms.CheckBox cbMisc;
+        public System.Windows.Forms.Button btnSay;
+        public System.Windows.Forms.ComboBox cbChatType;
 
     }
 }

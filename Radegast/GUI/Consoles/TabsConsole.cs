@@ -108,6 +108,7 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private ChatTextManager mainChatManger;
+        public ChatTextManager MainChatManger { get { return mainChatManger; } }
 
         private Dictionary<string, RadegastTab> tabs = new Dictionary<string, RadegastTab>();
         public Dictionary<string, RadegastTab> Tabs { get { return tabs; } }
@@ -500,6 +501,8 @@ namespace Radegast
             {
                 ChatBufferItem line = new ChatBufferItem(
                     DateTime.Now,
+                    string.Empty,
+                    UUID.Zero,
                     msg,
                     style
                 );

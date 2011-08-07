@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2011, Radegast Development Team
 // All rights reserved.
@@ -29,79 +29,39 @@
 // $Id$
 //
 using System;
-using OpenMetaverse;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Drawing;
 
-namespace Radegast
+namespace Radegast.Rendering
 {
-    public class ChatBufferItem
+    public class ChatOverlay : IDisposable
     {
-        private DateTime timestamp;
-        private string from;
-        private UUID id;
-        private string text;
-        private ChatBufferTextStyle style;
-        private ChatEventArgs rawMessage;
+        RadegastInstance Instance;
+        SceneWindow Window;
+        float runningTime;
 
-        public ChatBufferItem()
+        public ChatOverlay(RadegastInstance instance, SceneWindow window)
         {
-
+            this.Instance = instance;
+            this.Window = window;
+            Instance.TabConsole.MainChatManger.ChatLineAdded += new EventHandler<ChatLineAddedArgs>(MainChatManger_ChatLineAdded);
         }
 
-        public ChatBufferItem(DateTime timestamp, string from, UUID id, string text, ChatBufferTextStyle style)
+        public void Dispose()
         {
-            this.timestamp = timestamp;
-            this.text = text;
-            this.style = style;
+            Instance.TabConsole.MainChatManger.ChatLineAdded -= new EventHandler<ChatLineAddedArgs>(MainChatManger_ChatLineAdded);
         }
 
-        public DateTime Timestamp
+        void MainChatManger_ChatLineAdded(object sender, ChatLineAddedArgs e)
         {
-            get { return timestamp; }
-            set { timestamp = value; }
         }
 
-        public string From
+        public void RenderChat(float time)
         {
-            get { return from; }
-            set { from = value; }
+            runningTime += time;
         }
-
-        public UUID ID
-        {
-            get { return id; }
-            set { id = value; }
-        }
-
-        public string Text
-        {
-            get { return text; }
-            set { text = value; }
-        }
-
-        public ChatBufferTextStyle Style
-        {
-            get { return style; }
-            set { style = value; }
-        }
-
-        public ChatEventArgs RawMessage
-        {
-            get { return rawMessage; }
-            set { rawMessage = value; }
-        }
-    }
-
-    public enum ChatBufferTextStyle
-    {
-        Normal,
-        StatusBlue,
-        StatusDarkBlue,
-        LindenChat,
-        ObjectChat,
-        StartupTitle,
-        Error,
-        Alert,
-        OwnerSay,
-        Invisible
     }
 }

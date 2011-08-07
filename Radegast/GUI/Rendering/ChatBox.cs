@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2011, Radegast Development Team
 // All rights reserved.
@@ -28,80 +28,13 @@
 //
 // $Id$
 //
+
 using System;
-using OpenMetaverse;
+using System.Windows.Forms;
 
-namespace Radegast
+namespace Radegast.Rendering
 {
-    public class ChatBufferItem
+    public class ChatBox : TextBox
     {
-        private DateTime timestamp;
-        private string from;
-        private UUID id;
-        private string text;
-        private ChatBufferTextStyle style;
-        private ChatEventArgs rawMessage;
-
-        public ChatBufferItem()
-        {
-
-        }
-
-        public ChatBufferItem(DateTime timestamp, string from, UUID id, string text, ChatBufferTextStyle style)
-        {
-            this.timestamp = timestamp;
-            this.text = text;
-            this.style = style;
-        }
-
-        public DateTime Timestamp
-        {
-            get { return timestamp; }
-            set { timestamp = value; }
-        }
-
-        public string From
-        {
-            get { return from; }
-            set { from = value; }
-        }
-
-        public UUID ID
-        {
-            get { return id; }
-            set { id = value; }
-        }
-
-        public string Text
-        {
-            get { return text; }
-            set { text = value; }
-        }
-
-        public ChatBufferTextStyle Style
-        {
-            get { return style; }
-            set { style = value; }
-        }
-
-        public ChatEventArgs RawMessage
-        {
-            get { return rawMessage; }
-            set { rawMessage = value; }
-        }
-    }
-
-    public enum ChatBufferTextStyle
-    {
-        Normal,
-        StatusBlue,
-        StatusDarkBlue,
-        LindenChat,
-        ObjectChat,
-        StartupTitle,
-        Error,
-        Alert,
-        OwnerSay,
-        Invisible
     }
 }

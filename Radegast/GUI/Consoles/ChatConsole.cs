@@ -400,7 +400,7 @@ namespace Radegast
                 ProcessChatInput(cbxInput.Text, ChatType.Normal);
         }
 
-        private void ProcessChatInput(string input, ChatType type)
+        public void ProcessChatInput(string input, ChatType type)
         {
             if (string.IsNullOrEmpty(input)) return;
             chatHistory.Add(input);
