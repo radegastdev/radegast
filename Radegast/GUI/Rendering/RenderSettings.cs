@@ -37,7 +37,19 @@ namespace Radegast.Rendering
 {
     public static class RenderSettings
     {
+        #region VBO support
         public static bool UseVBO;
+        public static bool CoreVBOPresent;
+        public static bool ARBVBOPresent;
+        #endregion VBO support
+
+        #region Occlusion queries
+        /// <summary>Should we try to optimize by not drawing objects occluded behind other objects</summary>
+        public static bool OcclusionCullingEnabled;
+        public static bool CoreQuerySupported;
+        public static bool ARBQuerySupported;
+        #endregion Occlusion queries
+
         public static bool UseFBO;
         public static bool HasMipmap;
         public static bool HasShaders;
@@ -47,8 +59,6 @@ namespace Radegast.Rendering
         public static bool AllowQuickAndDirtyMeshing = true;
         public static int MeshesPerFrame = 2;
         public static int TexturesToDownloadPerFrame = 2;
-        /// <summary>Should we try to optimize by not drawing objects occluded behind other objects</summary>
-        public static bool OcclusionCullingEnabled = true;
         /// <summary>Should we try to make sure that large prims that are > our draw distance are in view when we are standing on them</summary>
         public static bool HeavierDistanceChecking = true;
         /// <summary>Minimum time between rebuilding terrain mesh and texture</summary>

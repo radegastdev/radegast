@@ -413,6 +413,7 @@ namespace Radegast.Rendering
                 return 0;
         }
 
+        #region Occlusion queries
         public void StartQuery(RenderPass pass)
         {
             if (!RenderSettings.OcclusionCullingEnabled) return;
@@ -447,11 +448,11 @@ namespace Radegast.Rendering
 
             if (AlphaQueryID == -1)
             {
-                GL.GenQueries(1, out AlphaQueryID);
+                Compat.GenQueries(out AlphaQueryID);
             }
             if (AlphaQueryID > 0)
             {
-                GL.BeginQuery(QueryTarget.SamplesPassed, AlphaQueryID);
+                Compat.BeginQuery(QueryTarget.SamplesPassed, AlphaQueryID);
             }
         }
 
@@ -461,7 +462,7 @@ namespace Radegast.Rendering
 
             if (AlphaQueryID > 0)
             {
-                GL.EndQuery(QueryTarget.SamplesPassed);
+                Compat.EndQuery(QueryTarget.SamplesPassed);
             }
         }
 
@@ -471,11 +472,11 @@ namespace Radegast.Rendering
 
             if (SimpleQueryID == -1)
             {
-                GL.GenQueries(1, out SimpleQueryID);
+                Compat.GenQueries(out SimpleQueryID);
             }
             if (SimpleQueryID > 0)
             {
-                GL.BeginQuery(QueryTarget.SamplesPassed, SimpleQueryID);
+                Compat.BeginQuery(QueryTarget.SamplesPassed, SimpleQueryID);
             }
         }
 
@@ -485,7 +486,7 @@ namespace Radegast.Rendering
 
             if (SimpleQueryID > 0)
             {
-                GL.EndQuery(QueryTarget.SamplesPassed);
+                Compat.EndQuery(QueryTarget.SamplesPassed);
             }
         }
 
@@ -503,7 +504,7 @@ namespace Radegast.Rendering
             int samples = 1;
             if (HasSimpleFaces && SimpleQueryID > 0)
             {
-                GL.GetQueryObject(SimpleQueryID, GetQueryObjectParam.QueryResult, out samples);
+                Compat.GetQueryObject(SimpleQueryID, GetQueryObjectParam.QueryResult, out samples);
             }
             if (HasSimpleFaces && samples > 0)
             {
@@ -513,7 +514,7 @@ namespace Radegast.Rendering
             samples = 1;
             if (HasAlphaFaces && AlphaQueryID > 0)
             {
-                GL.GetQueryObject(AlphaQueryID, GetQueryObjectParam.QueryResult, out samples);
+                Compat.GetQueryObject(AlphaQueryID, GetQueryObjectParam.QueryResult, out samples);
             }
             if (HasAlphaFaces && samples > 0)
             {
@@ -522,6 +523,7 @@ namespace Radegast.Rendering
 
             return true;
         }
+        #endregion Occlusion queries
     }
 
     public class RenderPrimitive : SceneObject

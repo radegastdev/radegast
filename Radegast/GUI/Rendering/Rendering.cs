@@ -595,33 +595,25 @@ namespace Radegast.Rendering
                 GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
                 string glExtensions = GL.GetString(StringName.Extensions);
-                RenderSettings.HasMipmap = glExtensions.Contains("GL_SGIS_generate_mipmap");
-                RenderSettings.UseVBO = glExtensions.Contains("ARB_vertex_buffer_object");
-                RenderSettings.HasShaders = glExtensions.Contains("vertex_shader") && glExtensions.Contains("fragment_shader");
 
-                // Double check if we have mipmap ability
-                if (RenderSettings.HasMipmap)
-                {
-                    try
-                    {
-                        int testID = -1;
-                        Bitmap testPic = new Bitmap(1, 1);
-                        BitmapData testData = testPic.LockBits(new Rectangle(0, 0, 1, 1), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-                        GL.GenTextures(1, out testID);
-                        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb8, 1, 1, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, testData.Scan0);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-                        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);
-                        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                        testPic.UnlockBits(testData);
-                        testPic.Dispose();
-                        GL.DeleteTexture(testID);
-                    }
-                    catch
-                    {
-                        Logger.DebugLog("Don't have glGenerateMipmap() after all");
-                        RenderSettings.HasMipmap = false;
-                    }
-                }
+                // Compatibility checks
+                OpenTK.Graphics.IGraphicsContextInternal context = glControl.Context as OpenTK.Graphics.IGraphicsContextInternal;
+
+                // VBO
+                RenderSettings.ARBVBOPresent = context.GetAddress("glGenBuffersARB") != IntPtr.Zero;
+                RenderSettings.CoreVBOPresent = context.GetAddress("glGenBuffers") != IntPtr.Zero;
+                RenderSettings.UseVBO = RenderSettings.ARBVBOPresent | RenderSettings.CoreVBOPresent;
+
+                // Occlusion Query
+                RenderSettings.ARBQuerySupported = context.GetAddress("glGetQueryObjectivARB") != IntPtr.Zero;
+                RenderSettings.CoreQuerySupported = context.GetAddress("glGetQueryObjectiv") != IntPtr.Zero;
+                RenderSettings.OcclusionCullingEnabled = RenderSettings.CoreQuerySupported | RenderSettings.ARBQuerySupported;
+
+                // Mipmap
+                RenderSettings.HasMipmap = context.GetAddress("glGenerateMipmap") != IntPtr.Zero;
+
+                // Shader support
+                RenderSettings.HasShaders = glExtensions.Contains("vertex_shader") && glExtensions.Contains("fragment_shader");
 
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
@@ -1640,7 +1632,7 @@ namespace Radegast.Rendering
 
                     // Prim roation and position
                     Vector3 pos = av.avatar.Position;
-           
+
                     Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
 
                     GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, pos - avataroffset));
@@ -1748,7 +1740,7 @@ namespace Radegast.Rendering
                     GL.PushMatrix();
 
                     Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
-                          
+
                     // Prim roation and position
                     GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset));
 
@@ -2206,24 +2198,24 @@ namespace Radegast.Rendering
             {
                 if (terrainVBO == -1)
                 {
-                    GL.GenBuffers(1, out terrainVBO);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
-                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * ColorVertex.Size), terrainVertices, BufferUsageHint.StaticDraw);
+                    Compat.GenBuffers(out terrainVBO);
+                    Compat.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
+                    Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * ColorVertex.Size), terrainVertices, BufferUsageHint.StaticDraw);
                 }
                 else
                 {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
+                    Compat.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
                 }
 
                 if (terrainIndexVBO == -1)
                 {
-                    GL.GenBuffers(1, out terrainIndexVBO);
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StaticDraw);
+                    Compat.GenBuffers(out terrainIndexVBO);
+                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
+                    Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StaticDraw);
                 }
                 else
                 {
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
+                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
                 }
 
                 GL.NormalPointer(NormalPointerType.Float, ColorVertex.Size, (IntPtr)12);
@@ -2236,8 +2228,8 @@ namespace Radegast.Rendering
 
                 GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
 
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             }
 
             if (pass == RenderPass.Picking)
@@ -2519,16 +2511,16 @@ namespace Radegast.Rendering
                 else
                 {
                     data.CheckVBO(face);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
+                    Compat.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
+                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
                     GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
                     GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
                     GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
 
                     GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
 
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                    Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
                 }
 
@@ -2712,24 +2704,24 @@ namespace Radegast.Rendering
             {
                 if (boundingBoxVBO == -1)
                 {
-                    GL.GenBuffers(1, out boundingBoxVBO);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, boundingBoxVBO);
-                    GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * RHelp.CubeVertices.Length), RHelp.CubeVertices, BufferUsageHint.StaticDraw);
+                    Compat.GenBuffers(out boundingBoxVBO);
+                    Compat.BindBuffer(BufferTarget.ArrayBuffer, boundingBoxVBO);
+                    Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * RHelp.CubeVertices.Length), RHelp.CubeVertices, BufferUsageHint.StaticDraw);
                 }
                 else
                 {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, boundingBoxVBO);
+                    Compat.BindBuffer(BufferTarget.ArrayBuffer, boundingBoxVBO);
                 }
 
                 if (boundingBoxVIndexVBO == -1)
                 {
-                    GL.GenBuffers(1, out boundingBoxVIndexVBO);
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, boundingBoxVIndexVBO);
-                    GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(sizeof(ushort) * RHelp.CubeIndices.Length), RHelp.CubeIndices, BufferUsageHint.StaticDraw);
+                    Compat.GenBuffers(out boundingBoxVIndexVBO);
+                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, boundingBoxVIndexVBO);
+                    Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(sizeof(ushort) * RHelp.CubeIndices.Length), RHelp.CubeIndices, BufferUsageHint.StaticDraw);
                 }
                 else
                 {
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, boundingBoxVIndexVBO);
+                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, boundingBoxVIndexVBO);
                 }
 
                 GL.VertexPointer(3, VertexPointerType.Float, 0, (IntPtr)0);
@@ -2747,8 +2739,8 @@ namespace Radegast.Rendering
 
             if (RenderSettings.UseVBO)
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             }
 
             GL.ColorMask(true, true, true, true);
