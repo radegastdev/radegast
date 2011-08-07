@@ -50,6 +50,7 @@ namespace Radegast.Rendering
         public static bool ARBQuerySupported;
         #endregion Occlusion queries
 
+        public static bool HasMultiTexturing;
         public static bool UseFBO;
         public static bool HasMipmap;
         public static bool HasShaders;

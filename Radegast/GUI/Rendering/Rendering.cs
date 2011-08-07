@@ -615,6 +615,13 @@ namespace Radegast.Rendering
                 // Shader support
                 RenderSettings.HasShaders = glExtensions.Contains("vertex_shader") && glExtensions.Contains("fragment_shader");
 
+                // Multi texture
+                RenderSettings.HasMultiTexturing = context.GetAddress("glMultiTexCoord2f") != IntPtr.Zero;
+                if (!RenderSettings.HasMultiTexturing || !RenderSettings.HasShaders)
+                {
+                    RenderSettings.AdvancedWater = false;
+                }
+
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
                 // and will also invalidate the GL control

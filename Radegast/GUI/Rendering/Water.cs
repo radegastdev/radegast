@@ -93,33 +93,46 @@ namespace Radegast.Rendering
             normalMove += waterFlow * kNormalMapScale * lastFrameTime;
             move += waterFlow * lastFrameTime;
 
-            GL.MultiTexCoord2(TextureUnit.Texture0, 0f, waterUV);
-            GL.MultiTexCoord2(TextureUnit.Texture1, 0f, waterUV - move);
-            GL.MultiTexCoord2(TextureUnit.Texture2, 0f, normalUV + normalMove);
-            GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
-            GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            if (RenderSettings.HasMultiTexturing)
+            {
+                GL.MultiTexCoord2(TextureUnit.Texture0, 0f, waterUV);
+                GL.MultiTexCoord2(TextureUnit.Texture1, 0f, waterUV - move);
+                GL.MultiTexCoord2(TextureUnit.Texture2, 0f, normalUV + normalMove);
+                GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
+                GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            }
             GL.Vertex3(x, y, z);
 
-            GL.MultiTexCoord2(TextureUnit.Texture0, waterUV, waterUV);
-            GL.MultiTexCoord2(TextureUnit.Texture1, waterUV, waterUV - move);
-            GL.MultiTexCoord2(TextureUnit.Texture2, normalUV, normalUV + normalMove);
-            GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
-            GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            if (RenderSettings.HasMultiTexturing)
+            {
+                GL.MultiTexCoord2(TextureUnit.Texture0, waterUV, waterUV);
+                GL.MultiTexCoord2(TextureUnit.Texture1, waterUV, waterUV - move);
+                GL.MultiTexCoord2(TextureUnit.Texture2, normalUV, normalUV + normalMove);
+                GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
+                GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            }
             GL.Vertex3(x + 256f, y, z);
 
-            GL.MultiTexCoord2(TextureUnit.Texture0, waterUV, 0f);
-            GL.MultiTexCoord2(TextureUnit.Texture1, waterUV, 0f - move);
-            GL.MultiTexCoord2(TextureUnit.Texture2, normalUV, 0f + normalMove);
-            GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
-            GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            if (RenderSettings.HasMultiTexturing)
+            {
+                GL.MultiTexCoord2(TextureUnit.Texture0, waterUV, 0f);
+                GL.MultiTexCoord2(TextureUnit.Texture1, waterUV, 0f - move);
+                GL.MultiTexCoord2(TextureUnit.Texture2, normalUV, 0f + normalMove);
+                GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
+                GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            }
             GL.Vertex3(x + 256f, y + 256f, z);
 
-            GL.MultiTexCoord2(TextureUnit.Texture0, 0f, 0f);
-            GL.MultiTexCoord2(TextureUnit.Texture1, 0f, 0f - move);
-            GL.MultiTexCoord2(TextureUnit.Texture2, 0f, 0f + normalMove);
-            GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
-            GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            if (RenderSettings.HasMultiTexturing)
+            {
+                GL.MultiTexCoord2(TextureUnit.Texture0, 0f, 0f);
+                GL.MultiTexCoord2(TextureUnit.Texture1, 0f, 0f - move);
+                GL.MultiTexCoord2(TextureUnit.Texture2, 0f, 0f + normalMove);
+                GL.MultiTexCoord2(TextureUnit.Texture3, 0f, 0f);
+                GL.MultiTexCoord2(TextureUnit.Texture4, 0f, 0f);
+            }
             GL.Vertex3(x, y + 256f, z);
+
         }
 
         public void CreateReflectionTexture(float waterHeight, int textureSize)
