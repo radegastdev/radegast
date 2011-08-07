@@ -252,12 +252,6 @@ namespace Radegast.Rendering
                 Instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             }
 
-            if (glControl != null)
-            {
-                glControl.Dispose();
-            }
-            glControl = null;
-
             lock (sculptCache)
             {
                 foreach (var img in sculptCache.Values)
@@ -269,6 +263,13 @@ namespace Radegast.Rendering
             lock (Avatars) Avatars.Clear();
 
             TexturesPtrMap.Clear();
+
+            if (glControl != null)
+            {
+                glControl.Dispose();
+            }
+            glControl = null;
+
             GC.Collect();
         }
 

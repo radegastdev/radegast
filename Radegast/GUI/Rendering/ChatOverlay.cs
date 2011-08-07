@@ -45,7 +45,7 @@ namespace Radegast.Rendering
         public static Font ChatFont = new Font(FontFamily.GenericSansSerif, 11f, FontStyle.Regular, GraphicsUnit.Point);
         public static float ChatLineTimeOnScreen = 20f; // time in seconds chat line appears on the screen
         public static float ChatLineFade = 1.5f; // number of seconds before expiry to start fading chat off
-        public static OpenTK.Graphics.Color4 ChatBackground = new OpenTK.Graphics.Color4(0f, 0f, 0f, 0.5f);
+        public static OpenTK.Graphics.Color4 ChatBackground = new OpenTK.Graphics.Color4(0f, 0f, 0f, 0.75f);
 
         RadegastInstance Instance;
         SceneWindow Window;
@@ -86,6 +86,30 @@ namespace Radegast.Rendering
                 chatLines.Enqueue(new ChatLine(e.Item, runningTime));
             }
         }
+
+        public static OpenTK.Graphics.Color4 GetColorForStyle(ChatBufferTextStyle style)
+        {
+            switch (style)
+            {
+                case ChatBufferTextStyle.StatusBlue:
+                    return new OpenTK.Graphics.Color4(0.2f, 0.2f, 1f, 1f);
+                case ChatBufferTextStyle.StatusDarkBlue:
+                    return new OpenTK.Graphics.Color4(0f, 0f, 1f, 1f);
+                case ChatBufferTextStyle.ObjectChat:
+                    return new OpenTK.Graphics.Color4(0.7f, 0.9f, 0.7f, 1f);
+                case ChatBufferTextStyle.OwnerSay:
+                    return new OpenTK.Graphics.Color4(0.99f, 0.99f, 0.69f, 1f);
+                case ChatBufferTextStyle.Alert:
+                    return new OpenTK.Graphics.Color4(0.8f, 1f, 1f, 1f);
+                case ChatBufferTextStyle.Error:
+                    return new OpenTK.Graphics.Color4(0.82f, 0.27f, 0.27f, 1f);
+
+                default:
+                    return new OpenTK.Graphics.Color4(1f, 1f, 1f, 1f);
+
+            }
+        }
+
 
         public void RenderChat(float time, RenderPass pass)
         {
@@ -144,16 +168,16 @@ namespace Radegast.Rendering
             GL.Enable(EnableCap.Texture2D);
             GL.Color4(ChatBackground);
             RHelp.Draw2DBox(x, y, actualMaxWidth + 6, height + 10, 1f);
-            GL.Color4(1f, 1f, 1f, 1f);
             for (int i = c - 1; i >= 0; i--)
             {
                 ChatLine line = lines[i];
+                OpenTK.Graphics.Color4 color = GetColorForStyle(line.Style);
                 float remain = ChatLineTimeOnScreen - (runningTime - line.TimeAdded);
                 if (remain < ChatLineFade)
                 {
-                    float alpha = remain / ChatLineFade;
-                    GL.Color4(1f, 1f, 1f, alpha);
+                    color.A = remain / ChatLineFade;
                 }
+                GL.Color4(color);
                 line.Render(x + 3, y + 5);
                 y += line.Height;
             }
@@ -168,6 +192,7 @@ namespace Radegast.Rendering
         public float TimeAdded;
         public int Width;
         public int Height;
+        public ChatBufferTextStyle Style { get { return item.Style; } }
 
         int textureID = -1;
         int widthForTextureGenerated = -1;
@@ -223,7 +248,7 @@ namespace Radegast.Rendering
                     txt,
                     ChatOverlay.ChatFont,
                     new Rectangle(0, 0, img.Width + 2, img.Height + 2),
-                    RHelp.WinColor(new OpenTK.Graphics.Color4(0.95f, 0.95f, 0.95f, 1f)),
+                    Color.White,
                     Color.Transparent,
                     flags);
 
