@@ -1163,15 +1163,16 @@ namespace Radegast.Rendering
 
         bool IsAttached(uint parentLocalID)
         {
-            if (parentLocalID == 0) return false;
-            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(parentLocalID))
-            {
-                return true;
-            }
-            else
-            {
-                return IsAttached(Client.Network.CurrentSim.ObjectsPrimitives[parentLocalID].ParentID);
-            }
+            return false;
+            //if (parentLocalID == 0) return false;
+            //if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(parentLocalID))
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return IsAttached(Client.Network.CurrentSim.ObjectsPrimitives[parentLocalID].ParentID);
+            //}
         }
 
         SceneObject GetSceneObject(uint localID)
