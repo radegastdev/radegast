@@ -390,11 +390,15 @@ namespace Radegast.Rendering
                 Quaternion dQ = Quaternion.CreateFromAxisAngle(angVel, angle);
                 InterpolatedRotation = dQ * InterpolatedRotation;
             }
-            else if (InterpolatedRotation != BasePrim.Rotation)
+            else if (InterpolatedRotation != BasePrim.Rotation && !(this is RenderAvatar))
             {
                 InterpolatedRotation = Quaternion.Slerp(InterpolatedRotation, BasePrim.Rotation, time * 10f);
                 if (1f - Math.Abs(Quaternion.Dot(InterpolatedRotation, BasePrim.Rotation)) < 0.0001)
                     InterpolatedRotation = BasePrim.Rotation;
+            }
+            else
+            {
+                InterpolatedRotation = BasePrim.Rotation;
             }
         }
 
@@ -874,6 +878,10 @@ namespace Radegast.Rendering
     /// </summary>
     public class Camera
     {
+        /// <summary>
+        /// Indicates that there was manual camera movement, stop tracking objects
+        /// </summary>
+        public bool Manual;
         Vector3 mPosition;
         Vector3 mFocalPoint;
         bool mModified;
@@ -956,6 +964,7 @@ namespace Radegast.Rendering
 
         public void Pan(float deltaX, float deltaY)
         {
+            Manual = true;
             Vector3 direction = Position - FocalPoint;
             direction.Normalize();
             Vector3 vy = direction % Vector3.UnitZ;
@@ -967,6 +976,7 @@ namespace Radegast.Rendering
 
         public void Rotate(float delta, bool horizontal)
         {
+            Manual = true;
             Vector3 direction = Position - FocalPoint;
             if (horizontal)
             {
@@ -980,6 +990,7 @@ namespace Radegast.Rendering
 
         public void MoveToTarget(float delta)
         {
+            Manual = true;
             Position += (Position - FocalPoint) * delta;
         }
 

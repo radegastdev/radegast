@@ -131,7 +131,6 @@ namespace Radegast.Rendering
         SceneObject trackedObject;
         Vector3 lastTrackedObjectPos = RHelp.InvalidPosition;
         RenderAvatar myself;
-        bool cameraLocked = false;
 
         Dictionary<UUID, TextureInfo> TexturesPtrMap = new Dictionary<UUID, TextureInfo>();
         MeshmerizerR renderer;
@@ -1147,7 +1146,7 @@ namespace Radegast.Rendering
         void InitCamera()
         {
             Vector3 camPos = Client.Self.SimPosition + new Vector3(-4, 0, 1) * Client.Self.Movement.BodyRotation;
-            camPos.Z += 2f;
+            camPos.Z += 1f;
             Camera.Position = camPos;
             Camera.FocalPoint = Client.Self.SimPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
             Camera.Zoom = 1.0f;
@@ -1902,6 +1901,8 @@ namespace Radegast.Rendering
                 if (Instance.Keyboard.IsKeyDown(Keys.Escape))
                 {
                     InitCamera();
+                    Camera.Manual = false;
+                    trackedObject = myself;
                 }
             }
             else if (ModifierKeys == Keys.Shift)
@@ -2816,18 +2817,29 @@ namespace Radegast.Rendering
             // Push the world matrix
             GL.PushMatrix();
 
-            if (!cameraLocked && trackedObject != null)
+            if (!Camera.Manual && trackedObject != null)
             {
-                if (lastTrackedObjectPos == RHelp.InvalidPosition)
+                // If camera is locked onto our avatar, follow us
+                if (trackedObject == myself)
                 {
-                    lastTrackedObjectPos = trackedObject.RenderPosition;
+                    Vector3 camPos = myself.RenderPosition + new Vector3(-4, 0, 1) * Client.Self.Movement.BodyRotation;
+                    camPos.Z += 1f;
+                    Camera.Position = camPos;
+                    Camera.FocalPoint = myself.RenderPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
                 }
-                else if (lastTrackedObjectPos != trackedObject.RenderPosition)
+                else
                 {
-                    Vector3 diffPos = (trackedObject.RenderPosition - lastTrackedObjectPos);
-                    Camera.Position += diffPos;
-                    Camera.FocalPoint += diffPos;
-                    lastTrackedObjectPos = trackedObject.RenderPosition;
+                    if (lastTrackedObjectPos == RHelp.InvalidPosition)
+                    {
+                        lastTrackedObjectPos = trackedObject.RenderPosition;
+                    }
+                    else if (lastTrackedObjectPos != trackedObject.RenderPosition)
+                    {
+                        Vector3 diffPos = (trackedObject.RenderPosition - lastTrackedObjectPos);
+                        Camera.Position += diffPos;
+                        Camera.FocalPoint += diffPos;
+                        lastTrackedObjectPos = trackedObject.RenderPosition;
+                    }
                 }
             }
 
