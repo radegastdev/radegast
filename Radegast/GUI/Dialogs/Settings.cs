@@ -103,6 +103,8 @@ namespace Radegast
 
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = false;
 
+            if (!s.ContainsKey("scene_window_docked")) s["scene_window_docked"] = true;
+
         }
 
         public frmSettings(RadegastInstance instance)
