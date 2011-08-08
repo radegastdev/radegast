@@ -55,17 +55,17 @@ namespace Radegast.Rendering
             if (VertexVBO == -1)
             {
                 Vertex[] vArray = face.Vertices.ToArray();
-                GL.GenBuffers(1, out VertexVBO);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, VertexVBO);
-                GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vArray.Length * VertexSize), vArray, BufferUsageHint.StaticDraw);
+                Compat.GenBuffers(out VertexVBO);
+                Compat.BindBuffer(BufferTarget.ArrayBuffer, VertexVBO);
+                Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vArray.Length * VertexSize), vArray, BufferUsageHint.StaticDraw);
             }
 
             if (IndexVBO == -1)
             {
                 ushort[] iArray = face.Indices.ToArray();
-                GL.GenBuffers(1, out IndexVBO);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, IndexVBO);
-                GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(iArray.Length * sizeof(ushort)), iArray, BufferUsageHint.StaticDraw);
+                Compat.GenBuffers(out IndexVBO);
+                Compat.BindBuffer(BufferTarget.ElementArrayBuffer, IndexVBO);
+                Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(iArray.Length * sizeof(ushort)), iArray, BufferUsageHint.StaticDraw);
             }
         }
     }
