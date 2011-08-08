@@ -3333,34 +3333,36 @@ namespace Radegast.Rendering
             ce.Cancel = false;
             ToolStripMenuItem item;
 
+            // Always add standup button if we are sitting
+            if (Instance.State.IsSitting)
+            {
+                item = new ToolStripMenuItem("Stand Up", null, (sender, e) =>
+                {
+                    instance.State.SetSitting(false, UUID.Zero);
+                });
+                ctxMenu.Items.Add(item);
+            }
+
             // Was it prim that was right clicked
             if (RightclickedObject != null && RightclickedObject is RenderPrimitive)
             {
                 RenderPrimitive prim = (RenderPrimitive)RightclickedObject;
 
-                // Sit/stand up button handling
-                item = new ToolStripMenuItem("Sit", null, (sender, e) =>
+                // Sit button handling
+                if (!instance.State.IsSitting)
                 {
-                    if (!instance.State.IsSitting)
+                    item = new ToolStripMenuItem("Sit", null, (sender, e) =>
                     {
                         instance.State.SetSitting(true, prim.Prim.ID);
-                    }
-                    else
-                    {
-                        instance.State.SetSitting(false, UUID.Zero);
-                    }
-                });
+                    });
 
-                if (instance.State.IsSitting)
-                {
-                    item.Text = "Stand up";
+                    if (prim.Prim.Properties != null
+                        && !string.IsNullOrEmpty(prim.Prim.Properties.SitName))
+                    {
+                        item.Text = prim.Prim.Properties.SitName;
+                    }
+                    ctxMenu.Items.Add(item);
                 }
-                else if (prim.Prim.Properties != null
-                    && !string.IsNullOrEmpty(prim.Prim.Properties.SitName))
-                {
-                    item.Text = prim.Prim.Properties.SitName;
-                }
-                ctxMenu.Items.Add(item);
 
                 // Is the prim touchable
                 if ((prim.Prim.Flags & PrimFlags.Touch) != 0)
@@ -3401,6 +3403,44 @@ namespace Radegast.Rendering
 
 
                 }
+            } // We right clicked on an avatar, add some context menu items
+            else if (RightclickedObject != null && RightclickedObject is RenderAvatar)
+            {
+                RenderAvatar av = (RenderAvatar)RightclickedObject;
+
+                // Profile button
+                item = new ToolStripMenuItem("Profile", null, (sender, e) =>
+                {
+                    Instance.MainForm.ShowAgentProfile("", av.avatar.ID);
+                });
+                ctxMenu.Items.Add(item);
+
+                if (av.avatar.ID != Client.Self.AgentID)
+                {
+                    // IM button
+                    item = new ToolStripMenuItem("Instant Message", null, (sender, e) =>
+                    {
+                        if (Instance.TabConsole.TabExists((Client.Self.AgentID ^ av.avatar.ID).ToString()))
+                        {
+                            Instance.TabConsole.SelectTab((Client.Self.AgentID ^ av.avatar.ID).ToString());
+                        }
+                        else
+                        {
+                            Instance.MediaManager.PlayUISound(UISounds.IMWindow);
+                            Instance.TabConsole.AddIMTab(av.avatar.ID, Client.Self.AgentID ^ av.avatar.ID, Instance.Names.Get(av.avatar.ID));
+                            Instance.TabConsole.SelectTab((Client.Self.AgentID ^ av.avatar.ID).ToString());
+                        }
+                    });
+                    ctxMenu.Items.Add(item);
+
+                    // Pay button
+                    item = new ToolStripMenuItem("Pay", null, (sender, e) =>
+                    {
+                        (new frmPay(Instance, av.avatar.ID, Instance.Names.Get(av.avatar.ID), false)).ShowDialog();
+                    });
+                    ctxMenu.Items.Add(item);
+                }
+
             }
 
             // If we are not the sole menu item, add separator
