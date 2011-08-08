@@ -162,6 +162,7 @@ namespace Radegast.Rendering
         OpenTK.Vector4 specularColor;
         float drawDistance = 48f;
         float drawDistanceSquared = 48f * 48f;
+        bool enableShiny;
 
         GridClient Client;
         RadegastInstance Instance;
@@ -199,6 +200,7 @@ namespace Radegast.Rendering
 
             chatOverlay = new ChatOverlay(instance, this);
             cbChatType.SelectedIndex = 1;
+            enableShiny = Instance.GlobalSettings["scene_viewer_shiny"];
 
             tbDrawDistance.Value = (int)DrawDistance;
             lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
@@ -649,6 +651,7 @@ namespace Radegast.Rendering
                 TextureThreadContextReady.WaitOne(1000, false);
                 glControl.MakeCurrent();
                 InitWater();
+                InitShaders();
                 RenderingEnabled = true;
                 LoadCurrentPrims();
             }
@@ -656,6 +659,15 @@ namespace Radegast.Rendering
             {
                 RenderingEnabled = false;
                 Logger.Log("Failed to initialize OpenGL control", Helpers.LogLevel.Warning, Client, ex);
+            }
+        }
+
+        ShaderProgram shinyProgram = new ShaderProgram();
+        void InitShaders()
+        {
+            if (RenderSettings.HasShaders)
+            {
+                shinyProgram.Load("shiny.vert", "shiny.frag");
             }
         }
 
@@ -2237,6 +2249,7 @@ namespace Radegast.Rendering
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 0f, 0f, 0f, 1.0f });
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { 0f, 0f, 0f, 1.0f });
             GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0f);
+            ShaderProgram.Stop();
         }
 
         float LODFactor(float distance, float radius)
@@ -2396,27 +2409,28 @@ namespace Radegast.Rendering
                         switchedLightsOff = true;
                     }
 
+                    float shiny = 0f;
                     switch (teFace.Shiny)
                     {
                         case Shininess.High:
-                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.94f);
+                            shiny = 0.96f;
                             break;
 
                         case Shininess.Medium:
-                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.64f);
+                            shiny = 0.64f;
                             break;
 
                         case Shininess.Low:
-                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0.24f);
-                            break;
-
-
-                        case Shininess.None:
-                        default:
-                            GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
+                            shiny = 0.24f;
                             break;
                     }
 
+                    if (shiny > 0f && enableShiny)
+                    {
+                        shinyProgram.Start();
+                        shinyProgram.SetUniform1("colorMap", 0);
+                    }
+                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, shiny);
                     var faceColor = new float[] { RGBA.R, RGBA.G, RGBA.B, RGBA.A };
                     GL.Color4(faceColor);
 
@@ -2464,7 +2478,6 @@ namespace Radegast.Rendering
                         GL.Enable(EnableCap.Texture2D);
                         GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
                     }
-
                 }
                 else
                 {
@@ -3492,6 +3505,29 @@ namespace Radegast.Rendering
                 });
             }
             ctxMenu.Items.Add(item);
+
+            // Enable disable shiny
+            if (RenderSettings.HasShaders)
+            {
+                if (enableShiny)
+                {
+                    item = new ToolStripMenuItem("Disable Shiny", null, (sender, e) =>
+                    {
+                        enableShiny = false;
+                        Instance.GlobalSettings["scene_viewer_shiny"] = false;
+                    });
+                }
+                else
+                {
+                    item = new ToolStripMenuItem("Enable Shiny", null, (sender, e) =>
+                    {
+                        enableShiny = true;
+                        Instance.GlobalSettings["scene_viewer_shiny"] = true;
+                    });
+                }
+                ctxMenu.Items.Add(item);
+            }
+
         }
         #endregion Context menu
 

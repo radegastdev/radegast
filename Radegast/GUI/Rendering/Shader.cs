@@ -135,14 +135,20 @@ namespace Radegast.Rendering
             if (!RenderSettings.HasShaders) return;
 
             if (ID != -1)
+            {
                 GL.UseProgram(ID);
+                CurrentProgram = ID;
+            }
         }
 
-        public void Stop()
+        public static void Stop()
         {
             if (!RenderSettings.HasShaders) return;
-
-            GL.UseProgram(0);
+            
+            if (CurrentProgram != 0)
+            {
+                GL.UseProgram(0);
+            }
         }
 
         public int Uni(string var)
@@ -150,6 +156,28 @@ namespace Radegast.Rendering
             if (!RenderSettings.HasShaders) return -1;
 
             return GL.GetUniformLocation(ID, var);
+        }
+
+        public void SetUniform1(string var, int value)
+        {
+            if (!RenderSettings.HasShaders || ID < 1) return;
+            int varID = Uni(var);
+            if (varID == -1)
+            {
+                return;
+            }
+            GL.Uniform1(varID, value);
+        }
+
+        public void SetUniform1(string var, float value)
+        {
+            if (!RenderSettings.HasShaders || ID < 1) return;
+            int varID = Uni(var);
+            if (varID == -1)
+            {
+                return;
+            }
+            GL.Uniform1(varID, value);
         }
 
         public void Dispose()

@@ -259,7 +259,7 @@ namespace Radegast.Rendering
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.Disable(EnableCap.Texture2D);
 
-                waterProgram.Stop();
+                ShaderProgram.Stop();
             }
         }
 
