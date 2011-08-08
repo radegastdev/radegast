@@ -342,14 +342,10 @@ namespace Radegast.Rendering
         {
             if (InvokeRequired)
             {
-                if (IsHandleCreated || !instance.MonoRuntime)
-                {
-                    BeginInvoke(new MethodInvoker(() => Netcom_ClientDisconnected(sender, e)));
-                }
+                if (!IsHandleCreated) return;
+                BeginInvoke(new MethodInvoker(() => Dispose()));
                 return;
             }
-
-            Dispose();
         }
 
         void Network_SimChanged(object sender, SimChangedEventArgs e)
@@ -898,7 +894,7 @@ namespace Radegast.Rendering
                             if (ModifierKeys == Keys.Alt)
                             {
                                 Vector3 pos = av.RenderPosition;
-                                pos.Z += 1.5f; // focus roughly on the chest area
+                                pos.Z += 0.5f; // focus roughly on the chest area
                                 Camera.FocalPoint = pos;
                                 Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
                             }
@@ -1147,7 +1143,6 @@ namespace Radegast.Rendering
         void InitCamera()
         {
             Vector3 camPos = Client.Self.SimPosition + new Vector3(-4, 0, 1) * Client.Self.Movement.BodyRotation;
-            camPos.Z += 1f;
             Camera.Position = camPos;
             Camera.FocalPoint = Client.Self.SimPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
             Camera.Zoom = 1.0f;
@@ -1262,6 +1257,10 @@ namespace Radegast.Rendering
                     pos = parentPos;
                     rot = parentRot;
 
+                    // Move by pelvis offset
+                    pos -= parentav.glavatar.skel.getOffset("mPelvis") * rot;
+                    //rot = parentav.glavatar.skel.getRotation("mPelvis") * rot;
+
                     // Translate and rotate to the joint calculated position
                     pos += bpos * rot;
                     rot *= brot;
@@ -1275,7 +1274,6 @@ namespace Radegast.Rendering
                     pos += obj.BasePrim.Position * rot;
                     rot *= obj.BasePrim.Rotation;
 
-                    pos -= parentav.glavatar.skel.getOffset("mPelvis");
                 }
                 return;
             }
@@ -1418,7 +1416,7 @@ namespace Radegast.Rendering
                     byte[] faceColor = null;
 
                     OpenTK.Vector3 tagPos = RHelp.TKVector3(avPos);
-                    tagPos.Z += 2.2f;
+                    tagPos.Z += 1.2f;
                     OpenTK.Vector3 screenPos;
                     if (!Math3D.GluProject(tagPos, ModelMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
 
@@ -1443,22 +1441,26 @@ namespace Radegast.Rendering
                             faceID++;
                         }
                     }
-                    // Render tag backround
-                    GL.Begin(BeginMode.Quads);
-                    float halfWidth = tSize.BoundingBox.Width / 2 + 12;
-                    float halfHeight = tSize.BoundingBox.Height / 2 + 5;
-                    GL.Vertex2(screenPos.X - halfWidth, screenPos.Y - halfHeight);
-                    GL.Vertex2(screenPos.X + halfWidth, screenPos.Y - halfHeight);
-                    GL.Vertex2(screenPos.X + halfWidth, screenPos.Y + halfHeight);
-                    GL.Vertex2(screenPos.X - halfWidth, screenPos.Y + halfHeight);
-                    GL.End();
 
+                    OpenTK.Vector3 quadPos = screenPos;
                     screenPos.Y = glControl.Height - screenPos.Y;
                     screenPos.X -= tSize.BoundingBox.Width / 2;
                     screenPos.Y -= tSize.BoundingBox.Height / 2 + 2;
 
                     if (screenPos.Y > 0)
                     {
+                        // Render tag backround
+                        GL.Begin(BeginMode.Quads);
+                        {
+                            float halfWidth = tSize.BoundingBox.Width / 2 + 12;
+                            float halfHeight = tSize.BoundingBox.Height / 2 + 5;
+                            GL.Vertex2(quadPos.X - halfWidth, quadPos.Y - halfHeight);
+                            GL.Vertex2(quadPos.X + halfWidth, quadPos.Y - halfHeight);
+                            GL.Vertex2(quadPos.X + halfWidth, quadPos.Y + halfHeight);
+                            GL.Vertex2(quadPos.X - halfWidth, quadPos.Y + halfHeight);
+                        }
+                        GL.End();
+
                         Printer.Begin();
                         Color textColor = pass == RenderPass.Simple ?
                             Color.Orange :
@@ -1614,7 +1616,7 @@ namespace Radegast.Rendering
 
                     Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
 
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.avatar.Rotation, pos - avataroffset));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.RenderRotation, av.RenderPosition - avataroffset * av.RenderRotation));
 
                     GL.Begin(BeginMode.Lines);
 
@@ -1721,7 +1723,7 @@ namespace Radegast.Rendering
                     Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
 
                     // Prim roation and position
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset * av.RenderRotation));
 
                     if (av.glavatar._meshes.Count > 0)
                     {
@@ -2825,7 +2827,6 @@ namespace Radegast.Rendering
                 if (trackedObject == myself)
                 {
                     Vector3 camPos = myself.RenderPosition + new Vector3(-4, 0, 1) * Client.Self.Movement.BodyRotation;
-                    camPos.Z += 1f;
                     Camera.Position = camPos;
                     Camera.FocalPoint = myself.RenderPosition + new Vector3(5, 0, 0) * Client.Self.Movement.BodyRotation;
                 }
@@ -3647,7 +3648,7 @@ namespace Radegast.Rendering
             if (e.KeyCode != Keys.Enter) return;
             e.Handled = e.SuppressKeyPress = true;
             ChatConsole chat = (ChatConsole)Instance.TabConsole.Tabs["chat"].Control;
-            
+
             if (e.Shift)
                 chat.ProcessChatInput(txtChat.Text, ChatType.Whisper);
             else if (e.Control)
