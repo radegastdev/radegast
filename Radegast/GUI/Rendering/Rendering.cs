@@ -668,6 +668,7 @@ namespace Radegast.Rendering
             if (RenderSettings.HasShaders)
             {
                 shinyProgram.Load("shiny.vert", "shiny.frag");
+                shinyProgram.SetUniform1("colorMap", 0);
             }
         }
 
@@ -2428,7 +2429,6 @@ namespace Radegast.Rendering
                     if (shiny > 0f && enableShiny)
                     {
                         shinyProgram.Start();
-                        shinyProgram.SetUniform1("colorMap", 0);
                     }
                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, shiny);
                     var faceColor = new float[] { RGBA.R, RGBA.G, RGBA.B, RGBA.A };
@@ -2754,10 +2754,9 @@ namespace Radegast.Rendering
             GL.EnableClientState(ArrayCap.NormalArray);
 
             Vector3 myPos = Vector3.Zero;
-            RenderAvatar me;
-            if (Avatars.TryGetValue(Client.Self.LocalID, out me))
+            if (myself != null)
             {
-                myPos = me.RenderPosition;
+                myPos = myself.RenderPosition;
             }
             else
             {
@@ -2793,6 +2792,8 @@ namespace Radegast.Rendering
         int texturesRequestedThisFrame;
         int meshingsRequestedThisFrame;
         int meshingsRequestedLastFrame;
+        int framesSinceReflection = 0;
+        float timeSinceReflection = 0f;
 
         private void Render(bool picking)
         {
@@ -2806,10 +2807,18 @@ namespace Radegast.Rendering
             {
                 if (RenderSettings.AdvancedWater)
                 {
-                    GL.ClearColor(0.09f, 0.28f, 0.63f, 1f);
-                    CreateReflectionTexture(Client.Network.CurrentSim.WaterHeight, 512);
-                    CreateRefractionDepthTexture(Client.Network.CurrentSim.WaterHeight, 512);
-                    glControl_Resize(null, null);
+                    framesSinceReflection++;
+                    timeSinceReflection += lastFrameTime;
+
+                    if (Camera.Modified || (framesSinceReflection > 4 && timeSinceReflection > 0.1f))
+                    {
+                        GL.ClearColor(0, 0, 0, 0);
+                        CreateReflectionTexture(Client.Network.CurrentSim.WaterHeight, 512);
+                        CreateRefractionDepthTexture(Client.Network.CurrentSim.WaterHeight, 512);
+                        glControl_Resize(null, null);
+                        framesSinceReflection = 0;
+                        timeSinceReflection = 0f;
+                    }
                 }
                 GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
             }
