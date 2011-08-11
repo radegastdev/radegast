@@ -3404,8 +3404,8 @@ namespace Radegast.Rendering
                     ctxMenu.Items.Add(item);
                 }
 
-                // Can I modify this object?
-                if ((prim.Prim.Flags & PrimFlags.ObjectModify) != 0)
+                // Can I delete and take this object?
+                if ((prim.Prim.Flags & (PrimFlags.ObjectYouOwner | PrimFlags.ObjectYouOfficer)) != 0)
                 {
                     // Take button
                     item = new ToolStripMenuItem("Take", null, (sender, e) =>
