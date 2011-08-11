@@ -347,6 +347,8 @@ namespace Radegast.Rendering
 
         #endregion Public fields
 
+        uint previousParent = uint.MaxValue;
+
         /// <summary>
         /// Cleanup resources used
         /// </summary>
@@ -370,6 +372,14 @@ namespace Radegast.Rendering
         /// <param name="time">Time since the last call (last frame time in seconds)</param>
         public virtual void Step(float time)
         {
+            if (previousParent != BasePrim.ParentID)
+            {
+                previousParent = BasePrim.ParentID;
+                InterpolatedPosition = BasePrim.Position;
+                InterpolatedRotation = BasePrim.Rotation;
+                return;
+            }
+
             // Linear velocity and acceleration
             if (BasePrim.Velocity != Vector3.Zero)
             {
