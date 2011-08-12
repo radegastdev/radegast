@@ -372,6 +372,7 @@ namespace Radegast.Rendering
         /// <param name="time">Time since the last call (last frame time in seconds)</param>
         public virtual void Step(float time)
         {
+            // Don't interpolate when parent changes (sit/stand link/unlink)
             if (previousParent != BasePrim.ParentID)
             {
                 previousParent = BasePrim.ParentID;
@@ -2668,17 +2669,17 @@ namespace Radegast.Rendering
 
             string pos = bone.Attributes.GetNamedItem("pos").Value;
             string[] posparts = pos.Split(' ');
-            b.pos = new Vector3(float.Parse(posparts[0]), float.Parse(posparts[1]), float.Parse(posparts[2]));
+            b.pos = new Vector3(float.Parse(posparts[0], Utils.EnUsCulture), float.Parse(posparts[1], Utils.EnUsCulture), float.Parse(posparts[2], Utils.EnUsCulture));
             b.orig_pos = new Vector3(b.pos);
 
             string rot = bone.Attributes.GetNamedItem("rot").Value;
             string[] rotparts = rot.Split(' ');
-            b.rot = Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0]) * Math.PI / 180f), (float)(float.Parse(rotparts[1]) * Math.PI / 180f), (float)(float.Parse(rotparts[2]) * Math.PI / 180f));
+            b.rot = Quaternion.CreateFromEulers((float)(float.Parse(rotparts[0], Utils.EnUsCulture) * Math.PI / 180f), (float)(float.Parse(rotparts[1], Utils.EnUsCulture) * Math.PI / 180f), (float)(float.Parse(rotparts[2], Utils.EnUsCulture) * Math.PI / 180f));
             b.orig_rot = new Quaternion(b.rot);
 
             string scale = bone.Attributes.GetNamedItem("scale").Value;
             string[] scaleparts = scale.Split(' ');
-            b.scale = new Vector3(float.Parse(scaleparts[0]), float.Parse(scaleparts[1]), float.Parse(scaleparts[2]));
+            b.scale = new Vector3(float.Parse(scaleparts[0], Utils.EnUsCulture), float.Parse(scaleparts[1], Utils.EnUsCulture), float.Parse(scaleparts[2], Utils.EnUsCulture));
             b.orig_scale = new Vector3(b.scale);
 
             float[] deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), b.rot, b.orig_pos);
@@ -3005,8 +3006,8 @@ namespace Radegast.Rendering
             if (node.Attributes.GetNamedItem("wearable") != null)
                 Wearable = node.Attributes.GetNamedItem("wearable").Value;
 
-            MinValue = float.Parse(node.Attributes.GetNamedItem("value_min").Value);
-            MaxValue = float.Parse(node.Attributes.GetNamedItem("value_max").Value);
+            MinValue = float.Parse(node.Attributes.GetNamedItem("value_min").Value, Utils.EnUsCulture);
+            MaxValue = float.Parse(node.Attributes.GetNamedItem("value_max").Value, Utils.EnUsCulture);
 
             // These do not exists for driven parameters
             if (node.Attributes.GetNamedItem("label_min") != null)
@@ -3174,10 +3175,10 @@ namespace Radegast.Rendering
                     XmlNode param = node.Attributes.GetNamedItem("max1");
                     if (param != null)
                     {
-                        d.max1 = float.Parse(param.Value);
-                        d.max2 = float.Parse(node.Attributes.GetNamedItem("max2").Value);
-                        d.min1 = float.Parse(node.Attributes.GetNamedItem("min1").Value);
-                        d.max2 = float.Parse(node.Attributes.GetNamedItem("min2").Value);
+                        d.max1 = float.Parse(param.Value, Utils.EnUsCulture);
+                        d.max2 = float.Parse(node.Attributes.GetNamedItem("max2").Value, Utils.EnUsCulture);
+                        d.min1 = float.Parse(node.Attributes.GetNamedItem("min1").Value, Utils.EnUsCulture);
+                        d.max2 = float.Parse(node.Attributes.GetNamedItem("min2").Value, Utils.EnUsCulture);
                         d.hasMinMax = true;
                     }
                     else
@@ -3194,7 +3195,7 @@ namespace Radegast.Rendering
         public static Vector3 XmlParseVector(string data)
         {
             string[] posparts = data.Split(' ');
-            return new Vector3(float.Parse(posparts[0]), float.Parse(posparts[1]), float.Parse(posparts[2]));
+            return new Vector3(float.Parse(posparts[0], Utils.EnUsCulture), float.Parse(posparts[1], Utils.EnUsCulture), float.Parse(posparts[2], Utils.EnUsCulture));
         }
 
         public static Quaternion XmlParseRotation(string data)
