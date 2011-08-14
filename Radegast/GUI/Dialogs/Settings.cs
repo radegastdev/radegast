@@ -107,6 +107,8 @@ namespace Radegast
 
             if (!s.ContainsKey("taskbar_highlight")) s["taskbar_highlight"] = true;
 
+            if (!s.ContainsKey("rendering_occlusion_culling_enabled")) s["rendering_occlusion_culling_enabled"] = true;
+
         }
 
         public frmSettings(RadegastInstance instance)
