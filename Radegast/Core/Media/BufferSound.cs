@@ -72,6 +72,8 @@ namespace Radegast.Media
 
         private void InitBuffer(UUID objectId, UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
         {
+            if (manager == null || !manager.SoundSystemAvailable) return;
+
             // Do not let this get garbage-collected.
             lock (allBuffers)
                 allBuffers[objectId] = this;

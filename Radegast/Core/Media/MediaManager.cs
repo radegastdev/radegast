@@ -632,6 +632,8 @@ namespace Radegast.Media
         /// <param name="sound">UUID of the sound to play</param>
         public void PlayUISound(UUID sound)
         {
+            if (!soundSystemAvailable) return;
+
             new BufferSound(
                 UUID.Random(),
                 sound,
