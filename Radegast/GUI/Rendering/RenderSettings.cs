@@ -64,6 +64,8 @@ namespace Radegast.Rendering
         public static bool HeavierDistanceChecking = true;
         /// <summary>Minimum time between rebuilding terrain mesh and texture</summary>
         public static float MinimumTimeBetweenTerrainUpdated = 15f;
+        /// <summary>Are textures that don't have dimensions that are powers of two supported</summary>
+        public static bool TextureNonPowerOfTwoSupported;
 
         #region Water
         public static bool AdvancedWater = false;

@@ -686,6 +686,13 @@ namespace Radegast.Rendering
             return Color.FromArgb((int)(color.A * 255), (int)(color.R * 255), (int)(color.G * 255), (int)(color.B * 255));
         }
 
+        public static int NextPow2(int start)
+        {
+            int pow = 1;
+            while (pow < start) pow *= 2;
+            return pow;
+        }
+
         #region Cached image save and load
         public static readonly string RAD_IMG_MAGIC = "radegast_img";
 
@@ -826,6 +833,12 @@ namespace Radegast.Rendering
 
         public static int GLLoadImage(Bitmap bitmap, bool hasAlpha)
         {
+            return GLLoadImage(bitmap, hasAlpha, true);
+        }
+
+        public static int GLLoadImage(Bitmap bitmap, bool hasAlpha, bool useMipmap)
+        {
+            useMipmap = useMipmap && RenderSettings.HasMipmap;
             int ret = -1;
             GL.GenTextures(1, out ret);
             GL.BindTexture(TextureTarget.Texture2D, ret);
@@ -852,7 +865,7 @@ namespace Radegast.Rendering
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            if (RenderSettings.HasMipmap)
+            if (useMipmap)
             {
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.GenerateMipmap, 1);

@@ -159,8 +159,8 @@ namespace Radegast.Rendering
             for (int i = 0; i < c; i++)
             {
                 lines[i].PrepareText(maxWidth);
-                if (lines[i].Width > actualMaxWidth) actualMaxWidth = lines[i].Width;
-                height += lines[i].Height;
+                if (lines[i].TextWidth > actualMaxWidth) actualMaxWidth = lines[i].TextWidth;
+                height += lines[i].TextHeight;
             }
 
             int x = 5;
@@ -179,7 +179,7 @@ namespace Radegast.Rendering
                 }
                 GL.Color4(color);
                 line.Render(x + 3, y + 5);
-                y += line.Height;
+                y += line.TextHeight;
             }
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.Disable(EnableCap.Texture2D);
@@ -190,8 +190,12 @@ namespace Radegast.Rendering
     public class ChatLine : IDisposable
     {
         public float TimeAdded;
-        public int Width;
-        public int Height;
+        
+        public int TextWidth;
+        public int TextHeight;
+        public int ImgWidth;
+        public int ImgHeight;
+
         public ChatBufferTextStyle Style { get { return item.Style; } }
 
         int textureID = -1;
@@ -219,7 +223,7 @@ namespace Radegast.Rendering
             {
                 string txt = item.From + item.Text;
 
-                // If we're modiefied and have texture already delete it from graphics card
+                // If we're modified and have texture already delete it from graphics card
                 if (textureID > 0)
                 {
                     GL.DeleteTexture(textureID);
@@ -232,13 +236,19 @@ namespace Radegast.Rendering
                     txt,
                     ChatOverlay.ChatFont,
                     new Size(maxWidth, 2000), flags);
-            
-                Width = s.Width;
-                Height = s.Height;
+
+                ImgWidth = TextWidth = s.Width;
+                ImgHeight = TextHeight = s.Height;
+
+                if (!RenderSettings.TextureNonPowerOfTwoSupported)
+                {
+                    ImgWidth = RHelp.NextPow2(TextWidth);
+                    ImgHeight = RHelp.NextPow2(TextHeight);
+                }
 
                 Bitmap img = new Bitmap(
-                    Width,
-                    Height,
+                    ImgWidth,
+                    ImgHeight,
                     System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                 
                 Graphics g = Graphics.FromImage(img);
@@ -247,13 +257,13 @@ namespace Radegast.Rendering
                     g,
                     txt,
                     ChatOverlay.ChatFont,
-                    new Rectangle(0, 0, img.Width + 2, img.Height + 2),
+                    new Rectangle(0, ImgHeight - TextHeight, TextWidth + 2, TextHeight + 2),
                     Color.White,
                     Color.Transparent,
                     flags);
 
                 widthForTextureGenerated = maxWidth;
-                textureID = RHelp.GLLoadImage(img, true);
+                textureID = RHelp.GLLoadImage(img, true, false);
                 g.Dispose();
                 img.Dispose();
             }
@@ -263,7 +273,7 @@ namespace Radegast.Rendering
         {
             if (textureID == -1) return;
             GL.BindTexture(TextureTarget.Texture2D, textureID);
-            RHelp.Draw2DBox(x, y, Width, Height, 0f);
+            RHelp.Draw2DBox(x, y, ImgWidth, ImgHeight, 0f);
         }
     }
 }

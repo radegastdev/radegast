@@ -634,6 +634,9 @@ namespace Radegast.Rendering
                     RenderSettings.AdvancedWater = false;
                 }
 
+                // Do textures have to have dimensions that are powers of two
+                RenderSettings.TextureNonPowerOfTwoSupported = glExtensions.Contains("texture_non_power_of_two");
+
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
                 // and will also invalidate the GL control
