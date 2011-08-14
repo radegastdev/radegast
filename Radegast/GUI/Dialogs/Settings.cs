@@ -105,6 +105,8 @@ namespace Radegast
 
             if (!s.ContainsKey("scene_window_docked")) s["scene_window_docked"] = true;
 
+            if (!s.ContainsKey("taskbar_highlight")) s["taskbar_highlight"] = true;
+
         }
 
         public frmSettings(RadegastInstance instance)
@@ -204,6 +206,12 @@ namespace Radegast
             }
 
             txtReconnectTime.Text = s["reconnect_time"].AsInteger().ToString();
+
+            cbTaskBarHighLight.Checked = s["taskbar_highlight"];
+            cbTaskBarHighLight.CheckedChanged += (sender, e) =>
+            {
+                s["taskbar_highlight"] = cbTaskBarHighLight.Checked;
+            };
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)

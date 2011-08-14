@@ -179,8 +179,10 @@ namespace Radegast
         public void Highlight()
         {
             if (selected) return;
-            FormFlash.StartFlash(control.FindForm());
-
+            if (instance.GlobalSettings["taskbar_highlight"])
+            {
+                FormFlash.StartFlash(control.FindForm());
+            }
             if (!detached)
             {
                 button.Image = Properties.Resources.arrow_forward_16;

@@ -89,6 +89,7 @@ namespace Radegast
             this.rbAutoAlways = new System.Windows.Forms.RadioButton();
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
+            this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.gbDisplayNames.SuspendLayout();
@@ -113,6 +114,7 @@ namespace Radegast
             this.tbpGeneral.Controls.Add(this.txtReconnectTime);
             this.tbpGeneral.Controls.Add(this.label2);
             this.tbpGeneral.Controls.Add(this.gbDisplayNames);
+            this.tbpGeneral.Controls.Add(this.cbTaskBarHighLight);
             this.tbpGeneral.Controls.Add(this.cbSyntaxHighlight);
             this.tbpGeneral.Controls.Add(this.label1);
             this.tbpGeneral.Controls.Add(this.cbFontSize);
@@ -453,6 +455,16 @@ namespace Radegast
             this.rbAutobusy.UseVisualStyleBackColor = true;
             this.rbAutobusy.CheckedChanged += new System.EventHandler(this.rbAutobusy_CheckedChanged);
             // 
+            // cbTaskBarHighLight
+            // 
+            this.cbTaskBarHighLight.AutoSize = true;
+            this.cbTaskBarHighLight.Location = new System.Drawing.Point(270, 212);
+            this.cbTaskBarHighLight.Name = "cbTaskBarHighLight";
+            this.cbTaskBarHighLight.Size = new System.Drawing.Size(155, 17);
+            this.cbTaskBarHighLight.TabIndex = 17;
+            this.cbTaskBarHighLight.Text = "Highlight in taskbar on chat";
+            this.cbTaskBarHighLight.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -507,6 +519,7 @@ namespace Radegast
         public System.Windows.Forms.RadioButton rbDNDandUsernme;
         public System.Windows.Forms.RadioButton rbDNSmart;
         public System.Windows.Forms.RadioButton rbDNOff;
+        public System.Windows.Forms.CheckBox cbTaskBarHighLight;
 
 
     }
