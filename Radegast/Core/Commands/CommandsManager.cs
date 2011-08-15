@@ -134,6 +134,20 @@ namespace Radegast.Commands
             return cmd;
         }
 
+        public void RemoveCommand(string name)
+        {
+            lock (CommandsLoaded)
+            {
+                if (CommandsByName.ContainsKey(name))
+                {
+                    var cmd = CommandsByName[name];
+                    CommandsLoaded.Remove(cmd);
+                    CommandsByName.Remove(name);
+                    cmd.Dispose();
+                }
+            }
+        }
+
         public void Help(string args, ConsoleWriteLine WriteLine)
         {
             int found = 0;
