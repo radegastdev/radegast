@@ -61,8 +61,6 @@ namespace Radegast.Rendering
             this.components = new System.ComponentModel.Container();
             this.pnlDebug = new System.Windows.Forms.GroupBox();
             this.cbMisc = new System.Windows.Forms.CheckBox();
-            this.lblDrawDistance = new System.Windows.Forms.Label();
-            this.tbDrawDistance = new System.Windows.Forms.TrackBar();
             this.button_driver = new System.Windows.Forms.Button();
             this.textBox_driveramount = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -88,23 +86,18 @@ namespace Radegast.Rendering
             this.hsAmbient = new System.Windows.Forms.HScrollBar();
             this.label2 = new System.Windows.Forms.Label();
             this.btnResetView = new System.Windows.Forms.Button();
-            this.cbAA = new System.Windows.Forms.CheckBox();
-            this.chkWireFrame = new System.Windows.Forms.CheckBox();
             this.ctxMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.pnlChat = new System.Windows.Forms.Panel();
             this.cbChatType = new System.Windows.Forms.ComboBox();
             this.btnSay = new System.Windows.Forms.Button();
             this.txtChat = new Radegast.Rendering.ChatBox();
             this.pnlDebug.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).BeginInit();
             this.pnlChat.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlDebug
             // 
             this.pnlDebug.Controls.Add(this.cbMisc);
-            this.pnlDebug.Controls.Add(this.lblDrawDistance);
-            this.pnlDebug.Controls.Add(this.tbDrawDistance);
             this.pnlDebug.Controls.Add(this.button_driver);
             this.pnlDebug.Controls.Add(this.textBox_driveramount);
             this.pnlDebug.Controls.Add(this.label6);
@@ -130,8 +123,6 @@ namespace Radegast.Rendering
             this.pnlDebug.Controls.Add(this.hsAmbient);
             this.pnlDebug.Controls.Add(this.label2);
             this.pnlDebug.Controls.Add(this.btnResetView);
-            this.pnlDebug.Controls.Add(this.cbAA);
-            this.pnlDebug.Controls.Add(this.chkWireFrame);
             this.pnlDebug.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlDebug.Location = new System.Drawing.Point(0, 337);
             this.pnlDebug.Name = "pnlDebug";
@@ -152,28 +143,6 @@ namespace Radegast.Rendering
             this.cbMisc.Text = "Misc";
             this.cbMisc.UseVisualStyleBackColor = true;
             this.cbMisc.CheckedChanged += new System.EventHandler(this.cbMisc_CheckedChanged);
-            // 
-            // lblDrawDistance
-            // 
-            this.lblDrawDistance.AutoSize = true;
-            this.lblDrawDistance.Location = new System.Drawing.Point(542, 140);
-            this.lblDrawDistance.Name = "lblDrawDistance";
-            this.lblDrawDistance.Size = new System.Drawing.Size(93, 13);
-            this.lblDrawDistance.TabIndex = 48;
-            this.lblDrawDistance.Text = "Draw distance: 48";
-            this.lblDrawDistance.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // tbDrawDistance
-            // 
-            this.tbDrawDistance.Location = new System.Drawing.Point(358, 117);
-            this.tbDrawDistance.Maximum = 176;
-            this.tbDrawDistance.Minimum = 32;
-            this.tbDrawDistance.Name = "tbDrawDistance";
-            this.tbDrawDistance.Size = new System.Drawing.Size(277, 45);
-            this.tbDrawDistance.TabIndex = 47;
-            this.tbDrawDistance.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.tbDrawDistance.Value = 32;
-            this.tbDrawDistance.Scroll += new System.EventHandler(this.tbDrawDistance_Scroll);
             // 
             // button_driver
             // 
@@ -430,7 +399,7 @@ namespace Radegast.Rendering
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(140, 36);
+            this.label2.Location = new System.Drawing.Point(9, 3);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(167, 13);
             this.label2.TabIndex = 23;
@@ -438,34 +407,13 @@ namespace Radegast.Rendering
             // 
             // btnResetView
             // 
-            this.btnResetView.Location = new System.Drawing.Point(12, 31);
+            this.btnResetView.Location = new System.Drawing.Point(12, 19);
             this.btnResetView.Name = "btnResetView";
             this.btnResetView.Size = new System.Drawing.Size(94, 23);
             this.btnResetView.TabIndex = 22;
             this.btnResetView.Text = "Reset View";
             this.btnResetView.UseVisualStyleBackColor = true;
             this.btnResetView.Click += new System.EventHandler(this.btnReset_Click);
-            // 
-            // cbAA
-            // 
-            this.cbAA.AutoSize = true;
-            this.cbAA.Location = new System.Drawing.Point(89, 11);
-            this.cbAA.Name = "cbAA";
-            this.cbAA.Size = new System.Drawing.Size(82, 17);
-            this.cbAA.TabIndex = 21;
-            this.cbAA.Text = "Anti-aliasing";
-            this.cbAA.UseVisualStyleBackColor = true;
-            // 
-            // chkWireFrame
-            // 
-            this.chkWireFrame.AutoSize = true;
-            this.chkWireFrame.Location = new System.Drawing.Point(9, 10);
-            this.chkWireFrame.Name = "chkWireFrame";
-            this.chkWireFrame.Size = new System.Drawing.Size(74, 17);
-            this.chkWireFrame.TabIndex = 21;
-            this.chkWireFrame.Text = "Wireframe";
-            this.chkWireFrame.UseVisualStyleBackColor = true;
-            this.chkWireFrame.CheckedChanged += new System.EventHandler(this.chkWireFrame_CheckedChanged);
             // 
             // ctxMenu
             // 
@@ -538,7 +486,6 @@ namespace Radegast.Rendering
             this.Load += new System.EventHandler(this.ControlLoaded);
             this.pnlDebug.ResumeLayout(false);
             this.pnlDebug.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).EndInit();
             this.pnlChat.ResumeLayout(false);
             this.pnlChat.PerformLayout();
             this.ResumeLayout(false);
@@ -549,8 +496,6 @@ namespace Radegast.Rendering
 
         public System.Windows.Forms.GroupBox pnlDebug;
         public System.Windows.Forms.ContextMenuStrip ctxMenu;
-        public System.Windows.Forms.CheckBox cbAA;
-        public System.Windows.Forms.CheckBox chkWireFrame;
         public System.Windows.Forms.Button btnResetView;
         public System.Windows.Forms.Label label2;
         public System.Windows.Forms.Panel pnlChat;
@@ -578,8 +523,6 @@ namespace Radegast.Rendering
         public System.Windows.Forms.TextBox textBox_driveramount;
         public System.Windows.Forms.Label label6;
         public System.Windows.Forms.ComboBox comboBox_driver;
-        public System.Windows.Forms.TrackBar tbDrawDistance;
-        public System.Windows.Forms.Label lblDrawDistance;
         public System.Windows.Forms.CheckBox cbMisc;
         public System.Windows.Forms.Button btnSay;
         public System.Windows.Forms.ComboBox cbChatType;

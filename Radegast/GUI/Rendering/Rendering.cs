@@ -122,6 +122,10 @@ namespace Radegast.Rendering
         /// </summary>
         public int[] Viewport = new int[4];
 
+        /// <summary>
+        /// Should shaders for shiny surfaces be enabed
+        /// </summary>
+        public bool EnableShiny;
         #endregion Public fields
 
         #region Private fields
@@ -160,9 +164,8 @@ namespace Radegast.Rendering
         OpenTK.Vector4 ambientColor;
         OpenTK.Vector4 difuseColor;
         OpenTK.Vector4 specularColor;
-        float drawDistance = 48f;
-        float drawDistanceSquared = 48f * 48f;
-        bool enableShiny;
+        float drawDistance;
+        float drawDistanceSquared;
 
         GridClient Client;
         RadegastInstance Instance;
@@ -179,10 +182,7 @@ namespace Radegast.Rendering
             this.Instance = instance;
             this.Client = instance.Client;
 
-            UseMultiSampling = cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];
-            cbAA.CheckedChanged += cbAA_CheckedChanged;
-
-            this.instance = instance;
+            UseMultiSampling = Instance.GlobalSettings["use_multi_sampling"];
 
             genericTaskThread = new Thread(new ThreadStart(GenericTaskRunner));
             genericTaskThread.IsBackground = true;
@@ -200,10 +200,9 @@ namespace Radegast.Rendering
 
             chatOverlay = new ChatOverlay(instance, this);
             cbChatType.SelectedIndex = 1;
-            enableShiny = Instance.GlobalSettings["scene_viewer_shiny"];
+            EnableShiny = Instance.GlobalSettings["scene_viewer_shiny"];
 
-            tbDrawDistance.Value = (int)DrawDistance;
-            lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
+            DrawDistance = Instance.GlobalSettings["draw_distance"];
             pnlDebug.Visible = Instance.GlobalSettings["scene_viewer_debug_panel"];
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
@@ -614,12 +613,13 @@ namespace Radegast.Rendering
                 // VBO
                 RenderSettings.ARBVBOPresent = context.GetAddress("glGenBuffersARB") != IntPtr.Zero;
                 RenderSettings.CoreVBOPresent = context.GetAddress("glGenBuffers") != IntPtr.Zero;
-                RenderSettings.UseVBO = RenderSettings.ARBVBOPresent | RenderSettings.CoreVBOPresent;
+                RenderSettings.UseVBO = RenderSettings.ARBVBOPresent || RenderSettings.CoreVBOPresent;
 
                 // Occlusion Query
                 RenderSettings.ARBQuerySupported = context.GetAddress("glGetQueryObjectivARB") != IntPtr.Zero;
                 RenderSettings.CoreQuerySupported = context.GetAddress("glGetQueryObjectiv") != IntPtr.Zero;
-                RenderSettings.OcclusionCullingEnabled = RenderSettings.CoreQuerySupported | RenderSettings.ARBQuerySupported;
+                RenderSettings.OcclusionCullingEnabled = (RenderSettings.CoreQuerySupported || RenderSettings.ARBQuerySupported)
+                    && instance.GlobalSettings["rendering_occlusion_culling_enabled"];
 
                 // Mipmap
                 RenderSettings.HasMipmap = context.GetAddress("glGenerateMipmap") != IntPtr.Zero;
@@ -629,16 +629,19 @@ namespace Radegast.Rendering
 
                 // Multi texture
                 RenderSettings.HasMultiTexturing = context.GetAddress("glMultiTexCoord2f") != IntPtr.Zero;
+                RenderSettings.WaterReflections = instance.GlobalSettings["water_reflections"];
+
                 if (!RenderSettings.HasMultiTexturing || !RenderSettings.HasShaders)
                 {
-                    RenderSettings.AdvancedWater = false;
+                    RenderSettings.WaterReflections = false;
                 }
 
                 // Do textures have to have dimensions that are powers of two
                 RenderSettings.TextureNonPowerOfTwoSupported = glExtensions.Contains("texture_non_power_of_two");
 
                 // Occlusion culling
-                RenderSettings.OcclusionCullingEnabled = Instance.GlobalSettings["rendering_occlusion_culling_enabled"];
+                RenderSettings.OcclusionCullingEnabled = Instance.GlobalSettings["rendering_occlusion_culling_enabled"]
+                    && (RenderSettings.ARBQuerySupported || RenderSettings.CoreQuerySupported);
 
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
@@ -1150,7 +1153,7 @@ namespace Radegast.Rendering
             GLAvatar.loadlindenmeshes2("avatar_lad.xml");
         }
 
-        private void UpdateCamera()
+        public void UpdateCamera()
         {
             if (Client != null)
             {
@@ -2432,7 +2435,7 @@ namespace Radegast.Rendering
                             break;
                     }
 
-                    if (shiny > 0f && enableShiny)
+                    if (shiny > 0f && EnableShiny)
                     {
                         shinyProgram.Start();
                     }
@@ -2811,7 +2814,7 @@ namespace Radegast.Rendering
             }
             else
             {
-                if (RenderSettings.AdvancedWater)
+                if (RenderSettings.WaterReflections)
                 {
                     framesSinceReflection++;
                     timeSinceReflection += lastFrameTime;
@@ -3330,20 +3333,9 @@ namespace Radegast.Rendering
         #endregion Private methods (the meat)
 
         #region Form controls handlers
-        private void chkWireFrame_CheckedChanged(object sender, EventArgs e)
-        {
-            Wireframe = chkWireFrame.Checked;
-        }
-
         private void btnReset_Click(object sender, EventArgs e)
         {
             InitCamera();
-        }
-
-        private void cbAA_CheckedChanged(object sender, EventArgs e)
-        {
-            instance.GlobalSettings["use_multi_sampling"] = UseMultiSampling = cbAA.Checked;
-            SetupGLControl();
         }
 
         #endregion Form controls handlers
@@ -3502,6 +3494,12 @@ namespace Radegast.Rendering
             }
             ctxMenu.Items.Add(item);
 
+            item = new ToolStripMenuItem("Options", null, (sender, e) =>
+            {
+                new Floater(Instance, new GraphicsPreferences(Instance), this).Show(FindForm());
+            });
+            ctxMenu.Items.Add(item);
+
             // Show hide debug panel
             if (pnlDebug.Visible)
             {
@@ -3520,29 +3518,6 @@ namespace Radegast.Rendering
                 });
             }
             ctxMenu.Items.Add(item);
-
-            // Enable disable shiny
-            if (RenderSettings.HasShaders)
-            {
-                if (enableShiny)
-                {
-                    item = new ToolStripMenuItem("Disable Shiny", null, (sender, e) =>
-                    {
-                        enableShiny = false;
-                        Instance.GlobalSettings["scene_viewer_shiny"] = false;
-                    });
-                }
-                else
-                {
-                    item = new ToolStripMenuItem("Enable Shiny", null, (sender, e) =>
-                    {
-                        enableShiny = true;
-                        Instance.GlobalSettings["scene_viewer_shiny"] = true;
-                    });
-                }
-                ctxMenu.Items.Add(item);
-            }
-
         }
         #endregion Context menu
 
@@ -3695,13 +3670,6 @@ namespace Radegast.Rendering
 
         }
 
-        private void tbDrawDistance_Scroll(object sender, EventArgs e)
-        {
-            DrawDistance = (float)tbDrawDistance.Value;
-            lblDrawDistance.Text = string.Format("Draw distance: {0}", tbDrawDistance.Value);
-            UpdateCamera();
-        }
-
         bool miscEnabled = true;
         private void cbMisc_CheckedChanged(object sender, EventArgs e)
         {
@@ -3757,5 +3725,6 @@ namespace Radegast.Rendering
             txtChat.Select();
             txtChat.Text = string.Empty;
         }
+
     }
 }

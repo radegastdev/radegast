@@ -192,7 +192,7 @@ namespace Radegast.Rendering
             float z = Client.Network.CurrentSim.WaterHeight;
             GL.Color4(0.09f, 0.28f, 0.63f, 0.84f);
 
-            if (RenderSettings.AdvancedWater)
+            if (RenderSettings.WaterReflections)
             {
                 waterProgram.Start();
 
@@ -242,7 +242,7 @@ namespace Radegast.Rendering
                     DrawWaterQuad(x, y, z);
             GL.End();
 
-            if (RenderSettings.AdvancedWater)
+            if (RenderSettings.WaterReflections)
             {
                 GL.ActiveTexture(TextureUnit.Texture4);
                 GL.Disable(EnableCap.Texture2D);

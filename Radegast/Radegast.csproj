@@ -495,6 +495,9 @@
     <Compile Include="GUI\Consoles\MediaConsole.Designer.cs">
       <DependentUpon>MediaConsole.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Floater.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="GUI\Notifications\FriendshipOfferNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -558,6 +561,12 @@
     <Compile Include="GUI\Rendering\ChatOverlay.cs" />
     <Compile Include="GUI\Rendering\Compat.cs" />
     <Compile Include="GUI\Rendering\Frustum.cs" />
+    <Compile Include="GUI\Rendering\GraphicsPreferences.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GUI\Rendering\GraphicsPreferences.Designer.cs">
+      <DependentUpon>GraphicsPreferences.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Rendering\ImageUtils.cs" />
     <Compile Include="GUI\Rendering\Perlin.cs" />
     <Compile Include="GUI\Rendering\PrimWorkshop.cs">
@@ -797,6 +806,9 @@
     <EmbeddedResource Include="GUI\Notifications\TeleportNotification.resx">
       <DependentUpon>TeleportNotification.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Rendering\GraphicsPreferences.resx">
+      <DependentUpon>GraphicsPreferences.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Rendering\PrimWorkshop.resx">
       <DependentUpon>PrimWorkshop.cs</DependentUpon>

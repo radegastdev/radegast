@@ -68,7 +68,7 @@ namespace Radegast.Rendering
         public static bool TextureNonPowerOfTwoSupported;
 
         #region Water
-        public static bool AdvancedWater = false;
+        public static bool WaterReflections = false;
         #endregion Water
     }
 }

@@ -804,10 +804,6 @@ namespace Radegast
             {
                 Invoke(new MethodInvoker(() => TreeUpdateTimerTick(null, null)));
             }
-            else
-            {
-                return;
-            }
             TreeUpdateInProgress = false;
             UpdateStatus("OK");
             instance.TabConsole.DisplayNotificationInChat("Inventory update completed.");

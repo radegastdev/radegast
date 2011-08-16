@@ -268,7 +268,7 @@ namespace Radegast
             position = Vector3.Zero;
 
             Avatar avi = null;
-            
+
             // First try the objecct tracker
             for (int i = 0; i < client.Network.Simulators.Count; i++)
             {
@@ -365,7 +365,13 @@ namespace Radegast
 
         void netcom_ClientConnected(object sender, EventArgs e)
         {
-            client.Self.Movement.Camera.Far = 48;
+            if (!instance.GlobalSettings.ContainsKey("draw_distance"))
+            {
+                instance.GlobalSettings["draw_distance"] = 48;
+            }
+
+            client.Self.Movement.Camera.Far = instance.GlobalSettings["draw_distance"];
+
             effectSource = client.Self.AgentID;
 
             if (lookAtTimer == null)
@@ -705,8 +711,8 @@ namespace Radegast
 
         public void StopAllAnimations()
         {
-            Dictionary<UUID, bool> stop = new Dictionary<UUID,bool>();
-            
+            Dictionary<UUID, bool> stop = new Dictionary<UUID, bool>();
+
             client.Self.SignaledAnimations.ForEach((UUID anim) =>
             {
                 if (!KnownAnimations.ContainsKey(anim))

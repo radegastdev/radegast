@@ -59,7 +59,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tcGraphics = new System.Windows.Forms.TabControl();
             this.tbpGeneral = new System.Windows.Forms.TabPage();
             this.txtReconnectTime = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -68,6 +68,7 @@ namespace Radegast
             this.rbDNDandUsernme = new System.Windows.Forms.RadioButton();
             this.rbDNSmart = new System.Windows.Forms.RadioButton();
             this.rbDNOff = new System.Windows.Forms.RadioButton();
+            this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cbFontSize = new System.Windows.Forms.ComboBox();
@@ -89,25 +90,26 @@ namespace Radegast
             this.rbAutoAlways = new System.Windows.Forms.RadioButton();
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
-            this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
-            this.tabControl1.SuspendLayout();
+            this.tbpGraphics = new System.Windows.Forms.TabPage();
+            this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.gbDisplayNames.SuspendLayout();
             this.tbpAutoResponse.SuspendLayout();
             this.gbAutoResponse.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tcGraphics
             // 
-            this.tabControl1.Controls.Add(this.tbpGeneral);
-            this.tabControl1.Controls.Add(this.tbpAutoResponse);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Multiline = true;
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(496, 303);
-            this.tabControl1.TabIndex = 0;
+            this.tcGraphics.Controls.Add(this.tbpGeneral);
+            this.tcGraphics.Controls.Add(this.tbpAutoResponse);
+            this.tcGraphics.Controls.Add(this.tbpGraphics);
+            this.tcGraphics.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcGraphics.Location = new System.Drawing.Point(0, 0);
+            this.tcGraphics.Multiline = true;
+            this.tcGraphics.Name = "tcGraphics";
+            this.tcGraphics.SelectedIndex = 0;
+            this.tcGraphics.Size = new System.Drawing.Size(496, 303);
+            this.tcGraphics.TabIndex = 0;
             // 
             // tbpGeneral
             // 
@@ -216,6 +218,16 @@ namespace Radegast
             this.rbDNOff.Text = "Off";
             this.rbDNOff.UseVisualStyleBackColor = true;
             this.rbDNOff.CheckedChanged += new System.EventHandler(this.rbDNOff_CheckedChanged);
+            // 
+            // cbTaskBarHighLight
+            // 
+            this.cbTaskBarHighLight.AutoSize = true;
+            this.cbTaskBarHighLight.Location = new System.Drawing.Point(270, 212);
+            this.cbTaskBarHighLight.Name = "cbTaskBarHighLight";
+            this.cbTaskBarHighLight.Size = new System.Drawing.Size(155, 17);
+            this.cbTaskBarHighLight.TabIndex = 17;
+            this.cbTaskBarHighLight.Text = "Highlight in taskbar on chat";
+            this.cbTaskBarHighLight.UseVisualStyleBackColor = true;
             // 
             // cbSyntaxHighlight
             // 
@@ -455,26 +467,26 @@ namespace Radegast
             this.rbAutobusy.UseVisualStyleBackColor = true;
             this.rbAutobusy.CheckedChanged += new System.EventHandler(this.rbAutobusy_CheckedChanged);
             // 
-            // cbTaskBarHighLight
+            // tbpGraphics
             // 
-            this.cbTaskBarHighLight.AutoSize = true;
-            this.cbTaskBarHighLight.Location = new System.Drawing.Point(270, 212);
-            this.cbTaskBarHighLight.Name = "cbTaskBarHighLight";
-            this.cbTaskBarHighLight.Size = new System.Drawing.Size(155, 17);
-            this.cbTaskBarHighLight.TabIndex = 17;
-            this.cbTaskBarHighLight.Text = "Highlight in taskbar on chat";
-            this.cbTaskBarHighLight.UseVisualStyleBackColor = true;
+            this.tbpGraphics.Location = new System.Drawing.Point(4, 22);
+            this.tbpGraphics.Name = "tbpGraphics";
+            this.tbpGraphics.Padding = new System.Windows.Forms.Padding(3);
+            this.tbpGraphics.Size = new System.Drawing.Size(488, 277);
+            this.tbpGraphics.TabIndex = 3;
+            this.tbpGraphics.Text = "Graphics Settings";
+            this.tbpGraphics.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(496, 303);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tcGraphics);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmSettings";
             this.Text = "Settings - Radegast";
-            this.tabControl1.ResumeLayout(false);
+            this.tcGraphics.ResumeLayout(false);
             this.tbpGeneral.ResumeLayout(false);
             this.tbpGeneral.PerformLayout();
             this.gbDisplayNames.ResumeLayout(false);
@@ -491,7 +503,7 @@ namespace Radegast
 
         public System.Windows.Forms.Label label1;
         public System.Windows.Forms.ComboBox cbFontSize;
-        public System.Windows.Forms.TabControl tabControl1;
+        public System.Windows.Forms.TabControl tcGraphics;
         public System.Windows.Forms.TabPage tbpGeneral;
         public System.Windows.Forms.CheckBox cbIMTimeStamps;
         public System.Windows.Forms.CheckBox cbChatTimestamps;
@@ -520,6 +532,7 @@ namespace Radegast
         public System.Windows.Forms.RadioButton rbDNSmart;
         public System.Windows.Forms.RadioButton rbDNOff;
         public System.Windows.Forms.CheckBox cbTaskBarHighLight;
+        public System.Windows.Forms.TabPage tbpGraphics;
 
 
     }
