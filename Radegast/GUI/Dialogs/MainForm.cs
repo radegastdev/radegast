@@ -1389,6 +1389,10 @@ namespace Radegast
         {
             if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_tray"].AsBoolean())
             {
+                if (TabConsole.TabExists("scene_window") && !TabConsole.Tabs["scene_window"].Detached )
+                {
+                    TabConsole.Tabs["scene_window"].Close();
+                }
                 ShowInTaskbar = false;
                 trayIcon.Visible = true;
                 FormBorderStyle = FormBorderStyle.SizableToolWindow;
