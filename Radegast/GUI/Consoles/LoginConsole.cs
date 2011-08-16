@@ -153,6 +153,15 @@ namespace Radegast
                 {
                     s["saved_logins"] = new OSDMap();
                 }
+                if (cbxLocation.SelectedIndex == -1)
+                {
+                    sl.CustomStartLocation = cbxLocation.Text;
+                }
+                else
+                {
+                    sl.CustomStartLocation = string.Empty;
+                }
+                sl.StartLocationType = cbxLocation.SelectedIndex;
                 ((OSDMap)s["saved_logins"])[string.Format("{0}%{1}", sl.Username, sl.GridID)] = sl.ToOSD();
             }
 
@@ -519,6 +528,11 @@ namespace Radegast
                 cbxUsername.Items[0] = sl.Username;
                 cbxUsername.SelectedIndex = 0;
                 txtPassword.Text = sl.Password;
+                cbxLocation.SelectedIndex = sl.StartLocationType;
+                if (sl.StartLocationType == -1)
+                {
+                    cbxLocation.Text = sl.CustomStartLocation;
+                }
                 if (sl.GridID == "custom_login_uri")
                 {
                     cbxGrid.SelectedIndex = cbxGrid.Items.Count - 1;
@@ -547,6 +561,8 @@ namespace Radegast
         public string Password;
         public string GridID;
         public string CustomURI;
+        public int StartLocationType;
+        public string CustomStartLocation;
 
         public OSDMap ToOSD()
         {
@@ -555,6 +571,8 @@ namespace Radegast
             ret["password"] = Password;
             ret["grid"] = GridID;
             ret["custom_url"] = CustomURI;
+            ret["location_type"] = StartLocationType;
+            ret["custom_location"] = CustomStartLocation;
             return ret;
         }
 
@@ -567,6 +585,15 @@ namespace Radegast
             ret.Password = map["password"];
             ret.GridID = map["grid"];
             ret.CustomURI = map["custom_url"];
+            if (map.ContainsKey("location_type"))
+            {
+                ret.StartLocationType = map["location_type"];
+            }
+            else
+            {
+                ret.StartLocationType = 1;
+            }
+            ret.CustomStartLocation = map["custom_location"];
             return ret;
         }
 
