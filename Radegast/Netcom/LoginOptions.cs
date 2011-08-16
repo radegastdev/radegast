@@ -36,7 +36,6 @@ namespace Radegast.Netcom
         private string firstName;
         private string lastName;
         private string password;
-        private bool isPasswordMD5 = false;
         private string version = string.Empty;
         private string channel = string.Empty;
 
@@ -49,6 +48,11 @@ namespace Radegast.Netcom
         public LoginOptions()
         {
 
+        }
+
+        public static bool IsPasswordMD5(string pass)
+        {
+            return pass.Length == 35 && pass.StartsWith("$1$");
         }
 
         public string FirstName
@@ -78,12 +82,6 @@ namespace Radegast.Netcom
         {
             get { return password; }
             set { password = value; }
-        }
-
-        public bool IsPasswordMD5
-        {
-            get { return isPasswordMD5; }
-            set { isPasswordMD5 = value; }
         }
 
         public StartLocationType StartLocation

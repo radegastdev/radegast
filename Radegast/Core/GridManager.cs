@@ -139,9 +139,30 @@ namespace Radegast
             }
         }
 
-        public Grid this [int ix]
+        public Grid this[int ix]
         {
             get { return Grids[ix]; }
+        }
+
+        public Grid this[string gridID]
+        {
+            get
+            {
+                foreach (Grid grid in Grids)
+                {
+                    if (grid.ID == gridID) return grid;
+                }
+                throw new KeyNotFoundException();
+            }
+        }
+
+        public bool KeyExists(string gridID)
+        {
+            foreach (Grid grid in Grids)
+            {
+                if (grid.ID == gridID) return true;
+            }
+            return false;
         }
 
         public int Count

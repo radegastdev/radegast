@@ -80,6 +80,7 @@ namespace Radegast
                 panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
 
             cbxLocation.SelectedIndex = 0;
+            cbxUsername.SelectedIndexChanged += cbxUsername_SelectedIndexChanged;
             InitializeConfig();
         }
 
@@ -116,12 +117,43 @@ namespace Radegast
 
             if (cbRemember.Checked)
             {
-                s["username"] = txtUsername.Text;
+                SavedLogin sl = new SavedLogin();
 
-                if (netcom.LoginOptions.IsPasswordMD5)
-                    s["password"] = OSD.FromString(txtPassword.Text);
+                string username = cbxUsername.Text;
+
+                if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin)
+                {
+                    username = ((SavedLogin)cbxUsername.SelectedItem).Username;
+                }
+
+                sl.Username = s["username"] = username;
+
+                if (LoginOptions.IsPasswordMD5(txtPassword.Text))
+                {
+                    sl.Password = txtPassword.Text;
+                    s["password"] = txtPassword.Text;
+                }
                 else
-                    s["password"] = OSD.FromString(Utils.MD5(txtPassword.Text));
+                {
+                    sl.Password =Utils.MD5(txtPassword.Text);
+                    s["password"] = Utils.MD5(txtPassword.Text);
+                }
+
+                if (cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1) // custom login uri
+                {
+                    sl.GridID = "custom_login_uri";
+                    sl.CustomURI = txtCustomLoginUri.Text;
+                }
+                else
+                {
+                    sl.GridID = (cbxGrid.SelectedItem as Grid).ID;
+                    sl.CustomURI = string.Empty;
+                }
+                if (!(s["saved_logins"] is OSDMap))
+                {
+                    s["saved_logins"] = new OSDMap();
+                }
+                ((OSDMap)s["saved_logins"])[string.Format("{0}%{1}", sl.Username, sl.GridID)] = sl.ToOSD();
             }
 
             s["login_location_type"] = OSD.FromInteger(cbxLocation.SelectedIndex);
@@ -162,26 +194,47 @@ namespace Radegast
             Settings s = instance.GlobalSettings;
 
             // Setup login name
+            string savedUsername;
+
             if (string.IsNullOrEmpty(MainProgram.CommandLine.Username))
             {
-                txtUsername.Text = s["username"];
+                savedUsername = s["username"];
             }
             else
             {
-                txtUsername.Text = MainProgram.CommandLine.Username;
+                savedUsername = MainProgram.CommandLine.Username;
             }
 
+            cbxUsername.Items.Add(savedUsername);
+
+            try
+            {
+                if (s["saved_logins"] is OSDMap)
+                {
+                    OSDMap savedLogins = (OSDMap)s["saved_logins"];
+                    foreach (string loginKey in savedLogins.Keys)
+                    {
+                        SavedLogin sl = SavedLogin.FromOSD(savedLogins[loginKey]);
+                        cbxUsername.Items.Add(sl);
+                    }
+                }
+            }
+            catch
+            {
+                cbxUsername.Items.Clear();
+                cbxUsername.Text = string.Empty;
+            }
+
+            cbxUsername.SelectedIndex = 0;
 
             // Fill in saved password or use one specified on the command line
             if (string.IsNullOrEmpty(MainProgram.CommandLine.Password))
             {
                 txtPassword.Text = s["password"].AsString();
-                netcom.LoginOptions.IsPasswordMD5 = true;
             }
             else
             {
                 txtPassword.Text = MainProgram.CommandLine.Password;
-                netcom.LoginOptions.IsPasswordMD5 = false;
             }
 
 
@@ -343,7 +396,15 @@ namespace Radegast
 
         private void BeginLogin()
         {
-            var parts = System.Text.RegularExpressions.Regex.Split(txtUsername.Text.Trim(), @"[. ]+");
+            string username = cbxUsername.Text;
+
+            if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin)
+            {
+                username = ((SavedLogin)cbxUsername.SelectedItem).Username;
+            }
+
+            string[] parts = System.Text.RegularExpressions.Regex.Split(username.Trim(), @"[. ]+");
+
             if (parts.Length == 2)
             {
                 netcom.LoginOptions.FirstName = parts[0];
@@ -351,7 +412,7 @@ namespace Radegast
             }
             else
             {
-                netcom.LoginOptions.FirstName = txtUsername.Text.Trim();
+                netcom.LoginOptions.FirstName = username.Trim();
                 netcom.LoginOptions.LastName = "Resident";
             }
 
@@ -393,11 +454,11 @@ namespace Radegast
             }
 
             netcom.Login();
+            SaveConfig();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            SaveConfig();
             switch (btnLogin.Text)
             {
                 case "Login": BeginLogin(); break;
@@ -432,11 +493,6 @@ namespace Radegast
             }
         }
 
-        private void txtPassword_TextChanged(object sender, EventArgs e)
-        {
-            netcom.LoginOptions.IsPasswordMD5 = false;
-        }
-
         private void cbTOS_CheckedChanged(object sender, EventArgs e)
         {
             btnLogin.Enabled = cbTOS.Checked;
@@ -451,5 +507,86 @@ namespace Radegast
             }
         }
 
+        private void cbxUsername_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cbxUsername.SelectedIndexChanged -= cbxUsername_SelectedIndexChanged;
+
+            if (cbxUsername.SelectedIndex > 0
+                && cbxUsername.SelectedItem is SavedLogin)
+            {
+                SavedLogin sl = (SavedLogin)cbxUsername.SelectedItem;
+                cbxUsername.Text = sl.Username;
+                cbxUsername.Items[0] = sl.Username;
+                cbxUsername.SelectedIndex = 0;
+                txtPassword.Text = sl.Password;
+                if (sl.GridID == "custom_login_uri")
+                {
+                    cbxGrid.SelectedIndex = cbxGrid.Items.Count - 1;
+                    txtCustomLoginUri.Text = sl.CustomURI;
+                }
+                else
+                {
+                    foreach (var item in cbxGrid.Items)
+                    {
+                        if (item is Grid && ((Grid)item).ID == sl.GridID)
+                        {
+                            cbxGrid.SelectedItem = item;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            cbxUsername.SelectedIndexChanged += cbxUsername_SelectedIndexChanged;
+        }
+    }
+
+    public class SavedLogin
+    {
+        public string Username;
+        public string Password;
+        public string GridID;
+        public string CustomURI;
+
+        public OSDMap ToOSD()
+        {
+            OSDMap ret = new OSDMap(4);
+            ret["username"] = Username;
+            ret["password"] = Password;
+            ret["grid"] = GridID;
+            ret["custom_url"] = CustomURI;
+            return ret;
+        }
+
+        public static SavedLogin FromOSD(OSD data)
+        {
+            if (!(data is OSDMap)) return null;
+            OSDMap map = (OSDMap)data;
+            SavedLogin ret = new SavedLogin();
+            ret.Username = map["username"];
+            ret.Password = map["password"];
+            ret.GridID = map["grid"];
+            ret.CustomURI = map["custom_url"];
+            return ret;
+        }
+
+        public override string ToString()
+        {
+            RadegastInstance instance = RadegastInstance.GlobalInstance;
+            string gridName;
+            if (GridID == "custom_login_uri")
+            {
+                gridName = "Custom Login URI";
+            }
+            else if (instance.GridManger.KeyExists(GridID))
+            {
+                gridName = instance.GridManger[GridID].Name;
+            }
+            else
+            {
+                gridName = GridID;
+            }
+            return string.Format("{0} -- {1}", Username, gridName);
+        }
     }
 }

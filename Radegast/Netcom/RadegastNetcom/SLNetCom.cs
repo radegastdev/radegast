@@ -270,7 +270,7 @@ namespace Radegast.Netcom
 
             string password;
 
-            if (loginOptions.IsPasswordMD5)
+            if (LoginOptions.IsPasswordMD5(loginOptions.Password))
             {
                 password = loginOptions.Password;
             }

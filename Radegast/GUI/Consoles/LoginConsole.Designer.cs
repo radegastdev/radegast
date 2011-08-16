@@ -59,12 +59,13 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.pnlLoginPrompt = new System.Windows.Forms.Panel();
+            this.cbRemember = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.txtCustomLoginUri = new System.Windows.Forms.TextBox();
             this.cbxGrid = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.txtUsername = new System.Windows.Forms.TextBox();
+            this.cbxUsername = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.cbxLocation = new System.Windows.Forms.ComboBox();
@@ -74,13 +75,11 @@ namespace Radegast
             this.proLogin = new System.Windows.Forms.ProgressBar();
             this.lblLoginStatus = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.btnGridManager = new System.Windows.Forms.Button();
             this.lblVersion = new System.Windows.Forms.Label();
             this.pnlSplash = new System.Windows.Forms.Panel();
             this.pnlTos = new System.Windows.Forms.Panel();
             this.cbTOS = new System.Windows.Forms.CheckBox();
             this.txtTOS = new System.Windows.Forms.TextBox();
-            this.cbRemember = new System.Windows.Forms.CheckBox();
             this.pnlLoginPrompt.SuspendLayout();
             this.pnlLoggingIn.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -97,7 +96,7 @@ namespace Radegast
             this.pnlLoginPrompt.Controls.Add(this.cbxGrid);
             this.pnlLoginPrompt.Controls.Add(this.label5);
             this.pnlLoginPrompt.Controls.Add(this.label1);
-            this.pnlLoginPrompt.Controls.Add(this.txtUsername);
+            this.pnlLoginPrompt.Controls.Add(this.cbxUsername);
             this.pnlLoginPrompt.Controls.Add(this.label2);
             this.pnlLoginPrompt.Controls.Add(this.txtPassword);
             this.pnlLoginPrompt.Controls.Add(this.cbxLocation);
@@ -106,6 +105,19 @@ namespace Radegast
             this.pnlLoginPrompt.Name = "pnlLoginPrompt";
             this.pnlLoginPrompt.Size = new System.Drawing.Size(554, 94);
             this.pnlLoginPrompt.TabIndex = 13;
+            // 
+            // cbRemember
+            // 
+            this.cbRemember.AutoSize = true;
+            this.cbRemember.Checked = true;
+            this.cbRemember.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbRemember.Location = new System.Drawing.Point(6, 45);
+            this.cbRemember.Name = "cbRemember";
+            this.cbRemember.Size = new System.Drawing.Size(197, 17);
+            this.cbRemember.TabIndex = 5;
+            this.cbRemember.Text = "Remember username and password";
+            this.cbRemember.UseVisualStyleBackColor = true;
+            this.cbRemember.CheckedChanged += new System.EventHandler(this.cbRemember_CheckedChanged);
             // 
             // label6
             // 
@@ -158,13 +170,13 @@ namespace Radegast
             this.label1.TabIndex = 0;
             this.label1.Text = "Username";
             // 
-            // txtUsername
+            // cbxUsername
             // 
-            this.txtUsername.AccessibleName = "Username";
-            this.txtUsername.Location = new System.Drawing.Point(3, 16);
-            this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(263, 21);
-            this.txtUsername.TabIndex = 1;
+            this.cbxUsername.AccessibleName = "Username";
+            this.cbxUsername.Location = new System.Drawing.Point(3, 16);
+            this.cbxUsername.Name = "cbxUsername";
+            this.cbxUsername.Size = new System.Drawing.Size(263, 21);
+            this.cbxUsername.TabIndex = 1;
             // 
             // label2
             // 
@@ -184,7 +196,6 @@ namespace Radegast
             this.txtPassword.Size = new System.Drawing.Size(275, 21);
             this.txtPassword.TabIndex = 4;
             this.txtPassword.UseSystemPasswordChar = true;
-            this.txtPassword.TextChanged += new System.EventHandler(this.txtPassword_TextChanged);
             // 
             // cbxLocation
             // 
@@ -256,7 +267,6 @@ namespace Radegast
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.panel1.Controls.Add(this.btnGridManager);
             this.panel1.Controls.Add(this.lblVersion);
             this.panel1.Controls.Add(this.pnlLoginPrompt);
             this.panel1.Controls.Add(this.btnLogin);
@@ -266,17 +276,6 @@ namespace Radegast
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(682, 97);
             this.panel1.TabIndex = 18;
-            // 
-            // btnGridManager
-            // 
-            this.btnGridManager.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnGridManager.Location = new System.Drawing.Point(6, 44);
-            this.btnGridManager.Name = "btnGridManager";
-            this.btnGridManager.Size = new System.Drawing.Size(116, 23);
-            this.btnGridManager.TabIndex = 16;
-            this.btnGridManager.Text = "Grid Manager";
-            this.btnGridManager.UseVisualStyleBackColor = true;
-            this.btnGridManager.Visible = false;
             // 
             // lblVersion
             // 
@@ -331,19 +330,6 @@ namespace Radegast
             this.txtTOS.Size = new System.Drawing.Size(682, 302);
             this.txtTOS.TabIndex = 0;
             // 
-            // cbRemember
-            // 
-            this.cbRemember.AutoSize = true;
-            this.cbRemember.Checked = true;
-            this.cbRemember.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbRemember.Location = new System.Drawing.Point(6, 45);
-            this.cbRemember.Name = "cbRemember";
-            this.cbRemember.Size = new System.Drawing.Size(197, 17);
-            this.cbRemember.TabIndex = 5;
-            this.cbRemember.Text = "Remember username and password";
-            this.cbRemember.UseVisualStyleBackColor = true;
-            this.cbRemember.CheckedChanged += new System.EventHandler(this.cbRemember_CheckedChanged);
-            // 
             // LoginConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -370,7 +356,7 @@ namespace Radegast
 
         public System.Windows.Forms.Panel pnlLoginPrompt;
         public System.Windows.Forms.Label label1;
-        public System.Windows.Forms.TextBox txtUsername;
+        public System.Windows.Forms.ComboBox cbxUsername;
         public System.Windows.Forms.Label label2;
         public System.Windows.Forms.TextBox txtPassword;
         public System.Windows.Forms.ComboBox cbxLocation;
@@ -385,7 +371,6 @@ namespace Radegast
         public System.Windows.Forms.Label label6;
         public System.Windows.Forms.Panel panel1;
         public System.Windows.Forms.Panel pnlSplash;
-        public System.Windows.Forms.Button btnGridManager;
         public System.Windows.Forms.Panel pnlTos;
         public System.Windows.Forms.TextBox txtTOS;
         public System.Windows.Forms.CheckBox cbTOS;
