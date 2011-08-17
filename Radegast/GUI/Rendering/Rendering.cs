@@ -147,6 +147,8 @@ namespace Radegast.Rendering
 
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
 
+        Dictionary<UUID, int> AssetFetchFailCount = new Dictionary<UUID, int>();
+
         Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 9f, FontStyle.Regular);
         Font AvatarTagFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold);
         Dictionary<UUID, Bitmap> sculptCache = new Dictionary<UUID, Bitmap>();
@@ -433,6 +435,13 @@ namespace Radegast.Rendering
                     foreach (Animation anim in e.Animations)
                     {
 
+                        int nofails = 0;
+                        if (AssetFetchFailCount.TryGetValue(anim.AnimationID, out nofails))
+                        {
+                            if (nofails >= 5)
+                                continue; // asset fetch has failed 5 times, give up.
+                        }
+
                         UUID tid = UUID.Random();
                         skeleton.mAnimationTransactions.Add(tid, av);
 
@@ -465,6 +474,19 @@ namespace Radegast.Rendering
             {
                 skeleton.addanimation(asset, transfer.ID, null);
             }
+            else
+            {
+                int nofails = 1;
+                if (AssetFetchFailCount.TryGetValue(transfer.AssetID, out nofails))
+                {
+                    nofails++;
+                }
+
+                AssetFetchFailCount[transfer.AssetID] = nofails;
+
+            }
+
+        
         }
 
         void Avatars_AvatarAppearance(object sender, AvatarAppearanceEventArgs e)
