@@ -417,6 +417,13 @@ namespace Radegast.Rendering
 
         void AvatarAnimationChanged(object sender, AvatarAnimationEventArgs e)
         {
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => AvatarAnimationChanged(sender, e)));
+                return;
+            }
+
             // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
             foreach (RenderAvatar av in Avatars.Values)
             {
@@ -447,6 +454,13 @@ namespace Radegast.Rendering
 
         void animRecievedCallback(AssetDownload transfer, Asset asset)
         {
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => animRecievedCallback(transfer, asset)));
+                return;
+            }
+
             if (transfer.Success)
             {
                 skeleton.addanimation(asset, transfer.ID, null);
