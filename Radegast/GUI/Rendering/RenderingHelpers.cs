@@ -460,22 +460,13 @@ namespace Radegast.Rendering
         {
             if (!RenderSettings.OcclusionCullingEnabled) return;
 
-            try
+            if (pass == RenderPass.Simple)
             {
-                if (pass == RenderPass.Simple)
-                {
-                    StartSimpleQuery();
-                }
-                else if (pass == RenderPass.Alpha)
-                {
-                    StartAlphaQuery();
-                }
+                StartSimpleQuery();
             }
-            catch
+            else if (pass == RenderPass.Alpha)
             {
-                Logger.Log("Error in occlusion query, disabling occlusion culling", Helpers.LogLevel.Error);
-                RenderSettings.OcclusionCullingEnabled = false;
-                RadegastInstance.GlobalInstance.GlobalSettings["rendering_occlusion_culling_enabled"] = false;
+                StartAlphaQuery();
             }
         }
 
@@ -483,24 +474,14 @@ namespace Radegast.Rendering
         {
             if (!RenderSettings.OcclusionCullingEnabled) return;
 
-            try
+            if (pass == RenderPass.Simple)
             {
-                if (pass == RenderPass.Simple)
-                {
-                    EndSimpleQuery();
-                }
-                else if (pass == RenderPass.Alpha)
-                {
-                    EndAlphaQuery();
-                }
+                EndSimpleQuery();
             }
-            catch
+            else if (pass == RenderPass.Alpha)
             {
-                Logger.Log("Error in occlusion query, disabling occlusion culling", Helpers.LogLevel.Error);
-                RenderSettings.OcclusionCullingEnabled = false;
-                RadegastInstance.GlobalInstance.GlobalSettings["rendering_occlusion_culling_enabled"] = false;
+                EndAlphaQuery();
             }
-
         }
 
         public void StartAlphaQuery()
@@ -565,16 +546,7 @@ namespace Radegast.Rendering
             int samples = 1;
             if (HasSimpleFaces && SimpleQueryID > 0)
             {
-                try
-                {
-                    Compat.GetQueryObject(SimpleQueryID, GetQueryObjectParam.QueryResult, out samples);
-                }
-                catch
-                {
-                    Logger.Log("Error in occlusion query, disabling occlusion culling", Helpers.LogLevel.Error);
-                    RenderSettings.OcclusionCullingEnabled = false;
-                    RadegastInstance.GlobalInstance.GlobalSettings["rendering_occlusion_culling_enabled"] = false;
-                }
+                Compat.GetQueryObject(SimpleQueryID, GetQueryObjectParam.QueryResult, out samples);
             }
             if (HasSimpleFaces && samples > 0)
             {
@@ -584,16 +556,7 @@ namespace Radegast.Rendering
             samples = 1;
             if (HasAlphaFaces && AlphaQueryID > 0)
             {
-                try
-                {
-                    Compat.GetQueryObject(AlphaQueryID, GetQueryObjectParam.QueryResult, out samples);
-                }
-                catch
-                {
-                    Logger.Log("Error in occlusion query, disabling occlusion culling", Helpers.LogLevel.Error);
-                    RenderSettings.OcclusionCullingEnabled = false;
-                    RadegastInstance.GlobalInstance.GlobalSettings["rendering_occlusion_culling_enabled"] = false;
-                }
+                Compat.GetQueryObject(AlphaQueryID, GetQueryObjectParam.QueryResult, out samples);
             }
             if (HasAlphaFaces && samples > 0)
             {
