@@ -2460,7 +2460,7 @@ namespace Radegast.Rendering
 
         public void animate(float lastframetime)
         {
-            mPriority.Clear();
+            lock (mPriority) mPriority.Clear();
 
             lock (mAnimations)
                 foreach (BinBVHAnimationReader b in mAnimations)
@@ -2473,15 +2473,18 @@ namespace Radegast.Rendering
                     {
                         int prio = 0;
 
-                        //Quick hack to stack animations in the correct order
-                        //TODO we need to do this per joint as they all have their own priorities as well ;-(
-                        if (mPriority.TryGetValue(joint.Name, out prio))
+                        lock (mPriority)
                         {
-                            if (prio > b.Priority)
-                                continue;
-                        }
+                            //Quick hack to stack animations in the correct order
+                            //TODO we need to do this per joint as they all have their own priorities as well ;-(
+                            if (mPriority.TryGetValue(joint.Name, out prio))
+                            {
+                                if (prio > b.Priority)
+                                    continue;
+                            }
 
-                        mPriority[joint.Name] = b.Priority;
+                            mPriority[joint.Name] = b.Priority;
+                        }
 
                         binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
 
