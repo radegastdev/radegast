@@ -75,6 +75,33 @@ namespace Radegast.Rendering
                 GL.Arb.BufferData<T2>((BufferTargetArb)(int)target, size, data, (BufferUsageArb)(int)usage);
             }
         }
+
+        public static int BufferSize(BufferTarget target)
+        {
+            int ret = 0;
+            if (RenderSettings.CoreVBOPresent)
+            {
+                GL.GetBufferParameter(target, BufferParameterName.BufferSize, out ret);
+            }
+            else
+            {
+                GL.Arb.GetBufferParameter((ArbVertexBufferObject)(int)target, BufferParameterNameArb.BufferSize, out ret);
+            }
+            return ret;
+        }
+
+        public static void DeleteBuffer(int id)
+        {
+            if (RenderSettings.CoreVBOPresent)
+            {
+                GL.DeleteBuffers(1, ref id);
+            }
+            else
+            {
+                GL.Arb.DeleteBuffers(1, ref id);
+            }
+        }
+
         #endregion VBO functions
 
         #region Occlusion query functions

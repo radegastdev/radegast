@@ -35,7 +35,7 @@ namespace Radegast.Rendering
         public static int Size = 36;
     }
 
-    public class FaceData
+    public class FaceData : IDisposable
     {
         public float[] Vertices;
         public ushort[] Indices;
@@ -49,8 +49,15 @@ namespace Radegast.Rendering
         public static int VertexSize = 32; // sizeof (vertex), 2  x vector3 + 1 x vector2 = 8 floats x 4 bytes = 32 bytes 
         public TextureAnimationInfo AnimInfo;
         public int QueryID = 0;
+        public bool VBOFailed = false;
 
-        public void CheckVBO(Face face)
+        public void Dispose()
+        {
+            if (VertexVBO != -1) Compat.DeleteBuffer(VertexVBO);
+            if (IndexVBO != -1) Compat.DeleteBuffer(IndexVBO);
+        }
+
+        public bool CheckVBO(Face face)
         {
             if (VertexVBO == -1)
             {
@@ -58,6 +65,14 @@ namespace Radegast.Rendering
                 Compat.GenBuffers(out VertexVBO);
                 Compat.BindBuffer(BufferTarget.ArrayBuffer, VertexVBO);
                 Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vArray.Length * VertexSize), vArray, BufferUsageHint.StaticDraw);
+                if (Compat.BufferSize(BufferTarget.ArrayBuffer) != vArray.Length * VertexSize)
+                {
+                    VBOFailed = true;
+                    Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                    Compat.DeleteBuffer(VertexVBO);
+                    VertexVBO = -1;
+                    return false;
+                }
             }
 
             if (IndexVBO == -1)
@@ -66,7 +81,17 @@ namespace Radegast.Rendering
                 Compat.GenBuffers(out IndexVBO);
                 Compat.BindBuffer(BufferTarget.ElementArrayBuffer, IndexVBO);
                 Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(iArray.Length * sizeof(ushort)), iArray, BufferUsageHint.StaticDraw);
+                if (Compat.BufferSize(BufferTarget.ElementArrayBuffer) != iArray.Length * sizeof(ushort))
+                {
+                    VBOFailed = true;
+                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                    Compat.DeleteBuffer(IndexVBO);
+                    IndexVBO = -1;
+                    return false;
+                }
             }
+
+            return true;
         }
     }
 

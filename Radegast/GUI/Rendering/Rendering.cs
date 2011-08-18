@@ -2057,6 +2057,7 @@ namespace Radegast.Rendering
         Bitmap terrainImage = null;
         int terrainVBO = -1;
         int terrainIndexVBO = -1;
+        bool terrainVBOFailed = false;
         bool terrainInProgress = false;
         bool terrainTextureNeedsUpdate = false;
         float terrainTimeSinceUpdate = RenderSettings.MinimumTimeBetweenTerrainUpdated + 1f; // Update terrain om first run
@@ -2216,7 +2217,7 @@ namespace Radegast.Rendering
                 GL.BindTexture(TextureTarget.Texture2D, terrainTexture);
             }
 
-            if (!RenderSettings.UseVBO)
+            if (!RenderSettings.UseVBO || terrainVBOFailed)
             {
                 unsafe
                 {
@@ -2242,6 +2243,12 @@ namespace Radegast.Rendering
                     Compat.GenBuffers(out terrainVBO);
                     Compat.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
                     Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * ColorVertex.Size), terrainVertices, BufferUsageHint.StaticDraw);
+                    if (Compat.BufferSize(BufferTarget.ArrayBuffer) != terrainVertices.Length * ColorVertex.Size)
+                    {
+                        terrainVBOFailed = true;
+                        Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                        terrainVBO = -1;
+                    }
                 }
                 else
                 {
@@ -2253,21 +2260,30 @@ namespace Radegast.Rendering
                     Compat.GenBuffers(out terrainIndexVBO);
                     Compat.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
                     Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StaticDraw);
+                    if (Compat.BufferSize(BufferTarget.ElementArrayBuffer) != terrainIndices.Length * sizeof(ushort))
+                    {
+                        terrainVBOFailed = true;
+                        Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                        terrainIndexVBO = -1;
+                    }
                 }
                 else
                 {
                     Compat.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
                 }
 
-                GL.NormalPointer(NormalPointerType.Float, ColorVertex.Size, (IntPtr)12);
-                GL.TexCoordPointer(2, TexCoordPointerType.Float, ColorVertex.Size, (IntPtr)(24));
-                if (pass == RenderPass.Picking)
+                if (!terrainVBOFailed)
                 {
-                    GL.ColorPointer(4, ColorPointerType.UnsignedByte, ColorVertex.Size, (IntPtr)32);
-                }
-                GL.VertexPointer(3, VertexPointerType.Float, ColorVertex.Size, (IntPtr)(0));
+                    GL.NormalPointer(NormalPointerType.Float, ColorVertex.Size, (IntPtr)12);
+                    GL.TexCoordPointer(2, TexCoordPointerType.Float, ColorVertex.Size, (IntPtr)(24));
+                    if (pass == RenderPass.Picking)
+                    {
+                        GL.ColorPointer(4, ColorPointerType.UnsignedByte, ColorVertex.Size, (IntPtr)32);
+                    }
+                    GL.VertexPointer(3, VertexPointerType.Float, ColorVertex.Size, (IntPtr)(0));
 
-                GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                }
 
                 Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
@@ -2532,7 +2548,7 @@ namespace Radegast.Rendering
                     GL.Color4(faceColor);
                 }
 
-                if (!RenderSettings.UseVBO)
+                if (!RenderSettings.UseVBO || data.VBOFailed)
                 {
                     Vertex[] verts = face.Vertices.ToArray();
                     ushort[] indices = face.Indices.ToArray();
@@ -2551,15 +2567,16 @@ namespace Radegast.Rendering
                 }
                 else
                 {
-                    data.CheckVBO(face);
-                    Compat.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
-                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
-                    GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
-                    GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
-                    GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
+                    if (data.CheckVBO(face))
+                    {
+                        Compat.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
+                        Compat.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
+                        GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
+                        GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
+                        GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
 
-                    GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
-
+                        GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                    }
                     Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
 
@@ -2717,7 +2734,7 @@ namespace Radegast.Rendering
             GL.PushMatrix();
             GL.MultMatrix(Math3D.CreateSRTMatrix(scale, prim.RenderRotation, prim.RenderPosition));
 
-            if (RenderSettings.UseVBO)
+            if (RenderSettings.UseVBO && !occludedVBOFailed)
             {
                 GL.DrawElements(BeginMode.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
             }
@@ -2731,6 +2748,7 @@ namespace Radegast.Rendering
 
         int boundingBoxVBO = -1;
         int boundingBoxVIndexVBO = -1;
+        bool occludedVBOFailed = false;
 
         private void RenderOccludedObjects()
         {
@@ -2741,13 +2759,19 @@ namespace Radegast.Rendering
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.Lighting);
 
-            if (RenderSettings.UseVBO)
+            if (RenderSettings.UseVBO && !occludedVBOFailed)
             {
                 if (boundingBoxVBO == -1)
                 {
                     Compat.GenBuffers(out boundingBoxVBO);
                     Compat.BindBuffer(BufferTarget.ArrayBuffer, boundingBoxVBO);
                     Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * RHelp.CubeVertices.Length), RHelp.CubeVertices, BufferUsageHint.StaticDraw);
+                    if (Compat.BufferSize(BufferTarget.ArrayBuffer) != sizeof(float) * RHelp.CubeVertices.Length)
+                    {
+                        occludedVBOFailed = true;
+                        Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                        boundingBoxVBO = -1;
+                    }
                 }
                 else
                 {
@@ -2759,6 +2783,12 @@ namespace Radegast.Rendering
                     Compat.GenBuffers(out boundingBoxVIndexVBO);
                     Compat.BindBuffer(BufferTarget.ElementArrayBuffer, boundingBoxVIndexVBO);
                     Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(sizeof(ushort) * RHelp.CubeIndices.Length), RHelp.CubeIndices, BufferUsageHint.StaticDraw);
+                    if (Compat.BufferSize(BufferTarget.ElementArrayBuffer) != sizeof(ushort) * RHelp.CubeIndices.Length)
+                    {
+                        occludedVBOFailed = true;
+                        Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                        boundingBoxVIndexVBO = -1;
+                    }
                 }
                 else
                 {
