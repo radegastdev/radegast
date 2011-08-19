@@ -569,6 +569,7 @@
     </Compile>
     <Compile Include="GUI\Rendering\ImageUtils.cs" />
     <Compile Include="GUI\Rendering\Perlin.cs" />
+    <Compile Include="GUI\Rendering\RenderAvatar.cs" />
     <Compile Include="GUI\Rendering\RenderPrimitive.cs" />
     <Compile Include="GUI\Rendering\PrimWorkshop.cs">
       <SubType>Form</SubType>
