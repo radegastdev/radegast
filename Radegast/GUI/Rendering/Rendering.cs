@@ -45,6 +45,7 @@ using OpenMetaverse.Rendering;
 using OpenMetaverse.Assets;
 using OpenMetaverse.Imaging;
 using OpenMetaverse.StructuredData;
+using OpenMetaverse.Packets;
 #endregion Usings
 
 namespace Radegast.Rendering
@@ -179,7 +180,6 @@ namespace Radegast.Rendering
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(frmPrimWorkshop_Disposed);
 
             this.Instance = instance;
             this.Client = instance.Client;
@@ -209,8 +209,9 @@ namespace Radegast.Rendering
 
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
-            Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            Client.Objects.AvatarUpdate += new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
+
+            Client.Network.RegisterCallback(PacketType.KillObject, KillObjectHandler);
             Client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Terrain.LandPatchReceived += new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
@@ -220,7 +221,7 @@ namespace Radegast.Rendering
             Application.Idle += new EventHandler(Application_Idle);
         }
 
-        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
+        void DisposeInternal()
         {
             RenderingEnabled = false;
             Application.Idle -= new EventHandler(Application_Idle);
@@ -235,8 +236,8 @@ namespace Radegast.Rendering
 
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            Client.Objects.ObjectDataBlockUpdate -= new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
-            Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            Client.Objects.AvatarUpdate -= new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
+            Client.Network.UnregisterCallback(PacketType.KillObject, KillObjectHandler);
             Client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             Client.Terrain.LandPatchReceived -= new EventHandler<LandPatchReceivedEventArgs>(Terrain_LandPatchReceived);
             Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
@@ -373,21 +374,45 @@ namespace Radegast.Rendering
             InitCamera();
         }
 
-        void Objects_KillObject(object sender, KillObjectEventArgs e)
+        protected void KillObjectHandler(object sender, PacketReceivedEventArgs e)
         {
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
             if (InvokeRequired)
             {
                 if (IsHandleCreated)
                 {
-                    BeginInvoke(new MethodInvoker(() => Objects_KillObject(sender, e)));
+                    BeginInvoke(new MethodInvoker(() => KillObjectHandler(sender, e)));
                 }
                 return;
             }
 
-            // TODO: there should be really cleanup of resources when removing prims and avatars
-            lock (Prims) Prims.Remove(e.ObjectLocalID);
-            lock (Avatars) Avatars.Remove(e.ObjectLocalID);
+            KillObjectPacket kill = (KillObjectPacket)e.Packet;
+
+            lock (Prims)
+            {
+                for (int i = 0; i < kill.ObjectData.Length; i++)
+                {
+                    uint id = kill.ObjectData[i].ID;
+                    if (Prims.ContainsKey(id))
+                    {
+                        Prims[id].Dispose();
+                        Prims.Remove(id);
+                    }
+                }
+            }
+
+            lock (Avatars)
+            {
+                for (int i = 0; i < kill.ObjectData.Length; i++)
+                {
+                    uint id = kill.ObjectData[i].ID;
+                    if (Avatars.ContainsKey(id))
+                    {
+                        Avatars[id].Dispose();
+                        Avatars.Remove(id);
+                    }
+                }
+            }
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
@@ -411,10 +436,10 @@ namespace Radegast.Rendering
             UpdatePrimBlocking(e.Prim);
         }
 
-        void Objects_ObjectDataBlockUpdate(object sender, ObjectDataBlockUpdateEventArgs e)
+        void Objects_AvatarUpdate(object sender, AvatarUpdateEventArgs e)
         {
             if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
-            UpdatePrimBlocking(e.Prim);
+            AddAvatarToScene(e.Avatar);
         }
 
         void AvatarAnimationChanged(object sender, AvatarAnimationEventArgs e)

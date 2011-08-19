@@ -55,6 +55,8 @@ namespace Radegast.Rendering
         {
             if (VertexVBO != -1) Compat.DeleteBuffer(VertexVBO);
             if (IndexVBO != -1) Compat.DeleteBuffer(IndexVBO);
+            VertexVBO = -1;
+            IndexVBO = -1;
         }
 
         public bool CheckVBO(Face face)
@@ -365,6 +367,8 @@ namespace Radegast.Rendering
         public virtual Primitive BasePrim { get; set; }
         /// <summary>Were initial initialization tasks done</summary>
         public bool Initialized;
+        /// <summary>Is this object disposed</summary>
+        public bool IsDisposed = false;
         public int AlphaQueryID = -1;
         public int SimpleQueryID = -1;
         public bool HasAlphaFaces;
@@ -379,6 +383,7 @@ namespace Radegast.Rendering
         /// </summary>
         public virtual void Dispose()
         {
+            IsDisposed = true;
         }
 
         /// <summary>
@@ -592,6 +597,24 @@ namespace Radegast.Rendering
         public RenderPrimitive()
         {
             Type = SceneObjectType.Primitive;
+        }
+
+        public override void Dispose()
+        {
+            if (Faces != null)
+            {
+                foreach (Face f in Faces)
+                {
+                    if (f.UserData != null && f.UserData is FaceData)
+                    {
+                        FaceData data = (FaceData)f.UserData;
+                        data.Dispose();
+                        data = null;
+                    }
+                }
+                Faces = null;
+            }
+            base.Dispose();
         }
 
         public override Primitive BasePrim
