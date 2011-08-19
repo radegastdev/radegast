@@ -148,7 +148,7 @@ namespace Radegast.Rendering
             {
                 if (RenderSettings.HasShaders)
                 {
-                    Window.EnableShiny = cbShiny.Checked;
+                    RenderSettings.EnableShiny = cbShiny.Checked;
                 }
             }
         }

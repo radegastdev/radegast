@@ -67,6 +67,26 @@ namespace Radegast.Rendering
         /// <summary>Are textures that don't have dimensions that are powers of two supported</summary>
         public static bool TextureNonPowerOfTwoSupported;
 
+        /// <summary>
+        /// Render avatars
+        /// </summary>
+        public static bool AvatarRenderingEnabled = true;
+
+        /// <summary>
+        /// Render prims
+        /// </summary>
+        public static bool PrimitiveRenderingEnabled = true;
+
+        /// <summary>
+        /// Show avatar skeloton
+        /// </summary>
+        public static bool RenderAvatarSkeleton = false;
+
+        /// <summary>
+        /// Enable shader for shiny
+        /// </summary>
+        public static bool EnableShiny = false;
+
         #region Water
         public static bool WaterReflections = false;
         #endregion Water

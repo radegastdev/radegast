@@ -1,4 +1,35 @@
-﻿using System;
+﻿// 
+// Radegast Metaverse Client
+// Copyright (c) 2009-2011, Radegast Development Team
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+// 
+//     * Redistributions of source code must retain the above copyright notice,
+//       this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of the application "Radegast", nor the names of its
+//       contributors may be used to endorse or promote products derived from
+//       this software without specific prior CreateReflectionTexture permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// $Id$
+//
+
+using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
@@ -34,277 +65,6 @@ namespace Radegast.Rendering
         public Color4b Color;
         public static int Size = 36;
     }
-
-    public class FaceData : IDisposable
-    {
-        public float[] Vertices;
-        public ushort[] Indices;
-        public float[] TexCoords;
-        public float[] Normals;
-        public int PickingID = -1;
-        public int VertexVBO = -1;
-        public int IndexVBO = -1;
-        public TextureInfo TextureInfo = new TextureInfo();
-        public BoundingVolume BoundingVolume = new BoundingVolume();
-        public static int VertexSize = 32; // sizeof (vertex), 2  x vector3 + 1 x vector2 = 8 floats x 4 bytes = 32 bytes 
-        public TextureAnimationInfo AnimInfo;
-        public int QueryID = 0;
-        public bool VBOFailed = false;
-
-        public void Dispose()
-        {
-            if (VertexVBO != -1) Compat.DeleteBuffer(VertexVBO);
-            if (IndexVBO != -1) Compat.DeleteBuffer(IndexVBO);
-            VertexVBO = -1;
-            IndexVBO = -1;
-        }
-
-        public bool CheckVBO(Face face)
-        {
-            if (VertexVBO == -1)
-            {
-                Vertex[] vArray = face.Vertices.ToArray();
-                Compat.GenBuffers(out VertexVBO);
-                Compat.BindBuffer(BufferTarget.ArrayBuffer, VertexVBO);
-                Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vArray.Length * VertexSize), vArray, BufferUsageHint.StaticDraw);
-                if (Compat.BufferSize(BufferTarget.ArrayBuffer) != vArray.Length * VertexSize)
-                {
-                    VBOFailed = true;
-                    Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                    Compat.DeleteBuffer(VertexVBO);
-                    VertexVBO = -1;
-                    return false;
-                }
-            }
-
-            if (IndexVBO == -1)
-            {
-                ushort[] iArray = face.Indices.ToArray();
-                Compat.GenBuffers(out IndexVBO);
-                Compat.BindBuffer(BufferTarget.ElementArrayBuffer, IndexVBO);
-                Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(iArray.Length * sizeof(ushort)), iArray, BufferUsageHint.StaticDraw);
-                if (Compat.BufferSize(BufferTarget.ElementArrayBuffer) != iArray.Length * sizeof(ushort))
-                {
-                    VBOFailed = true;
-                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-                    Compat.DeleteBuffer(IndexVBO);
-                    IndexVBO = -1;
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    public class TextureAnimationInfo
-    {
-        public Primitive.TextureAnimation PrimAnimInfo;
-        public float CurrentFrame;
-        public float CurrentTime;
-        public bool PingPong;
-        float LastTime = 0f;
-        float TotalTime = 0f;
-
-        public void Step(float lastFrameTime)
-        {
-            float numFrames = 1f;
-            float fullLength = 1f;
-
-            if (PrimAnimInfo.Length > 0)
-            {
-                numFrames = PrimAnimInfo.Length;
-            }
-            else
-            {
-                numFrames = Math.Max(1f, (float)(PrimAnimInfo.SizeX * PrimAnimInfo.SizeY));
-            }
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.PING_PONG) != 0)
-            {
-                if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
-                {
-                    fullLength = 2f * numFrames;
-                }
-                else if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.LOOP) != 0)
-                {
-                    fullLength = 2f * numFrames - 2f;
-                    fullLength = Math.Max(1f, fullLength);
-                }
-                else
-                {
-                    fullLength = 2f * numFrames - 1f;
-                    fullLength = Math.Max(1f, fullLength);
-                }
-            }
-            else
-            {
-                fullLength = numFrames;
-            }
-
-            float frameCounter;
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
-            {
-                frameCounter = lastFrameTime * PrimAnimInfo.Rate + LastTime;
-            }
-            else
-            {
-                TotalTime += lastFrameTime;
-                frameCounter = TotalTime * PrimAnimInfo.Rate;
-            }
-            LastTime = frameCounter;
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.LOOP) != 0)
-            {
-                frameCounter %= fullLength;
-            }
-            else
-            {
-                frameCounter = Math.Min(fullLength - 1f, frameCounter);
-            }
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) == 0)
-            {
-                frameCounter = (float)Math.Floor(frameCounter + 0.01f);
-            }
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.PING_PONG) != 0)
-            {
-                if (frameCounter > numFrames)
-                {
-                    if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
-                    {
-                        frameCounter = numFrames - (frameCounter - numFrames);
-                    }
-                    else
-                    {
-                        frameCounter = (numFrames - 1.99f) - (frameCounter - numFrames);
-                    }
-                }
-            }
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.REVERSE) != 0)
-            {
-                if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
-                {
-                    frameCounter = numFrames - frameCounter;
-                }
-                else
-                {
-                    frameCounter = (numFrames - 0.99f) - frameCounter;
-                }
-            }
-
-            frameCounter += PrimAnimInfo.Start;
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) == 0)
-            {
-                frameCounter = (float)Math.Round(frameCounter);
-            }
-
-
-            GL.MatrixMode(MatrixMode.Texture);
-            GL.LoadIdentity();
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.ROTATE) != 0)
-            {
-                GL.Translate(0.5f, 0.5f, 0f);
-                GL.Rotate(Utils.RAD_TO_DEG * frameCounter, OpenTK.Vector3d.UnitZ);
-                GL.Translate(-0.5f, -0.5f, 0f);
-            }
-            else if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SCALE) != 0)
-            {
-                GL.Scale(frameCounter, frameCounter, 0);
-            }
-            else // Translate
-            {
-                float sizeX = Math.Max(1f, (float)PrimAnimInfo.SizeX);
-                float sizeY = Math.Max(1f, (float)PrimAnimInfo.SizeY);
-
-                GL.Scale(1f / sizeX, 1f / sizeY, 0);
-                GL.Translate(frameCounter % sizeX, Math.Floor(frameCounter / sizeY), 0);
-            }
-
-            GL.MatrixMode(MatrixMode.Modelview);
-        }
-
-        [Obsolete("Use Step() instead")]
-        public void ExperimentalStep(float time)
-        {
-            int reverseFactor = 1;
-            float rate = PrimAnimInfo.Rate;
-
-            if (rate < 0)
-            {
-                rate = -rate;
-                reverseFactor = -reverseFactor;
-            }
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.REVERSE) != 0)
-            {
-                reverseFactor = -reverseFactor;
-            }
-
-            CurrentTime += time;
-            float totalTime = 1 / rate;
-
-            uint x = Math.Max(1, PrimAnimInfo.SizeX);
-            uint y = Math.Max(1, PrimAnimInfo.SizeY);
-            uint nrFrames = x * y;
-
-            if (PrimAnimInfo.Length > 0 && PrimAnimInfo.Length < nrFrames)
-            {
-                nrFrames = (uint)PrimAnimInfo.Length;
-            }
-
-            GL.MatrixMode(MatrixMode.Texture);
-            GL.LoadIdentity();
-
-            if (CurrentTime >= totalTime)
-            {
-                CurrentTime = 0;
-                CurrentFrame++;
-                if (CurrentFrame > nrFrames) CurrentFrame = (uint)PrimAnimInfo.Start;
-                if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.PING_PONG) != 0)
-                {
-                    PingPong = !PingPong;
-                }
-            }
-
-            float smoothOffset = 0f;
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SMOOTH) != 0)
-            {
-                smoothOffset = (CurrentTime / totalTime) * reverseFactor;
-            }
-
-            float f = CurrentFrame;
-            if (reverseFactor < 0)
-            {
-                f = nrFrames - CurrentFrame;
-            }
-
-            if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.ROTATE) == 0) // not rotating
-            {
-                GL.Scale(1f / x, 1f / y, 0f);
-                GL.Translate((f % x) + smoothOffset, f / y, 0);
-            }
-            else
-            {
-                smoothOffset = (CurrentTime * PrimAnimInfo.Rate);
-                float startAngle = PrimAnimInfo.Start;
-                float endAngle = PrimAnimInfo.Length;
-                float angle = startAngle + (endAngle - startAngle) * smoothOffset;
-                GL.Translate(0.5f, 0.5f, 0f);
-                GL.Rotate(Utils.RAD_TO_DEG * angle, OpenTK.Vector3d.UnitZ);
-                GL.Translate(-0.5f, -0.5f, 0f);
-            }
-
-            GL.MatrixMode(MatrixMode.Modelview);
-        }
-
-    }
-
 
     public class TextureInfo
     {
@@ -444,6 +204,17 @@ namespace Radegast.Rendering
         }
 
         /// <summary>
+        /// Render scene object
+        /// </summary>
+        /// <param name="pass">Which pass are we currently in</param>
+        /// <param name="pickingID">ID used to identify which object was picked</param>
+        /// <param name="scene">Main scene renderer</param>
+        /// <param name="time">Time it took to render the last frame</param>
+        public virtual void Render(RenderPass pass, int pickingID, SceneWindow scene, float time)
+        {
+        }
+
+        /// <summary>
         /// Implementation of the IComparable interface
         /// used for sorting by distance
         /// </summary>
@@ -571,103 +342,6 @@ namespace Radegast.Rendering
             return true;
         }
         #endregion Occlusion queries
-    }
-
-    public class RenderPrimitive : SceneObject
-    {
-        #region Public fields
-        public Primitive Prim;
-        public List<Face> Faces;
-        /// <summary>Is this object attached to an avatar</summary>
-        public bool Attached;
-        /// <summary>Do we know if object is attached</summary>
-        public bool AttachedStateKnown;
-        /// <summary>Are meshes constructed and ready for this prim</summary>
-        public bool Meshed;
-        /// <summary>Process of creating a mesh is underway</summary>
-        public bool Meshing;
-        #endregion Public fields
-
-        #region Private fields
-        int prevTEHash;
-        int prevSculptHash;
-        int prevShapeHash;
-        #endregion Private fields
-
-        public RenderPrimitive()
-        {
-            Type = SceneObjectType.Primitive;
-        }
-
-        public override void Dispose()
-        {
-            if (Faces != null)
-            {
-                foreach (Face f in Faces)
-                {
-                    if (f.UserData != null && f.UserData is FaceData)
-                    {
-                        FaceData data = (FaceData)f.UserData;
-                        data.Dispose();
-                        data = null;
-                    }
-                }
-                Faces = null;
-            }
-            base.Dispose();
-        }
-
-        public override Primitive BasePrim
-        {
-            get { return Prim; }
-            set
-            {
-                Prim = value;
-
-                int TEHash = Prim.Textures == null ? 0 : Prim.Textures.GetHashCode();
-                int sculptHash, shapeHash;
-
-                if (Meshed)
-                {
-                    if (Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
-                    {
-                        sculptHash = Prim.Sculpt.GetHashCode();
-                        if (Prim.Sculpt.GetHashCode() != prevSculptHash || TEHash != prevTEHash)
-                        {
-                            Meshed = false;
-                        }
-                        prevSculptHash = sculptHash;
-                    }
-                    else
-                    {
-                        shapeHash = Prim.PrimData.GetHashCode();
-                        if (shapeHash != prevShapeHash)
-                        {
-                            Meshed = false;
-                        }
-                        else if (TEHash != prevTEHash)
-                        {
-                            Meshed = false;
-                        }
-                        prevShapeHash = shapeHash;
-                    }
-                }
-                prevTEHash = TEHash;
-            }
-        }
-
-        public override void Initialize()
-        {
-            AttachedStateKnown = false;
-            base.Initialize();
-        }
-
-        public override string ToString()
-        {
-            uint id = Prim == null ? 0 : Prim.LocalID;
-            float distance = (float)Math.Sqrt(DistanceSquared);
-            return string.Format("LocalID: {0}, distance {0.00}", id, distance);
-        }
     }
 
     public static class RHelp
@@ -942,6 +616,16 @@ namespace Radegast.Rendering
                 GL.Vertex3(x, y + height, depth);
             }
             GL.End();
+        }
+
+        public static void ResetMaterial()
+        {
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 0f, 0f, 0f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { 0f, 0f, 0f, 1.0f });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0f);
+            ShaderProgram.Stop();
         }
     }
 

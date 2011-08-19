@@ -99,21 +99,6 @@ namespace Radegast.Rendering
         Dictionary<uint, RenderAvatar> Avatars = new Dictionary<uint, RenderAvatar>();
 
         /// <summary>
-        /// Render prims
-        /// </summary>
-        public bool PrimitiveRenderingEnabled = true;
-
-        /// <summary>
-        /// Render avatars
-        /// </summary>
-        public bool AvatarRenderingEnabled = true;
-
-        /// <summary>
-        /// Show avatar skeloton
-        /// </summary>
-        public bool RenderAvatarSkeleton = false;
-
-        /// <summary>
         /// Cache images after jpeg2000 decode. Uses a lot of disk space and can cause disk trashing
         /// </summary>
         public bool CacheDecodedTextures = false;
@@ -122,11 +107,6 @@ namespace Radegast.Rendering
         /// Size of OpenGL window we're drawing on
         /// </summary>
         public int[] Viewport = new int[4];
-
-        /// <summary>
-        /// Should shaders for shiny surfaces be enabed
-        /// </summary>
-        public bool EnableShiny;
         #endregion Public fields
 
         #region Private fields
@@ -202,7 +182,6 @@ namespace Radegast.Rendering
 
             chatOverlay = new ChatOverlay(instance, this);
             cbChatType.SelectedIndex = 1;
-            EnableShiny = Instance.GlobalSettings["scene_viewer_shiny"];
 
             DrawDistance = Instance.GlobalSettings["draw_distance"];
             pnlDebug.Visible = Instance.GlobalSettings["scene_viewer_debug_panel"];
@@ -704,6 +683,9 @@ namespace Radegast.Rendering
                 RenderSettings.OcclusionCullingEnabled = Instance.GlobalSettings["rendering_occlusion_culling_enabled"]
                     && (RenderSettings.ARBQuerySupported || RenderSettings.CoreQuerySupported);
 
+                // Shiny
+                RenderSettings.EnableShiny = Instance.GlobalSettings["scene_viewer_shiny"];
+
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
                 // and will also invalidate the GL control
@@ -1139,7 +1121,7 @@ namespace Radegast.Rendering
 
             ThreadPool.QueueUserWorkItem(sync =>
             {
-                if (PrimitiveRenderingEnabled)
+                if (RenderSettings.PrimitiveRenderingEnabled)
                 {
                     List<Primitive> mainPrims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0);
                     foreach (Primitive mainPrim in mainPrims)
@@ -1151,7 +1133,7 @@ namespace Radegast.Rendering
                     }
                 }
 
-                if (AvatarRenderingEnabled)
+                if (RenderSettings.AvatarRenderingEnabled)
                 {
                     List<Avatar> avis = Client.Network.CurrentSim.ObjectsAvatars.FindAll((Avatar a) => true);
                     foreach (Avatar avatar in avis)
@@ -1685,7 +1667,7 @@ namespace Radegast.Rendering
 
         private void RenderAvatarsSkeleton(RenderPass pass)
         {
-            if (!RenderAvatarSkeleton) return;
+            if (!RenderSettings.RenderAvatarSkeleton) return;
 
             lock (Avatars)
             {
@@ -1787,7 +1769,7 @@ namespace Radegast.Rendering
 
         private void RenderAvatars(RenderPass pass)
         {
-            if (!AvatarRenderingEnabled) return;
+            if (!RenderSettings.AvatarRenderingEnabled) return;
 
             lock (Avatars)
             {
@@ -2329,16 +2311,6 @@ namespace Radegast.Rendering
         }
         #endregion Terrain
 
-        private void ResetMaterial()
-        {
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Ambient, new float[] { 0.2f, 0.2f, 0.2f, 1.0f });
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, new float[] { 0.8f, 0.8f, 0.8f, 1.0f });
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 0f, 0f, 0f, 1.0f });
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { 0f, 0f, 0f, 1.0f });
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, 0f);
-            ShaderProgram.Stop();
-        }
-
         float LODFactor(float distance, float radius)
         {
             return radius * radius / distance;
@@ -2429,206 +2401,6 @@ namespace Radegast.Rendering
             GL.PopAttrib();
         }
 
-        void RenderPrim(RenderPrimitive mesh, RenderPass pass, int primNr)
-        {
-            if (!AvatarRenderingEnabled && mesh.Attached) return;
-
-            Primitive prim = mesh.Prim;
-
-            // Individual prim matrix
-            GL.PushMatrix();
-
-            // Prim roation and position and scale
-            GL.MultMatrix(Math3D.CreateSRTMatrix(prim.Scale, mesh.RenderRotation, mesh.RenderPosition));
-
-            // Do we have animated texture on this face
-            bool animatedTexture = false;
-
-            // Initialise flags tracking what type of faces this prim has
-            if (pass == RenderPass.Simple)
-            {
-                mesh.HasSimpleFaces = false;
-            }
-            else if (pass == RenderPass.Alpha)
-            {
-                mesh.HasAlphaFaces = false;
-            }
-
-            // Draw the prim faces
-            for (int j = 0; j < mesh.Faces.Count; j++)
-            {
-                Primitive.TextureEntryFace teFace = prim.Textures.GetFace((uint)j);
-                Face face = mesh.Faces[j];
-                FaceData data = (FaceData)face.UserData;
-
-                if (data == null)
-                    continue;
-
-                if (teFace == null)
-                    continue;
-
-                // Don't render transparent faces
-                Color4 RGBA = teFace.RGBA;
-
-                if (data.TextureInfo.FullAlpha || RGBA.A <= 0.01f) continue;
-
-                bool switchedLightsOff = false;
-
-                if (pass != RenderPass.Picking)
-                {
-                    bool belongToAlphaPass = (RGBA.A < 0.99f) || (data.TextureInfo.HasAlpha && !data.TextureInfo.IsMask);
-
-                    if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
-                    if (!belongToAlphaPass && pass == RenderPass.Alpha) continue;
-
-                    if (pass == RenderPass.Simple)
-                    {
-                        mesh.HasSimpleFaces = true;
-                    }
-                    else if (pass == RenderPass.Alpha)
-                    {
-                        mesh.HasAlphaFaces = true;
-                    }
-
-                    if (teFace.Fullbright)
-                    {
-                        GL.Disable(EnableCap.Lighting);
-                        switchedLightsOff = true;
-                    }
-
-                    float shiny = 0f;
-                    switch (teFace.Shiny)
-                    {
-                        case Shininess.High:
-                            shiny = 0.96f;
-                            break;
-
-                        case Shininess.Medium:
-                            shiny = 0.64f;
-                            break;
-
-                        case Shininess.Low:
-                            shiny = 0.24f;
-                            break;
-                    }
-
-                    if (shiny > 0f && EnableShiny)
-                    {
-                        shinyProgram.Start();
-                    }
-                    GL.Material(MaterialFace.Front, MaterialParameter.Shininess, shiny);
-                    var faceColor = new float[] { RGBA.R, RGBA.G, RGBA.B, RGBA.A };
-                    GL.Color4(faceColor);
-
-                    GL.Material(MaterialFace.Front, MaterialParameter.Specular, new float[] { 0.5f, 0.5f, 0.5f, 1f });
-
-                    if (data.TextureInfo.TexturePointer == 0 && TexturesPtrMap.ContainsKey(teFace.TextureID))
-                    {
-                        data.TextureInfo = TexturesPtrMap[teFace.TextureID];
-                    }
-
-                    if (data.TextureInfo.TexturePointer == 0)
-                    {
-                        GL.Disable(EnableCap.Texture2D);
-                        if (texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame && !data.TextureInfo.FetchFailed)
-                        {
-                            texturesRequestedThisFrame++;
-
-                            DownloadTexture(new TextureLoadItem()
-                            {
-                                Prim = prim,
-                                TeFace = teFace,
-                                Data = data
-                            });
-                        }
-                    }
-                    else
-                    {
-                        // Is this face using texture animation
-                        if ((prim.TextureAnim.Flags & Primitive.TextureAnimMode.ANIM_ON) != 0
-                            && (prim.TextureAnim.Face == j || prim.TextureAnim.Face == 255))
-                        {
-                            if (data.AnimInfo == null)
-                            {
-                                data.AnimInfo = new TextureAnimationInfo();
-                            }
-                            data.AnimInfo.PrimAnimInfo = prim.TextureAnim;
-                            data.AnimInfo.Step(lastFrameTime);
-                            animatedTexture = true;
-                        }
-                        else if (data.AnimInfo != null) // Face texture not animated. Do we have previous anim setting?
-                        {
-                            data.AnimInfo = null;
-                        }
-
-                        GL.Enable(EnableCap.Texture2D);
-                        GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
-                    }
-                }
-                else
-                {
-                    data.PickingID = primNr;
-                    var primNrBytes = Utils.UInt16ToBytes((ushort)primNr);
-                    var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
-                    GL.Color4(faceColor);
-                }
-
-                if (!RenderSettings.UseVBO || data.VBOFailed)
-                {
-                    Vertex[] verts = face.Vertices.ToArray();
-                    ushort[] indices = face.Indices.ToArray();
-
-                    unsafe
-                    {
-                        fixed (float* normalPtr = &verts[0].Normal.X)
-                        fixed (float* texPtr = &verts[0].TexCoord.X)
-                        {
-                            GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
-                            GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
-                            GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, verts);
-                            GL.DrawElements(BeginMode.Triangles, indices.Length, DrawElementsType.UnsignedShort, indices);
-                        }
-                    }
-                }
-                else
-                {
-                    if (data.CheckVBO(face))
-                    {
-                        Compat.BindBuffer(BufferTarget.ArrayBuffer, data.VertexVBO);
-                        Compat.BindBuffer(BufferTarget.ElementArrayBuffer, data.IndexVBO);
-                        GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)12);
-                        GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
-                        GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
-
-                        GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                    }
-                    Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-
-                }
-
-                if (switchedLightsOff)
-                {
-                    GL.Enable(EnableCap.Lighting);
-                    switchedLightsOff = false;
-                }
-            }
-
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            ResetMaterial();
-
-            // Reset texture coordinates if we modified them in texture animation
-            if (animatedTexture)
-            {
-                GL.MatrixMode(MatrixMode.Texture);
-                GL.LoadIdentity();
-                GL.MatrixMode(MatrixMode.Modelview);
-            }
-
-            // Pop the prim matrix
-            GL.PopMatrix();
-        }
-
         void SortCullInterpolate()
         {
             SortedObjects = new List<SceneObject>();
@@ -2689,7 +2461,7 @@ namespace Radegast.Rendering
                     foreach (RenderAvatar obj in Avatars.Values)
                     {
                         if (!obj.Initialized) obj.Initialize();
-                        if (AvatarRenderingEnabled) obj.Step(lastFrameTime);
+                        if (RenderSettings.AvatarRenderingEnabled) obj.Step(lastFrameTime);
                         PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
                         obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
                         obj.PositionCalculated = true;
@@ -2847,7 +2619,7 @@ namespace Radegast.Rendering
 
         private void RenderObjects(RenderPass pass)
         {
-            if (!PrimitiveRenderingEnabled) return;
+            if (!RenderSettings.PrimitiveRenderingEnabled) return;
 
             GL.EnableClientState(ArrayCap.VertexArray);
             GL.EnableClientState(ArrayCap.TextureCoordArray);
@@ -2878,7 +2650,7 @@ namespace Radegast.Rendering
                     // Don't render objects that are outside the draw distane
                     if (Vector3.DistanceSquared(myPos, obj.RenderPosition) > drawDistanceSquared) continue;
                     obj.StartQuery(pass);
-                    RenderPrim((RenderPrimitive)obj, pass, ix);
+                    obj.Render(pass, ix, this, lastFrameTime);
                     obj.EndQuery(pass);
                 }
             }
@@ -3125,52 +2897,81 @@ namespace Radegast.Rendering
             return picked != null;
         }
 
+        /// <summary>
+        /// Select shiny shader as the current shader
+        /// </summary>
+        public void StartShiny()
+        {
+            if (RenderSettings.EnableShiny)
+            {
+                shinyProgram.Start();
+            }
+        }
+
+        public bool TryGetTextureInfo(UUID textureID, out TextureInfo info)
+        {
+            info = null;
+            
+            if (TexturesPtrMap.ContainsKey(textureID))
+            {
+                info = TexturesPtrMap[textureID];
+                return true;
+            }
+
+            return false;
+        }
+
         public void DownloadTexture(TextureLoadItem item)
         {
-            lock (TexturesPtrMap)
+            if (texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame)
             {
-                if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
-                {
-                    item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
-                }
-                else
-                {
-                    TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
+                texturesRequestedThisFrame++;
 
-                    if (item.TextureData == null && item.TGAData == null)
+                lock (TexturesPtrMap)
+                {
+                    if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                     {
-                        if (CacheDecodedTextures && RHelp.LoadCachedImage(item.TeFace.TextureID, out item.TGAData, out item.Data.TextureInfo.HasAlpha, out item.Data.TextureInfo.FullAlpha, out item.Data.TextureInfo.IsMask))
-                        {
-                            PendingTextures.Enqueue(item);
-                        }
-                        else if (Client.Assets.Cache.HasAsset(item.Data.TextureInfo.TextureID))
-                        {
-                            item.LoadAssetFromCache = true;
-                            PendingTextures.Enqueue(item);
-                        }
-                        else if (!item.Data.TextureInfo.FetchFailed)
-                        {
-                            Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
-                            {
-                                switch (state)
-                                {
-                                    case TextureRequestState.Finished:
-                                        item.TextureData = asset.AssetData;
-                                        PendingTextures.Enqueue(item);
-                                        break;
-
-                                    case TextureRequestState.Aborted:
-                                    case TextureRequestState.NotFound:
-                                    case TextureRequestState.Timeout:
-                                        item.Data.TextureInfo.FetchFailed = true;
-                                        break;
-                                }
-                            });
-                        }
+                        item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
                     }
                     else
                     {
-                        PendingTextures.Enqueue(item);
+                        TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
+
+                        if (item.TextureData == null && item.TGAData == null)
+                        {
+                            if (CacheDecodedTextures && RHelp.LoadCachedImage(item.TeFace.TextureID, out item.TGAData, out item.Data.TextureInfo.HasAlpha, out item.Data.TextureInfo.FullAlpha, out item.Data.TextureInfo.IsMask))
+                            {
+                                PendingTextures.Enqueue(item);
+                            }
+                            else if (Client.Assets.Cache.HasAsset(item.Data.TextureInfo.TextureID))
+                            {
+                                item.LoadAssetFromCache = true;
+                                PendingTextures.Enqueue(item);
+                            }
+                            else if (!item.Data.TextureInfo.FetchFailed)
+                            {
+                                Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
+                                {
+                                    switch (state)
+                                    {
+                                        case TextureRequestState.Finished:
+                                            item.TextureData = asset.AssetData;
+                                            PendingTextures.Enqueue(item);
+                                            break;
+
+                                        case TextureRequestState.Aborted:
+                                        case TextureRequestState.NotFound:
+                                        case TextureRequestState.Timeout:
+                                            item.Data.TextureInfo.FetchFailed = true;
+                                            break;
+                                    }
+                                });
+                            }
+                        }
+                        else
+                        {
+                            PendingTextures.Enqueue(item);
+                        }
                     }
                 }
             }
@@ -3340,7 +3141,7 @@ namespace Radegast.Rendering
         {
             if (!RenderingEnabled) return;
 
-            if (AvatarRenderingEnabled && prim.PrimData.PCode == PCode.Avatar)
+            if (RenderSettings.AvatarRenderingEnabled && prim.PrimData.PCode == PCode.Avatar)
             {
                 AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
                 return;
@@ -3348,7 +3149,7 @@ namespace Radegast.Rendering
 
             // Skip foliage
             if (prim.PrimData.PCode != PCode.Prim) return;
-            if (!PrimitiveRenderingEnabled) return;
+            if (!RenderSettings.PrimitiveRenderingEnabled) return;
 
             if (prim.Textures == null) return;
 
