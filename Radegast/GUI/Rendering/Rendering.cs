@@ -975,7 +975,6 @@ namespace Radegast.Rendering
         {
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Lighting);
-            GL.Disable(EnableCap.Light0);
             GL.MatrixMode(MatrixMode.Projection);
             GL.PushMatrix();
             GL.LoadIdentity();
@@ -989,7 +988,6 @@ namespace Radegast.Rendering
         {
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Lighting);
-            GL.Enable(EnableCap.Light0);
             GL.MatrixMode(MatrixMode.Projection);
             GL.PopMatrix();
             GL.MatrixMode(MatrixMode.Modelview);
@@ -1222,18 +1220,23 @@ namespace Radegast.Rendering
             return pos;
         }
 
+        /// <summary>
+        /// Gets attachment state of a prim
+        /// </summary>
+        /// <param name="parentLocalID">Prim's parent id</param>
+        /// <returns>True, if prim is part of an attachment</returns>
         bool IsAttached(uint parentLocalID)
         {
+            if (parentLocalID == 0) return false;
+            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(parentLocalID))
+            {
+                return true;
+            }
+            else if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(parentLocalID))
+            {
+                return IsAttached(Client.Network.CurrentSim.ObjectsPrimitives[parentLocalID].ParentID);
+            }
             return false;
-            //if (parentLocalID == 0) return false;
-            //if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(parentLocalID))
-            //{
-            //    return true;
-            //}
-            //else
-            //{
-            //    return IsAttached(Client.Network.CurrentSim.ObjectsPrimitives[parentLocalID].ParentID);
-            //}
         }
 
         SceneObject GetSceneObject(uint localID)
@@ -1353,7 +1356,10 @@ namespace Radegast.Rendering
         /// <returns></returns>
         private float FindClosestDistanceSquared(Vector3 calcPos, SceneObject p)
         {
-            if (p.BoundingVolume == null || !RenderSettings.HeavierDistanceChecking)
+            if (p.BoundingVolume == null 
+                || !RenderSettings.HeavierDistanceChecking
+                || p.BoundingVolume.ScaledR < 10f
+                )
                 return Vector3.DistanceSquared(calcPos, p.RenderPosition);
 
             Vector3 posToCheckFrom = Vector3.Zero;
@@ -2405,6 +2411,7 @@ namespace Radegast.Rendering
         {
             SortedObjects = new List<SceneObject>();
             VisibleAvatars = new List<RenderAvatar>();
+
             if (RenderSettings.OcclusionCullingEnabled)
             {
                 OccludedObjects = new List<SceneObject>();
