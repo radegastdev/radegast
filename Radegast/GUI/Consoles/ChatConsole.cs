@@ -141,6 +141,7 @@ namespace Radegast
         void UpdateFontSize()
         {
             float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
+            if (size < 2f || size > 100f) size = 9f;
             cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
             rtbChat.Font = ChatConsole.ChangeFontSize(rtbChat.Font, size);
             chatManager.ReprintAllText();
