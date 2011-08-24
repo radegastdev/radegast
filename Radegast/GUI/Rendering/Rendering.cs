@@ -2121,9 +2121,9 @@ namespace Radegast.Rendering
             {
                 int step = 1;
 
-                for (int x = 0; x < 255; x += step)
+                for (int x = 0; x < 256; x += step)
                 {
-                    for (int y = 0; y < 255; y += step)
+                    for (int y = 0; y < 256; y += step)
                     {
                         float z = 0;
                         int patchNr = ((int)x / 16) * 16 + (int)y / 16;
