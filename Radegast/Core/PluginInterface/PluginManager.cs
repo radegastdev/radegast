@@ -318,6 +318,7 @@ namespace Radegast
                 loParameters.ReferencedAssemblies.Add("Radegast.exe");
                 loParameters.ReferencedAssemblies.Add("System.dll");
                 loParameters.ReferencedAssemblies.Add("System.Core.dll");
+                loParameters.ReferencedAssemblies.Add("System.Xml.dll");
                 loParameters.ReferencedAssemblies.Add("System.Drawing.dll");
                 loParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
 
