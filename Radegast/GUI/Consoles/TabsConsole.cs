@@ -1147,7 +1147,7 @@ namespace Radegast
             {
                 tabs[stripItem.Tag.ToString()].Select();
 
-                ctxBtnClose.Enabled = selectedTab.AllowClose || selectedTab.AllowHide;
+                ctxBtnClose.Enabled = !selectedTab.Merged && (selectedTab.AllowClose || selectedTab.AllowHide);
                 ctxBtnDetach.Enabled = selectedTab.AllowDetach;
                 ctxBtnMerge.Enabled = selectedTab.AllowMerge;
                 ctxBtnMerge.DropDown.Items.Clear();
