@@ -91,6 +91,7 @@ namespace Radegast
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tbpGraphics = new System.Windows.Forms.TabPage();
+            this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.gbDisplayNames.SuspendLayout();
@@ -116,6 +117,7 @@ namespace Radegast
             this.tbpGeneral.Controls.Add(this.txtReconnectTime);
             this.tbpGeneral.Controls.Add(this.label2);
             this.tbpGeneral.Controls.Add(this.gbDisplayNames);
+            this.tbpGeneral.Controls.Add(this.cbRadegastClientTag);
             this.tbpGeneral.Controls.Add(this.cbTaskBarHighLight);
             this.tbpGeneral.Controls.Add(this.cbSyntaxHighlight);
             this.tbpGeneral.Controls.Add(this.label1);
@@ -477,6 +479,16 @@ namespace Radegast
             this.tbpGraphics.Text = "Graphics Settings";
             this.tbpGraphics.UseVisualStyleBackColor = true;
             // 
+            // cbRadegastClientTag
+            // 
+            this.cbRadegastClientTag.AutoSize = true;
+            this.cbRadegastClientTag.Location = new System.Drawing.Point(270, 235);
+            this.cbRadegastClientTag.Name = "cbRadegastClientTag";
+            this.cbRadegastClientTag.Size = new System.Drawing.Size(146, 17);
+            this.cbRadegastClientTag.TabIndex = 18;
+            this.cbRadegastClientTag.Text = "Send Radegast client tag";
+            this.cbRadegastClientTag.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -533,6 +545,7 @@ namespace Radegast
         public System.Windows.Forms.RadioButton rbDNOff;
         public System.Windows.Forms.CheckBox cbTaskBarHighLight;
         public System.Windows.Forms.TabPage tbpGraphics;
+        public System.Windows.Forms.CheckBox cbRadegastClientTag;
 
 
     }

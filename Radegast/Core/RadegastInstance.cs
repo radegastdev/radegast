@@ -343,6 +343,7 @@ namespace Radegast
             client.Self.Movement.AutoResetControls = false;
             client.Self.Movement.UpdateInterval = 250;
             RegisterClientEvents(client);
+            SetClientTag();
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -365,6 +366,17 @@ namespace Radegast
                 netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
         }
 
+        public void SetClientTag()
+        {
+            if (GlobalSettings["send_rad_client_tag"])
+            {
+                client.Settings.CLIENT_IDENTIFICATION_TAG = new UUID("b748af88-58e2-995b-cf26-9486dea8e830");
+            }
+            else
+            {
+                client.Settings.CLIENT_IDENTIFICATION_TAG = UUID.Zero;
+            }
+        }
         private void GetWorldTimeZone()
         {
             try

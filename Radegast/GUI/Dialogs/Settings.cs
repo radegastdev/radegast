@@ -109,6 +109,8 @@ namespace Radegast
 
             if (!s.ContainsKey("rendering_occlusion_culling_enabled")) s["rendering_occlusion_culling_enabled"] = true;
 
+            if (!s.ContainsKey("send_rad_client_tag")) s["send_rad_client_tag"] = true;
+
         }
 
         public frmSettings(RadegastInstance instance)
@@ -213,6 +215,13 @@ namespace Radegast
             cbTaskBarHighLight.CheckedChanged += (sender, e) =>
             {
                 s["taskbar_highlight"] = cbTaskBarHighLight.Checked;
+            };
+
+            cbRadegastClientTag.Checked = s["send_rad_client_tag"];
+            cbRadegastClientTag.CheckedChanged += (sender, e) =>
+            {
+                s["send_rad_client_tag"] = cbRadegastClientTag.Checked;
+                instance.SetClientTag();
             };
         }
 
