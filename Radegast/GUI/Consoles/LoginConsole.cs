@@ -114,17 +114,35 @@ namespace Radegast
         private void SaveConfig()
         {
             Settings s = instance.GlobalSettings;
+            SavedLogin sl = new SavedLogin();
+
+            string username = cbxUsername.Text;
+
+            if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin)
+            {
+                username = ((SavedLogin)cbxUsername.SelectedItem).Username;
+            }
+
+            if (cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1) // custom login uri
+            {
+                sl.GridID = "custom_login_uri";
+                sl.CustomURI = txtCustomLoginUri.Text;
+            }
+            else
+            {
+                sl.GridID = (cbxGrid.SelectedItem as Grid).ID;
+                sl.CustomURI = string.Empty;
+            }
+
+            string savedLoginsKey = string.Format("{0}%{1}", sl.Username, sl.GridID);
+
+            if (!(s["saved_logins"] is OSDMap))
+            {
+                s["saved_logins"] = new OSDMap();
+            }
 
             if (cbRemember.Checked)
             {
-                SavedLogin sl = new SavedLogin();
-
-                string username = cbxUsername.Text;
-
-                if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin)
-                {
-                    username = ((SavedLogin)cbxUsername.SelectedItem).Username;
-                }
 
                 sl.Username = s["username"] = username;
 
@@ -138,21 +156,6 @@ namespace Radegast
                     sl.Password =Utils.MD5(txtPassword.Text);
                     s["password"] = Utils.MD5(txtPassword.Text);
                 }
-
-                if (cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1) // custom login uri
-                {
-                    sl.GridID = "custom_login_uri";
-                    sl.CustomURI = txtCustomLoginUri.Text;
-                }
-                else
-                {
-                    sl.GridID = (cbxGrid.SelectedItem as Grid).ID;
-                    sl.CustomURI = string.Empty;
-                }
-                if (!(s["saved_logins"] is OSDMap))
-                {
-                    s["saved_logins"] = new OSDMap();
-                }
                 if (cbxLocation.SelectedIndex == -1)
                 {
                     sl.CustomStartLocation = cbxLocation.Text;
@@ -162,7 +165,11 @@ namespace Radegast
                     sl.CustomStartLocation = string.Empty;
                 }
                 sl.StartLocationType = cbxLocation.SelectedIndex;
-                ((OSDMap)s["saved_logins"])[string.Format("{0}%{1}", sl.Username, sl.GridID)] = sl.ToOSD();
+                ((OSDMap)s["saved_logins"])[savedLoginsKey] = sl.ToOSD();
+            }
+            else if (((OSDMap)s["saved_logins"]).ContainsKey(savedLoginsKey))
+            {
+                ((OSDMap)s["saved_logins"]).Remove(savedLoginsKey);
             }
 
             s["login_location_type"] = OSD.FromInteger(cbxLocation.SelectedIndex);
@@ -201,6 +208,7 @@ namespace Radegast
 
 
             Settings s = instance.GlobalSettings;
+            cbRemember.Checked = s["remember_login"];
 
             // Setup login name
             string savedUsername;
@@ -307,8 +315,6 @@ namespace Radegast
                 txtCustomLoginUri.Text = MainProgram.CommandLine.LoginUri;
                 cbxGrid.SelectedIndex = cbxGrid.Items.Count - 1;
             }
-
-            cbRemember.Checked = s["remember_login"];
 
             // Start logging in if autologin enabled from command line
             if (MainProgram.CommandLine.AutoLogin)
