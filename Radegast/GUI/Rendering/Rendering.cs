@@ -2090,13 +2090,13 @@ namespace Radegast.Rendering
 
             if (terrainVBO != -1)
             {
-                GL.DeleteBuffers(1, ref terrainVBO);
+                Compat.DeleteBuffer(terrainVBO);
                 terrainVBO = -1;
             }
 
             if (terrainIndexVBO != -1)
             {
-                GL.DeleteBuffers(1, ref terrainIndexVBO);
+                Compat.DeleteBuffer(terrainIndexVBO);
                 terrainIndexVBO = -1;
             }
 
