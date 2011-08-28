@@ -832,6 +832,7 @@ namespace Radegast.Rendering
                     Vector3 worldPosition;
                     if (TryPick(e.X, e.Y, out picked, out LeftclickedFaceID, out worldPosition))
                     {
+                        trackedObject = null;
                         Camera.FocalPoint = worldPosition;
                         Cursor.Hide();
                     }
@@ -1463,7 +1464,7 @@ namespace Radegast.Rendering
 
         private void RenderText(RenderPass pass)
         {
-            lock (Avatars)
+            lock (VisibleAvatars)
             {
                 GL.Color4(0f, 0f, 0f, 0.4f);
                 foreach (RenderAvatar av in VisibleAvatars)
@@ -1512,10 +1513,7 @@ namespace Radegast.Rendering
                         {
                             float halfWidth = tSize.BoundingBox.Width / 2 + 12;
                             float halfHeight = tSize.BoundingBox.Height / 2 + 5;
-                            GL.Vertex2(quadPos.X - halfWidth, quadPos.Y - halfHeight);
-                            GL.Vertex2(quadPos.X + halfWidth, quadPos.Y - halfHeight);
-                            GL.Vertex2(quadPos.X + halfWidth, quadPos.Y + halfHeight);
-                            GL.Vertex2(quadPos.X - halfWidth, quadPos.Y + halfHeight);
+                            RHelp.Draw2DBox(quadPos.X - halfWidth, quadPos.Y - halfHeight, halfWidth * 2, halfHeight * 2, screenPos.Z);
                         }
                         GL.End();
 
