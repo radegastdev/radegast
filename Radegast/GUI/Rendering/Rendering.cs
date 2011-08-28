@@ -490,7 +490,7 @@ namespace Radegast.Rendering
 
             }
 
-        
+
         }
 
         void Avatars_AvatarAppearance(object sender, AvatarAppearanceEventArgs e)
@@ -813,6 +813,7 @@ namespace Radegast.Rendering
                 dragging = true;
                 downX = dragX = e.X;
                 downY = dragY = e.Y;
+
                 if (ModifierKeys == Keys.None)
                 {
                     object picked;
@@ -823,6 +824,17 @@ namespace Radegast.Rendering
                         {
                             TryTouchObject((RenderPrimitive)picked);
                         }
+                    }
+                }
+                else if (ModifierKeys == Keys.Alt)
+                {
+                    object picked;
+                    int LeftclickedFaceID;
+                    Vector3 worldPosition;
+                    if (TryPick(e.X, e.Y, out picked, out LeftclickedFaceID, out worldPosition))
+                    {
+                        Camera.FocalPoint = worldPosition;
+                        Cursor.Hide();
                     }
                 }
             }
@@ -931,40 +943,16 @@ namespace Radegast.Rendering
             if (e.Button == MouseButtons.Left)
             {
                 dragging = false;
-                object clicked;
-                int faceID;
+                Cursor.Show();
+
                 if (ModifierKeys == Keys.None)
-                    TryEndTouchObject();//Stop touching no matter whether we are touching anything
-                if (e.X == downX && e.Y == downY) // click
                 {
-                    if (TryPick(e.X, e.Y, out clicked, out faceID))
-                    {
-                        if (ModifierKeys == Keys.Alt && clicked is Vector3)
-                        {
-                            Camera.FocalPoint = (Vector3)clicked;
-                            Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
-                        }
-                        else if (clicked is RenderPrimitive)
-                        {
-                            RenderPrimitive picked = (RenderPrimitive)clicked;
-                            if (ModifierKeys == Keys.Alt)
-                            {
-                                Camera.FocalPoint = picked.RenderPosition;
-                                Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
-                            }
-                        }
-                        else if (clicked is RenderAvatar)
-                        {
-                            RenderAvatar av = (RenderAvatar)clicked;
-                            if (ModifierKeys == Keys.Alt)
-                            {
-                                Vector3 pos = av.RenderPosition;
-                                pos.Z += 0.5f; // focus roughly on the chest area
-                                Camera.FocalPoint = pos;
-                                Cursor.Position = glControl.PointToScreen(new Point(glControl.Width / 2, glControl.Height / 2));
-                            }
-                        }
-                    }
+                    TryEndTouchObject();//Stop touching no matter whether we are touching anything
+                }
+                else if ((ModifierKeys & Keys.Alt) != 0)
+                {
+                    Point screenCenter = new Point(glControl.Width / 2, glControl.Height / 2);
+                    Cursor.Position = glControl.PointToScreen(screenCenter);
                 }
             }
         }
@@ -1356,7 +1344,7 @@ namespace Radegast.Rendering
         /// <returns></returns>
         private float FindClosestDistanceSquared(Vector3 calcPos, SceneObject p)
         {
-            if (p.BoundingVolume == null 
+            if (p.BoundingVolume == null
                 || !RenderSettings.HeavierDistanceChecking
                 || p.BoundingVolume.ScaledR < 10f
                 )
@@ -2814,7 +2802,13 @@ namespace Radegast.Rendering
             GL.Frustum(-fW, fW, -fH, fH, zNear, zFar);
         }
 
-        private bool TryPick(int x, int y, out object picked, out int faceID)
+        public bool TryPick(int x, int y, out object picked, out int faceID)
+        {
+            Vector3 worldPos;
+            return TryPick(x, y, out picked, out faceID, out worldPos);
+        }
+
+        public bool TryPick(int x, int y, out object picked, out int faceID, out Vector3 worldPos)
         {
             // Save old attributes
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -2834,7 +2828,11 @@ namespace Radegast.Rendering
 
             byte[] color = new byte[4];
             GL.ReadPixels(x, glControl.Height - y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, color);
-
+            float depth = 0f;
+            GL.ReadPixels(x, glControl.Height - y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, ref depth);
+            OpenTK.Vector3 worldPosTK = OpenTK.Vector3.Zero;
+            Math3D.GluUnProject(x, glControl.Height - y, depth, ModelMatrix, ProjectionMatrix, Viewport, out worldPosTK);
+            worldPos = RHelp.OMVVector3(worldPosTK);
             GL.PopAttrib();
 
             int primID = Utils.BytesToUInt16(color, 0);
@@ -2918,7 +2916,7 @@ namespace Radegast.Rendering
         public bool TryGetTextureInfo(UUID textureID, out TextureInfo info)
         {
             info = null;
-            
+
             if (TexturesPtrMap.ContainsKey(textureID))
             {
                 info = TexturesPtrMap[textureID];

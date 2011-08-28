@@ -398,6 +398,21 @@ namespace Radegast.Rendering
             return new OpenTK.Vector4(v.X, v.Y, v.Z, v.W);
         }
 
+        public static Vector2 OMVVector2(OpenTK.Vector2 v)
+        {
+            return new Vector2(v.X, v.Y);
+        }
+
+        public static Vector3 OMVVector3(OpenTK.Vector3 v)
+        {
+            return new Vector3(v.X, v.Y, v.Z);
+        }
+
+        public static Vector4 OMVVector4(OpenTK.Vector4 v)
+        {
+            return new Vector4(v.X, v.Y, v.Z, v.W);
+        }
+
         public static Color WinColor(OpenTK.Graphics.Color4 color)
         {
             return Color.FromArgb((int)(color.A * 255), (int)(color.R * 255), (int)(color.G * 255), (int)(color.B * 255));
@@ -1085,9 +1100,50 @@ namespace Radegast.Rendering
             return true;
         }
 
+        public static bool GluUnProject(float winx, float winy, float winz, OpenTK.Matrix4 modelMatrix, OpenTK.Matrix4 projMatrix, int[] viewport, out OpenTK.Vector3 pos)
+        {
+            OpenTK.Matrix4 finalMatrix;
+            OpenTK.Vector4 _in;
+            OpenTK.Vector4 _out;
+
+            finalMatrix = OpenTK.Matrix4.Mult(modelMatrix, projMatrix);
+
+            finalMatrix.Invert();
+
+            _in.X = winx;
+            _in.Y = winy;
+            _in.Z = winz;
+            _in.W = 1.0f;
+
+            /* Map x and y from window coordinates */
+            _in.X = (_in.X - viewport[0]) / viewport[2];
+            _in.Y = (_in.Y - viewport[1]) / viewport[3];
+
+            pos = OpenTK.Vector3.Zero;
+
+            /* Map to range -1 to 1 */
+            _in.X = _in.X * 2 - 1;
+            _in.Y = _in.Y * 2 - 1;
+            _in.Z = _in.Z * 2 - 1;
+
+            //__gluMultMatrixVecd(finalMatrix, _in, _out);
+            // check if this works:
+            _out = OpenTK.Vector4.Transform(_in, finalMatrix);
+
+            if (_out.W == 0.0f)
+                return false;
+            _out.X /= _out.W;
+            _out.Y /= _out.W;
+            _out.Z /= _out.W;
+            pos.X = _out.X;
+            pos.Y = _out.Y;
+            pos.Z = _out.Z;
+            return true;
+        }
+
         public static double[] AbovePlane(double height)
         {
-            return new double[] { 0, 0, 1, -height};
+            return new double[] { 0, 0, 1, -height };
         }
 
         public static double[] BelowPlane(double height)
