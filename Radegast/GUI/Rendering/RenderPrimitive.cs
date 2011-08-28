@@ -564,7 +564,7 @@ namespace Radegast.Rendering
                                 Prim = this.Prim,
                                 TeFace = teFace,
                                 Data = data
-                            });
+                            }, false);
                         }
                     }
                     else

@@ -495,13 +495,12 @@ namespace Radegast.Rendering
 
         void Avatars_AvatarAppearance(object sender, AvatarAppearanceEventArgs e)
         {
-            // We don't currently have UUID -> RenderAvatar mapping so we need to walk the list
-            foreach (RenderAvatar av in Avatars.Values)
+            if (e.Simulator.Handle != Client.Network.CurrentSim.Handle) return;
+
+            Avatar a = e.Simulator.ObjectsAvatars.Find(av => av.ID == e.AvatarID);
+            if (a != null)
             {
-                if (av.avatar.ID == e.AvatarID)
-                {
-                    av.glavatar.morph(av.avatar);
-                }
+                AddAvatarToScene(a);
             }
         }
 
@@ -509,10 +508,10 @@ namespace Radegast.Rendering
         {
             if (e.Success)
             {
-                RenderAvatar me;
-                if (Avatars.TryGetValue(Client.Self.LocalID, out me))
+                Avatar me;
+                if (Client.Network.CurrentSim.ObjectsAvatars.TryGetValue(Client.Self.LocalID, out me))
                 {
-                    me.glavatar.morph(me.avatar);
+                    AddAvatarToScene(me);
                 }
             }
         }
@@ -1610,6 +1609,7 @@ namespace Radegast.Rendering
                 {
                     // flag we got an update??
                     updateAVtes(Avatars[av.LocalID]);
+                    Avatars[av.LocalID].glavatar.morph(av);
                 }
                 else
                 {
@@ -1643,7 +1643,7 @@ namespace Radegast.Rendering
                 if (TEF == null)
                     continue;
 
-                if (ra.data[fi] == null || ra.data[fi].TextureInfo.TextureID != TEF.TextureID)
+                if (ra.data[fi] == null || ra.data[fi].TextureInfo.TextureID != TEF.TextureID || ra.data[fi].TextureInfo.TexturePointer < 1 )
                 {
                     FaceData data = new FaceData();
                     ra.data[fi] = data;
@@ -1654,7 +1654,7 @@ namespace Radegast.Rendering
                         Data = data,
                         Prim = ra.avatar,
                         TeFace = ra.avatar.Textures.FaceTextures[fi]
-                    });
+                    }, true);
                 }
             }
         }
@@ -2955,9 +2955,9 @@ namespace Radegast.Rendering
         public static readonly UUID invisi1 = new UUID("38b86f85-2575-52a9-a531-23108d8da837");
         public static readonly UUID invisi2 = new UUID("e97cf410-8e61-7005-ec06-629eba4cd1fb");
 
-        public void DownloadTexture(TextureLoadItem item)
+        public void DownloadTexture(TextureLoadItem item, bool force)
         {
-            if (texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame)
+            if (force || texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame)
             {
                 texturesRequestedThisFrame++;
 
