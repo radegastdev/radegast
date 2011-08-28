@@ -73,7 +73,6 @@ namespace Radegast.Rendering
         public bool HasAlpha;
         public bool FullAlpha;
         public bool IsMask;
-        public bool IsInvisible;
         public UUID TextureID;
         public bool FetchFailed;
     }
@@ -92,8 +91,7 @@ namespace Radegast.Rendering
     {
         Picking,
         Simple,
-        Alpha,
-        Stencil
+        Alpha
     }
 
     public enum SceneObjectType
@@ -135,7 +133,6 @@ namespace Radegast.Rendering
         public int SimpleQueryID = -1;
         public bool HasAlphaFaces;
         public bool HasSimpleFaces;
-        public bool HasInvisibleFaces;
 
         #endregion Public fields
 
@@ -314,8 +311,6 @@ namespace Radegast.Rendering
         public bool Occluded()
         {
             if (!RenderSettings.OcclusionCullingEnabled) return false;
-
-            if (HasInvisibleFaces) return false;
 
             if ((SimpleQueryID == -1 && AlphaQueryID == -1))
             {

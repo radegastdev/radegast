@@ -459,10 +459,6 @@ namespace Radegast.Rendering
             {
                 HasAlphaFaces = false;
             }
-            else if (pass == RenderPass.Stencil)
-            {
-                HasInvisibleFaces = false;
-            }
 
             // Draw the prim faces
             for (int j = 0; j < Faces.Count; j++)
@@ -484,21 +480,8 @@ namespace Radegast.Rendering
 
                 bool switchedLightsOff = false;
 
-                if (pass == RenderPass.Picking)
+                if (pass != RenderPass.Picking)
                 {
-                    data.PickingID = pickingID;
-                    var primNrBytes = Utils.UInt16ToBytes((ushort)pickingID);
-                    var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
-                    GL.Color4(faceColor);
-                }
-                else if (pass == RenderPass.Stencil)
-                {
-                    if (!data.TextureInfo.IsInvisible) continue;
-                    HasInvisibleFaces = true;
-                }
-                else
-                {
-                    if (data.TextureInfo.IsInvisible) continue;
                     bool belongToAlphaPass = (RGBA.A < 0.99f) || (data.TextureInfo.HasAlpha && !data.TextureInfo.IsMask);
 
                     if (belongToAlphaPass && pass != RenderPass.Alpha) continue;
@@ -590,6 +573,13 @@ namespace Radegast.Rendering
                         GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
                     }
                 }
+                else
+                {
+                    data.PickingID = pickingID;
+                    var primNrBytes = Utils.UInt16ToBytes((ushort)pickingID);
+                    var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
+                    GL.Color4(faceColor);
+                }
 
                 if (!RenderSettings.UseVBO || data.VBOFailed)
                 {
@@ -630,7 +620,6 @@ namespace Radegast.Rendering
                     GL.Enable(EnableCap.Lighting);
                     switchedLightsOff = false;
                 }
-
             }
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
