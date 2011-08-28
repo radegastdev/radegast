@@ -2630,6 +2630,15 @@ namespace Radegast.Rendering
                 myPos = Client.Self.SimPosition;
             }
 
+            if (pass == RenderPass.Stencil)
+            {
+                GL.Disable(EnableCap.Texture2D);
+                GL.DepthMask(false);
+                GL.StencilFunc(StencilFunction.Always, 1, 1);
+                GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
+                GL.ColorMask(false, false, false, false);
+            }
+
             int nrPrims = SortedObjects.Count;
             for (int i = 0; i < nrPrims; i++)
             {
@@ -2644,10 +2653,25 @@ namespace Radegast.Rendering
                 {
                     // Don't render objects that are outside the draw distane
                     if (Vector3.DistanceSquared(myPos, obj.RenderPosition) > drawDistanceSquared) continue;
-                    obj.StartQuery(pass);
-                    obj.Render(pass, ix, this, lastFrameTime);
-                    obj.EndQuery(pass);
+                    if (pass == RenderPass.Simple || pass == RenderPass.Alpha)
+                    {
+                        obj.StartQuery(pass);
+                        obj.Render(pass, ix, this, lastFrameTime);
+                        obj.EndQuery(pass);
+                    }
+                    else
+                    {
+                        obj.Render(pass, ix, this, lastFrameTime);
+                    }
                 }
+            }
+
+            if (pass == RenderPass.Stencil)
+            {
+                GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Keep);
+                GL.ColorMask(true, true, true, true);
+                GL.StencilFunc(StencilFunction.Notequal, 1, 1);
+                GL.DepthMask(true);
             }
 
             GL.Disable(EnableCap.Texture2D);
@@ -2690,7 +2714,7 @@ namespace Radegast.Rendering
                 GL.ClearColor(0.39f, 0.58f, 0.93f, 1.0f);
             }
 
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
             GL.LoadIdentity();
 
             // Setup wireframe or solid fill drawing mode
@@ -2771,9 +2795,11 @@ namespace Radegast.Rendering
                 GL.Enable(EnableCap.AlphaTest);
                 RenderObjects(RenderPass.Simple);
                 RenderAvatarsSkeleton(RenderPass.Simple);
+                GL.Enable(EnableCap.StencilTest);
+                RenderObjects(RenderPass.Stencil);
                 RenderAvatars(RenderPass.Simple);
                 GL.Disable(EnableCap.AlphaTest);
-
+                GL.Disable(EnableCap.StencilTest);
                 GL.DepthMask(false);
                 RenderOccludedObjects();
 
@@ -2926,6 +2952,10 @@ namespace Radegast.Rendering
             return false;
         }
 
+
+        public static readonly UUID invisi1 = new UUID("38b86f85-2575-52a9-a531-23108d8da837");
+        public static readonly UUID invisi2 = new UUID("e97cf410-8e61-7005-ec06-629eba4cd1fb");
+
         public void DownloadTexture(TextureLoadItem item)
         {
             if (texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame)
@@ -2937,6 +2967,12 @@ namespace Radegast.Rendering
                     if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                     {
                         item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
+                    }
+                    else if (item.TeFace.TextureID == invisi1 || item.TeFace.TextureID == invisi2)
+                    {
+                        TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
+                        TexturesPtrMap[item.TeFace.TextureID].HasAlpha = false;
+                        TexturesPtrMap[item.TeFace.TextureID].IsInvisible = true;
                     }
                     else
                     {
