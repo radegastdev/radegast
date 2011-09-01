@@ -853,6 +853,10 @@ namespace Radegast.Rendering
                     {
                         trackedObject = null;
                         Camera.FocalPoint = worldPosition;
+                        Point screenCenter = new Point(glControl.Width / 2, glControl.Height / 2);
+                        Cursor.Position = glControl.PointToScreen(screenCenter);
+                        downX = dragX = screenCenter.X;
+                        downY = dragY = screenCenter.Y;
                         Cursor.Hide();
                     }
                 }
@@ -967,11 +971,6 @@ namespace Radegast.Rendering
                 if (ModifierKeys == Keys.None)
                 {
                     TryEndTouchObject();//Stop touching no matter whether we are touching anything
-                }
-                else if ((ModifierKeys & Keys.Alt) != 0)
-                {
-                    Point screenCenter = new Point(glControl.Width / 2, glControl.Height / 2);
-                    Cursor.Position = glControl.PointToScreen(screenCenter);
                 }
             }
         }
