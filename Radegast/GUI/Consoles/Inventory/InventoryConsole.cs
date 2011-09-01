@@ -636,7 +636,18 @@ namespace Radegast
 
         private void TraverseAndQueueNodes(InventoryNode start)
         {
-            if (start.NeedsUpdate)
+            bool has_items = false;
+
+            foreach (InventoryNode node in start.Nodes.Values)
+            {
+                if (node.Data is InventoryItem)
+                {
+                    has_items = true;
+                    break;
+                }
+            }
+
+            if (!has_items || start.NeedsUpdate)
             {
                 lock (QueuedFolders)
                 {
