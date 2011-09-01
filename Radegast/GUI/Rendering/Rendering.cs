@@ -205,7 +205,13 @@ namespace Radegast.Rendering
             RenderingEnabled = false;
             Application.Idle -= new EventHandler(Application_Idle);
 
-            PendingTextures.Close();
+            if (!PendingTextures.Closed)
+            {
+                TextureThreadContextReady.Reset();
+                TextureThreadRunning = false;
+                PendingTextures.Close();
+                TextureThreadContextReady.WaitOne(5000, false);
+            }
 
             if (chatOverlay != null)
             {
@@ -223,7 +229,11 @@ namespace Radegast.Rendering
             Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
             Client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
 
-            PendingTasks.Close();
+            if (!PendingTasks.Closed)
+            {
+                PendingTasks.Close();
+            }
+
             if (genericTaskThread != null)
             {
                 genericTaskThread.Join(2000);
@@ -249,6 +259,8 @@ namespace Radegast.Rendering
 
             if (glControl != null)
             {
+                glControl_UnhookEvents();
+                glControl.MakeCurrent();
                 glControl.Dispose();
             }
             glControl = null;
@@ -593,10 +605,8 @@ namespace Radegast.Rendering
             glControl.BringToFront();
         }
 
-        void glControl_Disposed(object sender, EventArgs e)
+        void glControl_UnhookEvents()
         {
-            TextureThreadRunning = false;
-            PendingTextures.Close();
             glControl.Paint -= glControl_Paint;
             glControl.Resize -= glControl_Resize;
             glControl.MouseDown -= glControl_MouseDown;
@@ -605,6 +615,11 @@ namespace Radegast.Rendering
             glControl.MouseWheel -= glControl_MouseWheel;
             glControl.Load -= new EventHandler(glControl_Load);
             glControl.Disposed -= glControl_Disposed;
+
+        }
+        void glControl_Disposed(object sender, EventArgs e)
+        {
+            glControl_UnhookEvents();
         }
 
         void SetSun()
@@ -618,8 +633,11 @@ namespace Radegast.Rendering
             GL.Light(LightName.Light0, LightParameter.Position, sunPos);
         }
 
+        bool glControlLoaded = false;
         void glControl_Load(object sender, EventArgs e)
         {
+            if (glControlLoaded) return;
+
             try
             {
                 GL.ShadeModel(ShadingModel.Smooth);
@@ -704,6 +722,7 @@ namespace Radegast.Rendering
                 InitWater();
                 InitShaders();
                 RenderingEnabled = true;
+                glControlLoaded = true;
                 LoadCurrentPrims();
             }
             catch (Exception ex)
@@ -1081,8 +1100,10 @@ namespace Radegast.Rendering
                 item.TGAData = null;
                 imageBytes = null;
             }
+            context.MakeCurrent(window.WindowInfo);
             context.Dispose();
             window.Dispose();
+            TextureThreadContextReady.Set();
             Logger.DebugLog("Texture thread exited");
         }
         #endregion Texture thread
