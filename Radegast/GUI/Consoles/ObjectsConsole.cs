@@ -84,6 +84,7 @@ namespace Radegast
             client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            client.Objects.ObjectPropertiesFamily += new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
             client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
@@ -104,6 +105,7 @@ namespace Radegast
             client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+            client.Objects.ObjectPropertiesFamily -= new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
             client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
             client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
             instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
@@ -204,6 +206,34 @@ namespace Radegast
             lstPrims.EndUpdate();
         }
 
+        void UpdateProperties(Primitive.ObjectProperties props)
+        {
+            lock (lstPrims.Items)
+            {
+                if (lstPrims.Items.ContainsKey(props.ObjectID.ToString()))
+                {
+                    Primitive prim = lstPrims.Items[props.ObjectID.ToString()].Tag as Primitive;
+                    prim.Properties = props;
+                    lstPrims.Items[props.ObjectID.ToString()].Text = GetObjectName(prim);
+                }
+            }
+
+            lock (lstChildren.Items)
+            {
+                if (lstChildren.Items.ContainsKey(props.ObjectID.ToString()))
+                {
+                    Primitive prim = lstChildren.Items[props.ObjectID.ToString()].Tag as Primitive;
+                    prim.Properties = props;
+                    lstChildren.Items[props.ObjectID.ToString()].Text = prim.Properties.Name;
+                }
+            }
+
+            if (props.ObjectID == currentPrim.ID)
+            {
+                UpdateCurrentObject(false);
+            }
+        }
+
         void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)
         {
             if (e.Simulator.Handle != client.Network.CurrentSim.Handle)
@@ -217,30 +247,23 @@ namespace Radegast
                 return;
             }
 
-            lock (lstPrims.Items)
+            UpdateProperties(e.Properties);
+        }
+
+        void Objects_ObjectPropertiesFamily(object sender, ObjectPropertiesFamilyEventArgs e)
+        {
+            if (e.Simulator.Handle != client.Network.CurrentSim.Handle)
             {
-                if (lstPrims.Items.ContainsKey(e.Properties.ObjectID.ToString()))
-                {
-                    Primitive prim = lstPrims.Items[e.Properties.ObjectID.ToString()].Tag as Primitive;
-                    prim.Properties = e.Properties;
-                    lstPrims.Items[e.Properties.ObjectID.ToString()].Text = GetObjectName(prim);
-                }
+                return;
             }
 
-            lock (lstChildren.Items)
+            if (InvokeRequired)
             {
-                if (lstChildren.Items.ContainsKey(e.Properties.ObjectID.ToString()))
-                {
-                    Primitive prim = lstChildren.Items[e.Properties.ObjectID.ToString()].Tag as Primitive;
-                    prim.Properties = e.Properties;
-                    lstChildren.Items[e.Properties.ObjectID.ToString()].Text = prim.Properties.Name;
-                }
+                BeginInvoke(new MethodInvoker(delegate() { Objects_ObjectPropertiesFamily(sender, e); }));
+                return;
             }
 
-            if (e.Properties.ObjectID == currentPrim.ID)
-            {
-                UpdateCurrentObject(false);
-            }
+            UpdateProperties(e.Properties);
         }
 
 
@@ -591,7 +614,7 @@ namespace Radegast
             if (prim.Properties == null)
             {
                 //if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
-                propRequester.RequestProps(prim.LocalID);
+                propRequester.RequestProps(prim.ID);
             }
             else
             {
@@ -688,7 +711,7 @@ namespace Radegast
                 {
                     if (e.Prim.Properties == null)
                     {
-                        propRequester.RequestProps(e.Prim.LocalID);
+                        propRequester.RequestProps(e.Prim.ID);
                     }
                     AddPrim(e.Prim);
                 }
@@ -700,7 +723,7 @@ namespace Radegast
                 {
                     UpdateCurrentObject(false);
                 }
-                propRequester.RequestProps(e.Prim.LocalID);
+                propRequester.RequestProps(e.Prim.ID);
             }
         }
 
@@ -823,7 +846,7 @@ namespace Radegast
                 currentPrim = currentItem.Tag as Primitive;
                 btnBuy.Tag = currentPrim;
 
-                if (currentPrim.Properties == null)
+                if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.CreatorID == UUID.Zero))
                 {
                     client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
                 }
@@ -846,7 +869,7 @@ namespace Radegast
                 currentPrim = lstChildren.SelectedItems[0].Tag as Primitive;
                 btnBuy.Tag = currentPrim;
 
-                if (currentPrim.Properties == null)
+                if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.CreatorID == UUID.Zero))
                 {
                     client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
                 }
@@ -864,6 +887,7 @@ namespace Radegast
             if (currentPrim == null) return;
             var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == currentPrim.LocalID);
             if (prims == null || prims.Count == 0) return;
+            List<uint> toGetNames = new List<uint>();
 
             lstChildren.BeginUpdate();
             lock (lstChildren.Items)
@@ -880,7 +904,7 @@ namespace Radegast
                     else
                     {
                         item.Text = "Loading...";
-                        propRequester.RequestProps(prim.LocalID);
+                        toGetNames.Add(prim.LocalID);
                     }
 
                     item.Tag = prim;
@@ -890,6 +914,10 @@ namespace Radegast
             }
             lstChildren.EndUpdate();
             lstChildren.Visible = true;
+            if (toGetNames.Count > 0)
+            {
+                client.Objects.SelectObjects(client.Network.CurrentSim, toGetNames.ToArray(), true);
+            }
         }
 
         private void btnPay_Click(object sender, EventArgs e)
@@ -1313,8 +1341,7 @@ namespace Radegast
         Object sync = new Object();
         RadegastInstance instance;
         System.Timers.Timer qTimer;
-        Queue<uint> props = new Queue<uint>();
-        List<uint> prims = new List<uint>();
+        Queue<UUID> props = new Queue<UUID>();
 
         public delegate void TickCallback(int remaining);
         public event TickCallback OnTick;
@@ -1327,13 +1354,13 @@ namespace Radegast
             qTimer.Elapsed += new ElapsedEventHandler(qTimer_Elapsed);
         }
 
-        public void RequestProps(uint localID)
+        public void RequestProps(UUID id)
         {
             lock (sync)
             {
-                if (!props.Contains(localID))
+                if (!props.Contains(id))
                 {
-                    props.Enqueue(localID);
+                    props.Enqueue(id);
                 }
             }
         }
@@ -1342,21 +1369,10 @@ namespace Radegast
         {
             lock (sync)
             {
-                if (prims.Count > 0)
+                for (int i = 0; i < 25 && props.Count > 0; i++)
                 {
-                    instance.Client.Objects.DeselectObjects(instance.Client.Network.CurrentSim, prims.ToArray());
-                    prims.Clear();
-                }
-
-                for (int i = 0; i < 50 && props.Count > 0; i++)
-                {
-                    prims.Add(props.Dequeue());
-                }
-
-                if (prims.Count > 0)
-                {
-                    instance.Client.Objects.SelectObjects(instance.Client.Network.CurrentSim, prims.ToArray(), false);
-                    prims.Clear();
+                    instance.Client.Objects.RequestObjectPropertiesFamily(
+                        instance.Client.Network.CurrentSim, props.Dequeue(), true);
                 }
 
                 if (OnTick != null)
