@@ -39,7 +39,6 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private Timer timer;
-        private float angle;
         private Vector3 forward = new Vector3(1, 0, 0);
         private bool turningLeft = false;
         private bool turningRight = false;
@@ -126,8 +125,7 @@ namespace Radegast
         public RadegastMovement(RadegastInstance instance)
         {
             this.instance = instance;
-            angle = client.Self.Movement.BodyRotation.Z;
-            timer = new System.Timers.Timer(250);
+            timer = new System.Timers.Timer(100);
             timer.Elapsed +=new ElapsedEventHandler(timer_Elapsed);
             timer.Enabled = false;
         }
@@ -141,27 +139,16 @@ namespace Radegast
 
         void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            float delta = (float)timer.Interval / 1000f;
             if (turningLeft) {
                 client.Self.Movement.TurnLeft = true;
-                angle += 0.2f;
-                if (angle > 1.0f) {
-                    angle = -1.0f;
-                }
-                client.Self.Movement.BodyRotation = new Quaternion(0, 0, angle);
-                System.Console.WriteLine(client.Self.Movement.BodyRotation.ToString());
+                client.Self.Movement.BodyRotation = client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, delta);
                 client.Self.Movement.SendUpdate(true);
             } else if (turningRight) {
                 client.Self.Movement.TurnRight = true;
-                angle -= 0.2f;
-                if (angle < -1.0f) {
-                    angle = 1.0f;
-                }
-                client.Self.Movement.BodyRotation = new Quaternion(0, 0, angle);
-                System.Console.WriteLine(client.Self.Movement.BodyRotation.ToString());
+                client.Self.Movement.BodyRotation = client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -delta);
                 client.Self.Movement.SendUpdate(true);
             }
         }
-
-
     }
 }
