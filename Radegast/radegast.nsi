@@ -18,7 +18,7 @@ RequestExecutionLevel admin	; on Vista we must be admin because we write to Prog
 LangString LanguageCode ${LANG_ENGLISH}  "en"
 
 !define APPNAME "Radegast"
-!define VERSION "1.29"
+!define VERSION "2.0"
 !define MAINEXEC "${APPNAME}.exe"
 !define DOTNET_VERSION "3.5"
 
@@ -106,8 +106,14 @@ Section "Uninstall"
   RMDir $INSTDIR\aiml
   Delete $INSTDIR\aiml_config\*.*
   RMDir $INSTDIR\aiml_config
+  Delete $INSTDIR\character\*.*
+  RMDir $INSTDIR\character
+  Delete $INSTDIR\openmetaverse_data\static_assets\*.*
+  RMDir $INSTDIR\openmetaverse_data
   Delete $INSTDIR\openmetaverse_data\*.*
   RMDir $INSTDIR\openmetaverse_data
+  Delete $INSTDIR\shader_data\*.*
+  RMDir $INSTDIR\shader_data
   
   ; Remove shortcuts, if any
   Delete "$DESKTOP\${APPNAME}.lnk"

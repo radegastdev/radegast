@@ -282,9 +282,9 @@ namespace Radegast
             this.lblVersion.AutoSize = true;
             this.lblVersion.Location = new System.Drawing.Point(3, 3);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(100, 13);
+            this.lblVersion.Size = new System.Drawing.Size(94, 13);
             this.lblVersion.TabIndex = 18;
-            this.lblVersion.Text = "Radegast 1.24.500";
+            this.lblVersion.Text = "Radegast 2.0.000";
             // 
             // pnlSplash
             // 

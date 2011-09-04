@@ -86,9 +86,9 @@ namespace Radegast
             this.txtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTitle.Location = new System.Drawing.Point(161, 12);
             this.txtTitle.Name = "txtTitle";
-            this.txtTitle.Size = new System.Drawing.Size(128, 17);
+            this.txtTitle.Size = new System.Drawing.Size(137, 17);
             this.txtTitle.TabIndex = 1;
-            this.txtTitle.Text = "Radegast 1.12.0";
+            this.txtTitle.Text = "Radegast 2.0.000";
             // 
             // txtLicense
             // 
