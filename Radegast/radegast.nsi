@@ -18,7 +18,7 @@ RequestExecutionLevel admin	; on Vista we must be admin because we write to Prog
 LangString LanguageCode ${LANG_ENGLISH}  "en"
 
 !define APPNAME "Radegast"
-!define VERSION "2.0"
+!define VERSION "2.1"
 !define MAINEXEC "${APPNAME}.exe"
 !define DOTNET_VERSION "3.5"
 
@@ -109,6 +109,7 @@ Section "Uninstall"
   Delete $INSTDIR\character\*.*
   RMDir $INSTDIR\character
   Delete $INSTDIR\openmetaverse_data\static_assets\*.*
+  RMDir $INSTDIR\openmetaverse_data\static_assets
   RMDir $INSTDIR\openmetaverse_data
   Delete $INSTDIR\openmetaverse_data\*.*
   RMDir $INSTDIR\openmetaverse_data
