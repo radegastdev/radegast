@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<project name="NullBuild" default="build">
+  <target name="build">
+  </target>
+  <target name="clean">
+    <delete dir="${bin.dir}" failonerror="false" />
+    <delete dir="${obj.dir}" failonerror="false" />
+  </target>
+  <target name="doc" description="Creates documentation.">
+  </target>
+</project>
+
