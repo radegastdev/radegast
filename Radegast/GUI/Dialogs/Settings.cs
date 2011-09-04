@@ -109,7 +109,10 @@ namespace Radegast
 
             if (!s.ContainsKey("rendering_occlusion_culling_enabled")) s["rendering_occlusion_culling_enabled"] = true;
 
+            if (!s.ContainsKey("rendering_use_vbo")) s["rendering_use_vbo"] = true;
+
             if (!s.ContainsKey("send_rad_client_tag")) s["send_rad_client_tag"] = true;
+
 
         }
 

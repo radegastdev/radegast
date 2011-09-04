@@ -35,6 +35,7 @@
             this.cbWaterReflections = new System.Windows.Forms.CheckBox();
             this.cbOcclusionCulling = new System.Windows.Forms.CheckBox();
             this.cbShiny = new System.Windows.Forms.CheckBox();
+            this.cbVBO = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.tbDrawDistance)).BeginInit();
             this.SuspendLayout();
             // 
@@ -96,10 +97,10 @@
             // cbOcclusionCulling
             // 
             this.cbOcclusionCulling.AutoSize = true;
-            this.cbOcclusionCulling.Location = new System.Drawing.Point(3, 72);
+            this.cbOcclusionCulling.Location = new System.Drawing.Point(169, 3);
             this.cbOcclusionCulling.Name = "cbOcclusionCulling";
             this.cbOcclusionCulling.Size = new System.Drawing.Size(107, 17);
-            this.cbOcclusionCulling.TabIndex = 4;
+            this.cbOcclusionCulling.TabIndex = 5;
             this.cbOcclusionCulling.Text = "Occlusion Culling";
             this.cbOcclusionCulling.UseVisualStyleBackColor = true;
             this.cbOcclusionCulling.CheckedChanged += new System.EventHandler(this.cbOcclusionCulling_CheckedChanged);
@@ -107,18 +108,30 @@
             // cbShiny
             // 
             this.cbShiny.AutoSize = true;
-            this.cbShiny.Location = new System.Drawing.Point(3, 95);
+            this.cbShiny.Location = new System.Drawing.Point(3, 72);
             this.cbShiny.Name = "cbShiny";
             this.cbShiny.Size = new System.Drawing.Size(52, 17);
-            this.cbShiny.TabIndex = 5;
+            this.cbShiny.TabIndex = 4;
             this.cbShiny.Text = "Shiny";
             this.cbShiny.UseVisualStyleBackColor = true;
             this.cbShiny.CheckedChanged += new System.EventHandler(this.cbShiny_CheckedChanged);
+            // 
+            // cbVBO
+            // 
+            this.cbVBO.AutoSize = true;
+            this.cbVBO.Location = new System.Drawing.Point(169, 26);
+            this.cbVBO.Name = "cbVBO";
+            this.cbVBO.Size = new System.Drawing.Size(70, 17);
+            this.cbVBO.TabIndex = 6;
+            this.cbVBO.Text = "Use VBO";
+            this.cbVBO.UseVisualStyleBackColor = true;
+            this.cbVBO.CheckedChanged += new System.EventHandler(this.cbVBO_CheckedChanged);
             // 
             // GraphicsPreferences
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.cbVBO);
             this.Controls.Add(this.cbShiny);
             this.Controls.Add(this.cbOcclusionCulling);
             this.Controls.Add(this.cbWaterReflections);
@@ -143,5 +156,6 @@
         public System.Windows.Forms.CheckBox cbWaterReflections;
         private System.Windows.Forms.CheckBox cbOcclusionCulling;
         private System.Windows.Forms.CheckBox cbShiny;
+        private System.Windows.Forms.CheckBox cbVBO;
     }
 }

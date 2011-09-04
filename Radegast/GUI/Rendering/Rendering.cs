@@ -670,7 +670,8 @@ namespace Radegast.Rendering
                 // VBO
                 RenderSettings.ARBVBOPresent = context.GetAddress("glGenBuffersARB") != IntPtr.Zero;
                 RenderSettings.CoreVBOPresent = context.GetAddress("glGenBuffers") != IntPtr.Zero;
-                RenderSettings.UseVBO = RenderSettings.ARBVBOPresent || RenderSettings.CoreVBOPresent;
+                RenderSettings.UseVBO = (RenderSettings.ARBVBOPresent || RenderSettings.CoreVBOPresent)
+                    && instance.GlobalSettings["rendering_use_vbo"];
 
                 // Occlusion Query
                 RenderSettings.ARBQuerySupported = context.GetAddress("glGetQueryObjectivARB") != IntPtr.Zero;
