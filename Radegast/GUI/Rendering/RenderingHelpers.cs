@@ -165,6 +165,8 @@ namespace Radegast.Rendering
         /// <param name="time">Time since the last call (last frame time in seconds)</param>
         public virtual void Step(float time)
         {
+            if (BasePrim == null) return;
+
             // Don't interpolate when parent changes (sit/stand link/unlink)
             if (previousParent != BasePrim.ParentID)
             {
