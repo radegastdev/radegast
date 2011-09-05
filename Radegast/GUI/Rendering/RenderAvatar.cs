@@ -1054,188 +1054,196 @@ namespace Radegast.Rendering
 
         public void animate(float lastframetime)
         {
-            lock (mPriority) mPriority.Clear();
-
-            lock (mAnimations)
-                foreach (BinBVHAnimationReader b in mAnimations)
+            try
+            {
+                lock (mPriority)
                 {
-                    if (b == null)
-                        continue;
-
-                    int jpos = 0;
-                    foreach (binBVHJoint joint in b.joints)
+                    mPriority.Clear();
+                    lock (mAnimations)
                     {
-                        int prio = 0;
-
-                        lock (mPriority)
+                        foreach (BinBVHAnimationReader b in mAnimations)
                         {
-                            //Quick hack to stack animations in the correct order
-                            //TODO we need to do this per joint as they all have their own priorities as well ;-(
-                            if (mPriority.TryGetValue(joint.Name, out prio))
+                            if (b == null)
+                                continue;
+
+                            int jpos = 0;
+                            foreach (binBVHJoint joint in b.joints)
                             {
-                                if (prio > b.Priority)
-                                    continue;
-                            }
+                                int prio = 0;
 
-                            mPriority[joint.Name] = b.Priority;
-                        }
-
-                        binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
-
-                        state.currenttime_rot += lastframetime;
-                        state.currenttime_pos += lastframetime;
-
-                        //fudge
-                        if (b.joints[jpos].rotationkeys.Length == 1)
-                        {
-                            state.nextkeyframe_rot = 0;
-                        }
-
-                        Vector3 poslerp = Vector3.Zero;
-
-                        if (b.joints[jpos].positionkeys.Length > 2)
-                        {
-                            binBVHJointKey pos2 = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
-
-
-                            if (state.currenttime_pos > pos2.time)
-                            {
-                                state.lastkeyframe_pos++;
-                                state.nextkeyframe_pos++;
-
-                                if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length || (state.nextkeyframe_pos >= state.loopoutframe && b.Loop == true))
+                                //Quick hack to stack animations in the correct order
+                                //TODO we need to do this per joint as they all have their own priorities as well ;-(
+                                if (mPriority.TryGetValue(joint.Name, out prio))
                                 {
-                                    if (b.Loop == true)
+                                    if (prio > b.Priority)
+                                        continue;
+                                }
+
+                                mPriority[joint.Name] = b.Priority;
+
+                                binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
+
+                                state.currenttime_rot += lastframetime;
+                                state.currenttime_pos += lastframetime;
+
+                                //fudge
+                                if (b.joints[jpos].rotationkeys.Length == 1)
+                                {
+                                    state.nextkeyframe_rot = 0;
+                                }
+
+                                Vector3 poslerp = Vector3.Zero;
+
+                                if (b.joints[jpos].positionkeys.Length > 2)
+                                {
+                                    binBVHJointKey pos2 = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
+
+
+                                    if (state.currenttime_pos > pos2.time)
                                     {
-                                        state.nextkeyframe_pos = state.loopinframe;
-                                        state.currenttime_pos = b.InPoint;
+                                        state.lastkeyframe_pos++;
+                                        state.nextkeyframe_pos++;
+
+                                        if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length || (state.nextkeyframe_pos >= state.loopoutframe && b.Loop == true))
+                                        {
+                                            if (b.Loop == true)
+                                            {
+                                                state.nextkeyframe_pos = state.loopinframe;
+                                                state.currenttime_pos = b.InPoint;
+
+                                                if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                                {
+                                                    state.lastkeyframe_pos = state.loopinframe;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                state.nextkeyframe_pos = joint.positionkeys.Length - 1;
+                                            }
+                                        }
+
+
 
                                         if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
                                         {
-                                            state.lastkeyframe_pos = state.loopinframe;
+                                            if (b.Loop == true)
+                                            {
+                                                state.lastkeyframe_pos = 0;
+                                                state.currenttime_pos = 0;
+
+                                            }
+                                            else
+                                            {
+                                                state.lastkeyframe_pos = joint.positionkeys.Length - 1;
+                                                if (state.lastkeyframe_pos < 0)//eeww
+                                                    state.lastkeyframe_pos = 0;
+                                            }
                                         }
                                     }
-                                    else
+
+                                    binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
+
+
+                                    if (state.currenttime_pos != ((pos.time - b.joints[jpos].positionkeys[0].time)))
                                     {
-                                        state.nextkeyframe_pos = joint.positionkeys.Length - 1;
+
+                                        float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
+
+                                        if (delta < 0)
+                                            delta = 0;
+
+                                        if (delta > 1)
+                                            delta = 1;
+
+                                        poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta);
                                     }
+
                                 }
 
 
-
-                                if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                Vector3 rotlerp = Vector3.Zero;
+                                if (b.joints[jpos].rotationkeys.Length > 0)
                                 {
-                                    if (b.Loop == true)
+                                    binBVHJointKey rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+
+                                    if (state.currenttime_rot > rot2.time)
                                     {
-                                        state.lastkeyframe_pos = 0;
-                                        state.currenttime_pos = 0;
+                                        state.lastkeyframe_rot++;
+                                        state.nextkeyframe_rot++;
 
-                                    }
-                                    else
-                                    {
-                                        state.lastkeyframe_pos = joint.positionkeys.Length - 1;
-                                        if (state.lastkeyframe_pos < 0)//eeww
-                                            state.lastkeyframe_pos = 0;
-                                    }
-                                }
-                            }
+                                        if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length || (state.nextkeyframe_rot >= state.loopoutframe && b.Loop == true))
+                                        {
+                                            if (b.Loop == true)
+                                            {
+                                                state.nextkeyframe_rot = state.loopinframe;
+                                                state.currenttime_rot = b.InPoint;
 
-                            binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
-
-
-                            if (state.currenttime_pos != ((pos.time - b.joints[jpos].positionkeys[0].time)))
-                            {
-
-                                float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
-
-                                if (delta < 0)
-                                    delta = 0;
-
-                                if (delta > 1)
-                                    delta = 1;
-
-                                poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta);
-                            }
-
-                        }
+                                                if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                                {
+                                                    state.lastkeyframe_rot = state.loopinframe;
 
 
-                        Vector3 rotlerp = Vector3.Zero;
-                        if (b.joints[jpos].rotationkeys.Length > 0)
-                        {
-                            binBVHJointKey rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+                                                }
 
-                            if (state.currenttime_rot > rot2.time)
-                            {
-                                state.lastkeyframe_rot++;
-                                state.nextkeyframe_rot++;
-
-                                if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length || (state.nextkeyframe_rot >= state.loopoutframe && b.Loop == true))
-                                {
-                                    if (b.Loop == true)
-                                    {
-                                        state.nextkeyframe_rot = state.loopinframe;
-                                        state.currenttime_rot = b.InPoint;
+                                            }
+                                            else
+                                            {
+                                                state.nextkeyframe_rot = joint.rotationkeys.Length - 1;
+                                            }
+                                        }
 
                                         if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
                                         {
-                                            state.lastkeyframe_rot = state.loopinframe;
+                                            if (b.Loop == true)
+                                            {
+                                                state.lastkeyframe_rot = 0;
+                                                state.currenttime_rot = 0;
 
-
+                                            }
+                                            else
+                                            {
+                                                state.lastkeyframe_rot = joint.rotationkeys.Length - 1;
+                                            }
                                         }
+                                    }
 
-                                    }
-                                    else
+                                    binBVHJointKey rot = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
+                                    rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+
+                                    float deltarot = 0;
+                                    if (state.currenttime_rot != (rot.time - b.joints[jpos].rotationkeys[0].time))
                                     {
-                                        state.nextkeyframe_rot = joint.rotationkeys.Length - 1;
+                                        deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
                                     }
+
+                                    if (deltarot < 0)
+                                        deltarot = 0;
+
+                                    if (deltarot > 1)
+                                        deltarot = 1;
+
+                                    rotlerp = Vector3.Lerp(rot.key_element, rot2.key_element, deltarot);
+
                                 }
 
-                                if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
-                                {
-                                    if (b.Loop == true)
-                                    {
-                                        state.lastkeyframe_rot = 0;
-                                        state.currenttime_rot = 0;
+                                b.joints[jpos].Tag = (object)state;
 
-                                    }
-                                    else
-                                    {
-                                        state.lastkeyframe_rot = joint.rotationkeys.Length - 1;
-                                    }
-                                }
+                                deformbone(joint.Name, poslerp, new Vector3(0, 0, 0), new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
+
+                                jpos++;
                             }
 
-                            binBVHJointKey rot = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
-                            rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
-
-                            float deltarot = 0;
-                            if (state.currenttime_rot != (rot.time - b.joints[jpos].rotationkeys[0].time))
-                            {
-                                deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
-                            }
-
-                            if (deltarot < 0)
-                                deltarot = 0;
-
-                            if (deltarot > 1)
-                                deltarot = 1;
-
-                            rotlerp = Vector3.Lerp(rot.key_element, rot2.key_element, deltarot);
-
+                            mNeedsMeshRebuild = true;
                         }
 
-                        b.joints[jpos].Tag = (object)state;
-
-                        deformbone(joint.Name, poslerp, new Vector3(0, 0, 0), new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
-
-                        jpos++;
+                        mNeedsUpdate = false;
                     }
-
-                    mNeedsMeshRebuild = true;
                 }
-
-            mNeedsUpdate = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Exception in animate()", Helpers.LogLevel.Warning, ex);
+            }
         }
     }
 
