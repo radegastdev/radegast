@@ -69,6 +69,10 @@ namespace Radegast
             this.InventoryItem = new System.Windows.Forms.ColumnHeader();
             this.clFileName = new System.Windows.Forms.ColumnHeader();
             this.Progress = new System.Windows.Forms.ColumnHeader();
+            this.cbNoteCards = new System.Windows.Forms.CheckBox();
+            this.cbScripts = new System.Windows.Forms.CheckBox();
+            this.cbImages = new System.Windows.Forms.CheckBox();
+            this.cbList = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,7 +110,7 @@ namespace Radegast
             this.toolStrip1.Location = new System.Drawing.Point(0, 361);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(774, 25);
-            this.toolStrip1.TabIndex = 2;
+            this.toolStrip1.TabIndex = 11;
             // 
             // lblStatus
             // 
@@ -140,7 +144,7 @@ namespace Radegast
             this.lvwFiles.ShowGroups = false;
             this.lvwFiles.ShowItemToolTips = true;
             this.lvwFiles.Size = new System.Drawing.Size(774, 319);
-            this.lvwFiles.TabIndex = 15;
+            this.lvwFiles.TabIndex = 10;
             this.lvwFiles.UseCompatibleStateImageBehavior = false;
             this.lvwFiles.View = System.Windows.Forms.View.Details;
             this.lvwFiles.DoubleClick += new System.EventHandler(this.lvwFiles_DoubleClick);
@@ -160,11 +164,63 @@ namespace Radegast
             this.Progress.Text = "Progress";
             this.Progress.Width = 193;
             // 
+            // cbNoteCards
+            // 
+            this.cbNoteCards.AutoSize = true;
+            this.cbNoteCards.Checked = true;
+            this.cbNoteCards.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbNoteCards.Location = new System.Drawing.Point(407, 14);
+            this.cbNoteCards.Name = "cbNoteCards";
+            this.cbNoteCards.Size = new System.Drawing.Size(75, 17);
+            this.cbNoteCards.TabIndex = 2;
+            this.cbNoteCards.Text = "Notecards";
+            this.cbNoteCards.UseVisualStyleBackColor = true;
+            // 
+            // cbScripts
+            // 
+            this.cbScripts.AutoSize = true;
+            this.cbScripts.Checked = true;
+            this.cbScripts.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbScripts.Location = new System.Drawing.Point(488, 14);
+            this.cbScripts.Name = "cbScripts";
+            this.cbScripts.Size = new System.Drawing.Size(58, 17);
+            this.cbScripts.TabIndex = 3;
+            this.cbScripts.Text = "Scripts";
+            this.cbScripts.UseVisualStyleBackColor = true;
+            // 
+            // cbImages
+            // 
+            this.cbImages.AutoSize = true;
+            this.cbImages.Checked = true;
+            this.cbImages.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbImages.Location = new System.Drawing.Point(552, 14);
+            this.cbImages.Name = "cbImages";
+            this.cbImages.Size = new System.Drawing.Size(60, 17);
+            this.cbImages.TabIndex = 4;
+            this.cbImages.Text = "Images";
+            this.cbImages.UseVisualStyleBackColor = true;
+            // 
+            // cbList
+            // 
+            this.cbList.AutoSize = true;
+            this.cbList.Checked = true;
+            this.cbList.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbList.Location = new System.Drawing.Point(618, 14);
+            this.cbList.Name = "cbList";
+            this.cbList.Size = new System.Drawing.Size(42, 17);
+            this.cbList.TabIndex = 5;
+            this.cbList.Text = "List";
+            this.cbList.UseVisualStyleBackColor = true;
+            // 
             // InventoryBackup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(774, 386);
+            this.Controls.Add(this.cbList);
+            this.Controls.Add(this.cbImages);
+            this.Controls.Add(this.cbScripts);
+            this.Controls.Add(this.cbNoteCards);
             this.Controls.Add(this.lvwFiles);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnFolder);
@@ -192,6 +248,10 @@ namespace Radegast
         public System.Windows.Forms.ColumnHeader InventoryItem;
         public System.Windows.Forms.ColumnHeader clFileName;
         public System.Windows.Forms.ColumnHeader Progress;
+        private System.Windows.Forms.CheckBox cbNoteCards;
+        private System.Windows.Forms.CheckBox cbScripts;
+        private System.Windows.Forms.CheckBox cbImages;
+        private System.Windows.Forms.CheckBox cbList;
 
     }
 }

@@ -241,7 +241,7 @@ namespace Radegast
             this.saveAllTToolStripMenuItem.Enabled = false;
             this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
             this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.saveAllTToolStripMenuItem.Text = "&Save all text";
+            this.saveAllTToolStripMenuItem.Text = "&Backup";
             this.saveAllTToolStripMenuItem.ToolTipText = "Saves all notecards and scripts to folder on local disk";
             this.saveAllTToolStripMenuItem.Click += new System.EventHandler(this.saveAllTToolStripMenuItem_Click);
             // 
@@ -639,6 +639,7 @@ namespace Radegast
             // 
             // txtCreator
             // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
             this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
             this.txtCreator.Location = new System.Drawing.Point(80, 29);
             this.txtCreator.Name = "txtCreator";
