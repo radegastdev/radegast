@@ -1237,14 +1237,18 @@ namespace Radegast.Rendering
         bool IsAttached(uint parentLocalID)
         {
             if (parentLocalID == 0) return false;
-            if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(parentLocalID))
+            try
             {
-                return true;
+                if (Client.Network.CurrentSim.ObjectsAvatars.ContainsKey(parentLocalID))
+                {
+                    return true;
+                }
+                else if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(parentLocalID))
+                {
+                    return IsAttached(Client.Network.CurrentSim.ObjectsPrimitives[parentLocalID].ParentID);
+                }
             }
-            else if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(parentLocalID))
-            {
-                return IsAttached(Client.Network.CurrentSim.ObjectsPrimitives[parentLocalID].ParentID);
-            }
+            catch { }
             return false;
         }
 
