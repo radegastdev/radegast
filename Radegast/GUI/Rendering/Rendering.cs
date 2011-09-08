@@ -2711,6 +2711,9 @@ namespace Radegast.Rendering
 
         private void Render(bool picking)
         {
+            // If we have more than one active GL control on the screen, make this one active
+            glControl.MakeCurrent();
+
             SortCullInterpolate();
 
             if (picking)
