@@ -459,7 +459,7 @@ namespace Radegast
         /// </summary>
         public void SelectDefaultTab()
         {
-            if (TabExists("chat"))
+            if (IsHandleCreated && TabExists("chat"))
                 tabs["chat"].Select();
         }
 
