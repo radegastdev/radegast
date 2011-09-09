@@ -788,7 +788,7 @@ namespace Radegast
 
             selectedTab = tab;
 
-            tbtnCloseTab.Enabled = tab.AllowClose || tab.AllowHide;
+            tbtnCloseTab.Enabled = !tab.Merged && (tab.AllowClose || tab.AllowHide);
 
             if (owner != null)
             {
@@ -1121,7 +1121,9 @@ namespace Radegast
         private void tbtnCloseTab_Click(object sender, EventArgs e)
         {
             RadegastTab tab = selectedTab;
-            if (tab.AllowClose)
+            if (tab.Merged)
+                return;
+            else if (tab.AllowClose)
                 tab.Close();
             else if (tab.AllowHide)
                 tab.Hide();
