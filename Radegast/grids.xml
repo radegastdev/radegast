@@ -131,6 +131,23 @@
 
     </map>
 
+    <!-- Metavers Francophone FrancoGrid -->
+    <map>
+      <key>gridnick</key><string>francogrid</string>
+      <key>gridname</key><string>Francogrid</string>
+
+      <key>platform</key><string>OpenSim</string>
+      <key>loginuri</key><string>http://login.francogrid.org/</string>
+      <key>loginpage</key><string>http://viewer.francogrid.org/</string>
+      <key>helperuri</key><string>http://helper.main.francogrid.org/</string>
+      <key>website</key><string>http:/francogrid.org/</string>
+
+      <key>support</key><string>http:/francogrid.org/aide</string>
+      <key>register</key><string>http:/francogrid.org/user/register</string>
+      <key>password</key><string>http:/francogrid.org/user/password</string>
+      <key>version</key><string>0</string>
+    </map>
+    
     <!-- Legend City Online -->
     <map>
       <key>gridnick</key><string>legendcityonline</string>
