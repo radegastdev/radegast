@@ -67,7 +67,9 @@ namespace Radegast
             this.pnlGroupList = new System.Windows.Forms.Panel();
             this.lblGrpMax = new System.Windows.Forms.Label();
             this.lblGroupNr = new System.Windows.Forms.Label();
+            this.btnKeys = new System.Windows.Forms.Button();
             this.btnNewGroup = new System.Windows.Forms.Button();
+            this.btnMute = new System.Windows.Forms.Button();
             this.pnlNewGroup = new System.Windows.Forms.Panel();
             this.lblCreateStatus = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -77,9 +79,11 @@ namespace Radegast
             this.label2 = new System.Windows.Forms.Label();
             this.txtNewGroupCharter = new System.Windows.Forms.TextBox();
             this.txtNewGroupName = new System.Windows.Forms.TextBox();
-            this.btnMute = new System.Windows.Forms.Button();
+            this.pnlKeys = new System.Windows.Forms.Panel();
+            this.txtKeys = new System.Windows.Forms.TextBox();
             this.pnlGroupList.SuspendLayout();
             this.pnlNewGroup.SuspendLayout();
+            this.pnlKeys.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -134,7 +138,7 @@ namespace Radegast
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(9, 26);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(442, 277);
+            this.listBox1.Size = new System.Drawing.Size(442, 269);
             this.listBox1.Sorted = true;
             this.listBox1.TabIndex = 0;
             this.listBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDoubleClick);
@@ -167,6 +171,7 @@ namespace Radegast
             // 
             this.pnlGroupList.Controls.Add(this.lblGrpMax);
             this.pnlGroupList.Controls.Add(this.lblGroupNr);
+            this.pnlGroupList.Controls.Add(this.btnKeys);
             this.pnlGroupList.Controls.Add(this.btnNewGroup);
             this.pnlGroupList.Controls.Add(this.listBox1);
             this.pnlGroupList.Controls.Add(this.btnInfo);
@@ -179,14 +184,14 @@ namespace Radegast
             this.pnlGroupList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlGroupList.Location = new System.Drawing.Point(0, 0);
             this.pnlGroupList.Name = "pnlGroupList";
-            this.pnlGroupList.Size = new System.Drawing.Size(545, 305);
+            this.pnlGroupList.Size = new System.Drawing.Size(545, 297);
             this.pnlGroupList.TabIndex = 6;
             // 
             // lblGrpMax
             // 
             this.lblGrpMax.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblGrpMax.AutoSize = true;
-            this.lblGrpMax.Location = new System.Drawing.Point(454, 240);
+            this.lblGrpMax.Location = new System.Drawing.Point(454, 281);
             this.lblGrpMax.Name = "lblGrpMax";
             this.lblGrpMax.Size = new System.Drawing.Size(26, 13);
             this.lblGrpMax.TabIndex = 7;
@@ -196,11 +201,22 @@ namespace Radegast
             // 
             this.lblGroupNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblGroupNr.AutoSize = true;
-            this.lblGroupNr.Location = new System.Drawing.Point(454, 227);
+            this.lblGroupNr.Location = new System.Drawing.Point(454, 268);
             this.lblGroupNr.Name = "lblGroupNr";
             this.lblGroupNr.Size = new System.Drawing.Size(48, 13);
             this.lblGroupNr.TabIndex = 7;
             this.lblGroupNr.Text = "0 groups";
+            // 
+            // btnKeys
+            // 
+            this.btnKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnKeys.Location = new System.Drawing.Point(457, 229);
+            this.btnKeys.Name = "btnKeys";
+            this.btnKeys.Size = new System.Drawing.Size(79, 23);
+            this.btnKeys.TabIndex = 8;
+            this.btnKeys.Text = "Keys";
+            this.btnKeys.UseVisualStyleBackColor = true;
+            this.btnKeys.Click += new System.EventHandler(this.btnKeys_Click);
             // 
             // btnNewGroup
             // 
@@ -213,6 +229,17 @@ namespace Radegast
             this.btnNewGroup.UseVisualStyleBackColor = true;
             this.btnNewGroup.Click += new System.EventHandler(this.btnNewGroup_Click);
             // 
+            // btnMute
+            // 
+            this.btnMute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMute.Location = new System.Drawing.Point(457, 171);
+            this.btnMute.Name = "btnMute";
+            this.btnMute.Size = new System.Drawing.Size(79, 23);
+            this.btnMute.TabIndex = 6;
+            this.btnMute.Text = "Mute";
+            this.btnMute.UseVisualStyleBackColor = true;
+            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
+            // 
             // pnlNewGroup
             // 
             this.pnlNewGroup.Controls.Add(this.lblCreateStatus);
@@ -224,10 +251,10 @@ namespace Radegast
             this.pnlNewGroup.Controls.Add(this.txtNewGroupCharter);
             this.pnlNewGroup.Controls.Add(this.txtNewGroupName);
             this.pnlNewGroup.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlNewGroup.Location = new System.Drawing.Point(0, 305);
+            this.pnlNewGroup.Location = new System.Drawing.Point(0, 430);
             this.pnlNewGroup.Name = "pnlNewGroup";
             this.pnlNewGroup.Size = new System.Drawing.Size(545, 120);
-            this.pnlNewGroup.TabIndex = 7;
+            this.pnlNewGroup.TabIndex = 8;
             this.pnlNewGroup.Visible = false;
             // 
             // lblCreateStatus
@@ -307,29 +334,45 @@ namespace Radegast
             this.txtNewGroupName.TextChanged += new System.EventHandler(this.txtNewGroupName_TextChanged);
             this.txtNewGroupName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNewGroupName_KeyDown);
             // 
-            // btnMute
+            // pnlKeys
             // 
-            this.btnMute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMute.Location = new System.Drawing.Point(457, 171);
-            this.btnMute.Name = "btnMute";
-            this.btnMute.Size = new System.Drawing.Size(79, 23);
-            this.btnMute.TabIndex = 6;
-            this.btnMute.Text = "Mute";
-            this.btnMute.UseVisualStyleBackColor = true;
-            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
+            this.pnlKeys.Controls.Add(this.txtKeys);
+            this.pnlKeys.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlKeys.Location = new System.Drawing.Point(0, 297);
+            this.pnlKeys.Name = "pnlKeys";
+            this.pnlKeys.Size = new System.Drawing.Size(545, 133);
+            this.pnlKeys.TabIndex = 7;
+            this.pnlKeys.Visible = false;
+            // 
+            // txtKeys
+            // 
+            this.txtKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtKeys.BackColor = System.Drawing.SystemColors.Window;
+            this.txtKeys.Location = new System.Drawing.Point(9, 3);
+            this.txtKeys.Multiline = true;
+            this.txtKeys.Name = "txtKeys";
+            this.txtKeys.ReadOnly = true;
+            this.txtKeys.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtKeys.Size = new System.Drawing.Size(442, 126);
+            this.txtKeys.TabIndex = 0;
             // 
             // GroupsConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlGroupList);
+            this.Controls.Add(this.pnlKeys);
             this.Controls.Add(this.pnlNewGroup);
             this.Name = "GroupsConsole";
-            this.Size = new System.Drawing.Size(545, 425);
+            this.Size = new System.Drawing.Size(545, 550);
             this.pnlGroupList.ResumeLayout(false);
             this.pnlGroupList.PerformLayout();
             this.pnlNewGroup.ResumeLayout(false);
             this.pnlNewGroup.PerformLayout();
+            this.pnlKeys.ResumeLayout(false);
+            this.pnlKeys.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -357,6 +400,9 @@ namespace Radegast
         public System.Windows.Forms.Button btnCancel;
         public System.Windows.Forms.Label lblCreateStatus;
         public System.Windows.Forms.Button btnMute;
+        public System.Windows.Forms.Panel pnlKeys;
+        public System.Windows.Forms.Button btnKeys;
+        private System.Windows.Forms.TextBox txtKeys;
 
     }
 }

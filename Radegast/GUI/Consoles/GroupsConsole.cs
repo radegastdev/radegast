@@ -50,6 +50,7 @@ namespace Radegast
             this.instance = instance;
             client.Groups.CurrentGroups += new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupCreatedReply += new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
+            client.Groups.GroupRoleDataReply += new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
             client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             client.Groups.RequestCurrentGroups();
             UpdateDisplay();
@@ -59,7 +60,29 @@ namespace Radegast
         {
             client.Groups.CurrentGroups -= new EventHandler<CurrentGroupsEventArgs>(Groups_CurrentGroups);
             client.Groups.GroupCreatedReply -= new EventHandler<GroupCreatedReplyEventArgs>(Groups_GroupCreatedReply);
+            client.Groups.GroupRoleDataReply += new EventHandler<GroupRolesDataReplyEventArgs>(Groups_GroupRoleDataReply);
             client.Self.MuteListUpdated -= new EventHandler<EventArgs>(Self_MuteListUpdated);
+        }
+
+        void Groups_GroupRoleDataReply(object sender, GroupRolesDataReplyEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Groups_GroupRoleDataReply(sender, e)));
+                }
+                return;
+            }
+
+            if (!(txtKeys.Tag is Group)) return;
+            Group g = (Group)txtKeys.Tag;
+            if (g.ID != e.GroupID) return;
+
+            foreach (var r in e.Roles)
+            {
+                txtKeys.AppendText(string.Format("Role \"{0}\": {1}{2}", r.Value.Name, r.Key, Environment.NewLine));
+            }
         }
 
         void Groups_GroupCreatedReply(object sender, GroupCreatedReplyEventArgs e)
@@ -279,6 +302,7 @@ namespace Radegast
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateMuteButton();
+            pnlKeys.Visible = false;
         }
 
         private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
@@ -315,5 +339,21 @@ namespace Radegast
 
             e.DrawFocusRectangle();
         }
-    }
+
+        private void btnKeys_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedItem == null) return;
+            Group g = (Group)listBox1.SelectedItem;
+            if (g.ID == UUID.Zero) return;
+
+            pnlKeys.Visible = !pnlKeys.Visible;
+            if (pnlKeys.Visible)
+            {
+                txtKeys.Text = string.Empty;
+                txtKeys.Tag = g;
+                txtKeys.AppendText(string.Format("Group \"{0}\": {1}{2}", g.Name, g.ID, Environment.NewLine));
+                client.Groups.RequestGroupRoles(g.ID);
+            }
+        }
+     }
 }
