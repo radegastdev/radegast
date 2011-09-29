@@ -278,7 +278,7 @@ namespace Radegast
             }
 
 
-            tbxCharter.Text = group.Charter;
+            tbxCharter.Text = group.Charter.Replace("\n", Environment.NewLine);
             lblFounded.Text = "Founded by: " + instance.Names.Get(group.FounderID);
             cbxShowInSearch.Checked = group.ShowInList;
             cbxOpenEnrollment.Checked = group.OpenEnrollment;
