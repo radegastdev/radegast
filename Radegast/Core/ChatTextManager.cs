@@ -138,7 +138,7 @@ namespace Radegast
 
             lock (SyncChat)
             {
-                instance.LogClientMessage("chat.txt", item.Text);
+                instance.LogClientMessage("chat.txt", item.From + item.Text);
                 if (addToBuffer) textBuffer.Add(item);
 
                 if (showTimestamps)
