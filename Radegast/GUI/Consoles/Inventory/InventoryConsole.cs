@@ -89,8 +89,31 @@ namespace Radegast
             Inventory.RootFolder.OwnerID = client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
             invRootNode = AddDir(null, Inventory.RootFolder);
-            Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
-            Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
+            UpdateStatus("Reading cache");
+            Init1();
+        }
+
+        public void Init1()
+        {
+            ThreadPool.QueueUserWorkItem(sync =>
+            {
+                Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
+                Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
+                Init2();
+            });
+        }
+
+        public void Init2()
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => Init2()));
+                }
+                return;
+            }
+
             AddFolderFromStore(invRootNode, Inventory.RootFolder);
 
             sorter = new InvNodeSorter();
@@ -228,29 +251,6 @@ namespace Radegast
 
                     lock (attachments)
                     {
-                        // Do we have attachmetns already on this spot?
-                        AttachmentInfo oldAttachment = null;
-                        UUID oldAttachmentUUID = UUID.Zero;
-                        foreach (KeyValuePair<UUID, AttachmentInfo> att in attachments)
-                        {
-                            if (att.Value.Point == prim.PrimData.AttachmentPoint)
-                            {
-                                oldAttachment = att.Value;
-                                oldAttachmentUUID = att.Key;
-                                break;
-                            }
-                        }
-
-                        if (oldAttachment != null && oldAttachment.InventoryID != attachment.InventoryID)
-                        {
-                            attachments.Remove(oldAttachmentUUID);
-                            if (oldAttachment.Item != null)
-                            {
-                                attachment.MarkedAttached = false;
-                                Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(oldAttachment.Item, oldAttachment.Item));
-                            }
-                        }
-
                         // Add new attachment info
                         if (!attachments.ContainsKey(attachment.InventoryID))
                         {
@@ -1137,10 +1137,36 @@ namespace Radegast
 
         public bool IsAttached(InventoryItem item)
         {
-            lock (attachments)
+            List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == client.Self.LocalID);
+            foreach (Primitive prim in myAtt)
             {
-                return attachments.ContainsKey(item.UUID);
+                if (prim.NameValues == null) continue;
+                UUID invID = UUID.Zero;
+                for (int i = 0; i < prim.NameValues.Length; i++)
+                {
+                    if (prim.NameValues[i].Name == "AttachItemID")
+                    {
+                        invID = (UUID)prim.NameValues[i].Value.ToString();
+                        break;
+                    }
+                }
+                if (invID == item.UUID)
+                {
+                    lock (attachments)
+                    {
+                        AttachmentInfo inf = new AttachmentInfo();
+                        inf.InventoryID = item.UUID;
+                        inf.Item = item;
+                        inf.MarkedAttached = true;
+                        inf.Prim = prim;
+                        inf.PrimID = prim.ID;
+                        attachments[invID] = inf;
+                    }
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public InventoryItem AttachmentAt(AttachmentPoint point)
@@ -1526,6 +1552,10 @@ namespace Radegast
                             }
                         }
 
+                        ctxItem = new ToolStripMenuItem("Add to Worn", null, OnInvContextClick);
+                        ctxItem.Name = "wear_attachment_add";
+                        ctxInv.Items.Add(ctxItem);
+
                         ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick);
                         ctxItem.Name = "wear_attachment";
                         ctxInv.Items.Add(ctxItem);
@@ -1738,6 +1768,10 @@ namespace Radegast
 
                     case "wear_attachment":
                         client.Appearance.Attach(item, AttachmentPoint.Default);
+                        break;
+
+                    case "wear_attachment_add":
+                        client.Appearance.Attach(item, AttachmentPoint.Default, false);
                         break;
 
                     case "attach_to":
