@@ -105,12 +105,9 @@ namespace Radegast
 
         public void Init2()
         {
-            if (InvokeRequired)
+            if (instance.MainForm.InvokeRequired)
             {
-                if (IsHandleCreated)
-                {
-                    BeginInvoke(new MethodInvoker(() => Init2()));
-                }
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => Init2()));
                 return;
             }
 
