@@ -50,6 +50,8 @@ namespace Radegast
         Image image;
         bool allowSave = false;
 
+        public event EventHandler<ImageUpdatedEventArgs> ImageUpdated;
+
         public PictureBoxSizeMode SizeMode
         {
             get { return pictureBox1.SizeMode; }
@@ -76,6 +78,8 @@ namespace Radegast
             }
         }
 
+        public bool AllowDrop = false;
+
         public SLImageHandler()
         {
             InitializeComponent();
@@ -96,6 +100,7 @@ namespace Radegast
         public void Init(RadegastInstance instance, UUID image, string label)
         {
             Disposed += new EventHandler(SLImageHandler_Disposed);
+            pictureBox1.AllowDrop = true;
 
             if (!allowSave && !instance.advancedDebugging) 
             {
@@ -109,9 +114,31 @@ namespace Radegast
 
             Text = string.IsNullOrEmpty(label) ? "Image" : label;
 
+            if (image == UUID.Zero)
+            {
+                progressBar1.Hide();
+                lblProgress.Hide();
+                pictureBox1.Enabled = true;
+                return;
+            }
+
             // Callbacks
             client.Assets.ImageReceiveProgress += new EventHandler<ImageReceiveProgressEventArgs>(Assets_ImageReceiveProgress);
+            UpdateImage(imageID);
+        }
+
+        public void UpdateImage(UUID imageID)
+        {
+            this.imageID = imageID;
             progressBar1.Visible = true;
+            pictureBox1.Image = null;
+            
+            if (imageID == UUID.Zero)
+            {
+                progressBar1.Visible = false;
+                return;
+            }
+
             client.Assets.RequestImage(imageID, ImageType.Normal, 101300.0f, 0, 0, delegate(TextureRequestState state, AssetTexture assetTexture)
             {
                 if (state == TextureRequestState.Finished || state == TextureRequestState.Timeout)
@@ -290,6 +317,126 @@ namespace Radegast
         private void tbtnCopy_Click(object sender, EventArgs e)
         {
             Clipboard.SetImage(pictureBox1.Image);
+        }
+
+        private void pictureBox1_DragEnter(object sender, DragEventArgs e)
+        {
+            TreeNode node = e.Data.GetData(typeof(TreeNode)) as TreeNode;
+            if (!AllowDrop || node == null)
+            {
+                e.Effect = DragDropEffects.None;
+            }
+            else if (node.Tag is InventorySnapshot || node.Tag is InventoryTexture)
+            {
+                e.Effect = DragDropEffects.Copy | DragDropEffects.Move;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void pictureBox1_DragDrop(object sender, DragEventArgs e)
+        {
+            TreeNode node = e.Data.GetData(typeof(TreeNode)) as TreeNode;
+            if (!AllowDrop || node == null) return;
+
+            if (node.Tag is InventorySnapshot || node.Tag is InventoryTexture)
+            {
+                UUID imgID = UUID.Zero;
+                if (node.Tag is InventorySnapshot)
+                {
+                    imgID = ((InventorySnapshot)node.Tag).AssetUUID;
+                }
+                else
+                {
+                    imgID = ((InventoryTexture)node.Tag).AssetUUID;
+                }
+
+                var handler = ImageUpdated;
+                if (handler != null)
+                {
+                    handler(this, new ImageUpdatedEventArgs(imgID));
+                }
+            }
+        }
+
+        private void cmsImage_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = false;
+            if (AllowDrop)
+            {
+                toolStripMenuItem1.Visible = tbtnClear.Visible = tbtnPaste.Visible = true;
+                if (instance.InventoryClipboard != null)
+                {
+                    if (instance.InventoryClipboard.Item is InventoryTexture ||
+                        instance.InventoryClipboard.Item is InventorySnapshot)
+                    {
+                        tbtnPaste.Enabled = true;
+                    }
+                    else
+                    {
+                        tbtnPaste.Enabled = false;
+                    }
+                }
+            }
+            else
+            {
+                toolStripMenuItem1.Visible = tbtnClear.Visible = tbtnPaste.Visible = false;
+            }
+        }
+
+        private void tbtnClear_Click(object sender, EventArgs e)
+        {
+            if (AllowDrop)
+            {
+                UpdateImage(UUID.Zero);
+                var handler = ImageUpdated;
+                if (handler != null)
+                {
+                    handler(this, new ImageUpdatedEventArgs(UUID.Zero));
+                }
+            }
+        }
+
+        private void tbtnPaste_Click(object sender, EventArgs e)
+        {
+            if (!AllowDrop) return;
+            if (instance.InventoryClipboard != null)
+            {
+                UUID newID = UUID.Zero;
+
+                if (instance.InventoryClipboard.Item is InventoryTexture)
+                {
+                    newID = ((InventoryTexture)instance.InventoryClipboard.Item).AssetUUID;
+                }
+                else if (instance.InventoryClipboard.Item is InventorySnapshot)
+                {
+                    newID = ((InventorySnapshot)instance.InventoryClipboard.Item).AssetUUID;
+                }
+                else
+                {
+                    return;
+                }
+
+                UpdateImage(newID);
+
+                var handler = ImageUpdated;
+                if (handler != null)
+                {
+                    handler(this, new ImageUpdatedEventArgs(newID));
+                }
+            }
+        }
+    }
+
+    public class ImageUpdatedEventArgs : EventArgs
+    {
+        public UUID NewImageID;
+
+        public ImageUpdatedEventArgs(UUID imageID)
+        {
+            this.NewImageID = imageID;
         }
     }
 }

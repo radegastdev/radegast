@@ -364,9 +364,21 @@ namespace Radegast
             FLImageID = e.Properties.FirstLifeImage;
             SLImageID = e.Properties.ProfileImage;
 
-            if (SLImageID != UUID.Zero)
+            if (agentID == client.Self.AgentID || SLImageID != UUID.Zero)
             {
                 SLImageHandler pic = new SLImageHandler(instance, SLImageID, "");
+                
+                if (agentID == client.Self.AgentID)
+                {
+                    pic.AllowDrop = true;
+                    pic.ImageUpdated += (usender, ue) =>
+                    {
+                        Profile.ProfileImage = ue.NewImageID;
+                        pic.UpdateImage(ue.NewImageID);
+                        client.Self.UpdateProfile(Profile);
+                    };
+                }
+
                 pic.Dock = DockStyle.Fill;
                 pic.SizeMode = PictureBoxSizeMode.StretchImage;
                 slPicPanel.Controls.Add(pic);
@@ -377,10 +389,22 @@ namespace Radegast
                 slPicPanel.Hide();
             }
 
-            if (FLImageID != UUID.Zero)
+            if (agentID == client.Self.AgentID || FLImageID != UUID.Zero)
             {
                 SLImageHandler pic = new SLImageHandler(instance, FLImageID, "");
                 pic.Dock = DockStyle.Fill;
+
+                if (agentID == client.Self.AgentID)
+                {
+                    pic.AllowDrop = true;
+                    pic.ImageUpdated += (usender, ue) =>
+                    {
+                        Profile.FirstLifeImage = ue.NewImageID;
+                        pic.UpdateImage(ue.NewImageID);
+                        client.Self.UpdateProfile(Profile);
+                    };
+                }
+
                 rlPicPanel.Controls.Add(pic);
                 rlPicPanel.Show();
             }

@@ -65,6 +65,9 @@ namespace Radegast
             this.tbtnCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnCopyUUID = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbtnClear = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbtnPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.cmsImage.SuspendLayout();
@@ -86,7 +89,6 @@ namespace Radegast
             // 
             this.pictureBox1.ContextMenuStrip = this.cmsImage;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Enabled = false;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(304, 286);
@@ -94,6 +96,8 @@ namespace Radegast
             this.pictureBox1.TabIndex = 5;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.pictureBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.pictureBox1_DragDrop);
+            this.pictureBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.pictureBox1_DragEnter);
             // 
             // cmsImage
             // 
@@ -101,15 +105,20 @@ namespace Radegast
             this.tbtnViewFullSize,
             this.tbtnCopy,
             this.tbtnCopyUUID,
-            this.tbtnSave});
+            this.tbtnSave,
+            this.toolStripMenuItem1,
+            this.tbtnClear,
+            this.tbtnPaste});
             this.cmsImage.Name = "cmsImage";
-            this.cmsImage.Size = new System.Drawing.Size(200, 92);
+            this.cmsImage.Size = new System.Drawing.Size(200, 164);
+            this.cmsImage.Opening += new System.ComponentModel.CancelEventHandler(this.cmsImage_Opening);
             // 
             // tbtnViewFullSize
             // 
             this.tbtnViewFullSize.Name = "tbtnViewFullSize";
             this.tbtnViewFullSize.Size = new System.Drawing.Size(199, 22);
             this.tbtnViewFullSize.Text = "View full size";
+            this.tbtnViewFullSize.ToolTipText = " View full size ";
             this.tbtnViewFullSize.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // tbtnCopy
@@ -117,6 +126,7 @@ namespace Radegast
             this.tbtnCopy.Name = "tbtnCopy";
             this.tbtnCopy.Size = new System.Drawing.Size(199, 22);
             this.tbtnCopy.Text = "Copy";
+            this.tbtnCopy.ToolTipText = " Copy ";
             this.tbtnCopy.Click += new System.EventHandler(this.tbtnCopy_Click);
             // 
             // tbtnCopyUUID
@@ -124,6 +134,7 @@ namespace Radegast
             this.tbtnCopyUUID.Name = "tbtnCopyUUID";
             this.tbtnCopyUUID.Size = new System.Drawing.Size(199, 22);
             this.tbtnCopyUUID.Text = "Copy UUID to clipboard";
+            this.tbtnCopyUUID.ToolTipText = " Copy UUID to clipboard ";
             this.tbtnCopyUUID.Click += new System.EventHandler(this.copyUUIDToClipboardToolStripMenuItem_Click);
             // 
             // tbtnSave
@@ -131,7 +142,29 @@ namespace Radegast
             this.tbtnSave.Name = "tbtnSave";
             this.tbtnSave.Size = new System.Drawing.Size(199, 22);
             this.tbtnSave.Text = "Save";
+            this.tbtnSave.ToolTipText = " Save ";
             this.tbtnSave.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(196, 6);
+            // 
+            // tbtnClear
+            // 
+            this.tbtnClear.Name = "tbtnClear";
+            this.tbtnClear.Size = new System.Drawing.Size(199, 22);
+            this.tbtnClear.Text = "Clear";
+            this.tbtnClear.ToolTipText = " Clear ";
+            this.tbtnClear.Click += new System.EventHandler(this.tbtnClear_Click);
+            // 
+            // tbtnPaste
+            // 
+            this.tbtnPaste.Name = "tbtnPaste";
+            this.tbtnPaste.Size = new System.Drawing.Size(199, 22);
+            this.tbtnPaste.Text = "Paste from Inventory";
+            this.tbtnPaste.ToolTipText = " Paste from Inventory ";
+            this.tbtnPaste.Click += new System.EventHandler(this.tbtnPaste_Click);
             // 
             // progressBar1
             // 
@@ -170,6 +203,9 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem tbtnCopyUUID;
         public System.Windows.Forms.ToolStripMenuItem tbtnSave;
         public System.Windows.Forms.ToolStripMenuItem tbtnCopy;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem tbtnClear;
+        private System.Windows.Forms.ToolStripMenuItem tbtnPaste;
 
 
     }
