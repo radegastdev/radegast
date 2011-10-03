@@ -285,12 +285,24 @@ namespace Radegast
                 pickPicturePanel.Controls[0].Dispose();
             pickPicturePanel.Controls.Clear();
 
-            if (e.Pick.SnapshotID != UUID.Zero)
+            if (agentID == client.Self.AgentID || e.Pick.SnapshotID != UUID.Zero)
             {
                 SLImageHandler img = new SLImageHandler(instance, e.Pick.SnapshotID, string.Empty);
                 img.Dock = DockStyle.Fill;
                 img.SizeMode = PictureBoxSizeMode.StretchImage;
                 pickPicturePanel.Controls.Add(img);
+
+                if (agentID == client.Self.AgentID)
+                {
+                    img.AllowDrop = true;
+                    ProfilePick p = e.Pick;
+                    img.ImageUpdated += (psender, pe) =>
+                    {
+                        img.UpdateImage(pe.NewImageID);
+                        p.SnapshotID = pe.NewImageID;
+                        client.Self.PickInfoUpdate(p.PickID, p.TopPick, p.ParcelID, p.Name, p.PosGlobal, p.SnapshotID, p.Desc);
+                    };
+                }
             }
 
             pickTitle.Text = e.Pick.Name;
