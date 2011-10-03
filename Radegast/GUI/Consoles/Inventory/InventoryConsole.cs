@@ -2542,6 +2542,22 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Finds and higlights inventory node
+        /// </summary>
+        /// <param name="itemID">Inventory of ID of the item to select</param>
+        public void SelectInventoryNode(UUID itemID)
+        {
+            TreeNode node = findNodeForItem(itemID);
+            if (node == null)
+                return;
+            invTree.SelectedNode = node;
+            if (node.Tag is InventoryItem)
+            {
+                UpdateItemInfo(node.Tag as InventoryItem);
+            }
+        }
+
         private void lstInventorySearch_MouseClick(object sender, MouseEventArgs e)
         {
             if (lstInventorySearch.SelectedIndices.Count != 1)

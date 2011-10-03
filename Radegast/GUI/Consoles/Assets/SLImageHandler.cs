@@ -366,7 +366,8 @@ namespace Radegast
             e.Cancel = false;
             if (AllowDrop)
             {
-                toolStripMenuItem1.Visible = tbtnClear.Visible = tbtnPaste.Visible = true;
+                tbtnClear.Visible = tbtnPaste.Visible = true;
+                tbtnPaste.Enabled = false;
                 if (instance.InventoryClipboard != null)
                 {
                     if (instance.InventoryClipboard.Item is InventoryTexture ||
@@ -374,17 +375,41 @@ namespace Radegast
                     {
                         tbtnPaste.Enabled = true;
                     }
-                    else
-                    {
-                        tbtnPaste.Enabled = false;
-                    }
                 }
             }
             else
             {
-                toolStripMenuItem1.Visible = tbtnClear.Visible = tbtnPaste.Visible = false;
+                tbtnClear.Visible = tbtnPaste.Visible = false;
+            }
+
+            tbtbInvShow.Enabled = false;
+
+            InventoryItem found = null;
+            foreach (var traversed in client.Inventory.Store.Items.Values)
+            {
+                if (traversed.Data is InventoryItem)
+                {
+                    InventoryItem item = (InventoryItem)traversed.Data;
+                    if (item.AssetUUID == imageID)
+                    {
+                        found = item;
+                        break;
+                    }
+                }
+            }
+
+            if (found == null)
+            {
+                tbtbInvShow.Enabled = false;
+                tbtbInvShow.Tag = null;
+            }
+            else
+            {
+                tbtbInvShow.Enabled = true;
+                tbtbInvShow.Tag = found;
             }
         }
+
 
         private void tbtnClear_Click(object sender, EventArgs e)
         {
@@ -426,6 +451,20 @@ namespace Radegast
                 {
                     handler(this, new ImageUpdatedEventArgs(newID));
                 }
+            }
+        }
+
+        private void tbtbInvShow_Click(object sender, EventArgs e)
+        {
+            if (tbtbInvShow.Tag == null || !(tbtbInvShow.Tag is InventoryItem)) return;
+            
+            InventoryItem item = (InventoryItem)tbtbInvShow.Tag;
+
+            if (instance.TabConsole.TabExists("inventory"))
+            {
+                instance.TabConsole.SelectTab("inventory");
+                InventoryConsole inv = (InventoryConsole)instance.TabConsole.Tabs["inventory"].Control;
+                inv.SelectInventoryNode(item.UUID);
             }
         }
     }

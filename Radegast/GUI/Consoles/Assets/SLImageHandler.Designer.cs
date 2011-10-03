@@ -69,6 +69,7 @@ namespace Radegast
             this.tbtnClear = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtnPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.tbtbInvShow = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.cmsImage.SuspendLayout();
             this.progressBar1.SuspendLayout();
@@ -108,9 +109,10 @@ namespace Radegast
             this.tbtnSave,
             this.toolStripMenuItem1,
             this.tbtnClear,
-            this.tbtnPaste});
+            this.tbtnPaste,
+            this.tbtbInvShow});
             this.cmsImage.Name = "cmsImage";
-            this.cmsImage.Size = new System.Drawing.Size(200, 164);
+            this.cmsImage.Size = new System.Drawing.Size(200, 186);
             this.cmsImage.Opening += new System.ComponentModel.CancelEventHandler(this.cmsImage_Opening);
             // 
             // tbtnViewFullSize
@@ -177,6 +179,14 @@ namespace Radegast
             this.progressBar1.TabIndex = 6;
             this.progressBar1.Visible = false;
             // 
+            // tbtbInvShow
+            // 
+            this.tbtbInvShow.Name = "tbtbInvShow";
+            this.tbtbInvShow.Size = new System.Drawing.Size(199, 22);
+            this.tbtbInvShow.Text = "Show in Inventory";
+            this.tbtbInvShow.ToolTipText = " Show in Inventory ";
+            this.tbtbInvShow.Click += new System.EventHandler(this.tbtbInvShow_Click);
+            // 
             // SLImageHandler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -203,9 +213,10 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem tbtnCopyUUID;
         public System.Windows.Forms.ToolStripMenuItem tbtnSave;
         public System.Windows.Forms.ToolStripMenuItem tbtnCopy;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem tbtnClear;
-        private System.Windows.Forms.ToolStripMenuItem tbtnPaste;
+        public System.Windows.Forms.ToolStripMenuItem tbtbInvShow;
+        public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        public System.Windows.Forms.ToolStripMenuItem tbtnClear;
+        public System.Windows.Forms.ToolStripMenuItem tbtnPaste;
 
 
     }
