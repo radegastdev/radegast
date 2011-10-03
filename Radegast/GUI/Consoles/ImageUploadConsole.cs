@@ -46,9 +46,9 @@ namespace Radegast
 {
     public partial class ImageUploadConsole : RadegastTabControl
     {
-        public string FileName;
+        public string FileName, TextureName, TextureDescription;
         public byte[] UploadData;
-        public UUID InventoryID, AssetID;
+        public UUID InventoryID, AssetID, TransactionID;
         bool ImageLoaded;
 
         public ImageUploadConsole()
@@ -61,9 +61,33 @@ namespace Radegast
         {
             InitializeComponent();
 
+            Disposed += new EventHandler(ImageUploadConsole_Disposed);
             instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            client.Assets.AssetUploaded += new EventHandler<AssetUploadEventArgs>(Assets_AssetUploaded);
             UpdateButtons();
+        }
+
+        void ImageUploadConsole_Disposed(object sender, EventArgs e)
+        {
+            client.Assets.AssetUploaded -= new EventHandler<AssetUploadEventArgs>(Assets_AssetUploaded);
+        }
+
+        void Assets_AssetUploaded(object sender, AssetUploadEventArgs e)
+        {
+            if (e.Upload.ID == TransactionID)
+            {
+                if (!e.Upload.Success)
+                {
+                    TempUploadHandler(false, new InventoryTexture(UUID.Zero));
+                }
+                else
+                {
+                    client.Inventory.RequestCreateItem(client.Inventory.FindFolderForType(AssetType.Texture),
+                        TextureName, TextureDescription, AssetType.Texture, TransactionID,
+                        InventoryType.Texture, PermissionMask.All, TempUploadHandler);
+                }
+            }
         }
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
@@ -281,11 +305,37 @@ namespace Radegast
             dlg.Dispose();
         }
 
+        private void TempUploadHandler(bool success, InventoryItem item)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                {
+                    BeginInvoke(new MethodInvoker(() => TempUploadHandler(success, item)));
+                }
+                return;
+            }
+
+            InventoryID = item.UUID;
+
+            UpdateButtons();
+            txtAssetID.Text = AssetID.ToString();
+
+            if (!success)
+            {
+                txtStatus.AppendText("Upload failed.\n");
+                return;
+            }
+
+            txtStatus.AppendText("Upload success.\n");
+            txtStatus.AppendText("New image ID: " + AssetID.ToString() + "\n");
+        }
+
         private void UploadHandler(bool success, string status, UUID itemID, UUID assetID)
         {
             if (InvokeRequired)
             {
-                if (!instance.MonoRuntime || IsHandleCreated)
+                if (IsHandleCreated)
                 {
                     BeginInvoke(new MethodInvoker(() => UploadHandler(success, status, itemID, assetID)));
                 }
@@ -310,21 +360,30 @@ namespace Radegast
 
         private void btnUpload_Click(object sender, EventArgs e)
         {
+            bool tmp = chkTemp.Checked;
             txtStatus.AppendText("Uploading...");
             btnLoad.Enabled = false;
             btnUpload.Enabled = false;
             AssetID = InventoryID = UUID.Zero;
 
-            string name = Path.GetFileNameWithoutExtension(FileName);
-            string desc = string.Format("Uploaded with Radegast on {0}", DateTime.Now.ToLongDateString());
+            TextureName = Path.GetFileNameWithoutExtension(FileName);
+            if (tmp) TextureName += " (temp)";
+            TextureDescription = string.Format("Uploaded with Radegast on {0}", DateTime.Now.ToLongDateString());
 
             Permissions perms = new Permissions();
             perms.EveryoneMask = PermissionMask.All;
             perms.NextOwnerMask = PermissionMask.All;
 
-            client.Inventory.RequestCreateItemFromAsset(UploadData, name, desc, AssetType.Texture, InventoryType.Texture,
-                client.Inventory.FindFolderForType(AssetType.Texture), perms, UploadHandler);
-
+            if (!tmp)
+            {
+                client.Inventory.RequestCreateItemFromAsset(UploadData, TextureName, TextureDescription, AssetType.Texture, InventoryType.Texture,
+                    client.Inventory.FindFolderForType(AssetType.Texture), perms, UploadHandler);
+            }
+            else
+            {
+                TransactionID = UUID.Random();
+                client.Assets.RequestUpload(out AssetID, AssetType.Texture, UploadData, true, TransactionID);
+            }
         }
     }
 }

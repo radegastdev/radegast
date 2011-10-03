@@ -68,6 +68,7 @@ namespace Radegast
             this.label1 = new System.Windows.Forms.Label();
             this.txtAssetID = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.chkTemp = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbPreview)).BeginInit();
             this.SuspendLayout();
             // 
@@ -161,7 +162,7 @@ namespace Radegast
             this.txtAssetID.Name = "txtAssetID";
             this.txtAssetID.ReadOnly = true;
             this.txtAssetID.Size = new System.Drawing.Size(256, 20);
-            this.txtAssetID.TabIndex = 5;
+            this.txtAssetID.TabIndex = 6;
             this.txtAssetID.Text = "00000000-0000-0000-0000-000000000000";
             // 
             // label2
@@ -174,10 +175,21 @@ namespace Radegast
             this.label2.Text = "Set this checkbox\r\nbefore clicking on\r\nLoad image...\r\nOnly useful for\r\npixel perf" +
                 "ect small\r\nimages (sculpties).\r\n";
             // 
+            // chkTemp
+            // 
+            this.chkTemp.AutoSize = true;
+            this.chkTemp.Location = new System.Drawing.Point(3, 214);
+            this.chkTemp.Name = "chkTemp";
+            this.chkTemp.Size = new System.Drawing.Size(76, 17);
+            this.chkTemp.TabIndex = 5;
+            this.chkTemp.Text = "Temporary";
+            this.chkTemp.UseVisualStyleBackColor = true;
+            // 
             // ImageUploadConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.chkTemp);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtAssetID);
             this.Controls.Add(this.label1);
@@ -208,6 +220,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox chkLossless;
         public System.Windows.Forms.Label lblSize;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox chkTemp;
 
     }
 }
