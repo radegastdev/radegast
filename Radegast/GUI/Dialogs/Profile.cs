@@ -294,7 +294,7 @@ namespace Radegast
 
                 if (agentID == client.Self.AgentID)
                 {
-                    img.AllowDrop = true;
+                    img.AllowUpdateImage = true;
                     ProfilePick p = e.Pick;
                     img.ImageUpdated += (psender, pe) =>
                     {
@@ -382,7 +382,7 @@ namespace Radegast
                 
                 if (agentID == client.Self.AgentID)
                 {
-                    pic.AllowDrop = true;
+                    pic.AllowUpdateImage = true;
                     pic.ImageUpdated += (usender, ue) =>
                     {
                         Profile.ProfileImage = ue.NewImageID;
@@ -408,7 +408,7 @@ namespace Radegast
 
                 if (agentID == client.Self.AgentID)
                 {
-                    pic.AllowDrop = true;
+                    pic.AllowUpdateImage = true;
                     pic.ImageUpdated += (usender, ue) =>
                     {
                         Profile.FirstLifeImage = ue.NewImageID;

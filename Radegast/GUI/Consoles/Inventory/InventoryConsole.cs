@@ -1225,7 +1225,7 @@ namespace Radegast
             return raw;
         }
 
-        bool IsFullPerm(InventoryItem item)
+        public static bool IsFullPerm(InventoryItem item)
         {
             if (
                 ((item.Permissions.OwnerMask & PermissionMask.Modify) != 0) &&

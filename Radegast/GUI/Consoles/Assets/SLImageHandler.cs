@@ -78,7 +78,7 @@ namespace Radegast
             }
         }
 
-        public bool AllowDrop = false;
+        public bool AllowUpdateImage = false;
 
         public SLImageHandler()
         {
@@ -101,13 +101,6 @@ namespace Radegast
         {
             Disposed += new EventHandler(SLImageHandler_Disposed);
             pictureBox1.AllowDrop = true;
-
-            if (!allowSave && !instance.advancedDebugging) 
-            {
-                tbtnCopy.Visible = false;
-                tbtnCopyUUID.Visible = false;
-                tbtnSave.Visible = false;
-            }
 
             this.instance = instance;
             this.imageID = image;
@@ -322,7 +315,7 @@ namespace Radegast
         private void pictureBox1_DragEnter(object sender, DragEventArgs e)
         {
             TreeNode node = e.Data.GetData(typeof(TreeNode)) as TreeNode;
-            if (!AllowDrop || node == null)
+            if (!AllowUpdateImage || node == null)
             {
                 e.Effect = DragDropEffects.None;
             }
@@ -339,7 +332,7 @@ namespace Radegast
         private void pictureBox1_DragDrop(object sender, DragEventArgs e)
         {
             TreeNode node = e.Data.GetData(typeof(TreeNode)) as TreeNode;
-            if (!AllowDrop || node == null) return;
+            if (!AllowUpdateImage || node == null) return;
 
             if (node.Tag is InventorySnapshot || node.Tag is InventoryTexture)
             {
@@ -364,7 +357,7 @@ namespace Radegast
         private void cmsImage_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = false;
-            if (AllowDrop)
+            if (AllowUpdateImage)
             {
                 tbtnClear.Visible = tbtnPaste.Visible = true;
                 tbtnPaste.Enabled = false;
@@ -398,6 +391,8 @@ namespace Radegast
                 }
             }
 
+            bool save = allowSave;
+
             if (found == null)
             {
                 tbtbInvShow.Enabled = false;
@@ -407,13 +402,29 @@ namespace Radegast
             {
                 tbtbInvShow.Enabled = true;
                 tbtbInvShow.Tag = found;
+                save |= InventoryConsole.IsFullPerm(found);
+            }
+
+            save |= instance.advancedDebugging;
+
+            if (save)
+            {
+                tbtnCopy.Visible = true;
+                tbtnCopyUUID.Visible = true;
+                tbtnSave.Visible = true;
+            }
+            else
+            {
+                tbtnCopy.Visible = false;
+                tbtnCopyUUID.Visible = false;
+                tbtnSave.Visible = false;
             }
         }
 
 
         private void tbtnClear_Click(object sender, EventArgs e)
         {
-            if (AllowDrop)
+            if (AllowUpdateImage)
             {
                 UpdateImage(UUID.Zero);
                 var handler = ImageUpdated;
@@ -426,7 +437,7 @@ namespace Radegast
 
         private void tbtnPaste_Click(object sender, EventArgs e)
         {
-            if (!AllowDrop) return;
+            if (!AllowUpdateImage) return;
             if (instance.InventoryClipboard != null)
             {
                 UUID newID = UUID.Zero;
