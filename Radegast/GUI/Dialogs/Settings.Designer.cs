@@ -68,6 +68,7 @@ namespace Radegast
             this.rbDNDandUsernme = new System.Windows.Forms.RadioButton();
             this.rbDNSmart = new System.Windows.Forms.RadioButton();
             this.rbDNOff = new System.Windows.Forms.RadioButton();
+            this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -85,17 +86,19 @@ namespace Radegast
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
             this.tbpAutoResponse = new System.Windows.Forms.TabPage();
+            this.gnAutoInventory = new System.Windows.Forms.GroupBox();
+            this.cbOnInvOffer = new System.Windows.Forms.ComboBox();
             this.txtAutoResponse = new System.Windows.Forms.TextBox();
             this.gbAutoResponse = new System.Windows.Forms.GroupBox();
             this.rbAutoAlways = new System.Windows.Forms.RadioButton();
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tbpGraphics = new System.Windows.Forms.TabPage();
-            this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.gbDisplayNames.SuspendLayout();
             this.tbpAutoResponse.SuspendLayout();
+            this.gnAutoInventory.SuspendLayout();
             this.gbAutoResponse.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -220,6 +223,16 @@ namespace Radegast
             this.rbDNOff.Text = "Off";
             this.rbDNOff.UseVisualStyleBackColor = true;
             this.rbDNOff.CheckedChanged += new System.EventHandler(this.rbDNOff_CheckedChanged);
+            // 
+            // cbRadegastClientTag
+            // 
+            this.cbRadegastClientTag.AutoSize = true;
+            this.cbRadegastClientTag.Location = new System.Drawing.Point(270, 235);
+            this.cbRadegastClientTag.Name = "cbRadegastClientTag";
+            this.cbRadegastClientTag.Size = new System.Drawing.Size(146, 17);
+            this.cbRadegastClientTag.TabIndex = 18;
+            this.cbRadegastClientTag.Text = "Send Radegast client tag";
+            this.cbRadegastClientTag.UseVisualStyleBackColor = true;
             // 
             // cbTaskBarHighLight
             // 
@@ -403,6 +416,7 @@ namespace Radegast
             // 
             // tbpAutoResponse
             // 
+            this.tbpAutoResponse.Controls.Add(this.gnAutoInventory);
             this.tbpAutoResponse.Controls.Add(this.txtAutoResponse);
             this.tbpAutoResponse.Controls.Add(this.gbAutoResponse);
             this.tbpAutoResponse.Location = new System.Drawing.Point(4, 22);
@@ -412,6 +426,29 @@ namespace Radegast
             this.tbpAutoResponse.TabIndex = 2;
             this.tbpAutoResponse.Text = "Auto Response";
             this.tbpAutoResponse.UseVisualStyleBackColor = true;
+            // 
+            // gnAutoInventory
+            // 
+            this.gnAutoInventory.Controls.Add(this.cbOnInvOffer);
+            this.gnAutoInventory.Location = new System.Drawing.Point(9, 156);
+            this.gnAutoInventory.Name = "gnAutoInventory";
+            this.gnAutoInventory.Size = new System.Drawing.Size(281, 54);
+            this.gnAutoInventory.TabIndex = 2;
+            this.gnAutoInventory.TabStop = false;
+            this.gnAutoInventory.Text = "On inventory offers";
+            // 
+            // cbOnInvOffer
+            // 
+            this.cbOnInvOffer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbOnInvOffer.FormattingEnabled = true;
+            this.cbOnInvOffer.Items.AddRange(new object[] {
+            "Ask",
+            "Auto Accept",
+            "Auto Discard"});
+            this.cbOnInvOffer.Location = new System.Drawing.Point(6, 19);
+            this.cbOnInvOffer.Name = "cbOnInvOffer";
+            this.cbOnInvOffer.Size = new System.Drawing.Size(121, 21);
+            this.cbOnInvOffer.TabIndex = 0;
             // 
             // txtAutoResponse
             // 
@@ -479,16 +516,6 @@ namespace Radegast
             this.tbpGraphics.Text = "Graphics Settings";
             this.tbpGraphics.UseVisualStyleBackColor = true;
             // 
-            // cbRadegastClientTag
-            // 
-            this.cbRadegastClientTag.AutoSize = true;
-            this.cbRadegastClientTag.Location = new System.Drawing.Point(270, 235);
-            this.cbRadegastClientTag.Name = "cbRadegastClientTag";
-            this.cbRadegastClientTag.Size = new System.Drawing.Size(146, 17);
-            this.cbRadegastClientTag.TabIndex = 18;
-            this.cbRadegastClientTag.Text = "Send Radegast client tag";
-            this.cbRadegastClientTag.UseVisualStyleBackColor = true;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -505,6 +532,7 @@ namespace Radegast
             this.gbDisplayNames.PerformLayout();
             this.tbpAutoResponse.ResumeLayout(false);
             this.tbpAutoResponse.PerformLayout();
+            this.gnAutoInventory.ResumeLayout(false);
             this.gbAutoResponse.ResumeLayout(false);
             this.gbAutoResponse.PerformLayout();
             this.ResumeLayout(false);
@@ -546,6 +574,8 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbTaskBarHighLight;
         public System.Windows.Forms.TabPage tbpGraphics;
         public System.Windows.Forms.CheckBox cbRadegastClientTag;
+        public System.Windows.Forms.GroupBox gnAutoInventory;
+        public System.Windows.Forms.ComboBox cbOnInvOffer;
 
 
     }

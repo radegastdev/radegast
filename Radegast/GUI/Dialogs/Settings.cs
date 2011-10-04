@@ -226,6 +226,12 @@ namespace Radegast
                 s["send_rad_client_tag"] = cbRadegastClientTag.Checked;
                 instance.SetClientTag();
             };
+
+            cbOnInvOffer.SelectedIndex = s["inv_auto_accept_mode"].AsInteger();
+            cbOnInvOffer.SelectedIndexChanged += (sender, e) =>
+            {
+                s["inv_auto_accept_mode"] = cbOnInvOffer.SelectedIndex;
+            };
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)

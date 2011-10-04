@@ -442,14 +442,32 @@ namespace Radegast
                     break;
 
                 case InstantMessageDialog.InventoryOffered:
-                    instance.MainForm.AddNotification(new ntfInventoryOffer(instance, e.IM));
+                    var ion = new ntfInventoryOffer(instance, e.IM);
+                    instance.MainForm.AddNotification(ion);
+                    if (instance.GlobalSettings["inv_auto_accept_mode"].AsInteger() == 1)
+                    {
+                        ion.btnAccept.PerformClick();
+                    }
+                    else if (instance.GlobalSettings["inv_auto_accept_mode"].AsInteger() == 2)
+                    {
+                        ion.btnDiscard.PerformClick();
+                    }
                     break;
 
                 case InstantMessageDialog.TaskInventoryOffered:
                     // Is the object muted by name?
                     if (null != client.Self.MuteList.Find(me => me.Type == MuteType.ByName && me.Name == e.IM.FromAgentName)) break;
 
-                    instance.MainForm.AddNotification(new ntfInventoryOffer(instance, e.IM));
+                    var iont = new ntfInventoryOffer(instance, e.IM);
+                    instance.MainForm.AddNotification(iont);
+                    if (instance.GlobalSettings["inv_auto_accept_mode"].AsInteger() == 1)
+                    {
+                        iont.btnAccept.PerformClick();
+                    }
+                    else if (instance.GlobalSettings["inv_auto_accept_mode"].AsInteger() == 2)
+                    {
+                        iont.btnDiscard.PerformClick();
+                    }
                     break;
             }
         }
