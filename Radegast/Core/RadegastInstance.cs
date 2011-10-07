@@ -340,7 +340,7 @@ namespace Radegast
             client.Throttle.Total = 5000000f;
             client.Settings.THROTTLE_OUTGOING_PACKETS = false;
             client.Settings.LOGIN_TIMEOUT = 120 * 1000;
-            client.Settings.SIMULATOR_TIMEOUT = 120 * 1000;
+            client.Settings.SIMULATOR_TIMEOUT = 180 * 1000;
             client.Settings.MAX_CONCURRENT_TEXTURE_DOWNLOADS = 20;
 
             client.Self.Movement.AutoResetControls = false;

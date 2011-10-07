@@ -50,6 +50,7 @@ namespace Radegast
         public byte[] UploadData;
         public UUID InventoryID, AssetID, TransactionID;
         bool ImageLoaded;
+        int OriginalCapsTimeout;
 
         public ImageUploadConsole()
         {
@@ -66,6 +67,7 @@ namespace Radegast
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             client.Assets.AssetUploaded += new EventHandler<AssetUploadEventArgs>(Assets_AssetUploaded);
             UpdateButtons();
+            OriginalCapsTimeout = client.Settings.CAPS_TIMEOUT;
         }
 
         void ImageUploadConsole_Disposed(object sender, EventArgs e)
@@ -342,6 +344,8 @@ namespace Radegast
                 return;
             }
 
+            client.Settings.CAPS_TIMEOUT = OriginalCapsTimeout;
+
             AssetID = assetID;
             InventoryID = itemID;
 
@@ -376,6 +380,7 @@ namespace Radegast
 
             if (!tmp)
             {
+                client.Settings.CAPS_TIMEOUT = 180 * 1000;
                 client.Inventory.RequestCreateItemFromAsset(UploadData, TextureName, TextureDescription, AssetType.Texture, InventoryType.Texture,
                     client.Inventory.FindFolderForType(AssetType.Texture), perms, UploadHandler);
             }
