@@ -36,7 +36,7 @@ namespace Radegast
 {
     public partial class RadegastTab
     {
-        public bool Floater = true;
+        public bool Floater = false;
         public bool CloseOnDetachedClose = false;
 
         private RadegastInstance instance;

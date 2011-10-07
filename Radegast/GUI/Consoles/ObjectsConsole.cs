@@ -614,7 +614,7 @@ namespace Radegast
             if (prim.Properties == null)
             {
                 //if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
-                propRequester.RequestProps(prim.ID);
+                propRequester.RequestProps(prim);
             }
             else
             {
@@ -646,13 +646,21 @@ namespace Radegast
                 else
                     ownerName = instance.Names.Get(prim.Properties.OwnerID);
             }
-            return String.Format("{0} ({1}m) owned by {2}", name, distance, ownerName);
+            if (prim.ParentID == client.Self.LocalID)
+            {
+                return string.Format("{0} attached to {1}", name, prim.PrimData.AttachmentPoint.ToString());
+            }
+            else
+            {
+                return String.Format("{0} ({1}m) owned by {2}", name, distance, ownerName);
+            }
 
         }
 
         private string GetObjectName(Primitive prim)
         {
             int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
+            if (prim.ParentID == client.Self.LocalID) distance = 0;
             return GetObjectName(prim, distance);
         }
 
@@ -711,10 +719,18 @@ namespace Radegast
                 {
                     if (e.Prim.Properties == null)
                     {
-                        propRequester.RequestProps(e.Prim.ID);
+                        propRequester.RequestProps(e.Prim);
                     }
                     AddPrim(e.Prim);
                 }
+            }
+            else if (e.Prim.ParentID == client.Self.LocalID)
+            {
+                if (e.Prim.Properties == null)
+                {
+                    propRequester.RequestProps(e.Prim);
+                }
+                AddPrim(e.Prim);
             }
 
             if (e.Prim.ID == currentPrim.ID)
@@ -723,7 +739,7 @@ namespace Radegast
                 {
                     UpdateCurrentObject(false);
                 }
-                propRequester.RequestProps(e.Prim.ID);
+                propRequester.RequestProps(e.Prim);
             }
         }
 
@@ -758,7 +774,14 @@ namespace Radegast
                 delegate(Primitive prim)
                 {
                     int distance = (int)Vector3.Distance(prim.Position, location);
-                    if (prim.ParentID == 0 && (prim.Position != Vector3.Zero) && (distance < searchRadius) && (txtSearch.Text.Length == 0 || (prim.Properties != null && prim.Properties.Name.ToLower().Contains(txtSearch.Text.ToLower())))) //root prims only
+                    if (prim.ParentID == client.Self.LocalID)
+                    {
+                        distance = 0;
+                    }
+                    if ((prim.ParentID == client.Self.LocalID || prim.ParentID == 0) &&
+                        (prim.Position != Vector3.Zero) &&
+                        (distance < searchRadius) &&
+                        (txtSearch.Text.Length == 0 || (prim.Properties != null && prim.Properties.Name.ToLower().Contains(txtSearch.Text.ToLower())))) //root prims and attachments only
                     {
                         ListViewItem item = new ListViewItem();
                         item.Text = GetObjectName(prim);
@@ -788,12 +811,6 @@ namespace Radegast
                 btnPointAt.Text = "Point At";
             }
         }
-
-        private void btnSource_Click(object sender, EventArgs e)
-        {
-            instance.State.EffectSource = currentPrim.ID;
-        }
-
 
         private void btnSitOn_Click(object sender, EventArgs e)
         {
@@ -1318,8 +1335,8 @@ namespace Radegast
                 return string.Compare(item1.Text, item2.Text);
             }
 
-            float dist1 = Vector3.Distance(me.SimPosition, ((Primitive)item1.Tag).Position);
-            float dist2 = Vector3.Distance(me.SimPosition, ((Primitive)item2.Tag).Position);
+            float dist1 = ((Primitive)item1.Tag).ParentID == RadegastInstance.GlobalInstance.Client.Self.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item1.Tag).Position);
+            float dist2 = ((Primitive)item2.Tag).ParentID == RadegastInstance.GlobalInstance.Client.Self.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item2.Tag).Position);
 
             if (dist1 == dist2)
             {
@@ -1341,7 +1358,7 @@ namespace Radegast
         Object sync = new Object();
         RadegastInstance instance;
         System.Timers.Timer qTimer;
-        Queue<UUID> props = new Queue<UUID>();
+        Queue<Primitive> props = new Queue<Primitive>();
 
         public delegate void TickCallback(int remaining);
         public event TickCallback OnTick;
@@ -1354,13 +1371,13 @@ namespace Radegast
             qTimer.Elapsed += new ElapsedEventHandler(qTimer_Elapsed);
         }
 
-        public void RequestProps(UUID id)
+        public void RequestProps(Primitive prim)
         {
             lock (sync)
             {
-                if (!props.Contains(id))
+                if (!props.Contains(prim))
                 {
-                    props.Enqueue(id);
+                    props.Enqueue(prim);
                 }
             }
         }
@@ -1371,8 +1388,17 @@ namespace Radegast
             {
                 for (int i = 0; i < 25 && props.Count > 0; i++)
                 {
-                    instance.Client.Objects.RequestObjectPropertiesFamily(
-                        instance.Client.Network.CurrentSim, props.Dequeue(), true);
+                    Primitive prim = props.Dequeue();
+                    if (prim.ParentID == 0)
+                    {
+                        instance.Client.Objects.RequestObjectPropertiesFamily(
+                            instance.Client.Network.CurrentSim, prim.ID, true);
+                    }
+                    else
+                    {
+                        instance.Client.Objects.SelectObject(instance.Client.Network.CurrentSim,
+                            prim.LocalID, true);
+                    }
                 }
 
                 if (OnTick != null)

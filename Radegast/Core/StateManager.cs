@@ -372,8 +372,6 @@ namespace Radegast
 
             client.Self.Movement.Camera.Far = instance.GlobalSettings["draw_distance"];
 
-            effectSource = client.Self.AgentID;
-
             if (lookAtTimer == null)
                 lookAtTimer = new System.Threading.Timer(new TimerCallback(lookAtTimerTick), null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -752,14 +750,13 @@ namespace Radegast
         private int numBeans;
         private Color4[] beamColors = new Color4[3] { new Color4(0, 255, 0, 255), new Color4(255, 0, 0, 255), new Color4(0, 0, 255, 255) };
         private Primitive targetPrim;
-        private UUID effectSource;
 
         public void UnSetPointing()
         {
             beamTimer.Enabled = false;
             if (pointID != UUID.Zero)
             {
-                client.Self.PointAtEffect(effectSource, UUID.Zero, Vector3d.Zero, PointAtType.None, pointID);
+                client.Self.PointAtEffect(client.Self.AgentID, UUID.Zero, Vector3d.Zero, PointAtType.None, pointID);
                 pointID = UUID.Zero;
             }
 
@@ -804,7 +801,7 @@ namespace Radegast
                         cross.Normalize();
                         scatter = GlobalPosition(targetPrim) + cross * (i * 0.2d) * (i % 2 == 0 ? 1 : -1);
                     }
-                    client.Self.BeamEffect(effectSource, UUID.Zero, scatter, beamColors[beamRandom.Next(0, 3)], 1.0f, beamID[i]);
+                    client.Self.BeamEffect(client.Self.AgentID, UUID.Zero, scatter, beamColors[beamRandom.Next(0, 3)], 1.0f, beamID[i]);
                 }
 
                 for (int j = 1; j < numBeans; j++)
@@ -815,7 +812,7 @@ namespace Radegast
                     cross.Normalize();
                     scatter = GlobalPosition(targetPrim) + cross * (j * 0.2d) * (j % 2 == 0 ? 1 : -1);
 
-                    client.Self.BeamEffect(effectSource, UUID.Zero, scatter, beamColors[beamRandom.Next(0, 3)], 1.0f, beamID[j + i - 1]);
+                    client.Self.BeamEffect(client.Self.AgentID, UUID.Zero, scatter, beamColors[beamRandom.Next(0, 3)], 1.0f, beamID[j + i - 1]);
                 }
             }
             catch (Exception) { };
@@ -833,7 +830,7 @@ namespace Radegast
             targetPrim = prim;
             this.numBeans = numBeans;
 
-            client.Self.PointAtEffect(effectSource, prim.ID, Vector3d.Zero, PointAtType.Select, pointID);
+            client.Self.PointAtEffect(client.Self.AgentID, prim.ID, Vector3d.Zero, PointAtType.Select, pointID);
 
             for (int i = 0; i < numBeans; i++)
             {
@@ -869,12 +866,6 @@ namespace Radegast
         {
             get { return busyAnimationID; }
             set { busyAnimationID = value; }
-        }
-
-        public UUID EffectSource
-        {
-            get { return effectSource; }
-            set { effectSource = value; }
         }
 
         public bool IsTyping

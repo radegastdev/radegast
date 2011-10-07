@@ -601,7 +601,7 @@ namespace Radegast
             {
                 currentAvatar = null;
                 tbtnStartIM.Enabled = tbtnFollow.Enabled = tbtnProfile.Enabled = tbtnTextures.Enabled = tbtnMaster.Enabled = tbtnAttach.Enabled = tbtnAnim.Enabled = false;
-                ctxPay.Enabled = ctxSource.Enabled = ctxPoint.Enabled = ctxStartIM.Enabled = ctxFollow.Enabled = ctxProfile.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = false;
+                ctxPay.Enabled = ctxPoint.Enabled = ctxStartIM.Enabled = ctxFollow.Enabled = ctxProfile.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = false;
             }
             else
             {
@@ -613,7 +613,7 @@ namespace Radegast
                 tbtnStartIM.Enabled = tbtnProfile.Enabled = true;
                 tbtnFollow.Enabled = tbtnTextures.Enabled = tbtnMaster.Enabled = tbtnAttach.Enabled = tbtnAnim.Enabled = currentAvatar != null;
 
-                ctxPay.Enabled = ctxSource.Enabled = ctxStartIM.Enabled = ctxProfile.Enabled = true;
+                ctxPay.Enabled = ctxStartIM.Enabled = ctxProfile.Enabled = true;
                 ctxPoint.Enabled = ctxFollow.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = currentAvatar != null;
 
                 if ((UUID)lvwObjects.SelectedItems[0].Tag == client.Self.AgentID)
@@ -799,13 +799,6 @@ namespace Radegast
 
             instance.ContextActionManager.AddContributions(
                 avatarContext, typeof(Avatar), lvwObjects.SelectedItems[0]);
-        }
-
-        private void ctxSource_Click(object sender, EventArgs e)
-        {
-            if (lvwObjects.SelectedItems.Count != 1) return;
-
-            instance.State.EffectSource = (UUID)lvwObjects.SelectedItems[0].Tag;
         }
 
         private void ctxPay_Click(object sender, EventArgs e)

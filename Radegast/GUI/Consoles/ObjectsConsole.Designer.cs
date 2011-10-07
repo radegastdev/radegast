@@ -69,7 +69,6 @@ namespace Radegast
             this.btnBuy = new System.Windows.Forms.Button();
             this.btnView = new System.Windows.Forms.Button();
             this.btnPay = new System.Windows.Forms.Button();
-            this.btnSource = new System.Windows.Forms.Button();
             this.btnTouch = new System.Windows.Forms.Button();
             this.btnSitOn = new System.Windows.Forms.Button();
             this.btnPointAt = new System.Windows.Forms.Button();
@@ -140,7 +139,6 @@ namespace Radegast
             this.gbxInworld.Controls.Add(this.btnBuy);
             this.gbxInworld.Controls.Add(this.btnView);
             this.gbxInworld.Controls.Add(this.btnPay);
-            this.gbxInworld.Controls.Add(this.btnSource);
             this.gbxInworld.Controls.Add(this.btnTouch);
             this.gbxInworld.Controls.Add(this.btnSitOn);
             this.gbxInworld.Controls.Add(this.btnPointAt);
@@ -154,9 +152,9 @@ namespace Radegast
             // 
             // btnContents
             // 
-            this.btnContents.Location = new System.Drawing.Point(172, 107);
+            this.btnContents.Location = new System.Drawing.Point(89, 107);
             this.btnContents.Name = "btnContents";
-            this.btnContents.Size = new System.Drawing.Size(75, 23);
+            this.btnContents.Size = new System.Drawing.Size(158, 23);
             this.btnContents.TabIndex = 16;
             this.btnContents.Text = "Contents";
             this.btnContents.UseVisualStyleBackColor = true;
@@ -164,7 +162,7 @@ namespace Radegast
             // 
             // btnMute
             // 
-            this.btnMute.Location = new System.Drawing.Point(87, 107);
+            this.btnMute.Location = new System.Drawing.Point(6, 107);
             this.btnMute.Name = "btnMute";
             this.btnMute.Size = new System.Drawing.Size(77, 23);
             this.btnMute.TabIndex = 15;
@@ -174,10 +172,10 @@ namespace Radegast
             // 
             // btnTake
             // 
-            this.btnTake.Location = new System.Drawing.Point(6, 107);
+            this.btnTake.Location = new System.Drawing.Point(170, 49);
             this.btnTake.Name = "btnTake";
             this.btnTake.Size = new System.Drawing.Size(77, 23);
-            this.btnTake.TabIndex = 14;
+            this.btnTake.TabIndex = 10;
             this.btnTake.Text = "Take";
             this.btnTake.UseVisualStyleBackColor = true;
             this.btnTake.Click += new System.EventHandler(this.btnTake_Click);
@@ -232,16 +230,6 @@ namespace Radegast
             this.btnPay.Text = "Pay";
             this.btnPay.UseVisualStyleBackColor = true;
             this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
-            // 
-            // btnSource
-            // 
-            this.btnSource.Location = new System.Drawing.Point(172, 49);
-            this.btnSource.Name = "btnSource";
-            this.btnSource.Size = new System.Drawing.Size(77, 23);
-            this.btnSource.TabIndex = 10;
-            this.btnSource.Text = "Set source";
-            this.btnSource.UseVisualStyleBackColor = true;
-            this.btnSource.Click += new System.EventHandler(this.btnSource_Click);
             // 
             // btnTouch
             // 
@@ -828,7 +816,6 @@ namespace Radegast
         public ListViewNoFlicker lstPrims;
         public System.Windows.Forms.ColumnHeader columnHeader1;
         public System.Windows.Forms.Button btnRefresh;
-        public System.Windows.Forms.Button btnSource;
         public System.Windows.Forms.Button btnPay;
         public System.Windows.Forms.Button btnView;
         public System.Windows.Forms.NumericUpDown nudRadius;

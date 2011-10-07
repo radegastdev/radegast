@@ -76,7 +76,6 @@ namespace Radegast
             this.ctxMaster = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxAnim = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
-            this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxOfferTP = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxTeleportTo = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxEject = new System.Windows.Forms.ToolStripMenuItem();
@@ -194,7 +193,6 @@ namespace Radegast
             this.ctxMaster,
             this.ctxAnim,
             this.ctxPoint,
-            this.ctxSource,
             this.ctxOfferTP,
             this.ctxTeleportTo,
             this.ctxEject,
@@ -202,7 +200,7 @@ namespace Radegast
             this.ctxEstateEject,
             this.muteToolStripMenuItem});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(163, 378);
+            this.avatarContext.Size = new System.Drawing.Size(163, 356);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
@@ -268,14 +266,6 @@ namespace Radegast
             this.ctxPoint.Size = new System.Drawing.Size(162, 22);
             this.ctxPoint.Text = "Point at";
             this.ctxPoint.Click += new System.EventHandler(this.ctxPoint_Click);
-            // 
-            // ctxSource
-            // 
-            this.ctxSource.Name = "ctxSource";
-            this.ctxSource.Size = new System.Drawing.Size(162, 22);
-            this.ctxSource.Text = "Set as source";
-            this.ctxSource.ToolTipText = " Set as source ";
-            this.ctxSource.Click += new System.EventHandler(this.ctxSource_Click);
             // 
             // ctxOfferTP
             // 
@@ -623,7 +613,6 @@ namespace Radegast
         public ToolStripMenuItem ctxMaster;
         public ToolStripMenuItem ctxAnim;
         public ToolStripMenuItem ctxPoint;
-        public ToolStripMenuItem ctxSource;
         public ToolStripMenuItem ctxPay;
         public ComboBox cbChatType;
         public RichTextBox rtbChat;
