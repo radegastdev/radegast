@@ -47,7 +47,7 @@ namespace Radegast
         private IMTextManagerType Type;
         private UUID sessionID;
         private string sessionName;
-
+        private bool AutoResponseSent = false;
         private ArrayList textBuffer;
 
         private bool showTimestamps;
@@ -156,7 +156,7 @@ namespace Radegast
 
             PrintIM(DateTime.Now, instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), msg);
 
-            if (Type == IMTextManagerType.Agent && e.IM.FromAgentID != UUID.Zero)
+            if (!AutoResponseSent && Type == IMTextManagerType.Agent && e.IM.FromAgentID != UUID.Zero && e.IM.FromAgentName != "Second Life")
             {
                 bool autoRespond = false;
                 AutoResponseType art = (AutoResponseType)instance.GlobalSettings["auto_response_type"].AsInteger();
@@ -170,6 +170,7 @@ namespace Radegast
 
                 if (autoRespond)
                 {
+                    AutoResponseSent = true;
                     instance.Client.Self.InstantMessage(instance.Client.Self.Name,
                         e.IM.FromAgentID,
                         instance.GlobalSettings["auto_response_text"].AsString(),
