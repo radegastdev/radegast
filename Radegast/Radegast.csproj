@@ -304,6 +304,7 @@
     <Compile Include="GUI\Consoles\ImageUploadConsole.Designer.cs">
       <DependentUpon>ImageUploadConsole.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Consoles\Inventory\CurrentOutfitFolder.cs" />
     <Compile Include="GUI\Consoles\Inventory\InventoryBackup.cs">
       <SubType>Form</SubType>
     </Compile>

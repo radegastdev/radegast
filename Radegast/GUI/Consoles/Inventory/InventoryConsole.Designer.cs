@@ -127,9 +127,11 @@ namespace Radegast
             this.txtCreated = new System.Windows.Forms.TextBox();
             this.txtAssetID = new System.Windows.Forms.TextBox();
             this.lblCreated = new System.Windows.Forms.Label();
+            this.txtItemDescription = new System.Windows.Forms.TextBox();
             this.txtItemName = new System.Windows.Forms.TextBox();
             this.lblAsset = new System.Windows.Forms.Label();
             this.lblCreator = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -507,7 +509,7 @@ namespace Radegast
             this.pnlDetail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDetail.Location = new System.Drawing.Point(3, 3);
             this.pnlDetail.Name = "pnlDetail";
-            this.pnlDetail.Size = new System.Drawing.Size(427, 297);
+            this.pnlDetail.Size = new System.Drawing.Size(427, 289);
             this.pnlDetail.TabIndex = 2;
             // 
             // pnlItemProperties
@@ -518,14 +520,16 @@ namespace Radegast
             this.pnlItemProperties.Controls.Add(this.txtCreated);
             this.pnlItemProperties.Controls.Add(this.txtAssetID);
             this.pnlItemProperties.Controls.Add(this.lblCreated);
+            this.pnlItemProperties.Controls.Add(this.txtItemDescription);
             this.pnlItemProperties.Controls.Add(this.txtItemName);
             this.pnlItemProperties.Controls.Add(this.lblAsset);
             this.pnlItemProperties.Controls.Add(this.lblCreator);
+            this.pnlItemProperties.Controls.Add(this.label1);
             this.pnlItemProperties.Controls.Add(this.lblItemName);
             this.pnlItemProperties.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlItemProperties.Location = new System.Drawing.Point(3, 300);
+            this.pnlItemProperties.Location = new System.Drawing.Point(3, 292);
             this.pnlItemProperties.Name = "pnlItemProperties";
-            this.pnlItemProperties.Size = new System.Drawing.Size(427, 154);
+            this.pnlItemProperties.Size = new System.Drawing.Size(427, 162);
             this.pnlItemProperties.TabIndex = 0;
             // 
             // gbxPerms
@@ -538,9 +542,9 @@ namespace Radegast
             this.gbxPerms.Controls.Add(this.cbOwnerModify);
             this.gbxPerms.Controls.Add(this.label8);
             this.gbxPerms.Controls.Add(this.label7);
-            this.gbxPerms.Location = new System.Drawing.Point(6, 81);
+            this.gbxPerms.Location = new System.Drawing.Point(6, 100);
             this.gbxPerms.Name = "gbxPerms";
-            this.gbxPerms.Size = new System.Drawing.Size(267, 64);
+            this.gbxPerms.Size = new System.Drawing.Size(267, 58);
             this.gbxPerms.TabIndex = 15;
             this.gbxPerms.TabStop = false;
             // 
@@ -630,7 +634,7 @@ namespace Radegast
             this.btnProfile.AccessibleDescription = "Open profile";
             this.btnProfile.Enabled = false;
             this.btnProfile.Image = global::Radegast.Properties.Resources.applications_16;
-            this.btnProfile.Location = new System.Drawing.Point(50, 29);
+            this.btnProfile.Location = new System.Drawing.Point(48, 53);
             this.btnProfile.Name = "btnProfile";
             this.btnProfile.Size = new System.Drawing.Size(26, 23);
             this.btnProfile.TabIndex = 12;
@@ -640,17 +644,17 @@ namespace Radegast
             // txtCreator
             // 
             this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
-            this.txtCreator.Location = new System.Drawing.Point(80, 29);
+            this.txtCreator.Location = new System.Drawing.Point(80, 55);
             this.txtCreator.Name = "txtCreator";
             this.txtCreator.ReadOnly = true;
             this.txtCreator.Size = new System.Drawing.Size(169, 20);
-            this.txtCreator.TabIndex = 11;
+            this.txtCreator.TabIndex = 12;
             // 
             // txtCreated
             // 
             this.txtCreated.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCreated.Location = new System.Drawing.Point(305, 29);
+            this.txtCreated.Location = new System.Drawing.Point(305, 55);
             this.txtCreated.Name = "txtCreated";
             this.txtCreated.ReadOnly = true;
             this.txtCreated.Size = new System.Drawing.Size(113, 20);
@@ -658,20 +662,30 @@ namespace Radegast
             // 
             // txtAssetID
             // 
-            this.txtAssetID.Location = new System.Drawing.Point(80, 55);
+            this.txtAssetID.Location = new System.Drawing.Point(80, 81);
             this.txtAssetID.Name = "txtAssetID";
             this.txtAssetID.ReadOnly = true;
-            this.txtAssetID.Size = new System.Drawing.Size(338, 20);
+            this.txtAssetID.Size = new System.Drawing.Size(169, 20);
             this.txtAssetID.TabIndex = 14;
             // 
             // lblCreated
             // 
             this.lblCreated.AutoSize = true;
-            this.lblCreated.Location = new System.Drawing.Point(255, 34);
+            this.lblCreated.Location = new System.Drawing.Point(255, 58);
             this.lblCreated.Name = "lblCreated";
             this.lblCreated.Size = new System.Drawing.Size(44, 13);
             this.lblCreated.TabIndex = 0;
             this.lblCreated.Text = "Created";
+            // 
+            // txtItemDescription
+            // 
+            this.txtItemDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtItemDescription.Location = new System.Drawing.Point(80, 29);
+            this.txtItemDescription.Name = "txtItemDescription";
+            this.txtItemDescription.Size = new System.Drawing.Size(338, 20);
+            this.txtItemDescription.TabIndex = 11;
+            this.txtItemDescription.Leave += new System.EventHandler(this.txtItemDescription_Leave);
             // 
             // txtItemName
             // 
@@ -686,7 +700,7 @@ namespace Radegast
             // lblAsset
             // 
             this.lblAsset.AutoSize = true;
-            this.lblAsset.Location = new System.Drawing.Point(3, 58);
+            this.lblAsset.Location = new System.Drawing.Point(3, 84);
             this.lblAsset.Name = "lblAsset";
             this.lblAsset.Size = new System.Drawing.Size(47, 13);
             this.lblAsset.TabIndex = 0;
@@ -695,16 +709,25 @@ namespace Radegast
             // lblCreator
             // 
             this.lblCreator.AutoSize = true;
-            this.lblCreator.Location = new System.Drawing.Point(3, 32);
+            this.lblCreator.Location = new System.Drawing.Point(3, 58);
             this.lblCreator.Name = "lblCreator";
             this.lblCreator.Size = new System.Drawing.Size(41, 13);
             this.lblCreator.TabIndex = 0;
             this.lblCreator.Text = "Creator";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 32);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(60, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Description";
+            // 
             // lblItemName
             // 
             this.lblItemName.AutoSize = true;
-            this.lblItemName.Location = new System.Drawing.Point(3, 10);
+            this.lblItemName.Location = new System.Drawing.Point(3, 6);
             this.lblItemName.Name = "lblItemName";
             this.lblItemName.Size = new System.Drawing.Size(27, 13);
             this.lblItemName.TabIndex = 0;
@@ -793,5 +816,7 @@ namespace Radegast
         public System.Windows.Forms.TabPage tabSearch;
         public ListViewNoFlicker lstInventorySearch;
         public System.Windows.Forms.ColumnHeader chResItemName;
+        public System.Windows.Forms.TextBox txtItemDescription;
+        public System.Windows.Forms.Label label1;
     }
 }

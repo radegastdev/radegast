@@ -947,6 +947,7 @@ namespace Radegast
             pnlItemProperties.Visible = true;
             btnProfile.Enabled = true;
             txtItemName.Text = item.Name;
+            txtItemDescription.Text = item.Description;
             txtCreator.AgentID = item.CreatorID;
             txtCreator.Tag = item.CreatorID;
             txtCreated.Text = item.CreationDate.ToString();
@@ -1054,6 +1055,20 @@ namespace Radegast
             client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
         }
 
+        private void txtItemDescription_Leave(object sender, EventArgs e)
+        {
+            InventoryItem item = null;
+            if (pnlItemProperties.Tag != null && pnlItemProperties.Tag is InventoryItem)
+            {
+                item = (InventoryItem)pnlItemProperties.Tag;
+            }
+            if (item == null) return;
+
+            item.Description = txtItemDescription.Text;
+
+            client.Inventory.RequestUpdateItem(item);
+            client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
+        }
 
         void invTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -1758,22 +1773,22 @@ namespace Radegast
                         break;
 
                     case "detach":
-                        client.Appearance.Detach(item.UUID);
+                        instance.COF.Detach(item);
                         attachments.Remove(item.UUID);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 
                     case "wear_attachment":
-                        client.Appearance.Attach(item, AttachmentPoint.Default);
+                        instance.COF.Attach(item, AttachmentPoint.Default, true);
                         break;
 
                     case "wear_attachment_add":
-                        client.Appearance.Attach(item, AttachmentPoint.Default, false);
+                        instance.COF.Attach(item, AttachmentPoint.Default, false);
                         break;
 
                     case "attach_to":
                         AttachmentPoint pt = (AttachmentPoint)((ToolStripMenuItem)sender).Tag;
-                        client.Appearance.Attach(item, pt);
+                        instance.COF.Attach(item, pt, true);
                         break;
 
                     case "edit_script":

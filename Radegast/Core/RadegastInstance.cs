@@ -214,6 +214,8 @@ namespace Radegast
 
         public Keyboard Keyboard;
 
+        public CurrentOutfitFolder COF;
+
         #region Events
 
         #region ClientChanged event
@@ -307,6 +309,7 @@ namespace Radegast
             gridManager.LoadGrids();
 
             names = new NameManager(this);
+            COF = new CurrentOutfitFolder(this);
 
             mainForm = new frmMain(this);
             mainForm.InitializeControls();
@@ -427,6 +430,12 @@ namespace Radegast
 
         public void CleanUp()
         {
+            if (COF != null)
+            {
+                COF.Dispose();
+                COF = null;
+            }
+            
             if (names != null)
             {
                 names.Dispose();
