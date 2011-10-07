@@ -134,7 +134,7 @@ namespace Radegast
                 sl.CustomURI = string.Empty;
             }
 
-            string savedLoginsKey = string.Format("{0}%{1}", sl.Username, sl.GridID);
+            string savedLoginsKey = string.Format("{0}%{1}", username, sl.GridID);
 
             if (!(s["saved_logins"] is OSDMap))
             {
