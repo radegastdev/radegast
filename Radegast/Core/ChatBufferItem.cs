@@ -50,6 +50,8 @@ namespace Radegast
         public ChatBufferItem(DateTime timestamp, string from, UUID id, string text, ChatBufferTextStyle style)
         {
             this.timestamp = timestamp;
+            this.from = from;
+            this.id = id;
             this.text = text;
             this.style = style;
         }

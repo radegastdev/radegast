@@ -330,6 +330,8 @@ namespace Radegast
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
+            if (selectedFriend == null) return;
+
             instance.MainForm.ShowAgentProfile(selectedFriend.Name, selectedFriend.UUID);
         }
 
@@ -368,11 +370,15 @@ namespace Radegast
 
         private void btnPay_Click(object sender, EventArgs e)
         {
+            if (selectedFriend == null) return;
+
             (new frmPay(instance, selectedFriend.UUID, selectedFriend.Name, false)).ShowDialog();
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
         {
+            if (selectedFriend == null) return;
+
             client.Friends.TerminateFriendship(selectedFriend.UUID);
             RefreshFriendsList();
         }
