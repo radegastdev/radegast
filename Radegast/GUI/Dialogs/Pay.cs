@@ -45,6 +45,7 @@ namespace Radegast
         private bool isObject;
         private Button[] buttons;
         private int[] defaultAmounts = new int[4] { 1, 5, 10, 20 };
+        public static int LastPayed = -1;
 
         public frmPay(RadegastInstance instance, UUID target, string name, bool isObject)
         {
@@ -81,6 +82,11 @@ namespace Radegast
             {
                 lblObject.Visible = false;
                 lblResident.Text = string.Format("Pay resident: {0}", name);
+            }
+
+            if (LastPayed > 0)
+            {
+                txtAmount.Text = LastPayed.ToString();
             }
         }
 
@@ -192,8 +198,17 @@ namespace Radegast
         private void btnPay_Click(object sender, EventArgs e)
         {
             int amount;
+
             if (int.TryParse(txtAmount.Text, out amount) && amount > 0)
             {
+                if (amount > client.Self.Balance)
+                {
+                    lblStatus.Visible = true;
+                    return;
+                }
+
+                LastPayed = amount;
+
                 if (!isObject)
                 {
                     client.Self.GiveAvatarMoney(target, amount);
@@ -219,7 +234,16 @@ namespace Radegast
             int amount = 0;
             if (int.TryParse(txtAmount.Text, out amount) && amount > 0)
             {
-                btnPay.Enabled = true;
+                if (amount > client.Self.Balance)
+                {
+                    lblStatus.Visible = true;
+                    btnPay.Enabled = false;
+                }
+                else
+                {
+                    lblStatus.Visible = false;
+                    btnPay.Enabled = true;
+                }
             }
             else
             {

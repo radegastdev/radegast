@@ -69,6 +69,7 @@ namespace Radegast
             this.btnFastPay4 = new System.Windows.Forms.Button();
             this.txtAmount = new System.Windows.Forms.TextBox();
             this.lblObject = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblResident
@@ -178,13 +179,26 @@ namespace Radegast
             this.lblObject.TabIndex = 0;
             this.lblObject.Text = "Via object:";
             // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.BackColor = System.Drawing.SystemColors.Highlight;
+            this.lblStatus.ForeColor = System.Drawing.SystemColors.HighlightText;
+            this.lblStatus.Location = new System.Drawing.Point(12, 134);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(91, 13);
+            this.lblStatus.TabIndex = 8;
+            this.lblStatus.Text = "Insufficient funds";
+            this.lblStatus.Visible = false;
+            // 
             // frmPay
             // 
             this.AcceptButton = this.btnPay;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(268, 142);
+            this.ClientSize = new System.Drawing.Size(268, 153);
+            this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.txtAmount);
             this.Controls.Add(this.btnFastPay4);
             this.Controls.Add(this.btnFastPay3);
@@ -222,6 +236,7 @@ namespace Radegast
         public System.Windows.Forms.Button btnFastPay4;
         public System.Windows.Forms.TextBox txtAmount;
         public System.Windows.Forms.Label lblObject;
+        public System.Windows.Forms.Label lblStatus;
 
     }
 }
