@@ -1303,7 +1303,7 @@ namespace Radegast.Rendering
                 if (!p.PositionCalculated)
                 {
                     PrimPosAndRot(p, out p.RenderPosition, out p.RenderRotation);
-                    p.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, p);
+                    p.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, p.RenderPosition);
                     p.PositionCalculated = true;
                 }
 
@@ -1379,71 +1379,9 @@ namespace Radegast.Rendering
             //Get the bounding boxes for this prim
             Vector3 boundingBoxMin = p.RenderPosition + p.BoundingVolume.ScaledMin;
             Vector3 boundingBoxMax = p.RenderPosition + p.BoundingVolume.ScaledMax;
-            if (calcPos.X > boundingBoxMin.X &&
-                    calcPos.X < boundingBoxMax.X)
-            {
-                //Between the two
-                posToCheckFrom.X = calcPos.X;
-            }
-            else
-            {
-                float minX = Abs(boundingBoxMin.X - calcPos.X);
-                float maxX = Abs(boundingBoxMax.X - calcPos.X);
-                if (maxX > minX)
-                {
-                    //The min is closer in the X direction
-                    posToCheckFrom.X = boundingBoxMin.X;
-                }
-                else
-                {
-                    //The max is closer in the X direction
-                    posToCheckFrom.X = boundingBoxMax.X;
-                }
-            }
-
-            if (calcPos.Y > boundingBoxMin.Y &&
-                    calcPos.Y < boundingBoxMax.Y)
-            {
-                //Between the two
-                posToCheckFrom.Y = calcPos.Y;
-            }
-            else
-            {
-                float minY = Abs(boundingBoxMin.Y - calcPos.Y);
-                float maxY = Abs(boundingBoxMax.Y - calcPos.Y);
-                if (maxY > minY)
-                {
-                    //The min is closer in the Y direction
-                    posToCheckFrom.Y = boundingBoxMin.Y;
-                }
-                else
-                {
-                    //The max is closer in the Y direction
-                    posToCheckFrom.Y = boundingBoxMax.Y;
-                }
-            }
-
-            if (calcPos.Z > boundingBoxMin.Z &&
-                    calcPos.Z < boundingBoxMax.Z)
-            {
-                //Between the two
-                posToCheckFrom.Z = calcPos.Z;
-            }
-            else
-            {
-                float minZ = Abs(boundingBoxMin.Z - calcPos.Z);
-                float maxZ = Abs(boundingBoxMax.Z - calcPos.Z);
-                if (maxZ > minZ)
-                {
-                    //The min is closer in the Z direction
-                    posToCheckFrom.Z = boundingBoxMin.Z;
-                }
-                else
-                {
-                    //The max is closer in the Z direction
-                    posToCheckFrom.Z = boundingBoxMax.Z;
-                }
-            }
+            posToCheckFrom.X = (calcPos.X < boundingBoxMin.X) ? boundingBoxMin.X : (calcPos.X > boundingBoxMax.X) ? boundingBoxMax.X : calcPos.X;
+            posToCheckFrom.Y = (calcPos.Y < boundingBoxMin.Y) ? boundingBoxMin.Y : (calcPos.Y > boundingBoxMax.Y) ? boundingBoxMax.Y : calcPos.Y;
+            posToCheckFrom.Z = (calcPos.Z < boundingBoxMin.Z) ? boundingBoxMin.Z : (calcPos.Z > boundingBoxMax.Z) ? boundingBoxMax.Z : calcPos.Z;
             return Vector3.DistanceSquared(calcPos, posToCheckFrom);
         }
 
@@ -2444,7 +2382,7 @@ namespace Radegast.Rendering
                     obj.Step(lastFrameTime);
 
                     PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
-                    obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
+                    obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.RenderPosition);
                     obj.PositionCalculated = true;
 
                     if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume)) continue;
@@ -2480,7 +2418,7 @@ namespace Radegast.Rendering
                         if (!obj.Initialized) obj.Initialize();
                         if (RenderSettings.AvatarRenderingEnabled) obj.Step(lastFrameTime);
                         PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
-                        obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.RenderPosition);
                         obj.PositionCalculated = true;
 
                         if (!Frustum.ObjectInFrustum(obj.RenderPosition, obj.BoundingVolume)) continue;
@@ -2501,7 +2439,7 @@ namespace Radegast.Rendering
                     if (!obj.PositionCalculated)
                     {
                         PrimPosAndRot(obj, out obj.RenderPosition, out obj.RenderRotation);
-                        obj.DistanceSquared = FindClosestDistanceSquared(Camera.RenderPosition, obj);
+                        obj.DistanceSquared = Vector3.DistanceSquared(Camera.RenderPosition, obj.RenderPosition);
                         obj.PositionCalculated = true;
                     }
 
@@ -2674,7 +2612,7 @@ namespace Radegast.Rendering
                 if (obj is RenderPrimitive)
                 {
                     // Don't render objects that are outside the draw distane
-                    if (Vector3.DistanceSquared(myPos, obj.RenderPosition) > drawDistanceSquared) continue;
+                    if (FindClosestDistanceSquared(myPos, obj) > drawDistanceSquared) continue;
                     if (pass == RenderPass.Simple || pass == RenderPass.Alpha)
                     {
                         obj.StartQuery(pass);
