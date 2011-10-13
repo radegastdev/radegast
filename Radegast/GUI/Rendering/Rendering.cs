@@ -1534,22 +1534,21 @@ namespace Radegast.Rendering
                     if (screenPos.Y > 0)
                     {
                         // Render tag backround
-                        GL.Begin(BeginMode.Quads);
-                        {
-                            float halfWidth = tSize.BoundingBox.Width / 2 + 12;
-                            float halfHeight = tSize.BoundingBox.Height / 2 + 5;
-                            RHelp.Draw2DBox(quadPos.X - halfWidth, quadPos.Y - halfHeight, halfWidth * 2, halfHeight * 2, screenPos.Z);
-                        }
-                        GL.End();
+                        float halfWidth = tSize.BoundingBox.Width / 2 + 12;
+                        float halfHeight = tSize.BoundingBox.Height / 2 + 5;
+                        RHelp.Draw2DBox(quadPos.X - halfWidth, quadPos.Y - halfHeight, halfWidth * 2, halfHeight * 2, screenPos.Z);
 
-                        Printer.Begin();
-                        Color textColor = pass == RenderPass.Simple ?
-                            Color.Orange :
-                            Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]);
-                        Printer.Print(tagText, AvatarTagFont, textColor,
-                            new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width + 2, tSize.BoundingBox.Height + 2),
-                            OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
-                        Printer.End();
+                        if (pass == RenderPass.Simple)
+                        {
+                            Printer.Begin();
+                            Color textColor = pass == RenderPass.Simple ?
+                                Color.Orange :
+                                Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]);
+                            Printer.Print(tagText, AvatarTagFont, textColor,
+                                new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width + 2, tSize.BoundingBox.Height + 2),
+                                OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                            Printer.End();
+                        }
                     }
                 }
             }
