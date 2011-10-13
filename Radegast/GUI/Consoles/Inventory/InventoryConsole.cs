@@ -402,9 +402,12 @@ namespace Radegast
                 return;
             }
 
-            if (attachments.ContainsKey(newObject.UUID))
+            lock (attachments)
             {
-                attachments[newObject.UUID].Item = (InventoryItem)newObject;
+                if (attachments.ContainsKey(newObject.UUID))
+                {
+                    attachments[newObject.UUID].Item = (InventoryItem)newObject;
+                }
             }
 
             // Find our current node in the tree
@@ -1774,7 +1777,7 @@ namespace Radegast
 
                     case "detach":
                         instance.COF.Detach(item);
-                        attachments.Remove(item.UUID);
+                        lock (attachments) attachments.Remove(item.UUID);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 

@@ -270,11 +270,11 @@ namespace Radegast.Rendering
 
         void Application_Idle(object sender, EventArgs e)
         {
-            if (glControl != null && !glControl.IsDisposed && RenderingEnabled)
+            if (RenderingEnabled && glControl != null && !glControl.IsDisposed)
             {
                 try
                 {
-                    while (glControl != null && glControl.IsIdle && RenderingEnabled)
+                    while (RenderingEnabled && glControl != null && glControl.IsIdle)
                     {
                         MainRenderLoop();
                         if (instance.MonoRuntime)
