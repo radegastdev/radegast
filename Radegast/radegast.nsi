@@ -18,7 +18,7 @@ RequestExecutionLevel admin	; on Vista we must be admin because we write to Prog
 LangString LanguageCode ${LANG_ENGLISH}  "en"
 
 !define APPNAME "Radegast"
-!define VERSION "2.2"
+!define VERSION "2.3"
 !define MAINEXEC "${APPNAME}.exe"
 !define DOTNET_VERSION "3.5"
 
