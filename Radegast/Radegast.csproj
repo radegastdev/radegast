@@ -2185,6 +2185,9 @@
     <None Include="Resources\del_trans.png" />
     <None Include="Resources\radegast_icon.ico" />
     <None Include="Resources\checkerboard.png" />
+    <Content Include="radegast.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\btn_play.png" />
     <Content Include="Resources\btn_stop.png" />
     <None Include="Resources\client_signatures.txt" />
