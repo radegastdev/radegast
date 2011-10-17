@@ -272,7 +272,9 @@ namespace Radegast.Rendering
 
                 GL.Enable(EnableCap.Blend);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-                hasMipmap = GL.GetString(StringName.Extensions).Contains("GL_SGIS_generate_mipmap");
+
+                OpenTK.Graphics.IGraphicsContextInternal context = glControl.Context as OpenTK.Graphics.IGraphicsContextInternal;
+                hasMipmap = context.GetAddress("glGenerateMipmap") != IntPtr.Zero;
 
                 RenderingEnabled = true;
                 // Call the resizing function which sets up the GL drawing window
