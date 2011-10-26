@@ -66,19 +66,25 @@ namespace Radegast
             }
 
             string group = string.Empty;
+
+            if (msg.BinaryBucket.Length >= 18)
+            {
+                UUID groupID = new UUID(msg.BinaryBucket, 2);
+
+                if (instance.Groups.ContainsKey(groupID))
+                {
+                    group = instance.Groups[groupID].Name;
+                    if (instance.Groups[groupID].InsigniaID != UUID.Zero)
+                    {
+                        imgGroup.Init(instance, instance.Groups[groupID].InsigniaID, string.Empty);
+                    }
+                }
+            }
+
             string text = msg.Message.Replace("\n", System.Environment.NewLine);
             int pos = msg.Message.IndexOf('|');
             string title = msg.Message.Substring(0, pos);
             text = text.Remove(0, pos + 1);
-
-            if (instance.Groups.ContainsKey(msg.FromAgentID))
-            {
-                group = instance.Groups[msg.FromAgentID].Name;
-                if (instance.Groups[msg.FromAgentID].InsigniaID != UUID.Zero)
-                {
-                    imgGroup.Init(instance, instance.Groups[msg.FromAgentID].InsigniaID, string.Empty);
-                }
-            }
 
             lblTitle.Text = title;
             lblSentBy.Text = string.Format("Sent by {0}, {1}", msg.FromAgentName, group);
