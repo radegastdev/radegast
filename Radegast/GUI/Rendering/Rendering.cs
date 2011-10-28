@@ -1332,7 +1332,7 @@ namespace Radegast.Rendering
 
                     // Check for invalid attachment point
                     int attachment_index = (int)obj.BasePrim.PrimData.AttachmentPoint;
-                    if (attachment_index > GLAvatar.attachment_points.Count()) return;
+                    if (attachment_index >= GLAvatar.attachment_points.Count()) return;
                     attachment_point apoint = GLAvatar.attachment_points[attachment_index];
                     skeleton skel = parentav.glavatar.skel;
                     if (!skel.mBones.ContainsKey(apoint.joint)) return;
