@@ -224,7 +224,7 @@ namespace Radegast
                 if (attachment != null)
                 {
                     attachments.Remove(attachment.InventoryID);
-                    Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(attachment.Item, attachment.Item));
+                    UpdateNodeLabel(attachment.InventoryID);
                 }
             }
         }
@@ -276,7 +276,7 @@ namespace Radegast
                                 if (!attachment.MarkedAttached)
                                 {
                                     attachment.MarkedAttached = true;
-                                    Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(attachments[attachment.InventoryID].Item, attachments[attachment.InventoryID].Item));
+                                    UpdateNodeLabel(attachment.InventoryID);
                                 }
                             }
                             else
@@ -621,6 +621,21 @@ namespace Radegast
             tlabelStatus.Text = text;
         }
 
+        private void UpdateNodeLabel(UUID itemID)
+        {
+            if (instance.MainForm.InvokeRequired)
+            {
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => UpdateNodeLabel(itemID)));
+                return;
+            }
+
+            TreeNode node = findNodeForItem(itemID);
+            if (node != null)
+            {
+                node.Text = ItemLabel((InventoryBase)node.Tag, false);
+            }
+        }
+
         private void AddFolderFromStore(TreeNode parent, InventoryFolder f)
         {
             List<InventoryBase> contents = Inventory.GetContents(f);
@@ -833,7 +848,7 @@ namespace Radegast
                         {
                             a.MarkedAttached = true;
                             a.Item = (InventoryItem)Inventory[a.InventoryID];
-                            Inventory_InventoryObjectUpdated(this, new InventoryObjectUpdatedEventArgs(a.Item, a.Item));
+                            UpdateNodeLabel(a.InventoryID);
                         }
                         else
                         {
