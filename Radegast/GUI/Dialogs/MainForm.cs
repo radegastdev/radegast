@@ -1025,7 +1025,7 @@ namespace Radegast
 
         private void cleanCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            client.Assets.Cache.Clear();
+            ThreadPool.QueueUserWorkItem(sync => client.Assets.Cache.Clear());
         }
 
         private void rebakeTexturesToolStripMenuItem_Click(object sender, EventArgs e)
