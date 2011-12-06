@@ -113,7 +113,7 @@ namespace Radegast
 
             if (!s.ContainsKey("send_rad_client_tag")) s["send_rad_client_tag"] = true;
 
-
+            if (!s.ContainsKey("log_to_file")) s["log_to_file"] = true;
         }
 
         public frmSettings(RadegastInstance instance)
@@ -232,6 +232,8 @@ namespace Radegast
             {
                 s["inv_auto_accept_mode"] = cbOnInvOffer.SelectedIndex;
             };
+
+            cbRadegastLogToFile.Checked = s["log_to_file"];
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)
@@ -356,6 +358,11 @@ namespace Radegast
             }
             
             s["reconnect_time"] = t;
+        }
+
+        private void cbRadegastLogToFile_CheckedChanged(object sender, EventArgs e)
+        {
+            s["log_to_file"] = OSD.FromBoolean(cbRadegastLogToFile.Checked);
         }
     }
 }

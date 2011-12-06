@@ -86,7 +86,7 @@ namespace Radegast
                 }
                 Console.WriteLine();
 
-                if (RadegastInstance.GlobalInstance.GlobalLogFile != null)
+                if (RadegastInstance.GlobalInstance.GlobalLogFile != null && (!RadegastInstance.GlobalInstance.GlobalSettings.ContainsKey("log_to_file") || RadegastInstance.GlobalInstance.GlobalSettings["log_to_file"]))
                     File.AppendAllText(RadegastInstance.GlobalInstance.GlobalLogFile, RenderLoggingEvent(le) + Environment.NewLine);
             }
             catch (Exception) { }
