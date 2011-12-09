@@ -144,43 +144,48 @@ namespace Radegast
             }
         }
 
+        object FolderSync = new object();
+
         void Inventory_FolderUpdated(object sender, FolderUpdatedEventArgs e)
         {
             if (COF == null) return;
 
             if (e.FolderID == COF.UUID && e.Success)
             {
-                lock (Content) Content.Clear();
-                lock (ContentLinks) ContentLinks.Clear();
-
-                List<InventoryBase> content = Client.Inventory.Store.GetContents(COF);
-                foreach (var baseItem in content)
+                lock (FolderSync)
                 {
-                    if (baseItem is InventoryItem)
+                    lock (Content) Content.Clear();
+                    lock (ContentLinks) ContentLinks.Clear();
+
+                    List<InventoryBase> content = Client.Inventory.Store.GetContents(COF);
+                    foreach (var baseItem in content)
                     {
-                        InventoryItem item = (InventoryItem)baseItem;
-                        if (item.AssetType == AssetType.Link)
+                        if (baseItem is InventoryItem)
                         {
-                            ContentLinks.Add(item);
+                            InventoryItem item = (InventoryItem)baseItem;
+                            if (item.AssetType == AssetType.Link)
+                            {
+                                ContentLinks.Add(item);
+                            }
                         }
                     }
-                }
 
-                List<UUID> items = new List<UUID>();
-                List<UUID> owners = new List<UUID>();
+                    List<UUID> items = new List<UUID>();
+                    List<UUID> owners = new List<UUID>();
 
-                lock (ContentLinks)
-                {
-                    foreach (var link in ContentLinks)
+                    lock (ContentLinks)
                     {
-                        items.Add(link.AssetUUID);
-                        owners.Add(Client.Self.AgentID);
+                        foreach (var link in ContentLinks)
+                        {
+                            items.Add(link.AssetUUID);
+                            owners.Add(Client.Self.AgentID);
+                        }
                     }
-                }
 
-                if (items.Count > 0)
-                {
-                    Client.Inventory.RequestFetchInventory(items, owners);
+                    if (items.Count > 0)
+                    {
+                        Client.Inventory.RequestFetchInventory(items, owners);
+                    }
                 }
             }
         }
