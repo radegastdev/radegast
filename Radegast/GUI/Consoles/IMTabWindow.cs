@@ -246,6 +246,16 @@ namespace Radegast
             instance.MainForm.ShowAgentProfile(toName, target);
         }
 
+        private void btnOfferTeleport_Click(object sender, EventArgs e)
+        {
+            instance.Client.Self.SendTeleportLure(target, "Join me in " + instance.Client.Network.CurrentSim.Name + "!");
+        }
+
+        private void btnPay_Click(object sender, EventArgs e)
+        {
+            (new frmPay(instance, target, toName, false)).ShowDialog();
+        }
+
         public UUID TargetId
         {
             get { return target; }

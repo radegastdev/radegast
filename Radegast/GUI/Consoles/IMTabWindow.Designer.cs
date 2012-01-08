@@ -61,10 +61,11 @@ namespace Radegast
             this.rtbIMText = new System.Windows.Forms.RichTextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
             this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbxInput = new Radegast.ChatInputBox();
-            this.toolStrip1.SuspendLayout();
+            this.btnPay = new System.Windows.Forms.Button();
+            this.btnOfferTeleport = new System.Windows.Forms.Button();
+            this.btnProfile = new System.Windows.Forms.Button();
             this.pnlChatInput.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,22 +97,11 @@ namespace Radegast
             // toolStrip1
             // 
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tbtnProfile});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(500, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // tbtnProfile
-            // 
-            this.tbtnProfile.Image = global::Radegast.Properties.Resources.applications_16;
-            this.tbtnProfile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtnProfile.Name = "tbtnProfile";
-            this.tbtnProfile.Size = new System.Drawing.Size(61, 22);
-            this.tbtnProfile.Text = "Profile";
-            this.tbtnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 
             // pnlChatInput
             // 
@@ -131,14 +121,47 @@ namespace Radegast
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(419, 21);
             this.cbxInput.TabIndex = 0;
+            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
-            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
+            // 
+            // btnPay
+            // 
+            this.btnPay.Location = new System.Drawing.Point(199, 0);
+            this.btnPay.Name = "btnPay";
+            this.btnPay.Size = new System.Drawing.Size(75, 23);
+            this.btnPay.TabIndex = 8;
+            this.btnPay.Text = "Pay...";
+            this.btnPay.UseVisualStyleBackColor = true;
+            this.btnPay.Click += new System.EventHandler(this.btnPay_Click);
+            // 
+            // btnOfferTeleport
+            // 
+            this.btnOfferTeleport.Location = new System.Drawing.Point(81, 0);
+            this.btnOfferTeleport.Name = "btnOfferTeleport";
+            this.btnOfferTeleport.Size = new System.Drawing.Size(112, 23);
+            this.btnOfferTeleport.TabIndex = 7;
+            this.btnOfferTeleport.Text = "Offer Teleport";
+            this.btnOfferTeleport.UseVisualStyleBackColor = true;
+            this.btnOfferTeleport.Click += new System.EventHandler(this.btnOfferTeleport_Click);
+            // 
+            // btnProfile
+            // 
+            this.btnProfile.Location = new System.Drawing.Point(0, 0);
+            this.btnProfile.Name = "btnProfile";
+            this.btnProfile.Size = new System.Drawing.Size(75, 23);
+            this.btnProfile.TabIndex = 6;
+            this.btnProfile.Text = "Profile";
+            this.btnProfile.UseVisualStyleBackColor = true;
+            this.btnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 
             // IMTabWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.btnPay);
+            this.Controls.Add(this.btnOfferTeleport);
+            this.Controls.Add(this.btnProfile);
             this.Controls.Add(this.rtbIMText);
             this.Controls.Add(this.pnlChatInput);
             this.Controls.Add(this.toolStrip1);
@@ -146,8 +169,6 @@ namespace Radegast
             this.Name = "IMTabWindow";
             this.Size = new System.Drawing.Size(500, 330);
             this.VisibleChanged += new System.EventHandler(this.cbxInput_VisibleChanged);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.pnlChatInput.ResumeLayout(false);
             this.pnlChatInput.PerformLayout();
             this.ResumeLayout(false);
@@ -161,8 +182,10 @@ namespace Radegast
         public ChatInputBox cbxInput;
         public System.Windows.Forms.Button btnSend;
         public System.Windows.Forms.ToolStrip toolStrip1;
-        public System.Windows.Forms.ToolStripButton tbtnProfile;
         private System.Windows.Forms.Panel pnlChatInput;
+        public System.Windows.Forms.Button btnPay;
+        public System.Windows.Forms.Button btnOfferTeleport;
+        public System.Windows.Forms.Button btnProfile;
 
     }
 }
