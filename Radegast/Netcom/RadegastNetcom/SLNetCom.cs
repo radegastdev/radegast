@@ -46,7 +46,7 @@ namespace Radegast.Netcom
     {
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
-        private LoginOptions loginOptions;
+        public LoginOptions loginOptions;
 
         private bool loggingIn = false;
         private bool loggedIn = false;
