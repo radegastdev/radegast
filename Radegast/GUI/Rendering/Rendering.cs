@@ -3199,23 +3199,38 @@ namespace Radegast.Rendering
                 {
                     instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
                         {
-                            if (state == TextureRequestState.Finished)
+                            try
                             {
-                                ManagedImage mi;
-                                OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
-
-                                if (removeAlpha)
+                                if (state == TextureRequestState.Finished)
                                 {
-                                    if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                    ManagedImage mi;
+                                    OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
+                                    if (mi != null)
                                     {
-                                        mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                        if (removeAlpha)
+                                        {
+                                            if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                            {
+                                                mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                            }
+                                        }
+                                        tgaData = mi.ExportTGA();
+                                        img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
+                                        RHelp.SaveCachedImage(tgaData, textureID,
+                                                              (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0,
+                                                              false, false);
                                     }
                                 }
-                                tgaData = mi.ExportTGA();
-                                img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
-                                RHelp.SaveCachedImage(tgaData, textureID, (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0, false, false);
                             }
-                            gotImage.Set();
+                            catch (Exception e)
+                            {
+                                Logger.Log("Failed to save or decode the texture asset " + textureID
+                                           + ": " + e.Message, Helpers.LogLevel.Warning, Client, e);
+                            }
+                            finally
+                            {
+                                gotImage.Set();
+                            }
                         }
                     );
                     gotImage.WaitOne(30 * 1000, false);
@@ -3323,6 +3338,7 @@ namespace Radegast.Rendering
                         Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
                     });
                     ctxMenu.Items.Add(item);
+                    instance.ContextActionManager.AddContributions(ctxMenu, typeof(Avatar), prim.Prim.ID);
 
 
                 }
@@ -3362,6 +3378,7 @@ namespace Radegast.Rendering
                         (new frmPay(Instance, av.avatar.ID, Instance.Names.Get(av.avatar.ID), false)).ShowDialog();
                     });
                     ctxMenu.Items.Add(item);
+                    instance.ContextActionManager.AddContributions(ctxMenu, typeof(Avatar), av.avatar.ID);
                 }
 
             }

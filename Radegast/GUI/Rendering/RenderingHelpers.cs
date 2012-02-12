@@ -74,7 +74,7 @@ namespace Radegast.Rendering
         public bool FullAlpha;
         public bool IsMask;
         public bool IsInvisible;
-        public UUID TextureID;
+        public UUID TextureID = UUID.Zero;
         public bool FetchFailed;
     }
 
