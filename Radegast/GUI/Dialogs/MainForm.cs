@@ -469,8 +469,9 @@ namespace Radegast
                 tlblMoneyBalance.Text = client.Self.Balance.ToString();
                 icoHealth.Text = client.Self.Health.ToString() + "%";
 
+                var cs = client.Network.CurrentSim;
                 tlblRegionInfo.Text =
-                    client.Network.CurrentSim.Name +
+                    (cs == null ? "No region" : cs.Name) +
                     " (" + Math.Floor(client.Self.SimPosition.X).ToString() + ", " +
                     Math.Floor(client.Self.SimPosition.Y).ToString() + ", " +
                     Math.Floor(client.Self.SimPosition.Z).ToString() + ")";
