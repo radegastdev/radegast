@@ -1335,8 +1335,8 @@ namespace Radegast
                 return string.Compare(item1.Text, item2.Text);
             }
 
-            float dist1 = ((Primitive)item1.Tag).ParentID == RadegastInstance.GlobalInstance.Client.Self.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item1.Tag).Position);
-            float dist2 = ((Primitive)item2.Tag).ParentID == RadegastInstance.GlobalInstance.Client.Self.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item2.Tag).Position);
+            float dist1 = ((Primitive)item1.Tag).ParentID == me.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item1.Tag).Position);
+            float dist2 = ((Primitive)item2.Tag).ParentID == me.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item2.Tag).Position);
 
             if (dist1 == dist2)
             {
