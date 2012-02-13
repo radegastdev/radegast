@@ -3338,7 +3338,7 @@ namespace Radegast.Rendering
                         Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
                     });
                     ctxMenu.Items.Add(item);
-                    instance.ContextActionManager.AddContributions(ctxMenu, typeof(Avatar), prim.Prim.ID);
+                    instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim.ID);
 
 
                 }
