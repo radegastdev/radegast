@@ -1704,8 +1704,7 @@ namespace Radegast.Rendering
 
             //TODO other paramaters but these arew concerned with editing the GUI display so not too fussed at the moment
 
-            if (allParams.ContainsKey(ParamID)) Logger.Log("Duplicate VisualParam in allParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
-            else allParams.Add(ParamID, this);            
+            allParams[ParamID] = this;            
 
             if (pt == ParamType.TYPE_BONEDEFORM)
             {
@@ -1726,8 +1725,7 @@ namespace Radegast.Rendering
                     ParseVolumeDeforms(node.ChildNodes[0].ChildNodes);
                 }
 
-                if (morphParams.ContainsKey(ParamID)) Logger.Log("Duplicate VisualParam in morphParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
-                else morphParams.Add(ParamID, this);  
+                morphParams[ParamID] = this;
 
             }
 
