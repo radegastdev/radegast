@@ -3338,10 +3338,8 @@ namespace Radegast.Rendering
                         Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
                     });
                     ctxMenu.Items.Add(item);
-                    instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim.ID);
-
-
                 }
+                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim.ID);
             } // We right clicked on an avatar, add some context menu items
             else if (RightclickedObject != null && RightclickedObject is RenderAvatar)
             {
@@ -3378,9 +3376,8 @@ namespace Radegast.Rendering
                         (new frmPay(Instance, av.avatar.ID, Instance.Names.Get(av.avatar.ID), false)).ShowDialog();
                     });
                     ctxMenu.Items.Add(item);
-                    instance.ContextActionManager.AddContributions(ctxMenu, typeof(Avatar), av.avatar.ID);
                 }
-
+                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Avatar), av.avatar.ID);
             }
 
             // If we are not the sole menu item, add separator
