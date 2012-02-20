@@ -1025,22 +1025,28 @@ namespace Radegast.Rendering
                 gotImage.Reset();
                 instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
                     {
-                        if (state == TextureRequestState.Finished)
+                        try
                         {
-                            ManagedImage mi;
-                            OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
-
-                            if (removeAlpha)
+                            if (state == TextureRequestState.Finished)
                             {
-                                if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
-                                {
-                                    mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
-                                }
-                            }
+                                ManagedImage mi;
+                                OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
 
-                            img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
+                                if (removeAlpha)
+                                {
+                                    if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                    {
+                                        mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                    }
+                                }
+
+                                img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
+                            }
                         }
-                        gotImage.Set();
+                        finally
+                        {
+                            gotImage.Set();                            
+                        }
                     }
                 );
                 gotImage.WaitOne(30 * 1000, false);
