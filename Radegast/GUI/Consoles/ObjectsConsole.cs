@@ -51,6 +51,7 @@ namespace Radegast
         //public List<InventoryBase> subitems;
         PropertiesQueue propRequester;
         private Thread ContentsThread;
+        private ObjectConsoleFilter filter;
 
         public ObjectsConsole(RadegastInstance instance)
         {
@@ -72,6 +73,20 @@ namespace Radegast
 
             lstContents.LargeImageList = frmMain.ResourceImages;
             lstContents.SmallImageList = frmMain.ResourceImages;
+
+            filter = (ObjectConsoleFilter)instance.GlobalSettings["object_console_filter"].AsInteger();
+            comboFilter.SelectedIndex = 0;
+            try
+            {
+                comboFilter.SelectedIndex = (int)filter;
+            }
+            catch { }
+            comboFilter.SelectedIndexChanged += (ssender, se) =>
+            {
+                instance.GlobalSettings["object_console_filter"] = comboFilter.SelectedIndex;
+                filter = (ObjectConsoleFilter)comboFilter.SelectedIndex;
+                btnRefresh_Click(null, null);
+            };
 
             //if (instance.MonoRuntime)
             //{
@@ -585,7 +600,7 @@ namespace Radegast
             {
                 UpdateObjectContents();
             }
-            
+
             UpdateMuteButton();
         }
 
@@ -620,7 +635,7 @@ namespace Radegast
             {
                 name = prim.Properties.Name;
                 // prim.Properties.GroupID is the actual group when group owned, not prim.GroupID
-                if (UUID.Zero == prim.Properties.OwnerID && 
+                if (UUID.Zero == prim.Properties.OwnerID &&
                     PrimFlags.ObjectGroupOwned == (prim.Flags & PrimFlags.ObjectGroupOwned) &&
                     UUID.Zero != prim.Properties.GroupID)
                 {
@@ -712,10 +727,21 @@ namespace Radegast
         {
             if (e.Simulator.Handle != client.Network.CurrentSim.Handle || e.Prim.Position == Vector3.Zero || e.Prim is Avatar) return;
 
-            if (e.Prim.ParentID == 0)
+            if (IncludePrim(e.Prim))
             {
-                int distance = (int)Vector3.Distance(client.Self.SimPosition, e.Prim.Position);
-                if (distance < searchRadius)
+                if (e.Prim.ParentID == 0)
+                {
+                    int distance = (int)Vector3.Distance(client.Self.SimPosition, e.Prim.Position);
+                    if (distance < searchRadius)
+                    {
+                        if (e.Prim.Properties == null)
+                        {
+                            propRequester.RequestProps(e.Prim);
+                        }
+                        AddPrim(e.Prim);
+                    }
+                }
+                else if (e.Prim.ParentID == client.Self.LocalID)
                 {
                     if (e.Prim.Properties == null)
                     {
@@ -723,14 +749,6 @@ namespace Radegast
                     }
                     AddPrim(e.Prim);
                 }
-            }
-            else if (e.Prim.ParentID == client.Self.LocalID)
-            {
-                if (e.Prim.Properties == null)
-                {
-                    propRequester.RequestProps(e.Prim);
-                }
-                AddPrim(e.Prim);
             }
 
             if (e.Prim.ID == currentPrim.ID)
@@ -764,6 +782,22 @@ namespace Radegast
             }
         }
 
+        private bool IncludePrim(Primitive prim)
+        {
+            if ((prim.ParentID == client.Self.LocalID) && (filter == ObjectConsoleFilter.Attached || filter == ObjectConsoleFilter.Both))
+            {
+                return true;
+            }
+            else if ((prim.ParentID == 0) && (filter == ObjectConsoleFilter.Rezzed || filter == ObjectConsoleFilter.Both))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private void AddAllObjects()
         {
             Vector3 location = client.Self.SimPosition;
@@ -778,7 +812,7 @@ namespace Radegast
                     {
                         distance = 0;
                     }
-                    if ((prim.ParentID == client.Self.LocalID || prim.ParentID == 0) &&
+                    if (IncludePrim(prim) &&
                         (prim.Position != Vector3.Zero) &&
                         (distance < searchRadius) &&
                         (txtSearch.Text.Length == 0 || (prim.Properties != null && prim.Properties.Name.ToLower().Contains(txtSearch.Text.ToLower())))) //root prims and attachments only
@@ -1201,7 +1235,7 @@ namespace Radegast
             //else if (e.KeyCode == Keys.Apps)
             //{
             //    Point pos = new Point(50, 30);
-                
+
             //    if (lstContents.SelectedItems.Count > 0)
             //    {
             //        pos = lstContents.SelectedItems[0].Position;
@@ -1308,6 +1342,14 @@ namespace Radegast
         {
             btnView.PerformClick();
         }
+
+    }
+
+    public enum ObjectConsoleFilter : int
+    {
+        Rezzed = 0,
+        Attached = 1,
+        Both = 2
     }
 
     public class ObjectSorter : IComparer
