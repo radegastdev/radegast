@@ -576,6 +576,8 @@ namespace Radegast
 
         public void LogClientMessage(string sessioName, string message)
         {
+            if (globalSettings["disable_chat_im_log"]) return;
+
             lock (this)
             {
                 try

@@ -114,6 +114,8 @@ namespace Radegast
             if (!s.ContainsKey("send_rad_client_tag")) s["send_rad_client_tag"] = true;
 
             if (!s.ContainsKey("log_to_file")) s["log_to_file"] = true;
+
+            if (!s.ContainsKey("disable_chat_im_log")) s["disable_chat_im_log"] = false;
         }
 
         public frmSettings(RadegastInstance instance)
@@ -234,6 +236,12 @@ namespace Radegast
             };
 
             cbRadegastLogToFile.Checked = s["log_to_file"];
+
+            cbDisableChatIMLog.Checked = s["disable_chat_im_log"];
+            cbDisableChatIMLog.CheckedChanged += (sender, e) =>
+            {
+                s["disable_chat_im_log"] = cbDisableChatIMLog.Checked;
+            };
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)

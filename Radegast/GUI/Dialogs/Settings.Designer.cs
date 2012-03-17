@@ -96,6 +96,7 @@ namespace Radegast
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tbpGraphics = new System.Windows.Forms.TabPage();
+            this.cbDisableChatIMLog = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.Chat.SuspendLayout();
@@ -115,7 +116,7 @@ namespace Radegast
             this.tcGraphics.Multiline = true;
             this.tcGraphics.Name = "tcGraphics";
             this.tcGraphics.SelectedIndex = 0;
-            this.tcGraphics.Size = new System.Drawing.Size(496, 303);
+            this.tcGraphics.Size = new System.Drawing.Size(496, 324);
             this.tcGraphics.TabIndex = 0;
             // 
             // tbpGeneral
@@ -137,7 +138,7 @@ namespace Radegast
             this.tbpGeneral.Location = new System.Drawing.Point(4, 22);
             this.tbpGeneral.Name = "tbpGeneral";
             this.tbpGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpGeneral.Size = new System.Drawing.Size(488, 277);
+            this.tbpGeneral.Size = new System.Drawing.Size(488, 298);
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
@@ -155,6 +156,7 @@ namespace Radegast
             // 
             // Chat
             // 
+            this.Chat.Controls.Add(this.cbDisableChatIMLog);
             this.Chat.Controls.Add(this.cbChatTimestamps);
             this.Chat.Controls.Add(this.cbIMTimeStamps);
             this.Chat.Controls.Add(this.cbFriendsHighlight);
@@ -165,7 +167,7 @@ namespace Radegast
             this.Chat.Controls.Add(this.label1);
             this.Chat.Location = new System.Drawing.Point(8, 5);
             this.Chat.Name = "Chat";
-            this.Chat.Size = new System.Drawing.Size(256, 155);
+            this.Chat.Size = new System.Drawing.Size(256, 181);
             this.Chat.TabIndex = 0;
             this.Chat.TabStop = false;
             this.Chat.Text = "Chat";
@@ -251,8 +253,8 @@ namespace Radegast
             this.cbFontSize.TabIndex = 3;
             this.cbFontSize.Text = "8.25";
             this.cbFontSize.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
-            this.cbFontSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
             this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
+            this.cbFontSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
             // 
             // label1
             // 
@@ -287,7 +289,7 @@ namespace Radegast
             this.gbDisplayNames.Controls.Add(this.rbDNDandUsernme);
             this.gbDisplayNames.Controls.Add(this.rbDNSmart);
             this.gbDisplayNames.Controls.Add(this.rbDNOff);
-            this.gbDisplayNames.Location = new System.Drawing.Point(8, 165);
+            this.gbDisplayNames.Location = new System.Drawing.Point(8, 192);
             this.gbDisplayNames.Name = "gbDisplayNames";
             this.gbDisplayNames.Size = new System.Drawing.Size(256, 100);
             this.gbDisplayNames.TabIndex = 1;
@@ -447,7 +449,7 @@ namespace Radegast
             this.tbpAutoResponse.Location = new System.Drawing.Point(4, 22);
             this.tbpAutoResponse.Name = "tbpAutoResponse";
             this.tbpAutoResponse.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpAutoResponse.Size = new System.Drawing.Size(488, 277);
+            this.tbpAutoResponse.Size = new System.Drawing.Size(488, 298);
             this.tbpAutoResponse.TabIndex = 2;
             this.tbpAutoResponse.Text = "Auto Response";
             this.tbpAutoResponse.UseVisualStyleBackColor = true;
@@ -536,16 +538,26 @@ namespace Radegast
             this.tbpGraphics.Location = new System.Drawing.Point(4, 22);
             this.tbpGraphics.Name = "tbpGraphics";
             this.tbpGraphics.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpGraphics.Size = new System.Drawing.Size(488, 277);
+            this.tbpGraphics.Size = new System.Drawing.Size(488, 298);
             this.tbpGraphics.TabIndex = 3;
             this.tbpGraphics.Text = "Graphics Settings";
             this.tbpGraphics.UseVisualStyleBackColor = true;
+            // 
+            // cbDisableChatIMLog
+            // 
+            this.cbDisableChatIMLog.AutoSize = true;
+            this.cbDisableChatIMLog.Location = new System.Drawing.Point(8, 155);
+            this.cbDisableChatIMLog.Name = "cbDisableChatIMLog";
+            this.cbDisableChatIMLog.Size = new System.Drawing.Size(138, 17);
+            this.cbDisableChatIMLog.TabIndex = 8;
+            this.cbDisableChatIMLog.Text = "Disable chat and IM log";
+            this.cbDisableChatIMLog.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(496, 303);
+            this.ClientSize = new System.Drawing.Size(496, 324);
             this.Controls.Add(this.tcGraphics);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmSettings";
@@ -603,8 +615,9 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbRadegastClientTag;
         public System.Windows.Forms.GroupBox gnAutoInventory;
         public System.Windows.Forms.ComboBox cbOnInvOffer;
-        private System.Windows.Forms.GroupBox Chat;
-        private System.Windows.Forms.CheckBox cbRadegastLogToFile;
+        public System.Windows.Forms.CheckBox cbDisableChatIMLog;
+        public System.Windows.Forms.GroupBox Chat;
+        public System.Windows.Forms.CheckBox cbRadegastLogToFile;
 
 
     }
