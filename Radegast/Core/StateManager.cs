@@ -385,7 +385,7 @@ namespace Radegast
             client.Network.CurrentSim.ObjectsAvatars.TryGetValue(e.Update.LocalID, out av);
             if (av == null) return;
 
-            if (av.Name == followName)
+            if (av.ID == followID)
             {
                 Vector3 pos = AvatarPosition(client.Network.CurrentSim, av);
 
