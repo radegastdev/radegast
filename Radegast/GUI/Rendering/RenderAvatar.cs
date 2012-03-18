@@ -957,8 +957,11 @@ namespace Radegast.Rendering
             public int lastkeyframe_pos;
             public int nextkeyframe_pos;
 
-            public int loopinframe;
-            public int loopoutframe;
+            public int pos_loopinframe;
+            public int pos_loopoutframe;
+
+            public int rot_loopinframe;
+            public int rot_loopoutframe;
 
         }
 
@@ -1183,8 +1186,11 @@ namespace Radegast.Rendering
                 state.currenttime_rot = 0;
                 state.currenttime_pos = 0;
 
-                state.loopinframe = 0;
-                state.loopoutframe = joint.rotationkeys.Length - 1;
+                state.pos_loopinframe = 0;
+                state.pos_loopoutframe = joint.positionkeys.Length - 1;
+
+                state.rot_loopinframe = 0;
+                state.rot_loopoutframe = joint.rotationkeys.Length - 1;
 
                 if (b.Loop == true)
                 {
@@ -1193,16 +1199,31 @@ namespace Radegast.Rendering
                     {
                         if (key.time == b.InPoint)
                         {
-                            state.loopinframe = frame;
+                            state.rot_loopinframe = frame;
                         }
 
                         if (key.time == b.OutPoint)
                         {
-                            state.loopoutframe = frame;
+                            state.rot_loopoutframe = frame;
                         }
 
                         frame++;
+                    }
 
+                    frame = 0;
+                    foreach (binBVHJointKey key in joint.positionkeys)
+                    {
+                        if (key.time == b.InPoint)
+                        {
+                            state.pos_loopinframe = frame;
+                        }
+
+                        if (key.time == b.OutPoint)
+                        {
+                            state.pos_loopoutframe = frame;
+                        }
+
+                        frame++;
                     }
 
                 }
@@ -1230,6 +1251,9 @@ namespace Radegast.Rendering
                 {
                     int jpos = 0;
                     animationwrapper ar = kvp.Value;
+                    if (ar.anim == null)
+                        continue;
+
                     foreach (binBVHJoint joint in ar.anim.joints)
                     {
                         if (ar.anim == null)
@@ -1384,18 +1408,18 @@ namespace Radegast.Rendering
 
                                 if (ar.anim.Loop)
                                 {
-                                    if (state.nextkeyframe_pos > state.loopoutframe)
-                                        state.nextkeyframe_pos = state.loopinframe;
+                                    if (state.nextkeyframe_pos > state.pos_loopoutframe)
+                                        state.nextkeyframe_pos = state.pos_loopinframe;
 
-                                    if (state.lastkeyframe_pos > state.loopoutframe)
-                                        state.lastkeyframe_pos = state.loopinframe;
+                                    if (state.lastkeyframe_pos > state.pos_loopoutframe)
+                                        state.lastkeyframe_pos = state.pos_loopinframe;
 
 
                                     if (state.nextkeyframe_pos >= ar.anim.joints[jpos].positionkeys.Length)
-                                        state.nextkeyframe_pos = state.loopinframe;
+                                        state.nextkeyframe_pos = state.pos_loopinframe;
 
                                     if (state.lastkeyframe_pos >= ar.anim.joints[jpos].positionkeys.Length)
-                                        state.lastkeyframe_pos = state.loopinframe;
+                                        state.lastkeyframe_pos = state.pos_loopinframe;
 
                                 }
                                 else
@@ -1467,11 +1491,11 @@ namespace Radegast.Rendering
 
                                 if (ar.anim.Loop)
                                 {
-                                    if (state.nextkeyframe_rot > state.loopoutframe)
-                                        state.nextkeyframe_rot = state.loopinframe;
+                                    if (state.nextkeyframe_rot > state.rot_loopoutframe)
+                                        state.nextkeyframe_rot = state.rot_loopinframe;
 
-                                    if (state.lastkeyframe_rot > state.loopoutframe)
-                                        state.lastkeyframe_rot = state.loopinframe;
+                                    if (state.lastkeyframe_rot > state.rot_loopoutframe)
+                                        state.lastkeyframe_rot = state.rot_loopinframe;
 
                                 }
                                 else
@@ -1488,11 +1512,6 @@ namespace Radegast.Rendering
                                     }
                                 }
                             }
-
-                            //if (rot_next.time == rot_last.time)
-                            //{
-                            //    ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
-                            //}
 
                             // update the pointers incase they have been moved
                             rot_next = ar.anim.joints[jpos].rotationkeys[state.nextkeyframe_rot];
