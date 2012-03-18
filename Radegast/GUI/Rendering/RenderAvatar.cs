@@ -852,7 +852,7 @@ namespace Radegast.Rendering
                     {
                         if (x >= VisualParamEx.tweakable_params.Count)
                         {
-                            Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
+                            //Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
                             break;
                         }
 
@@ -921,7 +921,7 @@ namespace Radegast.Rendering
 
         public void stopanim()
         {
-            Logger.Log(string.Format("Animation {0} marked as stopped",mAnimation),Helpers.LogLevel.Info);
+            //Logger.Log(string.Format("Animation {0} marked as stopped",mAnimation),Helpers.LogLevel.Info);
             playstate = animstate.STATE_STOP;
         }
     }
@@ -962,6 +962,9 @@ namespace Radegast.Rendering
 
             public int rot_loopinframe;
             public int rot_loopoutframe;
+
+            public Quaternion easeoutrot;
+            public float easeoutfactor;
 
         }
 
@@ -1127,7 +1130,7 @@ namespace Radegast.Rendering
                 foreach (UUID key in kills)
                 {
                     mAnimationsWrapper.Remove(key);
-                    Logger.Log(string.Format("Removing dead animation {0} from av", key), Helpers.LogLevel.Info);
+                    //Logger.Log(string.Format("Removing dead animation {0} from av", key), Helpers.LogLevel.Info);
                 }
             }
         }
@@ -1196,6 +1199,9 @@ namespace Radegast.Rendering
 
                 state.rot_loopinframe = 0;
                 state.rot_loopoutframe = joint.rotationkeys.Length - 1;
+
+                state.easeoutfactor = 1.0f;
+                state.easeoutrot = Quaternion.Identity;
 
                 if (b.Loop == true)
                 {
@@ -1363,6 +1369,7 @@ namespace Radegast.Rendering
                     int jpos = 0;
                     foreach (binBVHJoint joint in ar.anim.joints)
                     {
+                        bool easeoutset = false;
                         //warning struct copy non reference
                         binBVHJointState state = (binBVHJointState)ar.anim.joints[jpos].Tag;
 
@@ -1528,8 +1535,19 @@ namespace Radegast.Rendering
                             // t(0).
                             float delta = state.currenttime_rot - rot_last.time / (rot_next.time - rot_last.time);   
                             delta = Utils.Clamp(delta, 0f, 1f);
-                            Vector3 rotlerpv = Vector3.Lerp(rot_last.key_element, rot_next.key_element, delta) * factor;
-                            rotlerp = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
+                            Vector3 rotlerpv = Vector3.Lerp(rot_last.key_element, rot_next.key_element, delta);
+                           // rotlerp = Quaternion.Slerp(Quaternion.Identity,new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z), factor);
+
+                            if (easeoutset == false && ar.playstate == animationwrapper.animstate.STATE_EASEOUT)
+                            {
+                                easeoutset = true;
+                                state.easeoutrot = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
+                                state.easeoutfactor = factor;
+                            }
+                            else
+                            {
+                                rotlerp = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
+                            } 
                         }
 
                         //end of rotation
@@ -1539,7 +1557,20 @@ namespace Radegast.Rendering
                         if (jointdeforms.TryGetValue(ar.anim.joints[jpos].Name, out jointstate))
                         {
                             jointstate.offset += (poslerp);
-                            jointstate.rotation = rotlerp;
+
+                            if (ar.playstate != animationwrapper.animstate.STATE_EASEOUT)
+                            {
+                                if (easeoutset == true)
+                                {
+                                    jointstate.rotation = Quaternion.Slerp(jointstate.rotation, state.easeoutrot, state.easeoutfactor);
+                                }
+                                else
+                                {
+                                    jointstate.rotation = rotlerp;
+                                }
+                            }
+
+                           //jointstate.rotation= Quaternion.Slerp(jointstate.rotation, rotlerp, 0.5f);
                         }
                         else
                         {
