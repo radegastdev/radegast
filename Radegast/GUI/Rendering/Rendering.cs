@@ -459,6 +459,14 @@ namespace Radegast.Rendering
                     foreach (Animation anim in e.Animations)
                     {
 
+                        // Don't play internal turn 180 animations
+                        if (anim.AnimationID == new UUID("038fcec9-5ebd-8a8e-0e2e-6e71a0a1ac53"))
+                            continue;
+
+                        if (anim.AnimationID == new UUID("6883a61a-b27b-5914-a61e-dda118a9ee2c"))
+                            continue;
+
+
                         int nofails = 0;
                         if (AssetFetchFailCount.TryGetValue(anim.AnimationID, out nofails))
                         {
