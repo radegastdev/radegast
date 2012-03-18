@@ -1640,12 +1640,12 @@ namespace Radegast.Rendering
                     GL.PushMatrix();
 
                     // Prim roation and position
-                    Vector3 pos = av.avatar.Position;
+                    //Vector3 pos = av.avatar.Position;
 
                     Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
                     avataroffset.X += 1.0f;
 
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.RenderRotation, av.RenderPosition - avataroffset * av.RenderRotation));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset * av.RenderRotation));
 
                     GL.Begin(BeginMode.Lines);
 
@@ -1768,8 +1768,8 @@ namespace Radegast.Rendering
                             if (!av.glavatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
 
-                            if (mesh.Name == "hairMesh") // Don't render the hair mesh for the moment
-                                continue;
+                            //if (mesh.Name == "hairMesh") // Don't render the hair mesh for the moment
+                              //  continue;
 
                             GL.Color3(1f, 1f, 1f);
 
@@ -1780,7 +1780,7 @@ namespace Radegast.Rendering
                             // We have manually added the eyeball offset based on the headbone when we
                             // constructed the meshes, but why are the position offsets we got when loading
                             // the other meshes <0,7,0> ?
-                            if (mesh.Name == "eyeBallLeftMesh")
+                            if (mesh.Name == "eyeBallLeftMesh" )
                             {
                                 // Mesh roation and position
                                 GL.MultMatrix(Math3D.CreateSRTMatrix(av.glavatar.skel.mLeftEye.scale, av.glavatar.skel.mLeftEye.getTotalRotation(), av.glavatar.skel.mLeftEye.getTotalOffset()));
@@ -1792,10 +1792,18 @@ namespace Radegast.Rendering
                             }
 
                             //Should we be offsetting the base meshs at all?
-                            //if (mesh.Name == "headMesh")
-                            //{
-                            //    GL.MultMatrix(Math3D.CreateTranslationMatrix(av.glavatar.skel.getDeltaOffset("mHead")));
-                            //}
+                            if (mesh.Name == "eyelashMesh")
+                            {
+                              //  GL.MultMatrix(Math3D.CreateSRTMatrix(av.glavatar.skel.mHead.scale, av.glavatar.skel.mHead.getTotalRotation(), av.glavatar.skel.mHead.getTotalOffset()));
+                            }
+
+                            if  (mesh.Name == "hairMesh")
+                            {
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, Quaternion.Identity, avataroffset/2.0f));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.glavatar.skel.mHead.getTotalRotation(), av.glavatar.skel.mHead.getTotalOffset()));
+                              
+                          
+                            }
 
 
                             if (pass == RenderPass.Picking)

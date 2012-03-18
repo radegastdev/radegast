@@ -449,7 +449,7 @@ namespace Radegast.Rendering
 
         public void morphmesh(Morph morph, float weight)
         {
-            Logger.Log(String.Format("Applying morph {0} weight {1}",morph.Name,weight),Helpers.LogLevel.Debug);
+            //Logger.Log(String.Format("Applying morph {0} weight {1}",morph.Name,weight),Helpers.LogLevel.Debug);
 
             for (int v = 0; v < morph.NumVertices; v++)
             {
@@ -594,20 +594,22 @@ namespace Radegast.Rendering
                         break;
 
                     case "hairMesh":
+                       // mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
                         break;
 
                     case "eyelashMesh":
+                       // mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
                         break;
 
                     case "eyeBallRightMesh":
-                        mesh.setMeshPos(Bone.mBones["mEyeLeft"].getTotalOffset());
+                      //  mesh.setMeshPos(Bone.mBones["mEyeLeft"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
                     case "eyeBallLeftMesh":
-                        mesh.setMeshPos(Bone.mBones["mEyeRight"].getTotalOffset());
+                      //  mesh.setMeshPos(Bone.mBones["mEyeRight"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
@@ -890,10 +892,12 @@ namespace Radegast.Rendering
         public static Dictionary<UUID, BinBVHAnimationReader> mAnimationCache = new Dictionary<UUID, BinBVHAnimationReader>();
 
         public bool mNeedsUpdate = false;
-        public bool mNeedsMeshRebuild = false;
+        public bool mNeedsMeshRebuild = true;
 
         public Bone mLeftEye = null;
         public Bone mRightEye = null;
+        public Bone mHead = null;
+        public Bone mHair = null;
 
         public struct binBVHJointState
         {
@@ -966,8 +970,10 @@ namespace Radegast.Rendering
 
             }
 
+            // Prevent a dictionary look up in the renderloop here
             mLeftEye = mBones["mEyeLeft"];
             mRightEye = mBones["mEyeRight"];
+            mHead = mBones["mHead"];
 
         }
 
