@@ -1545,7 +1545,9 @@ namespace Radegast.Rendering
         static public SortedList tweakable_params = new SortedList();
 
         public Dictionary<string, BoneDeform> BoneDeforms = null;
+        
         public Dictionary<string, VolumeDeform> VolumeDeforms = null;
+        
         public List<driven> childparams = null;
 
         public List<VisualParamEx> identicalIds = new List<VisualParamEx>();
@@ -1575,6 +1577,7 @@ namespace Radegast.Rendering
 
         public enum ParamType
         {
+            TYPE_NOTSET = 0,
             TYPE_BONEDEFORM,
             TYPE_MORPH,
             TYPE_DRIVER,
@@ -1679,24 +1682,6 @@ namespace Radegast.Rendering
         public VisualParamEx(XmlNode node)
         {
 
-            if (matchchildnode("param_morph",node))
-                pType = ParamType.TYPE_MORPH;
-
-            if (matchchildnode("param_skeleton", node))
-                pType = ParamType.TYPE_BONEDEFORM;
-
-            if (matchchildnode("param_driver", node))
-                pType = ParamType.TYPE_DRIVER;
-
-            if (matchchildnode("param_color", node))
-                pType = ParamType.TYPE_COLOR;
-
-            if (node.ParentNode.Name == "mesh")
-            {
-                this.morphmesh = node.ParentNode.Attributes.GetNamedItem("type").Value;
-            }
-
-
             ParamID = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
             Name = node.Attributes.GetNamedItem("name").Value;
             Group = Int32.Parse(node.Attributes.GetNamedItem("group").Value);
@@ -1731,7 +1716,11 @@ namespace Radegast.Rendering
                 {
                     sex = EparamSex.SEX_FEMALE;
                 }
+            }
 
+            if (node.ParentNode.Name == "mesh")
+            {
+                this.morphmesh = node.ParentNode.Attributes.GetNamedItem("type").Value;
             }
 
             Group = int.Parse(node.Attributes.GetNamedItem("group").Value);
@@ -1749,8 +1738,6 @@ namespace Radegast.Rendering
                 count++;
             }
 
-            //TODO other paramaters but these arew concerned with editing the GUI display so not too fussed at the moment
-
             if(allParams.ContainsKey(ParamID))
             {
                 Logger.Log("Shared VisualParam id " + ParamID.ToString() + " "+Name, Helpers.LogLevel.Info);
@@ -1762,19 +1749,21 @@ namespace Radegast.Rendering
                 allParams.Add(ParamID, this);
             }
 
-
-            if (pType == ParamType.TYPE_BONEDEFORM)
-            {
+           if (matchchildnode("param_skeleton", node))
+           {
+                pType = ParamType.TYPE_BONEDEFORM;
                 // If we are in the skeleton section then we also have bone deforms to parse
                 BoneDeforms = new Dictionary<string, BoneDeform>();
                 if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
                 {
                     ParseBoneDeforms(node.ChildNodes[0].ChildNodes);
-                }
+                } 
             }
 
-            if (pType == ParamType.TYPE_MORPH)
-            {
+           if (matchchildnode("param_morph", node))
+           {
+                pType = ParamType.TYPE_MORPH;
+
                 VolumeDeforms = new Dictionary<string, VolumeDeform>();
                 if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
                 {
@@ -1782,8 +1771,9 @@ namespace Radegast.Rendering
                 }
             }
 
-            if (pType == ParamType.TYPE_DRIVER)
+           if (matchchildnode("param_driver", node))
             {
+                pType = ParamType.TYPE_DRIVER;
                 childparams = new List<driven>();
                 if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes) //LAZY
                 {
@@ -1791,8 +1781,9 @@ namespace Radegast.Rendering
                 }
             }
 
-            if (pType == ParamType.TYPE_COLOR)
+            if (matchchildnode("param_color", node))
             {
+                pType = ParamType.TYPE_COLOR;
                 if (node.HasChildNodes)
                 {
                     foreach (XmlNode colorchild in node.ChildNodes)
@@ -1802,7 +1793,6 @@ namespace Radegast.Rendering
                             //TODO extract <value color="50, 25, 5, 255" />
                         }
                     }
-
                 }
             }
 
