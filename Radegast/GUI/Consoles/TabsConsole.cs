@@ -359,6 +359,10 @@ namespace Radegast
                     {
                         HandleIMFromObject(e);
                     }
+                    else if (e.IM.FromAgentID == UUID.Zero)
+                    {
+                        instance.MainForm.AddNotification(new ntfGeneric(instance, e.IM.Message));
+                    }
                     else if (e.IM.GroupIM || instance.Groups.ContainsKey(e.IM.IMSessionID))
                     {
                         HandleGroupIM(e);
