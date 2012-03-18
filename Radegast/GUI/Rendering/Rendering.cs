@@ -1356,7 +1356,8 @@ namespace Radegast.Rendering
                     rot = parentRot;
 
                     // Move by pelvis offset
-                    pos -= parentav.glavatar.skel.getOffset("mPelvis") * rot;
+                    // FIXME 2 dictionay lookups via string key in render loop!
+                    pos -= (parentav.glavatar.skel.mBones["mPelvis"].animation_offset * parentav.RenderRotation) + parentav.glavatar.skel.getOffset("mPelvis") * rot;
                     //rot = parentav.glavatar.skel.getRotation("mPelvis") * rot;
 
                     // Translate and rotate to the joint calculated position
@@ -1758,10 +1759,13 @@ namespace Radegast.Rendering
                     // Whole avatar position
                     GL.PushMatrix();
 
-                    Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
+                    // FIXME 2 dictionay lookups via string key in render loop!
+                    Vector3 avataroffset = (av.glavatar.skel.mBones["mPelvis"].animation_offset*av.RenderRotation) + av.glavatar.skel.getOffset("mPelvis");
+
+                    Console.WriteLine(avataroffset.ToString());
 
                     // Prim roation and position
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset * av.RenderRotation));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset ));
 
                     if (av.glavatar._meshes.Count > 0)
                     {

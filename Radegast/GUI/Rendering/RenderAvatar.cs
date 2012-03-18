@@ -881,10 +881,18 @@ namespace Radegast.Rendering
         }
     }
 
+    public class joint
+    {
+        public Vector3 offset;
+        public Quaternion rotation;
+    }
+
     public class skeleton
     {
         public Dictionary<string, Bone> mBones;
-        public Dictionary<string, int> mPriority = new Dictionary<string, int>();
+        private Dictionary<string, int> mPriority = new Dictionary<string, int>();
+        private Dictionary<string, joint> jointdeforms = new Dictionary<string, joint>();
+
         public static Dictionary<int, string> mUpperMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
@@ -1116,14 +1124,50 @@ namespace Radegast.Rendering
             lock (av.glavatar.skel.mAnimations)
             {
                 av.glavatar.skel.mAnimations.Add(b);
+
+
+                //pre calculate all joint priorities here
+                av.glavatar.skel.mPriority.Clear();
+
+                foreach (BinBVHAnimationReader bb in av.glavatar.skel.mAnimations)
+                {
+                    int jpos = 0;
+                    foreach (binBVHJoint joint in bb.joints)
+                    {
+                        if (bb == null)
+                            continue;
+
+                        //warning struct copy non reference
+                        binBVHJointState state = (binBVHJointState)bb.joints[jpos].Tag;
+
+                        if (state.finished == true)
+                            continue;
+
+                        int prio = 0;
+                        //Quick hack to stack animations in the correct order
+                        //TODO we need to do this per joint as they all have their own priorities as well ;-(
+                        if (av.glavatar.skel.mPriority.TryGetValue(joint.Name, out prio))
+                        {
+                            if (prio > (bb.Priority))
+                                continue;
+                        }
+
+                        av.glavatar.skel.mPriority[joint.Name] = bb.Priority;
+
+                        jpos++;
+                    }
+                }
             }
         }
 
         public void animate(float lastframetime)
         {
-          
+
             lock (mAnimations)
             {
+              
+                jointdeforms.Clear();
+
                 foreach (BinBVHAnimationReader b in mAnimations)
                 {
                     if (b == null)
@@ -1135,19 +1179,17 @@ namespace Radegast.Rendering
                         //warning struct copy non reference
                         binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
 
+                        if (state.finished == true)
+                            continue;
+
                         int prio = 0;
                         //Quick hack to stack animations in the correct order
                         //TODO we need to do this per joint as they all have their own priorities as well ;-(
                         if (mPriority.TryGetValue(joint.Name, out prio))
                         {
-                            if (prio > (b.Priority + joint.Priority))
+                            if (prio > (b.Priority))
                                 continue;
                         }
-
-                        mPriority[joint.Name] = b.Priority+joint.Priority;
-
-                        if (state.finished == true)
-                            continue;
 
                         Vector3 poslerp = Vector3.Zero;
                         Quaternion rotlerp = Quaternion.Identity;
@@ -1168,7 +1210,7 @@ namespace Radegast.Rendering
                             {
                                 //overrun state
                                 int itterations = (int)(state.currenttime_pos / b.OutPoint) + 1;
-                                state.currenttime_pos = currentime = (b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_pos);
+                                state.currenttime_pos = currentime = b.InPoint + ((b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_pos));
                                 overrun = true;
                             }
 
@@ -1222,14 +1264,18 @@ namespace Radegast.Rendering
                             pos_next = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
                             pos_last = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
 
-                            float delta = state.currenttime_pos - pos_last.time / (pos_next.time - pos_last.time);
-
+                            // TODO the lerp/delta is faulty
+                            // it is not going to handle loop points when we wrap around as last will be > next
+                            // it also fails when currenttime < last_time which occurs as keyframe[0] is not exactly at
+                            // t(0).
+                            float delta = (state.currenttime_pos - pos_last.time) / (pos_next.time - pos_last.time);
+                            
                             delta = Utils.Clamp(delta, 0f, 1f);
-
                             poslerp = Vector3.Lerp(pos_last.key_element, pos_next.key_element, delta);
 
-                            //Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
+                            Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
 
+                            
                         }
 
                         // end of position
@@ -1248,7 +1294,7 @@ namespace Radegast.Rendering
                             {
                                 //overrun state
                                 int itterations = (int)(state.currenttime_rot / b.OutPoint) + 1;
-                                state.currenttime_rot = currentime = (b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_rot);
+                                state.currenttime_rot = currentime = b.InPoint + ((b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_rot));
                                 overrun = true;
                             }
 
@@ -1294,19 +1340,37 @@ namespace Radegast.Rendering
                             rot_next = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
                             rot_last = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
 
-                            float delta = state.currenttime_rot - rot_last.time / (rot_next.time - rot_last.time);
+                            // TODO the lerp/delta is faulty
+                            // it is not going to handle loop points when we wrap around as last will be > next
+                            // it also fails when currenttime < last_time which occurs as keyframe[0] is not exactly at
+                            // t(0).
+                            float delta = state.currenttime_rot - rot_last.time / (rot_next.time - rot_last.time);   
                             delta = Utils.Clamp(delta, 0f, 1f);
-
                             Vector3 rotlerpv = Vector3.Lerp(rot_last.key_element, rot_next.key_element, delta);
                             rotlerp = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
-                          
                         }
-                        
+
+
+                        joint jointstate;
+
+                        if (jointdeforms.TryGetValue(b.joints[jpos].Name, out jointstate))
+                        {
+                            jointstate.offset += poslerp;
+                            jointstate.rotation *= rotlerp;
+                        }
+                        else
+                        {
+                            jointstate = new joint();
+                            jointstate.rotation = rotlerp;
+                            jointstate.offset = poslerp;
+                            jointdeforms.Add(b.joints[jpos].Name, jointstate);
+                        }
+
 
                         //end of rotation
 
-                        deformbone(joint.Name, poslerp, rotlerp);
-                        mNeedsMeshRebuild = true;
+                        //deformbone(joint.Name, poslerp, rotlerp);
+                        //mNeedsMeshRebuild = true;
 
                         //warning struct copy non reference
                         b.joints[jpos].Tag = state;
@@ -1316,206 +1380,15 @@ namespace Radegast.Rendering
                 }
             }
 
+   
+
+            foreach (KeyValuePair<string, joint> kvp in jointdeforms)
+            {
+                deformbone(kvp.Key, kvp.Value.offset, kvp.Value.rotation);
+            }
+            mNeedsMeshRebuild = true;
         }
 
-        public void animateold(float lastframetime)
-        {
-          
-            try
-            {
-                lock (mPriority)
-                {
-                    mPriority.Clear();
-                    lock (mAnimations)
-                    {
-                        foreach (BinBVHAnimationReader b in mAnimations)
-                        {
-                            if (b == null)
-                                continue;
-
-                            int jpos = 0;
-                            foreach (binBVHJoint joint in b.joints)
-                            {
-                                int prio = 0;
-
-                                //Quick hack to stack animations in the correct order
-                                //TODO we need to do this per joint as they all have their own priorities as well ;-(
-                                if (mPriority.TryGetValue(joint.Name, out prio))
-                                {
-                                    if (prio > b.Priority)
-                                        continue;
-                                }
-
-                                mPriority[joint.Name] = b.Priority;
-
-                                binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
-
-                                state.currenttime_rot += lastframetime;
-                                state.currenttime_pos += lastframetime;
-
-                                //fudge
-                                if (b.joints[jpos].rotationkeys.Length == 1)
-                                {
-                                    state.nextkeyframe_rot = 0;
-                                }
-
-                                Vector3 poslerp = Vector3.Zero;
-
-                                if ( joint.Name == "mPelvis")
-                                {
-
-                                    if (b.joints[jpos].positionkeys.Length > 2)
-                                    {
-                                        binBVHJointKey pos2 = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
-
-
-                                        if (state.currenttime_pos > pos2.time)
-                                        {
-                                            state.lastkeyframe_pos++;
-                                            state.nextkeyframe_pos++;
-
-                                            if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length || (state.nextkeyframe_pos >= state.loopoutframe && b.Loop == true))
-                                            {
-                                                if (b.Loop == true)
-                                                {
-                                                    state.nextkeyframe_pos = state.loopinframe;
-                                                    state.currenttime_pos = b.InPoint;
-
-                                                    if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
-                                                    {
-                                                        state.lastkeyframe_pos = state.loopinframe;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    state.nextkeyframe_pos = joint.positionkeys.Length - 1;
-                                                }
-                                            }
-
-
-
-                                            if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
-                                            {
-                                                if (b.Loop == true)
-                                                {
-                                                    state.lastkeyframe_pos = 0;
-                                                    state.currenttime_pos = 0;
-
-                                                }
-                                                else
-                                                {
-                                                    state.lastkeyframe_pos = joint.positionkeys.Length - 1;
-                                                    if (state.lastkeyframe_pos < 0)//eeww
-                                                        state.lastkeyframe_pos = 0;
-                                                }
-                                            }
-                                        }
-
-                                        binBVHJointKey pos = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
-
-
-                                        if (state.currenttime_pos != ((pos.time - b.joints[jpos].positionkeys[0].time)))
-                                        {
-
-                                            float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time)) ;
-
-                                            if (delta < 0)
-                                                delta = 0;
-
-                                            if (delta > 1)
-                                                delta = 1;
-
-                                            poslerp = Vector3.Lerp(pos.key_element, pos2.key_element, delta);
-                                        }
-
-                                    }
-                                }
-
-                                Vector3 rotlerp = Vector3.Zero;
-                                if (b.joints[jpos].rotationkeys.Length > 0)
-                                {
-                                    binBVHJointKey rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
-
-                                    if (state.currenttime_rot > rot2.time)
-                                    {
-                                        state.lastkeyframe_rot++;
-                                        state.nextkeyframe_rot++;
-
-                                        if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length || (state.nextkeyframe_rot >= state.loopoutframe && b.Loop == true))
-                                        {
-                                            if (b.Loop == true)
-                                            {
-                                                state.nextkeyframe_rot = state.loopinframe;
-                                                state.currenttime_rot = b.InPoint;
-
-                                                if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
-                                                {
-                                                    state.lastkeyframe_rot = state.loopinframe;
-
-
-                                                }
-
-                                            }
-                                            else
-                                            {
-                                                state.nextkeyframe_rot = joint.rotationkeys.Length - 1;
-                                            }
-                                        }
-
-                                        if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
-                                        {
-                                            if (b.Loop == true)
-                                            {
-                                                state.lastkeyframe_rot = 0;
-                                                state.currenttime_rot = 0;
-
-                                            }
-                                            else
-                                            {
-                                                state.lastkeyframe_rot = joint.rotationkeys.Length - 1;
-                                            }
-                                        }
-                                    }
-
-                                    binBVHJointKey rot = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
-                                    rot2 = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
-
-                                    float deltarot = 0;
-                                    if (state.currenttime_rot != (rot.time - b.joints[jpos].rotationkeys[0].time))
-                                    {
-                                        deltarot = (rot2.time - rot.time) / ((state.currenttime_rot) - (rot.time - b.joints[jpos].rotationkeys[0].time));
-                                    }
-
-                                    if (deltarot < 0)
-                                        deltarot = 0;
-
-                                    if (deltarot > 1)
-                                        deltarot = 1;
-
-                                    rotlerp = Vector3.Lerp(rot.key_element, rot2.key_element, deltarot);
-
-                                }
-
-                                b.joints[jpos].Tag = (object)state;
-
-                                deformbone(joint.Name, poslerp*40, new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
-                              
-
-                                jpos++;
-                            }
-
-                            mNeedsMeshRebuild = true;
-                        }
-
-                        mNeedsUpdate = false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Exception in animate()", Helpers.LogLevel.Warning, ex);
-            }
-        }
     }
 
     public class Bone
@@ -1712,7 +1585,7 @@ namespace Radegast.Rendering
                 Vector3 orig = getOrigOffset();
                 //mTotalPos = (pos * scale)+offset_pos;
                 //mTotalPos = (pos) + offset_pos;
-                mTotalPos = animation_offset + pos;
+                mTotalPos = pos;
                 mDeltaPos = mTotalPos - orig;
                 posdirty = false;
                 return mTotalPos;
