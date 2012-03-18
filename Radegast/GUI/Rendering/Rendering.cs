@@ -463,7 +463,7 @@ namespace Radegast.Rendering
                     av.glavatar.skel.flushanimations();
                     foreach (Animation anim in e.Animations)
                     {
-                        Console.WriteLine(string.Format("AvatarAnimationChanged {0} {1}", anim.AnimationID, anim.AnimationSequence));
+                        //Console.WriteLine(string.Format("AvatarAnimationChanged {0} {1}", anim.AnimationID, anim.AnimationSequence));
                         
                         // Don't play internal turn 180 animations
                         if (anim.AnimationID == new UUID("038fcec9-5ebd-8a8e-0e2e-6e71a0a1ac53"))

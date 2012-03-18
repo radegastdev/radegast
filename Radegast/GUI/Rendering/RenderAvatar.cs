@@ -1030,7 +1030,7 @@ namespace Radegast.Rendering
             {
                 // Its an existing animation, we may need to do a seq update but we don't yet
                 // support that
-
+                mAnimationsWrapper[mAnimID].playstate = animationwrapper.animstate.STATE_WAITINGASSET;
                 mAnimationsWrapper[mAnimID].mPotentialyDead = false;
             }
             else
@@ -1140,7 +1140,7 @@ namespace Radegast.Rendering
                 {
                     if (ar.mPotentialyDead == true)
                     {
-                        Logger.Log(string.Format("Animation {0} is being marked for easeout (dead)",ar.mAnimation.ToString()),Helpers.LogLevel.Info);
+                       // Logger.Log(string.Format("Animation {0} is being marked for easeout (dead)",ar.mAnimation.ToString()),Helpers.LogLevel.Info);
                         // Should we just stop dead? i think not it may get jerky
                         ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
                         ar.mRunTime = 0; //fix me nasty hack
@@ -1168,7 +1168,12 @@ namespace Radegast.Rendering
                 Logger.Log("Adding new decoded animaton known animations " + asset.AssetID.ToString(), Helpers.LogLevel.Info);
             }
 
-           
+            if (!av.glavatar.skel.mAnimationsWrapper.ContainsKey(animKey))
+            {
+                Logger.Log(String.Format("Animation {0} is not in mAnimationsWrapper! ",animKey), Helpers.LogLevel.Warning);
+                return;
+            }
+
             // This sets the anim in the wrapper class;
             av.glavatar.skel.mAnimationsWrapper[animKey].anim = b;
         
@@ -1317,7 +1322,7 @@ namespace Radegast.Rendering
                         if (ar.mRunTime >= ar.anim.EaseInTime)
                         {
                             ar.playstate = animationwrapper.animstate.STATE_PLAY;
-                            Console.WriteLine(String.Format("{0} Now in STATE_PLAY", ar.mAnimation));
+                            //Console.WriteLine(String.Format("{0} Now in STATE_PLAY", ar.mAnimation));
                         }
                         else
                         {
@@ -1334,7 +1339,7 @@ namespace Radegast.Rendering
                         {
                             ar.stopanim();
                             factor = 0;
-                            Console.WriteLine(String.Format("{0} Now in STATE_STOP", ar.mAnimation));
+                            //Console.WriteLine(String.Format("{0} Now in STATE_STOP", ar.mAnimation));
 
                         }
                         else
@@ -1534,7 +1539,7 @@ namespace Radegast.Rendering
                         if (jointdeforms.TryGetValue(ar.anim.joints[jpos].Name, out jointstate))
                         {
                             jointstate.offset += (poslerp);
-                            jointstate.rotation *= (rotlerp);
+                            jointstate.rotation = rotlerp;
                         }
                         else
                         {
