@@ -471,7 +471,7 @@ namespace Radegast.Rendering
 
         public void morphmesh(Morph morph, float weight)
         {
-            //Logger.Log(String.Format("Applying morph {0} weight {1}",morph.Name,weight),Helpers.LogLevel.Debug);
+           // Logger.Log(String.Format("Applying morph {0} weight {1}",morph.Name,weight),Helpers.LogLevel.Debug);
 
             for (int v = 0; v < morph.NumVertices; v++)
             {
@@ -686,6 +686,10 @@ namespace Radegast.Rendering
             weight = Utils.Clamp(weight, 0.0f, 1.0f);
             float value = Utils.Lerp(vpx.MinValue,vpx.MaxValue,weight);
 
+            // don't do anything for less than 1% change
+            if (value > -0.001 && value < 0.001)
+                return;
+
             // Morphs are mesh deforms
             if (vpx.pType == VisualParamEx.ParamType.TYPE_MORPH)
             {
@@ -699,10 +703,11 @@ namespace Radegast.Rendering
                         {
                             if (mesh.Name == "skirtMesh" && _showSkirt == false)
                                 return;
-                            
+
+                            //Logger.Log(String.Format("Applying morph {0} ID {2} weight {1} mesh {3}",morph.Name,weight,vpx.ParamID,mesh.Name),Helpers.LogLevel.Debug);
+
                             mesh.morphmesh(morph, value);
 
-                            continue;
                         }
                     }
                 }     
@@ -1740,12 +1745,12 @@ namespace Radegast.Rendering
 
             if(allParams.ContainsKey(ParamID))
             {
-                Logger.Log("Shared VisualParam id " + ParamID.ToString() + " "+Name, Helpers.LogLevel.Info);
+                //Logger.Log("Shared VisualParam id " + ParamID.ToString() + " "+Name, Helpers.LogLevel.Info);
                 allParams[ParamID].identicalIds.Add(this);
             }
             else
             {
-                Logger.Log("VisualParam id " + ParamID.ToString() + " " + Name, Helpers.LogLevel.Info);
+                //Logger.Log("VisualParam id " + ParamID.ToString() + " " + Name, Helpers.LogLevel.Info);
                 allParams.Add(ParamID, this);
             }
 
