@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2012, Radegast Development Team
+// Copyright (c) 2009-2011, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id$
+// $Id: Rendering.cs 1180 2011-10-28 20:22:57Z latifer $
 //
 
 #region Usings
@@ -1781,12 +1781,12 @@ namespace Radegast.Rendering
                             if (mesh.Name == "eyeBallLeftMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.glavatar.skel.mLeftEye.getTotalRotation(), av.glavatar.skel.mLeftEye.getTotalOffset()));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(av.glavatar.skel.mLeftEye.scale, av.glavatar.skel.mLeftEye.getTotalRotation(), av.glavatar.skel.mLeftEye.getTotalOffset()));
                             }
                             if (mesh.Name == "eyeBallRightMesh")
                             {
                                 // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.glavatar.skel.mRightEye.getTotalRotation(), av.glavatar.skel.mRightEye.getTotalOffset()));
+                                GL.MultMatrix(Math3D.CreateSRTMatrix(av.glavatar.skel.mRightEye.scale, av.glavatar.skel.mRightEye.getTotalRotation(), av.glavatar.skel.mRightEye.getTotalOffset()));
                             }
 
                             //Should we be offsetting the base meshs at all?
@@ -3199,38 +3199,23 @@ namespace Radegast.Rendering
                 {
                     instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
                         {
-                            try
+                            if (state == TextureRequestState.Finished)
                             {
-                                if (state == TextureRequestState.Finished)
+                                ManagedImage mi;
+                                OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
+
+                                if (removeAlpha)
                                 {
-                                    ManagedImage mi;
-                                    OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
-                                    if (mi != null)
+                                    if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
                                     {
-                                        if (removeAlpha)
-                                        {
-                                            if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
-                                            {
-                                                mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
-                                            }
-                                        }
-                                        tgaData = mi.ExportTGA();
-                                        img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
-                                        RHelp.SaveCachedImage(tgaData, textureID,
-                                                              (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0,
-                                                              false, false);
+                                        mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
                                     }
                                 }
+                                tgaData = mi.ExportTGA();
+                                img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
+                                RHelp.SaveCachedImage(tgaData, textureID, (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0, false, false);
                             }
-                            catch (Exception e)
-                            {
-                                Logger.Log("Failed to save or decode the texture asset " + textureID
-                                           + ": " + e.Message, Helpers.LogLevel.Warning, Client, e);
-                            }
-                            finally
-                            {
-                                gotImage.Set();
-                            }
+                            gotImage.Set();
                         }
                     );
                     gotImage.WaitOne(30 * 1000, false);
@@ -3338,8 +3323,9 @@ namespace Radegast.Rendering
                         Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
                     });
                     ctxMenu.Items.Add(item);
+
+
                 }
-                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim.ID);
             } // We right clicked on an avatar, add some context menu items
             else if (RightclickedObject != null && RightclickedObject is RenderAvatar)
             {
@@ -3377,7 +3363,7 @@ namespace Radegast.Rendering
                     });
                     ctxMenu.Items.Add(item);
                 }
-                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Avatar), av.avatar.ID);
+
             }
 
             // If we are not the sole menu item, add separator
@@ -3473,8 +3459,8 @@ namespace Radegast.Rendering
 
             foreach (RenderAvatar av in Avatars.Values)
             {
-                //av.glavatar.morphtest(av.avatar,paramid,weight);
-                av.glavatar.skel.deformbone(comboBox1.Text, new Vector3(0, 0, 0), new Vector3(float.Parse(textBox_sx.Text), float.Parse(textBox_sy.Text), float.Parse(textBox_sz.Text)), Quaternion.CreateFromEulers((float)(Math.PI * (weightx / 180)), (float)(Math.PI * (weighty / 180)), (float)(Math.PI * (weightz / 180))));
+                //av.glavatar.applyMorph(av.avatar,paramid,weight);
+                av.glavatar.skel.deformbone(comboBox1.Text, new Vector3(float.Parse(textBox_sx.Text), float.Parse(textBox_sy.Text), float.Parse(textBox_sz.Text)), Quaternion.CreateFromEulers((float)(Math.PI * (weightx / 180)), (float)(Math.PI * (weighty / 180)), (float)(Math.PI * (weightz / 180))));
 
                 foreach (GLMesh mesh in av.glavatar._meshes.Values)
                 {
@@ -3544,7 +3530,7 @@ namespace Radegast.Rendering
                     }
 
                 }
-                av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_morphamount.Text));
+                av.glavatar.applyMorph(av.avatar, id, float.Parse(textBox_morphamount.Text));
 
                 foreach (GLMesh mesh in av.glavatar._meshes.Values)
                 {
@@ -3576,7 +3562,7 @@ namespace Radegast.Rendering
                     }
 
                 }
-                av.glavatar.morphtest(av.avatar, id, float.Parse(textBox_driveramount.Text));
+                av.glavatar.applyMorph(av.avatar, id, float.Parse(textBox_driveramount.Text));
 
                 foreach (GLMesh mesh in av.glavatar._meshes.Values)
                 {

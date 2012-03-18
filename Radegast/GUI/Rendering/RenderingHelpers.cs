@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2012, Radegast Development Team
+// Copyright (c) 2009-2011, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id$
+// $Id: RenderingHelpers.cs 1136 2011-09-05 22:45:11Z latifer $
 //
 
 using System;
@@ -74,7 +74,7 @@ namespace Radegast.Rendering
         public bool FullAlpha;
         public bool IsMask;
         public bool IsInvisible;
-        public UUID TextureID = UUID.Zero;
+        public UUID TextureID;
         public bool FetchFailed;
     }
 
