@@ -1821,7 +1821,7 @@ namespace Radegast.Rendering
 
                             GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, mesh.RenderData.TexCoords);
                             GL.VertexPointer(3, VertexPointerType.Float, 0, mesh.RenderData.Vertices);
-                            GL.NormalPointer(NormalPointerType.Float, 0, mesh.RenderData.Normals);
+                            GL.NormalPointer(NormalPointerType.Float, 0, mesh.MorphRenderData.Normals);
 
                             GL.DrawElements(BeginMode.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
 

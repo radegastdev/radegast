@@ -162,11 +162,16 @@ namespace Radegast.Rendering
             OrigRenderData.Indices = new ushort[source.RenderData.Indices.Length];
             OrigRenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
             OrigRenderData.Vertices = new float[source.RenderData.Vertices.Length];
+            OrigRenderData.Normals = new float[source.RenderData.Normals.Length];
 
             MorphRenderData.Vertices = new float[source.RenderData.Vertices.Length];
+            MorphRenderData.Normals = new float[source.RenderData.Normals.Length];
 
             Array.Copy(source.RenderData.Vertices, OrigRenderData.Vertices, source.RenderData.Vertices.Length);
             Array.Copy(source.RenderData.Vertices, MorphRenderData.Vertices, source.RenderData.Vertices.Length);
+
+            Array.Copy(source.RenderData.Normals, OrigRenderData.Normals, source.RenderData.Normals.Length);
+            Array.Copy(source.RenderData.Normals, MorphRenderData.Normals, source.RenderData.Normals.Length);
 
             Array.Copy(source.RenderData.TexCoords, OrigRenderData.TexCoords, source.RenderData.TexCoords.Length);
             Array.Copy(source.RenderData.Indices, OrigRenderData.Indices, source.RenderData.Indices.Length);
@@ -463,9 +468,9 @@ namespace Radegast.Rendering
                 MorphRenderData.Vertices[(i * 3) + 1] = OrigRenderData.Vertices[i * 3 + 1];
                 MorphRenderData.Vertices[(i * 3) + 2] = OrigRenderData.Vertices[i * 3 + 2];
 
-                //MorphRenderData.Normals[i * 3] = OrigRenderData.Normals[i * 3];
-                //MorphRenderData.Normals[(i * 3) + 1] = OrigRenderData.Normals[i * 3 + 1];
-                //MorphRenderData.Normals[(i * 3) + 2] = OrigRenderData.Normals[i * 3 + 2];
+                MorphRenderData.Normals[i * 3] = OrigRenderData.Normals[i * 3];
+                MorphRenderData.Normals[(i * 3) + 1] = OrigRenderData.Normals[i * 3 + 1];
+                MorphRenderData.Normals[(i * 3) + 2] = OrigRenderData.Normals[i * 3 + 2];
 
                 RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2];
                 RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1];
@@ -488,9 +493,9 @@ namespace Radegast.Rendering
                 MorphRenderData.Vertices[(i * 3) + 1] = MorphRenderData.Vertices[i * 3 + 1] + mvx.Coord.Y * weight;
                 MorphRenderData.Vertices[(i * 3) + 2] = MorphRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
 
-                //MorphRenderData.Normals[i * 3] = MorphRenderData.Normals[i * 3] + mvx.Normal.X * weight;
-                //MorphRenderData.Normals[(i * 3)+1] = MorphRenderData.Normals[(i * 3)+1] + mvx.Normal.Y * weight;
-                //MorphRenderData.Normals[(i * 3)+2] = MorphRenderData.Normals[(i * 3)+2] + mvx.Normal.Z * weight;
+                MorphRenderData.Normals[i * 3] = MorphRenderData.Normals[i * 3] + mvx.Normal.X * weight;
+                MorphRenderData.Normals[(i * 3)+1] = MorphRenderData.Normals[(i * 3)+1] + mvx.Normal.Y * weight;
+                MorphRenderData.Normals[(i * 3)+2] = MorphRenderData.Normals[(i * 3)+2] + mvx.Normal.Z * weight;
 
                 RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2] + mvx.TexCoord.X * weight;
                 RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1] + mvx.TexCoord.Y * weight;
@@ -735,18 +740,18 @@ namespace Radegast.Rendering
 
             if (VisualParamEx.allParams.TryGetValue(param, out vpx))
             {
-                applyMorph(vpx, av, param, weight);
+                applyMorph(vpx, av, weight);
 
                 // a morph ID may apply to more than one mesh (duplicate VP IDs)
                 // in this case also apply to all other identical IDs
                 foreach (VisualParamEx cvpx in vpx.identicalIds)
                 {
-                    applyMorph(cvpx, av, cvpx.ParamID, weight);
+                    applyMorph(cvpx, av, weight);
                 }
             }
         }
 
-        public void applyMorph(VisualParamEx vpx, Avatar av, int param, float weight)
+        public void applyMorph(VisualParamEx vpx, Avatar av, float weight)
         {
 
             weight = Utils.Clamp(weight, 0.0f, 1.0f);
@@ -885,11 +890,6 @@ namespace Radegast.Rendering
         public bool mNeedsUpdate = false;
         public bool mNeedsMeshRebuild = true;
 
-        public Bone mLeftEye = null;
-        public Bone mRightEye = null;
-        public Bone mHead = null;
-        public Bone mHair = null;
-
         public struct binBVHJointState
         {
             public float currenttime_rot;
@@ -961,18 +961,14 @@ namespace Radegast.Rendering
 
             }
 
-            // Prevent a dictionary look up in the renderloop here
-            mLeftEye = mBones["mEyeLeft"];
-            mRightEye = mBones["mEyeRight"];
-            mHead = mBones["mHead"];
-
         }
 
         public void resetbonescales()
         {
             foreach (KeyValuePair<string,Bone> src in mBones)
             {
-                src.Value.scale = new Vector3(1, 1, 1);
+                src.Value.scale = Vector3.One;
+                src.Value.offset_pos = Vector3.Zero;
             }
         }
 
@@ -991,7 +987,7 @@ namespace Radegast.Rendering
             Bone bone;
             if (mBones.TryGetValue(name, out bone))
             {
-                Logger.Log(String.Format("scalebone() {0} {1}", name, scale.ToString()),Helpers.LogLevel.Info);
+               // Logger.Log(String.Format("scalebone() {0} {1}", name, scale.ToString()),Helpers.LogLevel.Info);
                 bone.scalebone(scale);
             }
         }
@@ -1110,6 +1106,8 @@ namespace Radegast.Rendering
 
         public void animate(float lastframetime)
         {
+            return;
+
             try
             {
                 lock (mPriority)
@@ -1444,7 +1442,7 @@ namespace Radegast.Rendering
 
         public void offsetbone(Vector3 offset)
         {
-            this.offset_pos = offset;
+            this.offset_pos += offset;
             markdirty();
         }
 
