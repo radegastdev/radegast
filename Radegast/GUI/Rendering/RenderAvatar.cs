@@ -564,16 +564,17 @@ namespace Radegast.Rendering
                     attachment_point point = new attachment_point(skeletonnode);
                     attachment_points.Add(point.id, point);
                 }
+            }
 
-                if (skeletonnode.Name == "param")
-                {
-                    //Bone deform param
-                    VisualParamEx vp = new VisualParamEx(skeletonnode, VisualParamEx.ParamType.TYPE_BONEDEFORM);
-                }
+            // Parse all visual paramaters in one go
+            // we can dedue type on the fly
+            XmlNodeList paramss = lad.GetElementsByTagName("param");
+            foreach (XmlNode paramNode in paramss)
+            {
+                VisualParamEx vp = new VisualParamEx(paramNode);
             }
 
             //Now we parse the mesh nodes, mesh nodes reference a particular LLM file with a LOD
-            //and also list VisualParams for the various mesh morphs that can be applied
 
             XmlNodeList meshes = lad.GetElementsByTagName("mesh");
             foreach (XmlNode meshNode in meshes)
@@ -583,20 +584,6 @@ namespace Radegast.Rendering
                 string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
 
                 GLMesh mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
-
-                if (meshNode.HasChildNodes)
-                {
-                    foreach (XmlNode paramnode in meshNode.ChildNodes)
-                    {
-                        if (paramnode.Name == "param")
-                        {
-                            VisualParamEx vp = new VisualParamEx(paramnode, VisualParamEx.ParamType.TYPE_MORPH);
-
-                            mesh._evp.Add(vp.ParamID, vp); //Not sure we really need this may optimise out later
-                            vp.morphmesh = mesh.Name;
-                        }
-                    }
-                }
 
                 // Set up the texture elemenets for each mesh
                 // And hack the eyeball position
@@ -671,54 +658,6 @@ namespace Radegast.Rendering
 
                 _defaultmeshes[type] = mesh;
 
-            }
-
-            // Next are the textureing params, skipping for the moment
-
-            XmlNodeList colors = lad.GetElementsByTagName("global_color");
-            {
-                foreach (XmlNode globalcolornode in colors)
-                {
-                    foreach (XmlNode node in globalcolornode.ChildNodes)
-                    {
-                        if (node.Name == "param")
-                        {
-                            VisualParamEx vp = new VisualParamEx(node, VisualParamEx.ParamType.TYPE_COLOR);
-                        }
-                    }
-                }
-            }
-
-            // Get layer paramaters, a bit of a verbose way to do it but we probably want to get access
-            // to some of the other data not just the <param> tag
-
-            XmlNodeList layer_sets = lad.GetElementsByTagName("layer_set");
-            {
-                foreach (XmlNode layer_set in layer_sets)
-                {
-                    foreach (XmlNode layer in layer_set.ChildNodes)
-                    {
-                        foreach (XmlNode layernode in layer.ChildNodes)
-                        {
-                            if (layernode.Name == "param")
-                            {
-                                VisualParamEx vp = new VisualParamEx(layernode, VisualParamEx.ParamType.TYPE_COLOR);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Next are the driver parameters, these are parameters that change multiple real parameters
-
-            XmlNodeList drivers = lad.GetElementsByTagName("driver_parameters");
-
-            foreach (XmlNode node in drivers[0].ChildNodes) //lazy 
-            {
-                if (node.Name == "param")
-                {
-                    VisualParamEx vp = new VisualParamEx(node, VisualParamEx.ParamType.TYPE_DRIVER);
-                }
             }
 
             lindenMeshesLoaded = true;
@@ -1598,16 +1537,11 @@ namespace Radegast.Rendering
 
     public class VisualParamEx
     {
-
+        //All visual params indexed by ID
         static public Dictionary<int, VisualParamEx> allParams = new Dictionary<int, VisualParamEx>();
-        static public Dictionary<int, VisualParamEx> deformParams = new Dictionary<int, VisualParamEx>();
-       
-        //static public Dictionary<int, VisualParamEx> morphParams = new Dictionary<int, VisualParamEx>();
 
-        //dirty use of string as indexer, we need to have an enum for meshes
-        static public Dictionary<string,Dictionary<int, VisualParamEx>> morphParams = new  Dictionary<string,Dictionary<int, VisualParamEx>>();
-
-        static public Dictionary<int, VisualParamEx> drivenParams = new Dictionary<int, VisualParamEx>();
+        // The sorted list of tweakable params, this matches the AvatarAppearance packet visual
+        // parameters ordering
         static public SortedList tweakable_params = new SortedList();
 
         public Dictionary<string, BoneDeform> BoneDeforms = null;
@@ -1731,9 +1665,37 @@ namespace Radegast.Rendering
             sex = EparamSex.SEX_BOTH;
         }
 
-        public VisualParamEx(XmlNode node, ParamType pt)
+        public bool matchchildnode(string test, XmlNode node)
         {
-            pType = pt;
+            foreach(XmlNode n in node.ChildNodes)
+            {
+                if (n.Name == test)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public VisualParamEx(XmlNode node)
+        {
+
+            if (matchchildnode("param_morph",node))
+                pType = ParamType.TYPE_MORPH;
+
+            if (matchchildnode("param_skeleton", node))
+                pType = ParamType.TYPE_BONEDEFORM;
+
+            if (matchchildnode("param_driver", node))
+                pType = ParamType.TYPE_DRIVER;
+
+            if (matchchildnode("param_color", node))
+                pType = ParamType.TYPE_COLOR;
+
+            if (node.ParentNode.Name == "mesh")
+            {
+                this.morphmesh = node.ParentNode.Attributes.GetNamedItem("type").Value;
+            }
+
 
             ParamID = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
             Name = node.Attributes.GetNamedItem("name").Value;
@@ -1780,7 +1742,10 @@ namespace Radegast.Rendering
                 {
                     tweakable_params.Add(this.ParamID, this);
                 }
-                //Logger.Log(String.Format("Adding tweakable paramater ID {0} {1}", count, this.Name), Helpers.LogLevel.Info);
+                else
+                {
+                    Logger.Log(String.Format("Warning duplicate tweakable paramater ID {0} {1}", count, this.Name), Helpers.LogLevel.Warning);
+                }
                 count++;
             }
 
@@ -1788,16 +1753,17 @@ namespace Radegast.Rendering
 
             if(allParams.ContainsKey(ParamID))
             {
-                //Logger.Log("Duplicate VisualParam in allParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
+                Logger.Log("Shared VisualParam id " + ParamID.ToString() + " "+Name, Helpers.LogLevel.Info);
                 allParams[ParamID].identicalIds.Add(this);
             }
             else
             {
+                Logger.Log("VisualParam id " + ParamID.ToString() + " " + Name, Helpers.LogLevel.Info);
                 allParams.Add(ParamID, this);
             }
 
 
-            if (pt == ParamType.TYPE_BONEDEFORM)
+            if (pType == ParamType.TYPE_BONEDEFORM)
             {
                 // If we are in the skeleton section then we also have bone deforms to parse
                 BoneDeforms = new Dictionary<string, BoneDeform>();
@@ -1805,50 +1771,27 @@ namespace Radegast.Rendering
                 {
                     ParseBoneDeforms(node.ChildNodes[0].ChildNodes);
                 }
-                deformParams.Add(ParamID, this);
             }
 
-            if (pt == ParamType.TYPE_MORPH)
+            if (pType == ParamType.TYPE_MORPH)
             {
                 VolumeDeforms = new Dictionary<string, VolumeDeform>();
                 if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
                 {
                     ParseVolumeDeforms(node.ChildNodes[0].ChildNodes);
                 }
-
-                /*
-                try
-                {
-                    if (!morphParams.ContainsKey(meshname))
-                    {
-                        morphParams.Add(meshname, new Dictionary<int, VisualParamEx>());
-                    }
-                    else
-                    {
-                        morphParams[meshname].Add(ParamID, this);
-                    }
-                }
-                catch
-                {
-                    Logger.Log("Duplicate VisualParam in morphParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
-                }
-                */
-
             }
 
-            if (pt == ParamType.TYPE_DRIVER)
+            if (pType == ParamType.TYPE_DRIVER)
             {
                 childparams = new List<driven>();
                 if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes) //LAZY
                 {
                     ParseDrivers(node.ChildNodes[0].ChildNodes);
                 }
-
-                drivenParams.Add(ParamID, this);
-
             }
 
-            if (pt == ParamType.TYPE_COLOR)
+            if (pType == ParamType.TYPE_COLOR)
             {
                 if (node.HasChildNodes)
                 {

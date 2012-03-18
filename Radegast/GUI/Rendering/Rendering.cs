@@ -1207,10 +1207,10 @@ namespace Radegast.Rendering
             //    comboBox_morph.Items.Add(vpe.Name);
             //}
 
-            foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
-            {
-                comboBox_driver.Items.Add(vpe.Name);
-            }
+            //foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
+            //{
+            //    comboBox_driver.Items.Add(vpe.Name);
+            //}
 
             SetupGLControl();
         }
@@ -3538,6 +3538,7 @@ namespace Radegast.Rendering
 
         private void button_driver_Click(object sender, EventArgs e)
         {
+            /*
             foreach (RenderAvatar av in Avatars.Values)
             {
                 int id = -1;
@@ -3558,7 +3559,7 @@ namespace Radegast.Rendering
                 }
 
             }
-
+            */
         }
 
         bool miscEnabled = true;
