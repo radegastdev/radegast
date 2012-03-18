@@ -1771,8 +1771,8 @@ namespace Radegast.Rendering
                     GL.PushMatrix();
 
                     // FIXME 2 dictionay lookups via string key in render loop!
-                    //Vector3 avataroffset = (av.glavatar.skel.mBones["mPelvis"].animation_offset*av.RenderRotation) + av.glavatar.skel.getOffset("mPelvis");
-                    Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
+                    Vector3 avataroffset = (av.glavatar.skel.mBones["mPelvis"].animation_offset*av.RenderRotation) + av.glavatar.skel.getOffset("mPelvis");
+                    //Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
                     //Console.WriteLine(avataroffset.ToString());
 
                     // Prim roation and position
