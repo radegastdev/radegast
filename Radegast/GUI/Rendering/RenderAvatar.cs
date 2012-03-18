@@ -718,6 +718,13 @@ namespace Radegast.Rendering
             // A driver drives multiple slave visual paramaters
             if (vpx.pType == VisualParamEx.ParamType.TYPE_DRIVER)
             {
+
+                if (vpx.ParamID == 652)
+                {
+                    int x = 0;
+                    x++;
+                }
+
                 foreach (VisualParamEx.driven child in vpx.childparams)
                 {
 
@@ -1946,7 +1953,7 @@ namespace Radegast.Rendering
                         d.max1 = float.Parse(param.Value, Utils.EnUsCulture);
                         d.max2 = float.Parse(node.Attributes.GetNamedItem("max2").Value, Utils.EnUsCulture);
                         d.min1 = float.Parse(node.Attributes.GetNamedItem("min1").Value, Utils.EnUsCulture);
-                        d.max2 = float.Parse(node.Attributes.GetNamedItem("min2").Value, Utils.EnUsCulture);
+                        d.min2 = float.Parse(node.Attributes.GetNamedItem("min2").Value, Utils.EnUsCulture);
                         d.hasMinMax = true;
                     }
                     else
