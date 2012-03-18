@@ -887,6 +887,32 @@ namespace Radegast.Rendering
         public Quaternion rotation;
     }
 
+    public class animationwrapper
+    {
+        public BinBVHAnimationReader anim;
+
+        public float mRunTime;
+
+        public enum animstate
+        {
+            STATE_EASEIN,
+            STATE_EASEOUT,
+            STATE_PLAY,
+            STATE_STOP
+        }
+
+        public animstate playstate;
+
+        public animationwrapper(BinBVHAnimationReader anim)
+        {
+            this.anim = anim;
+            playstate = animstate.STATE_EASEIN;
+            mRunTime = 0;
+        }
+
+
+    }
+
     public class skeleton
     {
         public Dictionary<string, Bone> mBones;
@@ -897,7 +923,8 @@ namespace Radegast.Rendering
         public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
 
-        public List<BinBVHAnimationReader> mAnimations = new List<BinBVHAnimationReader>();
+       // public List<BinBVHAnimationReader> mAnimations = new List<BinBVHAnimationReader>();
+        public List<animationwrapper> mAnimationsWrapper = new List<animationwrapper>();
 
         public static Dictionary<UUID, RenderAvatar> mAnimationTransactions = new Dictionary<UUID, RenderAvatar>();
 
@@ -920,7 +947,6 @@ namespace Radegast.Rendering
             public int loopinframe;
             public int loopoutframe;
 
-            public bool finished;
         }
 
 
@@ -1051,9 +1077,9 @@ namespace Radegast.Rendering
 
         public void flushanimations()
         {
-            lock (mAnimations)
+            lock (mAnimationsWrapper)
             {
-                mAnimations.Clear();
+                mAnimationsWrapper.Clear();
             }
         }
 
@@ -1092,10 +1118,6 @@ namespace Radegast.Rendering
                 state.loopinframe = 0;
                 state.loopoutframe = joint.rotationkeys.Length - 1;
 
-                state.finished = false;
-
-               
-
                 if (b.Loop == true)
                 {
                     int frame = 0;
@@ -1121,38 +1143,40 @@ namespace Radegast.Rendering
                 pos++;
             }
 
-            lock (av.glavatar.skel.mAnimations)
+            lock (av.glavatar.skel.mAnimationsWrapper)
             {
-                av.glavatar.skel.mAnimations.Add(b);
-
+                av.glavatar.skel.mAnimationsWrapper.Add(new animationwrapper(b));
 
                 //pre calculate all joint priorities here
                 av.glavatar.skel.mPriority.Clear();
 
-                foreach (BinBVHAnimationReader bb in av.glavatar.skel.mAnimations)
+                foreach (animationwrapper ar in av.glavatar.skel.mAnimationsWrapper)
                 {
                     int jpos = 0;
-                    foreach (binBVHJoint joint in bb.joints)
+                    foreach (binBVHJoint joint in ar.anim.joints)
                     {
-                        if (bb == null)
+                        if (ar.anim == null)
                             continue;
 
                         //warning struct copy non reference
-                        binBVHJointState state = (binBVHJointState)bb.joints[jpos].Tag;
+                        binBVHJointState state = (binBVHJointState)ar.anim.joints[jpos].Tag;
 
-                        if (state.finished == true)
+                        if (ar.playstate == animationwrapper.animstate.STATE_STOP)
                             continue;
+
+                        //FIX ME need to consider ease out here on priorities somehow
+
 
                         int prio = 0;
                         //Quick hack to stack animations in the correct order
                         //TODO we need to do this per joint as they all have their own priorities as well ;-(
                         if (av.glavatar.skel.mPriority.TryGetValue(joint.Name, out prio))
                         {
-                            if (prio > (bb.Priority))
+                            if (prio > (ar.anim.Priority))
                                 continue;
                         }
 
-                        av.glavatar.skel.mPriority[joint.Name] = bb.Priority;
+                        av.glavatar.skel.mPriority[joint.Name] = ar.anim.Priority;
 
                         jpos++;
                     }
@@ -1163,23 +1187,25 @@ namespace Radegast.Rendering
         public void animate(float lastframetime)
         {
 
-            lock (mAnimations)
+            lock (mAnimationsWrapper)
             {
               
                 jointdeforms.Clear();
 
-                foreach (BinBVHAnimationReader b in mAnimations)
+                foreach (animationwrapper ar in mAnimationsWrapper)
                 {
-                    if (b == null)
+                    if (ar.anim == null)
                         continue;
 
+                    ar.mRunTime += lastframetime;
+
                     int jpos = 0;
-                    foreach (binBVHJoint joint in b.joints)
+                    foreach (binBVHJoint joint in ar.anim.joints)
                     {
                         //warning struct copy non reference
-                        binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
+                        binBVHJointState state = (binBVHJointState)ar.anim.joints[jpos].Tag;
 
-                        if (state.finished == true)
+                        if (ar.playstate == animationwrapper.animstate.STATE_STOP)
                             continue;
 
                         int prio = 0;
@@ -1187,7 +1213,7 @@ namespace Radegast.Rendering
                         //TODO we need to do this per joint as they all have their own priorities as well ;-(
                         if (mPriority.TryGetValue(joint.Name, out prio))
                         {
-                            if (prio > (b.Priority))
+                            if (prio > (ar.anim.Priority))
                                 continue;
                         }
 
@@ -1196,7 +1222,7 @@ namespace Radegast.Rendering
 
                         // Position
 
-                        if ( b.joints[jpos].positionkeys.Length >= 2 && joint.Name == "mPelvis")
+                        if (ar.anim.joints[jpos].positionkeys.Length >= 2 && joint.Name == "mPelvis")
                         {
 
                             //Console.WriteLine("Animate time " + state.currenttime_pos.ToString());
@@ -1206,16 +1232,16 @@ namespace Radegast.Rendering
                             float currentime = state.currenttime_pos;
                             bool overrun = false;
 
-                            if (state.currenttime_pos > b.OutPoint)
+                            if (state.currenttime_pos > ar.anim.OutPoint)
                             {
                                 //overrun state
-                                int itterations = (int)(state.currenttime_pos / b.OutPoint) + 1;
-                                state.currenttime_pos = currentime = b.InPoint + ((b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_pos));
+                                int itterations = (int)(state.currenttime_pos / ar.anim.OutPoint) + 1;
+                                state.currenttime_pos = currentime = ar.anim.InPoint + ((ar.anim.OutPoint - ar.anim.InPoint) - (((ar.anim.OutPoint - ar.anim.InPoint) * itterations) - state.currenttime_pos));
                                 overrun = true;
                             }
 
-                            binBVHJointKey pos_next = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
-                            binBVHJointKey pos_last = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
+                            binBVHJointKey pos_next = ar.anim.joints[jpos].positionkeys[state.nextkeyframe_pos];
+                            binBVHJointKey pos_last = ar.anim.joints[jpos].positionkeys[state.lastkeyframe_pos];
 
                             // if the current time > than next key frame time we move keyframes
                             if (currentime >= pos_next.time || overrun)
@@ -1225,7 +1251,7 @@ namespace Radegast.Rendering
                                 state.lastkeyframe_pos++;
                                 state.nextkeyframe_pos++;
 
-                                if (b.Loop)
+                                if (ar.anim.Loop)
                                 {
                                     if (state.nextkeyframe_pos > state.loopoutframe)
                                         state.nextkeyframe_pos = state.loopinframe;
@@ -1234,35 +1260,36 @@ namespace Radegast.Rendering
                                         state.lastkeyframe_pos = state.loopinframe;
 
 
-                                    if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                    if (state.nextkeyframe_pos >= ar.anim.joints[jpos].positionkeys.Length)
                                         state.nextkeyframe_pos = state.loopinframe;
 
-                                    if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                    if (state.lastkeyframe_pos >= ar.anim.joints[jpos].positionkeys.Length)
                                         state.lastkeyframe_pos = state.loopinframe;
 
                                 }
                                 else
                                 {
-                                    if(state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length)
-                                        state.nextkeyframe_pos = b.joints[jpos].positionkeys.Length-1;
+                                    if (state.nextkeyframe_pos >= ar.anim.joints[jpos].positionkeys.Length)
+                                        state.nextkeyframe_pos = ar.anim.joints[jpos].positionkeys.Length - 1;
 
-                                    if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                    if (state.lastkeyframe_pos >= ar.anim.joints[jpos].positionkeys.Length)
                                     {
-                                        state.lastkeyframe_pos = b.joints[jpos].positionkeys.Length - 1;
-                                        state.finished = true;
+                                        state.lastkeyframe_pos = ar.anim.joints[jpos].positionkeys.Length - 1;
+
+                                        //ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
                                         //animation over
                                     }
                                 }
                             }
 
-                            if (pos_next.time == pos_last.time)
-                            {
-                                state.finished = true;
-                            }
+                            //if (pos_next.time == pos_last.time)
+                            //{
+                            //    ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
+                            //}
 
                             // update the pointers incase they have been moved
-                            pos_next = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
-                            pos_last = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
+                            pos_next = ar.anim.joints[jpos].positionkeys[state.nextkeyframe_pos];
+                            pos_last = ar.anim.joints[jpos].positionkeys[state.lastkeyframe_pos];
 
                             // TODO the lerp/delta is faulty
                             // it is not going to handle loop points when we wrap around as last will be > next
@@ -1281,8 +1308,8 @@ namespace Radegast.Rendering
                         // end of position
 
                         //rotation
-                        
-                        if ( b.joints[jpos].rotationkeys.Length >= 2)
+
+                        if (ar.anim.joints[jpos].rotationkeys.Length >= 2)
                         {
 
                             state.currenttime_rot += lastframetime;
@@ -1290,16 +1317,16 @@ namespace Radegast.Rendering
                             float currentime = state.currenttime_rot;
                             bool overrun = false;
 
-                            if (state.currenttime_rot > b.OutPoint)
+                            if (state.currenttime_rot > ar.anim.OutPoint)
                             {
                                 //overrun state
-                                int itterations = (int)(state.currenttime_rot / b.OutPoint) + 1;
-                                state.currenttime_rot = currentime = b.InPoint + ((b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_rot));
+                                int itterations = (int)(state.currenttime_rot / ar.anim.OutPoint) + 1;
+                                state.currenttime_rot = currentime = ar.anim.InPoint + ((ar.anim.OutPoint - ar.anim.InPoint) - (((ar.anim.OutPoint - ar.anim.InPoint) * itterations) - state.currenttime_rot));
                                 overrun = true;
                             }
 
-                            binBVHJointKey rot_next = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
-                            binBVHJointKey rot_last = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
+                            binBVHJointKey rot_next = ar.anim.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+                            binBVHJointKey rot_last = ar.anim.joints[jpos].rotationkeys[state.lastkeyframe_rot];
 
                             // if the current time > than next key frame time we move keyframes
                             if (currentime >= rot_next.time || overrun)
@@ -1308,7 +1335,7 @@ namespace Radegast.Rendering
                                 state.lastkeyframe_rot++;
                                 state.nextkeyframe_rot++;
 
-                                if (b.Loop)
+                                if (ar.anim.Loop)
                                 {
                                     if (state.nextkeyframe_rot > state.loopoutframe)
                                         state.nextkeyframe_rot = state.loopinframe;
@@ -1319,26 +1346,26 @@ namespace Radegast.Rendering
                                 }
                                 else
                                 {
-                                    if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
-                                        state.nextkeyframe_rot = b.joints[jpos].rotationkeys.Length - 1;
+                                    if (state.nextkeyframe_rot >= ar.anim.joints[jpos].rotationkeys.Length)
+                                        state.nextkeyframe_rot = ar.anim.joints[jpos].rotationkeys.Length - 1;
 
-                                    if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                    if (state.lastkeyframe_rot >= ar.anim.joints[jpos].rotationkeys.Length)
                                     {
-                                        state.lastkeyframe_rot = b.joints[jpos].rotationkeys.Length - 1;
-                                        state.finished = true;
+                                        state.lastkeyframe_rot = ar.anim.joints[jpos].rotationkeys.Length - 1;
+                                        //ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
                                         //animation over
                                     }
                                 }
                             }
 
-                            if (rot_next.time == rot_last.time)
-                            {
-                                state.finished = true;
-                            }
+                            //if (rot_next.time == rot_last.time)
+                            //{
+                            //    ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
+                            //}
 
                             // update the pointers incase they have been moved
-                            rot_next = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
-                            rot_last = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
+                            rot_next = ar.anim.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+                            rot_last = ar.anim.joints[jpos].rotationkeys[state.lastkeyframe_rot];
 
                             // TODO the lerp/delta is faulty
                             // it is not going to handle loop points when we wrap around as last will be > next
@@ -1350,37 +1377,61 @@ namespace Radegast.Rendering
                             rotlerp = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
                         }
 
+                        //end of rotation
 
                         joint jointstate;
 
-                        if (jointdeforms.TryGetValue(b.joints[jpos].Name, out jointstate))
+                        float factor = 1.0f;
+
+                        if (ar.playstate == animationwrapper.animstate.STATE_EASEIN)
                         {
-                            jointstate.offset += poslerp;
-                            jointstate.rotation *= rotlerp;
+                            if (ar.mRunTime >= ar.anim.EaseInTime)
+                            {
+                                ar.playstate = animationwrapper.animstate.STATE_PLAY;
+                            }
+                            else
+                            {
+                                factor = 1.0f - ((ar.anim.EaseInTime - ar.mRunTime) / ar.anim.EaseInTime);
+                            }
+                        }
+
+                        if (ar.playstate == animationwrapper.animstate.STATE_EASEOUT)
+                        {
+                            if (ar.mRunTime >= ar.anim.EaseOutTime)
+                            {
+                                ar.playstate = animationwrapper.animstate.STATE_STOP;
+                                factor = 0;
+                            }
+                            else
+                            {
+                                factor = 1.0f - ((ar.anim.EaseOutTime - ar.mRunTime) / ar.anim.EaseOutTime);
+                            }
+                        }
+
+                        if (jointdeforms.TryGetValue(ar.anim.joints[jpos].Name, out jointstate))
+                        {
+                            jointstate.offset += poslerp* factor;
+                            jointstate.rotation *= rotlerp * factor;
                         }
                         else
                         {
                             jointstate = new joint();
                             jointstate.rotation = rotlerp;
                             jointstate.offset = poslerp;
-                            jointdeforms.Add(b.joints[jpos].Name, jointstate);
+                            jointdeforms.Add(ar.anim.joints[jpos].Name, jointstate);
                         }
 
 
-                        //end of rotation
-
-                        //deformbone(joint.Name, poslerp, rotlerp);
-                        //mNeedsMeshRebuild = true;
-
                         //warning struct copy non reference
-                        b.joints[jpos].Tag = state;
+                        ar.anim.joints[jpos].Tag = state;
 
                         jpos++;
                     }
                 }
             }
 
-   
+
+            float amount = 1.0f;
 
             foreach (KeyValuePair<string, joint> kvp in jointdeforms)
             {
