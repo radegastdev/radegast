@@ -1768,39 +1768,13 @@ namespace Radegast.Rendering
                             if (!av.glavatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
 
+                            //hair is now rendered in the correct position and also morphs
+                            //but its not responding correctly to the bald caps eveyone uses
+                            //leave off until that is fixed
                             if (mesh.Name == "hairMesh") // Don't render the hair mesh for the moment
                                 continue;
 
                             GL.Color3(1f, 1f, 1f);
-
-                            // Individual part mesh matrix
-                            GL.PushMatrix();
-
-                            // Special case for eyeballs we need to offset the mesh to the correct position
-                            // We have manually added the eyeball offset based on the headbone when we
-                            // constructed the meshes
-                            if (mesh.Name == "eyeBallLeftMesh" )
-                            {
-                                // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(av.glavatar.skel.mLeftEye.scale, av.glavatar.skel.mLeftEye.getTotalRotation(), av.glavatar.skel.mLeftEye.getTotalOffset()));
-                            }
-                            if (mesh.Name == "eyeBallRightMesh")
-                            {
-                                // Mesh roation and position
-                                GL.MultMatrix(Math3D.CreateSRTMatrix(av.glavatar.skel.mRightEye.scale, av.glavatar.skel.mRightEye.getTotalRotation(), av.glavatar.skel.mRightEye.getTotalOffset()));
-                            }
-
-                            //Should we be offsetting the base meshs at all?
-                            if (mesh.Name == "eyelashMesh")
-                            {
-                              //  GL.MultMatrix(Math3D.CreateSRTMatrix(av.glavatar.skel.mHead.scale, av.glavatar.skel.mHead.getTotalRotation(), av.glavatar.skel.mHead.getTotalOffset()));
-                            }
-
-                            if  (mesh.Name == "hairMesh")
-                            {
-                               // GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.glavatar.skel.mHead.getTotalRotation(), av.glavatar.skel.mHead.getTotalOffset()));  
-                            }
-
 
                             if (pass == RenderPass.Picking)
                             {
@@ -1844,8 +1818,6 @@ namespace Radegast.Rendering
                             GL.DrawElements(BeginMode.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
 
                             GL.BindTexture(TextureTarget.Texture2D, 0);
-
-                            GL.PopMatrix();
 
                         }
 

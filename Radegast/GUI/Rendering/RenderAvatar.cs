@@ -178,6 +178,18 @@ namespace Radegast.Rendering
         public void setMeshPos(Vector3 pos)
         {
             _position = pos;
+
+            // Force offset all vertices by this offset
+            // this is required to force some meshes into the default T bind pose
+
+            for (int vert = 0; vert < RenderData.Vertices.Length; vert = vert + 3)
+            {
+                RenderData.Vertices[vert] += pos.X;
+                RenderData.Vertices[vert+1] += pos.Y;
+                RenderData.Vertices[vert+2] += pos.Z;
+            }
+            
+
         }
 
         public void setMeshRot(Vector3 rot)
@@ -319,6 +331,22 @@ namespace Radegast.Rendering
                             jointname = skeleton.mHeadMeshMapping[jointindex];
                             jointindex++;
                             jointname2 = skeleton.mHeadMeshMapping[jointindex];
+                            break;
+
+                        case "eyeBallRightMesh":
+                            jointname = "mHead";
+                            jointname2 = "mEyeRight";
+                            break;
+
+                        case "eyeBallLeftMesh":
+                            jointname = "mHead";
+                            jointname2 = "mEyeLeft";
+                            break;
+
+                        case "eyelashMesh":
+                        case "hairMesh":
+                            jointname = "mHead";
+                            jointname2 = "mSkull";
                             break;
 
                         default:
@@ -621,6 +649,31 @@ namespace Radegast.Rendering
                 else
                     mesh.LoadLODMesh(lod, basedir + fileName);
 
+                if (lod == 0)
+                {
+                    switch (mesh.Name)
+                    {
+                        case "eyeBallLeftMesh":
+                            mesh.setMeshPos(Bone.mBones["mEyeLeft"].getTotalOffset());
+                            break;
+
+                        case "eyeBallRightMesh":
+                            mesh.setMeshPos(Bone.mBones["mEyeRight"].getTotalOffset());
+                            break;
+
+                        case "eyelashMesh":
+                            mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
+                            break;
+
+                        case "hairMesh":
+                            //mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
                 _defaultmeshes[type] = mesh;
 
             }
@@ -688,7 +741,7 @@ namespace Radegast.Rendering
                 // in this case also apply to all other identical IDs
                 foreach (VisualParamEx cvpx in vpx.identicalIds)
                 {
-                    applyMorph(vpx, av, param, weight);
+                    applyMorph(cvpx, av, cvpx.ParamID, weight);
                 }
             }
         }
@@ -1436,7 +1489,8 @@ namespace Radegast.Rendering
             {
                 Vector3 orig = getOrigOffset();
                 //mTotalPos = (pos * scale)+offset_pos;
-                mTotalPos = (pos) + offset_pos;
+                //mTotalPos = (pos) + offset_pos;
+                mTotalPos = pos;
                 mDeltaPos = mTotalPos - orig;
                 posdirty = false;
                 return mTotalPos;
