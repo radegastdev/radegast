@@ -898,6 +898,7 @@ namespace Radegast.Rendering
         public bool mNeedsUpdate = false;
         public bool mNeedsMeshRebuild = true;
 
+
         public struct binBVHJointState
         {
             public float currenttime_rot;
@@ -910,6 +911,8 @@ namespace Radegast.Rendering
 
             public int loopinframe;
             public int loopoutframe;
+
+            public bool finished;
         }
 
 
@@ -1081,6 +1084,10 @@ namespace Radegast.Rendering
                 state.loopinframe = 0;
                 state.loopoutframe = joint.rotationkeys.Length - 1;
 
+                state.finished = false;
+
+               
+
                 if (b.Loop == true)
                 {
                     int frame = 0;
@@ -1113,6 +1120,205 @@ namespace Radegast.Rendering
         }
 
         public void animate(float lastframetime)
+        {
+          
+            lock (mAnimations)
+            {
+                foreach (BinBVHAnimationReader b in mAnimations)
+                {
+                    if (b == null)
+                        continue;
+
+                    int jpos = 0;
+                    foreach (binBVHJoint joint in b.joints)
+                    {
+                        //warning struct copy non reference
+                        binBVHJointState state = (binBVHJointState)b.joints[jpos].Tag;
+
+                        int prio = 0;
+                        //Quick hack to stack animations in the correct order
+                        //TODO we need to do this per joint as they all have their own priorities as well ;-(
+                        if (mPriority.TryGetValue(joint.Name, out prio))
+                        {
+                            if (prio > (b.Priority + joint.Priority))
+                                continue;
+                        }
+
+                        mPriority[joint.Name] = b.Priority+joint.Priority;
+
+                        if (state.finished == true)
+                            continue;
+
+                        Vector3 poslerp = Vector3.Zero;
+                        Quaternion rotlerp = Quaternion.Identity;
+
+                        // Position
+
+                        if ( b.joints[jpos].positionkeys.Length >= 2 && joint.Name == "mPelvis")
+                        {
+
+                            //Console.WriteLine("Animate time " + state.currenttime_pos.ToString());
+
+                            state.currenttime_pos += lastframetime;
+
+                            float currentime = state.currenttime_pos;
+                            bool overrun = false;
+
+                            if (state.currenttime_pos > b.OutPoint)
+                            {
+                                //overrun state
+                                int itterations = (int)(state.currenttime_pos / b.OutPoint) + 1;
+                                state.currenttime_pos = currentime = (b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_pos);
+                                overrun = true;
+                            }
+
+                            binBVHJointKey pos_next = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
+                            binBVHJointKey pos_last = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
+
+                            // if the current time > than next key frame time we move keyframes
+                            if (currentime >= pos_next.time || overrun)
+                            {
+
+                                //Console.WriteLine("bump");
+                                state.lastkeyframe_pos++;
+                                state.nextkeyframe_pos++;
+
+                                if (b.Loop)
+                                {
+                                    if (state.nextkeyframe_pos > state.loopoutframe)
+                                        state.nextkeyframe_pos = state.loopinframe;
+
+                                    if (state.lastkeyframe_pos > state.loopoutframe)
+                                        state.lastkeyframe_pos = state.loopinframe;
+
+
+                                    if (state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                        state.nextkeyframe_pos = state.loopinframe;
+
+                                    if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                        state.lastkeyframe_pos = state.loopinframe;
+
+                                }
+                                else
+                                {
+                                    if(state.nextkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                        state.nextkeyframe_pos = b.joints[jpos].positionkeys.Length-1;
+
+                                    if (state.lastkeyframe_pos >= b.joints[jpos].positionkeys.Length)
+                                    {
+                                        state.lastkeyframe_pos = b.joints[jpos].positionkeys.Length - 1;
+                                        state.finished = true;
+                                        //animation over
+                                    }
+                                }
+                            }
+
+                            if (pos_next.time == pos_last.time)
+                            {
+                                state.finished = true;
+                            }
+
+                            // update the pointers incase they have been moved
+                            pos_next = b.joints[jpos].positionkeys[state.nextkeyframe_pos];
+                            pos_last = b.joints[jpos].positionkeys[state.lastkeyframe_pos];
+
+                            float delta = state.currenttime_pos - pos_last.time / (pos_next.time - pos_last.time);
+
+                            delta = Utils.Clamp(delta, 0f, 1f);
+
+                            poslerp = Vector3.Lerp(pos_last.key_element, pos_next.key_element, delta);
+
+                            //Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
+
+                        }
+
+                        // end of position
+
+                        //rotation
+                        
+                        if ( b.joints[jpos].rotationkeys.Length >= 2)
+                        {
+
+                            state.currenttime_rot += lastframetime;
+
+                            float currentime = state.currenttime_rot;
+                            bool overrun = false;
+
+                            if (state.currenttime_rot > b.OutPoint)
+                            {
+                                //overrun state
+                                int itterations = (int)(state.currenttime_rot / b.OutPoint) + 1;
+                                state.currenttime_rot = currentime = (b.OutPoint - b.InPoint) - (((b.OutPoint - b.InPoint) * itterations) - state.currenttime_rot);
+                                overrun = true;
+                            }
+
+                            binBVHJointKey rot_next = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+                            binBVHJointKey rot_last = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
+
+                            // if the current time > than next key frame time we move keyframes
+                            if (currentime >= rot_next.time || overrun)
+                            {
+
+                                state.lastkeyframe_rot++;
+                                state.nextkeyframe_rot++;
+
+                                if (b.Loop)
+                                {
+                                    if (state.nextkeyframe_rot > state.loopoutframe)
+                                        state.nextkeyframe_rot = state.loopinframe;
+
+                                    if (state.lastkeyframe_rot > state.loopoutframe)
+                                        state.lastkeyframe_rot = state.loopinframe;
+
+                                }
+                                else
+                                {
+                                    if (state.nextkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                        state.nextkeyframe_rot = b.joints[jpos].rotationkeys.Length - 1;
+
+                                    if (state.lastkeyframe_rot >= b.joints[jpos].rotationkeys.Length)
+                                    {
+                                        state.lastkeyframe_rot = b.joints[jpos].rotationkeys.Length - 1;
+                                        state.finished = true;
+                                        //animation over
+                                    }
+                                }
+                            }
+
+                            if (rot_next.time == rot_last.time)
+                            {
+                                state.finished = true;
+                            }
+
+                            // update the pointers incase they have been moved
+                            rot_next = b.joints[jpos].rotationkeys[state.nextkeyframe_rot];
+                            rot_last = b.joints[jpos].rotationkeys[state.lastkeyframe_rot];
+
+                            float delta = state.currenttime_rot - rot_last.time / (rot_next.time - rot_last.time);
+                            delta = Utils.Clamp(delta, 0f, 1f);
+
+                            Vector3 rotlerpv = Vector3.Lerp(rot_last.key_element, rot_next.key_element, delta);
+                            rotlerp = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
+                          
+                        }
+                        
+
+                        //end of rotation
+
+                        deformbone(joint.Name, poslerp, rotlerp);
+                        mNeedsMeshRebuild = true;
+
+                        //warning struct copy non reference
+                        b.joints[jpos].Tag = state;
+
+                        jpos++;
+                    }
+                }
+            }
+
+        }
+
+        public void animateold(float lastframetime)
         {
           
             try
@@ -1155,7 +1361,7 @@ namespace Radegast.Rendering
 
                                 Vector3 poslerp = Vector3.Zero;
 
-                                //if (joint.Name == "mPelvis")
+                                if ( joint.Name == "mPelvis")
                                 {
 
                                     if (b.joints[jpos].positionkeys.Length > 2)
@@ -1211,7 +1417,7 @@ namespace Radegast.Rendering
                                         if (state.currenttime_pos != ((pos.time - b.joints[jpos].positionkeys[0].time)))
                                         {
 
-                                            float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time));
+                                            float delta = (pos2.time - pos.time) / ((state.currenttime_pos) - (pos.time - b.joints[jpos].positionkeys[0].time)) ;
 
                                             if (delta < 0)
                                                 delta = 0;
@@ -1292,7 +1498,7 @@ namespace Radegast.Rendering
 
                                 b.joints[jpos].Tag = (object)state;
 
-                                deformbone(joint.Name, poslerp, new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
+                                deformbone(joint.Name, poslerp*40, new Quaternion(rotlerp.X, rotlerp.Y, rotlerp.Z));
                               
 
                                 jpos++;
@@ -1315,7 +1521,7 @@ namespace Radegast.Rendering
     public class Bone
     {
         public string name;
-        public Vector3 pos;
+        private Vector3 pos;
         public Quaternion rot;
         public Vector3 scale;
         public Vector3 piviot;
@@ -1328,6 +1534,8 @@ namespace Radegast.Rendering
         public Vector3 orig_piviot;
 
         Matrix4 mDeformMatrix = Matrix4.Identity;
+
+        public Vector3 animation_offset;
 
         public Bone parent;
 
@@ -1433,13 +1641,18 @@ namespace Radegast.Rendering
 
         }
 
-        public void deformbone(Vector3 pos, Quaternion rot)
+        public void deformbone(Vector3 dpos, Quaternion rot)
         {
             //float[] deform = Math3D.CreateSRTMatrix(scale, rot, this.orig_pos);
             //mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
 
-            this.offset_pos += pos;
-            //this.pos = Bone.mBones[name].offset_pos + pos;
+            //this.offset_pos += pos;
+            //this.pos = pos;
+           // this.offset_pos = pos;
+
+            animation_offset = dpos;
+
+            //this.pos = Bone.mBones[name].offset_pos + dpos;
             this.rot = Bone.mBones[name].orig_rot * rot;
 
             markdirty();
@@ -1447,7 +1660,6 @@ namespace Radegast.Rendering
 
         public void scalebone(Vector3 scale)
         {
-         //  this.scale = Bone.mBones[name].orig_scale * scale;
             this.scale *= scale;
             markdirty();
         }
@@ -1487,7 +1699,7 @@ namespace Radegast.Rendering
             {
                 Quaternion totalrot = getParentRot(); // we don't want this joints rotation included
                 Vector3 parento = parent.getOffset();
-                mTotalPos = parento + pos * parent.scale * totalrot;
+                mTotalPos =  parento + pos * parent.scale * totalrot;
                 Vector3 orig = getOrigOffset();
                 mDeltaPos = mTotalPos - orig;
 
@@ -1500,7 +1712,7 @@ namespace Radegast.Rendering
                 Vector3 orig = getOrigOffset();
                 //mTotalPos = (pos * scale)+offset_pos;
                 //mTotalPos = (pos) + offset_pos;
-                mTotalPos = pos;
+                mTotalPos = animation_offset + pos;
                 mDeltaPos = mTotalPos - orig;
                 posdirty = false;
                 return mTotalPos;
