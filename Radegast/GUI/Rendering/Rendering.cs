@@ -1777,10 +1777,8 @@ namespace Radegast.Rendering
                             if (!av.glavatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
 
-                            //hair is now rendered in the correct position and also morphs
-                            //but its not responding correctly to the bald caps eveyone uses
-                            //leave off until that is fixed
-
+                        
+                            // If we don't have a hair bake OR the hair bake is invisible don't render it
                             if (mesh.Name == "hairMesh" && (av.data[(int)AvatarTextureIndex.HairBaked] == null || av.data[(int)AvatarTextureIndex.HairBaked].TextureInfo.IsInvisible))
                                 continue;
 
