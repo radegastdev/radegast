@@ -704,7 +704,7 @@ namespace Radegast.Rendering
                             if (mesh.Name == "skirtMesh" && _showSkirt == false)
                                 return;
 
-                            //Logger.Log(String.Format("Applying morph {0} ID {2} weight {1} mesh {3}",morph.Name,weight,vpx.ParamID,mesh.Name),Helpers.LogLevel.Debug);
+                           // Logger.Log(String.Format("Applying morph {0} ID {2} weight {1} mesh {3}",morph.Name,weight,vpx.ParamID,mesh.Name),Helpers.LogLevel.Debug);
 
                             mesh.morphmesh(morph, value);
 
@@ -720,7 +720,79 @@ namespace Radegast.Rendering
             {
                 foreach (VisualParamEx.driven child in vpx.childparams)
                 {
-                    applyMorph(av, child.id, weight); //TO DO use minmax if they are present
+
+                    /***** BEGIN UNGRACEFULL CODE STEALING ******/
+
+                    //	driven    ________
+                    //	^        /|       |\       ^
+                    //	|       / |       | \      |
+                    //	|      /  |       |  \     |
+                    //	|     /   |       |   \    |
+                    //	|    /    |       |    \   |
+                    //-------|----|-------|----|-------> driver
+                    //  | min1   max1    max2  min2
+
+
+                    if (child.hasMinMax == false)
+                    {
+                        applyMorph(av, child.id, weight);
+                        continue;
+                    }
+
+                    float driven_weight = vpx.DefaultValue;
+                    float driven_max = VisualParamEx.allParams[child.id].MaxValue;
+                    float driven_min = VisualParamEx.allParams[child.id].MinValue;
+                    float input_weight = weight;
+
+                    float min_weight = vpx.MinValue;
+                    float max_weight = vpx.MaxValue;
+    
+                    if (input_weight <= child.min1)
+                    {
+                        if (child.min1 == child.max1 &&
+                            child.min1 <= min_weight)
+                        {
+                            driven_weight = driven_max;
+                        }
+                        else
+                        {
+                            driven_weight = driven_min;
+                        }
+                    }
+                    else
+                        if (input_weight <= child.max1)
+                        {
+                            float t = (input_weight - child.min1) / (child.max1 - child.min1);
+                            driven_weight = driven_min + t * (driven_max - driven_min);
+                        }
+                        else
+                            if (input_weight <= child.max2)
+                            {
+                                driven_weight = driven_max;
+                            }
+                            else
+                                if (input_weight <= child.min2)
+                                {
+                                    float t = (input_weight - child.max2) / (child.min2 - child.max2);
+                                    driven_weight = driven_max + t * (driven_min - driven_max);
+                                }
+                                else
+                                {
+                                    if (child.max2 >= max_weight)
+                                    {
+                                        driven_weight = driven_max;
+                                    }
+                                    else
+                                    {
+                                        driven_weight = driven_min;
+                                    }
+                                }
+
+
+                    /***** END UNGRACEFULL CODE STEALING ******/
+
+                  applyMorph(av, child.id, driven_weight);
+ 
                 }
 
                 return;
@@ -800,6 +872,7 @@ namespace Radegast.Rendering
                     }
 
                     vpsent = true;
+                    this.skel.mNeedsMeshRebuild = true;
                     // Don't update actual meshes here anymore, we do it every frame because of animation anyway
                
                 }
@@ -1040,8 +1113,7 @@ namespace Radegast.Rendering
 
         public void animate(float lastframetime)
         {
-            return;
-
+          
             try
             {
                 lock (mPriority)
