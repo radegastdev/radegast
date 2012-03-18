@@ -441,6 +441,11 @@ namespace Radegast.Rendering
             AddAvatarToScene(e.Avatar);
         }
 
+
+        // This is called when ever an animation play state changes, that might be a start/stop event etc
+        // the entire list of animations is sent each time and it is our job to determine which are new and
+        // which are deleted
+
         void AvatarAnimationChanged(object sender, AvatarAnimationEventArgs e)
         {
 
@@ -458,7 +463,8 @@ namespace Radegast.Rendering
                     av.glavatar.skel.flushanimations();
                     foreach (Animation anim in e.Animations)
                     {
-
+                        Console.WriteLine(string.Format("AvatarAnimationChanged {0} {1}", anim.AnimationID, anim.AnimationSequence));
+                        
                         // Don't play internal turn 180 animations
                         if (anim.AnimationID == new UUID("038fcec9-5ebd-8a8e-0e2e-6e71a0a1ac53"))
                             continue;
@@ -466,7 +472,8 @@ namespace Radegast.Rendering
                         if (anim.AnimationID == new UUID("6883a61a-b27b-5914-a61e-dda118a9ee2c"))
                             continue;
 
-
+                        av.glavatar.skel.processAnimation(anim.AnimationID);
+                        
                         int nofails = 0;
                         if (AssetFetchFailCount.TryGetValue(anim.AnimationID, out nofails))
                         {
@@ -480,7 +487,7 @@ namespace Radegast.Rendering
                         BinBVHAnimationReader bvh;
                         if (skeleton.mAnimationCache.TryGetValue(anim.AnimationID, out bvh))
                         {
-                            skeleton.addanimation(null, tid, bvh);
+                            skeleton.addanimation(null, tid, bvh, anim.AnimationID);
                             continue;
                         }
 
@@ -488,6 +495,10 @@ namespace Radegast.Rendering
 
                         Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, animRecievedCallback);
                     }
+
+                    av.glavatar.skel.flushanimationsfinal();
+                    skeleton.recalcpriorities(av);
+
                     break;
                 }
             }
@@ -504,7 +515,7 @@ namespace Radegast.Rendering
 
             if (transfer.Success)
             {
-                skeleton.addanimation(asset, transfer.ID, null);
+                skeleton.addanimation(asset, transfer.ID, null,asset.AssetID);
             }
             else
             {
@@ -1760,9 +1771,9 @@ namespace Radegast.Rendering
                     GL.PushMatrix();
 
                     // FIXME 2 dictionay lookups via string key in render loop!
-                    Vector3 avataroffset = (av.glavatar.skel.mBones["mPelvis"].animation_offset*av.RenderRotation) + av.glavatar.skel.getOffset("mPelvis");
-
-                    Console.WriteLine(avataroffset.ToString());
+                    //Vector3 avataroffset = (av.glavatar.skel.mBones["mPelvis"].animation_offset*av.RenderRotation) + av.glavatar.skel.getOffset("mPelvis");
+                    Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
+                    //Console.WriteLine(avataroffset.ToString());
 
                     // Prim roation and position
                     GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset ));

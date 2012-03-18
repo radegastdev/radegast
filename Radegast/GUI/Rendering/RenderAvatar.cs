@@ -890,11 +890,13 @@ namespace Radegast.Rendering
     public class animationwrapper
     {
         public BinBVHAnimationReader anim;
-
         public float mRunTime;
+        public UUID mAnimation;
+        public bool mPotentialyDead = false;
 
         public enum animstate
         {
+            STATE_WAITINGASSET,
             STATE_EASEIN,
             STATE_EASEOUT,
             STATE_PLAY,
@@ -910,7 +912,18 @@ namespace Radegast.Rendering
             mRunTime = 0;
         }
 
+        public animationwrapper(UUID key)
+        {
+            mAnimation = key;
+            playstate = animstate.STATE_WAITINGASSET;
+            mRunTime = 0;
+        }
 
+        public void stopanim()
+        {
+            Logger.Log(string.Format("Animation {0} marked as stopped",mAnimation),Helpers.LogLevel.Info);
+            playstate = animstate.STATE_STOP;
+        }
     }
 
     public class skeleton
@@ -924,7 +937,7 @@ namespace Radegast.Rendering
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
 
        // public List<BinBVHAnimationReader> mAnimations = new List<BinBVHAnimationReader>();
-        public List<animationwrapper> mAnimationsWrapper = new List<animationwrapper>();
+        public Dictionary<UUID, animationwrapper> mAnimationsWrapper = new Dictionary<UUID, animationwrapper>();
 
         public static Dictionary<UUID, RenderAvatar> mAnimationTransactions = new Dictionary<UUID, RenderAvatar>();
 
@@ -1008,6 +1021,24 @@ namespace Radegast.Rendering
 
         }
 
+        public void processAnimation(UUID mAnimID)
+        {
+            if (mAnimationsWrapper.ContainsKey(mAnimID))
+            {
+                // Its an existing animation, we may need to do a seq update but we don't yet
+                // support that
+
+                mAnimationsWrapper[mAnimID].mPotentialyDead = false;
+            }
+            else
+            {
+                // Its a new animation do the decode dance
+                animationwrapper aw = new animationwrapper(mAnimID);
+                mAnimationsWrapper.Add(mAnimID, aw);
+
+            }
+        }
+
         public void resetbonescales()
         {
             foreach (KeyValuePair<string,Bone> src in mBones)
@@ -1079,13 +1110,46 @@ namespace Radegast.Rendering
         {
             lock (mAnimationsWrapper)
             {
-                mAnimationsWrapper.Clear();
+                List<UUID> kills = new List<UUID>();
+                foreach (animationwrapper ar in mAnimationsWrapper.Values)
+                {
+                    if (ar.playstate == animationwrapper.animstate.STATE_STOP)
+                    {
+                        kills.Add(ar.mAnimation);
+                    }
+
+                    ar.mPotentialyDead = true;
+                }
+
+                foreach (UUID key in kills)
+                {
+                    mAnimationsWrapper.Remove(key);
+                    Logger.Log(string.Format("Removing dead animation {0} from av", key), Helpers.LogLevel.Info);
+                }
             }
+        }
+
+        public void flushanimationsfinal()
+        {
+            lock (mAnimationsWrapper)
+            {
+                foreach (animationwrapper ar in mAnimationsWrapper.Values)
+                {
+                    if (ar.mPotentialyDead == true)
+                    {
+                        Logger.Log(string.Format("Animation {0} is being marked for easeout (dead)",ar.mAnimation.ToString()),Helpers.LogLevel.Info);
+                        // Should we just stop dead? i think not it may get jerky
+                        ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
+                        ar.mRunTime = 0; //fix me nasty hack
+                    }
+                }
+            }
+
         }
 
         // Add animations to the global decoded list
         // TODO garbage collect unused animations somehow
-        public static void addanimation(OpenMetaverse.Assets.Asset asset, UUID tid, BinBVHAnimationReader b)
+        public static void addanimation(OpenMetaverse.Assets.Asset asset, UUID tid, BinBVHAnimationReader b, UUID animKey)
         {
             RenderAvatar av;
             mAnimationTransactions.TryGetValue(tid, out av);
@@ -1101,6 +1165,10 @@ namespace Radegast.Rendering
                 Logger.Log("Adding new decoded animaton known animations " + asset.AssetID.ToString(), Helpers.LogLevel.Info);
             }
 
+           
+            // This sets the anim in the wrapper class;
+            av.glavatar.skel.mAnimationsWrapper[animKey].anim = b;
+        
             int pos = 0;
             foreach (binBVHJoint joint in b.joints)
             {
@@ -1143,16 +1211,25 @@ namespace Radegast.Rendering
                 pos++;
             }
 
+            av.glavatar.skel.mAnimationsWrapper[animKey].playstate = animationwrapper.animstate.STATE_EASEIN;
+            recalcpriorities(av);
+
+        }
+
+        public static void recalcpriorities(RenderAvatar av)
+        {
+
             lock (av.glavatar.skel.mAnimationsWrapper)
             {
-                av.glavatar.skel.mAnimationsWrapper.Add(new animationwrapper(b));
+                //av.glavatar.skel.mAnimationsWrapper.Add(new animationwrapper(b));
 
                 //pre calculate all joint priorities here
                 av.glavatar.skel.mPriority.Clear();
 
-                foreach (animationwrapper ar in av.glavatar.skel.mAnimationsWrapper)
+                foreach (KeyValuePair<UUID, animationwrapper> kvp in av.glavatar.skel.mAnimationsWrapper)
                 {
                     int jpos = 0;
+                    animationwrapper ar = kvp.Value;
                     foreach (binBVHJoint joint in ar.anim.joints)
                     {
                         if (ar.anim == null)
@@ -1161,7 +1238,7 @@ namespace Radegast.Rendering
                         //warning struct copy non reference
                         binBVHJointState state = (binBVHJointState)ar.anim.joints[jpos].Tag;
 
-                        if (ar.playstate == animationwrapper.animstate.STATE_STOP)
+                        if (ar.playstate == animationwrapper.animstate.STATE_STOP || ar.playstate == animationwrapper.animstate.STATE_EASEOUT)
                             continue;
 
                         //FIX ME need to consider ease out here on priorities somehow
@@ -1179,9 +1256,13 @@ namespace Radegast.Rendering
                         av.glavatar.skel.mPriority[joint.Name] = ar.anim.Priority;
 
                         jpos++;
+
+                        //av.glavatar.skel.mAnimationsWrapper[kvp.Key].playstate = animationwrapper.animstate.STATE_EASEIN;
+
                     }
                 }
             }
+
         }
 
         public void animate(float lastframetime)
@@ -1189,15 +1270,66 @@ namespace Radegast.Rendering
 
             lock (mAnimationsWrapper)
             {
-              
+
                 jointdeforms.Clear();
 
-                foreach (animationwrapper ar in mAnimationsWrapper)
+                foreach (animationwrapper ar in mAnimationsWrapper.Values)
                 {
+
+                    if (ar.playstate == animationwrapper.animstate.STATE_WAITINGASSET)
+                        continue;
+
                     if (ar.anim == null)
                         continue;
 
                     ar.mRunTime += lastframetime;
+
+                    // EASE FACTORS
+                    // Caclulate ease factors now they are common to all joints in a given animation
+                    float factor = 1.0f;
+
+                    if (ar.playstate == animationwrapper.animstate.STATE_EASEIN)
+                    {
+                        if (ar.mRunTime >= ar.anim.EaseInTime)
+                        {
+                            ar.playstate = animationwrapper.animstate.STATE_PLAY;
+                            Console.WriteLine(String.Format("{0} Now in STATE_PLAY", ar.mAnimation));
+                        }
+                        else
+                        {
+                            factor = 1.0f- ((ar.anim.EaseInTime - ar.mRunTime) / ar.anim.EaseInTime);
+                        }
+
+                        Console.WriteLine(String.Format("EASE IN {0} {1}",factor.ToString(),ar.mAnimation));
+                    }
+
+                    if (ar.playstate == animationwrapper.animstate.STATE_EASEOUT)
+                    {
+
+                        if (ar.mRunTime >= ar.anim.EaseOutTime)
+                        {
+                            ar.stopanim();
+                            factor = 0;
+                            Console.WriteLine(String.Format("{0} Now in STATE_STOP", ar.mAnimation));
+
+                        }
+                        else
+                        {
+                            factor = 1.0f-(ar.mRunTime/ar.anim.EaseOutTime);
+
+                        }
+                   
+                        Console.WriteLine(String.Format("EASE OUT {0} {1}", factor.ToString(), ar.mAnimation));
+                    }
+
+                    // we should not need this, this implies bad math above
+                   
+                    
+                    factor = Utils.Clamp(factor, 0.0f, 1.0f);
+                    //factor = 1.0f;
+                     
+                    //END EASE FACTORS
+
 
                     int jpos = 0;
                     foreach (binBVHJoint joint in ar.anim.joints)
@@ -1213,15 +1345,14 @@ namespace Radegast.Rendering
                         //TODO we need to do this per joint as they all have their own priorities as well ;-(
                         if (mPriority.TryGetValue(joint.Name, out prio))
                         {
-                            if (prio > (ar.anim.Priority))
-                                continue;
+                            //if (prio > (ar.anim.Priority))
+                                //continue;
                         }
 
                         Vector3 poslerp = Vector3.Zero;
                         Quaternion rotlerp = Quaternion.Identity;
 
                         // Position
-
                         if (ar.anim.joints[jpos].positionkeys.Length >= 2 && joint.Name == "mPelvis")
                         {
 
@@ -1276,7 +1407,7 @@ namespace Radegast.Rendering
                                     {
                                         state.lastkeyframe_pos = ar.anim.joints[jpos].positionkeys.Length - 1;
 
-                                        //ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
+                                        ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
                                         //animation over
                                     }
                                 }
@@ -1298,11 +1429,10 @@ namespace Radegast.Rendering
                             float delta = (state.currenttime_pos - pos_last.time) / (pos_next.time - pos_last.time);
                             
                             delta = Utils.Clamp(delta, 0f, 1f);
-                            poslerp = Vector3.Lerp(pos_last.key_element, pos_next.key_element, delta);
+                            poslerp = Vector3.Lerp(pos_last.key_element, pos_next.key_element, delta) * factor;
 
-                           // Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
-
-                            
+                            //Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
+      
                         }
 
                         // end of position
@@ -1352,7 +1482,8 @@ namespace Radegast.Rendering
                                     if (state.lastkeyframe_rot >= ar.anim.joints[jpos].rotationkeys.Length)
                                     {
                                         state.lastkeyframe_rot = ar.anim.joints[jpos].rotationkeys.Length - 1;
-                                        //ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
+                                        
+                                        ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
                                         //animation over
                                     }
                                 }
@@ -1373,45 +1504,18 @@ namespace Radegast.Rendering
                             // t(0).
                             float delta = state.currenttime_rot - rot_last.time / (rot_next.time - rot_last.time);   
                             delta = Utils.Clamp(delta, 0f, 1f);
-                            Vector3 rotlerpv = Vector3.Lerp(rot_last.key_element, rot_next.key_element, delta);
+                            Vector3 rotlerpv = Vector3.Lerp(rot_last.key_element, rot_next.key_element, delta) * factor;
                             rotlerp = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
                         }
 
                         //end of rotation
 
-                        joint jointstate;
-
-                        float factor = 1.0f;
-
-                        if (ar.playstate == animationwrapper.animstate.STATE_EASEIN)
-                        {
-                            if (ar.mRunTime >= ar.anim.EaseInTime)
-                            {
-                                ar.playstate = animationwrapper.animstate.STATE_PLAY;
-                            }
-                            else
-                            {
-                                factor = 1.0f - ((ar.anim.EaseInTime - ar.mRunTime) / ar.anim.EaseInTime);
-                            }
-                        }
-
-                        if (ar.playstate == animationwrapper.animstate.STATE_EASEOUT)
-                        {
-                            if (ar.mRunTime >= ar.anim.EaseOutTime)
-                            {
-                                ar.playstate = animationwrapper.animstate.STATE_STOP;
-                                factor = 0;
-                            }
-                            else
-                            {
-                                factor = 1.0f - ((ar.anim.EaseOutTime - ar.mRunTime) / ar.anim.EaseOutTime);
-                            }
-                        }
+                        joint jointstate = new Rendering.joint();
 
                         if (jointdeforms.TryGetValue(ar.anim.joints[jpos].Name, out jointstate))
                         {
-                            jointstate.offset += poslerp* factor;
-                            jointstate.rotation *= rotlerp * factor;
+                            jointstate.offset += (poslerp);
+                            jointstate.rotation *= (rotlerp);
                         }
                         else
                         {
@@ -1421,7 +1525,6 @@ namespace Radegast.Rendering
                             jointdeforms.Add(ar.anim.joints[jpos].Name, jointstate);
                         }
 
-
                         //warning struct copy non reference
                         ar.anim.joints[jpos].Tag = state;
 
@@ -1429,9 +1532,6 @@ namespace Radegast.Rendering
                     }
                 }
             }
-
-
-            float amount = 1.0f;
 
             foreach (KeyValuePair<string, joint> kvp in jointdeforms)
             {
