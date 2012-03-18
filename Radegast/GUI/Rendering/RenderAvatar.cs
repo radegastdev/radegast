@@ -680,13 +680,26 @@ namespace Radegast.Rendering
             lindenMeshesLoaded = true;
         }
 
+ 
+
         public void applyMorph(Avatar av, int param, float weight)
         {
             VisualParamEx vpx;
+
             if (VisualParamEx.allParams.TryGetValue(param, out vpx))
             {
+                applyMorph(vpx, av, param, weight);
 
-             
+                foreach (VisualParamEx cvpx in vpx.identicalIds)
+                {
+                    applyMorph(vpx, av, param, weight);
+                }
+            }
+        }
+
+        public void applyMorph(VisualParamEx vpx, Avatar av, int param, float weight)
+        {
+
                 if (weight < 0)
                     weight = 0;
 
@@ -711,7 +724,7 @@ namespace Radegast.Rendering
                                 if (mesh.Name == "skirtMesh" && _showSkirt == false)
                                     return;
 
-                                mesh.morphmesh(morph, weight);
+                                mesh.morphmesh(morph, value);
 
                                 continue;
                             }
@@ -757,11 +770,11 @@ namespace Radegast.Rendering
                         //  scale="0 0 .3" />
                         //   value_min="-1"
                         // value_max="1"
-
+                      
                         foreach (KeyValuePair<string, BoneDeform> kvp in vpx.BoneDeforms)
                         {
-                            skel.scalebone(kvp.Key, Vector3.One + (kvp.Value.scale *value));
-                            skel.offsetbone(kvp.Key, kvp.Value.offset * value);
+                            skel.scalebone(kvp.Key, Vector3.One + (kvp.Value.scale * value));
+                          //  skel.offsetbone(kvp.Key, kvp.Value.offset * value);
                         }
                         return;
                     }
@@ -771,11 +784,7 @@ namespace Radegast.Rendering
                     }
                 }
 
-            }
-            else
-            {
-                Logger.Log("Invalid paramater " + param.ToString(), Helpers.LogLevel.Warning);
-            }
+
         }
 
         public void morph(Avatar av)
@@ -809,6 +818,8 @@ namespace Radegast.Rendering
                     {
                       mesh.resetallmorphs();
                     }
+
+                    skel.resetbonescales();
 
                     foreach (byte vpvalue in av.VisualParameters)
                     {
@@ -902,8 +913,6 @@ namespace Radegast.Rendering
         public skeleton()
         {
 
-
-
             mBones = new Dictionary<string, Bone>();
 
             foreach (Bone src in Bone.mBones.Values)
@@ -962,6 +971,14 @@ namespace Radegast.Rendering
 
         }
 
+        public void resetbonescales()
+        {
+            foreach (KeyValuePair<string,Bone> src in mBones)
+            {
+                src.Value.scale = new Vector3(1, 1, 1);
+            }
+        }
+
         public void deformbone(string name, Vector3 pos, Quaternion rotation)
         {
             Bone bone;
@@ -973,9 +990,11 @@ namespace Radegast.Rendering
 
         public void scalebone(string name, Vector3 scale)
         {
+
             Bone bone;
             if (mBones.TryGetValue(name, out bone))
             {
+                Logger.Log(String.Format("scalebone() {0} {1}", name, scale.ToString()),Helpers.LogLevel.Info);
                 bone.scalebone(scale);
             }
         }
@@ -1421,8 +1440,8 @@ namespace Radegast.Rendering
 
         public void scalebone(Vector3 scale)
         {
-            //this.scale = Bone.mBones[name].orig_scale + scale;
-            this.scale = scale;
+         //  this.scale = Bone.mBones[name].orig_scale * scale;
+            this.scale *= scale;
             markdirty();
         }
 
@@ -1461,7 +1480,7 @@ namespace Radegast.Rendering
             {
                 Quaternion totalrot = getParentRot(); // we don't want this joints rotation included
                 Vector3 parento = parent.getOffset();
-                mTotalPos = parento + pos * scale * totalrot;
+                mTotalPos = parento + pos * parent.scale * totalrot;
                 Vector3 orig = getOrigOffset();
                 mDeltaPos = mTotalPos - orig;
 
@@ -1472,7 +1491,8 @@ namespace Radegast.Rendering
             else
             {
                 Vector3 orig = getOrigOffset();
-                mTotalPos = (pos * scale)+offset_pos;
+                //mTotalPos = (pos * scale)+offset_pos;
+                mTotalPos = (pos) + offset_pos;
                 mDeltaPos = mTotalPos - orig;
                 posdirty = false;
                 return mTotalPos;
@@ -1595,13 +1615,20 @@ namespace Radegast.Rendering
 
         static public Dictionary<int, VisualParamEx> allParams = new Dictionary<int, VisualParamEx>();
         static public Dictionary<int, VisualParamEx> deformParams = new Dictionary<int, VisualParamEx>();
-        static public Dictionary<int, VisualParamEx> morphParams = new Dictionary<int, VisualParamEx>();
+       
+        //static public Dictionary<int, VisualParamEx> morphParams = new Dictionary<int, VisualParamEx>();
+
+        //dirty use of string as indexer, we need to have an enum for meshes
+        static public Dictionary<string,Dictionary<int, VisualParamEx>> morphParams = new  Dictionary<string,Dictionary<int, VisualParamEx>>();
+
         static public Dictionary<int, VisualParamEx> drivenParams = new Dictionary<int, VisualParamEx>();
         static public SortedList tweakable_params = new SortedList();
 
         public Dictionary<string, BoneDeform> BoneDeforms = null;
         public Dictionary<string, VolumeDeform> VolumeDeforms = null;
         public List<driven> childparams = null;
+
+        public List<VisualParamEx> identicalIds = new List<VisualParamEx>();
 
         public string morphmesh = null;
 
@@ -1773,14 +1800,16 @@ namespace Radegast.Rendering
 
             //TODO other paramaters but these arew concerned with editing the GUI display so not too fussed at the moment
 
-            try
+            if(allParams.ContainsKey(ParamID))
+            {
+                //Logger.Log("Duplicate VisualParam in allParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
+                allParams[ParamID].identicalIds.Add(this);
+            }
+            else
             {
                 allParams.Add(ParamID, this);
             }
-            catch
-            {
-                Logger.Log("Duplicate VisualParam in allParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
-            }
+
 
             if (pt == ParamType.TYPE_BONEDEFORM)
             {
@@ -1801,14 +1830,23 @@ namespace Radegast.Rendering
                     ParseVolumeDeforms(node.ChildNodes[0].ChildNodes);
                 }
 
+                /*
                 try
                 {
-                    morphParams.Add(ParamID, this);
+                    if (!morphParams.ContainsKey(meshname))
+                    {
+                        morphParams.Add(meshname, new Dictionary<int, VisualParamEx>());
+                    }
+                    else
+                    {
+                        morphParams[meshname].Add(ParamID, this);
+                    }
                 }
                 catch
                 {
                     Logger.Log("Duplicate VisualParam in morphParams id " + ParamID.ToString(), Helpers.LogLevel.Info);
                 }
+                */
 
             }
 

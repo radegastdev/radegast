@@ -1193,10 +1193,11 @@ namespace Radegast.Rendering
                 return;
             }
 
-            foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
-            {
-                comboBox_morph.Items.Add(vpe.Name);
-            }
+            //FIX ME
+            //foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+            //{
+            //    comboBox_morph.Items.Add(vpe.Name);
+            //}
 
             foreach (VisualParamEx vpe in VisualParamEx.drivenParams.Values)
             {
@@ -1642,6 +1643,7 @@ namespace Radegast.Rendering
                     Vector3 pos = av.avatar.Position;
 
                     Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
+                    avataroffset.X += 1.0f;
 
                     GL.MultMatrix(Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), av.RenderRotation, av.RenderPosition - avataroffset * av.RenderRotation));
 
@@ -3521,15 +3523,17 @@ namespace Radegast.Rendering
             foreach (RenderAvatar av in Avatars.Values)
             {
                 int id = -1;
-                foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
-                {
-                    if (vpe.Name == comboBox_morph.Text)
-                    {
-                        id = vpe.ParamID;
-                        break;
-                    }
+                
+                //foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
+                //{
+                //    if (vpe.Name == comboBox_morph.Text)
+                //    {
+                //        id = vpe.ParamID;
+                //        break;
+                //    }
+                //
+                //}
 
-                }
                 av.glavatar.applyMorph(av.avatar, id, float.Parse(textBox_morphamount.Text));
 
                 foreach (GLMesh mesh in av.glavatar._meshes.Values)
