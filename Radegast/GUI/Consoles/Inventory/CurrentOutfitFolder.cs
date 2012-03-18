@@ -396,6 +396,23 @@ namespace Radegast
             Client.Appearance.Detach(item);
             RemoveLink(item.UUID);
         }
+
+        /// <summary>
+        /// Resolves inventory links and returns a real inventory item that
+        /// the link is pointing to
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public InventoryItem RealInventoryItem(InventoryItem item)
+        {
+            if (item.IsLink() && Client.Inventory.Store.Contains(item.AssetUUID) && Client.Inventory.Store[item.AssetUUID] is InventoryItem)
+            {
+                return (InventoryItem)Client.Inventory.Store[item.AssetUUID];
+            }
+
+            return item;
+        }
+
         #endregion Public methods
     }
 }

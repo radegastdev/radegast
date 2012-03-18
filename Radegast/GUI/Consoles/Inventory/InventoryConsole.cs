@@ -1230,6 +1230,7 @@ namespace Radegast
             if (item.IsLink())
             {
                 raw += " (link)";
+                item = instance.COF.RealInventoryItem(item);
                 if (Inventory.Contains(item.AssetUUID) && Inventory[item.AssetUUID] is InventoryItem)
                 {
                     item = (InventoryItem)Inventory[item.AssetUUID];
@@ -1281,7 +1282,7 @@ namespace Radegast
                 invTree.SelectedNode = node;
                 if (node.Tag is InventoryItem)
                 {
-                    UpdateItemInfo(node.Tag as InventoryItem);
+                    UpdateItemInfo(instance.COF.RealInventoryItem(node.Tag as InventoryItem));
                 }
                 else
                 {
@@ -1305,6 +1306,7 @@ namespace Radegast
             }
             else
             {
+                #region Folder context menu
                 if (node.Tag is InventoryFolder)
                 {
                     InventoryFolder folder = (InventoryFolder)node.Tag;
@@ -1403,7 +1405,10 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
 
                         ctxInv.Items.Add(new ToolStripSeparator());
+                    }
 
+                    if (folder.PreferredType == AssetType.Unknown || folder.PreferredType == AssetType.OutfitFolder)
+                    {
                         ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
                         ctxItem.Name = "outfit_take_off";
                         ctxInv.Items.Add(ctxItem);
@@ -1418,10 +1423,12 @@ namespace Radegast
                     }
 
                     instance.ContextActionManager.AddContributions(ctxInv, folder);
+                    #endregion Folder context menu
                 }
                 else if (node.Tag is InventoryItem)
                 {
-                    InventoryItem item = (InventoryItem)node.Tag;
+                    #region Item context menu
+                    InventoryItem item = instance.COF.RealInventoryItem((InventoryItem)node.Tag);
                     ctxInv.Items.Clear();
 
                     ToolStripMenuItem ctxItem;
@@ -1608,7 +1615,7 @@ namespace Radegast
                     }
 
                     instance.ContextActionManager.AddContributions(ctxInv, item);
-
+                    #endregion Item context menu
                 }
             }
         }
@@ -1723,7 +1730,7 @@ namespace Radegast
                         foreach (InventoryBase item in Inventory.GetContents(f))
                         {
                             if (item is InventoryItem)
-                                newOutfit.Add((InventoryItem)item);
+                                newOutfit.Add(instance.COF.RealInventoryItem((InventoryItem)item));
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.ReplaceOutfit(newOutfit);
@@ -1736,7 +1743,7 @@ namespace Radegast
                         foreach (InventoryBase item in Inventory.GetContents(f))
                         {
                             if (item is InventoryItem)
-                                addToOutfit.Add((InventoryItem)item);
+                                addToOutfit.Add(instance.COF.RealInventoryItem((InventoryItem)item));
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.AddToOutfit(addToOutfit);
@@ -1748,7 +1755,7 @@ namespace Radegast
                         foreach (InventoryBase item in Inventory.GetContents(f))
                         {
                             if (item is InventoryItem)
-                                removeFromOutfit.Add((InventoryItem)item);
+                                removeFromOutfit.Add(instance.COF.RealInventoryItem((InventoryItem)item));
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         client.Appearance.RemoveFromOutfit(removeFromOutfit);
@@ -1761,6 +1768,13 @@ namespace Radegast
             {
                 #region Item actions
                 InventoryItem item = (InventoryItem)invTree.SelectedNode.Tag;
+
+                // Copy, cut, and delete works on links directly
+                // The rest operate on the item that is pointed by the link
+                if (cmd != "copy_item" && cmd != "cut_item" && cmd != "delete_item")
+                {
+                    item = instance.COF.RealInventoryItem(item);
+                }
 
                 switch (cmd)
                 {
