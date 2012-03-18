@@ -1599,6 +1599,7 @@ namespace Radegast.Rendering
                     updateAVtes(ra);
                     Avatars.Add(av.LocalID, ra);
                     ra.glavatar.morph(av);
+
                     if (av.LocalID == Client.Self.LocalID)
                     {
                         myself = ra;
@@ -1779,7 +1780,8 @@ namespace Radegast.Rendering
                             //hair is now rendered in the correct position and also morphs
                             //but its not responding correctly to the bald caps eveyone uses
                             //leave off until that is fixed
-                            if (mesh.Name == "hairMesh") // Don't render the hair mesh for the moment
+
+                            if (mesh.Name == "hairMesh" && (av.data[(int)AvatarTextureIndex.HairBaked] == null || av.data[(int)AvatarTextureIndex.HairBaked].TextureInfo.IsInvisible))
                                 continue;
 
                             GL.Color3(1f, 1f, 1f);
