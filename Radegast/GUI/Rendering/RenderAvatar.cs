@@ -719,12 +719,6 @@ namespace Radegast.Rendering
             if (vpx.pType == VisualParamEx.ParamType.TYPE_DRIVER)
             {
 
-                if (vpx.ParamID == 652)
-                {
-                    int x = 0;
-                    x++;
-                }
-
                 foreach (VisualParamEx.driven child in vpx.childparams)
                 {
 
