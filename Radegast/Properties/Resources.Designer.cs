@@ -252,9 +252,23 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap inv_folder_favorite {
+            get {
+                object obj = ResourceManager.GetObject("inv_folder_favorite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap inv_folder_gesture {
             get {
                 object obj = ResourceManager.GetObject("inv_folder_gesture", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap inv_folder_inbox {
+            get {
+                object obj = ResourceManager.GetObject("inv_folder_inbox", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -287,6 +301,13 @@ namespace Radegast.Properties {
             }
         }
         
+        public static System.Drawing.Bitmap inv_folder_outfit {
+            get {
+                object obj = ResourceManager.GetObject("inv_folder_outfit", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         public static System.Drawing.Bitmap inv_folder_plain_closed {
             get {
                 object obj = ResourceManager.GetObject("inv_folder_plain_closed", resourceCulture);
@@ -297,6 +318,13 @@ namespace Radegast.Properties {
         public static System.Drawing.Bitmap inv_folder_plain_open {
             get {
                 object obj = ResourceManager.GetObject("inv_folder_plain_open", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap inv_folder_RLVa {
+            get {
+                object obj = ResourceManager.GetObject("inv_folder_RLVa", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -318,6 +346,13 @@ namespace Radegast.Properties {
         public static System.Drawing.Bitmap inv_folder_sound {
             get {
                 object obj = ResourceManager.GetObject("inv_folder_sound", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        public static System.Drawing.Bitmap inv_folder_sys {
+            get {
+                object obj = ResourceManager.GetObject("inv_folder_sys", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -391,4 +391,19 @@
   <data name="inv_item_physics" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>../Resources/inv_item_physics.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="inv_folder_favorite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_favorite.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="inv_folder_inbox" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_inbox.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="inv_folder_outfit" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_outfit.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="inv_folder_RLVa" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_RLVa.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="inv_folder_sys" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>../Resources/inv_folder_sys.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

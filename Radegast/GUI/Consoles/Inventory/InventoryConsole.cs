@@ -446,17 +446,15 @@ namespace Radegast
         #region Node manipulation
         public static int GetDirImageIndex(string t)
         {
+            t = System.Text.RegularExpressions.Regex.Replace(t, @"folder$", "");
             int res = frmMain.ImageNames.IndexOf("inv_folder_" + t);
             if (res == -1)
             {
                 switch (t)
                 {
-                    case "trashfolder":
-                        return frmMain.ImageNames.IndexOf("inv_folder_trash");
-
-                    case "lostandfoundfolder":
-                        return frmMain.ImageNames.IndexOf("inv_folder_lostandfound");
-
+                    case "currentoutfit":
+                    case "myoutfits":
+                        return frmMain.ImageNames.IndexOf("inv_folder_outfit");
                     case "lsltext":
                         return frmMain.ImageNames.IndexOf("inv_folder_script");
                 }

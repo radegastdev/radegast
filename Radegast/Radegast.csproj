@@ -2197,6 +2197,11 @@
     <None Include="Resources\inv_item_alpha.png" />
     <None Include="Resources\inv_item_tattoo.png" />
     <None Include="Resources\inv_item_physics.png" />
+    <Content Include="Resources\inv_folder_favorite.png" />
+    <Content Include="Resources\inv_folder_inbox.png" />
+    <Content Include="Resources\inv_folder_outfit.png" />
+    <Content Include="Resources\inv_folder_RLVa.png" />
+    <Content Include="Resources\inv_folder_sys.png" />
     <Content Include="Resources\radegast_large.png" />
     <None Include="shader_data\caust00.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
