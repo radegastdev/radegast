@@ -80,7 +80,7 @@ namespace Radegast.Rendering
         /// <summary>
         /// Show avatar skeloton
         /// </summary>
-        public static bool RenderAvatarSkeleton = true;
+        public static bool RenderAvatarSkeleton = false;
 
         /// <summary>
         /// Enable shader for shiny

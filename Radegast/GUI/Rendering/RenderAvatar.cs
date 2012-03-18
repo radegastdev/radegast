@@ -332,7 +332,6 @@ namespace Radegast.Rendering
                         //Don't yet handle this, its a split joint to two children
                         ba = av.skel.mBones[jointname2];
                         bb = null;
-
                         //continue;
                     }
                     else
@@ -508,7 +507,6 @@ namespace Radegast.Rendering
                 Console.WriteLine(string.Format("{0} is {1}", x, vpe.Name));
             }
 
-
         }
 
         public static void loadlindenmeshes2(string LODfilename)
@@ -594,22 +592,18 @@ namespace Radegast.Rendering
                         break;
 
                     case "hairMesh":
-                       // mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.HairBaked;
                         break;
 
                     case "eyelashMesh":
-                       // mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.HeadBaked;
                         break;
 
                     case "eyeBallRightMesh":
-                      //  mesh.setMeshPos(Bone.mBones["mEyeLeft"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
                     case "eyeBallLeftMesh":
-                      //  mesh.setMeshPos(Bone.mBones["mEyeRight"].getTotalOffset());
                         mesh.teFaceID = (int)AvatarTextureIndex.EyesBaked;
                         break;
 
@@ -682,8 +676,6 @@ namespace Radegast.Rendering
             lindenMeshesLoaded = true;
         }
 
- 
-
         public void applyMorph(Avatar av, int param, float weight)
         {
             VisualParamEx vpx;
@@ -692,6 +684,8 @@ namespace Radegast.Rendering
             {
                 applyMorph(vpx, av, param, weight);
 
+                // a morph ID may apply to more than one mesh (duplicate VP IDs)
+                // in this case also apply to all other identical IDs
                 foreach (VisualParamEx cvpx in vpx.identicalIds)
                 {
                     applyMorph(vpx, av, param, weight);
@@ -702,91 +696,57 @@ namespace Radegast.Rendering
         public void applyMorph(VisualParamEx vpx, Avatar av, int param, float weight)
         {
 
-                if (weight < 0)
-                    weight = 0;
+            weight = Utils.Clamp(weight, 0.0f, 1.0f);
+            float value = Utils.Lerp(vpx.MinValue,vpx.MaxValue,weight);
 
-                if (weight > 1.0)
-                    weight = 1;
-
-                float value = vpx.MinValue + ((vpx.MaxValue - vpx.MinValue) * weight);
-
-                //Logger.Log(string.Format("Applying visual parameter {0} id {1} value {2} scalar {4} type {3}", vpx.Name, vpx.ParamID, weight, vpx.pType.ToString(),value.ToString()), Helpers.LogLevel.Debug);
-
-
-                if (vpx.pType == VisualParamEx.ParamType.TYPE_MORPH)
+            // Morphs are mesh deforms
+            if (vpx.pType == VisualParamEx.ParamType.TYPE_MORPH)
+            {
+                // Its a morph
+                GLMesh mesh;
+                if (_meshes.TryGetValue(vpx.morphmesh, out mesh))
                 {
-                    // Its a morph
-                    GLMesh mesh;
-                    if (_meshes.TryGetValue(vpx.morphmesh, out mesh))
+                    foreach (LindenMesh.Morph morph in mesh.Morphs) //optimise me to a dictionary
                     {
-                        foreach (LindenMesh.Morph morph in mesh.Morphs) //optimise me to a dictionary
+                        if (morph.Name == vpx.Name)
                         {
-                            if (morph.Name == vpx.Name)
-                            {
-                                if (mesh.Name == "skirtMesh" && _showSkirt == false)
-                                    return;
+                            if (mesh.Name == "skirtMesh" && _showSkirt == false)
+                                return;
+                            
+                            mesh.morphmesh(morph, value);
 
-                                mesh.morphmesh(morph, value);
-
-                                continue;
-                            }
+                            continue;
                         }
                     }
-                    else
-                    {
-                        // Not a mesh morph 
+                }     
+            }
 
-                        // Its a volume deform, these appear to be related to collision volumes
-                        /*
-                        if (vpx.VolumeDeforms == null)
-                        {
-                            Logger.Log(String.Format("paramater {0} has invalid mesh {1}", param, vpx.morphmesh), Helpers.LogLevel.Warning);
-                        }
-                        else
-                        {
-                            foreach (KeyValuePair<string, VisualParamEx.VolumeDeform> kvp in vpx.VolumeDeforms)
-                            {
-                                skel.deformbone(kvp.Key, kvp.Value.pos, kvp.Value.scale);
-                            }
-                        }
-                         * */
 
-                    }
-
+            // Driver type
+            // A driver drives multiple slave visual paramaters
+            if (vpx.pType == VisualParamEx.ParamType.TYPE_DRIVER)
+            {
+                foreach (VisualParamEx.driven child in vpx.childparams)
+                {
+                    applyMorph(av, child.id, weight); //TO DO use minmax if they are present
                 }
-                else
-                {
-                    // Its not a morph, it might be a driver though
-                    if (vpx.pType == VisualParamEx.ParamType.TYPE_DRIVER)
-                    {
-                        foreach (VisualParamEx.driven child in vpx.childparams)
-                        {
-                            applyMorph(av, child.id, weight); //TO DO use minmax if they are present
-                        }
-                        return;
-                    }
 
-                    //Is this a bone deform?
-                    if (vpx.pType == VisualParamEx.ParamType.TYPE_BONEDEFORM)
-                    {
-                        //  scale="0 0 .3" />
-                        //   value_min="-1"
-                        // value_max="1"
+                return;
+            }
+
+            //Is this a bone deform?
+            if (vpx.pType == VisualParamEx.ParamType.TYPE_BONEDEFORM)
+            {
+                //  scale="0 0 .3" />
+                //   value_min="-1"
+                // value_max="1"
                       
-                        foreach (KeyValuePair<string, BoneDeform> kvp in vpx.BoneDeforms)
-                        {
-                            skel.scalebone(kvp.Key, Vector3.One + (kvp.Value.scale * value));
-                          //  skel.offsetbone(kvp.Key, kvp.Value.offset * value);
-                        }
-                        return;
-                    }
-                    else
-                    {
-                        //Logger.Log(String.Format("paramater {0} is not a morph and not a driver", param), Helpers.LogLevel.Warning);
-                    }
+                foreach (KeyValuePair<string, BoneDeform> kvp in vpx.BoneDeforms)
+                {
+                    skel.scalebone(kvp.Key, Vector3.One + (kvp.Value.scale * value));
+                    skel.offsetbone(kvp.Key, kvp.Value.offset * value);
                 }
-
-
+            }
         }
 
         public void morph(Avatar av)
@@ -825,20 +785,9 @@ namespace Radegast.Rendering
 
                     foreach (byte vpvalue in av.VisualParameters)
                     {
-                        /*
-                        if (vpsent == true && VisualAppearanceParameters[x] == vpvalue)
-                        {
-                     
-                           x++;
-                           continue;
-                        }
-                        */
-
-                      
-
                         if (x >= VisualParamEx.tweakable_params.Count)
                         {
-                            //Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
+                            Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
                             break;
                         }
 
@@ -850,16 +799,6 @@ namespace Radegast.Rendering
                             continue;
                         }
 
-                        
-                        //if (VisualAppearanceParameters[x] == vpvalue)
-                        //{
-                        //  x++;
-                        //   continue;
-                        //}
-
-                        //Console.WriteLine(String.Format("VP Change detected for byte {0} value {1} name {2}", x, vpvalue, vpe.Name));
-                        
-
                         VisualAppearanceParameters[x] = vpvalue;
 
                         float value = (vpvalue / 255.0f);
@@ -869,7 +808,6 @@ namespace Radegast.Rendering
                     }
 
                     vpsent = true;
-
                     // Don't update actual meshes here anymore, we do it every frame because of animation anyway
                
                 }
