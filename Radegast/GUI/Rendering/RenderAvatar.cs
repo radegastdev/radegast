@@ -358,19 +358,9 @@ namespace Radegast.Rendering
                             return;
 
                     }
-
-                 
-                    if (jointname == "")
-                    {
-                        //Don't yet handle this, its a split joint to two children
-                        ba = av.skel.mBones[jointname2];
-                        bb = null;
-                        //continue;
-                    }
-                    else
-                    {
-                        ba = av.skel.mBones[jointname];
-                    }
+             
+                    ba = av.skel.mBones[jointname];
+              
 
                     if (jointname2 == "")
                     {
@@ -933,12 +923,12 @@ namespace Radegast.Rendering
                 mUpperMeshMapping.Add(2, "mTorso");
                 mUpperMeshMapping.Add(3, "mChest");
                 mUpperMeshMapping.Add(4, "mNeck");
-                mUpperMeshMapping.Add(5, "");
+                mUpperMeshMapping.Add(5, "mNeck");
                 mUpperMeshMapping.Add(6, "mCollarLeft");
                 mUpperMeshMapping.Add(7, "mShoulderLeft");
                 mUpperMeshMapping.Add(8, "mElbowLeft");
                 mUpperMeshMapping.Add(9, "mWristLeft");
-                mUpperMeshMapping.Add(10, "");
+                mUpperMeshMapping.Add(10, "mNeck");  // this case might fail for mWriteLeft and mNeck acting together?
                 mUpperMeshMapping.Add(11, "mCollarRight");
                 mUpperMeshMapping.Add(12, "mShoulderRight");
                 mUpperMeshMapping.Add(13, "mElbowRight");
@@ -949,7 +939,7 @@ namespace Radegast.Rendering
                 mLowerMeshMapping.Add(2, "mHipRight");
                 mLowerMeshMapping.Add(3, "mKneeRight");
                 mLowerMeshMapping.Add(4, "mAnkleRight");
-                mLowerMeshMapping.Add(5, "");
+                mLowerMeshMapping.Add(5, "mPelvis");
                 mLowerMeshMapping.Add(6, "mHipLeft");
                 mLowerMeshMapping.Add(7, "mKneeLeft");
                 mLowerMeshMapping.Add(8, "mAnkleLeft");
