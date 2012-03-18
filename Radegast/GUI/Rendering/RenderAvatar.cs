@@ -1300,7 +1300,7 @@ namespace Radegast.Rendering
                             factor = 1.0f- ((ar.anim.EaseInTime - ar.mRunTime) / ar.anim.EaseInTime);
                         }
 
-                        Console.WriteLine(String.Format("EASE IN {0} {1}",factor.ToString(),ar.mAnimation));
+                        //Console.WriteLine(String.Format("EASE IN {0} {1}",factor.ToString(),ar.mAnimation));
                     }
 
                     if (ar.playstate == animationwrapper.animstate.STATE_EASEOUT)
@@ -1319,7 +1319,7 @@ namespace Radegast.Rendering
 
                         }
                    
-                        Console.WriteLine(String.Format("EASE OUT {0} {1}", factor.ToString(), ar.mAnimation));
+                        //Console.WriteLine(String.Format("EASE OUT {0} {1}", factor.ToString(), ar.mAnimation));
                     }
 
                     // we should not need this, this implies bad math above
