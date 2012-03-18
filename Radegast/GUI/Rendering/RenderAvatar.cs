@@ -1273,7 +1273,7 @@ namespace Radegast.Rendering
                             delta = Utils.Clamp(delta, 0f, 1f);
                             poslerp = Vector3.Lerp(pos_last.key_element, pos_next.key_element, delta);
 
-                            Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
+                           // Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
 
                             
                         }
