@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<aiml>
+<!-- Free software &copy; 2001-2003 ALICE A.I. Foundation. -->
+<!-- This program is open source code released under -->
+<!-- the terms of the GNU General Public License     -->
+<!-- as published by the Free Software Foundation.   -->
+<!-- Complies with AIML 1.01 Tag Set Specification -->
+<!-- as adopted by the ALICE A.I. Foundation.  -->
+<!-- Annotated Version updated September 2003 -->
+<category>
+<pattern>GET PREDICATES</pattern>
+<template>
+Age: <get name="age"/>,
+Birthday: <get name="birthday"/>,
+Boyfriend: <get name="boyfriend"/>,
+Brother: <get name="brother"/>,
+Cat: <get name="cat"/>,
+Does: <get name="does"/>,
+Dog: <get name="dog"/>,
+Email: <get name="email"/>,
+Father: <get name="father"/>,
+Favcolor:  <get name="favcolor"/>,
+Favmovie: <get name="favmovie"/>,
+Friend: <get name="friend"/>,
+Full name: <get name="fullname"/>,
+Gender: <get name="gender"/>,
+Girlfriend: <get name="girlfriend"/>,
+Has: <get name="has"/>,
+Heard: <get name="heard"/>,
+He: <get name="he"/>,
+Her: <get name="her"/>,
+Him: <get name="him"/>,
+Husband: <get name="husband"/>,
+You are: <get name="is"/>,
+It: <get name="it"/>,
+Job: <get name="job"/>,
+Last name: <get name="lastname"/>,
+You Like: <get name="like"/>,
+Location:  <get name="location"/>,
+You look like: <get name="looklike"/>,
+Memory: <get name="memory"/>,
+Meta Predicate: <get name="meta"/>,
+Nickname: <get name="nickname"/>,
+Middle name: <get name="middlename"/>,
+Mother: <get name="mother"/>,
+Name: <get name="name"/>,
+Password: <get name="password"/>,
+Personality: <get name="personality"/>,
+Phone: <get name="phone"/>,
+She: <get name="she"/>,
+Sign <get name="sign"/>,
+Sister: <get name="sister"/>,
+Them: <get name="them"/>,
+They: <get name="they"/>,
+Thought: <get name="thought"/>,
+Want: <get name="want"/>,
+We: <get name="we"/>,
+Wife: <get name="wife"/>.
+
+</template>
+</category>
+
+<category>
+<pattern>SET PREDICATES</pattern>
+<template><srai>SET PREDICATES <get name="meta"/></srai>
+</template>
+</category>
+
+<category>
+<pattern>SET PREDICATES *</pattern>
+<template>
+The meta Predicate is set.
+</template>
+</category>
+<category>
+<pattern>SET PREDICATES OM</pattern>
+<template>
+<think>
+<set name="age">how many</set>
+<set name="heard">where</set>
+<set name="he">he</set>
+<set name="her">her</set>
+<set name="him">him</set>
+<set name="is">a client</set>
+<set name="it">it</set>
+<set name="job">your job</set>
+<set name="like">to chat</set>
+<set name="looklike">a person</set>
+<set name="memory">nothing</set>
+<set name="meta">set</set>
+<set name="name">judge</set>
+<set name="personality">average</set>
+<set name="she">she</set>
+<set name="sign">your starsign</set>
+<set name="them">them</set>
+<set name="they">they</set>
+<set name="thought">nothing</set>
+<set name="want">to talk to me</set>
+<set name="we">we</set>
+</think>
+</template>
+</category>
+
+<category>
+<pattern>CLIENT PROPERTIES</pattern>
+<template>
+<srai>GET PREDICATES</srai>
+</template>
+</category>
+
+</aiml>

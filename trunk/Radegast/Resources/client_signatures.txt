@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- $Id: $ -->
+<llsd>
+  <map>
+    <key>0bcd5f5d-a4ce-9ea4-f9e8-15132653b3d8</key>
+    <map>
+      <key>color</key>
+      <array>
+        <real>2</real>
+        <real>1</real>
+
+        <real>1.6000000238418579</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+      <real>2</real>
+      <key>name</key>
+
+      <string>MoyMix</string>
+    </map>
+    <key>0f6723d2-5b23-6b58-08ab-308112b33786</key>
+    <map>
+      <key>color</key>
+      <array>
+        <real>0</real>
+
+        <real>2</real>
+        <real>2</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+      <real>2</real>
+
+      <key>name</key>
+      <string>CryoLife</string>
+    </map>
+    <key>11ad2452-ce54-8d65-7c23-05589b59f516</key>
+    <map>
+      <key>color</key>
+      <array>
+
+        <real>0</real>
+        <real>0.5</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>VerticalLife</string>
+    </map>
+    <key>1c29480c-c608-df87-28bb-964fb64c5366</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1.6000000238418579</real>
+        <real>1.6000000238418579</real>
+        <real>0.80000001192092896</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Gemini</string>
+    </map>
+    <key>2a9a406c-f448-68f2-4e38-878f8c46c190</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1</real>
+        <real>0.89999997615814209</real>
+        <real>0.69999998807907104</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>Meerkat</string>
+    </map>
+    <key>2c9c1e0b-e5d1-263e-16b1-7fc6d169f3d6</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>1</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>PhoxSL</string>
+    </map>
+    <key>3ab7e2fa-9572-ef36-1a30-d855dbea4f92</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>0.5</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>VerticalLife</string>
+    </map>
+    <key>4da16427-d81e-e816-f346-aaf4741b8056</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>2</real>
+        <real>2</real>
+        <real>2</real>
+        <real>2</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>iLife</string>
+    </map>
+    <key>4e8dcf80-336b-b1d8-ef3e-08dacf015a0f</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>0</real>
+        <real>2</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Sapphire</string>
+    </map>
+    <key>5262d71a-88f7-ef40-3b15-00ea148ab4b5</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1.6000000238418579</real>
+        <real>1.6000000238418579</real>
+        <real>0.80000001192092896</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Gemini.Bot</string>
+    </map>
+    <key>58a8b7ec-1455-7162-5d96-d3c3ead2ed71</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>0.5</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>VerticalLife</string>
+    </map>
+    <key>5aa5c70d-d787-571b-0495-4fc1bdef1500</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>2</real>
+        <real>0</real>
+        <real>0</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>LGG proxy</string>
+    </map>
+    <key>77662f23-c77a-9b4d-5558-26b757b2144c</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0.60000002384185791</real>
+        <real>0.20000000298023224</real>
+        <real>0.80000001192092896</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>PSL</string>
+    </map>
+    <key>7c4d47a3-0c51-04d1-fa47-e4f3ac12f59b</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>2</real>
+        <real>2</real>
+        <real>2</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Kung Fu</string>
+    </map>
+    <key>8183e823-c443-2142-6eb6-2ab763d4f81c</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>0</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>Day Oh proxy</string>
+    </map>
+    <key>81b3e921-ee31-aa57-ff9b-ec1f28e41da1</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1.2000000476837158</real>
+        <real>1.2000000476837158</real>
+        <real>0.80000001192092896</real>
+        <real>2</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Infinity</string>
+    </map>
+    <key>841ef25b-3b90-caf9-ea3d-5649e755db65</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>0.5</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>VerticalLife</string>
+    </map>
+    <key>872c0005-3095-0967-866d-11cd71115c22</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>1</real>
+        <real>2</real>
+        <real>3</real>
+      </array>
+      <key>multiple</key>
+
+      <real>3</real>
+      <key>name</key>
+      <string>&lt;-- Fag</string>
+    </map>
+    <key>9422e9d7-7b11-83e4-6262-4a8db4716a3b</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>2</real>
+        <real>0</real>
+        <real>2</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>BetaLife</string>
+    </map>
+    <key>9ba526b6-f43d-6b60-42de-ce62a25ee7fb</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1</real>
+        <real>1</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>0</real>
+      <key>name</key>
+      <string>nolife</string>
+    </map>
+    <key>adcbe893-7643-fd12-f61c-0b39717e2e32</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1</real>
+        <real>0.5</real>
+        <real>0.80000001192092896</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>tyk3n</string>
+    </map>
+    <key>b6820989-bf42-ff59-ddde-fd3fd3a74fe4</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1</real>
+        <real>0.89999997615814209</real>
+        <real>0.69999998807907104</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>Meerkat</string>
+    </map>
+    <key>c252d89d-6f7c-7d90-f430-d140d2e3fbbe</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1</real>
+        <real>0</real>
+        <real>0</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>VLife</string>
+    </map>
+    <key>c5b570ca-bb7e-3c81-afd1-f62646b20014</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>2</real>
+        <real>2</real>
+        <real>2</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Kung Fu</string>
+    </map>
+    <key>ccb509cf-cc69-e569-38f1-5086c687afd1</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1.6000000238418579</real>
+        <real>0.20000000298023224</real>
+        <real>0.80000001192092896</real>
+        <real>2</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Ruby</string>
+    </map>
+    <key>ccda2b3b-e72c-a112-e126-fee238b67218</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>2</real>
+        <real>0</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>Emerald</string>
+    </map>
+    <key>d3eb4a5f-aec5-4bcb-b007-cce9efe89d37</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>0.60000002384185791</real>
+        <real>0</real>
+        <real>2</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>rivlife</string>
+    </map>
+    <key>e52d21f7-3c8b-819f-a3db-65c432295dac</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>2</real>
+        <real>2</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>CryoLife</string>
+    </map>
+    <key>e734563e-1c31-2a35-3ed5-8552c807439f</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0</real>
+        <real>0.5</real>
+        <real>1</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>VerticalLife</string>
+    </map>
+    <key>f3fd74a6-fee7-4b2f-93ae-ddcb5991da04</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0.60000002384185791</real>
+        <real>0.20000000298023224</real>
+        <real>0.80000001192092896</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>PSL</string>
+    </map>
+    <key>f5a48821-9a98-d09e-8d6a-50cc08ba9a47</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>2</real>
+        <real>2</real>
+        <real>0</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>2</real>
+      <key>name</key>
+      <string>NeilLife</string>
+    </map>
+    <key>f5feab57-bde5-2074-97af-517290213eaa</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>0.36000001430511475</real>
+        <real>0.36000001430511475</real>
+        <real>0.36000001430511475</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>0</real>
+      <key>name</key>
+      <string>Onyx</string>
+    </map>
+    <key>ffce04ff-5303-4909-a044-d37af7ab0b0e</key>
+    <map>
+      <key>color</key>
+
+      <array>
+        <real>1</real>
+        <real>0.5</real>
+        <real>0</real>
+        <real>1</real>
+      </array>
+      <key>multiple</key>
+
+      <real>1</real>
+      <key>name</key>
+      <string>Corgi</string>
+    </map>
+    <key>isComplete</key>
+    <string>true</string>
+
+  </map>
+</llsd>
