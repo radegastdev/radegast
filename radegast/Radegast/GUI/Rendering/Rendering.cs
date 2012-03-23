@@ -26,7 +26,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id: Rendering.cs 1180 2011-10-28 20:22:57Z latifer $
+// $Id$
 //
 
 #region Usings
@@ -1367,8 +1367,7 @@ namespace Radegast.Rendering
                     rot = parentRot;
 
                     // Move by pelvis offset
-                    // FIXME 2 dictionay lookups via string key in render loop!
-                    pos -= (parentav.glavatar.skel.mBones["mPelvis"].animation_offset * parentav.RenderRotation) + parentav.glavatar.skel.getOffset("mPelvis") * rot;
+                    pos -= parentav.glavatar.skel.getOffset("mPelvis") * rot;
                     //rot = parentav.glavatar.skel.getRotation("mPelvis") * rot;
 
                     // Translate and rotate to the joint calculated position
@@ -1770,13 +1769,10 @@ namespace Radegast.Rendering
                     // Whole avatar position
                     GL.PushMatrix();
 
-                    // FIXME 2 dictionay lookups via string key in render loop!
-                    Vector3 avataroffset = (av.glavatar.skel.mBones["mPelvis"].animation_offset*av.RenderRotation) + av.glavatar.skel.getOffset("mPelvis");
-                    //Vector3 avataroffset = av.glavatar.skel.getOffset("mPelvis");
-                    //Console.WriteLine(avataroffset.ToString());
+                    Vector3 avatarOffset = av.glavatar.skel.getOffset("mPelvis") * av.RenderRotation;
 
                     // Prim roation and position
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset ));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avatarOffset));
 
                     if (av.glavatar._meshes.Count > 0)
                     {
