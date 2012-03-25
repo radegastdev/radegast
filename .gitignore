@@ -3,3 +3,5 @@
 bin
 obj
 compile.bat
+*.sln
+*.csproj
