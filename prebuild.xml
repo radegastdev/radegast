@@ -185,8 +185,7 @@
       <Reference name="assemblies/Tools.dll" localCopy="true" />
       <Reference name="assemblies/log4net.dll" localCopy="true" />
       <Reference name="assemblies/CommandLine.dll" localCopy="true" />
-
-      <Reference name="../../libopenmetaverse/bin/XMLRPC.dll" localCopy="true" />
+      <Reference name="assemblies/XMLRPC.dll" localCopy="true" />
 
       <Files>
         <Match path="." pattern="*.cs" recurse="true" subType="Code">
@@ -202,6 +201,9 @@
         <Match path="." pattern="*.html" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.xml" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.txt" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="*.txt" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="*.png" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
+        <Match path="." pattern="radegast.nsi" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="openmetaverse_data" pattern="*.*" recurse="true" buildAction="Content" copyToOutput="PreserveNewest">
           <Exclude name=".svn"/>
         </Match>
