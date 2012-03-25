@@ -116,6 +116,8 @@ namespace Radegast
             if (!s.ContainsKey("log_to_file")) s["log_to_file"] = true;
 
             if (!s.ContainsKey("disable_chat_im_log")) s["disable_chat_im_log"] = false;
+
+            if (!s.ContainsKey("disable_look_at")) s["disable_look_at"] = false;
         }
 
         public frmSettings(RadegastInstance instance)
@@ -241,6 +243,12 @@ namespace Radegast
             cbDisableChatIMLog.CheckedChanged += (sender, e) =>
             {
                 s["disable_chat_im_log"] = cbDisableChatIMLog.Checked;
+            };
+
+            cbDisableLookAt.Checked = s["disable_look_at"];
+            cbDisableLookAt.CheckedChanged += (sender, e) =>
+            {
+                s["disable_look_at"] = cbDisableLookAt.Checked;
             };
         }
 

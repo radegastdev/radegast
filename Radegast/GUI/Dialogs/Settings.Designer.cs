@@ -63,6 +63,7 @@ namespace Radegast
             this.tbpGeneral = new System.Windows.Forms.TabPage();
             this.cbRadegastLogToFile = new System.Windows.Forms.CheckBox();
             this.Chat = new System.Windows.Forms.GroupBox();
+            this.cbDisableChatIMLog = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
@@ -96,7 +97,7 @@ namespace Radegast
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tbpGraphics = new System.Windows.Forms.TabPage();
-            this.cbDisableChatIMLog = new System.Windows.Forms.CheckBox();
+            this.cbDisableLookAt = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.Chat.SuspendLayout();
@@ -121,6 +122,7 @@ namespace Radegast
             // 
             // tbpGeneral
             // 
+            this.tbpGeneral.Controls.Add(this.cbDisableLookAt);
             this.tbpGeneral.Controls.Add(this.cbRadegastLogToFile);
             this.tbpGeneral.Controls.Add(this.Chat);
             this.tbpGeneral.Controls.Add(this.txtReconnectTime);
@@ -171,6 +173,16 @@ namespace Radegast
             this.Chat.TabIndex = 0;
             this.Chat.TabStop = false;
             this.Chat.Text = "Chat";
+            // 
+            // cbDisableChatIMLog
+            // 
+            this.cbDisableChatIMLog.AutoSize = true;
+            this.cbDisableChatIMLog.Location = new System.Drawing.Point(8, 155);
+            this.cbDisableChatIMLog.Name = "cbDisableChatIMLog";
+            this.cbDisableChatIMLog.Size = new System.Drawing.Size(138, 17);
+            this.cbDisableChatIMLog.TabIndex = 8;
+            this.cbDisableChatIMLog.Text = "Disable chat and IM log";
+            this.cbDisableChatIMLog.UseVisualStyleBackColor = true;
             // 
             // cbChatTimestamps
             // 
@@ -253,8 +265,8 @@ namespace Radegast
             this.cbFontSize.TabIndex = 3;
             this.cbFontSize.Text = "8.25";
             this.cbFontSize.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
-            this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
             this.cbFontSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
+            this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
             // 
             // label1
             // 
@@ -543,15 +555,15 @@ namespace Radegast
             this.tbpGraphics.Text = "Graphics Settings";
             this.tbpGraphics.UseVisualStyleBackColor = true;
             // 
-            // cbDisableChatIMLog
+            // cbDisableLookAt
             // 
-            this.cbDisableChatIMLog.AutoSize = true;
-            this.cbDisableChatIMLog.Location = new System.Drawing.Point(8, 155);
-            this.cbDisableChatIMLog.Name = "cbDisableChatIMLog";
-            this.cbDisableChatIMLog.Size = new System.Drawing.Size(138, 17);
-            this.cbDisableChatIMLog.TabIndex = 8;
-            this.cbDisableChatIMLog.Text = "Disable chat and IM log";
-            this.cbDisableChatIMLog.UseVisualStyleBackColor = true;
+            this.cbDisableLookAt.AutoSize = true;
+            this.cbDisableLookAt.Location = new System.Drawing.Point(275, 243);
+            this.cbDisableLookAt.Name = "cbDisableLookAt";
+            this.cbDisableLookAt.Size = new System.Drawing.Size(140, 17);
+            this.cbDisableLookAt.TabIndex = 15;
+            this.cbDisableLookAt.Text = "Disable Look At beacon";
+            this.cbDisableLookAt.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -618,6 +630,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbDisableChatIMLog;
         public System.Windows.Forms.GroupBox Chat;
         public System.Windows.Forms.CheckBox cbRadegastLogToFile;
+        protected System.Windows.Forms.CheckBox cbDisableLookAt;
 
 
     }

@@ -373,7 +373,9 @@ namespace Radegast
             client.Self.Movement.Camera.Far = instance.GlobalSettings["draw_distance"];
 
             if (lookAtTimer == null)
+            {
                 lookAtTimer = new System.Threading.Timer(new TimerCallback(lookAtTimerTick), null, Timeout.Infinite, Timeout.Infinite);
+            }
         }
 
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
@@ -510,7 +512,7 @@ namespace Radegast
         /// </summary>
         public void LookInFront()
         {
-            if (!client.Network.Connected) return;
+            if (!client.Network.Connected || instance.GlobalSettings["disable_look_at"]) return;
 
             client.Self.LookAtEffect(client.Self.AgentID, client.Self.AgentID,
                 new Vector3d(new Vector3(3, 0, 0) * Quaternion.Identity),
@@ -524,7 +526,9 @@ namespace Radegast
 
         void netcom_ChatReceived(object sender, ChatEventArgs e)
         {
-            if (e.SourceID != client.Self.AgentID && (e.SourceType == ChatSourceType.Agent || e.Type == ChatType.StartTyping))
+            if (!instance.GlobalSettings["disable_look_at"]
+                && e.SourceID != client.Self.AgentID
+                && (e.SourceType == ChatSourceType.Agent || e.Type == ChatType.StartTyping))
             {
                 // change focus max every 4 seconds
                 if (Environment.TickCount - lastLookAtEffect > 4000)
