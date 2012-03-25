@@ -49,7 +49,7 @@ namespace Radegast.Commands
             : base(instance)
         {
             Name = "tp";
-            Description = @"Teleport to a named landmark from ""{1}"" inventory folder";
+			Description = "Teleport to a named landmark from the \"" + FolderName + "\" inventory folder";
             Usage = "tp (list|landmark name|landmark number|help) (type \"" + CommandsManager.CmdPrefix + "tp help\" for full usage)";
             
         }
