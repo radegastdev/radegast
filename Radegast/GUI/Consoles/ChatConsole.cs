@@ -863,7 +863,7 @@ namespace Radegast
             if (instance.State.TryFindAvatar(person, out sim, out pos))
             {
                 tabConsole.DisplayNotificationInChat(string.Format("Teleporting to {0}", pname));
-                client.Self.RequestTeleport(sim.Handle, pos);
+                instance.State.MoveTo(sim, pos, true);
             }
             else
             {
@@ -906,6 +906,34 @@ namespace Radegast
             else
             {
                 client.Self.RemoveMuteListEntry(agentID, instance.Names.GetLegacyName(agentID));
+            }
+        }
+
+        private void faceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID person = (UUID)lvwObjects.SelectedItems[0].Tag;
+            string pname = instance.Names.Get(person);
+
+            Vector3 targetPos;
+            if (instance.State.TryFindAvatar(person, out targetPos))
+            {
+                client.Self.Movement.TurnToward(targetPos);
+                instance.TabConsole.DisplayNotificationInChat("Facing " + pname);
+            }
+        }
+
+        private void goToToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID person = (UUID)lvwObjects.SelectedItems[0].Tag;
+            string pname = instance.Names.Get(person);
+
+            Vector3 targetPos;
+            Simulator sim;
+            if (instance.State.TryFindAvatar(person, out sim, out targetPos))
+            {
+                instance.State.MoveTo(sim, targetPos, false);
             }
         }
     }

@@ -74,6 +74,7 @@ namespace Radegast
         private string followName = string.Empty;
         private float followDistance = 3.0f;
         private UUID followID;
+        private bool displayEndWalk = false;
 
         private UUID awayAnimationID = new UUID("fd037134-85d4-f241-72c6-4f42164fedee");
         private UUID busyAnimationID = new UUID("efcf670c2d188128973a034ebc806b67");
@@ -259,6 +260,18 @@ namespace Radegast
         /// Locates avatar in the current sim, or adjacents sims
         /// </summary>
         /// <param name="person">Avatar UUID</param>
+        /// <param name="position">Position within sim</param>
+        /// <returns>True if managed to find the avatar</returns>
+        public bool TryFindAvatar(UUID person, out Vector3 position)
+        {
+            Simulator sim;
+            return TryFindAvatar(person, out sim, out position);
+        }
+ 
+        /// <summary>
+        /// Locates avatar in the current sim, or adjacents sims
+        /// </summary>
+        /// <param name="person">Avatar UUID</param>
         /// <param name="sim">Simulator avatar is in</param>
         /// <param name="position">Position within sim</param>
         /// <returns>True if managed to find the avatar</returns>
@@ -269,7 +282,7 @@ namespace Radegast
 
             Avatar avi = null;
 
-            // First try the objecct tracker
+            // First try the object tracker
             for (int i = 0; i < client.Network.Simulators.Count; i++)
             {
                 avi = client.Network.Simulators[i].ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
@@ -291,7 +304,7 @@ namespace Radegast
                     Primitive seat;
                     if (sim.ObjectsPrimitives.TryGetValue(avi.ParentID, out seat))
                     {
-                        position = seat.Position + avi.Position;
+                        position = seat.Position + avi.Position * seat.Rotation;
                     }
                 }
             }
@@ -313,6 +326,39 @@ namespace Radegast
             else
                 return false;
         }
+
+        /// <summary>
+        /// Move to target position either by walking or by teleporting
+        /// </summary>
+        /// <param name="target">Sim local position of the target</param>
+        /// <param name="useTP">Move using teleport</param>
+        public void MoveTo(Vector3 target, bool useTP)
+        {
+            MoveTo(client.Network.CurrentSim, target, useTP);
+        }
+
+        /// <summary>
+        /// Move to target position either by walking or by teleporting
+        /// </summary>
+        /// <param name="sim">Simulator in which the target is</param>
+        /// <param name="target">Sim local position of the target</param>
+        /// <param name="useTP">Move using teleport</param>
+        public void MoveTo(Simulator sim, Vector3 target, bool useTP)
+        {
+            SetSitting(false, UUID.Zero);
+
+            if (useTP)
+            {
+                client.Self.RequestTeleport(sim.Handle, target);
+            }
+            else
+            {
+                displayEndWalk = true;
+                client.Self.Movement.TurnToward(target);
+                WalkTo(GlobalPosition(sim, target));
+            }
+        }
+
 
         public void SetRandomHeading()
         {
@@ -636,6 +682,22 @@ namespace Radegast
                 walkTimer.Dispose();
                 walkTimer = null;
                 client.Self.AutoPilotCancel();
+                
+                if (displayEndWalk)
+                {
+                    displayEndWalk = false;
+                    string msg = "Finished walking";
+
+                    if (walkToTarget != Vector3d.Zero)
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        msg += string.Format(" {0:0} meters from destination", Vector3d.Distance(client.Self.GlobalPosition, walkToTarget));
+                        walkToTarget = Vector3d.Zero;
+                    }
+
+                    instance.TabConsole.DisplayNotificationInChat(msg);
+                }
+
                 FireWalkStateCanged();
             }
         }

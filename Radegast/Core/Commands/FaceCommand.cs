@@ -157,33 +157,7 @@ Examples:
                     }
                     string pname = Instance.Names.Get(person);
 
-                    targetPos = Vector3.Zero;
-
-                    // try to find where they are
-                    Avatar avi = Client.Network.CurrentSim.ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
-
-                    if (avi != null)
-                    {
-                        if (avi.ParentID == 0)
-                        {
-                            targetPos = avi.Position;
-                        }
-                        else
-                        {
-                            Primitive seat;
-                            if (Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(avi.ParentID, out seat))
-                            {
-                                targetPos = seat.Position + avi.Position;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (Client.Network.CurrentSim.AvatarPositions.ContainsKey(person))
-                            targetPos = Client.Network.CurrentSim.AvatarPositions[person];
-                    }
-
-                    if (targetPos.Z < 0.01f)
+                    if (!Instance.State.TryFindAvatar(person, out targetPos))
                     {
                         WriteLine("Could not locate {0}", pname);
                         return;

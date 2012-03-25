@@ -45,7 +45,6 @@ namespace Radegast.Commands
         TabsConsole TC { get { return Instance.TabConsole; } }
         ObjectsConsole Objects;
         ChatConsole Chat;
-        bool displayEndWalk = false;
         Vector3 targetPos = Vector3.Zero;
         ConsoleWriteLine wl;
 
@@ -58,34 +57,13 @@ namespace Radegast.Commands
 
             subCommand = new Regex(@"(?<subcmd>.*)\s*=\s*(?<subarg>.*)", regexOptions);
             Chat = (ChatConsole)TC.Tabs["chat"].Control;
-            Instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
         }
 
         public override void Dispose()
         {
-            Instance.State.OnWalkStateCanged -= new StateManager.WalkStateCanged(State_OnWalkStateCanged);
             Objects = null;
             Chat = null;
             base.Dispose();
-        }
-
-        void State_OnWalkStateCanged(bool walking)
-        {
-            if (!walking && displayEndWalk)
-            {
-                displayEndWalk = false;
-                Vector3 p = Client.Self.SimPosition;
-                string msg = "Finished walking";
-
-                if (targetPos != Vector3.Zero)
-                {
-                    System.Threading.Thread.Sleep(1000);
-                    msg += string.Format(" {0:0} meters from destination", Vector3.Distance(Client.Self.SimPosition, targetPos));
-                    targetPos = Vector3.Zero;
-                }
-
-                wl(msg);
-            }
         }
 
         void PrintUsage()
@@ -124,22 +102,6 @@ Moves toward a person
 Examples:
 {0}go person Latif -- walk toward the closest person whose name begins with Latif
 {0}go tp person John -- teleports to the closest person whose name begins with John", CommandsManager.CmdPrefix);
-        }
-
-        void MoveTo(Vector3 target, bool useTP)
-        {
-            Instance.State.SetSitting(false, UUID.Zero);
-
-            if (useTP)
-            {
-                Client.Self.RequestTeleport(Client.Network.CurrentSim.Handle, targetPos);
-            }
-            else
-            {
-                displayEndWalk = true;
-                Client.Self.Movement.TurnToward(targetPos);
-                Instance.State.WalkTo(Instance.State.GlobalPosition(Client.Network.CurrentSim, target));
-            }
         }
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
@@ -190,7 +152,7 @@ Examples:
                 Client.Self.Movement.Camera.LookAt(Client.Self.SimPosition, targetPos);
                 Client.Self.Movement.SendUpdate(true);
                 WriteLine("Going {0} to {1:0},{2:0},{3:0}", kh == null ? string.Empty : kh.Name, targetPos.X, targetPos.Y, targetPos.Z);
-                MoveTo(targetPos, useTP);
+                Instance.State.MoveTo(targetPos, useTP);
                 return;
             }
 
@@ -214,7 +176,7 @@ Examples:
                     int z = coords.Length > 2 ? int.Parse(coords[2]) : (int)Client.Self.SimPosition.Z;
                     targetPos = new Vector3(x, y, z);
                     WriteLine("Going to {0:0},{1:0},{2:0}", targetPos.X, targetPos.Y, targetPos.Z);
-                    MoveTo(targetPos, useTP);
+                    Instance.State.MoveTo(targetPos, useTP);
                     return;
                 
                 case "person":
@@ -228,39 +190,15 @@ Examples:
                     string pname = Instance.Names.Get(person);
 
                     targetPos = Vector3.Zero;
-
-                    // try to find where they are
-                    Avatar avi = Client.Network.CurrentSim.ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
                     
-                    if (avi != null)
-                    {
-                        if (avi.ParentID == 0)
-                        {
-                            targetPos = avi.Position;
-                        }
-                        else
-                        {
-                            Primitive seat;
-                            if (Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(avi.ParentID, out seat))
-                            {
-                                targetPos = seat.Position + avi.Position;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (Client.Network.CurrentSim.AvatarPositions.ContainsKey(person))
-                            targetPos = Client.Network.CurrentSim.AvatarPositions[person];
-                    }
-
-                    if (targetPos.Z < 0.01f)
+                    if (!Instance.State.TryFindAvatar(person, out targetPos))
                     {
                         WriteLine("Could not locate {0}", pname);
                         return;
                     }
 
                     WriteLine("Going to {3} at {0:0},{1:0},{2:0}", targetPos.X, targetPos.Y, targetPos.Z, pname);
-                    MoveTo(targetPos, useTP);
+                    Instance.State.MoveTo(targetPos, useTP);
 
                     return;
 
@@ -297,7 +235,7 @@ Examples:
                     targetPos = target.Position;
 
                     WriteLine("Going to object '{0}' at {1:0},{2:0},{3:0}", target.Properties.Name, targetPos.X, targetPos.Y, targetPos.Z);
-                    MoveTo(targetPos, useTP);
+                    Instance.State.MoveTo(targetPos, useTP);
                     return;
 
                 default:

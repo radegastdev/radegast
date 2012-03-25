@@ -78,6 +78,8 @@ namespace Radegast
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxOfferTP = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxTeleportTo = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.faceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxEject = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxBan = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxEstateEject = new System.Windows.Forms.ToolStripMenuItem();
@@ -176,10 +178,10 @@ namespace Radegast
             this.lvwObjects.TabIndex = 0;
             this.lvwObjects.UseCompatibleStateImageBehavior = false;
             this.lvwObjects.View = System.Windows.Forms.View.List;
-            this.lvwObjects.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwObjects_MouseDoubleClick);
             this.lvwObjects.SelectedIndexChanged += new System.EventHandler(this.lvwObjects_SelectedIndexChanged);
             this.lvwObjects.DragDrop += new System.Windows.Forms.DragEventHandler(this.lvwObjects_DragDrop);
             this.lvwObjects.DragOver += new System.Windows.Forms.DragEventHandler(this.lvwObjects_DragOver);
+            this.lvwObjects.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwObjects_MouseDoubleClick);
             // 
             // avatarContext
             // 
@@ -195,12 +197,14 @@ namespace Radegast
             this.ctxPoint,
             this.ctxOfferTP,
             this.ctxTeleportTo,
+            this.goToToolStripMenuItem,
+            this.faceToolStripMenuItem,
             this.ctxEject,
             this.ctxBan,
             this.ctxEstateEject,
             this.muteToolStripMenuItem});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(163, 356);
+            this.avatarContext.Size = new System.Drawing.Size(163, 400);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
@@ -282,6 +286,22 @@ namespace Radegast
             this.ctxTeleportTo.Text = "Teleport To";
             this.ctxTeleportTo.ToolTipText = " Teleport To ";
             this.ctxTeleportTo.Click += new System.EventHandler(this.ctxTeleportTo_Click);
+            // 
+            // goToToolStripMenuItem
+            // 
+            this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
+            this.goToToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.goToToolStripMenuItem.Text = "Go To";
+            this.goToToolStripMenuItem.ToolTipText = " Go To ";
+            this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem_Click);
+            // 
+            // faceToolStripMenuItem
+            // 
+            this.faceToolStripMenuItem.Name = "faceToolStripMenuItem";
+            this.faceToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.faceToolStripMenuItem.Text = "Face";
+            this.faceToolStripMenuItem.ToolTipText = " Face Avatar";
+            this.faceToolStripMenuItem.Click += new System.EventHandler(this.faceToolStripMenuItem_Click);
             // 
             // ctxEject
             // 
@@ -544,16 +564,16 @@ namespace Radegast
             // cbxInput
             // 
             this.cbxInput.AccessibleName = "Chat input";
-            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxInput.Enabled = false;
             this.cbxInput.Location = new System.Drawing.Point(0, 0);
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(412, 21);
             this.cbxInput.TabIndex = 0;
+            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
-            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             // 
             // ChatConsole
             // 
@@ -622,5 +642,7 @@ namespace Radegast
         private ToolStripMenuItem ctxBan;
         private ToolStripMenuItem ctxEstateEject;
         private ToolStripMenuItem muteToolStripMenuItem;
+        private ToolStripMenuItem goToToolStripMenuItem;
+        private ToolStripMenuItem faceToolStripMenuItem;
     }
 }
