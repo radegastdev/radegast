@@ -338,6 +338,7 @@ namespace Radegast
             else if (e.Status == LoginStatus.Success)
             {
                 InAutoReconnect = false;
+                reconnectToolStripMenuItem.Enabled = false;
                 tsb3D.Enabled =  tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
                 tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                     tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
@@ -1329,7 +1330,10 @@ namespace Radegast
 
         private void reconnectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            instance.Reconnect();
+            if (!client.Network.Connected)
+            {
+                instance.Reconnect();
+            }
         }
 
         private frmKeyboardShortcuts keyboardShortcutsForm = null;
