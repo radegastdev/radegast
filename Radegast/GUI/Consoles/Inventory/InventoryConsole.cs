@@ -1730,11 +1730,10 @@ namespace Radegast
                         foreach (InventoryBase item in Inventory.GetContents(f))
                         {
                             if (item is InventoryItem)
-                                newOutfit.Add(instance.COF.RealInventoryItem((InventoryItem)item));
+                                newOutfit.Add((InventoryItem)item);
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        client.Appearance.ReplaceOutfit(newOutfit);
-                        client.Appearance.RequestSetAppearance(true);
+                        instance.COF.ReplaceOutfit(newOutfit);
                         UpdateWornLabels();
                         break;
 
@@ -1743,10 +1742,10 @@ namespace Radegast
                         foreach (InventoryBase item in Inventory.GetContents(f))
                         {
                             if (item is InventoryItem)
-                                addToOutfit.Add(instance.COF.RealInventoryItem((InventoryItem)item));
+                                addToOutfit.Add((InventoryItem)item);
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        client.Appearance.AddToOutfit(addToOutfit);
+                        instance.COF.AddToOutfit(addToOutfit);
                         UpdateWornLabels();
                         break;
 
@@ -1755,10 +1754,10 @@ namespace Radegast
                         foreach (InventoryBase item in Inventory.GetContents(f))
                         {
                             if (item is InventoryItem)
-                                removeFromOutfit.Add(instance.COF.RealInventoryItem((InventoryItem)item));
+                                removeFromOutfit.Add((InventoryItem)item);
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        client.Appearance.RemoveFromOutfit(removeFromOutfit);
+                        instance.COF.RemoveFromOutfit(removeFromOutfit);
                         UpdateWornLabels();
                         break;
                 }

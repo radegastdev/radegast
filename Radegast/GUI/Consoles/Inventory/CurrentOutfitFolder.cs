@@ -346,6 +346,15 @@ namespace Radegast
         public void Attach(InventoryItem item, AttachmentPoint point, bool replace)
         {
             Client.Appearance.Attach(item, point, replace);
+            AddLink(item);
+        }
+
+        /// <summary>
+        /// Creates a new COF link
+        /// </summary>
+        /// <param name="item">Original item to be linked from COF</param>
+        public void AddLink(InventoryItem item)
+        {
             if (COF == null) return;
 
             bool linkExists = false;
@@ -411,6 +420,89 @@ namespace Radegast
             }
 
             return item;
+        }
+
+        /// <summary>
+        /// Replaces the current outfit and updates COF links accordingly
+        /// </summary>
+        /// <param name="outfit">List of new wearables and attachments that comprise the new outfit</param>
+        public void ReplaceOutfit(List<InventoryItem> newOutfit)
+        {
+            // Resolve inventory links
+            List<InventoryItem> outfit = new List<InventoryItem>();
+            foreach (var item in newOutfit)
+            {
+                outfit.Add(RealInventoryItem(item));
+            }
+
+            Client.Appearance.ReplaceOutfit(outfit);
+            Client.Appearance.RequestSetAppearance(true);
+
+            // Remove links to all exiting attachments
+            List<InventoryItem> allAttachments = null;
+            lock (ContentLinks)
+            {
+                allAttachments = ContentLinks.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
+            }
+            foreach (var item in allAttachments)
+            {
+                RemoveLink(item.AssetUUID);
+            }
+            
+            // Add links to new attachments
+            List<InventoryItem> newAttachments = outfit.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
+            foreach (var item in newAttachments)
+            {
+                AddLink(item);
+            }
+        }
+
+        /// <summary>
+        /// Add items to current outfit
+        /// </summary>
+        /// <param name="items">List of items to add</param>
+        public void AddToOutfit(List<InventoryItem> items)
+        {
+            // Resolve inventory links
+            List<InventoryItem> outfit = new List<InventoryItem>();
+            foreach (var item in items)
+            {
+                outfit.Add(RealInventoryItem(item));
+            }
+
+            Client.Appearance.AddToOutfit(outfit);
+
+            // Add links to new attachments
+            List<InventoryItem> newAttachments = outfit.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
+            foreach (var item in newAttachments)
+            {
+                AddLink(item);
+            }
+        }
+
+        /// <summary>
+        /// Remove specified items from the current outfit
+        /// </summary>
+        /// <param name="items">List of items to remove</param>
+        public void RemoveFromOutfit(List<InventoryItem> items)
+        {
+            // Resolve inventory links
+            List<InventoryItem> outfit = new List<InventoryItem>();
+            foreach (var item in items)
+            {
+                outfit.Add(RealInventoryItem(item));
+            }
+
+            Client.Appearance.RemoveFromOutfit(outfit);
+
+            // Remove links to all attachments that were removed
+            List<InventoryItem> allAttachments = null;
+            allAttachments = outfit.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
+            foreach (var item in allAttachments)
+            {
+                RemoveLink(item.UUID);
+            }
+
         }
 
         #endregion Public methods
