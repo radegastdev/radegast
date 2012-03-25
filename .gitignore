@@ -4,7 +4,7 @@ bin
 obj
 compile.bat
 *.sln
+*.sln.cache
 *.csproj
-<<<<<<< HEAD
 *.bak
 *~
