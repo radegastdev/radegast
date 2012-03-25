@@ -5,5 +5,6 @@ obj
 compile.bat
 *.sln
 *.csproj
+<<<<<<< HEAD
 *.bak
 *~
