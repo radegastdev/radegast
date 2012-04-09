@@ -17,6 +17,8 @@ XPStyle on                  ; add an XP manifest to the installer
 RequestExecutionLevel admin	; on Vista we must be admin because we write to Program Files
 
 LangString LanguageCode ${LANG_ENGLISH}  "en"
+!define DOTNET_URL "http://download.microsoft.com/download/0/6/1/061F001C-8752-4600-A198-53214C69B51F/dotnetfx35setup.exe"
+!define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
 
 !define APPNAME "Radegast"
 !define VERSION "2.7"
@@ -52,10 +54,122 @@ Page instfiles
 UninstPage uninstConfirm
 UninstPage instfiles
 
+;--------------------------------
+; Check MSI and .NET
+Section ".NET check"
+  ; Comment out below if not mandatory
+  ; SectionIn RO
+
+  ; Set output path to the installation directory.
+  SetOutPath $TEMP
+  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "SP"
+  ${If} $0 < "1"
+	goto CheckMSI
+  ${EndIf}
+  goto NewDotNET
+
+  CheckMSI:
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;                               MSI                                          ;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  GetDLLVersion "$SYSDIR\msi.dll" $R0 $R1
+  IntOp $R2 $R0 / 0x00010000 ; $R2 now contains major version
+  IntOp $R3 $R0 & 0x0000FFFF ; $R3 now contains minor version
+  IntOp $R4 $R1 / 0x00010000 ; $R4 now contains release
+  IntOp $R5 $R1 & 0x0000FFFF ; $R5 now contains build
+  StrCpy $0 "$R2.$R3.$R4.$R5" ; $0 now contains string like "1.2.0.192"
+  DetailPrint "MSI version $0"
+ 
+  ${If} $R2 < '3'
+    goto AskMSI
+  ${ElseIf} $R2 == '3'
+    DetailPrint "MSI3.x"
+	${If} $R3 < '1'
+	  goto AskMSI
+    ${EndIf}
+  ${Else}
+    DetailPrint "MSI3.1 already installed"
+    goto DownloadDotNET
+  ${EndIf}
+
+  AskMSI:
+    SetOutPath "$TEMP"
+    SetOverwrite on
+ 
+    MessageBox MB_YESNOCANCEL|MB_ICONEXCLAMATION \
+    "Your MSI version: $0.$\nRequired Version: 3.1 or greater.$\nDownload MSI version from www.microsoft.com?" \
+    /SD IDYES IDYES DownloadMSI IDNO DownloadDotNET
+    goto GiveUpDotNET ;IDCANCEL
+ 
+  DownloadMSI:
+    DetailPrint "Beginning download of MSI3.1."
+    NSISDL::download ${MSI31_URL} "$TEMP\WindowsInstaller-KB893803-v2-x86.exe"
+    DetailPrint "Completed download."
+    Pop $0
+    ${If} $0 == "cancel"
+      MessageBox MB_YESNO|MB_ICONEXCLAMATION \
+      "Download cancelled.  Continue Installation?" \
+      IDYES DownloadDotNET IDNO GiveUpDotNET
+    ${ElseIf} $0 != "success"
+      MessageBox MB_YESNO|MB_ICONEXCLAMATION \
+      "Download failed:$\n$0$\n$\nContinue Installation?" \
+      IDYES DownloadDotNET IDNO GiveUpDotNET
+    ${EndIf}
+    DetailPrint "Pausing installation while downloaded MSI3.1 installer runs."
+    ExecWait '$TEMP\WindowsInstaller-KB893803-v2-x86.exe /quiet /norestart' $0
+    DetailPrint "Completed MSI3.1 install/update. Exit code = '$0'. Removing MSI3.1 installer."
+    Delete "$TEMP\WindowsInstaller-KB893803-v2-x86.exe"
+    DetailPrint "MSI3.1 installer removed."
+    goto DownloadDotNET
+
+  DownloadDotNET:
+    DetailPrint "Beginning download of .NET 3.5SP1."
+    NSISdl::download /TIMEOUT=30000 ${DOTNET_URL} "$TEMP\dotnetfx35.exe" /END
+    Pop $0
+    DetailPrint "Result: $0"
+    StrCmp $0 "success" InstallDotNet
+    StrCmp $0 "cancel" GiveUpDotNET
+    NSISdl::download /TIMEOUT=30000 /NOPROXY ${DOTNET_URL} "$TEMP\dotnetfx35.exe" /END
+    Pop $0
+    DetailPrint "Result: $0"
+    StrCmp $0 "success" InstallDotNet
+ 
+    MessageBox MB_ICONSTOP "Download failed: $0"
+    goto NewDotNET
+
+   GiveUpDotNET:
+     DetailPrint "Installation cancelled by user."
+	 goto NewDotNET
+
+  InstallDotNet:
+    DetailPrint "Completed download."
+    Pop $0
+    ${If} $0 == "cancel"
+      MessageBox MB_YESNO|MB_ICONEXCLAMATION \
+      "Download cancelled.  Continue Installation?" \
+      IDYES NewDotNET IDNO GiveUpDotNET
+    ${EndIf}
+    DetailPrint "Pausing installation while downloaded .NET Framework installer runs."
+	MessageBox MB_OKCANCEL "Setup will now install .NET Framework$\nThis will take a while." \
+	  IDOK +1 IDCANCEL GiveUpDotNET
+    ExecWait '$TEMP\dotnetfx35.exe /q /norestart /c:"install /q"'
+    DetailPrint "Completed .NET Framework install/update. Removing .NET Framework installer."
+    Delete "$TEMP\dotnetfx35.exe"
+    DetailPrint ".NET Framework installer removed."
+	goto NewDotNET
+
+  NewDotNET:
+    DetailPrint ".NET Framework check complete."
+
+SectionEnd
+
+
+;--------------------------------
 ; The stuff to install
+; Main Section
+;--------------------------------
 Section "${APPNAME} core (required)"
-	
-  
+
   SectionIn RO
 
   ; Set output path to the installation directory.
@@ -63,7 +177,8 @@ Section "${APPNAME} core (required)"
 
   ; Put file there
   File /r /x *.nsi /x *.bak /x *.mdb /x *.application /x *vshost*.* /x *installer*.* /x *.so /x *.dylib *.*
-  
+  ; File Radegast.exe
+
   ; Write the installation path into the registry
   WriteRegStr HKLM "SOFTWARE\${APPNAME}" "Install_Dir" "$INSTDIR"
   
