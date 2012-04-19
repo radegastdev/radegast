@@ -674,8 +674,13 @@ namespace Radegast
             }
         }
 
-        private void InitializeMainTab()
+        public void InitializeMainTab()
         {
+            if (TabExists("login"))
+            {
+                ForceCloseTab("login");
+            }
+
             LoginConsole loginConsole = new LoginConsole(instance);
 
             RadegastTab tab = AddTab("login", "Login", loginConsole);

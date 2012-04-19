@@ -339,6 +339,7 @@ namespace Radegast
             {
                 InAutoReconnect = false;
                 reconnectToolStripMenuItem.Enabled = false;
+                loginToolStripMenuItem.Enabled = false;
                 tsb3D.Enabled = tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
                 tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                     tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
@@ -355,6 +356,7 @@ namespace Radegast
                 tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = false;
 
             reconnectToolStripMenuItem.Enabled = true;
+            loginToolStripMenuItem.Enabled = true;
             InAutoReconnect = false;
 
             if (statusTimer != null)
@@ -1537,6 +1539,12 @@ namespace Radegast
                     instance.TabConsole.Tabs["scene_window"].Detach(instance);
                 }
             }
+        }
+
+        private void loginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TabConsole.InitializeMainTab();
+            TabConsole.Tabs["login"].Select();
         }
     }
 }

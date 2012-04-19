@@ -159,6 +159,7 @@ namespace Radegast
         {
             // Unregister callbacks
             UnregisterClientEvents(client);
+            instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
             if (map != null)
             {

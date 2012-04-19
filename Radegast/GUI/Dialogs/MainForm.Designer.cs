@@ -150,6 +150,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.loginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -196,6 +197,7 @@ namespace Radegast
             this.tmnuImport,
             this.scriptEditorToolStripMenuItem,
             this.toolStripMenuItem3,
+            this.loginToolStripMenuItem,
             this.disconnectToolStripMenuItem,
             this.reconnectToolStripMenuItem,
             this.tmnuPrefs,
@@ -572,7 +574,7 @@ namespace Radegast
             this.tbnObjects.Size = new System.Drawing.Size(51, 22);
             this.tbnObjects.Text = "Objects";
             this.tbnObjects.ToolTipText = "Displays a list of nearby objects that you can perform various operations on (Alt" +
-                "-7)";
+    "-7)";
             this.tbnObjects.Click += new System.EventHandler(this.tbnObjects_Click);
             // 
             // lblTime
@@ -885,6 +887,14 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
+            // loginToolStripMenuItem
+            // 
+            this.loginToolStripMenuItem.Enabled = false;
+            this.loginToolStripMenuItem.Name = "loginToolStripMenuItem";
+            this.loginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.loginToolStripMenuItem.Text = "Login";
+            this.loginToolStripMenuItem.Click += new System.EventHandler(this.loginToolStripMenuItem_Click);
+            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -900,10 +910,10 @@ namespace Radegast
             this.MinimumSize = new System.Drawing.Size(754, 541);
             this.Name = "frmMain";
             this.Text = "Radegast";
-            this.Load += new System.EventHandler(this.frmMain_Load);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
-            this.Resize += new System.EventHandler(this.frmMain_Resize);
+            this.Load += new System.EventHandler(this.frmMain_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
+            this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -998,6 +1008,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem myAttachmentsToolStripMenuItem;
         public System.Windows.Forms.ToolStripButton tsb3D;
+        public System.Windows.Forms.ToolStripMenuItem loginToolStripMenuItem;
     }
 }
 
