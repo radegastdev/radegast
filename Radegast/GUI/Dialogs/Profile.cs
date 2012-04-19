@@ -549,15 +549,7 @@ namespace Radegast
 
         private void btnIM_Click(object sender, EventArgs e)
         {
-            if (instance.TabConsole.TabExists((client.Self.AgentID ^ agentID).ToString()))
-            {
-                instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
-                return;
-            }
-
-            instance.MediaManager.PlayUISound(UISounds.IMWindow);
-            instance.TabConsole.AddIMTab(agentID, client.Self.AgentID ^ agentID, fullName);
-            instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
+            instance.TabConsole.ShowIMTab(agentID, fullName, true);
         }
 
         private void tabProfile_SelectedIndexChanged(object sender, EventArgs e)

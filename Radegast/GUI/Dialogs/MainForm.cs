@@ -205,7 +205,7 @@ namespace Radegast
                 netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
                 netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             }
-            
+
             if (client != null)
             {
                 UnregisterClientEvents(client);
@@ -339,7 +339,7 @@ namespace Radegast
             {
                 InAutoReconnect = false;
                 reconnectToolStripMenuItem.Enabled = false;
-                tsb3D.Enabled =  tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
+                tsb3D.Enabled = tbtnVoice.Enabled = disconnectToolStripMenuItem.Enabled =
                 tbtnGroups.Enabled = tbnObjects.Enabled = tbtnWorld.Enabled = tbnTools.Enabled = tmnuImport.Enabled =
                     tbtnFriends.Enabled = tbtnInventory.Enabled = tbtnSearch.Enabled = tbtnMap.Enabled = true;
 
@@ -760,8 +760,6 @@ namespace Radegast
             }
         }
 
-        private Dictionary<UUID, frmGroupInfo> shownGroupProfiles = new Dictionary<UUID, frmGroupInfo>();
-
         public void ShowGroupProfile(AvatarGroup group)
         {
             ShowGroupProfile(new OpenMetaverse.Group()
@@ -772,6 +770,8 @@ namespace Radegast
             }
             );
         }
+
+        private Dictionary<UUID, frmGroupInfo> shownGroupProfiles = new Dictionary<UUID, frmGroupInfo>();
 
         public void ShowGroupProfile(OpenMetaverse.Group group)
         {
@@ -879,6 +879,8 @@ namespace Radegast
                 return;
             }
 
+            Control active = TabsConsole.FindFocusedControl(this);
+
             FormFlash.StartFlash(this);
             pnlDialog.Visible = true;
             pnlDialog.BringToFront();
@@ -897,6 +899,11 @@ namespace Radegast
             ResizeNotificationByControl(control);
 
             btnDialogNextControl.Visible = notifications.Count > 1;
+
+            if (active != null)
+            {
+                active.Focus();
+            }
         }
 
         public void RemoveNotification(Control control)
@@ -1394,7 +1401,7 @@ namespace Radegast
         {
             if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_tray"].AsBoolean())
             {
-                if (TabConsole.TabExists("scene_window") && !TabConsole.Tabs["scene_window"].Detached )
+                if (TabConsole.TabExists("scene_window") && !TabConsole.Tabs["scene_window"].Detached)
                 {
                     TabConsole.Tabs["scene_window"].Close();
                 }
@@ -1427,7 +1434,7 @@ namespace Radegast
             TabConsole.DisplayNotificationInChat("Teleporting home...");
             client.Self.RequestTeleport(UUID.Zero);
         }
- 
+
         private void stopAllAnimationsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             instance.State.StopAllAnimations();
@@ -1491,7 +1498,7 @@ namespace Radegast
         private void myAttachmentsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Avatar av = client.Network.CurrentSim.ObjectsAvatars.Find((Avatar a) => { return a.ID == client.Self.AgentID; });
-            
+
             if (av == null)
             {
                 tabsConsole.DisplayNotificationInChat("Unable to find my avatar!", ChatBufferTextStyle.Error);

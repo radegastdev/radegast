@@ -3345,16 +3345,7 @@ namespace Radegast.Rendering
                     // IM button
                     item = new ToolStripMenuItem("Instant Message", null, (sender, e) =>
                     {
-                        if (Instance.TabConsole.TabExists((Client.Self.AgentID ^ av.avatar.ID).ToString()))
-                        {
-                            Instance.TabConsole.SelectTab((Client.Self.AgentID ^ av.avatar.ID).ToString());
-                        }
-                        else
-                        {
-                            Instance.MediaManager.PlayUISound(UISounds.IMWindow);
-                            Instance.TabConsole.AddIMTab(av.avatar.ID, Client.Self.AgentID ^ av.avatar.ID, Instance.Names.Get(av.avatar.ID));
-                            Instance.TabConsole.SelectTab((Client.Self.AgentID ^ av.avatar.ID).ToString());
-                        }
+                        Instance.TabConsole.ShowIMTab(av.avatar.ID, Instance.Names.Get(av.avatar.ID), true);
                     });
                     ctxMenu.Items.Add(item);
 

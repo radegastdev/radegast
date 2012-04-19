@@ -292,17 +292,7 @@ namespace Radegast
             if (listFriends.SelectedItems.Count == 1)
             {
                 selectedFriend = (FriendInfo)listFriends.SelectedItems[0];
-
-                if (instance.TabConsole.TabExists((client.Self.AgentID ^ selectedFriend.UUID).ToString()))
-                {
-                    instance.TabConsole.SelectTab((client.Self.AgentID ^ selectedFriend.UUID).ToString());
-                    return;
-                }
-
-                instance.MediaManager.PlayUISound(UISounds.IMWindow);
-
-                instance.TabConsole.AddIMTab(selectedFriend.UUID, client.Self.AgentID ^ selectedFriend.UUID, selectedFriend.Name);
-                instance.TabConsole.SelectTab((client.Self.AgentID ^ selectedFriend.UUID).ToString());
+                instance.TabConsole.ShowIMTab(selectedFriend.UUID, selectedFriend.Name, true);
             }
             else if (listFriends.SelectedItems.Count > 1)
             {

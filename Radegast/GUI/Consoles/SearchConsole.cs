@@ -112,14 +112,7 @@ namespace Radegast
 
         private void btnNewIM_Click(object sender, EventArgs e)
         {
-            if (instance.TabConsole.TabExists((client.Self.AgentID ^ console.SelectedAgentUUID).ToString()))
-            {
-                instance.TabConsole.SelectTab((client.Self.AgentID ^ console.SelectedAgentUUID).ToString());
-                return;
-            }
-
-            instance.TabConsole.AddIMTab(console.SelectedAgentUUID, client.Self.AgentID ^ console.SelectedAgentUUID, console.SelectedName);
-            instance.TabConsole.SelectTab((client.Self.AgentID ^ console.SelectedAgentUUID).ToString());
+            instance.TabConsole.ShowIMTab(console.SelectedAgentUUID, console.SelectedName, true);
         }
 
         private void btnFind_Click(object sender, EventArgs e)

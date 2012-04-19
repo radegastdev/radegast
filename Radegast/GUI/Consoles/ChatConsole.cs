@@ -548,17 +548,7 @@ namespace Radegast
             if (lvwObjects.SelectedItems.Count == 0) return;
             UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
             string name = instance.Names.Get(av);
-
-            if (tabConsole.TabExists((client.Self.AgentID ^ av).ToString()))
-            {
-                tabConsole.SelectTab((client.Self.AgentID ^ av).ToString());
-                return;
-            }
-
-            instance.MediaManager.PlayUISound(UISounds.IMWindow);
-
-            tabConsole.AddIMTab(av, client.Self.AgentID ^ av, name);
-            tabConsole.SelectTab((client.Self.AgentID ^ av).ToString());
+            instance.TabConsole.ShowIMTab(av, name, true);
         }
 
         private void tbtnFollow_Click(object sender, EventArgs e)

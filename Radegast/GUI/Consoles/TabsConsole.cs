@@ -558,19 +558,71 @@ namespace Radegast
             DisplayNotificationInChat(e.IM.FromAgentName + ": " + e.IM.Message);
         }
 
-        private void HandleIM(InstantMessageEventArgs e)
+        public static Control FindFocusedControl(Control control)
         {
-            if (TabExists(e.IM.IMSessionID.ToString()))
+            var container = control as ContainerControl;
+            while (container != null)
             {
-                RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
-                if (!tab.Selected) tab.Highlight();
-                return;
+                control = container.ActiveControl;
+                container = control as ContainerControl;
+            }
+            return control;
+        }
+
+        /// <summary>
+        /// Creates new IM tab if needed
+        /// </summary>
+        /// <param name="agentID">IM session with agentID</param>
+        /// <param name="label">Tab label</param>
+        /// <param name="makeActive">Should tab be selected and focused</param>
+        /// <returns>True if there was an existing IM tab, false if it was created</returns>
+        public bool ShowIMTab(UUID agentID, string label, bool makeActive)
+        {
+            if (instance.TabConsole.TabExists((client.Self.AgentID ^ agentID).ToString()))
+            {
+                if (makeActive)
+                {
+                    instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
+                }
+                return false;
             }
 
-            instance.MediaManager.PlayUISound(UISounds.IM);
+            if (makeActive)
+            {
+                instance.MediaManager.PlayUISound(UISounds.IMWindow);
+            }
+            else
+            {
+                instance.MediaManager.PlayUISound(UISounds.IM);
+            }
 
-            IMTabWindow imTab = AddIMTab(e);
-            tabs[e.IM.IMSessionID.ToString()].Highlight();
+            Control active = FindFocusedControl(instance.MainForm);
+
+            instance.TabConsole.AddIMTab(agentID, client.Self.AgentID ^ agentID, label);
+
+            if (makeActive)
+            {
+                instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
+            }
+            else if (active != null)
+            {
+                active.Focus();
+            }
+
+            return true;
+        }
+
+        private void HandleIM(InstantMessageEventArgs e)
+        {
+            bool isNew = ShowIMTab(e.IM.FromAgentID, e.IM.FromAgentName, false);
+            if (!TabExists(e.IM.IMSessionID.ToString())) return; // this should now exist. sanity check anyway
+            RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
+            if (!tab.Selected) tab.Highlight();
+
+            if (isNew)
+            {
+                ((IMTabWindow)tab.Control).TextManager.ProcessIM(e);
+            }
         }
 
         private void HandleConferenceIM(InstantMessageEventArgs e)
@@ -584,8 +636,16 @@ namespace Radegast
 
             instance.MediaManager.PlayUISound(UISounds.IM);
 
-            ConferenceIMTabWindow imTab = AddConferenceIMTab(e);
+            Control active = FindFocusedControl(instance.MainForm);
+
+            ConferenceIMTabWindow imTab = AddConferenceIMTab(e.IM.IMSessionID, Utils.BytesToString(e.IM.BinaryBucket));
             tabs[e.IM.IMSessionID.ToString()].Highlight();
+            imTab.TextManager.ProcessIM(e);
+
+            if (active != null)
+            {
+                active.Focus();
+            }
         }
 
         private void HandleGroupIM(InstantMessageEventArgs e)
@@ -602,8 +662,16 @@ namespace Radegast
 
             instance.MediaManager.PlayUISound(UISounds.IM);
 
-            GroupIMTabWindow imTab = AddGroupIMTab(e);
+            Control active = FindFocusedControl(instance.MainForm);
+
+            GroupIMTabWindow imTab = AddGroupIMTab(e.IM.IMSessionID, Utils.BytesToString(e.IM.BinaryBucket));
+            imTab.TextManager.ProcessIM(e);
             tabs[e.IM.IMSessionID.ToString()].Highlight();
+
+            if (active != null)
+            {
+                active.Focus();
+            }
         }
 
         private void InitializeMainTab()
@@ -1010,14 +1078,6 @@ namespace Radegast
             return imTab;
         }
 
-
-        public ConferenceIMTabWindow AddConferenceIMTab(InstantMessageEventArgs e)
-        {
-            ConferenceIMTabWindow imTab = AddConferenceIMTab(e.IM.IMSessionID, Utils.BytesToString(e.IM.BinaryBucket));
-            imTab.TextManager.ProcessIM(e);
-            return imTab;
-        }
-
         public GroupIMTabWindow AddGroupIMTab(UUID session, string name)
         {
             GroupIMTabWindow imTab = new GroupIMTabWindow(instance, session, name);
@@ -1025,20 +1085,6 @@ namespace Radegast
             RadegastTab tab = AddTab(session.ToString(), name, imTab);
             imTab.SelectIMInput();
 
-            return imTab;
-        }
-
-        public GroupIMTabWindow AddGroupIMTab(InstantMessageEventArgs e)
-        {
-            GroupIMTabWindow imTab = AddGroupIMTab(e.IM.IMSessionID, Utils.BytesToString(e.IM.BinaryBucket));
-            imTab.TextManager.ProcessIM(e);
-            return imTab;
-        }
-
-        public IMTabWindow AddIMTab(InstantMessageEventArgs e)
-        {
-            IMTabWindow imTab = AddIMTab(e.IM.FromAgentID, e.IM.IMSessionID, e.IM.FromAgentName);
-            imTab.TextManager.ProcessIM(e);
             return imTab;
         }
 
