@@ -178,11 +178,19 @@ namespace Radegast
 
         public void Highlight()
         {
-            if (selected) return;
             if (instance.GlobalSettings["taskbar_highlight"])
             {
-                FormFlash.StartFlash(control.FindForm());
+                if ((Control is ChatConsole && instance.GlobalSettings["highlight_on_chat"]) ||
+                    (Control is IMTabWindow && instance.GlobalSettings["highlight_on_im"]) ||
+                    (Control is GroupIMTabWindow && instance.GlobalSettings["highlight_on_group_chat"]) ||
+                    (Control is ConferenceIMTabWindow && instance.GlobalSettings["highlight_on_group_chat"]))
+                {
+                    FormFlash.StartFlash(control.FindForm());
+                }
             }
+
+            if (selected) return;
+
             if (!detached)
             {
                 button.Image = Properties.Resources.arrow_forward_16;

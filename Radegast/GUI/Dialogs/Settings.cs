@@ -118,6 +118,12 @@ namespace Radegast
             if (!s.ContainsKey("disable_chat_im_log")) s["disable_chat_im_log"] = false;
 
             if (!s.ContainsKey("disable_look_at")) s["disable_look_at"] = false;
+
+            if (!s.ContainsKey("highlight_on_chat")) s["highlight_on_chat"] = true;
+
+            if (!s.ContainsKey("highlight_on_im")) s["highlight_on_im"] = true;
+
+            if (!s.ContainsKey("highlight_on_group_im")) s["highlight_on_group_im"] = true;
         }
 
         public frmSettings(RadegastInstance instance)
@@ -160,12 +166,6 @@ namespace Radegast
             cbMUEmotes.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
-            };
-
-            cbFriendsHighlight.Checked = s["friends_notification_highlight"].AsBoolean();
-            cbFriendsHighlight.CheckedChanged += (object sender, EventArgs e) =>
-            {
-                s["friends_notification_highlight"] = new OSDBoolean(cbFriendsHighlight.Checked);
             };
 
             if (s["chat_font_size"].Type != OSDType.Real)
@@ -218,12 +218,6 @@ namespace Radegast
 
             txtReconnectTime.Text = s["reconnect_time"].AsInteger().ToString();
 
-            cbTaskBarHighLight.Checked = s["taskbar_highlight"];
-            cbTaskBarHighLight.CheckedChanged += (sender, e) =>
-            {
-                s["taskbar_highlight"] = cbTaskBarHighLight.Checked;
-            };
-
             cbRadegastClientTag.Checked = s["send_rad_client_tag"];
             cbRadegastClientTag.CheckedChanged += (sender, e) =>
             {
@@ -250,6 +244,51 @@ namespace Radegast
             {
                 s["disable_look_at"] = cbDisableLookAt.Checked;
             };
+
+            cbTaskBarHighLight.Checked = s["taskbar_highlight"];
+            cbTaskBarHighLight.CheckedChanged += (sender, e) =>
+            {
+                s["taskbar_highlight"] = cbTaskBarHighLight.Checked;
+                UpdateEnabled();
+            };
+
+            cbFriendsHighlight.Checked = s["friends_notification_highlight"].AsBoolean();
+            cbFriendsHighlight.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["friends_notification_highlight"] = new OSDBoolean(cbFriendsHighlight.Checked);
+            };
+
+            cbHighlightChat.Checked = s["highlight_on_chat"];
+            cbHighlightChat.CheckedChanged += (sender, e) =>
+            {
+                s["highlight_on_chat"] = cbHighlightChat.Checked;
+            };
+
+            cbHighlightIM.Checked = s["highlight_on_im"];
+            cbHighlightIM.CheckedChanged += (sender, e) =>
+            {
+                s["highlight_on_im"] = cbHighlightIM.Checked;
+            };
+
+            cbHighlightGroupIM.Checked = s["highlight_on_group_im"];
+            cbHighlightGroupIM.CheckedChanged += (sender, e) =>
+            {
+                s["highlight_on_group_im"] = cbHighlightGroupIM.Checked;
+            };
+
+            UpdateEnabled();
+        }
+
+        void UpdateEnabled()
+        {
+            if (cbTaskBarHighLight.Checked)
+            {
+                cbFriendsHighlight.Enabled = cbHighlightChat.Enabled = cbHighlightGroupIM.Enabled = cbHighlightIM.Enabled = true;
+            }
+            else
+            {
+                cbFriendsHighlight.Enabled = cbHighlightChat.Enabled = cbHighlightGroupIM.Enabled = cbHighlightIM.Enabled = false;
+            }
         }
 
         void cbHideLoginGraphics_CheckedChanged(object sender, EventArgs e)

@@ -617,7 +617,7 @@ namespace Radegast
             bool isNew = ShowIMTab(e.IM.FromAgentID, e.IM.FromAgentName, false);
             if (!TabExists(e.IM.IMSessionID.ToString())) return; // this should now exist. sanity check anyway
             RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
-            if (!tab.Selected) tab.Highlight();
+            tab.Highlight();
 
             if (isNew)
             {
@@ -630,7 +630,7 @@ namespace Radegast
             if (TabExists(e.IM.IMSessionID.ToString()))
             {
                 RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
-                if (!tab.Selected) tab.Highlight();
+                tab.Highlight();
                 return;
             }
 
@@ -656,7 +656,7 @@ namespace Radegast
             if (TabExists(e.IM.IMSessionID.ToString()))
             {
                 RadegastTab tab = tabs[e.IM.IMSessionID.ToString()];
-                if (!tab.Selected) tab.Highlight();
+                tab.Highlight();
                 return;
             }
 
@@ -1063,7 +1063,6 @@ namespace Radegast
 
             RadegastTab tab = AddTab(session.ToString(), "IM: " + targetName, imTab);
             imTab.SelectIMInput();
-            tab.Highlight();
 
             return imTab;
         }
