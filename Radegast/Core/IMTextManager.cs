@@ -186,6 +186,25 @@ namespace Radegast
             }
         }
 
+        public void DisplayNotification(string message)
+        {
+            if (instance.MainForm.InvokeRequired)
+            {
+                instance.MainForm.Invoke(new System.Windows.Forms.MethodInvoker(() => DisplayNotification(message)));
+                return;
+            }
+
+            if (showTimestamps)
+            {
+                textPrinter.ForeColor = SystemColors.GrayText;
+                textPrinter.PrintText(DateTime.Now.ToString("[HH:mm] "));
+            }
+
+            textPrinter.ForeColor = Color.DarkCyan;
+            instance.LogClientMessage(sessionName + ".txt", message);
+            textPrinter.PrintTextLine(message);
+        }
+
         private void PrintIM(DateTime timestamp, string fromName, string message)
         {
             if (showTimestamps)

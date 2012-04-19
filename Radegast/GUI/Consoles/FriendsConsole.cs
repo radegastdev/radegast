@@ -166,6 +166,28 @@ namespace Radegast
             RefreshFriendsList();
         }
 
+        bool TryFindIMTab(UUID friendID, out IMTabWindow console)
+        {
+            console = null;
+            string tabID = (client.Self.AgentID ^ friendID).ToString();
+            if (instance.TabConsole.TabExists(tabID))
+            {
+                console = (IMTabWindow)instance.TabConsole.Tabs[tabID].Control;
+                return true;
+            }
+            return false;
+        }
+
+        void DisplayNotification(UUID friendID, string msg)
+        {
+            IMTabWindow console;
+            if (TryFindIMTab(friendID, out console))
+            {
+                console.TextManager.DisplayNotification(msg);
+            }
+            instance.TabConsole.DisplayNotificationInChat(msg, ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"]);
+        }
+
         void Friends_FriendOffline(object sender, FriendInfoEventArgs e)
         {
             if (!instance.GlobalSettings["show_friends_online_notifications"]) return;
@@ -175,7 +197,7 @@ namespace Radegast
                 string name = instance.Names.Get(e.Friend.UUID, true);
                 MethodInvoker display = () =>
                 {
-                    instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is offline", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"]);
+                    DisplayNotification(e.Friend.UUID, name + " is offline");
                     RefreshFriendsList();
                 };
 
@@ -199,7 +221,7 @@ namespace Radegast
                 string name = instance.Names.Get(e.Friend.UUID, true);
                 MethodInvoker display = () =>
                 {
-                    instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is online", ChatBufferTextStyle.ObjectChat, instance.GlobalSettings["friends_notification_highlight"]);
+                    DisplayNotification(e.Friend.UUID, name + " is online");
                     RefreshFriendsList();
                 };
 
@@ -221,7 +243,7 @@ namespace Radegast
                 string name = instance.Names.Get(e.AgentID, true);
                 MethodInvoker display = () =>
                 {
-                    instance.MainForm.TabConsole.DisplayNotificationInChat(name + " is no longer on your friend list");
+                    DisplayNotification(e.AgentID, name + " is no longer on your friend list");
                     RefreshFriendsList();
                 };
 
