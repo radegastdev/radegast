@@ -50,13 +50,19 @@ namespace Radegast
         private int fetched = 0;
         private TextWriter csvFile = null;
         private int traversed = 0;
+        private InventoryNode rootNode;
 
-        public InventoryBackup(RadegastInstance instance)
+        public InventoryBackup(RadegastInstance instance, UUID rootFolder)
         {
             InitializeComponent();
             Disposed += new System.EventHandler(InventoryBackup_Disposed);
             this.instance = instance;
             inv = client.Inventory.Store;
+            rootNode = inv.RootNode;
+            if (inv.Items.ContainsKey(rootFolder) && inv.Items[rootFolder].Data is InventoryFolder)
+            {
+                rootNode = inv.GetNodeFor(rootFolder);
+            }
         }
 
         void InventoryBackup_Disposed(object sender, System.EventArgs e)
@@ -123,7 +129,7 @@ namespace Radegast
 
                 backupThread = new Thread(new ThreadStart(() =>
                 {
-                    TraverseDir(inv.RootNode, Path.DirectorySeparatorChar.ToString());
+                    TraverseDir(rootNode, Path.DirectorySeparatorChar.ToString());
                     if (csvFile != null)
                     {
                         try
@@ -153,7 +159,8 @@ namespace Radegast
 
         private void TraverseDir(InventoryNode node, string path)
         {
-            foreach (InventoryNode n in node.Nodes.Values)
+            var nodes = new List<InventoryNode>(node.Nodes.Values);
+            foreach (InventoryNode n in nodes)
             {
                 traversed++;
                 if (IsHandleCreated && (traversed % 13 == 0))

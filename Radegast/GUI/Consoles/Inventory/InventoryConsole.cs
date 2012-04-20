@@ -1339,6 +1339,10 @@ namespace Radegast
                     ctxItem.Name = "refresh";
                     ctxInv.Items.Add(ctxItem);
 
+                    ctxItem = new ToolStripMenuItem("Backup...", null, OnInvContextClick);
+                    ctxItem.Name = "backup";
+                    ctxInv.Items.Add(ctxItem);
+
                     ctxInv.Items.Add(new ToolStripSeparator());
 
                     ctxItem = new ToolStripMenuItem("Expand", null, OnInvContextClick);
@@ -1646,6 +1650,10 @@ namespace Radegast
                             }
                         }
                         fetchFolder(f.UUID, f.OwnerID, true);
+                        break;
+
+                    case "backup":
+                        (new InventoryBackup(instance, f.UUID)).Show();
                         break;
 
                     case "expand":
@@ -2275,7 +2283,7 @@ namespace Radegast
 
         private void saveAllTToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            (new InventoryBackup(instance)).Show();
+            (new InventoryBackup(instance, Inventory.RootFolder.UUID)).Show();
         }
 
         private void tbtnSystemFoldersFirst_Click(object sender, EventArgs e)
