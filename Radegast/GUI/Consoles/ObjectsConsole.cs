@@ -53,6 +53,8 @@ namespace Radegast
         private Thread ContentsThread;
         private ObjectConsoleFilter filter;
 
+        public Primitive CurrentPrim { get { return currentPrim; } }
+
         public ObjectsConsole(RadegastInstance instance)
         {
             InitializeComponent();
