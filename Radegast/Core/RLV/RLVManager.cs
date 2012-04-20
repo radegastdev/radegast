@@ -192,8 +192,20 @@ namespace Radegast
 
                 if (rule.Param == "n")
                 {
-                    lock (rules) rules.Add(rule);
-                    OnRLVRuleChanged(new RLVEventArgs(rule));
+                    lock (rules)
+                    {
+                        var existing = rules.Find(r =>
+                            r.Behaviour == rule.Behaviour &&
+                            r.Sender == rule.Sender &&
+                            r.Option == rule.Option);
+
+                        if (existing != null)
+                        {
+                            rules.Remove(existing);
+                        }
+                        rules.Add(rule);
+                        OnRLVRuleChanged(new RLVEventArgs(rule));
+                    }
                     continue;
                 }
 
@@ -228,14 +240,103 @@ namespace Radegast
                         int chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            instance.Client.Self.Chat("RestrainedLife viewer v1.20c (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
+                            instance.Client.Self.Chat("RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
                         }
                         break;
+
+                    case "versionnew":
+                        chan = 0;
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            instance.Client.Self.Chat("RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
+                        }
+                        break;
+
 
                     case "versionnum":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            instance.Client.Self.Chat("1210100", chan, ChatType.Normal);
+                            instance.Client.Self.Chat("1230100", chan, ChatType.Normal);
+                        }
+                        break;
+
+                    case "getgroup":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            UUID gid = instance.Client.Self.ActiveGroup;
+                            if (instance.Groups.ContainsKey(gid))
+                            {
+                                instance.Client.Self.Chat(instance.Groups[gid].Name, chan, ChatType.Normal);
+                            }
+                        }
+                        break;
+
+                    case "getsitid":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            Avatar me;
+                            if (instance.Client.Network.CurrentSim.ObjectsAvatars.TryGetValue(instance.Client.Self.LocalID, out me))
+                            {
+                                if (me.ParentID != 0)
+                                {
+                                    Primitive seat;
+                                    if (instance.Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(me.ParentID, out seat))
+                                    {
+                                        instance.Client.Self.Chat(seat.ID.ToString(), chan, ChatType.Normal);
+                                        break;
+                                    }
+                                }
+                            }
+                            instance.Client.Self.Chat(UUID.Zero.ToString(), chan, ChatType.Normal);
+                        }
+                        break;
+
+                    case "getstatusall":
+                    case "getstatus":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            string sep = "/";
+                            string filter = "";
+
+                            if (!string.IsNullOrEmpty(rule.Option))
+                            {
+                                var parts = rule.Option.Split(';');
+                                if (parts.Length > 1 && parts[1].Length > 0)
+                                {
+                                    sep = parts[1].Substring(0, 1);
+                                }
+                                if (parts.Length > 0 && parts[0].Length > 0)
+                                {
+                                    filter = parts[0].ToLower();
+                                }
+                            }
+
+                            lock (rules)
+                            {
+                                string res = "";
+                                rules
+                                    .FindAll(r => (rule.Behaviour == "getstatusall" || r.Sender == rule.Sender) && r.Behaviour.Contains(filter))
+                                    .ForEach(objRule =>
+                                {
+                                    res += sep + objRule.Behaviour;
+                                });
+                                instance.Client.Self.Chat(res, chan, ChatType.Normal);
+                            }
+                        }
+                        break;
+
+                    case "setgroup":
+                        {
+                            if (rule.Param == "force")
+                            {
+                                foreach (var g in instance.Groups.Values)
+                                {
+                                    if (g.Name.ToLower() == rule.Option)
+                                    {
+                                        instance.Client.Groups.ActivateGroup(g.ID);
+                                    }
+                                }
+                            }
                         }
                         break;
 
