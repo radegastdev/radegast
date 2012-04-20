@@ -271,6 +271,21 @@ namespace Radegast
                         }
                         break;
 
+                    case "setgroup":
+                        {
+                            if (rule.Param == "force")
+                            {
+                                foreach (var g in instance.Groups.Values)
+                                {
+                                    if (g.Name.ToLower() == rule.Option)
+                                    {
+                                        instance.Client.Groups.ActivateGroup(g.ID);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+
                     case "getsitid":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
@@ -321,21 +336,6 @@ namespace Radegast
                                     res += sep + objRule.Behaviour;
                                 });
                                 instance.Client.Self.Chat(res, chan, ChatType.Normal);
-                            }
-                        }
-                        break;
-
-                    case "setgroup":
-                        {
-                            if (rule.Param == "force")
-                            {
-                                foreach (var g in instance.Groups.Values)
-                                {
-                                    if (g.Name.ToLower() == rule.Option)
-                                    {
-                                        instance.Client.Groups.ActivateGroup(g.ID);
-                                    }
-                                }
                             }
                         }
                         break;
