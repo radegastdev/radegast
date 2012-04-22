@@ -72,6 +72,58 @@ namespace Radegast
         }
         #endregion
 
+        #region Helper classes, structs and enums
+        public struct RLVWearable
+        {
+            public string Name { get; set; }
+            public WearableType Type { get; set; }
+        }
+
+        public struct RLVAttachment
+        {
+            public string Name { get; set; }
+            public AttachmentPoint Point { get; set; }
+        }
+
+        public static readonly List<RLVWearable> RLVWearables;
+        public static readonly List<RLVAttachment> RLVAttachments;
+        static RLVManager()
+        {
+            RLVWearables = new List<RLVWearable>(16);
+            RLVWearables.Add(new RLVWearable() { Name = "gloves", Type = WearableType.Gloves });
+            RLVWearables.Add(new RLVWearable() { Name = "jacket", Type = WearableType.Jacket });
+            RLVWearables.Add(new RLVWearable() { Name = "pants", Type = WearableType.Pants });
+            RLVWearables.Add(new RLVWearable() { Name = "shirt", Type = WearableType.Shirt });
+            RLVWearables.Add(new RLVWearable() { Name = "shoes", Type = WearableType.Shoes });
+            RLVWearables.Add(new RLVWearable() { Name = "skirt", Type = WearableType.Skirt });
+            RLVWearables.Add(new RLVWearable() { Name = "socks", Type = WearableType.Socks });
+            RLVWearables.Add(new RLVWearable() { Name = "underpants", Type = WearableType.Underpants });
+            RLVWearables.Add(new RLVWearable() { Name = "undershirt", Type = WearableType.Undershirt });
+            RLVWearables.Add(new RLVWearable() { Name = "skin", Type = WearableType.Skin });
+            RLVWearables.Add(new RLVWearable() { Name = "eyes", Type = WearableType.Eyes });
+            RLVWearables.Add(new RLVWearable() { Name = "hair", Type = WearableType.Hair });
+            RLVWearables.Add(new RLVWearable() { Name = "shape", Type = WearableType.Shape });
+            RLVWearables.Add(new RLVWearable() { Name = "alpha", Type = WearableType.Alpha });
+            RLVWearables.Add(new RLVWearable() { Name = "tattoo", Type = WearableType.Tattoo });
+
+            RLVAttachments = new List<RLVAttachment>();
+        }
+
+        #endregion Helper classes, structs and enums
+
+        public static WearableType WearableFromString(string type)
+        {
+            var found = RLVWearables.FindAll(w => w.Name == type);
+            if (found.Count == 1)
+            {
+                return found[0].Type;
+            }
+            else
+            {
+                return WearableType.Invalid;
+            }
+        }
+
         public bool Enabled
         {
 
@@ -101,6 +153,7 @@ namespace Radegast
         }
 
         RadegastInstance instance;
+        GridClient client { get { return instance.Client; } }
         Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]+))?=(?<param>\w+)", RegexOptions.Compiled);
         List<RLVRule> rules = new List<RLVRule>();
         System.Timers.Timer CleanupTimer;
@@ -146,7 +199,7 @@ namespace Radegast
 
             foreach (UUID obj in objecs)
             {
-                if (instance.Client.Network.CurrentSim.ObjectsPrimitives.Find((Primitive p) => { return p.ID == obj; }) == null)
+                if (client.Network.CurrentSim.ObjectsPrimitives.Find((Primitive p) => { return p.ID == obj; }) == null)
                 {
                     Clear(obj);
                 }
@@ -240,7 +293,7 @@ namespace Radegast
                         int chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            instance.Client.Self.Chat("RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
+                            client.Self.Chat("RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
                         }
                         break;
 
@@ -248,7 +301,7 @@ namespace Radegast
                         chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            instance.Client.Self.Chat("RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
+                            client.Self.Chat("RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
                         }
                         break;
 
@@ -256,17 +309,17 @@ namespace Radegast
                     case "versionnum":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            instance.Client.Self.Chat("1230100", chan, ChatType.Normal);
+                            client.Self.Chat("1230100", chan, ChatType.Normal);
                         }
                         break;
 
                     case "getgroup":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            UUID gid = instance.Client.Self.ActiveGroup;
+                            UUID gid = client.Self.ActiveGroup;
                             if (instance.Groups.ContainsKey(gid))
                             {
-                                instance.Client.Self.Chat(instance.Groups[gid].Name, chan, ChatType.Normal);
+                                client.Self.Chat(instance.Groups[gid].Name, chan, ChatType.Normal);
                             }
                         }
                         break;
@@ -279,7 +332,7 @@ namespace Radegast
                                 {
                                     if (g.Name.ToLower() == rule.Option)
                                     {
-                                        instance.Client.Groups.ActivateGroup(g.ID);
+                                        client.Groups.ActivateGroup(g.ID);
                                     }
                                 }
                             }
@@ -290,19 +343,19 @@ namespace Radegast
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
                             Avatar me;
-                            if (instance.Client.Network.CurrentSim.ObjectsAvatars.TryGetValue(instance.Client.Self.LocalID, out me))
+                            if (client.Network.CurrentSim.ObjectsAvatars.TryGetValue(client.Self.LocalID, out me))
                             {
                                 if (me.ParentID != 0)
                                 {
                                     Primitive seat;
-                                    if (instance.Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(me.ParentID, out seat))
+                                    if (client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(me.ParentID, out seat))
                                     {
-                                        instance.Client.Self.Chat(seat.ID.ToString(), chan, ChatType.Normal);
+                                        client.Self.Chat(seat.ID.ToString(), chan, ChatType.Normal);
                                         break;
                                     }
                                 }
                             }
-                            instance.Client.Self.Chat(UUID.Zero.ToString(), chan, ChatType.Normal);
+                            client.Self.Chat(UUID.Zero.ToString(), chan, ChatType.Normal);
                         }
                         break;
 
@@ -335,7 +388,7 @@ namespace Radegast
                                 {
                                     res += sep + objRule.Behaviour;
                                 });
-                                instance.Client.Self.Chat(res, chan, ChatType.Normal);
+                                client.Self.Chat(res, chan, ChatType.Normal);
                             }
                         }
                         break;
@@ -361,7 +414,7 @@ namespace Radegast
 
                         if (rule.Param == "force" && double.TryParse(rule.Option, System.Globalization.NumberStyles.Float, Utils.EnUsCulture, out rot))
                         {
-                            instance.Client.Self.Movement.UpdateFromHeading(Math.PI / 2d - rot, true);
+                            client.Self.Movement.UpdateFromHeading(Math.PI / 2d - rot, true);
                         }
                         break;
 
@@ -377,11 +430,51 @@ namespace Radegast
 
                             instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
                             ulong h = Helpers.GlobalPosToRegionHandle(gx, gy, out x, out y);
-                            instance.Client.Self.RequestTeleport(h, new Vector3(x, y, z));
+                            client.Self.RequestTeleport(h, new Vector3(x, y, z));
                         }
                         catch (Exception) { }
 
                         break;
+
+                    #region #RLV folder and outfit manipulation
+                    case "getoutfit":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            var wearables = client.Appearance.GetWearables();
+                            string res = "";
+
+                            // Do we have a specific wearable to check, ie @getoutfit:socks=99
+                            if (!string.IsNullOrEmpty(rule.Option))
+                            {
+                                if (wearables.ContainsKey(WearableFromString(rule.Option)))
+                                {
+                                    res = "1";
+                                }
+                                else
+                                {
+                                    res = "0";
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < RLVWearables.Count; i++)
+                                {
+                                    if (wearables.ContainsKey(RLVWearables[i].Type))
+                                    {
+                                        res += "1";
+                                    }
+                                    else
+                                    {
+                                        res += "0";
+                                    }
+
+                                }
+                            }
+                            client.Self.Chat(res, chan, ChatType.Normal);
+                        }
+                        break;
+
+                    #endregion #RLV folder and outfit manipulation
 
                 }
             }
