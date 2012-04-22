@@ -759,7 +759,16 @@ namespace Radegast
             }
             else
             {
-                client.Self.Stand();
+                if (!instance.RLV.RestictionActive("unsit"))
+                {
+                    client.Self.Stand();
+                }
+                else
+                {
+                    instance.TabConsole.DisplayNotificationInChat("Unsit prevented by RLV");
+                    this.sitting = true;
+                    return;
+                }
             }
 
             if (SitStateChanged != null)
