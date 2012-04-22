@@ -72,7 +72,7 @@ namespace Radegast
         }
         #endregion
 
-        #region Helper classes, structs and enums
+        #region Helper classes, methods, structs and enums
         public struct RLVWearable
         {
             public string Name { get; set; }
@@ -87,6 +87,7 @@ namespace Radegast
 
         public static readonly List<RLVWearable> RLVWearables;
         public static readonly List<RLVAttachment> RLVAttachments;
+        
         static RLVManager()
         {
             RLVWearables = new List<RLVWearable>(16);
@@ -107,9 +108,48 @@ namespace Radegast
             RLVWearables.Add(new RLVWearable() { Name = "tattoo", Type = WearableType.Tattoo });
 
             RLVAttachments = new List<RLVAttachment>();
+            RLVAttachments.Add(new RLVAttachment() { Name = "none", Point = AttachmentPoint.Default });
+            RLVAttachments.Add(new RLVAttachment() { Name = "chest", Point = AttachmentPoint.Chest });
+            RLVAttachments.Add(new RLVAttachment() { Name = "skull", Point = AttachmentPoint.Skull });
+            RLVAttachments.Add(new RLVAttachment() { Name = "left shoulder", Point = AttachmentPoint.LeftShoulder });
+            RLVAttachments.Add(new RLVAttachment() { Name = "right shoulder", Point = AttachmentPoint.RightShoulder });
+            RLVAttachments.Add(new RLVAttachment() { Name = "left hand", Point = AttachmentPoint.LeftHand });
+            RLVAttachments.Add(new RLVAttachment() { Name = "right hand", Point = AttachmentPoint.RightHand });
+            RLVAttachments.Add(new RLVAttachment() { Name = "left foot", Point = AttachmentPoint.LeftFoot });
+            RLVAttachments.Add(new RLVAttachment() { Name = "right foot", Point = AttachmentPoint.RightFoot });
+            RLVAttachments.Add(new RLVAttachment() { Name = "spine", Point = AttachmentPoint.Spine });
+            RLVAttachments.Add(new RLVAttachment() { Name = "pelvis", Point = AttachmentPoint.Pelvis });
+            RLVAttachments.Add(new RLVAttachment() { Name = "mouth", Point = AttachmentPoint.Mouth });
+            RLVAttachments.Add(new RLVAttachment() { Name = "chin", Point = AttachmentPoint.Chin });
+            RLVAttachments.Add(new RLVAttachment() { Name = "left ear", Point = AttachmentPoint.LeftEar });
+            RLVAttachments.Add(new RLVAttachment() { Name = "right ear", Point = AttachmentPoint.RightEar });
+            RLVAttachments.Add(new RLVAttachment() { Name = "left eyeball", Point = AttachmentPoint.LeftEyeball });
+            RLVAttachments.Add(new RLVAttachment() { Name = "right eyeball", Point = AttachmentPoint.RightEyeball });
+            RLVAttachments.Add(new RLVAttachment() { Name = "nose", Point = AttachmentPoint.Nose });
+            RLVAttachments.Add(new RLVAttachment() { Name = "r upper arm", Point = AttachmentPoint.RightUpperArm });
+            RLVAttachments.Add(new RLVAttachment() { Name = "r forearm", Point = AttachmentPoint.RightForearm });
+            RLVAttachments.Add(new RLVAttachment() { Name = "l upper arm", Point = AttachmentPoint.LeftUpperArm });
+            RLVAttachments.Add(new RLVAttachment() { Name = "l forearm", Point = AttachmentPoint.LeftForearm });
+            RLVAttachments.Add(new RLVAttachment() { Name = "right hip", Point = AttachmentPoint.RightHip });
+            RLVAttachments.Add(new RLVAttachment() { Name = "r upper leg", Point = AttachmentPoint.RightUpperLeg });
+            RLVAttachments.Add(new RLVAttachment() { Name = "r lower leg", Point = AttachmentPoint.RightLowerLeg });
+            RLVAttachments.Add(new RLVAttachment() { Name = "left hip", Point = AttachmentPoint.LeftHip });
+            RLVAttachments.Add(new RLVAttachment() { Name = "l upper leg", Point = AttachmentPoint.LeftUpperLeg });
+            RLVAttachments.Add(new RLVAttachment() { Name = "l lower leg", Point = AttachmentPoint.LeftLowerLeg });
+            RLVAttachments.Add(new RLVAttachment() { Name = "stomach", Point = AttachmentPoint.Stomach });
+            RLVAttachments.Add(new RLVAttachment() { Name = "left pec", Point = AttachmentPoint.LeftPec });
+            RLVAttachments.Add(new RLVAttachment() { Name = "right pec", Point = AttachmentPoint.RightPec });
+            RLVAttachments.Add(new RLVAttachment() { Name = "center 2", Point = AttachmentPoint.HUDCenter2 });
+            RLVAttachments.Add(new RLVAttachment() { Name = "top right", Point = AttachmentPoint.HUDTopRight });
+            RLVAttachments.Add(new RLVAttachment() { Name = "top", Point = AttachmentPoint.HUDTop });
+            RLVAttachments.Add(new RLVAttachment() { Name = "top left", Point = AttachmentPoint.HUDTopLeft });
+            RLVAttachments.Add(new RLVAttachment() { Name = "center", Point = AttachmentPoint.HUDCenter });
+            RLVAttachments.Add(new RLVAttachment() { Name = "bottom left", Point = AttachmentPoint.HUDBottomLeft });
+            RLVAttachments.Add(new RLVAttachment() { Name = "bottom", Point = AttachmentPoint.HUDBottom });
+            RLVAttachments.Add(new RLVAttachment() { Name = "bottom right", Point = AttachmentPoint.HUDBottomRight });
+            RLVAttachments.Add(new RLVAttachment() { Name = "neck", Point = AttachmentPoint.Neck });
+            RLVAttachments.Add(new RLVAttachment() { Name = "root", Point = AttachmentPoint.Root });
         }
-
-        #endregion Helper classes, structs and enums
 
         public static WearableType WearableFromString(string type)
         {
@@ -123,6 +163,21 @@ namespace Radegast
                 return WearableType.Invalid;
             }
         }
+
+        public static AttachmentPoint AttachmentPointFromString(string point)
+        {
+            var found = RLVAttachments.FindAll(a => a.Name == point);
+            if (found.Count == 1)
+            {
+                return found[0].Point;
+            }
+            else
+            {
+                return AttachmentPoint.Default;
+            }
+        }
+
+        #endregion Helper classes, structs and enums
 
         public bool Enabled
         {
@@ -469,6 +524,55 @@ namespace Radegast
                                     }
 
                                 }
+                            }
+                            client.Self.Chat(res, chan, ChatType.Normal);
+                        }
+                        break;
+
+                    case "getattach":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            string res = "";
+                            var attachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
+                            if (attachments.Count > 0)
+                            {
+                                var myPoints = new List<AttachmentPoint>(attachments.Count);
+                                for (int i = 0; i < attachments.Count; i++)
+                                {
+                                    if (!myPoints.Contains(attachments[i].PrimData.AttachmentPoint))
+                                    {
+                                        myPoints.Add(attachments[i].PrimData.AttachmentPoint);
+                                    }
+                                }
+
+                                // Do we want to check one single attachment
+                                if (!string.IsNullOrEmpty(rule.Option))
+                                {
+                                    if (myPoints.Contains(AttachmentPointFromString(rule.Option)))
+                                    {
+                                        res = "1";
+                                    }
+                                    else
+                                    {
+                                        res = "0";
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < RLVAttachments.Count; i++)
+                                    {
+                                        if (myPoints.Contains(RLVAttachments[i].Point))
+                                        {
+                                            res += "1";
+                                        }
+                                        else
+                                        {
+                                            res += "0";
+                                        }
+                                    }
+                                }
+
+
                             }
                             client.Self.Chat(res, chan, ChatType.Normal);
                         }
