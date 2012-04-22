@@ -578,6 +578,35 @@ namespace Radegast
                         }
                         break;
 
+                    case "remattach":
+                    case "detach":
+                        if (rule.Param == "force")
+                        {
+                            if (!string.IsNullOrEmpty(rule.Option))
+                            {
+                                var point = RLVAttachments.Find(a => a.Name == rule.Option);
+                                if (point.Name == rule.Option)
+                                {
+                                    var attachment = client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ParentID == client.Self.LocalID && p.PrimData.AttachmentPoint == point.Point);
+                                    if (attachment != null && client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                                    {
+                                        instance.COF.Detach((InventoryItem)client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)].Data);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID).ForEach(attachment =>
+                                {
+                                    if (client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                                    {
+                                        instance.COF.Detach((InventoryItem)client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)].Data);
+                                    }
+                                });
+                            }
+                        }
+                        break;
+
                     #endregion #RLV folder and outfit manipulation
 
                 }
