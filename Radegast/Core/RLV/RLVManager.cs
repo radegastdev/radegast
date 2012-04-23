@@ -209,7 +209,7 @@ namespace Radegast
 
         RadegastInstance instance;
         GridClient client { get { return instance.Client; } }
-        Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]+))?=(?<param>\w+)", RegexOptions.Compiled);
+        Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]*))?=(?<param>\w+)", RegexOptions.Compiled);
         List<RLVRule> rules = new List<RLVRule>();
         System.Timers.Timer CleanupTimer;
 
@@ -611,6 +611,26 @@ namespace Radegast
                         }
                         break;
 
+                    case "getinv":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            string res = string.Empty;
+                            InventoryNode folder = FindFolder(rule.Option);
+                            if (folder != null)
+                            {
+                                foreach (var f in folder.Nodes.Values)
+                                {
+                                    if (f.Data is InventoryFolder)
+                                    {
+                                        res += f.Data.Name + ",";
+                                    }
+                                }
+                            }
+                            
+                            client.Self.Chat(res.TrimEnd(','), chan, ChatType.Normal);
+                        }
+                        break;
+
                     #endregion #RLV folder and outfit manipulation
 
                 }
@@ -618,6 +638,43 @@ namespace Radegast
 
 
             return true;
+        }
+
+        public InventoryNode RLVRootFolder()
+        {
+            foreach (var rn in client.Inventory.Store.RootNode.Nodes.Values)
+            {
+                if (rn.Data.Name == "#RLV" && rn.Data is InventoryFolder)
+                {
+                    return rn;
+                }
+            }
+            return null;
+        }
+
+        public InventoryNode FindFolder(string path)
+        {
+            var root = RLVRootFolder();
+            if (root == null) return null;
+
+            return FindFolderInternal(root, "/", "/" + Regex.Replace(path, @"^[/\s]*(.*)[/\s]*", @"$1").ToLower());
+        }
+
+        protected InventoryNode FindFolderInternal(InventoryNode currentNode, string currentPath, string desiredPath)
+        {
+            if (desiredPath == currentPath)
+            {
+                return currentNode;
+            }
+            foreach (var n in currentNode.Nodes.Values)
+            {
+                var res = FindFolderInternal(n, currentPath + n.Data.Name.ToLower(), desiredPath);
+                if (res != null)
+                {
+                    return res;
+                }
+            }
+            return null;
         }
 
         public void Clear(UUID id)
