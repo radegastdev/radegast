@@ -338,6 +338,34 @@ namespace Radegast
         }
 
         /// <summary>
+        /// Checks if inventory item of Wearable type is worn
+        /// </summary>
+        /// <param name="currentlyWorn">Current outfit</param>
+        /// <param name="item">Item to check</param>
+        /// <returns>True if the item is worn</returns>
+        public static bool IsWorn(Dictionary<WearableType, AppearanceManager.WearableData> currentlyWorn, InventoryItem item)
+        {
+            foreach (var n in currentlyWorn.Values)
+            {
+                if (n.ItemID == item.UUID)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Can this inventory type be worn
+        /// </summary>
+        /// <param name="item">Item to check</param>
+        /// <returns>True if the inventory item can be worn</returns>
+        public static bool CanBeWorn(InventoryBase item)
+        {
+            return item is InventoryWearable || item is InventoryAttachment || item is InventoryObject;
+        }
+
+        /// <summary>
         /// Attach an inventory item
         /// </summary>
         /// <param name="item">Item to be attached</param>

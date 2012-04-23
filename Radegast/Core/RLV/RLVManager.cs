@@ -620,13 +620,34 @@ namespace Radegast
                             {
                                 foreach (var f in folder.Nodes.Values)
                                 {
-                                    if (f.Data is InventoryFolder)
+                                    if (f.Data is InventoryFolder && !f.Data.Name.StartsWith("."))
                                     {
                                         res += f.Data.Name + ",";
                                     }
                                 }
                             }
                             
+                            client.Self.Chat(res.TrimEnd(','), chan, ChatType.Normal);
+                        }
+                        break;
+
+                    case "getinvworn":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            string res = string.Empty;
+                            InventoryNode root = FindFolder(rule.Option);
+                            if (root != null)
+                            {
+                                res += "|" + GetWornIndicator(root) + ",";
+                                foreach (var n in root.Nodes.Values)
+                                {
+                                    if (n.Data is InventoryFolder && !n.Data.Name.StartsWith("."))
+                                    {
+                                        res += n.Data.Name + "|" + GetWornIndicator(n) + ",";
+                                    }
+                                }
+                            }
+
                             client.Self.Chat(res.TrimEnd(','), chan, ChatType.Normal);
                         }
                         break;
@@ -638,6 +659,97 @@ namespace Radegast
 
 
             return true;
+        }
+
+
+        public void AllSubfolderWearables(InventoryNode root, ref List<InventoryItem> WearableItems)
+        {
+            foreach (var n in root.Nodes.Values)
+            {
+                if (!n.Data.Name.StartsWith("."))
+                {
+                    if (n.Data is InventoryFolder)
+                    {
+                        AllSubfolderWearables(n, ref WearableItems);
+                    }
+                    else
+                    {
+                        WearableItems.Add((InventoryItem)n.Data);
+                    }
+                }
+            }
+
+        }
+
+        protected string GetWornIndicator(InventoryNode node)
+        {
+            var currentOutfit = client.Appearance.GetWearables();
+            var currentAttachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
+            int myItemsCount = 0;
+            int myItemsWornCount = 0;
+
+            foreach (var n in node.Nodes.Values)
+            {
+                if (CurrentOutfitFolder.CanBeWorn(n.Data) && !n.Data.Name.StartsWith("."))
+                {
+                    myItemsCount++;
+                    if ((n.Data is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, (InventoryItem)n.Data)) ||
+                        CurrentOutfitFolder.IsAttached(currentAttachments, (InventoryItem)n.Data))
+                    {
+                        myItemsWornCount++;
+                    }
+                }
+            }
+
+            List<InventoryItem> allItems = new List<InventoryItem>();
+            foreach (var n in node.Nodes.Values)
+            {
+                if (n.Data is InventoryFolder && !n.Data.Name.StartsWith("."))
+                {
+                    AllSubfolderWearables(n, ref allItems);
+                }
+            }
+
+            int allItemsCount = 0;
+            int allItemsWornCount = 0;
+
+            foreach (var n in allItems)
+            {
+                if (CurrentOutfitFolder.CanBeWorn(n) && !n.Name.StartsWith("."))
+                {
+                    allItemsCount++;
+                    if ((n is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, n)) ||
+                        CurrentOutfitFolder.IsAttached(currentAttachments, n))
+                    {
+                        allItemsWornCount++;
+                    }
+                }
+            }
+
+            return WornIndicator(myItemsCount, myItemsWornCount) + WornIndicator(allItemsCount, allItemsWornCount);
+        }
+
+        protected string WornIndicator(int nrMyItem, int nrWorn)
+        {
+            string first = "0";
+
+            if (nrMyItem > 0)
+            {
+                if (nrMyItem == nrWorn)
+                {
+                    first = "3";
+                }
+                else if (nrWorn > 0)
+                {
+                    first = "2";
+                }
+                else
+                {
+                    first = "1";
+                }
+            }
+
+            return first;
         }
 
         public InventoryNode RLVRootFolder()
@@ -668,6 +780,8 @@ namespace Radegast
             }
             foreach (var n in currentNode.Nodes.Values)
             {
+                if (n.Data.Name.StartsWith(".")) continue;
+
                 var res = FindFolderInternal(n, currentPath + n.Data.Name.ToLower(), desiredPath);
                 if (res != null)
                 {
