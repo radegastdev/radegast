@@ -442,6 +442,10 @@ namespace Radegast
                                     .ForEach(objRule =>
                                 {
                                     res += sep + objRule.Behaviour;
+                                    if (!string.IsNullOrEmpty(objRule.Option))
+                                    {
+                                        res += ":" + objRule.Option;
+                                    }
                                 });
                                 client.Self.Chat(res, chan, ChatType.Normal);
                             }
