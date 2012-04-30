@@ -119,15 +119,12 @@ namespace Radegast
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Create main Radegast instance
-            RadegastInstance instance = RadegastInstance.GlobalInstance;
-
             // See if we only wanted to display list of grids
             if (CommandLine.ListGrids)
             {
                 Console.WriteLine(CommandLine.GetHeader());
                 Console.WriteLine();
-                GridManager grids = instance.GridManger;
+                GridManager grids = new GridManager();
                 Console.WriteLine("Use Grid ID as the parameter for --grid");
                 Console.WriteLine("{0,-25} - {1}", "Grid ID", "Grid Name");
                 Console.WriteLine("========================================================");
@@ -140,6 +137,8 @@ namespace Radegast
                 Environment.Exit(0);
             }
 
+            // Create main Radegast instance
+            RadegastInstance instance = RadegastInstance.GlobalInstance;
             Application.Run(instance.MainForm);
         }
 

@@ -305,7 +305,7 @@ namespace Radegast
             InitializeClient(client);
 
             rlv = new RLVManager(this);
-            gridManager = new GridManager(this);
+            gridManager = new GridManager();
             gridManager.LoadGrids();
 
             names = new NameManager(this);

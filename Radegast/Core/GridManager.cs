@@ -92,12 +92,8 @@ namespace Radegast
     {
         public List<Grid> Grids;
 
-        private RadegastInstance Instance;
-
-        public GridManager(RadegastInstance instance)
+        public GridManager()
         {
-            this.Instance = instance;
-
             Grids = new List<Grid>();
         }
 
