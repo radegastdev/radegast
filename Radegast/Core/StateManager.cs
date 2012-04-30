@@ -277,18 +277,23 @@ namespace Radegast
         /// <returns>True if managed to find the avatar</returns>
         public bool TryFindAvatar(UUID person, out Simulator sim, out Vector3 position)
         {
+            Simulator[] Simulators = null;
+            lock (client.Network.Simulators)
+            {
+                Simulators = client.Network.Simulators.ToArray();
+            }
             sim = null;
             position = Vector3.Zero;
 
             Avatar avi = null;
 
             // First try the object tracker
-            for (int i = 0; i < client.Network.Simulators.Count; i++)
+            foreach (var s in Simulators)
             {
-                avi = client.Network.Simulators[i].ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
+                avi = s.ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
                 if (avi != null)
                 {
-                    sim = client.Network.Simulators[i];
+                    sim = s;
                     break;
                 }
             }
@@ -310,12 +315,11 @@ namespace Radegast
             }
             else
             {
-                for (int i = 0; i < client.Network.Simulators.Count; i++)
+                foreach (var s in Simulators)
                 {
-                    if (client.Network.Simulators[i].AvatarPositions.ContainsKey(person))
+                    if (s.AvatarPositions.ContainsKey(person))
                     {
-                        sim = client.Network.Simulators[i];
-                        position = sim.AvatarPositions[person];
+                        position = s.AvatarPositions[person];
                         break;
                     }
                 }
