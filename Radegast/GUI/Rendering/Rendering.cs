@@ -26,7 +26,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id:$
+// $Id$
 //
 
 #region Usings
@@ -3328,6 +3328,10 @@ namespace Radegast.Rendering
 
 
                 }
+
+                // add prim context menu items
+                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim.ID);
+
             } // We right clicked on an avatar, add some context menu items
             else if (RightclickedObject != null && RightclickedObject is RenderAvatar)
             {
@@ -3357,6 +3361,8 @@ namespace Radegast.Rendering
                     ctxMenu.Items.Add(item);
                 }
 
+                // add avatar context menu items
+                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Avatar), av.avatar.ID);
             }
 
             // If we are not the sole menu item, add separator
