@@ -3330,7 +3330,7 @@ namespace Radegast.Rendering
                 }
 
                 // add prim context menu items
-                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim.ID);
+                instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim);
 
             } // We right clicked on an avatar, add some context menu items
             else if (RightclickedObject != null && RightclickedObject is RenderAvatar)
