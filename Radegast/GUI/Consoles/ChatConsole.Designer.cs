@@ -61,7 +61,6 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChatConsole));
             this.btnSay = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.rtbChat = new System.Windows.Forms.RichTextBox();
@@ -84,19 +83,6 @@ namespace Radegast
             this.ctxBan = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxEstateEject = new System.Windows.Forms.ToolStripMenuItem();
             this.muteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.tbtnStartIM = new System.Windows.Forms.ToolStripButton();
-            this.tbtnProfile = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbtnFollow = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbtnTextures = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbtnAttach = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbtnMaster = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.tbtnAnim = new System.Windows.Forms.ToolStripButton();
             this.pnlMovement = new System.Windows.Forms.Panel();
             this.btnMoveBack = new System.Windows.Forms.Button();
             this.btnFwd = new System.Windows.Forms.Button();
@@ -109,7 +95,6 @@ namespace Radegast
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.avatarContext.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.pnlMovement.SuspendLayout();
             this.pnlChatInput.SuspendLayout();
             this.SuspendLayout();
@@ -139,7 +124,6 @@ namespace Radegast
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.lvwObjects);
-            this.splitContainer1.Panel2.Controls.Add(this.toolStrip1);
             this.splitContainer1.Panel2.Controls.Add(this.pnlMovement);
             this.splitContainer1.Size = new System.Drawing.Size(576, 354);
             this.splitContainer1.SplitterDistance = 445;
@@ -174,7 +158,7 @@ namespace Radegast
             this.lvwObjects.Location = new System.Drawing.Point(0, 0);
             this.lvwObjects.MultiSelect = false;
             this.lvwObjects.Name = "lvwObjects";
-            this.lvwObjects.Size = new System.Drawing.Size(86, 317);
+            this.lvwObjects.Size = new System.Drawing.Size(127, 317);
             this.lvwObjects.TabIndex = 0;
             this.lvwObjects.UseCompatibleStateImageBehavior = false;
             this.lvwObjects.View = System.Windows.Forms.View.List;
@@ -335,136 +319,6 @@ namespace Radegast
             this.muteToolStripMenuItem.ToolTipText = " Mute ";
             this.muteToolStripMenuItem.Click += new System.EventHandler(this.muteToolStripMenuItem_Click);
             // 
-            // toolStrip1
-            // 
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tbtnStartIM,
-            this.tbtnProfile,
-            this.toolStripSeparator1,
-            this.tbtnFollow,
-            this.toolStripSeparator2,
-            this.tbtnTextures,
-            this.toolStripSeparator3,
-            this.tbtnAttach,
-            this.toolStripSeparator4,
-            this.tbtnMaster,
-            this.toolStripSeparator5,
-            this.tbtnAnim});
-            this.toolStrip1.Location = new System.Drawing.Point(86, 0);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(41, 317);
-            this.toolStrip1.TabIndex = 20;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // tbtnStartIM
-            // 
-            this.tbtnStartIM.AccessibleName = "Start IM";
-            this.tbtnStartIM.AutoToolTip = false;
-            this.tbtnStartIM.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnStartIM.Enabled = false;
-            this.tbtnStartIM.Image = global::Radegast.Properties.Resources.computer_16;
-            this.tbtnStartIM.Name = "tbtnStartIM";
-            this.tbtnStartIM.Size = new System.Drawing.Size(38, 20);
-            this.tbtnStartIM.ToolTipText = "Start IM";
-            this.tbtnStartIM.Click += new System.EventHandler(this.tbtnStartIM_Click);
-            // 
-            // tbtnProfile
-            // 
-            this.tbtnProfile.AccessibleName = "View profile";
-            this.tbtnProfile.AutoToolTip = false;
-            this.tbtnProfile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnProfile.Enabled = false;
-            this.tbtnProfile.Image = global::Radegast.Properties.Resources.applications_16;
-            this.tbtnProfile.Name = "tbtnProfile";
-            this.tbtnProfile.Size = new System.Drawing.Size(38, 20);
-            this.tbtnProfile.ToolTipText = "View Profile";
-            this.tbtnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnFollow
-            // 
-            this.tbtnFollow.AccessibleName = "Follow";
-            this.tbtnFollow.AutoToolTip = false;
-            this.tbtnFollow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtnFollow.Enabled = false;
-            this.tbtnFollow.Image = global::Radegast.Properties.Resources.arrow_forward_16;
-            this.tbtnFollow.Name = "tbtnFollow";
-            this.tbtnFollow.Size = new System.Drawing.Size(38, 20);
-            this.tbtnFollow.ToolTipText = "Follow";
-            this.tbtnFollow.Click += new System.EventHandler(this.tbtnFollow_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnTextures
-            // 
-            this.tbtnTextures.AccessibleName = "Textures";
-            this.tbtnTextures.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnTextures.Enabled = false;
-            this.tbtnTextures.Image = ((System.Drawing.Image)(resources.GetObject("tbtnTextures.Image")));
-            this.tbtnTextures.Name = "tbtnTextures";
-            this.tbtnTextures.Size = new System.Drawing.Size(38, 19);
-            this.tbtnTextures.Text = "Txtr";
-            this.tbtnTextures.Click += new System.EventHandler(this.dumpOufitBtn_Click);
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnAttach
-            // 
-            this.tbtnAttach.AccessibleName = "Attachments";
-            this.tbtnAttach.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnAttach.Enabled = false;
-            this.tbtnAttach.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAttach.Image")));
-            this.tbtnAttach.Name = "tbtnAttach";
-            this.tbtnAttach.Size = new System.Drawing.Size(38, 19);
-            this.tbtnAttach.Text = "Attn";
-            this.tbtnAttach.ToolTipText = "List avatar attachments";
-            this.tbtnAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnMaster
-            // 
-            this.tbtnMaster.AccessibleName = "Master";
-            this.tbtnMaster.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnMaster.Enabled = false;
-            this.tbtnMaster.Image = ((System.Drawing.Image)(resources.GetObject("tbtnMaster.Image")));
-            this.tbtnMaster.Name = "tbtnMaster";
-            this.tbtnMaster.Size = new System.Drawing.Size(38, 19);
-            this.tbtnMaster.Text = "Mstr";
-            this.tbtnMaster.Click += new System.EventHandler(this.tbtnMaster_Click);
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(38, 6);
-            // 
-            // tbtnAnim
-            // 
-            this.tbtnAnim.AccessibleName = "Animations";
-            this.tbtnAnim.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbtnAnim.Enabled = false;
-            this.tbtnAnim.Image = ((System.Drawing.Image)(resources.GetObject("tbtnAnim.Image")));
-            this.tbtnAnim.Name = "tbtnAnim";
-            this.tbtnAnim.Size = new System.Drawing.Size(38, 19);
-            this.tbtnAnim.Text = "Anim";
-            this.tbtnAnim.ToolTipText = "List Avatar Animatoions";
-            this.tbtnAnim.Click += new System.EventHandler(this.tbtnAnim_Click);
-            // 
             // pnlMovement
             // 
             this.pnlMovement.Controls.Add(this.btnMoveBack);
@@ -587,11 +441,8 @@ namespace Radegast
             this.VisibleChanged += new System.EventHandler(this.ChatConsole_VisibleChanged);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
             this.avatarContext.ResumeLayout(false);
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.pnlMovement.ResumeLayout(false);
             this.pnlChatInput.ResumeLayout(false);
             this.pnlChatInput.PerformLayout();
@@ -606,24 +457,11 @@ namespace Radegast
         public Button btnSay;
         public SplitContainer splitContainer1;
         public Panel pnlChatInput;
-        public ToolStrip toolStrip1;
-        public ToolStripButton tbtnStartIM;
-        public ToolStripButton tbtnFollow;
-        public ToolStripSeparator toolStripSeparator1;
-        public ToolStripButton tbtnProfile;
-        public ToolStripButton tbtnTextures;
-        public ToolStripSeparator toolStripSeparator2;
-        public ToolStripSeparator toolStripSeparator3;
-        public ToolStripButton tbtnMaster;
-        public ToolStripButton tbtnAttach;
-        public ToolStripSeparator toolStripSeparator4;
         public Panel pnlMovement;
         public Button btnTurnLeft;
         public Button btnTurnRight;
         public Button btnFwd;
         public Button btnMoveBack;
-        public ToolStripButton tbtnAnim;
-        public ToolStripSeparator toolStripSeparator5;
         public RadegastContextMenuStrip avatarContext;
         public ToolStripMenuItem ctxProfile;
         public ToolStripMenuItem ctxStartIM;

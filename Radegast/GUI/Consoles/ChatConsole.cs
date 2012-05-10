@@ -64,9 +64,6 @@ namespace Radegast
 
             if (!instance.advancedDebugging)
             {
-                tbtnAnim.Visible = false;
-                tbtnTextures.Visible = false;
-
                 ctxAnim.Visible = false;
                 ctxTextures.Visible = false;
             }
@@ -590,7 +587,6 @@ namespace Radegast
             if (lvwObjects.SelectedItems.Count == 0)
             {
                 currentAvatar = null;
-                tbtnStartIM.Enabled = tbtnFollow.Enabled = tbtnProfile.Enabled = tbtnTextures.Enabled = tbtnMaster.Enabled = tbtnAttach.Enabled = tbtnAnim.Enabled = false;
                 ctxPay.Enabled = ctxPoint.Enabled = ctxStartIM.Enabled = ctxFollow.Enabled = ctxProfile.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = false;
             }
             else
@@ -600,15 +596,11 @@ namespace Radegast
                     return a.ID == (UUID)lvwObjects.SelectedItems[0].Tag;
                 });
 
-                tbtnStartIM.Enabled = tbtnProfile.Enabled = true;
-                tbtnFollow.Enabled = tbtnTextures.Enabled = tbtnMaster.Enabled = tbtnAttach.Enabled = tbtnAnim.Enabled = currentAvatar != null;
-
                 ctxPay.Enabled = ctxStartIM.Enabled = ctxProfile.Enabled = true;
                 ctxPoint.Enabled = ctxFollow.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = currentAvatar != null;
 
                 if ((UUID)lvwObjects.SelectedItems[0].Tag == client.Self.AgentID)
                 {
-                    tbtnFollow.Enabled = tbtnStartIM.Enabled = false;
                     ctxPay.Enabled = ctxFollow.Enabled = ctxStartIM.Enabled = false;
                 }
             }
