@@ -40,15 +40,18 @@ namespace Radegast
         private InstantMessage msg;
         private AssetType type = AssetType.Unknown;
         private UUID destinationFolderID;
-
+        private UUID groupID;
+        private Group group;
 
         public ntfGroupNotice(RadegastInstance instance, InstantMessage msg)
             : base(NotificationType.GroupNotice)
         {
             InitializeComponent();
+            Disposed += new System.EventHandler(ntfGroupNotice_Disposed);
 
             this.instance = instance;
             this.msg = msg;
+            client.Groups.GroupProfile += new System.EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
 
             if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
             {
@@ -65,30 +68,43 @@ namespace Radegast
                 btnSave.Visible = icnItem.Visible = txtItemName.Visible = true;
             }
 
-            string group = string.Empty;
 
             if (msg.BinaryBucket.Length >= 18)
             {
-                UUID groupID = new UUID(msg.BinaryBucket, 2);
-
-                if (instance.Groups.ContainsKey(groupID))
-                {
-                    group = instance.Groups[groupID].Name;
-                    if (instance.Groups[groupID].InsigniaID != UUID.Zero)
-                    {
-                        imgGroup.Init(instance, instance.Groups[groupID].InsigniaID, string.Empty);
-                    }
-                }
+                groupID = new UUID(msg.BinaryBucket, 2);
+            }
+            else
+            {
+                groupID = msg.FromAgentID;
             }
 
-            string text = msg.Message.Replace("\n", System.Environment.NewLine);
             int pos = msg.Message.IndexOf('|');
             string title = msg.Message.Substring(0, pos);
+            lblTitle.Text = title;
+            string text = msg.Message.Replace("\n", System.Environment.NewLine);
             text = text.Remove(0, pos + 1);
 
-            lblTitle.Text = title;
-            lblSentBy.Text = string.Format("Sent by {0}, {1}", msg.FromAgentName, group);
+            lblSentBy.Text = string.Format("Sent by {0}", msg.FromAgentName);
             txtNotice.Text = text;
+
+            if (instance.Groups.ContainsKey(groupID))
+            {
+                group = instance.Groups[groupID];
+                ShowNotice();
+            }
+            else
+            {
+                client.Groups.RequestGroupProfile(groupID);
+            }
+
+        }
+
+        private void ShowNotice()
+        {
+            if (group.ID == UUID.Zero) return;
+            
+            imgGroup.Init(instance, group.InsigniaID, string.Empty);
+            lblSentBy.Text += ", " + group.Name;
 
             // Fire off event
             NotificationEventArgs args = new NotificationEventArgs(instance);
@@ -104,6 +120,25 @@ namespace Radegast
             }
             args.Buttons.Add(btnOK);
             FireNotificationCallback(args);
+        }
+
+        void ntfGroupNotice_Disposed(object sender, System.EventArgs e)
+        {
+            client.Groups.GroupProfile -= new System.EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
+        }
+
+        void Groups_GroupProfile(object sender, GroupProfileEventArgs e)
+        {
+            if (groupID != e.Group.ID) return;
+
+            if (instance.MainForm.InvokeRequired)
+            {
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => Groups_GroupProfile(sender, e)));
+                return;
+            }
+
+            group = e.Group;
+            ShowNotice();
         }
 
         private void SendReply(InstantMessageDialog dialog, byte[] bucket)
