@@ -149,7 +149,7 @@ namespace Radegast
             // 
             this.lvwObjects.AccessibleName = "Nearby people";
             this.lvwObjects.AllowDrop = true;
-            this.lvwObjects.ContextMenuStrip = this.avatarContext;
+            // this.lvwObjects.ContextMenuStrip = this.avatarContext;
             this.lvwObjects.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvwObjects.FullRowSelect = true;
             this.lvwObjects.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;

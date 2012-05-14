@@ -72,6 +72,13 @@ namespace Radegast
             nudRadius.ValueChanged += nudRadius_ValueChanged;
 
             lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
+			lstPrims.MouseClick += (sender, e) => {
+				if (e.Button == MouseButtons.Right)
+				{
+					ctxMenuObjects.Show(lstPrims, e.X, e.Y);
+					ctxMenuObjects.BringToFront();
+				}
+			};
 
             lstContents.LargeImageList = frmMain.ResourceImages;
             lstContents.SmallImageList = frmMain.ResourceImages;
@@ -1083,6 +1090,7 @@ namespace Radegast
         private void ctxMenuObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = false;
+			ctxMenuObjects.BringToFront();
 
             if (lstPrims.SelectedItems.Count != 1)
             {

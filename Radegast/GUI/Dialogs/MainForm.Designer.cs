@@ -616,6 +616,7 @@ namespace Radegast
             this.tsb3D.Name = "tsb3D";
             this.tsb3D.Size = new System.Drawing.Size(59, 22);
             this.tsb3D.Text = "3D Scene";
+			this.tsb3D.Visible = false;
             this.tsb3D.Click += new System.EventHandler(this.tsb3D_Click);
             // 
             // tbtnHelp

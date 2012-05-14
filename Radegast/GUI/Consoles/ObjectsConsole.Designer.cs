@@ -221,6 +221,7 @@ namespace Radegast
             this.btnView.TabIndex = 13;
             this.btnView.Text = "3D View";
             this.btnView.UseVisualStyleBackColor = true;
+			this.btnView.Enabled = false;
             this.btnView.Click += new System.EventHandler(this.btnView_Click);
             // 
             // btnPay
@@ -702,7 +703,7 @@ namespace Radegast
             this.lstPrims.AccessibleName = "Objects";
             this.lstPrims.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1});
-            this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
+            // this.lstPrims.ContextMenuStrip = this.ctxMenuObjects;
             this.lstPrims.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstPrims.FullRowSelect = true;
             this.lstPrims.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;

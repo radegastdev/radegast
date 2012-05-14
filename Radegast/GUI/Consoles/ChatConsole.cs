@@ -77,7 +77,14 @@ namespace Radegast
             }
 
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
-
+			
+			lvwObjects.MouseClick += (sender, e) => {
+				if (e.Button == MouseButtons.Right)
+				{
+					avatarContext.Show(lvwObjects, e.X, e.Y);
+					avatarContext.BringToFront();
+				}
+			};
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
