@@ -8,3 +8,8 @@ compile.bat
 *.csproj
 *.bak
 *~
+*.pidb
+*.resources
+.DS_Store
+*.userprefs
+

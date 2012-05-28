@@ -114,7 +114,11 @@ namespace Radegast
             }
 
             // Change current working directory to Radegast install dir
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+			string myLoc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			if (!string.IsNullOrEmpty(myLoc))
+			{
+            	Directory.SetCurrentDirectory(myLoc);
+			}
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
