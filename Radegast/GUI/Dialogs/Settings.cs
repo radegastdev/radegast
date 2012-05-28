@@ -136,7 +136,7 @@ namespace Radegast
             InitializeComponent();
 
             s = instance.GlobalSettings;
-            tbpGraphics.Controls.Add(new Radegast.Rendering.GraphicsPreferences(instance));
+            // tbpGraphics.Controls.Add(new Radegast.Rendering.GraphicsPreferences(instance));
             cbChatTimestamps.Checked = s["chat_timestamps"].AsBoolean();
 
             cbIMTimeStamps.Checked = s["im_timestamps"].AsBoolean();

@@ -1517,29 +1517,8 @@ namespace Radegast
 
         private void tsb3D_Click(object sender, EventArgs e)
         {
-            if (instance.TabConsole.TabExists("scene_window"))
-            {
-                instance.TabConsole.Tabs["scene_window"].Select();
-            }
-            else
-            {
-                var control = new Rendering.SceneWindow(instance);
-                control.Dock = DockStyle.Fill;
-                instance.TabConsole.AddTab("scene_window", "Scene Viewer", control);
-                instance.TabConsole.Tabs["scene_window"].Floater = false;
-                instance.TabConsole.Tabs["scene_window"].CloseOnDetachedClose = true;
-                control.RegisterTabEvents();
+		}
 
-                if (instance.GlobalSettings["scene_window_docked"])
-                {
-                    instance.TabConsole.Tabs["scene_window"].Select();
-                }
-                else
-                {
-                    instance.TabConsole.Tabs["scene_window"].Detach(instance);
-                }
-            }
-        }
 
         private void loginToolStripMenuItem_Click(object sender, EventArgs e)
         {

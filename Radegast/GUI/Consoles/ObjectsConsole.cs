@@ -993,8 +993,8 @@ namespace Radegast
                 return;
             }
 
-            Rendering.frmPrimWorkshop pw = new Rendering.frmPrimWorkshop(instance, currentPrim.LocalID);
-            pw.Show();
+            // Rendering.frmPrimWorkshop pw = new Rendering.frmPrimWorkshop(instance, currentPrim.LocalID);
+            // pw.Show();
         }
 
         private void nudRadius_ValueChanged(object sender, EventArgs e)

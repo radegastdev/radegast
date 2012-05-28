@@ -159,9 +159,9 @@ namespace Radegast
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Rendering.frmPrimWorkshop pw = new Rendering.frmPrimWorkshop(instance, attachment.LocalID);
-            pw.Show();
-            pw.SetView(new Vector3(0f, 0.5f, 0f), 0, 0, 90, -10);
+            // Rendering.frmPrimWorkshop pw = new Rendering.frmPrimWorkshop(instance, attachment.LocalID);
+            // pw.Show();
+            // pw.SetView(new Vector3(0f, 0.5f, 0f), 0, 0, 90, -10);
         }
     }
 }
