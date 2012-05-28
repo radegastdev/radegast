@@ -43,8 +43,8 @@ namespace Radegast
         RadegastInstance instance;
         GridClient client { get { return instance.Client; } }
         bool Active { get { return client.Network.Connected; } }
-        WebBrowser map;
         MapControl mmap;
+		object map = null;
         Regex slscheme = new Regex("^secondlife://(.+)/([0-9]+)/([0-9]+)");
         bool InTeleport = false;
         bool mapCreated = false;
@@ -121,39 +121,6 @@ namespace Radegast
                 zoomTracker.Value = newval;
         }
 
-        void map_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-            map.DocumentCompleted -= new WebBrowserDocumentCompletedEventHandler(map_DocumentCompleted);
-            map.AllowWebBrowserDrop = false;
-            map.WebBrowserShortcutsEnabled = false;
-            map.ScriptErrorsSuppressed = true;
-            map.ObjectForScripting = this;
-            map.AllowNavigation = false;
-
-            if (instance.MonoRuntime)
-            {
-                map.Navigating += new WebBrowserNavigatingEventHandler(map_Navigating);
-            }
-
-            ThreadPool.QueueUserWorkItem(sync =>
-                {
-                    Thread.Sleep(1000);
-                    if (InvokeRequired && (!instance.MonoRuntime || IsHandleCreated))
-                        BeginInvoke(new MethodInvoker(() =>
-                            {
-                                if (savedRegion != null)
-                                {
-                                    gotoRegion(savedRegion, savedX, savedY);
-                                }
-                                else if (Active)
-                                {
-                                    gotoRegion(client.Network.CurrentSim.Name, 128, 128);
-                                }
-                            }
-                    ));
-                }
-            );
-        }
 
         void frmMap_Disposed(object sender, EventArgs e)
         {
@@ -163,14 +130,6 @@ namespace Radegast
 
             if (map != null)
             {
-                if (instance.MonoRuntime)
-                {
-                    map.Navigating -= new WebBrowserNavigatingEventHandler(map_Navigating);
-                }
-                else
-                {
-                    map.Dispose();
-                }
                 map = null;
             }
 
@@ -385,11 +344,6 @@ namespace Radegast
         {
             if (!Active) return;
 
-            if (instance.MonoRuntime && map != null)
-            {
-                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
-            }
-
             lblStatus.Text = "Teleporting to " + txtRegion.Text;
             prgTeleport.Style = ProgressBarStyle.Marquee;
 
@@ -445,16 +399,6 @@ namespace Radegast
                 return;
             }
 
-            if (map == null || map.Document == null) return;
-
-            if (instance.MonoRuntime)
-            {
-                map.Document.InvokeScript(string.Format("gReg = \"{0}\"; gSimX = {1}; gSimY = {2}; monosucks", regionName, simX, simY));
-            }
-            else
-            {
-                map.Document.InvokeScript("gotoRegion", new object[] { regionName, simX, simY });
-            }
         }
 
         #endregion

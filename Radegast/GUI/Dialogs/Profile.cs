@@ -478,11 +478,6 @@ namespace Radegast
 
         private void btnWebView_Click(object sender, EventArgs e)
         {
-            WebBrowser web = new WebBrowser();
-            web.Dock = DockStyle.Fill;
-            web.Url = new Uri(txtWebURL.Text);
-
-            pnlWeb.Controls.Add(web);
         }
 
         private void btnWebOpen_Click(object sender, EventArgs e)
