@@ -229,7 +229,7 @@ namespace Radegast
                 if (uuid != UUID.Zero) return uuid;
             }
             string str = ((target is string) ? (string)target : null);
-            if (string.IsNullOrEmpty(str))
+            if (!string.IsNullOrEmpty(str))
             {
                 if (UUID.TryParse(str, out uuid))
                 {
