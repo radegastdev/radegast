@@ -142,8 +142,9 @@ namespace Radegast
         public virtual bool Contributes(Object o, Type type)
         {
             if (o==null) return false;
+            if(TypeContributes(type)) return true;
             object oo = DeRef(o);
-            return (oo != o && Contributes(oo,type)) || TypeContributes(type) || TypeContributes(o.GetType());
+            return (oo != null && oo != o && Contributes(oo, oo.GetType()));
         }
 
         public virtual void OnInvoke(object sender, EventArgs e, object target)
