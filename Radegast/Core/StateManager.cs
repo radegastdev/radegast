@@ -277,6 +277,10 @@ namespace Radegast
         /// <returns>True if managed to find the avatar</returns>
         public bool TryFindAvatar(UUID person, out Simulator sim, out Vector3 position)
         {
+            return TryFindPrim(person, out sim, out position, true);
+        }
+        public bool TryFindPrim(UUID person, out Simulator sim, out Vector3 position, bool onlyAvatars)
+        {
             Simulator[] Simulators = null;
             lock (client.Network.Simulators)
             {
@@ -285,7 +289,7 @@ namespace Radegast
             sim = null;
             position = Vector3.Zero;
 
-            Avatar avi = null;
+            Primitive avi = null;
 
             // First try the object tracker
             foreach (var s in Simulators)
@@ -297,7 +301,18 @@ namespace Radegast
                     break;
                 }
             }
-
+            if (avi == null && !onlyAvatars)
+            {
+                foreach (var s in Simulators)
+                {
+                    avi = s.ObjectsPrimitives.Find((Primitive av) => { return av.ID == person; });
+                    if (avi != null)
+                    {
+                        sim = s;
+                        break;
+                    }
+                }
+            }
             if (avi != null)
             {
                 if (avi.ParentID == 0)
