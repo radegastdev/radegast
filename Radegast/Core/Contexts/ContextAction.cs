@@ -149,7 +149,14 @@ namespace Radegast
 
         public virtual void OnInvoke(object sender, EventArgs e, object target)
         {
-            if (Handler != null) Handler(DeRef(target ?? sender), e);
+
+            object oneOf = target ?? sender;
+            oneOf = GetValue(ContextType, oneOf);
+            if (!ContextType.IsInstanceOfType(oneOf))
+            {
+                oneOf = GetValue(ContextType, DeRef(oneOf));
+            }
+            if (Handler != null) Handler(oneOf, e);
         }
 
         public virtual void IContextAction(RadegastInstance instance)
@@ -160,7 +167,14 @@ namespace Radegast
         public virtual void Dispose()
         {           
         }
-
+        public object GetValue(Type type, object lastObject)
+        {
+            if (type.IsInstanceOfType(lastObject)) return lastObject;
+            if (type.IsAssignableFrom(typeof(Primitive))) return ToPrimitive(lastObject);
+            if (type.IsAssignableFrom(typeof(Avatar))) return ToAvatar(lastObject);
+            if (type.IsAssignableFrom(typeof(UUID))) return ToUUID(lastObject);
+            return lastObject;
+        }
         public Primitive ToPrimitive(object target)
         {
             Primitive thePrim = ((target is Primitive) ? (Primitive)target : null);
