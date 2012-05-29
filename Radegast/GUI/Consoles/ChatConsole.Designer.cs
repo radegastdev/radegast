@@ -275,8 +275,8 @@ namespace Radegast
             // 
             this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
             this.goToToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.goToToolStripMenuItem.Text = "Go To";
-            this.goToToolStripMenuItem.ToolTipText = " Go To ";
+            this.goToToolStripMenuItem.Text = "Walk To";
+            this.goToToolStripMenuItem.ToolTipText = " Walk To ";
             this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem_Click);
             // 
             // faceToolStripMenuItem
