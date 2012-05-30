@@ -53,7 +53,7 @@ namespace Radegast
         /// </summary>
         /// <param name="libomvType"></param>
         /// <param name="label"></param>
-        /// <param name="handler"></param>
+        /// <param name="handler">Action<object,EventArgs></param>
         public void RegisterContextAction(Type libomvType, String label, EventHandler handler)
         {
             RegisterContextAction(new ContextAction(instance)
