@@ -357,6 +357,7 @@ namespace Radegast
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             if (netcom != null)
                 netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
+            client.Network.LoginProgress += new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -367,6 +368,7 @@ namespace Radegast
             client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             if (netcom != null)
                 netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
+            client.Network.LoginProgress -= new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
         }
 
         public void SetClientTag()
@@ -399,7 +401,7 @@ namespace Radegast
         public DateTime GetWorldTime()
         {
             DateTime now;
-            
+
             try
             {
                 if (WordTimeZone != null)
@@ -435,7 +437,7 @@ namespace Radegast
                 COF.Dispose();
                 COF = null;
             }
-            
+
             if (names != null)
             {
                 names.Dispose();
@@ -509,18 +511,25 @@ namespace Radegast
 
         void netcom_ClientConnected(object sender, EventArgs e)
         {
-            try
-            {
-                if (!Directory.Exists(ClientDir))
-                    Directory.CreateDirectory(ClientDir);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to create client directory", Helpers.LogLevel.Warning, ex);
-            }
-
-            clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
             client.Self.RequestMuteList();
+        }
+
+        void Network_LoginProgress(object sender, LoginProgressEventArgs e)
+        {
+            if (e.Status == LoginStatus.ConnectingToSim)
+            {
+                try
+                {
+                    if (!Directory.Exists(ClientDir))
+                        Directory.CreateDirectory(ClientDir);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failed to create client directory", Helpers.LogLevel.Warning, ex);
+                }
+
+                clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
+            }
         }
 
 
