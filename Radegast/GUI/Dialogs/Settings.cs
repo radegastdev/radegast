@@ -37,7 +37,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
+using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+
+using Radegast.Bot;
 
 namespace Radegast
 {
@@ -127,6 +131,7 @@ namespace Radegast
         }
 
         public frmSettings(RadegastInstance instance)
+            : base(instance)
         {
             if (settingInitialized)
             {
@@ -178,9 +183,9 @@ namespace Radegast
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
             cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
             cbMinToTrey.CheckedChanged += (object sender, EventArgs e) =>
-                {
-                    s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
-                };
+            {
+                s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
+            };
 
 
             cbNoTyping.Checked = s["no_typing_anim"].AsBoolean();
@@ -191,9 +196,9 @@ namespace Radegast
 
             txtAutoResponse.Text = s["auto_response_text"];
             txtAutoResponse.TextChanged += (object sender, EventArgs e) =>
-                {
-                    s["auto_response_text"] = txtAutoResponse.Text;
-                };
+            {
+                s["auto_response_text"] = txtAutoResponse.Text;
+            };
             AutoResponseType art = (AutoResponseType)s["auto_response_type"].AsInteger();
             switch (art)
             {
@@ -275,6 +280,8 @@ namespace Radegast
             {
                 s["highlight_on_group_im"] = cbHighlightGroupIM.Checked;
             };
+
+            autoSitPrefsUpdate();
 
             UpdateEnabled();
         }
@@ -405,19 +412,68 @@ namespace Radegast
             string input = System.Text.RegularExpressions.Regex.Replace(txtReconnectTime.Text, @"[^\d]", "");
             int t = 120;
             int.TryParse(input, out t);
-            
+
             if (txtReconnectTime.Text != t.ToString())
             {
                 txtReconnectTime.Text = t.ToString();
                 txtReconnectTime.Select(txtReconnectTime.Text.Length, 0);
             }
-            
+
             s["reconnect_time"] = t;
         }
 
         private void cbRadegastLogToFile_CheckedChanged(object sender, EventArgs e)
         {
             s["log_to_file"] = OSD.FromBoolean(cbRadegastLogToFile.Checked);
+        }
+
+        private void autoSitPrefsUpdate()
+        {
+            autoSit.Enabled = (Instance.Client.Network.Connected && Instance.ClientSettings != null);
+            if (!autoSit.Enabled)
+            {
+                return;
+            }
+            RadegastInstance foo = Instance;
+            StateManager bar = foo.State;
+            AutoSit baz = bar.AutoSit;
+            AutoSitPreferences bat = baz.Preferences;
+            AutoSitPreferences prefs = Instance.State.AutoSit.Preferences;
+            autoSitName.Text = prefs.PrimitiveName;
+            autoSitUUID.Text = prefs.Primitive.ToString();
+            autoSitSit.Enabled = prefs.Primitive != UUID.Zero;
+            autoSitEnabled.Checked = prefs.Enabled;
+        }
+
+        private void autoSitClear_Click(object sender, EventArgs e)
+        {
+            Instance.State.AutoSit.Preferences = new AutoSitPreferences();
+            autoSitPrefsUpdate();
+        }
+
+        private void autoSitNameLabel_Click(object sender, EventArgs e)
+        {
+            autoSitName.SelectAll();
+        }
+
+        private void autoSitUUIDLabel_Click(object sender, EventArgs e)
+        {
+            autoSitUUID.SelectAll();
+        }
+
+        private void autoSitSit_Click(object sender, EventArgs e)
+        {
+            Instance.State.AutoSit.TrySit();
+        }
+
+        private void autoSitEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Instance.State.AutoSit.Preferences = new AutoSitPreferences
+            {
+                Primitive = Instance.State.AutoSit.Preferences.Primitive,
+                PrimitiveName = Instance.State.AutoSit.Preferences.PrimitiveName,
+                Enabled = autoSitEnabled.Checked
+            };
         }
     }
 }
