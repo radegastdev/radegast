@@ -32,7 +32,10 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 using System.Threading;
+
 using OpenMetaverse;
+
+using Radegast.Bot;
 using Radegast.Netcom;
 
 namespace Radegast
@@ -186,6 +189,7 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             KnownAnimations = Animations.ToDictionary();
+            autosit = new AutoSit(this.instance);
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -206,6 +210,7 @@ namespace Radegast
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -215,6 +220,7 @@ namespace Radegast
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
         }
 
         public void Dispose()
@@ -267,7 +273,7 @@ namespace Radegast
             Simulator sim;
             return TryFindAvatar(person, out sim, out position);
         }
- 
+
         /// <summary>
         /// Locates avatar in the current sim, or adjacents sims
         /// </summary>
@@ -391,6 +397,11 @@ namespace Radegast
             {
                 SetRandomHeading();
             }
+        }
+
+        void Network_SimChanged(object sender, SimChangedEventArgs e)
+        {
+            autosit.TrySit();
         }
 
         private UUID teleportEffect = UUID.Random();
@@ -1012,6 +1023,12 @@ namespace Radegast
         public bool IsWalking
         {
             get { return walking; }
+        }
+
+        private AutoSit autosit;
+        public AutoSit AutoSit
+        {
+            get { return autosit; }
         }
     }
 

@@ -103,6 +103,15 @@ namespace Radegast
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tbpGraphics = new System.Windows.Forms.TabPage();
+            this.tbpBot = new System.Windows.Forms.TabPage();
+            this.autoSit = new System.Windows.Forms.GroupBox();
+            this.autoSitEnabled = new System.Windows.Forms.CheckBox();
+            this.autoSitSit = new System.Windows.Forms.Button();
+            this.autoSitClear = new System.Windows.Forms.Button();
+            this.autoSitUUIDLabel = new System.Windows.Forms.Label();
+            this.autoSitUUID = new System.Windows.Forms.TextBox();
+            this.autoSitName = new System.Windows.Forms.TextBox();
+            this.autoSitNameLabel = new System.Windows.Forms.Label();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -112,6 +121,8 @@ namespace Radegast
             this.tbpAutoResponse.SuspendLayout();
             this.gnAutoInventory.SuspendLayout();
             this.gbAutoResponse.SuspendLayout();
+            this.tbpBot.SuspendLayout();
+            this.autoSit.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcGraphics
@@ -119,6 +130,7 @@ namespace Radegast
             this.tcGraphics.Controls.Add(this.tbpGeneral);
             this.tcGraphics.Controls.Add(this.tbpAutoResponse);
             this.tcGraphics.Controls.Add(this.tbpGraphics);
+            this.tcGraphics.Controls.Add(this.tbpBot);
             this.tcGraphics.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcGraphics.Location = new System.Drawing.Point(0, 0);
             this.tcGraphics.Multiline = true;
@@ -624,6 +636,100 @@ namespace Radegast
             this.tbpGraphics.Text = "Graphics Settings";
             this.tbpGraphics.UseVisualStyleBackColor = true;
             // 
+            // tbpBot
+            // 
+            this.tbpBot.Controls.Add(this.autoSit);
+            this.tbpBot.Location = new System.Drawing.Point(4, 22);
+            this.tbpBot.Name = "tbpBot";
+            this.tbpBot.Size = new System.Drawing.Size(522, 377);
+            this.tbpBot.TabIndex = 4;
+            this.tbpBot.Text = "Bot";
+            this.tbpBot.UseVisualStyleBackColor = true;
+            // 
+            // autoSit
+            // 
+            this.autoSit.Controls.Add(this.autoSitEnabled);
+            this.autoSit.Controls.Add(this.autoSitSit);
+            this.autoSit.Controls.Add(this.autoSitClear);
+            this.autoSit.Controls.Add(this.autoSitUUIDLabel);
+            this.autoSit.Controls.Add(this.autoSitUUID);
+            this.autoSit.Controls.Add(this.autoSitName);
+            this.autoSit.Controls.Add(this.autoSitNameLabel);
+            this.autoSit.Location = new System.Drawing.Point(8, 3);
+            this.autoSit.Name = "autoSit";
+            this.autoSit.Size = new System.Drawing.Size(263, 95);
+            this.autoSit.TabIndex = 0;
+            this.autoSit.TabStop = false;
+            this.autoSit.Text = "Auto-Sit";
+            // 
+            // autoSitEnabled
+            // 
+            this.autoSitEnabled.AutoSize = true;
+            this.autoSitEnabled.Location = new System.Drawing.Point(9, 70);
+            this.autoSitEnabled.Name = "autoSitEnabled";
+            this.autoSitEnabled.Size = new System.Drawing.Size(65, 17);
+            this.autoSitEnabled.TabIndex = 6;
+            this.autoSitEnabled.Text = "Enabled";
+            this.autoSitEnabled.UseVisualStyleBackColor = true;
+            this.autoSitEnabled.CheckedChanged += new System.EventHandler(this.autoSitEnabled_CheckedChanged);
+            // 
+            // autoSitSit
+            // 
+            this.autoSitSit.Location = new System.Drawing.Point(101, 66);
+            this.autoSitSit.Name = "autoSitSit";
+            this.autoSitSit.Size = new System.Drawing.Size(75, 23);
+            this.autoSitSit.TabIndex = 5;
+            this.autoSitSit.Text = "Sit";
+            this.autoSitSit.UseVisualStyleBackColor = true;
+            this.autoSitSit.Click += new System.EventHandler(this.autoSitSit_Click);
+            // 
+            // autoSitClear
+            // 
+            this.autoSitClear.Location = new System.Drawing.Point(182, 66);
+            this.autoSitClear.Name = "autoSitClear";
+            this.autoSitClear.Size = new System.Drawing.Size(75, 23);
+            this.autoSitClear.TabIndex = 0;
+            this.autoSitClear.Text = "Clear";
+            this.autoSitClear.UseVisualStyleBackColor = true;
+            this.autoSitClear.Click += new System.EventHandler(this.autoSitClear_Click);
+            // 
+            // autoSitUUIDLabel
+            // 
+            this.autoSitUUIDLabel.AutoSize = true;
+            this.autoSitUUIDLabel.Location = new System.Drawing.Point(6, 43);
+            this.autoSitUUIDLabel.Name = "autoSitUUIDLabel";
+            this.autoSitUUIDLabel.Size = new System.Drawing.Size(34, 13);
+            this.autoSitUUIDLabel.TabIndex = 4;
+            this.autoSitUUIDLabel.Text = "UUID";
+            this.autoSitUUIDLabel.Click += new System.EventHandler(this.autoSitUUIDLabel_Click);
+            // 
+            // autoSitUUID
+            // 
+            this.autoSitUUID.Location = new System.Drawing.Point(47, 40);
+            this.autoSitUUID.MaxLength = 36;
+            this.autoSitUUID.Name = "autoSitUUID";
+            this.autoSitUUID.ReadOnly = true;
+            this.autoSitUUID.Size = new System.Drawing.Size(210, 20);
+            this.autoSitUUID.TabIndex = 3;
+            // 
+            // autoSitName
+            // 
+            this.autoSitName.Location = new System.Drawing.Point(47, 13);
+            this.autoSitName.Name = "autoSitName";
+            this.autoSitName.ReadOnly = true;
+            this.autoSitName.Size = new System.Drawing.Size(210, 20);
+            this.autoSitName.TabIndex = 2;
+            // 
+            // autoSitNameLabel
+            // 
+            this.autoSitNameLabel.AutoSize = true;
+            this.autoSitNameLabel.Location = new System.Drawing.Point(6, 16);
+            this.autoSitNameLabel.Name = "autoSitNameLabel";
+            this.autoSitNameLabel.Size = new System.Drawing.Size(35, 13);
+            this.autoSitNameLabel.TabIndex = 1;
+            this.autoSitNameLabel.Text = "Name";
+            this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -648,6 +754,9 @@ namespace Radegast
             this.gnAutoInventory.ResumeLayout(false);
             this.gbAutoResponse.ResumeLayout(false);
             this.gbAutoResponse.PerformLayout();
+            this.tbpBot.ResumeLayout(false);
+            this.autoSit.ResumeLayout(false);
+            this.autoSit.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -698,6 +807,15 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbHighlightGroupIM;
         public System.Windows.Forms.CheckBox cbHighlightIM;
         private System.Windows.Forms.CheckBox cbHighlightChat;
+        private System.Windows.Forms.TabPage tbpBot;
+        private System.Windows.Forms.GroupBox autoSit;
+        private System.Windows.Forms.Button autoSitClear;
+        private System.Windows.Forms.Button autoSitSit;
+        private System.Windows.Forms.Label autoSitUUIDLabel;
+        private System.Windows.Forms.TextBox autoSitUUID;
+        private System.Windows.Forms.TextBox autoSitName;
+        private System.Windows.Forms.Label autoSitNameLabel;
+        private System.Windows.Forms.CheckBox autoSitEnabled;
 
 
     }
