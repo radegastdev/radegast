@@ -696,6 +696,19 @@ namespace Radegast
         {
             WalkTo(GlobalPosition(prim));
         }
+        public double WaitUntilPosition(Vector3d pos, TimeSpan maxWait, double howClose)
+        {
+             
+            DateTime until = DateTime.Now + maxWait;
+            while (until > DateTime.Now)
+            {
+                double dist = Vector3d.Distance(client.Self.GlobalPosition, pos);
+                if (howClose <= dist) return dist;
+                Thread.Sleep(250);
+            }
+            return Vector3d.Distance(client.Self.GlobalPosition, pos);
+            
+        }
 
         public void WalkTo(Vector3d globalPos)
         {
@@ -893,7 +906,7 @@ namespace Radegast
             }
         }
 
-        public Vector3d GlobalPosition(Simulator sim, Vector3 pos)
+        static public Vector3d GlobalPosition(Simulator sim, Vector3 pos)
         {
             uint globalX, globalY;
             Utils.LongToUInts(sim.Handle, out globalX, out globalY);

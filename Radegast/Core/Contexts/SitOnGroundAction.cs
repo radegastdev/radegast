@@ -59,7 +59,13 @@ namespace Radegast
                 instance.TabConsole.DisplayNotificationInChat(string.Format("Walking to {0}", pname));
                 instance.State.MoveTo(sim, pos, false);
                 //TODO wait until we get there
-                Thread.Sleep(3000);
+
+                double close = instance.State.WaitUntilPosition(StateManager.GlobalPosition(sim, pos), TimeSpan.FromSeconds(5), 1);
+                if (close > 1)
+                {
+                    instance.TabConsole.DisplayNotificationInChat(
+                        string.Format("Counldn't quite make it to {0}, now sitting", pname));
+                }
                 Client.Self.SitOnGround();
             }
             else
