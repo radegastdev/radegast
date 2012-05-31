@@ -521,14 +521,15 @@ namespace Radegast
                 try
                 {
                     if (!Directory.Exists(ClientDir))
+                    {
                         Directory.CreateDirectory(ClientDir);
+                    }
+                    clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
                 }
                 catch (Exception ex)
                 {
                     Logger.Log("Failed to create client directory", Helpers.LogLevel.Warning, ex);
                 }
-
-                clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
             }
         }
 
