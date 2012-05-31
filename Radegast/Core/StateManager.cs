@@ -274,9 +274,15 @@ namespace Radegast
             if (!TryFindAvatar(person, out sim, out position)) return false;
             // same sim?
             if (sim == client.Network.CurrentSim) return true;
-            Vector3d diff = ToVector3D(sim.Handle, position) - client.Self.GlobalPosition;
-            position = new Vector3((float) diff.X, (float) diff.Y, (float) diff.Z) - position;
+            position = ToLocalPosition(sim.Handle, position);
             return true;
+        }
+
+        public Vector3 ToLocalPosition(ulong handle, Vector3 position)
+        {
+            Vector3d diff = ToVector3D(handle, position) - client.Self.GlobalPosition;
+            position = new Vector3((float) diff.X, (float) diff.Y, (float) diff.Z) - position;
+            return position;
         }
 
         public static Vector3d ToVector3D(ulong handle, Vector3 pos)
@@ -369,6 +375,46 @@ namespace Radegast
                 return false;
         }
 
+        public bool TryLocatePrim(Primitive avi, out Simulator sim, out Vector3 position)
+        {
+            Simulator[] Simulators = null;
+            lock (client.Network.Simulators)
+            {
+                Simulators = client.Network.Simulators.ToArray();
+            }
+
+            sim = client.Network.CurrentSim;
+            position = Vector3.Zero;
+            {
+                foreach (var s in Simulators)
+                {
+                    if (s.Handle == avi.RegionHandle)
+                    {
+                        sim = s;
+                        break;
+                    }
+                }
+            }
+            if (avi != null)
+            {
+                if (avi.ParentID == 0)
+                {
+                    position = avi.Position;
+                }
+                else
+                {
+                    Primitive seat;
+                    if (sim.ObjectsPrimitives.TryGetValue(avi.ParentID, out seat))
+                    {
+                        position = seat.Position + avi.Position*seat.Rotation;
+                    }
+                }
+            }
+            if (position.Z > 0.1f)
+                return true;
+            else
+                return false;
+        }
         /// <summary>
         /// Move to target position either by walking or by teleporting
         /// </summary>

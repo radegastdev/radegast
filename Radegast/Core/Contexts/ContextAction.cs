@@ -262,5 +262,47 @@ namespace Radegast
         {
            // instance.TabConsole.DisplayNotificationInChat(string.Format("ContextAction {0}: {1}", Label, s));
         }
+
+        protected bool TryFindPos(object initial, out Simulator simulator, out Vector3 vector3)
+        {
+            simulator = Client.Network.CurrentSim;
+            vector3 = Vector3.Zero;
+            if (initial is Vector3)
+            {
+                vector3 = (Vector3) initial;
+                return true;
+            }
+            if (initial is Vector3d)
+            {
+                var v3d = (Vector3d) initial;
+                float lx, ly;
+                ulong handle = Helpers.GlobalPosToRegionHandle((float) v3d.X, (float) v3d.Y, out lx, out ly);
+                Simulator[] Simulators = null;
+                lock (Client.Network.Simulators)
+                {
+                    Simulators = Client.Network.Simulators.ToArray();
+                }
+                foreach (Simulator s in Simulators)
+                {
+                    if (handle == s.Handle)
+                    {
+                        simulator = s;
+                    }
+                }
+                vector3 = new Vector3(lx, ly, (float) v3d.Z);
+                return true;
+            }
+            if (initial is UUID)
+            {
+                return instance.State.TryFindPrim((UUID)initial, out simulator, out vector3, false);
+            }
+            if (initial is Primitive)
+            {
+                return instance.State.TryLocatePrim((Primitive)initial, out simulator, out vector3);
+            }
+            UUID toUUID = ToUUID(initial);
+            if (toUUID == UUID.Zero) return false;
+            return instance.State.TryFindPrim(toUUID, out simulator, out vector3, false);
+        }
     }
 }

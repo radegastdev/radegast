@@ -29,25 +29,22 @@
 // $Id: 
 //
 using System;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast
 {
-    public class TurnToAction : ContextAction
+    public class SitOnGroundAction : ContextAction
     {
-        public TurnToAction(RadegastInstance inst)
+        public SitOnGroundAction(RadegastInstance inst)
             : base(inst)
         {
-            Label = "Turn To";
-            ContextType = typeof(Primitive);
+            Label = "Sit on ground";
+            ContextType = typeof(Vector3);
         }
         public override bool IsEnabled(object target)
         {
             return true;
-        }
-        public override bool Contributes(object o, Type type)
-        {
-            return type == typeof(Vector3) || type == typeof(Vector3d) || base.Contributes(o, type);
         }
         public override void OnInvoke(object sender, EventArgs e, object target)
         {
@@ -59,8 +56,11 @@ namespace Radegast
 
             if (base.TryFindPos(target, out sim, out pos))
             {
-                instance.TabConsole.DisplayNotificationInChat(string.Format("Facing {0}", pname));
-                Client.Self.Movement.TurnToward(instance.State.ToLocalPosition(sim.Handle, pos), false);
+                instance.TabConsole.DisplayNotificationInChat(string.Format("Walking to {0}", pname));
+                instance.State.MoveTo(sim, pos, false);
+                //TODO wait until we get there
+                Thread.Sleep(3000);
+                Client.Self.SitOnGround();
             }
             else
             {

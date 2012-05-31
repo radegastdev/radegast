@@ -851,6 +851,7 @@ namespace Radegast.Rendering
 
         SceneObject RightclickedObject;
         int RightclickedFaceID;
+        Vector3 RightclickedPosition;
 
         private void glControl_MouseDown(object sender, MouseEventArgs e)
         {
@@ -893,7 +894,7 @@ namespace Radegast.Rendering
             {
                 object picked;
                 RightclickedObject = null;
-                if (TryPick(e.X, e.Y, out picked, out RightclickedFaceID))
+                if (TryPick(e.X, e.Y, out picked, out RightclickedFaceID, out RightclickedPosition))
                 {
                     if (picked is SceneObject)
                     {
@@ -3420,6 +3421,7 @@ namespace Radegast.Rendering
                 });
             }
             ctxMenu.Items.Add(item);
+            instance.ContextActionManager.AddContributions(ctxMenu, typeof(Vector3), RightclickedPosition);
         }
         #endregion Context menu
 

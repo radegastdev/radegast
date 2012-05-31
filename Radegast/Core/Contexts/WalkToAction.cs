@@ -41,25 +41,30 @@ namespace Radegast
             Label = "Walk To";
             ContextType = typeof(Primitive);
         }
+        public override bool Contributes(object o, Type type)
+        {
+            return type == typeof (Vector3) || type == typeof (Vector3d) || base.Contributes(o, type);
+        }
         public override bool IsEnabled(object target)
         {
             return true;
         }
         public override void OnInvoke(object sender, EventArgs e, object target)
         {
-            UUID id = ToUUID(target);
-            string pname = instance.Names.Get(id);
+            string pname = instance.Names.Get(ToUUID(target));
+            if (pname == "(???) (???)") pname = "" + target;
+
             Simulator sim = null;
             Vector3 pos;
 
-            if (instance.State.TryFindPrim(id, out sim, out pos, false))
+            if (base.TryFindPos(target, out sim, out pos))
             {
                 instance.TabConsole.DisplayNotificationInChat(string.Format("Walking to {0}", pname));
                 instance.State.MoveTo(sim, pos, false);
             }
             else
             {
-                instance.TabConsole.DisplayNotificationInChat(string.Format("Could not locate {0}", pname));
+                instance.TabConsole.DisplayNotificationInChat(string.Format("Could not locate {0}", target));
             }
         }
     }
