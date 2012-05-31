@@ -271,7 +271,23 @@ namespace Radegast
         public bool TryFindAvatar(UUID person, out Vector3 position)
         {
             Simulator sim;
-            return TryFindAvatar(person, out sim, out position);
+            if (!TryFindAvatar(person, out sim, out position)) return false;
+            // same sim?
+            if (sim == client.Network.CurrentSim) return true;
+            Vector3d diff = ToVector3D(sim.Handle, position) - client.Self.GlobalPosition;
+            position = new Vector3((float) diff.X, (float) diff.Y, (float) diff.Z) - position;
+            return true;
+        }
+
+        public static Vector3d ToVector3D(ulong handle, Vector3 pos)
+        {
+            uint globalX, globalY;
+            Utils.LongToUInts(handle, out globalX, out globalY);
+
+            return new Vector3d(
+                (double)globalX + (double)pos.X,
+                (double)globalY + (double)pos.Y,
+                (double)pos.Z);
         }
 
         /// <summary>

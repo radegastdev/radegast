@@ -97,11 +97,15 @@ namespace Radegast
         private void RegisterClientEvents(GridClient client)
         {
             client.Grid.CoarseLocationUpdate += new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
+            client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            client.Network.SimDisconnected += new EventHandler<SimDisconnectedEventArgs>(Network_SimDisconnected);
         }
 
         private void UnregisterClientEvents(GridClient client)
         {
             client.Grid.CoarseLocationUpdate -= new EventHandler<CoarseLocationUpdateEventArgs>(Grid_CoarseLocationUpdate);
+            client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
+            client.Network.SimDisconnected -= new EventHandler<SimDisconnectedEventArgs>(Network_SimDisconnected);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -164,6 +168,73 @@ namespace Radegast
             }
         }
 
+        void Self_TeleportProgress(object sender, TeleportEventArgs e)
+        {
+            if (e.Status == TeleportStatus.Progress || e.Status == TeleportStatus.Finished)
+            {
+                ResetAvatarList();
+            }
+        }
+        private void Network_SimDisconnected(object sender, SimDisconnectedEventArgs e)
+        {
+
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => Network_SimDisconnected(sender, e)));
+                return;
+            }
+            lock (agentSimHandle)
+            {
+                var h = e.Simulator.Handle;
+                List<UUID> remove = new List<UUID>();
+                foreach (var uh in agentSimHandle)
+                {
+                    if (uh.Value == h)
+                    {
+                        remove.Add(uh.Key);
+                    }
+                }
+                if (remove.Count == 0) return;
+                lvwObjects.BeginUpdate();
+                try
+                {
+                    foreach (UUID key in remove)
+                    {
+                        agentSimHandle.Remove(key);
+                        lvwObjects.Items.RemoveByKey("" + key);
+                    }
+                }
+                finally
+                {
+                    lvwObjects.EndUpdate();
+                }
+            }
+        }
+
+        private void ResetAvatarList()
+        {
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(ResetAvatarList));
+                return;
+            }
+            lock (agentSimHandle)
+            {
+                try
+                {
+
+                    lvwObjects.BeginUpdate();
+                    agentSimHandle.Clear();
+                    lvwObjects.Clear();
+                }
+                finally
+                {
+                    lvwObjects.EndUpdate();
+                }
+            }
+        }
         void Grid_CoarseLocationUpdate(object sender, CoarseLocationUpdateEventArgs e)
         {
             if (client.Network.CurrentSim == null /*|| client.Network.CurrentSim.Handle != sim.Handle*/)
@@ -185,7 +256,7 @@ namespace Radegast
                 {
                     lvwObjects.BeginUpdate();
                     Vector3d mypos = e.Simulator.AvatarPositions.ContainsKey(client.Self.AgentID)
-                                        ? ToVector3D(e.Simulator, e.Simulator.AvatarPositions[client.Self.AgentID])
+                                        ? StateManager.ToVector3D(e.Simulator.Handle, e.Simulator.AvatarPositions[client.Self.AgentID])
                                         : client.Self.GlobalPosition;
 
                     // CoarseLocationUpdate gives us hight of 0 when actual height is
@@ -266,7 +337,7 @@ namespace Radegast
                             }
                         }
 
-                        int d = (int)Vector3d.Distance(ToVector3D(e.Simulator, pos), mypos);
+                        int d = (int)Vector3d.Distance(StateManager.ToVector3D(e.Simulator.Handle, pos), mypos);
 
                         if (e.Simulator != client.Network.CurrentSim && d > MAX_DISTANCE)
                         {
@@ -292,6 +363,7 @@ namespace Radegast
                     foreach (UUID key in removed)
                     {
                         lvwObjects.Items.RemoveByKey(key.ToString());
+                        agentSimHandle.Remove(key);
                     }
 
                     lvwObjects.Sort();
@@ -306,21 +378,6 @@ namespace Radegast
                 }
         }
 
-        static Vector3d ToVector3D(Simulator simulator, Vector3 pos)
-        {
-            if (simulator != null)
-            {
-                uint globalX, globalY;
-                Utils.LongToUInts(simulator.Handle, out globalX, out globalY);
-
-                return new Vector3d(
-                    (double)globalX + (double)pos.X,
-                    (double)globalY + (double)pos.Y,
-                    (double)pos.Z);
-            }
-            else
-                return Vector3d.Zero;
-        }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
