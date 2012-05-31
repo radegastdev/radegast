@@ -42,12 +42,26 @@ namespace Radegast
             Label = "Sit on ground";
             ContextType = typeof(Vector3);
         }
+        public override string LabelFor(object target)
+        {
+            if (Client.Self.Movement.SitOnGround)
+            {
+                return "Stand up";
+            }
+            return "Sit on ground";
+        }
         public override bool IsEnabled(object target)
         {
             return true;
         }
         public override void OnInvoke(object sender, EventArgs e, object target)
         {
+            if (Client.Self.Movement.SitOnGround)
+            {
+                instance.TabConsole.DisplayNotificationInChat("Standing up");
+                Client.Self.Stand();
+                return;
+            }
             string pname = instance.Names.Get(ToUUID(target));
             if (pname == "(???) (???)") pname = "" + target;
 
@@ -61,7 +75,7 @@ namespace Radegast
                 //TODO wait until we get there
 
                 double close = instance.State.WaitUntilPosition(StateManager.GlobalPosition(sim, pos), TimeSpan.FromSeconds(5), 1);
-                if (close > 1)
+                if (close > 2)
                 {
                     instance.TabConsole.DisplayNotificationInChat(
                         string.Format("Counldn't quite make it to {0}, now sitting", pname));
