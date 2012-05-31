@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
@@ -43,6 +44,8 @@ namespace Radegast
         public virtual string Label { get; set; }
         public EventHandler Handler;
         protected RadegastInstance instance;
+        public bool ExecAsync = true;
+        private Thread AsyncThread;
         public bool Enabled { get; set; }
         public virtual object DeRef(object o)
         {
@@ -103,10 +106,45 @@ namespace Radegast
         {
             return new List<ToolStripMenuItem>(){new ToolStripMenuItem(
                 LabelFor(target), (Image) null,
-                (sender, e) => TryCatch(() => OnInvoke(sender, e, target)))
+                (sender, e) => TCI(sender, e, target))
                        {
                            Enabled = IsEnabled(target),
                        }};
+        }
+
+        private void TCI(object sender, EventArgs e, object target)
+        {
+            if (!this.ExecAsync)
+            {
+                TryCatch(() => OnInvoke(sender, e, target));
+                return;
+            }
+            if (AsyncThread != null && AsyncThread.IsAlive)
+            {
+                AsyncThread.Abort();
+            }
+            AsyncThread = new Thread(() => TryCatch(() => OnInvoke(sender, e, target)))
+                              {
+                                  Name = Label + " Async command"
+                              };
+            AsyncThread.Start();                       
+        }
+
+        protected void InvokeSync(MethodInvoker func)
+        {
+            try
+            {
+                if (instance.MainForm.InvokeRequired)
+                {
+                    instance.MainForm.Invoke(func);
+                    return;
+                }
+                func();
+            }
+            catch (Exception e)
+            {
+                DebugLog("Exception: " + e);
+            }
         }
 
         protected void TryCatch(MethodInvoker func)
@@ -121,7 +159,6 @@ namespace Radegast
             }
         }
 
-
         public virtual string LabelFor(object target)
         {
             return Label;
@@ -130,7 +167,7 @@ namespace Radegast
         public virtual IEnumerable<Control> GetControls(object target, Type type)
         {
             Button button = new Button { Text = LabelFor(target), Enabled = IsEnabled(target) };
-            button.Click += (sender, e) => TryCatch(() => OnInvoke(sender, e, target));
+            button.Click += (sender, e) => TCI(sender, e, target);
             return new List<Control>() { button };
         }
 
