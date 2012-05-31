@@ -341,6 +341,7 @@ namespace Radegast
                     if (s.AvatarPositions.ContainsKey(person))
                     {
                         position = s.AvatarPositions[person];
+                        sim = s;
                         break;
                     }
                 }
