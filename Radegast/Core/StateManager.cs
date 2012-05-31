@@ -703,7 +703,7 @@ namespace Radegast
             while (until > DateTime.Now)
             {
                 double dist = Vector3d.Distance(client.Self.GlobalPosition, pos);
-                if (howClose <= dist) return dist;
+                if (howClose >= dist) return dist;
                 Thread.Sleep(250);
             }
             return Vector3d.Distance(client.Self.GlobalPosition, pos);
