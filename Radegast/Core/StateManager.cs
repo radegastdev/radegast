@@ -415,7 +415,8 @@ namespace Radegast
                 return true;
             else
                 return false;
-        }
+        }
+
         /// <summary>
         /// Move to target position either by walking or by teleporting
         /// </summary>
