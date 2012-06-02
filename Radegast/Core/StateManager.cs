@@ -190,6 +190,7 @@ namespace Radegast
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             KnownAnimations = Animations.ToDictionary();
             autosit = new AutoSit(this.instance);
+            pseudohome = new PseudoHome(this.instance);
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -465,6 +466,7 @@ namespace Radegast
         void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
             autosit.TrySit();
+            pseudohome.ETGoHome();
         }
 
         private UUID teleportEffect = UUID.Random();
@@ -1105,6 +1107,12 @@ namespace Radegast
         public AutoSit AutoSit
         {
             get { return autosit; }
+        }
+
+        private PseudoHome pseudohome;
+        public PseudoHome PseudoHome
+        {
+            get { return pseudohome; }
         }
     }
 

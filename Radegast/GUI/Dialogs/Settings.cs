@@ -282,6 +282,7 @@ namespace Radegast
             };
 
             autoSitPrefsUpdate();
+            pseudoHomePrefsUpdated();
 
             UpdateEnabled();
         }
@@ -427,6 +428,8 @@ namespace Radegast
             s["log_to_file"] = OSD.FromBoolean(cbRadegastLogToFile.Checked);
         }
 
+        #region Auto-Sit
+
         private void autoSitPrefsUpdate()
         {
             autoSit.Enabled = (Instance.Client.Network.Connected && Instance.ClientSettings != null);
@@ -434,10 +437,6 @@ namespace Radegast
             {
                 return;
             }
-            RadegastInstance foo = Instance;
-            StateManager bar = foo.State;
-            AutoSit baz = bar.AutoSit;
-            AutoSitPreferences bat = baz.Preferences;
             AutoSitPreferences prefs = Instance.State.AutoSit.Preferences;
             autoSitName.Text = prefs.PrimitiveName;
             autoSitUUID.Text = prefs.Primitive.ToString();
@@ -475,5 +474,69 @@ namespace Radegast
                 Enabled = autoSitEnabled.Checked
             };
         }
+
+        #endregion
+
+        #region Pseudo Home
+
+        private void pseudoHomePrefsUpdated()
+        {
+            pseudoHome.Enabled = (Instance.Client.Network.Connected && Instance.ClientSettings != null);
+            if (!pseudoHome.Enabled)
+            {
+                return;
+            }
+            PseudoHomePreferences prefs = Instance.State.PseudoHome.Preferences;
+            pseudoHomeLocation.Text = (prefs.Region != string.Empty) ? string.Format("{0} <{1}, {2}, {3}>", prefs.Region, (int)prefs.Position.X, (int)prefs.Position.Y, (int)prefs.Position.Z) : "";
+            pseudoHomeEnabled.Checked = prefs.Enabled;
+            pseudoHomeTP.Enabled = (prefs.Region.Trim() != string.Empty);
+            pseudoHomeTolerance.Value = Math.Max(pseudoHomeTolerance.Minimum, Math.Min(pseudoHomeTolerance.Maximum, prefs.Tolerance));
+        }
+
+        private void pseudoHomeLabel_Click(object sender, EventArgs e)
+        {
+            pseudoHomeLocation.SelectAll();
+        }
+
+        private void pseudoHomeEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences
+            {
+                Enabled = pseudoHomeEnabled.Checked,
+                Region = Instance.State.PseudoHome.Preferences.Region,
+                Position = Instance.State.PseudoHome.Preferences.Position,
+                Tolerance = Instance.State.PseudoHome.Preferences.Tolerance
+            };
+        }
+
+        private void pseudoHomeTP_Click(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.ETGoHome();
+        }
+
+        private void pseudoHomeSet_Click(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences
+            {
+                Enabled = Instance.State.PseudoHome.Preferences.Enabled,
+                Region = Instance.Client.Network.CurrentSim.Name,
+                Position = Instance.Client.Self.SimPosition,
+                Tolerance = Instance.State.PseudoHome.Preferences.Tolerance
+            };
+            pseudoHomePrefsUpdated();
+        }
+
+        private void pseudoHomeTolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences
+            {
+                Enabled = Instance.State.PseudoHome.Preferences.Enabled,
+                Region = Instance.State.PseudoHome.Preferences.Region,
+                Position = Instance.State.PseudoHome.Preferences.Position,
+                Tolerance = (uint)pseudoHomeTolerance.Value
+            };
+        }
+
+        #endregion
     }
 }
