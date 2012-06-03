@@ -1093,6 +1093,42 @@ namespace Radegast
             instance.TabConsole.DisplayNotificationInChat("Notice sent", ChatBufferTextStyle.Invisible);
         }
         #endregion
+
+        private void memberListContextMenuSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveMembers = new SaveFileDialog();
+            saveMembers.Filter = "CSV|.csv|JSON|.json";
+            saveMembers.Title = "Save visible group members";
+            saveMembers.ShowDialog();
+            if (saveMembers.FileName != string.Empty)
+            {
+                switch (saveMembers.FilterIndex)
+                {
+                    case 1:
+                        System.IO.FileStream fs = (System.IO.FileStream)saveMembers.OpenFile();
+                        System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.UTF8);
+                        sw.WriteLine("UUID,Name");
+                        foreach (ListViewItem item in lvwGeneralMembers.Items)
+                        {
+                            sw.WriteLine("{0},{1}", item.Name, item.Text);
+                        }
+                        sw.Close();
+                        break;
+                    case 2:
+                        OpenMetaverse.StructuredData.OSDArray members = new OpenMetaverse.StructuredData.OSDArray(lvwGeneralMembers.Items.Count);
+                        foreach (ListViewItem item in lvwGeneralMembers.Items)
+                        {
+                            OpenMetaverse.StructuredData.OSDMap member = new OpenMetaverse.StructuredData.OSDMap(2);
+                            member["UUID"] = item.Name;
+                            member["Name"] = item.Text;
+                            members.Add(member);
+                        }
+                        System.IO.File.WriteAllText(saveMembers.FileName, OpenMetaverse.StructuredData.OSDParser.SerializeJsonString(members));
+                        break;
+                }
+                instance.Client.Self.Chat(lvwGeneralMembers.Items.Count.ToString(), 0, ChatType.Whisper);
+            }
+        }
     }
 
     public class EnhancedGroupMember
