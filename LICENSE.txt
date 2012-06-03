@@ -67,4 +67,3 @@ Command Line Library (MIT License)
 Copyright © 2005 - 2010 Giacomo Stelluti Scala
 http://commandline.codeplex.com/
 
-
