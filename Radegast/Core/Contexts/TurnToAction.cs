@@ -60,7 +60,7 @@ namespace Radegast
             if (base.TryFindPos(target, out sim, out pos))
             {
                 instance.TabConsole.DisplayNotificationInChat(string.Format("Facing {0}", pname));
-                Client.Self.Movement.TurnToward(instance.State.ToLocalPosition(sim.Handle, pos), false);
+                Client.Self.Movement.TurnToward(instance.State.ToLocalPosition(sim.Handle, pos));
             }
             else
             {
