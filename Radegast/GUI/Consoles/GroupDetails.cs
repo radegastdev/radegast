@@ -71,10 +71,7 @@ namespace Radegast
 
             isMember = instance.Groups.ContainsKey(group.ID);
 
-            if (isMember)
-            {
-            }
-            else
+            if (!isMember)
             {
                 tcGroupDetails.TabPages.Remove(tpMembersRoles);
                 tcGroupDetails.TabPages.Remove(tpNotices);
