@@ -1074,7 +1074,14 @@ namespace Radegast
 
         public bool IsSitting
         {
-            get { return sitting; }
+            get
+            {
+                if (client.Self.Movement.SitOnGround || client.Self.SittingOn != 0) return true;
+                if (sitting) {
+                    Logger.Log("out of sync sitting", Helpers.LogLevel.Debug);
+                }
+                return false;
+            }
         }
 
         public bool IsPointing
