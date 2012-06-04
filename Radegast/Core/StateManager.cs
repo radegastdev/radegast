@@ -758,7 +758,7 @@ namespace Radegast
                     EndWalking();
                     return;
                 }
-                walkTimer.Change(walkChekInterval, Timeout.Infinite);
+                if (walkTimer != null) walkTimer.Change(walkChekInterval, Timeout.Infinite);
             }
         }
 
