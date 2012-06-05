@@ -102,14 +102,23 @@ namespace Radegast
             return Enabled && Contributes(target,target!=null?target.GetType():null) || Enabled;
         }
 
+        public virtual string ToolTipText(object target)
+        {
+            return LabelFor(target) + " " + target;
+        }
+
         public virtual IEnumerable<ToolStripMenuItem> GetToolItems(object target, Type type)
         {
-            return new List<ToolStripMenuItem>(){new ToolStripMenuItem(
+            return new List<ToolStripMenuItem>()
+                       {
+                           new ToolStripMenuItem(
                 LabelFor(target), (Image) null,
                 (sender, e) => TCI(sender, e, target))
                        {
                            Enabled = IsEnabled(target),
-                       }};
+                                   ToolTipText = ToolTipText(target)
+                               }
+                       };
         }
 
         private void TCI(object sender, EventArgs e, object target)
@@ -233,7 +242,11 @@ namespace Radegast
         public Avatar ToAvatar(object target)
         {
             Primitive thePrim = ((target is Primitive) ? (Primitive)target : null);
-            if (thePrim != null) return (Avatar)thePrim;
+            if (thePrim is Avatar) return (Avatar)thePrim;
+            if (thePrim != null && thePrim.Properties != null && thePrim.Properties.OwnerID != UUID.Zero)
+            {
+                target = thePrim.Properties.OwnerID;
+            }
             object oo = DeRef(target);
             if (oo != target)
             {
