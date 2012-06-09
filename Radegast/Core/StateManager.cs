@@ -668,6 +668,8 @@ namespace Radegast
 
         void netcom_ChatReceived(object sender, ChatEventArgs e)
         {
+            //somehow it can be too early (when Radegast is loaded from running bot)
+            if (instance.GlobalSettings==null) return;
             if (!instance.GlobalSettings["disable_look_at"]
                 && e.SourceID != client.Self.AgentID
                 && (e.SourceType == ChatSourceType.Agent || e.Type == ChatType.StartTyping))
@@ -835,6 +837,7 @@ namespace Radegast
             awayAnim.Add(awayAnimationID, away);
 
             client.Self.Animate(awayAnim, true);
+            if (UseMoveControl) client.Self.Movement.Away = away;
             this.away = away;
         }
 
@@ -1059,7 +1062,11 @@ namespace Radegast
 
         public bool IsAway
         {
-            get { return away; }
+            get
+            {
+                if (UseMoveControl) return client.Self.Movement.Away;
+                return away;
+            }
         }
 
         public bool IsBusy
@@ -1069,7 +1076,7 @@ namespace Radegast
 
         public bool IsFlying
         {
-            get { return flying; }
+            get { return client.Self.Movement.Fly; }
         }
 
         public bool IsSitting
@@ -1079,6 +1086,7 @@ namespace Radegast
                 if (client.Self.Movement.SitOnGround || client.Self.SittingOn != 0) return true;
                 if (sitting) {
                     Logger.Log("out of sync sitting", Helpers.LogLevel.Debug);
+                    sitting = false;
                 }
                 return false;
             }
@@ -1118,6 +1126,12 @@ namespace Radegast
         }
 
         private PseudoHome pseudohome;
+
+        /// <summary>
+        /// Experimental Option that sometimes the Client has more authority than state mananger
+        /// </summary>
+        public static bool UseMoveControl;
+
         public PseudoHome PseudoHome
         {
             get { return pseudohome; }
