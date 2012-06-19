@@ -120,7 +120,7 @@ namespace Radegast.Bot
         {
             if (Preferences != null && m_instance.Client.Network.Connected && Preferences.Region.Trim() != string.Empty)
             {
-                if (Preferences.Enabled && m_instance.Client.Network.CurrentSim.Name != Preferences.Region || Vector3.Distance(m_instance.Client.Self.SimPosition, Preferences.Position) > Preferences.Tolerance)
+                if (Preferences.Enabled && (m_instance.Client.Network.CurrentSim.Name != Preferences.Region || Vector3.Distance(m_instance.Client.Self.SimPosition, Preferences.Position) > Preferences.Tolerance))
                 {
                     m_instance.Client.Self.Teleport(Preferences.Region, Preferences.Position);
                     m_Timer.Enabled = true;
