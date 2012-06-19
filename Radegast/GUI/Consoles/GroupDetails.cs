@@ -180,7 +180,7 @@ namespace Radegast
 
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
-            if (e.IM.Dialog != InstantMessageDialog.GroupNoticeRequested || e.IM.FromAgentID != group.ID) return;
+            if (e.IM.Dialog != InstantMessageDialog.GroupNoticeRequested) return;
 
             if (InvokeRequired)
             {
@@ -190,7 +190,18 @@ namespace Radegast
 
             InstantMessage msg = e.IM;
             AssetType type;
+            UUID groupID;
 
+            if (msg.BinaryBucket.Length >= 18)
+            {
+                groupID = new UUID(msg.BinaryBucket, 2);
+            }
+            else
+            {
+                groupID = msg.FromAgentID;
+            }
+
+            if (groupID != group.ID) return;
 
             if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
             {
