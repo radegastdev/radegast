@@ -63,7 +63,7 @@ namespace Radegast
             this.components = new System.ComponentModel.Container();
             this.btnSay = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.rtbChat = new System.Windows.Forms.RichTextBox();
+            this.rtbChat = new Radegast.RRichTextBox();
             this.lvwObjects = new Radegast.ListViewNoFlicker();
             this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
             this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
@@ -134,6 +134,7 @@ namespace Radegast
             // 
             this.rtbChat.AccessibleName = "Chat history";
             this.rtbChat.BackColor = System.Drawing.SystemColors.Window;
+            this.rtbChat.DetectUrls = false;
             this.rtbChat.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbChat.HideSelection = false;
             this.rtbChat.Location = new System.Drawing.Point(0, 0);
@@ -473,7 +474,7 @@ namespace Radegast
         public ToolStripMenuItem ctxPoint;
         public ToolStripMenuItem ctxPay;
         public ComboBox cbChatType;
-        public RichTextBox rtbChat;
+        public RRichTextBox rtbChat;
         private ToolStripMenuItem ctxOfferTP;
         private ToolStripMenuItem ctxTeleportTo;
         private ToolStripMenuItem ctxEject;

@@ -813,6 +813,12 @@ namespace Radegast
 
         public bool ProcessLink(string link, bool onlyMap)
         {
+            var pos = link.IndexOf(RRichTextBox.LinkSeparator);
+            if (pos > 0)
+            {
+                link = link.Substring(pos);
+            }
+
             if (!link.Contains("://"))
             {
                 link = "http://" + link;
