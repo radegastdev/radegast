@@ -155,6 +155,7 @@ namespace Radegast
             this.btnClose = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.txtGroupID = new System.Windows.Forms.TextBox();
             this.tcGroupDetails.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.memberListContextMenu.SuspendLayout();
@@ -184,13 +185,14 @@ namespace Radegast
             this.tcGroupDetails.Location = new System.Drawing.Point(0, 0);
             this.tcGroupDetails.Name = "tcGroupDetails";
             this.tcGroupDetails.SelectedIndex = 0;
-            this.tcGroupDetails.Size = new System.Drawing.Size(408, 463);
+            this.tcGroupDetails.Size = new System.Drawing.Size(408, 465);
             this.tcGroupDetails.TabIndex = 0;
             this.tcGroupDetails.SelectedIndexChanged += new System.EventHandler(this.tcGroupDetails_SelectedIndexChanged);
             // 
             // tpGeneral
             // 
             this.tpGeneral.BackColor = System.Drawing.Color.Transparent;
+            this.tpGeneral.Controls.Add(this.txtGroupID);
             this.tpGeneral.Controls.Add(this.btnJoin);
             this.tpGeneral.Controls.Add(this.lvwGeneralMembers);
             this.tpGeneral.Controls.Add(this.lblOwners);
@@ -238,7 +240,7 @@ namespace Radegast
             this.lvwGeneralMembers.MultiSelect = false;
             this.lvwGeneralMembers.Name = "lvwGeneralMembers";
             this.lvwGeneralMembers.ShowGroups = false;
-            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 80);
+            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 82);
             this.lvwGeneralMembers.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvwGeneralMembers.TabIndex = 8;
             this.lvwGeneralMembers.UseCompatibleStateImageBehavior = false;
@@ -293,7 +295,7 @@ namespace Radegast
             this.tbxCharter.Multiline = true;
             this.tbxCharter.Name = "tbxCharter";
             this.tbxCharter.ReadOnly = true;
-            this.tbxCharter.Size = new System.Drawing.Size(239, 190);
+            this.tbxCharter.Size = new System.Drawing.Size(239, 156);
             this.tbxCharter.TabIndex = 6;
             this.tbxCharter.TextChanged += new System.EventHandler(this.tbxCharter_TextChanged);
             // 
@@ -465,7 +467,7 @@ namespace Radegast
             this.tpMembersRoles.Location = new System.Drawing.Point(4, 22);
             this.tpMembersRoles.Name = "tpMembersRoles";
             this.tpMembersRoles.Padding = new System.Windows.Forms.Padding(3);
-            this.tpMembersRoles.Size = new System.Drawing.Size(400, 439);
+            this.tpMembersRoles.Size = new System.Drawing.Size(400, 437);
             this.tpMembersRoles.TabIndex = 3;
             this.tpMembersRoles.Text = "Members && Roles";
             this.tpMembersRoles.UseVisualStyleBackColor = true;
@@ -1186,7 +1188,7 @@ namespace Radegast
             this.pnlBottomControls.Controls.Add(this.btnApply);
             this.pnlBottomControls.Controls.Add(this.btnRefresh);
             this.pnlBottomControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBottomControls.Location = new System.Drawing.Point(0, 463);
+            this.pnlBottomControls.Location = new System.Drawing.Point(0, 465);
             this.pnlBottomControls.Name = "pnlBottomControls";
             this.pnlBottomControls.Size = new System.Drawing.Size(408, 34);
             this.pnlBottomControls.TabIndex = 6;
@@ -1223,6 +1225,16 @@ namespace Radegast
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // txtGroupID
+            // 
+            this.txtGroupID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtGroupID.Location = new System.Drawing.Point(155, 198);
+            this.txtGroupID.Name = "txtGroupID";
+            this.txtGroupID.ReadOnly = true;
+            this.txtGroupID.Size = new System.Drawing.Size(239, 20);
+            this.txtGroupID.TabIndex = 7;
             // 
             // GroupDetails
             // 
@@ -1361,6 +1373,7 @@ namespace Radegast
         private System.Windows.Forms.GroupBox pnlNoticeAttachment;
         private System.Windows.Forms.ContextMenuStrip memberListContextMenu;
         private System.Windows.Forms.ToolStripMenuItem memberListContextMenuSave;
+        public System.Windows.Forms.TextBox txtGroupID;
 
     }
 }

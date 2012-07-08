@@ -65,6 +65,8 @@ namespace Radegast
                 pnlInsignia.Controls.Add(insignia);
             }
 
+            txtGroupID.Text = group.ID.ToString();
+
             lblGroupName.Text = group.Name;
             lvwGeneralMembers.ListViewItemSorter = new GroupMemberSorter();
             lvwMemberDetails.ListViewItemSorter = new GroupMemberSorter();
@@ -285,7 +287,7 @@ namespace Radegast
                 pnlInsignia.Controls.Add(insignia);
             }
 
-
+            lblGroupName.Text = e.Group.Name;
             tbxCharter.Text = group.Charter.Replace("\n", Environment.NewLine);
             lblFounded.Text = "Founded by: " + instance.Names.Get(group.FounderID);
             cbxShowInSearch.Checked = group.ShowInList;
