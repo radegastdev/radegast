@@ -849,8 +849,27 @@ namespace Radegast
                 if (UUID.TryParse(m.Groups["id"].Value, out id))
                 {
                     ShowGroupProfile(id);
+                    return true;
                 }
+                return false;
             }
+
+            // Is it user profile link
+            r = new Regex(@"^secondlife:///app/agent/(?<id>[^/]+)/about",
+                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+            m = r.Match(link);
+
+            if (m.Success)
+            {
+                UUID id;
+                if (UUID.TryParse(m.Groups["id"].Value, out id))
+                {
+                    ShowAgentProfile(instance.Names.Get(id), id);
+                    return true;
+                }
+                return false;
+            }
+
             return false;
         }
 
@@ -864,7 +883,7 @@ namespace Radegast
             var pos = link.IndexOf(RRichTextBox.LinkSeparator);
             if (pos > 0)
             {
-                link = link.Substring(pos);
+                link = link.Substring(pos + 1);
             }
 
             if (link.StartsWith("secondlife://"))

@@ -82,6 +82,7 @@ namespace Radegast
             this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.Chat = new System.Windows.Forms.GroupBox();
+            this.cbDisableNameLinks = new System.Windows.Forms.CheckBox();
             this.cbDisableChatIMLog = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
@@ -105,11 +106,13 @@ namespace Radegast
             this.tbpGraphics = new System.Windows.Forms.TabPage();
             this.tbpBot = new System.Windows.Forms.TabPage();
             this.pseudoHome = new System.Windows.Forms.GroupBox();
-            this.pseudoHomeLocation = new System.Windows.Forms.TextBox();
-            this.pseudoHomeEnabled = new System.Windows.Forms.CheckBox();
-            this.pseudoHomeTP = new System.Windows.Forms.Button();
             this.pseudoHomeSet = new System.Windows.Forms.Button();
+            this.pseudoHomeTolerance = new System.Windows.Forms.NumericUpDown();
+            this.pseudoHomeTP = new System.Windows.Forms.Button();
+            this.pseudoHomeLocation = new System.Windows.Forms.TextBox();
             this.pseudoHomeClear = new System.Windows.Forms.Button();
+            this.pseudoHomeToleranceLabel = new System.Windows.Forms.Label();
+            this.pseudoHomeEnabled = new System.Windows.Forms.CheckBox();
             this.autoSit = new System.Windows.Forms.GroupBox();
             this.autoSitEnabled = new System.Windows.Forms.CheckBox();
             this.autoSitSit = new System.Windows.Forms.Button();
@@ -118,8 +121,6 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
-            this.pseudoHomeToleranceLabel = new System.Windows.Forms.Label();
-            this.pseudoHomeTolerance = new System.Windows.Forms.NumericUpDown();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -131,8 +132,8 @@ namespace Radegast
             this.gbAutoResponse.SuspendLayout();
             this.tbpBot.SuspendLayout();
             this.pseudoHome.SuspendLayout();
-            this.autoSit.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).BeginInit();
+            this.autoSit.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcGraphics
@@ -170,7 +171,7 @@ namespace Radegast
             this.cbHighLight.Controls.Add(this.cbHighlightChat);
             this.cbHighLight.Controls.Add(this.cbFriendsHighlight);
             this.cbHighLight.Controls.Add(this.cbTaskBarHighLight);
-            this.cbHighLight.Location = new System.Drawing.Point(8, 160);
+            this.cbHighLight.Location = new System.Drawing.Point(8, 180);
             this.cbHighLight.Name = "cbHighLight";
             this.cbHighLight.Size = new System.Drawing.Size(256, 136);
             this.cbHighLight.TabIndex = 1;
@@ -387,6 +388,7 @@ namespace Radegast
             // 
             // Chat
             // 
+            this.Chat.Controls.Add(this.cbDisableNameLinks);
             this.Chat.Controls.Add(this.cbDisableChatIMLog);
             this.Chat.Controls.Add(this.cbChatTimestamps);
             this.Chat.Controls.Add(this.cbIMTimeStamps);
@@ -396,10 +398,20 @@ namespace Radegast
             this.Chat.Controls.Add(this.label1);
             this.Chat.Location = new System.Drawing.Point(8, 5);
             this.Chat.Name = "Chat";
-            this.Chat.Size = new System.Drawing.Size(256, 149);
+            this.Chat.Size = new System.Drawing.Size(256, 169);
             this.Chat.TabIndex = 0;
             this.Chat.TabStop = false;
             this.Chat.Text = "Chat";
+            // 
+            // cbDisableNameLinks
+            // 
+            this.cbDisableNameLinks.AutoSize = true;
+            this.cbDisableNameLinks.Location = new System.Drawing.Point(8, 144);
+            this.cbDisableNameLinks.Name = "cbDisableNameLinks";
+            this.cbDisableNameLinks.Size = new System.Drawing.Size(147, 17);
+            this.cbDisableNameLinks.TabIndex = 9;
+            this.cbDisableNameLinks.Text = "Disable avatar name links";
+            this.cbDisableNameLinks.UseVisualStyleBackColor = true;
             // 
             // cbDisableChatIMLog
             // 
@@ -673,24 +685,38 @@ namespace Radegast
             this.pseudoHome.TabStop = false;
             this.pseudoHome.Text = "Pseudo Home";
             // 
-            // pseudoHomeLocation
+            // pseudoHomeSet
             // 
-            this.pseudoHomeLocation.Location = new System.Drawing.Point(87, 40);
-            this.pseudoHomeLocation.Name = "pseudoHomeLocation";
-            this.pseudoHomeLocation.ReadOnly = true;
-            this.pseudoHomeLocation.Size = new System.Drawing.Size(170, 20);
-            this.pseudoHomeLocation.TabIndex = 5;
+            this.pseudoHomeSet.Location = new System.Drawing.Point(94, 73);
+            this.pseudoHomeSet.Name = "pseudoHomeSet";
+            this.pseudoHomeSet.Size = new System.Drawing.Size(75, 23);
+            this.pseudoHomeSet.TabIndex = 1;
+            this.pseudoHomeSet.Text = "Set";
+            this.pseudoHomeSet.UseVisualStyleBackColor = true;
+            this.pseudoHomeSet.Click += new System.EventHandler(this.pseudoHomeSet_Click);
             // 
-            // pseudoHomeEnabled
+            // pseudoHomeTolerance
             // 
-            this.pseudoHomeEnabled.AutoSize = true;
-            this.pseudoHomeEnabled.Location = new System.Drawing.Point(6, 77);
-            this.pseudoHomeEnabled.Name = "pseudoHomeEnabled";
-            this.pseudoHomeEnabled.Size = new System.Drawing.Size(65, 17);
-            this.pseudoHomeEnabled.TabIndex = 3;
-            this.pseudoHomeEnabled.Text = "Enabled";
-            this.pseudoHomeEnabled.UseVisualStyleBackColor = true;
-            this.pseudoHomeEnabled.CheckedChanged += new System.EventHandler(this.pseudoHomeEnabled_CheckedChanged);
+            this.pseudoHomeTolerance.Location = new System.Drawing.Point(87, 14);
+            this.pseudoHomeTolerance.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.pseudoHomeTolerance.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pseudoHomeTolerance.Name = "pseudoHomeTolerance";
+            this.pseudoHomeTolerance.Size = new System.Drawing.Size(40, 20);
+            this.pseudoHomeTolerance.TabIndex = 7;
+            this.pseudoHomeTolerance.Value = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.pseudoHomeTolerance.ValueChanged += new System.EventHandler(this.pseudoHomeTolerance_ValueChanged);
             // 
             // pseudoHomeTP
             // 
@@ -702,15 +728,13 @@ namespace Radegast
             this.pseudoHomeTP.UseVisualStyleBackColor = true;
             this.pseudoHomeTP.Click += new System.EventHandler(this.pseudoHomeTP_Click);
             // 
-            // pseudoHomeSet
+            // pseudoHomeLocation
             // 
-            this.pseudoHomeSet.Location = new System.Drawing.Point(94, 73);
-            this.pseudoHomeSet.Name = "pseudoHomeSet";
-            this.pseudoHomeSet.Size = new System.Drawing.Size(75, 23);
-            this.pseudoHomeSet.TabIndex = 1;
-            this.pseudoHomeSet.Text = "Set";
-            this.pseudoHomeSet.UseVisualStyleBackColor = true;
-            this.pseudoHomeSet.Click += new System.EventHandler(this.pseudoHomeSet_Click);
+            this.pseudoHomeLocation.Location = new System.Drawing.Point(87, 40);
+            this.pseudoHomeLocation.Name = "pseudoHomeLocation";
+            this.pseudoHomeLocation.ReadOnly = true;
+            this.pseudoHomeLocation.Size = new System.Drawing.Size(170, 20);
+            this.pseudoHomeLocation.TabIndex = 5;
             // 
             // pseudoHomeClear
             // 
@@ -720,6 +744,26 @@ namespace Radegast
             this.pseudoHomeClear.TabIndex = 0;
             this.pseudoHomeClear.Text = "Clear";
             this.pseudoHomeClear.UseVisualStyleBackColor = true;
+            // 
+            // pseudoHomeToleranceLabel
+            // 
+            this.pseudoHomeToleranceLabel.AutoSize = true;
+            this.pseudoHomeToleranceLabel.Location = new System.Drawing.Point(6, 16);
+            this.pseudoHomeToleranceLabel.Name = "pseudoHomeToleranceLabel";
+            this.pseudoHomeToleranceLabel.Size = new System.Drawing.Size(55, 13);
+            this.pseudoHomeToleranceLabel.TabIndex = 6;
+            this.pseudoHomeToleranceLabel.Text = "Tolerance";
+            // 
+            // pseudoHomeEnabled
+            // 
+            this.pseudoHomeEnabled.AutoSize = true;
+            this.pseudoHomeEnabled.Location = new System.Drawing.Point(6, 77);
+            this.pseudoHomeEnabled.Name = "pseudoHomeEnabled";
+            this.pseudoHomeEnabled.Size = new System.Drawing.Size(65, 17);
+            this.pseudoHomeEnabled.TabIndex = 3;
+            this.pseudoHomeEnabled.Text = "Enabled";
+            this.pseudoHomeEnabled.UseVisualStyleBackColor = true;
+            this.pseudoHomeEnabled.CheckedChanged += new System.EventHandler(this.pseudoHomeEnabled_CheckedChanged);
             // 
             // autoSit
             // 
@@ -805,38 +849,6 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
-            // pseudoHomeToleranceLabel
-            // 
-            this.pseudoHomeToleranceLabel.AutoSize = true;
-            this.pseudoHomeToleranceLabel.Location = new System.Drawing.Point(6, 16);
-            this.pseudoHomeToleranceLabel.Name = "pseudoHomeToleranceLabel";
-            this.pseudoHomeToleranceLabel.Size = new System.Drawing.Size(55, 13);
-            this.pseudoHomeToleranceLabel.TabIndex = 6;
-            this.pseudoHomeToleranceLabel.Text = "Tolerance";
-            // 
-            // pseudoHomeTolerance
-            // 
-            this.pseudoHomeTolerance.Location = new System.Drawing.Point(87, 14);
-            this.pseudoHomeTolerance.Maximum = new decimal(new int[] {
-            256,
-            0,
-            0,
-            0});
-            this.pseudoHomeTolerance.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.pseudoHomeTolerance.Name = "pseudoHomeTolerance";
-            this.pseudoHomeTolerance.Size = new System.Drawing.Size(40, 20);
-            this.pseudoHomeTolerance.TabIndex = 7;
-            this.pseudoHomeTolerance.Value = new decimal(new int[] {
-            256,
-            0,
-            0,
-            0});
-            this.pseudoHomeTolerance.ValueChanged += new System.EventHandler(this.pseudoHomeTolerance_ValueChanged);
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -864,9 +876,9 @@ namespace Radegast
             this.tbpBot.ResumeLayout(false);
             this.pseudoHome.ResumeLayout(false);
             this.pseudoHome.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).EndInit();
             this.autoSit.ResumeLayout(false);
             this.autoSit.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -934,6 +946,7 @@ namespace Radegast
         private System.Windows.Forms.Button pseudoHomeClear;
         private System.Windows.Forms.NumericUpDown pseudoHomeTolerance;
         private System.Windows.Forms.Label pseudoHomeToleranceLabel;
+        private System.Windows.Forms.CheckBox cbDisableNameLinks;
 
 
     }

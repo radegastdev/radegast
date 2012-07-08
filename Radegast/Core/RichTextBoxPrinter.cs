@@ -59,6 +59,16 @@ namespace Radegast
 
         }
 
+        public void InsertLink(string text)
+        {
+            rtb.InsertLink(text);
+        }
+
+        public void InsertLink(string text, string hyperlink)
+        {
+            rtb.InsertLink(text, hyperlink);
+        }
+
         private void FindURLs(string text)
         {
             Match m = urlRegex.Match(text);
