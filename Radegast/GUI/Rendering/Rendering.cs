@@ -3019,14 +3019,6 @@ namespace Radegast.Rendering
                     teFace.OffsetV = 0;
                 }
 
-                // Need to adjust UV for spheres as they are sort of half-prim
-                if (prim.PrimData.ProfileCurve == ProfileCurve.HalfCircle)
-                {
-                    teFace = (Primitive.TextureEntryFace)teFace.Clone();
-                    teFace.RepeatV *= 2;
-                    teFace.OffsetV += 0.5f;
-                }
-
                 // Sculpt UV vertically flipped compared to prims. Flip back
                 if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && prim.Sculpt.Type != SculptType.Mesh)
                 {
