@@ -236,9 +236,8 @@ namespace Radegast
                 sb.Append(message);
             }
 
-            instance.LogClientMessage(sessionName + ".txt", sb.ToString());
+            instance.LogClientMessage(sessionName + ".txt", fromName + sb.ToString());
             textPrinter.PrintTextLine(sb.ToString());
-            sb = null;
         }
 
         public static string ReadEndTokens(string path, Int64 numberOfTokens, Encoding encoding, string tokenSeparator)
