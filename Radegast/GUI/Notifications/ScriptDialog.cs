@@ -61,22 +61,30 @@ namespace Radegast
             int btnHeight = 23;
 
             int i = 0;
-            foreach (string label in buttons)
+            if (buttons.Count == 1 && buttons[0] == "!!llTextBox!!")
             {
-                Button b = new Button();
-                b.Size = new Size(btnWidth, btnHeight);
-                b.Text = label;
-                b.Location = new Point(5 + (i % 3) * (btnWidth + 5), btnsPanel.Size.Height - (i / 3) * (btnHeight + 5) - (btnHeight + 5));
-                b.Name = i.ToString();
-                b.Click += new EventHandler(b_Click);
-                b.UseVisualStyleBackColor = true;
-                b.Margin = new Padding(0, 3, 0, 3);
-                b.Padding = new Padding(0);
-                btnsPanel.Controls.Add(b);
-                args.Buttons.Add(b);
-                i++;
+                txtTextBox.Visible = true;
+                sendBtn.Visible = true;
+                args.Buttons.Add(ignoreBtn);
             }
-            
+            else
+            {
+                foreach (string label in buttons)
+                {
+                    Button b = new Button();
+                    b.Size = new Size(btnWidth, btnHeight);
+                    b.Text = label;
+                    b.Location = new Point(5 + (i % 3) * (btnWidth + 5), btnsPanel.Size.Height - (i / 3) * (btnHeight + 5) - (btnHeight + 5));
+                    b.Name = i.ToString();
+                    b.Click += new EventHandler(b_Click);
+                    b.UseVisualStyleBackColor = true;
+                    b.Margin = new Padding(0, 3, 0, 3);
+                    b.Padding = new Padding(0);
+                    btnsPanel.Controls.Add(b);
+                    args.Buttons.Add(b);
+                    i++;
+                }
+            }
             // Fire off event
             args.Buttons.Add(ignoreBtn);
             FireNotificationCallback(args);
@@ -92,6 +100,12 @@ namespace Radegast
 
         private void ignoreBtn_Click(object sender, EventArgs e)
         {
+            instance.MainForm.RemoveNotification(this);
+        }
+
+        private void sendBtn_Click(object sender, EventArgs e)
+        {
+            instance.Client.Self.ReplyToScriptDialog(chatChannel, 0, txtTextBox.Text, objectID);
             instance.MainForm.RemoveNotification(this);
         }
     }

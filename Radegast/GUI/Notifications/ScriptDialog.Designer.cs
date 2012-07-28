@@ -59,16 +59,32 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.btnsPanel = new System.Windows.Forms.Panel();
+            this.txtTextBox = new System.Windows.Forms.TextBox();
             this.descBox = new System.Windows.Forms.TextBox();
             this.ignoreBtn = new System.Windows.Forms.Button();
+            this.sendBtn = new System.Windows.Forms.Button();
+            this.btnsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnsPanel
             // 
+            this.btnsPanel.Controls.Add(this.txtTextBox);
             this.btnsPanel.Location = new System.Drawing.Point(0, 123);
             this.btnsPanel.Name = "btnsPanel";
             this.btnsPanel.Size = new System.Drawing.Size(287, 112);
             this.btnsPanel.TabIndex = 5;
+            // 
+            // txtTextBox
+            // 
+            this.txtTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTextBox.Location = new System.Drawing.Point(3, 3);
+            this.txtTextBox.Multiline = true;
+            this.txtTextBox.Name = "txtTextBox";
+            this.txtTextBox.Size = new System.Drawing.Size(281, 99);
+            this.txtTextBox.TabIndex = 0;
+            this.txtTextBox.Visible = false;
             // 
             // descBox
             // 
@@ -94,15 +110,29 @@ namespace Radegast
             this.ignoreBtn.UseVisualStyleBackColor = true;
             this.ignoreBtn.Click += new System.EventHandler(this.ignoreBtn_Click);
             // 
+            // sendBtn
+            // 
+            this.sendBtn.Location = new System.Drawing.Point(131, 231);
+            this.sendBtn.Name = "sendBtn";
+            this.sendBtn.Size = new System.Drawing.Size(75, 23);
+            this.sendBtn.TabIndex = 6;
+            this.sendBtn.Text = "Send";
+            this.sendBtn.UseVisualStyleBackColor = true;
+            this.sendBtn.Visible = false;
+            this.sendBtn.Click += new System.EventHandler(this.sendBtn_Click);
+            // 
             // ntfScriptDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.sendBtn);
             this.Controls.Add(this.ignoreBtn);
             this.Controls.Add(this.btnsPanel);
             this.Controls.Add(this.descBox);
             this.Name = "ntfScriptDialog";
             this.Size = new System.Drawing.Size(289, 254);
+            this.btnsPanel.ResumeLayout(false);
+            this.btnsPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -113,6 +143,8 @@ namespace Radegast
         public System.Windows.Forms.Panel btnsPanel;
         public System.Windows.Forms.TextBox descBox;
         public System.Windows.Forms.Button ignoreBtn;
+        public System.Windows.Forms.Button sendBtn;
+        public System.Windows.Forms.TextBox txtTextBox;
 
     }
 }

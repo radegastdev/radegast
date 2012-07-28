@@ -240,6 +240,12 @@ namespace Radegast
 
         void Self_ScriptDialog(object sender, ScriptDialogEventArgs e)
         {
+            if (instance.MainForm.InvokeRequired)
+            {
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => Self_ScriptDialog(sender, e)));
+                return;
+            }
+
             // Is this object muted
             if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.ObjectID) // muted object by id
                 || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
