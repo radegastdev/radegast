@@ -3194,10 +3194,9 @@ namespace Radegast.Rendering
                 {
                     instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
                         {
-                            if (state == TextureRequestState.Finished)
+                            ManagedImage mi;
+                            if (state == TextureRequestState.Finished && OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi))
                             {
-                                ManagedImage mi;
-                                OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
 
                                 if (removeAlpha)
                                 {
