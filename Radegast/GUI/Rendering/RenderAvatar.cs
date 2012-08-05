@@ -513,7 +513,7 @@ namespace Radegast.Rendering
 
         public GLAvatar()
         {
-            foreach (KeyValuePair<string, GLMesh> kvp in _defaultmeshes)
+            lock (_defaultmeshes) foreach (KeyValuePair<string, GLMesh> kvp in _defaultmeshes)
             {
                 GLMesh mesh = new GLMesh(kvp.Value, this); // Instance our meshes
                 _meshes.Add(kvp.Key, mesh);
@@ -583,7 +583,9 @@ namespace Radegast.Rendering
                 int lod = Int32.Parse(meshNode.Attributes.GetNamedItem("lod").Value);
                 string fileName = meshNode.Attributes.GetNamedItem("file_name").Value;
 
-                GLMesh mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
+                GLMesh mesh = null;
+                lock (_defaultmeshes)
+                    mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
 
                 // Set up the texture elemenets for each mesh
                 // And hack the eyeball position
@@ -636,15 +638,15 @@ namespace Radegast.Rendering
                     switch (mesh.Name)
                     {
                         case "eyeBallLeftMesh":
-                            mesh.setMeshPos(Bone.mBones["mEyeLeft"].getTotalOffset());
+                            lock (Bone.mBones) mesh.setMeshPos(Bone.mBones["mEyeLeft"].getTotalOffset());
                             break;
 
                         case "eyeBallRightMesh":
-                            mesh.setMeshPos(Bone.mBones["mEyeRight"].getTotalOffset());
+                            lock (Bone.mBones) mesh.setMeshPos(Bone.mBones["mEyeRight"].getTotalOffset());
                             break;
 
                         case "eyelashMesh":
-                            mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
+                            lock (Bone.mBones) mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
                             break;
 
                         case "hairMesh":
@@ -656,7 +658,7 @@ namespace Radegast.Rendering
                     }
                 }
 
-                _defaultmeshes[type] = mesh;
+                lock (_defaultmeshes) _defaultmeshes[type] = mesh;
 
             }
 
@@ -974,7 +976,7 @@ namespace Radegast.Rendering
 
             mBones = new Dictionary<string, Bone>();
 
-            foreach (Bone src in Bone.mBones.Values)
+            lock (Bone.mBones) foreach (Bone src in Bone.mBones.Values)
             {
                 Bone newbone = new Bone(src);
                 mBones.Add(newbone.name, newbone);
@@ -1662,7 +1664,7 @@ namespace Radegast.Rendering
 
         public static void loadbones(string skeletonfilename)
         {
-            mBones.Clear();
+            lock (Bone.mBones) mBones.Clear();
             string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
             XmlDocument skeleton = new XmlDocument();
             skeleton.Load(basedir + skeletonfilename);
@@ -1708,7 +1710,7 @@ namespace Radegast.Rendering
                 parent.children.Add(b);
             }
 
-            mBones.Add(b.name, b);
+            lock (Bone.mBones) mBones.Add(b.name, b);
             mIndexedBones.Add(boneaddindex++, b);
 
             Logger.Log("Found bone " + b.name, Helpers.LogLevel.Info);
@@ -1732,7 +1734,7 @@ namespace Radegast.Rendering
             animation_offset = dpos;
 
             //this.pos = Bone.mBones[name].offset_pos + dpos;
-            this.rot = Bone.mBones[name].orig_rot * rot;
+            lock (Bone.mBones) this.rot = Bone.mBones[name].orig_rot * rot;
 
             markdirty();
         }
@@ -1845,13 +1847,16 @@ namespace Radegast.Rendering
         private static Quaternion getRotation(string bonename)
         {
             Bone b;
-            if (mBones.TryGetValue(bonename, out b))
+            lock (Bone.mBones)
             {
-                return (b.getRotation());
-            }
-            else
-            {
-                return Quaternion.Identity;
+                if (mBones.TryGetValue(bonename, out b))
+                {
+                    return (b.getRotation());
+                }
+                else
+                {
+                    return Quaternion.Identity;
+                }
             }
         }
 
