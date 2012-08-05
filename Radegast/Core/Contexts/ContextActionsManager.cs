@@ -60,7 +60,8 @@ namespace Radegast
                                {
                                    Label = label,
                                    Handler = handler,
-                                   ContextType = libomvType
+                                   ContextType = libomvType,
+                                   ExactContextType = true
                                });
         }
 

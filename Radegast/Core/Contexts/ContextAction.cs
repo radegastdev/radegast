@@ -41,6 +41,7 @@ namespace Radegast
     public class ContextAction : IContextAction
     {
         public Type ContextType;
+        public bool ExactContextType = false;
         public virtual string Label { get; set; }
         public EventHandler Handler;
         protected RadegastInstance instance;
@@ -182,6 +183,7 @@ namespace Radegast
 
         public virtual bool TypeContributes(Type o)
         {
+            if (ExactContextType) return o.IsAssignableFrom(ContextType);
             return ContextType.IsAssignableFrom(o);
         }
 
