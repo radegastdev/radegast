@@ -202,7 +202,14 @@ namespace Radegast
                     foreach (UUID key in remove)
                     {
                         agentSimHandle.Remove(key);
-                        lvwObjects.Items.RemoveByKey("" + key);
+                        try
+                        {
+                            lvwObjects.Items.RemoveByKey("" + key);
+                        }
+                        catch (Exception)
+                        {
+                            
+                        }
                     }
                 }
                 finally
