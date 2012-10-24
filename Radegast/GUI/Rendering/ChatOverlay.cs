@@ -30,11 +30,7 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 
