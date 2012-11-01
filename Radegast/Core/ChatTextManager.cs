@@ -187,7 +187,15 @@ namespace Radegast
                         break;
                 }
 
-                textPrinter.PrintTextLine(item.From + item.Text);
+                if (item.Style == ChatBufferTextStyle.Normal && item.ID != UUID.Zero && !instance.GlobalSettings["disable_av_name_link"])
+                {
+                    textPrinter.InsertLink(item.From, string.Format("secondlife:///app/agent/{0}/about", item.ID));
+                    textPrinter.PrintTextLine(item.Text);
+                }
+                else
+                {
+                    textPrinter.PrintTextLine(item.From + item.Text);
+                }
             }
         }
 

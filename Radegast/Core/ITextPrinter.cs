@@ -34,6 +34,8 @@ namespace Radegast
 {
     public interface ITextPrinter
     {
+        void InsertLink(string text);
+        void InsertLink(string text, string hyperlink);
         void PrintText(string text);
         void PrintTextLine(string text);
         void PrintTextLine(string text, Color color);

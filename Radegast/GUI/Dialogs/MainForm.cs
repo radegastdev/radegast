@@ -762,6 +762,16 @@ namespace Radegast
             }
         }
 
+        private Dictionary<UUID, frmGroupInfo> shownGroupProfiles = new Dictionary<UUID, frmGroupInfo>();
+
+        public void ShowGroupProfile(UUID id)
+        {
+            ShowGroupProfile(new OpenMetaverse.Group()
+            {
+                ID = id,
+            });
+        }
+
         public void ShowGroupProfile(AvatarGroup group)
         {
             ShowGroupProfile(new OpenMetaverse.Group()
@@ -773,10 +783,14 @@ namespace Radegast
             );
         }
 
-        private Dictionary<UUID, frmGroupInfo> shownGroupProfiles = new Dictionary<UUID, frmGroupInfo>();
-
         public void ShowGroupProfile(OpenMetaverse.Group group)
         {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => ShowGroupProfile(group)));
+                return;
+            }
+
             lock (shownGroupProfiles)
             {
                 frmGroupInfo profile = null;
@@ -806,6 +820,59 @@ namespace Radegast
             }
         }
 
+        public bool ProcessSecondlifeURI(string link)
+        {
+            // First try if we have a region name, assume it's a teleport link if we have
+            Regex r = new Regex(@"^(secondlife://)(?<region>[^/$]+)(/(?<x>\d+))?((/?<y>\d+))?(/(?<z>\d+))?",
+                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+            Match m = r.Match(link);
+
+            if (m.Success)
+            {
+                string region = HttpUtility.UrlDecode(m.Groups["region"].Value);
+                int x = string.IsNullOrEmpty(m.Groups["x"].Value) ? 128 : int.Parse(m.Groups["x"].Value);
+                int y = string.IsNullOrEmpty(m.Groups["y"].Value) ? 128 : int.Parse(m.Groups["y"].Value);
+                int z = string.IsNullOrEmpty(m.Groups["z"].Value) ? 0 : int.Parse(m.Groups["z"].Value);
+                MapTab.Select();
+                WorldMap.DisplayLocation(region, x, y, z);
+                return true;
+            }
+
+            // Is it group profile link
+            r = new Regex(@"^secondlife:///app/group/(?<id>[^/]+)/about",
+                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+            m = r.Match(link);
+
+            if (m.Success)
+            {
+                UUID id;
+                if (UUID.TryParse(m.Groups["id"].Value, out id))
+                {
+                    ShowGroupProfile(id);
+                    return true;
+                }
+                return false;
+            }
+
+            // Is it user profile link
+            r = new Regex(@"^secondlife:///app/agent/(?<id>[^/]+)/about",
+                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+            m = r.Match(link);
+
+            if (m.Success)
+            {
+                UUID id;
+                if (UUID.TryParse(m.Groups["id"].Value, out id))
+                {
+                    ShowAgentProfile(instance.Names.Get(id), id);
+                    return true;
+                }
+                return false;
+            }
+
+            return false;
+        }
+
         public void ProcessLink(string link)
         {
             ProcessLink(link, false);
@@ -813,6 +880,17 @@ namespace Radegast
 
         public bool ProcessLink(string link, bool onlyMap)
         {
+            var pos = link.IndexOf(RRichTextBox.LinkSeparator);
+            if (pos > 0)
+            {
+                link = link.Substring(pos + 1);
+            }
+
+            if (link.StartsWith("secondlife://"))
+            {
+                return ProcessSecondlifeURI(link);
+            }
+
             if (!link.Contains("://"))
             {
                 link = "http://" + link;

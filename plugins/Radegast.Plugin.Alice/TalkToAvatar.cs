@@ -1,14 +1,18 @@
 using System;
 using System.Windows.Forms;
+
 using AIMLbot;
+using AIMLBot = AIMLbot.Bot;
+
 using OpenMetaverse;
 
 namespace Radegast.Plugin.Alice
 {
     public class TalkToAvatar : ContextAction
     {
-        private Bot aimlBot;
-        public TalkToAvatar(RadegastInstance inst, Bot bot) : base(inst)
+        private AIMLBot aimlBot;
+        public TalkToAvatar(RadegastInstance inst, AIMLBot bot)
+            : base(inst)
         {
             ContextType = typeof (Avatar);
             Label = "Talk to";

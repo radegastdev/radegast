@@ -32,7 +32,10 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 using System.Threading;
+
 using OpenMetaverse;
+
+using Radegast.Bot;
 using Radegast.Netcom;
 
 namespace Radegast
@@ -186,6 +189,8 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             KnownAnimations = Animations.ToDictionary();
+            autosit = new AutoSit(this.instance);
+            pseudohome = new PseudoHome(this.instance);
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -206,6 +211,7 @@ namespace Radegast
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             client.Self.TeleportProgress += new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.EventQueueRunning += new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
         }
 
         private void UnregisterClientEvents(GridClient client)
@@ -215,6 +221,7 @@ namespace Radegast
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
             client.Self.TeleportProgress -= new EventHandler<TeleportEventArgs>(Self_TeleportProgress);
             client.Network.EventQueueRunning -= new EventHandler<EventQueueRunningEventArgs>(Network_EventQueueRunning);
+            client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
         }
 
         public void Dispose()
@@ -265,9 +272,31 @@ namespace Radegast
         public bool TryFindAvatar(UUID person, out Vector3 position)
         {
             Simulator sim;
-            return TryFindAvatar(person, out sim, out position);
+            if (!TryFindAvatar(person, out sim, out position)) return false;
+            // same sim?
+            if (sim == client.Network.CurrentSim) return true;
+            position = ToLocalPosition(sim.Handle, position);
+            return true;
         }
- 
+
+        public Vector3 ToLocalPosition(ulong handle, Vector3 position)
+        {
+            Vector3d diff = ToVector3D(handle, position) - client.Self.GlobalPosition;
+            position = new Vector3((float) diff.X, (float) diff.Y, (float) diff.Z) - position;
+            return position;
+        }
+
+        public static Vector3d ToVector3D(ulong handle, Vector3 pos)
+        {
+            uint globalX, globalY;
+            Utils.LongToUInts(handle, out globalX, out globalY);
+
+            return new Vector3d(
+                (double)globalX + (double)pos.X,
+                (double)globalY + (double)pos.Y,
+                (double)pos.Z);
+        }
+
         /// <summary>
         /// Locates avatar in the current sim, or adjacents sims
         /// </summary>
@@ -277,6 +306,10 @@ namespace Radegast
         /// <returns>True if managed to find the avatar</returns>
         public bool TryFindAvatar(UUID person, out Simulator sim, out Vector3 position)
         {
+            return TryFindPrim(person, out sim, out position, true);
+        }
+        public bool TryFindPrim(UUID person, out Simulator sim, out Vector3 position, bool onlyAvatars)
+        {
             Simulator[] Simulators = null;
             lock (client.Network.Simulators)
             {
@@ -285,7 +318,7 @@ namespace Radegast
             sim = null;
             position = Vector3.Zero;
 
-            Avatar avi = null;
+            Primitive avi = null;
 
             // First try the object tracker
             foreach (var s in Simulators)
@@ -297,7 +330,18 @@ namespace Radegast
                     break;
                 }
             }
-
+            if (avi == null && !onlyAvatars)
+            {
+                foreach (var s in Simulators)
+                {
+                    avi = s.ObjectsPrimitives.Find((Primitive av) => { return av.ID == person; });
+                    if (avi != null)
+                    {
+                        sim = s;
+                        break;
+                    }
+                }
+            }
             if (avi != null)
             {
                 if (avi.ParentID == 0)
@@ -320,11 +364,53 @@ namespace Radegast
                     if (s.AvatarPositions.ContainsKey(person))
                     {
                         position = s.AvatarPositions[person];
+                        sim = s;
                         break;
                     }
                 }
             }
 
+            if (position.Z > 0.1f)
+                return true;
+            else
+                return false;
+        }
+
+        public bool TryLocatePrim(Primitive avi, out Simulator sim, out Vector3 position)
+        {
+            Simulator[] Simulators = null;
+            lock (client.Network.Simulators)
+            {
+                Simulators = client.Network.Simulators.ToArray();
+            }
+
+            sim = client.Network.CurrentSim;
+            position = Vector3.Zero;
+            {
+                foreach (var s in Simulators)
+                {
+                    if (s.Handle == avi.RegionHandle)
+                    {
+                        sim = s;
+                        break;
+                    }
+                }
+            }
+            if (avi != null)
+            {
+                if (avi.ParentID == 0)
+                {
+                    position = avi.Position;
+                }
+                else
+                {
+                    Primitive seat;
+                    if (sim.ObjectsPrimitives.TryGetValue(avi.ParentID, out seat))
+                    {
+                        position = seat.Position + avi.Position*seat.Rotation;
+                    }
+                }
+            }
             if (position.Z > 0.1f)
                 return true;
             else
@@ -376,6 +462,12 @@ namespace Radegast
             {
                 SetRandomHeading();
             }
+        }
+
+        void Network_SimChanged(object sender, SimChangedEventArgs e)
+        {
+            autosit.TrySit();
+            pseudohome.ETGoHome();
         }
 
         private UUID teleportEffect = UUID.Random();
@@ -576,6 +668,8 @@ namespace Radegast
 
         void netcom_ChatReceived(object sender, ChatEventArgs e)
         {
+            //somehow it can be too early (when Radegast is loaded from running bot)
+            if (instance.GlobalSettings==null) return;
             if (!instance.GlobalSettings["disable_look_at"]
                 && e.SourceID != client.Self.AgentID
                 && (e.SourceType == ChatSourceType.Agent || e.Type == ChatType.StartTyping))
@@ -606,6 +700,19 @@ namespace Radegast
         public void WalkTo(Primitive prim)
         {
             WalkTo(GlobalPosition(prim));
+        }
+        public double WaitUntilPosition(Vector3d pos, TimeSpan maxWait, double howClose)
+        {
+             
+            DateTime until = DateTime.Now + maxWait;
+            while (until > DateTime.Now)
+            {
+                double dist = Vector3d.Distance(client.Self.GlobalPosition, pos);
+                if (howClose >= dist) return dist;
+                Thread.Sleep(250);
+            }
+            return Vector3d.Distance(client.Self.GlobalPosition, pos);
+            
         }
 
         public void WalkTo(Vector3d globalPos)
@@ -653,7 +760,7 @@ namespace Radegast
                     EndWalking();
                     return;
                 }
-                walkTimer.Change(walkChekInterval, Timeout.Infinite);
+                if (walkTimer != null) walkTimer.Change(walkChekInterval, Timeout.Infinite);
             }
         }
 
@@ -730,6 +837,7 @@ namespace Radegast
             awayAnim.Add(awayAnimationID, away);
 
             client.Self.Animate(awayAnim, true);
+            if (UseMoveControl) client.Self.Movement.Away = away;
             this.away = away;
         }
 
@@ -804,7 +912,7 @@ namespace Radegast
             }
         }
 
-        public Vector3d GlobalPosition(Simulator sim, Vector3 pos)
+        static public Vector3d GlobalPosition(Simulator sim, Vector3 pos)
         {
             uint globalX, globalY;
             Utils.LongToUInts(sim.Handle, out globalX, out globalY);
@@ -954,7 +1062,11 @@ namespace Radegast
 
         public bool IsAway
         {
-            get { return away; }
+            get
+            {
+                if (UseMoveControl) return client.Self.Movement.Away;
+                return away;
+            }
         }
 
         public bool IsBusy
@@ -964,12 +1076,20 @@ namespace Radegast
 
         public bool IsFlying
         {
-            get { return flying; }
+            get { return client.Self.Movement.Fly; }
         }
 
         public bool IsSitting
         {
-            get { return sitting; }
+            get
+            {
+                if (client.Self.Movement.SitOnGround || client.Self.SittingOn != 0) return true;
+                if (sitting) {
+                    Logger.Log("out of sync sitting", Helpers.LogLevel.Debug);
+                    sitting = false;
+                }
+                return false;
+            }
         }
 
         public bool IsPointing
@@ -997,6 +1117,24 @@ namespace Radegast
         public bool IsWalking
         {
             get { return walking; }
+        }
+
+        private AutoSit autosit;
+        public AutoSit AutoSit
+        {
+            get { return autosit; }
+        }
+
+        private PseudoHome pseudohome;
+
+        /// <summary>
+        /// Experimental Option that sometimes the Client has more authority than state mananger
+        /// </summary>
+        public static bool UseMoveControl;
+
+        public PseudoHome PseudoHome
+        {
+            get { return pseudohome; }
         }
     }
 

@@ -112,6 +112,7 @@ namespace Radegast.Rendering
         #region Private fields
 
         ChatOverlay chatOverlay;
+        TextRendering textRendering;
         Camera Camera;
         SceneObject trackedObject;
         Vector3 lastTrackedObjectPos = RHelp.InvalidPosition;
@@ -181,6 +182,8 @@ namespace Radegast.Rendering
             SetWaterPlanes();
 
             chatOverlay = new ChatOverlay(instance, this);
+            textRendering = new TextRendering(instance);
+
             cbChatType.SelectedIndex = 1;
 
             DrawDistance = Instance.GlobalSettings["draw_distance"];
@@ -217,6 +220,12 @@ namespace Radegast.Rendering
             {
                 chatOverlay.Dispose();
                 chatOverlay = null;
+            }
+
+            if (textRendering != null)
+            {
+                textRendering.Dispose();
+                textRendering = null;
             }
 
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
@@ -689,10 +698,10 @@ namespace Radegast.Rendering
 
                 GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-                string glExtensions = GL.GetString(StringName.Extensions);
 
                 // Compatibility checks
                 OpenTK.Graphics.IGraphicsContextInternal context = glControl.Context as OpenTK.Graphics.IGraphicsContextInternal;
+                string glExtensions = GL.GetString(StringName.Extensions);
 
                 // VBO
                 RenderSettings.ARBVBOPresent = context.GetAddress("glGenBuffersARB") != IntPtr.Zero;
@@ -737,7 +746,7 @@ namespace Radegast.Rendering
                 glControl_Resize(null, null);
                 RenderingEnabled = false;
 
-                glControl.Context.MakeCurrent(null);
+                // glControl.Context.MakeCurrent(null);
                 TextureThreadContextReady.Reset();
                 var textureThread = new Thread(() => TextureThread())
                 {
@@ -746,7 +755,7 @@ namespace Radegast.Rendering
                 };
                 textureThread.Start();
                 TextureThreadContextReady.WaitOne(1000, false);
-                glControl.MakeCurrent();
+                // glControl.MakeCurrent();
                 InitWater();
                 InitShaders();
                 RenderingEnabled = true;
@@ -851,6 +860,7 @@ namespace Radegast.Rendering
 
         SceneObject RightclickedObject;
         int RightclickedFaceID;
+        Vector3 RightclickedPosition;
 
         private void glControl_MouseDown(object sender, MouseEventArgs e)
         {
@@ -893,7 +903,7 @@ namespace Radegast.Rendering
             {
                 object picked;
                 RightclickedObject = null;
-                if (TryPick(e.X, e.Y, out picked, out RightclickedFaceID))
+                if (TryPick(e.X, e.Y, out picked, out RightclickedFaceID, out RightclickedPosition))
                 {
                     if (picked is SceneObject)
                     {
@@ -1032,16 +1042,16 @@ namespace Radegast.Rendering
 
         void TextureThread()
         {
-            OpenTK.INativeWindow window = new OpenTK.NativeWindow();
-            OpenTK.Graphics.IGraphicsContext context = new OpenTK.Graphics.GraphicsContext(GLMode, window.WindowInfo);
-            context.MakeCurrent(window.WindowInfo);
+            //OpenTK.INativeWindow window = new OpenTK.NativeWindow();
+            //OpenTK.Graphics.IGraphicsContext context = new OpenTK.Graphics.GraphicsContext(GLMode, window.WindowInfo);
+            //context.MakeCurrent(window.WindowInfo);
             TextureThreadContextReady.Set();
             PendingTextures.Open();
             Logger.DebugLog("Started Texture Thread");
 
-            while (window.Exists && TextureThreadRunning)
+            while (/*window.Exists &&*/ TextureThreadRunning)
             {
-                window.ProcessEvents();
+                //window.ProcessEvents();
 
                 TextureLoadItem item = null;
 
@@ -1118,18 +1128,22 @@ namespace Radegast.Rendering
                     Bitmap bitmap = (Bitmap)img;
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    item.Data.TextureInfo.TexturePointer = RHelp.GLLoadImage(bitmap, item.Data.TextureInfo.HasAlpha);
-                    GL.Flush();
-                    bitmap.Dispose();
+                    
+                    instance.MainForm.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        item.Data.TextureInfo.TexturePointer = RHelp.GLLoadImage(bitmap, item.Data.TextureInfo.HasAlpha);
+                        // GL.Flush();
+                        bitmap.Dispose();
+                    }));
                 }
 
                 item.TextureData = null;
                 item.TGAData = null;
                 imageBytes = null;
             }
-            context.MakeCurrent(window.WindowInfo);
-            context.Dispose();
-            window.Dispose();
+            //context.MakeCurrent(window.WindowInfo);
+            //context.Dispose();
+            //window.Dispose();
             TextureThreadContextReady.Set();
             Logger.DebugLog("Texture thread exited");
         }
@@ -1429,10 +1443,6 @@ namespace Radegast.Rendering
         }
 
 
-#pragma warning disable 0612
-        OpenTK.Graphics.TextPrinter Printer = new OpenTK.Graphics.TextPrinter(OpenTK.Graphics.TextQuality.High);
-#pragma warning restore 0612
-
         private void RenderStats()
         {
             // This is a FIR filter known as a MMA or Modified Mean Average, using a 20 point sampling width
@@ -1476,7 +1486,9 @@ namespace Radegast.Rendering
                     if (!string.IsNullOrEmpty(av.avatar.GroupName))
                         tagText = av.avatar.GroupName + "\n" + tagText;
 
-                    var tSize = Printer.Measure(tagText, AvatarTagFont);
+                    TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.Top;
+                    var tSize = TextRendering.Measure(tagText, AvatarTagFont, flags);
+
                     if (pass == RenderPass.Picking)
                     {
                         //Send avatar anyway, we're attached to it
@@ -1496,26 +1508,26 @@ namespace Radegast.Rendering
 
                     OpenTK.Vector3 quadPos = screenPos;
                     screenPos.Y = glControl.Height - screenPos.Y;
-                    screenPos.X -= tSize.BoundingBox.Width / 2;
-                    screenPos.Y -= tSize.BoundingBox.Height / 2 + 2;
+                    screenPos.X -= tSize.Width / 2;
+                    screenPos.Y -= tSize.Height / 2 + 2;
 
                     if (screenPos.Y > 0)
                     {
                         // Render tag backround
-                        float halfWidth = tSize.BoundingBox.Width / 2 + 12;
-                        float halfHeight = tSize.BoundingBox.Height / 2 + 5;
+                        float halfWidth = tSize.Width / 2 + 12;
+                        float halfHeight = tSize.Height / 2 + 5;
                         RHelp.Draw2DBox(quadPos.X - halfWidth, quadPos.Y - halfHeight, halfWidth * 2, halfHeight * 2, screenPos.Z);
 
                         if (pass == RenderPass.Simple)
                         {
-                            Printer.Begin();
+                            textRendering.Begin();
                             Color textColor = pass == RenderPass.Simple ?
                                 Color.Orange :
                                 Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]);
-                            Printer.Print(tagText, AvatarTagFont, textColor,
-                                new RectangleF(screenPos.X, screenPos.Y, tSize.BoundingBox.Width + 2, tSize.BoundingBox.Height + 2),
-                                OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
-                            Printer.End();
+                            textRendering.Print(tagText, AvatarTagFont, textColor,
+                                new Rectangle((int)screenPos.X, (int)screenPos.Y, tSize.Width + 2, tSize.Height + 2),
+                                flags);
+                            textRendering.End();
                         }
                     }
                 }
@@ -1546,13 +1558,14 @@ namespace Radegast.Rendering
                         if (!Math3D.GluProject(primPos, ModelMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
                         screenPos.Y = glControl.Height - screenPos.Y;
 
-                        Printer.Begin();
+                        textRendering.Begin();
 
                         Color color = Color.FromArgb((int)(prim.BasePrim.TextColor.A * 255), (int)(prim.BasePrim.TextColor.R * 255), (int)(prim.BasePrim.TextColor.G * 255), (int)(prim.BasePrim.TextColor.B * 255));
 
-                        var size = Printer.Measure(text, HoverTextFont);
-                        screenPos.X -= size.BoundingBox.Width / 2;
-                        screenPos.Y -= size.BoundingBox.Height;
+                        TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.Top;
+                        var size = TextRendering.Measure(text, HoverTextFont, flags);
+                        screenPos.X -= size.Width / 2;
+                        screenPos.Y -= size.Height;
 
                         if (screenPos.Y > 0)
                         {
@@ -1566,7 +1579,7 @@ namespace Radegast.Rendering
                                     {
                                         byte[] primNrBytes = Utils.Int16ToBytes((short)((FaceData)f.UserData).PickingID);
                                         byte[] faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)faceID, 255 };
-                                        Printer.Print(text, HoverTextFont, Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]), new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                                        textRendering.Print(text, HoverTextFont, Color.FromArgb(faceColor[3], faceColor[0], faceColor[1], faceColor[2]), new Rectangle((int)screenPos.X, (int)screenPos.Y, size.Width + 2, size.Height + 2), flags);
                                         break;
                                     }
                                     faceID++;
@@ -1576,14 +1589,14 @@ namespace Radegast.Rendering
                             {
                                 // Shadow
                                 if (color != Color.Black)
-                                    Printer.Print(text, HoverTextFont, Color.Black, new RectangleF(screenPos.X + 1, screenPos.Y + 1, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                                    textRendering.Print(text, HoverTextFont, Color.Black, new Rectangle((int)screenPos.X + 1, (int)screenPos.Y + 1, size.Width + 2, size.Height + 2), flags);
 
                                 // Text
-                                Printer.Print(text, HoverTextFont, color, new RectangleF(screenPos.X, screenPos.Y, size.BoundingBox.Width + 2, size.BoundingBox.Height + 2), OpenTK.Graphics.TextPrinterOptions.Default, OpenTK.Graphics.TextAlignment.Center);
+                                textRendering.Print(text, HoverTextFont, color, new Rectangle((int)screenPos.X, (int)screenPos.Y, size.Width + 2, size.Height + 2), flags);
                             }
                         }
 
-                        Printer.End();
+                        textRendering.End();
                     }
                 }
             }
@@ -3018,14 +3031,6 @@ namespace Radegast.Rendering
                     teFace.OffsetV = 0;
                 }
 
-                // Need to adjust UV for spheres as they are sort of half-prim
-                if (prim.PrimData.ProfileCurve == ProfileCurve.HalfCircle)
-                {
-                    teFace = (Primitive.TextureEntryFace)teFace.Clone();
-                    teFace.RepeatV *= 2;
-                    teFace.OffsetV += 0.5f;
-                }
-
                 // Sculpt UV vertically flipped compared to prims. Flip back
                 if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && prim.Sculpt.Type != SculptType.Mesh)
                 {
@@ -3201,10 +3206,9 @@ namespace Radegast.Rendering
                 {
                     instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
                         {
-                            if (state == TextureRequestState.Finished)
+                            ManagedImage mi;
+                            if (state == TextureRequestState.Finished && OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi))
                             {
-                                ManagedImage mi;
-                                OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
 
                                 if (removeAlpha)
                                 {
@@ -3420,6 +3424,7 @@ namespace Radegast.Rendering
                 });
             }
             ctxMenu.Items.Add(item);
+            instance.ContextActionManager.AddContributions(ctxMenu, typeof(Vector3), RightclickedPosition);
         }
         #endregion Context menu
 

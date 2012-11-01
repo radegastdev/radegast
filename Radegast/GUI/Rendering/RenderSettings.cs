@@ -58,7 +58,7 @@ namespace Radegast.Rendering
         public static DetailLevel SculptRenderDetail = DetailLevel.High;
         public static DetailLevel MeshRenderDetail = DetailLevel.Highest;
         public static bool AllowQuickAndDirtyMeshing = true;
-        public static int MeshesPerFrame = 2;
+        public static int MeshesPerFrame = 20;
         public static int TexturesToDownloadPerFrame = 2;
         /// <summary>Should we try to make sure that large prims that are > our draw distance are in view when we are standing on them</summary>
         public static bool HeavierDistanceChecking = true;

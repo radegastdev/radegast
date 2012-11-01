@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
@@ -40,9 +41,12 @@ namespace Radegast
     public class ContextAction : IContextAction
     {
         public Type ContextType;
+        public bool ExactContextType = false;
         public virtual string Label { get; set; }
         public EventHandler Handler;
         protected RadegastInstance instance;
+        public bool ExecAsync = true;
+        private Thread AsyncThread;
         public bool Enabled { get; set; }
         public virtual object DeRef(object o)
         {
@@ -99,14 +103,58 @@ namespace Radegast
             return Enabled && Contributes(target,target!=null?target.GetType():null) || Enabled;
         }
 
+        public virtual string ToolTipText(object target)
+        {
+            return LabelFor(target) + " " + target;
+        }
+
         public virtual IEnumerable<ToolStripMenuItem> GetToolItems(object target, Type type)
         {
-            return new List<ToolStripMenuItem>(){new ToolStripMenuItem(
+            return new List<ToolStripMenuItem>()
+                       {
+                           new ToolStripMenuItem(
                 LabelFor(target), (Image) null,
-                (sender, e) => TryCatch(() => OnInvoke(sender, e, target)))
+                (sender, e) => TCI(sender, e, target))
                        {
                            Enabled = IsEnabled(target),
-                       }};
+                                   ToolTipText = ToolTipText(target)
+                               }
+                       };
+        }
+
+        private void TCI(object sender, EventArgs e, object target)
+        {
+            if (!this.ExecAsync)
+            {
+                TryCatch(() => OnInvoke(sender, e, target));
+                return;
+            }
+            if (AsyncThread != null && AsyncThread.IsAlive)
+            {
+                AsyncThread.Abort();
+            }
+            AsyncThread = new Thread(() => TryCatch(() => OnInvoke(sender, e, target)))
+                              {
+                                  Name = Label + " Async command"
+                              };
+            AsyncThread.Start();                       
+        }
+
+        protected void InvokeSync(MethodInvoker func)
+        {
+            try
+            {
+                if (instance.MainForm.InvokeRequired)
+                {
+                    instance.MainForm.Invoke(func);
+                    return;
+                }
+                func();
+            }
+            catch (Exception e)
+            {
+                DebugLog("Exception: " + e);
+            }
         }
 
         protected void TryCatch(MethodInvoker func)
@@ -121,7 +169,6 @@ namespace Radegast
             }
         }
 
-
         public virtual string LabelFor(object target)
         {
             return Label;
@@ -130,25 +177,34 @@ namespace Radegast
         public virtual IEnumerable<Control> GetControls(object target, Type type)
         {
             Button button = new Button { Text = LabelFor(target), Enabled = IsEnabled(target) };
-            button.Click += (sender, e) => TryCatch(() => OnInvoke(sender, e, target));
+            button.Click += (sender, e) => TCI(sender, e, target);
             return new List<Control>() { button };
         }
 
         public virtual bool TypeContributes(Type o)
         {
+            if (ExactContextType) return o.IsAssignableFrom(ContextType);
             return ContextType.IsAssignableFrom(o);
         }
 
         public virtual bool Contributes(Object o, Type type)
         {
             if (o==null) return false;
+            if(TypeContributes(type)) return true;
             object oo = DeRef(o);
-            return (oo != o && Contributes(oo,type)) || TypeContributes(type) || TypeContributes(o.GetType());
+            return (oo != null && oo != o && Contributes(oo, oo.GetType()));
         }
 
         public virtual void OnInvoke(object sender, EventArgs e, object target)
         {
-            if (Handler != null) Handler(DeRef(target ?? sender), e);
+
+            object oneOf = target ?? sender;
+            oneOf = GetValue(ContextType, oneOf);
+            if (!ContextType.IsInstanceOfType(oneOf))
+            {
+                oneOf = GetValue(ContextType, DeRef(oneOf));
+            }
+            if (Handler != null) Handler(oneOf, e);
         }
 
         public virtual void IContextAction(RadegastInstance instance)
@@ -159,7 +215,14 @@ namespace Radegast
         public virtual void Dispose()
         {           
         }
-
+        public object GetValue(Type type, object lastObject)
+        {
+            if (type.IsInstanceOfType(lastObject)) return lastObject;
+            if (type.IsAssignableFrom(typeof(Primitive))) return ToPrimitive(lastObject);
+            if (type.IsAssignableFrom(typeof(Avatar))) return ToAvatar(lastObject);
+            if (type.IsAssignableFrom(typeof(UUID))) return ToUUID(lastObject);
+            return lastObject;
+        }
         public Primitive ToPrimitive(object target)
         {
             Primitive thePrim = ((target is Primitive) ? (Primitive)target : null);
@@ -181,7 +244,11 @@ namespace Radegast
         public Avatar ToAvatar(object target)
         {
             Primitive thePrim = ((target is Primitive) ? (Primitive)target : null);
-            if (thePrim != null) return (Avatar)thePrim;
+            if (thePrim is Avatar) return (Avatar)thePrim;
+            if (thePrim != null && thePrim.Properties != null && thePrim.Properties.OwnerID != UUID.Zero)
+            {
+                target = thePrim.Properties.OwnerID;
+            }
             object oo = DeRef(target);
             if (oo != target)
             {
@@ -229,7 +296,7 @@ namespace Radegast
                 if (uuid != UUID.Zero) return uuid;
             }
             string str = ((target is string) ? (string)target : null);
-            if (string.IsNullOrEmpty(str))
+            if (!string.IsNullOrEmpty(str))
             {
                 if (UUID.TryParse(str, out uuid))
                 {
@@ -246,6 +313,48 @@ namespace Radegast
         public void DebugLog(string s)
         {
            // instance.TabConsole.DisplayNotificationInChat(string.Format("ContextAction {0}: {1}", Label, s));
+        }
+
+        protected bool TryFindPos(object initial, out Simulator simulator, out Vector3 vector3)
+        {
+            simulator = Client.Network.CurrentSim;
+            vector3 = Vector3.Zero;
+            if (initial is Vector3)
+            {
+                vector3 = (Vector3) initial;
+                return true;
+            }
+            if (initial is Vector3d)
+            {
+                var v3d = (Vector3d) initial;
+                float lx, ly;
+                ulong handle = Helpers.GlobalPosToRegionHandle((float) v3d.X, (float) v3d.Y, out lx, out ly);
+                Simulator[] Simulators = null;
+                lock (Client.Network.Simulators)
+                {
+                    Simulators = Client.Network.Simulators.ToArray();
+                }
+                foreach (Simulator s in Simulators)
+                {
+                    if (handle == s.Handle)
+                    {
+                        simulator = s;
+                    }
+                }
+                vector3 = new Vector3(lx, ly, (float) v3d.Z);
+                return true;
+            }
+            if (initial is UUID)
+            {
+                return instance.State.TryFindPrim((UUID)initial, out simulator, out vector3, false);
+            }
+            if (initial is Primitive)
+            {
+                return instance.State.TryLocatePrim((Primitive)initial, out simulator, out vector3);
+            }
+            UUID toUUID = ToUUID(initial);
+            if (toUUID == UUID.Zero) return false;
+            return instance.State.TryFindPrim(toUUID, out simulator, out vector3, false);
         }
     }
 }

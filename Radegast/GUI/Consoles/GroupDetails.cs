@@ -65,16 +65,15 @@ namespace Radegast
                 pnlInsignia.Controls.Add(insignia);
             }
 
+            txtGroupID.Text = group.ID.ToString();
+
             lblGroupName.Text = group.Name;
             lvwGeneralMembers.ListViewItemSorter = new GroupMemberSorter();
             lvwMemberDetails.ListViewItemSorter = new GroupMemberSorter();
 
             isMember = instance.Groups.ContainsKey(group.ID);
 
-            if (isMember)
-            {
-            }
-            else
+            if (!isMember)
             {
                 tcGroupDetails.TabPages.Remove(tpMembersRoles);
                 tcGroupDetails.TabPages.Remove(tpNotices);
@@ -183,7 +182,7 @@ namespace Radegast
 
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
-            if (e.IM.Dialog != InstantMessageDialog.GroupNoticeRequested || e.IM.FromAgentID != group.ID) return;
+            if (e.IM.Dialog != InstantMessageDialog.GroupNoticeRequested) return;
 
             if (InvokeRequired)
             {
@@ -193,7 +192,18 @@ namespace Radegast
 
             InstantMessage msg = e.IM;
             AssetType type;
+            UUID groupID;
 
+            if (msg.BinaryBucket.Length >= 18)
+            {
+                groupID = new UUID(msg.BinaryBucket, 2);
+            }
+            else
+            {
+                groupID = msg.FromAgentID;
+            }
+
+            if (groupID != group.ID) return;
 
             if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
             {
@@ -277,7 +287,7 @@ namespace Radegast
                 pnlInsignia.Controls.Add(insignia);
             }
 
-
+            lblGroupName.Text = e.Group.Name;
             tbxCharter.Text = group.Charter.Replace("\n", Environment.NewLine);
             lblFounded.Text = "Founded by: " + instance.Names.Get(group.FounderID);
             cbxShowInSearch.Checked = group.ShowInList;
@@ -1096,6 +1106,50 @@ namespace Radegast
             instance.TabConsole.DisplayNotificationInChat("Notice sent", ChatBufferTextStyle.Invisible);
         }
         #endregion
+
+        private void memberListContextMenuSave_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveMembers = new SaveFileDialog();
+            saveMembers.Filter = "CSV|.csv|JSON|.json";
+            saveMembers.Title = "Save visible group members";
+            saveMembers.ShowDialog();
+            if (saveMembers.FileName != string.Empty)
+            {
+                try
+                {
+                    switch (saveMembers.FilterIndex)
+                    {
+                        case 1:
+                            System.IO.FileStream fs = (System.IO.FileStream)saveMembers.OpenFile();
+                            System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.UTF8);
+                            sw.WriteLine("UUID,Name");
+                            foreach (ListViewItem item in lvwGeneralMembers.Items)
+                            {
+                                sw.WriteLine("{0},{1}", item.Name, item.Text);
+                            }
+                            sw.Close();
+                            break;
+                        case 2:
+                            OpenMetaverse.StructuredData.OSDArray members = new OpenMetaverse.StructuredData.OSDArray(lvwGeneralMembers.Items.Count);
+                            foreach (ListViewItem item in lvwGeneralMembers.Items)
+                            {
+                                OpenMetaverse.StructuredData.OSDMap member = new OpenMetaverse.StructuredData.OSDMap(2);
+                                member["UUID"] = item.Name;
+                                member["Name"] = item.Text;
+                                members.Add(member);
+                            }
+                            System.IO.File.WriteAllText(saveMembers.FileName, OpenMetaverse.StructuredData.OSDParser.SerializeJsonString(members));
+                            break;
+                    }
+
+                    instance.TabConsole.DisplayNotificationInChat(string.Format("Saved {0} members to {1}", lvwGeneralMembers.Items.Count, saveMembers.FileName));
+                }
+                catch (Exception ex)
+                {
+                    instance.TabConsole.DisplayNotificationInChat("Failed to save member list: " + ex.Message, ChatBufferTextStyle.Error);
+                }
+            }
+        }
     }
 
     public class EnhancedGroupMember

@@ -395,7 +395,7 @@ namespace Radegast
                     );
                     return;
                 }
-                mmap.CenterMap(regionHandles[regionName], (uint)simX, (uint)simY, false);
+                mmap.CenterMap(regionHandles[regionName], (uint)simX, (uint)simY, true);
                 return;
             }
 

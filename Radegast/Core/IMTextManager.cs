@@ -129,7 +129,7 @@ namespace Radegast
 
         private void ProcessOutgoingIM(InstantMessageSentEventArgs e)
         {
-            PrintIM(e.Timestamp, netcom.LoginOptions.FullName, e.Message);
+            PrintIM(e.Timestamp, netcom.LoginOptions.FullName, instance.Client.Self.AgentID, e.Message);
         }
 
         private void ProcessIncomingIM(InstantMessageEventArgs e)
@@ -154,7 +154,7 @@ namespace Radegast
                 }
             }
 
-            PrintIM(DateTime.Now, instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), msg);
+            PrintIM(DateTime.Now, instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), e.IM.FromAgentID, msg);
 
             if (!AutoResponseSent && Type == IMTextManagerType.Agent && e.IM.FromAgentID != UUID.Zero && e.IM.FromAgentName != "Second Life")
             {
@@ -181,7 +181,7 @@ namespace Radegast
                         instance.Client.Network.CurrentSim.ID,
                         null);
 
-                    PrintIM(DateTime.Now, instance.Client.Self.Name, instance.GlobalSettings["auto_response_text"].AsString());
+                    PrintIM(DateTime.Now, instance.Client.Self.Name, instance.Client.Self.AgentID, instance.GlobalSettings["auto_response_text"].AsString());
                 }
             }
         }
@@ -205,7 +205,7 @@ namespace Radegast
             textPrinter.PrintTextLine(message);
         }
 
-        private void PrintIM(DateTime timestamp, string fromName, string message)
+        private void PrintIM(DateTime timestamp, string fromName, UUID fromID, string message)
         {
             if (showTimestamps)
             {
@@ -215,23 +215,29 @@ namespace Radegast
 
             textPrinter.ForeColor = SystemColors.WindowText;
 
+            if (!instance.GlobalSettings["disable_av_name_link"])
+            {
+                textPrinter.InsertLink(fromName, string.Format("secondlife:///app/agent/{0}/about", fromID));
+            }
+            else
+            {
+                textPrinter.PrintText(fromName);
+            }
+
             StringBuilder sb = new StringBuilder();
 
             if (message.StartsWith("/me "))
             {
-                sb.Append(fromName);
                 sb.Append(message.Substring(3));
             }
             else
             {
-                sb.Append(fromName);
                 sb.Append(": ");
                 sb.Append(message);
             }
 
-            instance.LogClientMessage(sessionName + ".txt", sb.ToString());
+            instance.LogClientMessage(sessionName + ".txt", fromName + sb.ToString());
             textPrinter.PrintTextLine(sb.ToString());
-            sb = null;
         }
 
         public static string ReadEndTokens(string path, Int64 numberOfTokens, Encoding encoding, string tokenSeparator)

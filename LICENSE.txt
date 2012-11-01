@@ -1,5 +1,3 @@
-$Id$
-
 Radegast Metaverse Client
 Copyright (c) 2009-2011, Radegast Development Team
 All rights reserved.

@@ -66,6 +66,7 @@ namespace Radegast
             this.cbHighlightIM = new System.Windows.Forms.CheckBox();
             this.cbHighlightChat = new System.Windows.Forms.CheckBox();
             this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
+            this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbMisc = new System.Windows.Forms.GroupBox();
             this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
             this.cbDisableLookAt = new System.Windows.Forms.CheckBox();
@@ -81,12 +82,12 @@ namespace Radegast
             this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.Chat = new System.Windows.Forms.GroupBox();
+            this.cbDisableNameLinks = new System.Windows.Forms.CheckBox();
             this.cbDisableChatIMLog = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.cbNoTyping = new System.Windows.Forms.CheckBox();
-            this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbFontSize = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.gbDisplayNames = new System.Windows.Forms.GroupBox();
@@ -103,6 +104,23 @@ namespace Radegast
             this.rbAutoNonFriend = new System.Windows.Forms.RadioButton();
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tbpGraphics = new System.Windows.Forms.TabPage();
+            this.tbpBot = new System.Windows.Forms.TabPage();
+            this.pseudoHome = new System.Windows.Forms.GroupBox();
+            this.pseudoHomeSet = new System.Windows.Forms.Button();
+            this.pseudoHomeTolerance = new System.Windows.Forms.NumericUpDown();
+            this.pseudoHomeTP = new System.Windows.Forms.Button();
+            this.pseudoHomeLocation = new System.Windows.Forms.TextBox();
+            this.pseudoHomeClear = new System.Windows.Forms.Button();
+            this.pseudoHomeToleranceLabel = new System.Windows.Forms.Label();
+            this.pseudoHomeEnabled = new System.Windows.Forms.CheckBox();
+            this.autoSit = new System.Windows.Forms.GroupBox();
+            this.autoSitEnabled = new System.Windows.Forms.CheckBox();
+            this.autoSitSit = new System.Windows.Forms.Button();
+            this.autoSitClear = new System.Windows.Forms.Button();
+            this.autoSitUUIDLabel = new System.Windows.Forms.Label();
+            this.autoSitUUID = new System.Windows.Forms.TextBox();
+            this.autoSitName = new System.Windows.Forms.TextBox();
+            this.autoSitNameLabel = new System.Windows.Forms.Label();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -112,6 +130,10 @@ namespace Radegast
             this.tbpAutoResponse.SuspendLayout();
             this.gnAutoInventory.SuspendLayout();
             this.gbAutoResponse.SuspendLayout();
+            this.tbpBot.SuspendLayout();
+            this.pseudoHome.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).BeginInit();
+            this.autoSit.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcGraphics
@@ -119,6 +141,7 @@ namespace Radegast
             this.tcGraphics.Controls.Add(this.tbpGeneral);
             this.tcGraphics.Controls.Add(this.tbpAutoResponse);
             this.tcGraphics.Controls.Add(this.tbpGraphics);
+            this.tcGraphics.Controls.Add(this.tbpBot);
             this.tcGraphics.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcGraphics.Location = new System.Drawing.Point(0, 0);
             this.tcGraphics.Multiline = true;
@@ -148,7 +171,7 @@ namespace Radegast
             this.cbHighLight.Controls.Add(this.cbHighlightChat);
             this.cbHighLight.Controls.Add(this.cbFriendsHighlight);
             this.cbHighLight.Controls.Add(this.cbTaskBarHighLight);
-            this.cbHighLight.Location = new System.Drawing.Point(8, 160);
+            this.cbHighLight.Location = new System.Drawing.Point(8, 180);
             this.cbHighLight.Name = "cbHighLight";
             this.cbHighLight.Size = new System.Drawing.Size(256, 136);
             this.cbHighLight.TabIndex = 1;
@@ -195,6 +218,16 @@ namespace Radegast
             this.cbFriendsHighlight.Text = "Friends online notifications";
             this.cbFriendsHighlight.UseVisualStyleBackColor = true;
             this.cbFriendsHighlight.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            // 
+            // cbTaskBarHighLight
+            // 
+            this.cbTaskBarHighLight.AutoSize = true;
+            this.cbTaskBarHighLight.Location = new System.Drawing.Point(6, 19);
+            this.cbTaskBarHighLight.Name = "cbTaskBarHighLight";
+            this.cbTaskBarHighLight.Size = new System.Drawing.Size(115, 17);
+            this.cbTaskBarHighLight.TabIndex = 1;
+            this.cbTaskBarHighLight.Text = "Enable highlighting";
+            this.cbTaskBarHighLight.UseVisualStyleBackColor = true;
             // 
             // cbMisc
             // 
@@ -355,6 +388,7 @@ namespace Radegast
             // 
             // Chat
             // 
+            this.Chat.Controls.Add(this.cbDisableNameLinks);
             this.Chat.Controls.Add(this.cbDisableChatIMLog);
             this.Chat.Controls.Add(this.cbChatTimestamps);
             this.Chat.Controls.Add(this.cbIMTimeStamps);
@@ -364,10 +398,20 @@ namespace Radegast
             this.Chat.Controls.Add(this.label1);
             this.Chat.Location = new System.Drawing.Point(8, 5);
             this.Chat.Name = "Chat";
-            this.Chat.Size = new System.Drawing.Size(256, 149);
+            this.Chat.Size = new System.Drawing.Size(256, 169);
             this.Chat.TabIndex = 0;
             this.Chat.TabStop = false;
             this.Chat.Text = "Chat";
+            // 
+            // cbDisableNameLinks
+            // 
+            this.cbDisableNameLinks.AutoSize = true;
+            this.cbDisableNameLinks.Location = new System.Drawing.Point(8, 144);
+            this.cbDisableNameLinks.Name = "cbDisableNameLinks";
+            this.cbDisableNameLinks.Size = new System.Drawing.Size(147, 17);
+            this.cbDisableNameLinks.TabIndex = 9;
+            this.cbDisableNameLinks.Text = "Disable avatar name links";
+            this.cbDisableNameLinks.UseVisualStyleBackColor = true;
             // 
             // cbDisableChatIMLog
             // 
@@ -420,16 +464,6 @@ namespace Radegast
             this.cbNoTyping.Text = "Don\'t use typing animation";
             this.cbNoTyping.UseVisualStyleBackColor = true;
             this.cbNoTyping.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
-            // 
-            // cbTaskBarHighLight
-            // 
-            this.cbTaskBarHighLight.AutoSize = true;
-            this.cbTaskBarHighLight.Location = new System.Drawing.Point(6, 19);
-            this.cbTaskBarHighLight.Name = "cbTaskBarHighLight";
-            this.cbTaskBarHighLight.Size = new System.Drawing.Size(115, 17);
-            this.cbTaskBarHighLight.TabIndex = 1;
-            this.cbTaskBarHighLight.Text = "Enable highlighting";
-            this.cbTaskBarHighLight.UseVisualStyleBackColor = true;
             // 
             // cbFontSize
             // 
@@ -530,7 +564,7 @@ namespace Radegast
             this.tbpAutoResponse.Location = new System.Drawing.Point(4, 22);
             this.tbpAutoResponse.Name = "tbpAutoResponse";
             this.tbpAutoResponse.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpAutoResponse.Size = new System.Drawing.Size(522, 391);
+            this.tbpAutoResponse.Size = new System.Drawing.Size(522, 377);
             this.tbpAutoResponse.TabIndex = 2;
             this.tbpAutoResponse.Text = "Auto Response";
             this.tbpAutoResponse.UseVisualStyleBackColor = true;
@@ -619,10 +653,201 @@ namespace Radegast
             this.tbpGraphics.Location = new System.Drawing.Point(4, 22);
             this.tbpGraphics.Name = "tbpGraphics";
             this.tbpGraphics.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpGraphics.Size = new System.Drawing.Size(522, 391);
+            this.tbpGraphics.Size = new System.Drawing.Size(522, 377);
             this.tbpGraphics.TabIndex = 3;
             this.tbpGraphics.Text = "Graphics Settings";
             this.tbpGraphics.UseVisualStyleBackColor = true;
+            // 
+            // tbpBot
+            // 
+            this.tbpBot.Controls.Add(this.pseudoHome);
+            this.tbpBot.Controls.Add(this.autoSit);
+            this.tbpBot.Location = new System.Drawing.Point(4, 22);
+            this.tbpBot.Name = "tbpBot";
+            this.tbpBot.Size = new System.Drawing.Size(522, 377);
+            this.tbpBot.TabIndex = 4;
+            this.tbpBot.Text = "Bot";
+            this.tbpBot.UseVisualStyleBackColor = true;
+            // 
+            // pseudoHome
+            // 
+            this.pseudoHome.Controls.Add(this.pseudoHomeSet);
+            this.pseudoHome.Controls.Add(this.pseudoHomeTolerance);
+            this.pseudoHome.Controls.Add(this.pseudoHomeTP);
+            this.pseudoHome.Controls.Add(this.pseudoHomeLocation);
+            this.pseudoHome.Controls.Add(this.pseudoHomeClear);
+            this.pseudoHome.Controls.Add(this.pseudoHomeToleranceLabel);
+            this.pseudoHome.Controls.Add(this.pseudoHomeEnabled);
+            this.pseudoHome.Location = new System.Drawing.Point(8, 104);
+            this.pseudoHome.Name = "pseudoHome";
+            this.pseudoHome.Size = new System.Drawing.Size(263, 108);
+            this.pseudoHome.TabIndex = 1;
+            this.pseudoHome.TabStop = false;
+            this.pseudoHome.Text = "Pseudo Home";
+            // 
+            // pseudoHomeSet
+            // 
+            this.pseudoHomeSet.Location = new System.Drawing.Point(94, 73);
+            this.pseudoHomeSet.Name = "pseudoHomeSet";
+            this.pseudoHomeSet.Size = new System.Drawing.Size(75, 23);
+            this.pseudoHomeSet.TabIndex = 1;
+            this.pseudoHomeSet.Text = "Set";
+            this.pseudoHomeSet.UseVisualStyleBackColor = true;
+            this.pseudoHomeSet.Click += new System.EventHandler(this.pseudoHomeSet_Click);
+            // 
+            // pseudoHomeTolerance
+            // 
+            this.pseudoHomeTolerance.Location = new System.Drawing.Point(87, 14);
+            this.pseudoHomeTolerance.Maximum = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.pseudoHomeTolerance.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.pseudoHomeTolerance.Name = "pseudoHomeTolerance";
+            this.pseudoHomeTolerance.Size = new System.Drawing.Size(40, 20);
+            this.pseudoHomeTolerance.TabIndex = 7;
+            this.pseudoHomeTolerance.Value = new decimal(new int[] {
+            256,
+            0,
+            0,
+            0});
+            this.pseudoHomeTolerance.ValueChanged += new System.EventHandler(this.pseudoHomeTolerance_ValueChanged);
+            // 
+            // pseudoHomeTP
+            // 
+            this.pseudoHomeTP.Location = new System.Drawing.Point(6, 38);
+            this.pseudoHomeTP.Name = "pseudoHomeTP";
+            this.pseudoHomeTP.Size = new System.Drawing.Size(75, 23);
+            this.pseudoHomeTP.TabIndex = 2;
+            this.pseudoHomeTP.Text = "Teleport";
+            this.pseudoHomeTP.UseVisualStyleBackColor = true;
+            this.pseudoHomeTP.Click += new System.EventHandler(this.pseudoHomeTP_Click);
+            // 
+            // pseudoHomeLocation
+            // 
+            this.pseudoHomeLocation.Location = new System.Drawing.Point(87, 40);
+            this.pseudoHomeLocation.Name = "pseudoHomeLocation";
+            this.pseudoHomeLocation.ReadOnly = true;
+            this.pseudoHomeLocation.Size = new System.Drawing.Size(170, 20);
+            this.pseudoHomeLocation.TabIndex = 5;
+            // 
+            // pseudoHomeClear
+            // 
+            this.pseudoHomeClear.Location = new System.Drawing.Point(182, 73);
+            this.pseudoHomeClear.Name = "pseudoHomeClear";
+            this.pseudoHomeClear.Size = new System.Drawing.Size(75, 23);
+            this.pseudoHomeClear.TabIndex = 0;
+            this.pseudoHomeClear.Text = "Clear";
+            this.pseudoHomeClear.UseVisualStyleBackColor = true;
+            // 
+            // pseudoHomeToleranceLabel
+            // 
+            this.pseudoHomeToleranceLabel.AutoSize = true;
+            this.pseudoHomeToleranceLabel.Location = new System.Drawing.Point(6, 16);
+            this.pseudoHomeToleranceLabel.Name = "pseudoHomeToleranceLabel";
+            this.pseudoHomeToleranceLabel.Size = new System.Drawing.Size(55, 13);
+            this.pseudoHomeToleranceLabel.TabIndex = 6;
+            this.pseudoHomeToleranceLabel.Text = "Tolerance";
+            // 
+            // pseudoHomeEnabled
+            // 
+            this.pseudoHomeEnabled.AutoSize = true;
+            this.pseudoHomeEnabled.Location = new System.Drawing.Point(6, 77);
+            this.pseudoHomeEnabled.Name = "pseudoHomeEnabled";
+            this.pseudoHomeEnabled.Size = new System.Drawing.Size(65, 17);
+            this.pseudoHomeEnabled.TabIndex = 3;
+            this.pseudoHomeEnabled.Text = "Enabled";
+            this.pseudoHomeEnabled.UseVisualStyleBackColor = true;
+            this.pseudoHomeEnabled.CheckedChanged += new System.EventHandler(this.pseudoHomeEnabled_CheckedChanged);
+            // 
+            // autoSit
+            // 
+            this.autoSit.Controls.Add(this.autoSitEnabled);
+            this.autoSit.Controls.Add(this.autoSitSit);
+            this.autoSit.Controls.Add(this.autoSitClear);
+            this.autoSit.Controls.Add(this.autoSitUUIDLabel);
+            this.autoSit.Controls.Add(this.autoSitUUID);
+            this.autoSit.Controls.Add(this.autoSitName);
+            this.autoSit.Controls.Add(this.autoSitNameLabel);
+            this.autoSit.Location = new System.Drawing.Point(8, 3);
+            this.autoSit.Name = "autoSit";
+            this.autoSit.Size = new System.Drawing.Size(263, 95);
+            this.autoSit.TabIndex = 0;
+            this.autoSit.TabStop = false;
+            this.autoSit.Text = "Auto-Sit";
+            // 
+            // autoSitEnabled
+            // 
+            this.autoSitEnabled.AutoSize = true;
+            this.autoSitEnabled.Location = new System.Drawing.Point(9, 70);
+            this.autoSitEnabled.Name = "autoSitEnabled";
+            this.autoSitEnabled.Size = new System.Drawing.Size(65, 17);
+            this.autoSitEnabled.TabIndex = 6;
+            this.autoSitEnabled.Text = "Enabled";
+            this.autoSitEnabled.UseVisualStyleBackColor = true;
+            this.autoSitEnabled.CheckedChanged += new System.EventHandler(this.autoSitEnabled_CheckedChanged);
+            // 
+            // autoSitSit
+            // 
+            this.autoSitSit.Location = new System.Drawing.Point(94, 66);
+            this.autoSitSit.Name = "autoSitSit";
+            this.autoSitSit.Size = new System.Drawing.Size(75, 23);
+            this.autoSitSit.TabIndex = 5;
+            this.autoSitSit.Text = "Sit";
+            this.autoSitSit.UseVisualStyleBackColor = true;
+            this.autoSitSit.Click += new System.EventHandler(this.autoSitSit_Click);
+            // 
+            // autoSitClear
+            // 
+            this.autoSitClear.Location = new System.Drawing.Point(182, 66);
+            this.autoSitClear.Name = "autoSitClear";
+            this.autoSitClear.Size = new System.Drawing.Size(75, 23);
+            this.autoSitClear.TabIndex = 0;
+            this.autoSitClear.Text = "Clear";
+            this.autoSitClear.UseVisualStyleBackColor = true;
+            this.autoSitClear.Click += new System.EventHandler(this.autoSitClear_Click);
+            // 
+            // autoSitUUIDLabel
+            // 
+            this.autoSitUUIDLabel.AutoSize = true;
+            this.autoSitUUIDLabel.Location = new System.Drawing.Point(6, 43);
+            this.autoSitUUIDLabel.Name = "autoSitUUIDLabel";
+            this.autoSitUUIDLabel.Size = new System.Drawing.Size(34, 13);
+            this.autoSitUUIDLabel.TabIndex = 4;
+            this.autoSitUUIDLabel.Text = "UUID";
+            this.autoSitUUIDLabel.Click += new System.EventHandler(this.autoSitUUIDLabel_Click);
+            // 
+            // autoSitUUID
+            // 
+            this.autoSitUUID.Location = new System.Drawing.Point(47, 40);
+            this.autoSitUUID.MaxLength = 36;
+            this.autoSitUUID.Name = "autoSitUUID";
+            this.autoSitUUID.ReadOnly = true;
+            this.autoSitUUID.Size = new System.Drawing.Size(210, 20);
+            this.autoSitUUID.TabIndex = 3;
+            // 
+            // autoSitName
+            // 
+            this.autoSitName.Location = new System.Drawing.Point(47, 13);
+            this.autoSitName.Name = "autoSitName";
+            this.autoSitName.ReadOnly = true;
+            this.autoSitName.Size = new System.Drawing.Size(210, 20);
+            this.autoSitName.TabIndex = 2;
+            // 
+            // autoSitNameLabel
+            // 
+            this.autoSitNameLabel.AutoSize = true;
+            this.autoSitNameLabel.Location = new System.Drawing.Point(6, 16);
+            this.autoSitNameLabel.Name = "autoSitNameLabel";
+            this.autoSitNameLabel.Size = new System.Drawing.Size(35, 13);
+            this.autoSitNameLabel.TabIndex = 1;
+            this.autoSitNameLabel.Text = "Name";
+            this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
             // frmSettings
             // 
@@ -648,6 +873,12 @@ namespace Radegast
             this.gnAutoInventory.ResumeLayout(false);
             this.gbAutoResponse.ResumeLayout(false);
             this.gbAutoResponse.PerformLayout();
+            this.tbpBot.ResumeLayout(false);
+            this.pseudoHome.ResumeLayout(false);
+            this.pseudoHome.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).EndInit();
+            this.autoSit.ResumeLayout(false);
+            this.autoSit.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -698,6 +929,24 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbHighlightGroupIM;
         public System.Windows.Forms.CheckBox cbHighlightIM;
         private System.Windows.Forms.CheckBox cbHighlightChat;
+        private System.Windows.Forms.TabPage tbpBot;
+        private System.Windows.Forms.GroupBox autoSit;
+        private System.Windows.Forms.Button autoSitClear;
+        private System.Windows.Forms.Button autoSitSit;
+        private System.Windows.Forms.Label autoSitUUIDLabel;
+        private System.Windows.Forms.TextBox autoSitUUID;
+        private System.Windows.Forms.TextBox autoSitName;
+        private System.Windows.Forms.Label autoSitNameLabel;
+        private System.Windows.Forms.CheckBox autoSitEnabled;
+        private System.Windows.Forms.GroupBox pseudoHome;
+        private System.Windows.Forms.TextBox pseudoHomeLocation;
+        private System.Windows.Forms.CheckBox pseudoHomeEnabled;
+        private System.Windows.Forms.Button pseudoHomeTP;
+        private System.Windows.Forms.Button pseudoHomeSet;
+        private System.Windows.Forms.Button pseudoHomeClear;
+        private System.Windows.Forms.NumericUpDown pseudoHomeTolerance;
+        private System.Windows.Forms.Label pseudoHomeToleranceLabel;
+        private System.Windows.Forms.CheckBox cbDisableNameLinks;
 
 
     }

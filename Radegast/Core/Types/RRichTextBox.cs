@@ -50,6 +50,7 @@ namespace Radegast
         private bool supressOnTextChanged = false;
         private bool syntaxHighLightEnabled = false;
         private bool monoRuntime = false;
+        private string rtfHeader;
 
         //  Tool tip related private members
         private System.Threading.Timer ttTimer;
@@ -89,6 +90,8 @@ namespace Radegast
             {
                 monoRuntime = true;
             }
+
+            rtfHeader = this.Rtf.Substring(0, this.Rtf.IndexOf('{', 2)) + " ";
 
         }
 
@@ -513,7 +516,25 @@ namespace Radegast
             InsertLink(text, hyperlink, this.SelectionStart);
         }
 
-        public const char LinkSeparator = (char)0x1970;
+        //public const char LinkSeparator = (char)0x1970;
+        public const char LinkSeparator = (char)0x8D;
+
+        private string RtfUnicode(string s)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] > (char)255)
+                {
+                    sb.Append(string.Format("\\u{0}?", (short)s[i]));
+                }
+                else
+                {
+                    sb.Append(s[i]);
+                }
+            }
+            return sb.ToString();
+        }
 
         /// <summary>
         /// Insert a given text at a given position as a link. The link text is followed by
@@ -538,7 +559,7 @@ namespace Radegast
             }
             else
             {
-                this.SelectedRtf = @"{\rtf1\ansi " + text + @"\v " + LinkSeparator + hyperlink + @"\v0}";
+                this.SelectedRtf = rtfHeader + RtfUnicode(text) + @"\v " + LinkSeparator + hyperlink + @"\v0}";
                 this.Select(position, text.Length + hyperlink.Length + 1);
                 this.SetSelectionLink(true);
                 this.Select(position + text.Length + hyperlink.Length + 1, 0);

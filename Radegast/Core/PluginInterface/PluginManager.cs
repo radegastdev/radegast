@@ -420,6 +420,7 @@ namespace Radegast
                     try
                     {
                         instance.CommandsManager.LoadType(type);
+                        instance.ContextActionManager.LoadType(type);
                     }
                     catch (Exception ex)
                     {

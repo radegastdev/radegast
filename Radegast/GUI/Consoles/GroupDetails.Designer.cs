@@ -58,13 +58,16 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tcGroupDetails = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
             this.btnJoin = new System.Windows.Forms.Button();
             this.lvwGeneralMembers = new Radegast.ListViewNoFlicker();
-            this.chGenMemberName = new System.Windows.Forms.ColumnHeader();
-            this.chGenTitle = new System.Windows.Forms.ColumnHeader();
-            this.chGenLastOn = new System.Windows.Forms.ColumnHeader();
+            this.chGenMemberName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chGenTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chGenLastOn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.memberListContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.memberListContextMenuSave = new System.Windows.Forms.ToolStripMenuItem();
             this.lblOwners = new System.Windows.Forms.Label();
             this.tbxCharter = new System.Windows.Forms.TextBox();
             this.lblCharter = new System.Windows.Forms.Label();
@@ -87,26 +90,26 @@ namespace Radegast
             this.tpMembers = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lvwAllowedAbilities = new Radegast.ListViewNoFlicker();
-            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvwAssignedRoles = new Radegast.ListViewNoFlicker();
-            this.chHasRole = new System.Windows.Forms.ColumnHeader();
-            this.chRoleName = new System.Windows.Forms.ColumnHeader();
+            this.chHasRole = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chRoleName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnInviteNewMember = new System.Windows.Forms.Button();
             this.btnEjectMember = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.lblAssignedRoles = new System.Windows.Forms.Label();
             this.lvwMemberDetails = new Radegast.ListViewNoFlicker();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tpRoles = new System.Windows.Forms.TabPage();
             this.pnlRoleDetaiils = new System.Windows.Forms.Panel();
             this.btnSaveRole = new System.Windows.Forms.Button();
             this.lvwRoleAbilitis = new Radegast.ListViewNoFlicker();
-            this.columnHeader6 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader7 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvwAssignedMembers = new Radegast.ListViewNoFlicker();
-            this.columnHeader5 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnDeleteRole = new System.Windows.Forms.Button();
             this.btnCreateNewRole = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
@@ -118,17 +121,17 @@ namespace Radegast
             this.txtRoleDescription = new System.Windows.Forms.TextBox();
             this.txtRoleName = new System.Windows.Forms.TextBox();
             this.lvwRoles = new Radegast.ListViewNoFlicker();
-            this.chRoleListName = new System.Windows.Forms.ColumnHeader();
-            this.chRoleTitle = new System.Windows.Forms.ColumnHeader();
+            this.chRoleListName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chRoleTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label2 = new System.Windows.Forms.Label();
             this.tpNotices = new System.Windows.Forms.TabPage();
             this.btnNewNotice = new System.Windows.Forms.Button();
             this.lblGroupNoticesArchive = new System.Windows.Forms.Label();
             this.lvwNoticeArchive = new Radegast.ListViewNoFlicker();
-            this.ntcArchAttachment = new System.Windows.Forms.ColumnHeader();
-            this.ntcArchSubject = new System.Windows.Forms.ColumnHeader();
-            this.ntcArchFrom = new System.Windows.Forms.ColumnHeader();
-            this.ntcArchDate = new System.Windows.Forms.ColumnHeader();
+            this.ntcArchAttachment = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ntcArchSubject = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ntcArchFrom = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ntcArchDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.pnlNewNotice = new System.Windows.Forms.Panel();
             this.pnlNoticeAttachment = new System.Windows.Forms.GroupBox();
             this.btnPasteInv = new System.Windows.Forms.Button();
@@ -152,8 +155,10 @@ namespace Radegast
             this.btnClose = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.txtGroupID = new System.Windows.Forms.TextBox();
             this.tcGroupDetails.SuspendLayout();
             this.tpGeneral.SuspendLayout();
+            this.memberListContextMenu.SuspendLayout();
             this.gbPreferences.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudEnrollmentFee)).BeginInit();
             this.tpMembersRoles.SuspendLayout();
@@ -187,6 +192,7 @@ namespace Radegast
             // tpGeneral
             // 
             this.tpGeneral.BackColor = System.Drawing.Color.Transparent;
+            this.tpGeneral.Controls.Add(this.txtGroupID);
             this.tpGeneral.Controls.Add(this.btnJoin);
             this.tpGeneral.Controls.Add(this.lvwGeneralMembers);
             this.tpGeneral.Controls.Add(this.lblOwners);
@@ -219,13 +225,14 @@ namespace Radegast
             // lvwGeneralMembers
             // 
             this.lvwGeneralMembers.AllowColumnReorder = true;
-            this.lvwGeneralMembers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwGeneralMembers.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvwGeneralMembers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chGenMemberName,
             this.chGenTitle,
             this.chGenLastOn});
+            this.lvwGeneralMembers.ContextMenuStrip = this.memberListContextMenu;
             this.lvwGeneralMembers.FullRowSelect = true;
             this.lvwGeneralMembers.GridLines = true;
             this.lvwGeneralMembers.HideSelection = false;
@@ -233,13 +240,13 @@ namespace Radegast
             this.lvwGeneralMembers.MultiSelect = false;
             this.lvwGeneralMembers.Name = "lvwGeneralMembers";
             this.lvwGeneralMembers.ShowGroups = false;
-            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 80);
+            this.lvwGeneralMembers.Size = new System.Drawing.Size(385, 82);
             this.lvwGeneralMembers.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvwGeneralMembers.TabIndex = 8;
             this.lvwGeneralMembers.UseCompatibleStateImageBehavior = false;
             this.lvwGeneralMembers.View = System.Windows.Forms.View.Details;
-            this.lvwGeneralMembers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwGeneralMembers_MouseDoubleClick);
             this.lvwGeneralMembers.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGeneralMembers_ColumnClick);
+            this.lvwGeneralMembers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwGeneralMembers_MouseDoubleClick);
             // 
             // chGenMemberName
             // 
@@ -256,6 +263,20 @@ namespace Radegast
             this.chGenLastOn.Text = "Last login";
             this.chGenLastOn.Width = 90;
             // 
+            // memberListContextMenu
+            // 
+            this.memberListContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.memberListContextMenuSave});
+            this.memberListContextMenu.Name = "contextMenuStrip1";
+            this.memberListContextMenu.Size = new System.Drawing.Size(168, 48);
+            // 
+            // memberListContextMenuSave
+            // 
+            this.memberListContextMenuSave.Name = "memberListContextMenuSave";
+            this.memberListContextMenuSave.Size = new System.Drawing.Size(167, 22);
+            this.memberListContextMenuSave.Text = "Save Member List";
+            this.memberListContextMenuSave.Click += new System.EventHandler(this.memberListContextMenuSave_Click);
+            // 
             // lblOwners
             // 
             this.lblOwners.AutoSize = true;
@@ -267,14 +288,14 @@ namespace Radegast
             // 
             // tbxCharter
             // 
-            this.tbxCharter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbxCharter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbxCharter.BackColor = System.Drawing.SystemColors.Window;
             this.tbxCharter.Location = new System.Drawing.Point(155, 36);
             this.tbxCharter.Multiline = true;
             this.tbxCharter.Name = "tbxCharter";
             this.tbxCharter.ReadOnly = true;
-            this.tbxCharter.Size = new System.Drawing.Size(239, 190);
+            this.tbxCharter.Size = new System.Drawing.Size(239, 156);
             this.tbxCharter.TabIndex = 6;
             this.tbxCharter.TextChanged += new System.EventHandler(this.tbxCharter_TextChanged);
             // 
@@ -446,16 +467,16 @@ namespace Radegast
             this.tpMembersRoles.Location = new System.Drawing.Point(4, 22);
             this.tpMembersRoles.Name = "tpMembersRoles";
             this.tpMembersRoles.Padding = new System.Windows.Forms.Padding(3);
-            this.tpMembersRoles.Size = new System.Drawing.Size(400, 433);
+            this.tpMembersRoles.Size = new System.Drawing.Size(400, 437);
             this.tpMembersRoles.TabIndex = 3;
             this.tpMembersRoles.Text = "Members && Roles";
             this.tpMembersRoles.UseVisualStyleBackColor = true;
             // 
             // tcMembersRoles
             // 
-            this.tcMembersRoles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tcMembersRoles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tcMembersRoles.Controls.Add(this.tpMembers);
             this.tcMembersRoles.Controls.Add(this.tpRoles);
             this.tcMembersRoles.Location = new System.Drawing.Point(9, 23);
@@ -479,8 +500,8 @@ namespace Radegast
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel1.Controls.Add(this.lvwAllowedAbilities);
             this.panel1.Controls.Add(this.lvwAssignedRoles);
             this.panel1.Controls.Add(this.btnInviteNewMember);
@@ -580,9 +601,9 @@ namespace Radegast
             // lvwMemberDetails
             // 
             this.lvwMemberDetails.AllowColumnReorder = true;
-            this.lvwMemberDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwMemberDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvwMemberDetails.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
@@ -599,9 +620,9 @@ namespace Radegast
             this.lvwMemberDetails.TabIndex = 9;
             this.lvwMemberDetails.UseCompatibleStateImageBehavior = false;
             this.lvwMemberDetails.View = System.Windows.Forms.View.Details;
-            this.lvwMemberDetails.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwMemberDetails_MouseDoubleClick);
-            this.lvwMemberDetails.SelectedIndexChanged += new System.EventHandler(this.lvwMemberDetails_SelectedIndexChanged);
             this.lvwMemberDetails.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGeneralMembers_ColumnClick);
+            this.lvwMemberDetails.SelectedIndexChanged += new System.EventHandler(this.lvwMemberDetails_SelectedIndexChanged);
+            this.lvwMemberDetails.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwMemberDetails_MouseDoubleClick);
             // 
             // columnHeader1
             // 
@@ -625,15 +646,15 @@ namespace Radegast
             this.tpRoles.Location = new System.Drawing.Point(4, 22);
             this.tpRoles.Name = "tpRoles";
             this.tpRoles.Padding = new System.Windows.Forms.Padding(3);
-            this.tpRoles.Size = new System.Drawing.Size(377, 419);
+            this.tpRoles.Size = new System.Drawing.Size(377, 378);
             this.tpRoles.TabIndex = 1;
             this.tpRoles.Text = "Roles";
             this.tpRoles.UseVisualStyleBackColor = true;
             // 
             // pnlRoleDetaiils
             // 
-            this.pnlRoleDetaiils.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlRoleDetaiils.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlRoleDetaiils.Controls.Add(this.btnSaveRole);
             this.pnlRoleDetaiils.Controls.Add(this.lvwRoleAbilitis);
             this.pnlRoleDetaiils.Controls.Add(this.lvwAssignedMembers);
@@ -647,7 +668,7 @@ namespace Radegast
             this.pnlRoleDetaiils.Controls.Add(this.txtRoleTitle);
             this.pnlRoleDetaiils.Controls.Add(this.txtRoleDescription);
             this.pnlRoleDetaiils.Controls.Add(this.txtRoleName);
-            this.pnlRoleDetaiils.Location = new System.Drawing.Point(-4, 171);
+            this.pnlRoleDetaiils.Location = new System.Drawing.Point(-4, 130);
             this.pnlRoleDetaiils.Name = "pnlRoleDetaiils";
             this.pnlRoleDetaiils.Size = new System.Drawing.Size(384, 252);
             this.pnlRoleDetaiils.TabIndex = 11;
@@ -665,8 +686,8 @@ namespace Radegast
             // lvwRoleAbilitis
             // 
             this.lvwRoleAbilitis.AccessibleName = "Allowed Members";
-            this.lvwRoleAbilitis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwRoleAbilitis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvwRoleAbilitis.CheckBoxes = true;
             this.lvwRoleAbilitis.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader6,
@@ -788,8 +809,8 @@ namespace Radegast
             // txtRoleDescription
             // 
             this.txtRoleDescription.AccessibleName = "Role Description";
-            this.txtRoleDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtRoleDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtRoleDescription.Location = new System.Drawing.Point(182, 45);
             this.txtRoleDescription.Name = "txtRoleDescription";
             this.txtRoleDescription.Size = new System.Drawing.Size(196, 20);
@@ -807,9 +828,9 @@ namespace Radegast
             // 
             this.lvwRoles.AccessibleName = "Roles";
             this.lvwRoles.AllowColumnReorder = true;
-            this.lvwRoles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwRoles.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvwRoles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chRoleListName,
             this.chRoleTitle});
@@ -820,7 +841,7 @@ namespace Radegast
             this.lvwRoles.MultiSelect = false;
             this.lvwRoles.Name = "lvwRoles";
             this.lvwRoles.ShowGroups = false;
-            this.lvwRoles.Size = new System.Drawing.Size(377, 165);
+            this.lvwRoles.Size = new System.Drawing.Size(377, 124);
             this.lvwRoles.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvwRoles.TabIndex = 10;
             this.lvwRoles.UseCompatibleStateImageBehavior = false;
@@ -858,7 +879,7 @@ namespace Radegast
             this.tpNotices.Location = new System.Drawing.Point(4, 22);
             this.tpNotices.Name = "tpNotices";
             this.tpNotices.Padding = new System.Windows.Forms.Padding(3);
-            this.tpNotices.Size = new System.Drawing.Size(400, 463);
+            this.tpNotices.Size = new System.Drawing.Size(400, 437);
             this.tpNotices.TabIndex = 2;
             this.tpNotices.Text = "Notices";
             this.tpNotices.UseVisualStyleBackColor = true;
@@ -885,8 +906,8 @@ namespace Radegast
             // 
             // lvwNoticeArchive
             // 
-            this.lvwNoticeArchive.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwNoticeArchive.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvwNoticeArchive.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ntcArchAttachment,
             this.ntcArchSubject,
@@ -904,8 +925,8 @@ namespace Radegast
             this.lvwNoticeArchive.TabIndex = 9;
             this.lvwNoticeArchive.UseCompatibleStateImageBehavior = false;
             this.lvwNoticeArchive.View = System.Windows.Forms.View.Details;
-            this.lvwNoticeArchive.SelectedIndexChanged += new System.EventHandler(this.lvwNoticeArchive_SelectedIndexChanged);
             this.lvwNoticeArchive.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwNoticeArchive_ColumnClick);
+            this.lvwNoticeArchive.SelectedIndexChanged += new System.EventHandler(this.lvwNoticeArchive_SelectedIndexChanged);
             // 
             // ntcArchAttachment
             // 
@@ -929,9 +950,9 @@ namespace Radegast
             // 
             // pnlNewNotice
             // 
-            this.pnlNewNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlNewNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlNewNotice.Controls.Add(this.pnlNoticeAttachment);
             this.pnlNewNotice.Controls.Add(this.txtNewNoticeTitle);
             this.pnlNewNotice.Controls.Add(this.btnSend);
@@ -940,19 +961,19 @@ namespace Radegast
             this.pnlNewNotice.Controls.Add(this.label11);
             this.pnlNewNotice.Location = new System.Drawing.Point(6, 224);
             this.pnlNewNotice.Name = "pnlNewNotice";
-            this.pnlNewNotice.Size = new System.Drawing.Size(385, 233);
+            this.pnlNewNotice.Size = new System.Drawing.Size(385, 210);
             this.pnlNewNotice.TabIndex = 25;
             this.pnlNewNotice.Visible = false;
             // 
             // pnlNoticeAttachment
             // 
-            this.pnlNoticeAttachment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlNoticeAttachment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlNoticeAttachment.Controls.Add(this.btnPasteInv);
             this.pnlNoticeAttachment.Controls.Add(this.btnRemoveAttachment);
             this.pnlNoticeAttachment.Controls.Add(this.icnNewNoticeAtt);
             this.pnlNoticeAttachment.Controls.Add(this.txtNewNoteAtt);
-            this.pnlNoticeAttachment.Location = new System.Drawing.Point(3, 186);
+            this.pnlNoticeAttachment.Location = new System.Drawing.Point(3, 165);
             this.pnlNoticeAttachment.Name = "pnlNoticeAttachment";
             this.pnlNoticeAttachment.Size = new System.Drawing.Size(276, 44);
             this.pnlNoticeAttachment.TabIndex = 3;
@@ -996,8 +1017,8 @@ namespace Radegast
             // txtNewNoteAtt
             // 
             this.txtNewNoteAtt.AccessibleName = "Notice attachment";
-            this.txtNewNoteAtt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNewNoteAtt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNewNoteAtt.Location = new System.Drawing.Point(23, 15);
             this.txtNewNoteAtt.Name = "txtNewNoteAtt";
             this.txtNewNoteAtt.ReadOnly = true;
@@ -1006,8 +1027,8 @@ namespace Radegast
             // 
             // txtNewNoticeTitle
             // 
-            this.txtNewNoticeTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNewNoticeTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNewNoticeTitle.Location = new System.Drawing.Point(7, 35);
             this.txtNewNoticeTitle.Name = "txtNewNoticeTitle";
             this.txtNewNoticeTitle.Size = new System.Drawing.Size(375, 20);
@@ -1016,7 +1037,7 @@ namespace Radegast
             // btnSend
             // 
             this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSend.Location = new System.Drawing.Point(285, 201);
+            this.btnSend.Location = new System.Drawing.Point(285, 180);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(97, 23);
             this.btnSend.TabIndex = 6;
@@ -1027,15 +1048,15 @@ namespace Radegast
             // txtNewNoticeBody
             // 
             this.txtNewNoticeBody.AccessibleName = "Notice text";
-            this.txtNewNoticeBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNewNoticeBody.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNewNoticeBody.BackColor = System.Drawing.SystemColors.Window;
             this.txtNewNoticeBody.Location = new System.Drawing.Point(7, 58);
             this.txtNewNoticeBody.Multiline = true;
             this.txtNewNoticeBody.Name = "txtNewNoticeBody";
             this.txtNewNoticeBody.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNewNoticeBody.Size = new System.Drawing.Size(375, 122);
+            this.txtNewNoticeBody.Size = new System.Drawing.Size(375, 101);
             this.txtNewNoticeBody.TabIndex = 2;
             // 
             // label10
@@ -1060,9 +1081,9 @@ namespace Radegast
             // 
             // pnlArchivedNotice
             // 
-            this.pnlArchivedNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlArchivedNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlArchivedNotice.Controls.Add(this.txtItemName);
             this.pnlArchivedNotice.Controls.Add(this.icnItem);
             this.pnlArchivedNotice.Controls.Add(this.btnSave);
@@ -1072,16 +1093,16 @@ namespace Radegast
             this.pnlArchivedNotice.Controls.Add(this.label1);
             this.pnlArchivedNotice.Location = new System.Drawing.Point(6, 224);
             this.pnlArchivedNotice.Name = "pnlArchivedNotice";
-            this.pnlArchivedNotice.Size = new System.Drawing.Size(385, 233);
+            this.pnlArchivedNotice.Size = new System.Drawing.Size(385, 207);
             this.pnlArchivedNotice.TabIndex = 11;
             this.pnlArchivedNotice.Visible = false;
             // 
             // txtItemName
             // 
             this.txtItemName.AccessibleName = "Notice attachment";
-            this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtItemName.Location = new System.Drawing.Point(25, 207);
+            this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtItemName.Location = new System.Drawing.Point(25, 183);
             this.txtItemName.Name = "txtItemName";
             this.txtItemName.ReadOnly = true;
             this.txtItemName.Size = new System.Drawing.Size(302, 20);
@@ -1091,7 +1112,7 @@ namespace Radegast
             // icnItem
             // 
             this.icnItem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.icnItem.Location = new System.Drawing.Point(3, 209);
+            this.icnItem.Location = new System.Drawing.Point(3, 185);
             this.icnItem.Name = "icnItem";
             this.icnItem.Size = new System.Drawing.Size(16, 16);
             this.icnItem.TabIndex = 23;
@@ -1102,7 +1123,7 @@ namespace Radegast
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(333, 207);
+            this.btnSave.Location = new System.Drawing.Point(333, 183);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(49, 23);
             this.btnSave.TabIndex = 18;
@@ -1114,23 +1135,23 @@ namespace Radegast
             // txtNotice
             // 
             this.txtNotice.AccessibleName = "Notice text";
-            this.txtNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtNotice.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNotice.BackColor = System.Drawing.SystemColors.Window;
             this.txtNotice.Location = new System.Drawing.Point(7, 58);
             this.txtNotice.Multiline = true;
             this.txtNotice.Name = "txtNotice";
             this.txtNotice.ReadOnly = true;
             this.txtNotice.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtNotice.Size = new System.Drawing.Size(375, 143);
+            this.txtNotice.Size = new System.Drawing.Size(375, 119);
             this.txtNotice.TabIndex = 19;
             // 
             // lblTitle
             // 
             this.lblTitle.AccessibleName = "Notice title";
-            this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitle.BackColor = System.Drawing.SystemColors.Window;
             this.lblTitle.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1205,6 +1226,16 @@ namespace Radegast
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // txtGroupID
+            // 
+            this.txtGroupID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtGroupID.Location = new System.Drawing.Point(155, 198);
+            this.txtGroupID.Name = "txtGroupID";
+            this.txtGroupID.ReadOnly = true;
+            this.txtGroupID.Size = new System.Drawing.Size(239, 20);
+            this.txtGroupID.TabIndex = 7;
+            // 
             // GroupDetails
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -1216,6 +1247,7 @@ namespace Radegast
             this.tcGroupDetails.ResumeLayout(false);
             this.tpGeneral.ResumeLayout(false);
             this.tpGeneral.PerformLayout();
+            this.memberListContextMenu.ResumeLayout(false);
             this.gbPreferences.ResumeLayout(false);
             this.gbPreferences.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudEnrollmentFee)).EndInit();
@@ -1339,6 +1371,9 @@ namespace Radegast
         private System.Windows.Forms.Button btnPasteInv;
         private System.Windows.Forms.Button btnRemoveAttachment;
         private System.Windows.Forms.GroupBox pnlNoticeAttachment;
+        private System.Windows.Forms.ContextMenuStrip memberListContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem memberListContextMenuSave;
+        public System.Windows.Forms.TextBox txtGroupID;
 
     }
 }

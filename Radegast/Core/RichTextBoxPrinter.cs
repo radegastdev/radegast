@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -36,11 +37,60 @@ namespace Radegast
 {
     public class RichTextBoxPrinter : ITextPrinter
     {
-        private RichTextBox rtb;
+        private RRichTextBox rtb;
+        private bool mono;
+        private static readonly string urlRegexString = @"\b(?<url>(https?|secondlife)://[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])";
+        Regex urlRegex;
 
-        public RichTextBoxPrinter(RichTextBox textBox)
+        public RichTextBoxPrinter(RRichTextBox textBox)
         {
             rtb = textBox;
+
+            // Are we running mono?
+            mono = Type.GetType("Mono.Runtime") != null;
+            if (mono)
+            {
+                // On Linux we cannot do manual links
+                // so we keep using built in URL detection
+                rtb.DetectUrls = true;
+            }
+
+            urlRegex = new Regex(urlRegexString, RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+
+        }
+
+        public void InsertLink(string text)
+        {
+            rtb.InsertLink(text);
+        }
+
+        public void InsertLink(string text, string hyperlink)
+        {
+            rtb.InsertLink(text, hyperlink);
+        }
+
+        private void FindURLs(string text)
+        {
+            Match m = urlRegex.Match(text);
+            
+            if (!m.Success)
+            {
+                rtb.AppendText(text);
+                return;
+            }
+
+            int pos = 0;
+            do
+            {
+                rtb.AppendText(text.Substring(pos, m.Index - pos));
+                pos = m.Index + m.Length;
+                Color c = ForeColor;
+                rtb.InsertLink(m.Groups[1].Value);
+                ForeColor = c;
+            }
+            while ((m = m.NextMatch()).Success);
+
+            rtb.AppendText(text.Substring(pos));
         }
 
         #region ITextPrinter Members
@@ -51,8 +101,16 @@ namespace Radegast
             {
                 rtb.Invoke(new MethodInvoker(() => rtb.AppendText(text)));
                 return;
-            } 
-            rtb.AppendText(text);
+            }
+
+            if (mono)
+            {
+                rtb.AppendText(text);
+            }
+            else
+            {
+                FindURLs(text);
+            }
         }
 
         public void PrintTextLine(string text)
@@ -62,6 +120,12 @@ namespace Radegast
 
         public void PrintTextLine(string text, Color color)
         {
+            if (rtb.InvokeRequired)
+            {
+                rtb.Invoke(new MethodInvoker(() => PrintTextLine(text, color)));
+                return;
+            }
+
             Color c = ForeColor;
             ForeColor = color;
             PrintTextLine(text);

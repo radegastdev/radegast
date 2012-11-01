@@ -240,6 +240,12 @@ namespace Radegast
 
         void Self_ScriptDialog(object sender, ScriptDialogEventArgs e)
         {
+            if (instance.MainForm.InvokeRequired)
+            {
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => Self_ScriptDialog(sender, e)));
+                return;
+            }
+
             // Is this object muted
             if (null != client.Self.MuteList.Find(m => (m.Type == MuteType.Object && m.ID == e.ObjectID) // muted object by id
                 || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
@@ -370,6 +376,12 @@ namespace Radegast
                     else if (e.IM.BinaryBucket.Length > 1)
                     { // conference
                         HandleConferenceIM(e);
+                    }
+                    else if (e.IM.IMSessionID == UUID.Zero)
+                    {
+                        String msg = string.Format("Region message from {0}: {1}", instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), e.IM.Message);
+                        instance.MainForm.AddNotification(new ntfGeneric(instance, msg));
+                        DisplayNotificationInChat(msg);
                     }
                     else
                     {

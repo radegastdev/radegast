@@ -58,7 +58,7 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            this.rtbIMText = new System.Windows.Forms.RichTextBox();
+            this.rtbIMText = new Radegast.RRichTextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.chatSplit = new System.Windows.Forms.SplitContainer();
             this.Participants = new Radegast.ListViewNoFlicker();
@@ -74,6 +74,7 @@ namespace Radegast
             // rtbIMText
             // 
             this.rtbIMText.BackColor = System.Drawing.SystemColors.Window;
+            this.rtbIMText.DetectUrls = false;
             this.rtbIMText.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbIMText.HideSelection = false;
             this.rtbIMText.Location = new System.Drawing.Point(0, 0);
@@ -153,15 +154,15 @@ namespace Radegast
             // 
             // cbxInput
             // 
-            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxInput.Location = new System.Drawing.Point(0, 4);
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(381, 21);
             this.cbxInput.TabIndex = 0;
+            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
-            this.cbxInput.SizeChanged += new System.EventHandler(this.cbxInput_SizeChanged);
             // 
             // GroupIMTabWindow
             // 
@@ -184,7 +185,7 @@ namespace Radegast
 
         #endregion
 
-        public System.Windows.Forms.RichTextBox rtbIMText;
+        public Radegast.RRichTextBox rtbIMText;
         public ChatInputBox cbxInput;
         public System.Windows.Forms.Button btnSend;
         public System.Windows.Forms.SplitContainer chatSplit;

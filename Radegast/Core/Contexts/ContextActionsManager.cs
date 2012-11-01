@@ -53,14 +53,15 @@ namespace Radegast
         /// </summary>
         /// <param name="libomvType"></param>
         /// <param name="label"></param>
-        /// <param name="handler"></param>
+        /// <param name="handler">Action<object,EventArgs></param>
         public void RegisterContextAction(Type libomvType, String label, EventHandler handler)
         {
             RegisterContextAction(new ContextAction(instance)
                                {
                                    Label = label,
                                    Handler = handler,
-                                   ContextType = libomvType
+                                   ContextType = libomvType,
+                                   ExactContextType = true
                                });
         }
 
@@ -166,7 +167,27 @@ namespace Radegast
             {
                 if (!i.Contributes(obj, type)) continue;
                 var v = i.GetToolItems(obj, type);
-                if (v != null) items.AddRange(v);
+                if (v != null)
+                {
+                    foreach (ToolStripMenuItem item in v)
+                    {
+                        bool alreadyPresent = false;
+                        foreach (object down in strip.Items)
+                        {
+                            if (down is ToolStripMenuItem)
+                            {
+                                ToolStripMenuItem mi = (ToolStripMenuItem) down;
+                                if ((mi.Text ?? "").ToLower() == (item.Text ?? "").ToLower())
+                                {
+                                    alreadyPresent = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (alreadyPresent) continue;
+                        items.Add(item);
+                    }
+                }
             }
             items.Sort(CompareItems);
             AddContributions_Helper(strip, items);

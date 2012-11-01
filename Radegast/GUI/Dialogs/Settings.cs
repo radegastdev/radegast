@@ -37,7 +37,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
+using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+
+using Radegast.Bot;
 
 namespace Radegast
 {
@@ -124,9 +128,12 @@ namespace Radegast
             if (!s.ContainsKey("highlight_on_im")) s["highlight_on_im"] = true;
 
             if (!s.ContainsKey("highlight_on_group_im")) s["highlight_on_group_im"] = true;
+
+            if (!s.ContainsKey("disable_av_name_link")) s["disable_av_name_link"] = false;
         }
 
         public frmSettings(RadegastInstance instance)
+            : base(instance)
         {
             if (settingInitialized)
             {
@@ -178,9 +185,9 @@ namespace Radegast
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
             cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
             cbMinToTrey.CheckedChanged += (object sender, EventArgs e) =>
-                {
-                    s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
-                };
+            {
+                s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
+            };
 
 
             cbNoTyping.Checked = s["no_typing_anim"].AsBoolean();
@@ -191,9 +198,9 @@ namespace Radegast
 
             txtAutoResponse.Text = s["auto_response_text"];
             txtAutoResponse.TextChanged += (object sender, EventArgs e) =>
-                {
-                    s["auto_response_text"] = txtAutoResponse.Text;
-                };
+            {
+                s["auto_response_text"] = txtAutoResponse.Text;
+            };
             AutoResponseType art = (AutoResponseType)s["auto_response_type"].AsInteger();
             switch (art)
             {
@@ -275,6 +282,23 @@ namespace Radegast
             {
                 s["highlight_on_group_im"] = cbHighlightGroupIM.Checked;
             };
+
+            // disable_av_name_link
+            if (instance.MonoRuntime)
+            {
+                cbDisableNameLinks.Visible = false;
+            }
+            else
+            {
+                cbDisableNameLinks.Checked = s["disable_av_name_link"];
+                cbDisableNameLinks.CheckedChanged += (sender, e) =>
+                {
+                    s["disable_av_name_link"] = cbDisableNameLinks.Checked;
+                };
+            }
+
+            autoSitPrefsUpdate();
+            pseudoHomePrefsUpdated();
 
             UpdateEnabled();
         }
@@ -405,13 +429,13 @@ namespace Radegast
             string input = System.Text.RegularExpressions.Regex.Replace(txtReconnectTime.Text, @"[^\d]", "");
             int t = 120;
             int.TryParse(input, out t);
-            
+
             if (txtReconnectTime.Text != t.ToString())
             {
                 txtReconnectTime.Text = t.ToString();
                 txtReconnectTime.Select(txtReconnectTime.Text.Length, 0);
             }
-            
+
             s["reconnect_time"] = t;
         }
 
@@ -419,5 +443,116 @@ namespace Radegast
         {
             s["log_to_file"] = OSD.FromBoolean(cbRadegastLogToFile.Checked);
         }
+
+        #region Auto-Sit
+
+        private void autoSitPrefsUpdate()
+        {
+            autoSit.Enabled = (Instance.Client.Network.Connected && Instance.ClientSettings != null);
+            if (!autoSit.Enabled)
+            {
+                return;
+            }
+            AutoSitPreferences prefs = Instance.State.AutoSit.Preferences;
+            autoSitName.Text = prefs.PrimitiveName;
+            autoSitUUID.Text = prefs.Primitive.ToString();
+            autoSitSit.Enabled = prefs.Primitive != UUID.Zero;
+            autoSitEnabled.Checked = prefs.Enabled;
+        }
+
+        private void autoSitClear_Click(object sender, EventArgs e)
+        {
+            Instance.State.AutoSit.Preferences = new AutoSitPreferences();
+            autoSitPrefsUpdate();
+        }
+
+        private void autoSitNameLabel_Click(object sender, EventArgs e)
+        {
+            autoSitName.SelectAll();
+        }
+
+        private void autoSitUUIDLabel_Click(object sender, EventArgs e)
+        {
+            autoSitUUID.SelectAll();
+        }
+
+        private void autoSitSit_Click(object sender, EventArgs e)
+        {
+            Instance.State.AutoSit.TrySit();
+        }
+
+        private void autoSitEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Instance.State.AutoSit.Preferences = new AutoSitPreferences
+            {
+                Primitive = Instance.State.AutoSit.Preferences.Primitive,
+                PrimitiveName = Instance.State.AutoSit.Preferences.PrimitiveName,
+                Enabled = autoSitEnabled.Checked
+            };
+        }
+
+        #endregion
+
+        #region Pseudo Home
+
+        private void pseudoHomePrefsUpdated()
+        {
+            pseudoHome.Enabled = (Instance.Client.Network.Connected && Instance.ClientSettings != null);
+            if (!pseudoHome.Enabled)
+            {
+                return;
+            }
+            PseudoHomePreferences prefs = Instance.State.PseudoHome.Preferences;
+            pseudoHomeLocation.Text = (prefs.Region != string.Empty) ? string.Format("{0} <{1}, {2}, {3}>", prefs.Region, (int)prefs.Position.X, (int)prefs.Position.Y, (int)prefs.Position.Z) : "";
+            pseudoHomeEnabled.Checked = prefs.Enabled;
+            pseudoHomeTP.Enabled = (prefs.Region.Trim() != string.Empty);
+            pseudoHomeTolerance.Value = Math.Max(pseudoHomeTolerance.Minimum, Math.Min(pseudoHomeTolerance.Maximum, prefs.Tolerance));
+        }
+
+        private void pseudoHomeLabel_Click(object sender, EventArgs e)
+        {
+            pseudoHomeLocation.SelectAll();
+        }
+
+        private void pseudoHomeEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences
+            {
+                Enabled = pseudoHomeEnabled.Checked,
+                Region = Instance.State.PseudoHome.Preferences.Region,
+                Position = Instance.State.PseudoHome.Preferences.Position,
+                Tolerance = Instance.State.PseudoHome.Preferences.Tolerance
+            };
+        }
+
+        private void pseudoHomeTP_Click(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.ETGoHome();
+        }
+
+        private void pseudoHomeSet_Click(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences
+            {
+                Enabled = Instance.State.PseudoHome.Preferences.Enabled,
+                Region = Instance.Client.Network.CurrentSim.Name,
+                Position = Instance.Client.Self.SimPosition,
+                Tolerance = Instance.State.PseudoHome.Preferences.Tolerance
+            };
+            pseudoHomePrefsUpdated();
+        }
+
+        private void pseudoHomeTolerance_ValueChanged(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences
+            {
+                Enabled = Instance.State.PseudoHome.Preferences.Enabled,
+                Region = Instance.State.PseudoHome.Preferences.Region,
+                Position = Instance.State.PseudoHome.Preferences.Position,
+                Tolerance = (uint)pseudoHomeTolerance.Value
+            };
+        }
+
+        #endregion
     }
 }
