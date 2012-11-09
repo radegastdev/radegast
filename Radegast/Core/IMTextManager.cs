@@ -215,7 +215,7 @@ namespace Radegast
 
             textPrinter.ForeColor = SystemColors.WindowText;
 
-            if (!instance.GlobalSettings["disable_av_name_link"])
+            if (instance.GlobalSettings["av_name_link"])
             {
                 textPrinter.InsertLink(fromName, string.Format("secondlife:///app/agent/{0}/about", fromID));
             }

@@ -369,6 +369,8 @@ namespace Radegast.Rendering
             {
                 title += string.Format(" - {0}", objName);
             }
+
+            Text = title;
         }
 
         private void glControl_Resize(object sender, EventArgs e)

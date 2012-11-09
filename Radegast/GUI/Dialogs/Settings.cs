@@ -129,7 +129,7 @@ namespace Radegast
 
             if (!s.ContainsKey("highlight_on_group_im")) s["highlight_on_group_im"] = true;
 
-            if (!s.ContainsKey("disable_av_name_link")) s["disable_av_name_link"] = false;
+            if (!s.ContainsKey("av_name_link")) s["av_name_link"] = false;
         }
 
         public frmSettings(RadegastInstance instance)
@@ -286,14 +286,14 @@ namespace Radegast
             // disable_av_name_link
             if (instance.MonoRuntime)
             {
-                cbDisableNameLinks.Visible = false;
+                cbNameLinks.Visible = false;
             }
             else
             {
-                cbDisableNameLinks.Checked = s["disable_av_name_link"];
-                cbDisableNameLinks.CheckedChanged += (sender, e) =>
+                cbNameLinks.Checked = s["av_name_link"];
+                cbNameLinks.CheckedChanged += (sender, e) =>
                 {
-                    s["disable_av_name_link"] = cbDisableNameLinks.Checked;
+                    s["av_name_link"] = cbNameLinks.Checked;
                 };
             }
 
