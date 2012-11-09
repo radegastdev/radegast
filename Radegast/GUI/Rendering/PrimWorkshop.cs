@@ -93,7 +93,6 @@ namespace Radegast.Rendering
         RadegastInstance instance;
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
-        AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
         BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
         float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
         TextRendering textRendering;
@@ -270,6 +269,7 @@ namespace Radegast.Rendering
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.ColorMaterial);
                 GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Back);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.AmbientAndDiffuse);
                 GL.ColorMaterial(MaterialFace.Front, ColorMaterialParameter.Specular);
 
@@ -279,6 +279,7 @@ namespace Radegast.Rendering
                 GL.MatrixMode(MatrixMode.Projection);
 
                 GL.Enable(EnableCap.Blend);
+                GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
                 #region Compatibility checks
@@ -328,16 +329,12 @@ namespace Radegast.Rendering
                 // and will also invalidate the GL control
                 glControl_Resize(null, null);
 
-                //glControl.Context.MakeCurrent(null);
-                TextureThreadContextReady.Reset();
                 var textureThread = new Thread(() => TextureThread())
                 {
                     IsBackground = true,
                     Name = "TextureLoadingThread"
                 };
                 textureThread.Start();
-                //TextureThreadContextReady.WaitOne(1000, false);
-                //glControl.MakeCurrent();
             }
             catch (Exception ex)
             {
@@ -355,6 +352,23 @@ namespace Radegast.Rendering
             Render(false);
 
             glControl.SwapBuffers();
+
+            Primitive prim = null;
+            string objName = string.Empty;
+
+            if (Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(RootPrimLocalID, out prim))
+            {
+                if (prim.Properties != null)
+                {
+                    objName = prim.Properties.Name;
+                }
+            }
+
+            string title = string.Format("Object Viewer - {0}", instance.Names.Get(Client.Self.AgentID, Client.Self.Name));
+            if (!string.IsNullOrEmpty(objName))
+            {
+                title += string.Format(" - {0}", objName);
+            }
         }
 
         private void glControl_Resize(object sender, EventArgs e)
@@ -499,17 +513,11 @@ namespace Radegast.Rendering
 
         void TextureThread()
         {
-            //OpenTK.INativeWindow window = new OpenTK.NativeWindow();
-            //OpenTK.Graphics.IGraphicsContext context = new OpenTK.Graphics.GraphicsContext(GLMode, glControl.WindowInfo);
-            //context.MakeCurrent(window.WindowInfo);
-            TextureThreadContextReady.Set();
             PendingTextures.Open();
             Logger.DebugLog("Started Texture Thread");
 
-            while (/* window.Exists &&*/ TextureThreadRunning)
+            while (TextureThreadRunning)
             {
-                //window.ProcessEvents();
-
                 TextureLoadItem item = null;
 
                 if (!PendingTextures.Dequeue(Timeout.Infinite, ref item)) continue;
@@ -517,7 +525,6 @@ namespace Radegast.Rendering
                 if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                 {
                     item.Data.TextureInfo = TexturesPtrMap[item.TeFace.TextureID];
-                    //GL.BindTexture(TextureTarget.Texture2D, item.Data.TextureInfo.TexturePointer);
                     continue;
                 }
 
@@ -534,6 +541,7 @@ namespace Radegast.Rendering
                     {
                         hasAlpha = false;
                     }
+                    
                     item.Data.TextureInfo.HasAlpha = hasAlpha;
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
@@ -675,7 +683,15 @@ namespace Radegast.Rendering
                         if (teFace == null)
                             teFace = mesh.Prim.Textures.DefaultTexture;
 
-                        if (pass != RenderPass.Picking)
+                        if (pass == RenderPass.Picking)
+                        {
+                            data.PickingID = primNr;
+                            var primNrBytes = Utils.Int16ToBytes((short)primNr);
+                            var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
+
+                            GL.Color4(faceColor);
+                        }
+                        else
                         {
                             bool belongToAlphaPass = (teFace.RGBA.A < 0.99) || data.TextureInfo.HasAlpha;
 
@@ -723,14 +739,6 @@ namespace Radegast.Rendering
 
                             // Bind the texture
                             GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
-                        }
-                        else
-                        {
-                            data.PickingID = primNr;
-                            var primNrBytes = Utils.Int16ToBytes((short)primNr);
-                            var faceColor = new byte[] { primNrBytes[0], primNrBytes[1], (byte)j, 255 };
-
-                            GL.Color4(faceColor);
                         }
 
                         GL.TexCoordPointer(2, TexCoordPointerType.Float, 0, data.TexCoords);
