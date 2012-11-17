@@ -102,6 +102,12 @@ namespace Radegast
 
         void GroupDetails_Disposed(object sender, EventArgs e)
         {
+            if (nameUpdateTimer != null)
+            {
+                nameUpdateTimer.Dispose();
+                nameUpdateTimer = null;
+            }
+
             client.Groups.GroupTitlesReply -= new EventHandler<GroupTitlesReplyEventArgs>(Groups_GroupTitlesReply);
             client.Groups.GroupMembersReply -= new EventHandler<GroupMembersReplyEventArgs>(Groups_GroupMembersReply);
             client.Groups.GroupProfile -= new EventHandler<GroupProfileEventArgs>(Groups_GroupProfile);
@@ -331,23 +337,65 @@ namespace Radegast
             RefreshControlsAvailability();
         }
 
+        Queue<UUIDNameReplyEventArgs> namesToUpdate = new Queue<UUIDNameReplyEventArgs>();
+        System.Threading.Timer nameUpdateTimer = null;
+
         void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
         {
-            if (InvokeRequired)
+            lock (namesToUpdate)
             {
-                BeginInvoke(new MethodInvoker(() => Names_NameUpdated(sender, e)));
+                namesToUpdate.Enqueue(e);
+                if (null == nameUpdateTimer)
+                {
+                    nameUpdateTimer = new System.Threading.Timer(NameUpdateTick, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                }
+                nameUpdateTimer.Change(1000, System.Threading.Timeout.Infinite);
+            }
+            return;
+        }
+
+        void NameUpdateTick(object state)
+        {
+            Dictionary<UUID, string> names = new Dictionary<UUID, string>();
+            lock (namesToUpdate)
+            {
+                while (namesToUpdate.Count > 0 && names.Count < 200)
+                {
+                    var e = namesToUpdate.Dequeue();
+                    foreach (var elem in e.Names)
+                    {
+                        names[elem.Key] = elem.Value;
+                    }
+                }
+            }
+
+            if (names.Count > 0)
+            {
+                nameUpdateTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+                ProcessNameUpdate(names);
+                nameUpdateTimer.Change(1000, System.Threading.Timeout.Infinite);
+            }
+        }
+
+        void ProcessNameUpdate(Dictionary<UUID, string> Names)
+        {
+            if (instance.MainForm.InvokeRequired)
+            {
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => ProcessNameUpdate(Names)));
                 return;
             }
 
-            if (e.Names.ContainsKey(group.FounderID))
+            if (Names.ContainsKey(group.FounderID))
             {
-                lblFounded.Text = "Founded by: " + e.Names[group.FounderID];
+                lblFounded.Text = "Founded by: " + Names[group.FounderID];
             }
 
             lvwMemberDetails.BeginUpdate();
             lvwGeneralMembers.BeginUpdate();
+
             bool modified = false;
-            foreach (KeyValuePair<UUID, string> name in e.Names)
+
+            foreach (KeyValuePair<UUID, string> name in Names)
             {
                 if (lvwGeneralMembers.Items.ContainsKey(name.Key.ToString()))
                 {
