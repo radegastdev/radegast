@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.IO;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
@@ -86,15 +87,16 @@ namespace Radegast
         GridClient client { get { return instance.Client; } }
         Timer requestTimer;
         Timer cacheTimer;
+        string cacheFileName;
 
         Queue<UUID> requests = new Queue<UUID>();
 
         int MaxNameRequests = 80;
 
-        // Queue up name request for this many ms, and send a batch requsr
+        // Queue up name request for this many ms, and send a batch requst
         const int REQUEST_DELAY = 100;
         // Save name cache after change to names after this many ms
-        const int CACHE_DELAY = 5000;
+        const int CACHE_DELAY = 30000;
         // Consider request failed after this many ms
         const int MAX_REQ_AGE = 15000;
 
@@ -110,13 +112,16 @@ namespace Radegast
 
             requestTimer = new Timer(MakeRequest, null, Timeout.Infinite, Timeout.Infinite);
             cacheTimer = new Timer(SaveCache, null, Timeout.Infinite, Timeout.Infinite);
-
+            cacheFileName = Path.Combine(instance.UserDir, "name.cache");
+            LoadCachedNames();
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterEvents(client);
         }
 
         public void Dispose()
         {
+            SaveCache(new object());
+
             if (client != null)
             {
                 DeregisterEvents(client);
@@ -161,6 +166,7 @@ namespace Radegast
         {
             lock (names)
             {
+                e.DisplayName.Updated = DateTime.Now;
                 names[e.DisplayName.ID] = e.DisplayName;
             }
             Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
@@ -192,6 +198,8 @@ namespace Radegast
                         names[kvp.Key].NextUpdate = UUIDNameOnly;
                         names[kvp.Key].IsDefaultDisplayName = true;
                     }
+
+                    names[kvp.Key].Updated = DateTime.Now;
 
                     string[] parts = kvp.Value.Trim().Split(' ');
                     if (parts.Length == 2)
@@ -269,6 +277,7 @@ namespace Radegast
 
                 ret.Add(name.ID, FormatName(name));
 
+                name.Updated = DateTime.Now;
                 lock (this.names)
                 {
                     this.names[name.ID] = name;
@@ -291,7 +300,7 @@ namespace Radegast
 
             if (req.Count > 0)
             {
-                if (Mode == NameMode.Standard)
+                if (Mode == NameMode.Standard || (!client.Avatars.DisplayNamesAvailable()))
                 {
                     client.Avatars.RequestAvatarNames(req);
                 }
@@ -315,6 +324,64 @@ namespace Radegast
 
         void SaveCache(object sync)
         {
+            ThreadPool.QueueUserWorkItem(syncx =>
+            {
+                OSDArray namesOSD = new OSDArray(names.Count);
+                lock (names)
+                {
+                    foreach (var name in names)
+                    {
+                        namesOSD.Add(name.Value.GetOSD());
+                    }
+                }
+                
+                OSDMap cache = new OSDMap(1);
+                cache["names"] = namesOSD;
+                byte[] data = OSDParser.SerializeLLSDBinary(cache, false);
+                Logger.DebugLog(string.Format("Caching {0} avatar names to {1}", namesOSD.Count, cacheFileName));
+                
+                try
+                {
+                    File.WriteAllBytes(cacheFileName, data);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failed to save avatar name cache: ", Helpers.LogLevel.Error, client, ex);
+                }
+            });
+        }
+
+        void LoadCachedNames()
+        {
+            ThreadPool.QueueUserWorkItem(syncx =>
+            {
+                try
+                {
+                    byte[] data = File.ReadAllBytes(cacheFileName);
+                    OSDMap cache = (OSDMap)OSDParser.DeserializeLLSDBinary(data);
+                    OSDArray namesOSD = (OSDArray)cache["names"];
+                    DateTime now = DateTime.Now;
+                    TimeSpan maxAge = new TimeSpan(24, 0, 0);
+
+                    lock (names)
+                    {
+                        for (int i = 0; i < namesOSD.Count; i++)
+                        {
+                            AgentDisplayName name = AgentDisplayName.FromOSD(namesOSD[i]);
+                            if (now - name.Updated < maxAge)
+                            {
+                                names[name.ID] = name;
+                            }
+                        }
+                    }
+
+                    Logger.DebugLog(string.Format("Restored {0} names from the avatar name cache", names.Count));
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failed loading cached avatar names: ", Helpers.LogLevel.Warning, client, ex);
+                }
+            });
         }
 
         void TriggerEvent(Dictionary<UUID, string> ret)
@@ -397,6 +464,22 @@ namespace Radegast
         #endregion private methods
 
         #region public methods
+        /// <summary>
+        /// Cleans avatar name cache
+        /// </summary>
+        public void CleanCache()
+        {
+            lock (names)
+            {
+                try
+                {
+                    names.Clear();
+                    File.Delete(cacheFileName);
+                }
+                catch { }
+            }
+        }
+
         /// <summary>
         /// Gets legacy First Last name
         /// </summary>

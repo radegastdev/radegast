@@ -403,25 +403,37 @@ namespace Radegast
         private void rbDNOff_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNOff.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.Standard;
+            }
         }
 
         private void rbDNSmart_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNSmart.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.Smart;
+            }
         }
 
         private void rbDNDandUsernme_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNDandUsernme.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.DisplayNameAndUserName;
+            }
         }
 
         private void rbDNOnlyDN_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNOnlyDN.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.OnlyDisplayName;
+            }
         }
 
         private void txtReconnectTime_TextChanged(object sender, EventArgs e)
