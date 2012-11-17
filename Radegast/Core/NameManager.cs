@@ -291,10 +291,11 @@ namespace Radegast
 
             if (req.Count > 0)
             {
-                // Request standard name anyway
-                client.Avatars.RequestAvatarNames(req);
-
-                if (Mode != NameMode.Standard) // Use display names
+                if (Mode == NameMode.Standard)
+                {
+                    client.Avatars.RequestAvatarNames(req);
+                }
+                else // Use display names
                 {
                     client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
                         {
