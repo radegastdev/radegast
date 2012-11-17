@@ -361,7 +361,7 @@ namespace Radegast
                     OSDMap cache = (OSDMap)OSDParser.DeserializeLLSDBinary(data);
                     OSDArray namesOSD = (OSDArray)cache["names"];
                     DateTime now = DateTime.Now;
-                    TimeSpan maxAge = new TimeSpan(24, 0, 0);
+                    TimeSpan maxAge = Mode == NameMode.Standard ? TimeSpan.MaxValue : new TimeSpan(24, 0, 0);
 
                     lock (names)
                     {
