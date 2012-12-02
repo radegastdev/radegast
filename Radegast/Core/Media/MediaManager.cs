@@ -505,7 +505,6 @@ namespace Radegast.Media
             if (!e.Simulator.ObjectsPrimitives.TryGetValue(e.ObjectLocalID, out  p)) return;
 
             // Objects without sounds are not interesting.
-            if (p.Sound == null) return;
             if (p.Sound == UUID.Zero) return;
 
             BufferSound.Kill(p.ID);
