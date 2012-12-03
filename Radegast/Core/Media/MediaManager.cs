@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2012, Radegast Development Team
 // All rights reserved.
@@ -249,6 +249,10 @@ namespace Radegast.Media
                         FMOD.INITFLAG.NORMAL,
                         (IntPtr)null)
                     );
+                }
+                else if (result != FMOD.RESULT.OK)
+                {
+                    throw(new Exception(result.ToString()));
                 }
 
                 // Set real-world effect scales.
