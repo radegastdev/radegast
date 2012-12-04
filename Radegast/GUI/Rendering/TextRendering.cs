@@ -171,13 +171,20 @@ namespace Radegast.Rendering
                 item.TextureID = -1;
             }
 
-            Size s = TextRenderer.MeasureText(
-                item.Text,
-                item.Font,
-                TextRendering.MaxSize,
-                item.Flags);
-
-            s = TextRenderer.MeasureText(item.Text, item.Font, TextRendering.MaxSize, item.Flags);
+            Size s;
+            
+            try
+            {
+                 s = TextRenderer.MeasureText(
+                    item.Text,
+                    item.Font,
+                    TextRendering.MaxSize,
+                    item.Flags);
+            }
+            catch
+            {
+                return;
+            }
 
             item.ImgWidth = s.Width;
             item.ImgHeight = s.Height;

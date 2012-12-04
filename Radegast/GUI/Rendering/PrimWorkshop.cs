@@ -228,7 +228,7 @@ namespace Radegast.Rendering
                 return;
             }
 
-            Logger.Log("Initializing OpenGL mode: " + GLMode.ToString(), Helpers.LogLevel.Info);
+            Logger.Log("Initializing OpenGL mode: " + (GLMode == null ? "" : GLMode.ToString()), Helpers.LogLevel.Info);
 
             glControl.Paint += glControl_Paint;
             glControl.Resize += glControl_Resize;
@@ -548,14 +548,19 @@ namespace Radegast.Rendering
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-                    instance.MainForm.BeginInvoke(new MethodInvoker(() =>
+                    var loadOnMainThread = new MethodInvoker(() =>
                     {
                         item.Data.TextureInfo.TexturePointer = RHelp.GLLoadImage(bitmap, hasAlpha, RenderSettings.HasMipmap);
                         TexturesPtrMap[item.TeFace.TextureID] = item.Data.TextureInfo;
                         bitmap.Dispose();
                         item.Data.TextureInfo.Texture = null;
                         SafeInvalidate();
-                    }));
+                    });
+
+                    if (!instance.MonoRuntime || IsHandleCreated)
+                    {
+                        BeginInvoke(loadOnMainThread);
+                    }
                 }
             }
             Logger.DebugLog("Texture thread exited");
