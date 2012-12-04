@@ -7,4 +7,5 @@ compile.bat
 *.sln.cache
 *.csproj
 *.bak
+*.resources
 *~
