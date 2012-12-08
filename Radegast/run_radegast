@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd $(dirname "$0")
+MONO_MWF_MAC_FORCE_X11=1
+export MONO_MWF_MAC_FORCE_X11
+mono Radegast.exe
+
