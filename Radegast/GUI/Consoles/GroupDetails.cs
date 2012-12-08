@@ -31,6 +31,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
@@ -333,21 +334,28 @@ namespace Radegast
 
         void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
         {
-            if (InvokeRequired)
+            ProcessNameUpdate(e.Names);
+        }
+
+        void ProcessNameUpdate(Dictionary<UUID, string> Names)
+        {
+            if (instance.MainForm.InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => Names_NameUpdated(sender, e)));
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => ProcessNameUpdate(Names)));
                 return;
             }
 
-            if (e.Names.ContainsKey(group.FounderID))
+            if (Names.ContainsKey(group.FounderID))
             {
-                lblFounded.Text = "Founded by: " + e.Names[group.FounderID];
+                lblFounded.Text = "Founded by: " + Names[group.FounderID];
             }
 
             lvwMemberDetails.BeginUpdate();
             lvwGeneralMembers.BeginUpdate();
+
             bool modified = false;
-            foreach (KeyValuePair<UUID, string> name in e.Names)
+
+            foreach (KeyValuePair<UUID, string> name in Names)
             {
                 if (lvwGeneralMembers.Items.ContainsKey(name.Key.ToString()))
                 {
@@ -400,63 +408,138 @@ namespace Radegast
         {
             if (groupMembersRequest != e.RequestID) return;
 
-            if (InvokeRequired)
+            ThreadPool.QueueUserWorkItem(sync =>
             {
-                BeginInvoke(new MethodInvoker(() => Groups_GroupMembersReply(sender, e)));
+                List<ListViewItem> newItems = new List<ListViewItem>();
+                List<ListViewItem> memberDetails = new List<ListViewItem>();
+                int namesToFetch = 0;
+                AutoResetEvent gotNames = new AutoResetEvent(false);
+                
+                EventHandler<UUIDNameReplyEventArgs> handler = (xsender, xe) =>
+                {
+                    lock (newItems)
+                    {
+                        foreach (var item in newItems)
+                        {
+                            foreach (var name in xe.Names)
+                            {
+                                if (item.Name == name.Key.ToString())
+                                {
+                                    item.Text = name.Value;
+                                    namesToFetch--;
+                                }
+                            }
+                        }
+                    }
+
+                    if (isMember)
+                    {
+                        lock (memberDetails)
+                        {
+                            foreach (var item in memberDetails)
+                            {
+                                foreach (var name in xe.Names)
+                                {
+                                    if (item.Name == name.Key.ToString())
+                                    {
+                                        item.Text = name.Value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (namesToFetch < 20)
+                    {
+                        gotNames.Set();
+                    }
+                    Logger.DebugLog("Names to fetch: " + namesToFetch.ToString());
+                };
+
+                instance.Names.NameUpdated += handler;
+
+                foreach (GroupMember baseMember in e.Members.Values)
+                {
+                    EnhancedGroupMember member = new EnhancedGroupMember(baseMember);
+                    string name;
+
+                    name = instance.Names.Get(member.Base.ID);
+                    if (name == RadegastInstance.INCOMPLETE_NAME)
+                    {
+                        namesToFetch++;
+                    }
+
+                    {
+                        ListViewItem item = new ListViewItem(name);
+                        item.Tag = member;
+                        item.Name = member.Base.ID.ToString();
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Title));
+                        if (member.LastOnline != DateTime.MinValue)
+                        {
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
+                        }
+
+                        newItems.Add(item);
+                    }
+
+                    if (isMember)
+                    {
+                        ListViewItem item = new ListViewItem(name);
+                        item.Tag = member;
+                        item.Name = member.Base.ID.ToString();
+                        item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Contribution.ToString()));
+                        if (member.LastOnline != DateTime.MinValue)
+                        {
+                            item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
+                        }
+                        lock (memberDetails)
+                        {
+                            memberDetails.Add(item);
+                        }
+                    }
+                }
+
+                if (namesToFetch >= 20)
+                {
+                    gotNames.WaitOne(120 * 1000);
+                }
+                instance.Names.NameUpdated -= handler;
+
+                UpdateGeneralMembers(newItems);
+
+                if (isMember && memberDetails.Count > 0)
+                {
+                    UpdateMemberDetails(memberDetails);
+                }
+            });
+        }
+
+        void UpdateGeneralMembers(List<ListViewItem> newItems)
+        {
+            if (instance.MainForm.InvokeRequired)
+            {
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => UpdateGeneralMembers(newItems)));
                 return;
             }
 
             lvwGeneralMembers.BeginUpdate();
-            List<ListViewItem> newItems = new List<ListViewItem>();
-            List<ListViewItem> memberDetails = new List<ListViewItem>();
-
-            foreach (GroupMember baseMember in e.Members.Values)
-            {
-                EnhancedGroupMember member = new EnhancedGroupMember(baseMember);
-                string name;
-
-                name = instance.Names.Get(member.Base.ID);
-
-                {
-                    ListViewItem item = new ListViewItem(name);
-                    item.Tag = member;
-                    item.Name = member.Base.ID.ToString();
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Title));
-                    if (member.LastOnline != DateTime.MinValue)
-                    {
-                        item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
-                    }
-
-                    newItems.Add(item);
-                }
-
-                if (isMember)
-                {
-                    ListViewItem item = new ListViewItem(name);
-                    item.Tag = member;
-                    item.Name = member.Base.ID.ToString();
-                    item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Contribution.ToString()));
-                    if (member.LastOnline != DateTime.MinValue)
-                    {
-                        item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
-                    }
-                    memberDetails.Add(item);
-                }
-
-
-            }
-
             lvwGeneralMembers.Items.AddRange(newItems.ToArray());
             lvwGeneralMembers.Sort();
             lvwGeneralMembers.EndUpdate();
+        }
 
-            if (isMember && memberDetails.Count > 0)
+        void UpdateMemberDetails(List<ListViewItem> memberDetails)
+        {
+            if (instance.MainForm.InvokeRequired)
             {
-                lvwMemberDetails.BeginUpdate();
-                lvwMemberDetails.Items.AddRange(memberDetails.ToArray());
-                lvwMemberDetails.Sort();
-                lvwMemberDetails.EndUpdate();
+                instance.MainForm.BeginInvoke(new MethodInvoker(() => UpdateMemberDetails(memberDetails)));
+                return;
             }
+
+            lvwMemberDetails.BeginUpdate();
+            lvwMemberDetails.Items.AddRange(memberDetails.ToArray());
+            lvwMemberDetails.Sort();
+            lvwMemberDetails.EndUpdate();
         }
         #endregion
 
@@ -555,11 +638,11 @@ namespace Radegast
             if (!isMember) return;
 
             btnApply.Enabled = false;
-            lvwGeneralMembers.Items.Clear();
-            lvwMemberDetails.Items.Clear();
-            lvwAllowedAbilities.Items.Clear();
+            //lvwGeneralMembers.Items.Clear();
+            //lvwMemberDetails.Items.Clear();
+            //lvwAllowedAbilities.Items.Clear();
             lvwAssignedRoles.Items.Clear();
-            groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
+            //groupMembersRequest = client.Groups.RequestGroupMembers(group.ID);
             groupRolesRequest = client.Groups.RequestGroupRoles(group.ID);
         }
         #endregion

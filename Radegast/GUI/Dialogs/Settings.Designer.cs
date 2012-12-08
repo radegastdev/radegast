@@ -82,7 +82,7 @@ namespace Radegast
             this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
             this.Chat = new System.Windows.Forms.GroupBox();
-            this.cbDisableNameLinks = new System.Windows.Forms.CheckBox();
+            this.cbNameLinks = new System.Windows.Forms.CheckBox();
             this.cbDisableChatIMLog = new System.Windows.Forms.CheckBox();
             this.cbChatTimestamps = new System.Windows.Forms.CheckBox();
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
@@ -388,7 +388,7 @@ namespace Radegast
             // 
             // Chat
             // 
-            this.Chat.Controls.Add(this.cbDisableNameLinks);
+            this.Chat.Controls.Add(this.cbNameLinks);
             this.Chat.Controls.Add(this.cbDisableChatIMLog);
             this.Chat.Controls.Add(this.cbChatTimestamps);
             this.Chat.Controls.Add(this.cbIMTimeStamps);
@@ -403,15 +403,15 @@ namespace Radegast
             this.Chat.TabStop = false;
             this.Chat.Text = "Chat";
             // 
-            // cbDisableNameLinks
+            // cbNameLinks
             // 
-            this.cbDisableNameLinks.AutoSize = true;
-            this.cbDisableNameLinks.Location = new System.Drawing.Point(8, 144);
-            this.cbDisableNameLinks.Name = "cbDisableNameLinks";
-            this.cbDisableNameLinks.Size = new System.Drawing.Size(147, 17);
-            this.cbDisableNameLinks.TabIndex = 9;
-            this.cbDisableNameLinks.Text = "Disable avatar name links";
-            this.cbDisableNameLinks.UseVisualStyleBackColor = true;
+            this.cbNameLinks.AutoSize = true;
+            this.cbNameLinks.Location = new System.Drawing.Point(8, 144);
+            this.cbNameLinks.Name = "cbNameLinks";
+            this.cbNameLinks.Size = new System.Drawing.Size(110, 17);
+            this.cbNameLinks.TabIndex = 9;
+            this.cbNameLinks.Text = "Avatar name links";
+            this.cbNameLinks.UseVisualStyleBackColor = true;
             // 
             // cbDisableChatIMLog
             // 
@@ -946,7 +946,7 @@ namespace Radegast
         private System.Windows.Forms.Button pseudoHomeClear;
         private System.Windows.Forms.NumericUpDown pseudoHomeTolerance;
         private System.Windows.Forms.Label pseudoHomeToleranceLabel;
-        private System.Windows.Forms.CheckBox cbDisableNameLinks;
+        private System.Windows.Forms.CheckBox cbNameLinks;
 
 
     }

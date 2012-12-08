@@ -129,7 +129,7 @@ namespace Radegast
 
             if (!s.ContainsKey("highlight_on_group_im")) s["highlight_on_group_im"] = true;
 
-            if (!s.ContainsKey("disable_av_name_link")) s["disable_av_name_link"] = false;
+            if (!s.ContainsKey("av_name_link")) s["av_name_link"] = false;
         }
 
         public frmSettings(RadegastInstance instance)
@@ -286,14 +286,14 @@ namespace Radegast
             // disable_av_name_link
             if (instance.MonoRuntime)
             {
-                cbDisableNameLinks.Visible = false;
+                cbNameLinks.Visible = false;
             }
             else
             {
-                cbDisableNameLinks.Checked = s["disable_av_name_link"];
-                cbDisableNameLinks.CheckedChanged += (sender, e) =>
+                cbNameLinks.Checked = s["av_name_link"];
+                cbNameLinks.CheckedChanged += (sender, e) =>
                 {
-                    s["disable_av_name_link"] = cbDisableNameLinks.Checked;
+                    s["av_name_link"] = cbNameLinks.Checked;
                 };
             }
 
@@ -403,25 +403,37 @@ namespace Radegast
         private void rbDNOff_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNOff.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.Standard;
+            }
         }
 
         private void rbDNSmart_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNSmart.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.Smart;
+            }
         }
 
         private void rbDNDandUsernme_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNDandUsernme.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.DisplayNameAndUserName;
+            }
         }
 
         private void rbDNOnlyDN_CheckedChanged(object sender, EventArgs e)
         {
             if (rbDNOnlyDN.Checked)
+            {
+                Instance.Names.CleanCache();
                 s["display_name_mode"] = (int)NameMode.OnlyDisplayName;
+            }
         }
 
         private void txtReconnectTime_TextChanged(object sender, EventArgs e)
