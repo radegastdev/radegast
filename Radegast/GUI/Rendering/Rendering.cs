@@ -469,45 +469,7 @@ namespace Radegast.Rendering
             {
                 if (av.avatar.ID == e.AvatarID)
                 {
-                    av.glavatar.skel.flushanimations();
-                    foreach (Animation anim in e.Animations)
-                    {
-                        //Console.WriteLine(string.Format("AvatarAnimationChanged {0} {1}", anim.AnimationID, anim.AnimationSequence));
-                        
-                        // Don't play internal turn 180 animations
-                        if (anim.AnimationID == new UUID("038fcec9-5ebd-8a8e-0e2e-6e71a0a1ac53"))
-                            continue;
-
-                        if (anim.AnimationID == new UUID("6883a61a-b27b-5914-a61e-dda118a9ee2c"))
-                            continue;
-
-                        av.glavatar.skel.processAnimation(anim.AnimationID);
-                        
-                        int nofails = 0;
-                        if (AssetFetchFailCount.TryGetValue(anim.AnimationID, out nofails))
-                        {
-                            if (nofails >= 5)
-                                continue; // asset fetch has failed 5 times, give up.
-                        }
-
-                        UUID tid = UUID.Random();
-                        skeleton.mAnimationTransactions.Add(tid, av);
-
-                        BinBVHAnimationReader bvh;
-                        if (skeleton.mAnimationCache.TryGetValue(anim.AnimationID, out bvh))
-                        {
-                            skeleton.addanimation(null, tid, bvh, anim.AnimationID);
-                            continue;
-                        }
-
-                        Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
-
-                        Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, animRecievedCallback);
-                    }
-
-                    av.glavatar.skel.flushanimationsfinal();
-                    skeleton.recalcpriorities(av);
-
+                    UpdateAvatarAnimations(av);
                     break;
                 }
             }
@@ -524,7 +486,7 @@ namespace Radegast.Rendering
 
             if (transfer.Success)
             {
-                skeleton.addanimation(asset, transfer.ID, null,asset.AssetID);
+                skeleton.addanimation(asset, transfer.ID, null, asset.AssetID);
             }
             else
             {
@@ -1128,7 +1090,7 @@ namespace Radegast.Rendering
                     Bitmap bitmap = (Bitmap)img;
 
                     bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    
+
                     instance.MainForm.BeginInvoke(new MethodInvoker(() =>
                     {
                         item.Data.TextureInfo.TexturePointer = RHelp.GLLoadImage(bitmap, item.Data.TextureInfo.HasAlpha);
@@ -1613,6 +1575,7 @@ namespace Radegast.Rendering
                     // flag we got an update??
                     updateAVtes(Avatars[av.LocalID]);
                     Avatars[av.LocalID].glavatar.morph(av);
+                    UpdateAvatarAnimations(Avatars[av.LocalID]);
                 }
                 else
                 {
@@ -1630,8 +1593,55 @@ namespace Radegast.Rendering
                     {
                         myself = ra;
                     }
+
+                    UpdateAvatarAnimations(ra);
                 }
             }
+        }
+
+        private void UpdateAvatarAnimations(RenderAvatar av)
+        {
+            if (av.avatar.Animations == null) return;
+
+            av.glavatar.skel.flushanimations();
+            foreach (Animation anim in av.avatar.Animations)
+            {
+                //Console.WriteLine(string.Format("AvatarAnimationChanged {0} {1}", anim.AnimationID, anim.AnimationSequence));
+
+                // Don't play internal turn 180 animations
+                if (anim.AnimationID == new UUID("038fcec9-5ebd-8a8e-0e2e-6e71a0a1ac53"))
+                    continue;
+
+                if (anim.AnimationID == new UUID("6883a61a-b27b-5914-a61e-dda118a9ee2c"))
+                    continue;
+
+                av.glavatar.skel.processAnimation(anim.AnimationID);
+
+                int nofails = 0;
+                if (AssetFetchFailCount.TryGetValue(anim.AnimationID, out nofails))
+                {
+                    if (nofails >= 5)
+                        continue; // asset fetch has failed 5 times, give up.
+                }
+
+                UUID tid = UUID.Random();
+                skeleton.mAnimationTransactions.Add(tid, av);
+
+                BinBVHAnimationReader bvh;
+                if (skeleton.mAnimationCache.TryGetValue(anim.AnimationID, out bvh))
+                {
+                    skeleton.addanimation(null, tid, bvh, anim.AnimationID);
+                    continue;
+                }
+
+                Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
+
+                Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, animRecievedCallback);
+            }
+
+            av.glavatar.skel.flushanimationsfinal();
+            skeleton.recalcpriorities(av);
+
         }
 
         private void updateAVtes(RenderAvatar ra)
@@ -1646,7 +1656,7 @@ namespace Radegast.Rendering
                 if (TEF == null)
                     continue;
 
-                if (ra.data[fi] == null || ra.data[fi].TextureInfo.TextureID != TEF.TextureID || ra.data[fi].TextureInfo.TexturePointer < 1 )
+                if (ra.data[fi] == null || ra.data[fi].TextureInfo.TextureID != TEF.TextureID || ra.data[fi].TextureInfo.TexturePointer < 1)
                 {
                     FaceData data = new FaceData();
                     ra.data[fi] = data;
@@ -1798,7 +1808,7 @@ namespace Radegast.Rendering
                     //Console.WriteLine(avataroffset.ToString());
 
                     // Prim roation and position
-                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset ));
+                    GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset));
 
                     if (av.glavatar._meshes.Count > 0)
                     {
@@ -1814,7 +1824,7 @@ namespace Radegast.Rendering
                             if (!av.glavatar._showSkirt && mesh.Name == "skirtMesh")
                                 continue;
 
-                        
+
                             // If we don't have a hair bake OR the hair bake is invisible don't render it
                             if (mesh.Name == "hairMesh" && (av.data[(int)AvatarTextureIndex.HairBaked] == null || av.data[(int)AvatarTextureIndex.HairBaked].TextureInfo.IsInvisible))
                                 continue;
@@ -3542,7 +3552,7 @@ namespace Radegast.Rendering
             foreach (RenderAvatar av in Avatars.Values)
             {
                 int id = -1;
-                
+
                 //foreach (VisualParamEx vpe in VisualParamEx.morphParams.Values)
                 //{
                 //    if (vpe.Name == comboBox_morph.Text)
