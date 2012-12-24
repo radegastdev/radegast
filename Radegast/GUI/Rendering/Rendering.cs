@@ -1469,7 +1469,6 @@ namespace Radegast.Rendering
         {
             lock (VisibleAvatars)
             {
-                GL.Color4(0f, 0f, 0f, 0.4f);
                 foreach (RenderAvatar av in VisibleAvatars)
                 {
                     Vector3 avPos = av.RenderPosition;
@@ -1491,7 +1490,7 @@ namespace Radegast.Rendering
 
                     if (pass == RenderPass.Picking)
                     {
-                        //Send avatar anyway, we're attached to it
+                        // Send avatar anyway, we're attached to it
                         int faceID = 0;
                         foreach (FaceData f in av.data)
                         {
@@ -1516,6 +1515,7 @@ namespace Radegast.Rendering
                         // Render tag backround
                         float halfWidth = tSize.Width / 2 + 12;
                         float halfHeight = tSize.Height / 2 + 5;
+                        GL.Color4(0f, 0f, 0f, 0.4f);
                         RHelp.Draw2DBox(quadPos.X - halfWidth, quadPos.Y - halfHeight, halfWidth * 2, halfHeight * 2, screenPos.Z);
 
                         if (pass == RenderPass.Simple)
