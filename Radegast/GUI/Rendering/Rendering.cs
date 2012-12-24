@@ -1639,9 +1639,8 @@ namespace Radegast.Rendering
             if (ra.avatar.Textures == null)
                 return;
 
-            int[] tes = { 8, 9, 10, 11, 19, 20 };
 
-            foreach (int fi in tes)
+            foreach (int fi in RenderAvatar.BakedTextures.Keys)
             {
                 Primitive.TextureEntryFace TEF = ra.avatar.Textures.FaceTextures[fi];
                 if (TEF == null)
@@ -1653,11 +1652,20 @@ namespace Radegast.Rendering
                     ra.data[fi] = data;
                     data.TextureInfo.TextureID = TEF.TextureID;
 
+                    ImageType type = ImageType.Baked;
+                    if (ra.avatar.COFVersion > 0) // This avatar was server baked
+                    {
+                        type = ImageType.ServerBaked;
+                    }
+
                     DownloadTexture(new TextureLoadItem()
                     {
                         Data = data,
                         Prim = ra.avatar,
-                        TeFace = ra.avatar.Textures.FaceTextures[fi]
+                        TeFace = ra.avatar.Textures.FaceTextures[fi],
+                        ImageType = type,
+                        BakeName = RenderAvatar.BakedTextures[fi],
+                        AvatarID = ra.avatar.ID
                     }, true);
                 }
             }
@@ -2976,22 +2984,31 @@ namespace Radegast.Rendering
                             }
                             else if (!item.Data.TextureInfo.FetchFailed)
                             {
-                                Client.Assets.RequestImage(item.TeFace.TextureID, (state, asset) =>
-                                {
-                                    switch (state)
+                                TextureDownloadCallback handler = (state, asset) =>
                                     {
-                                        case TextureRequestState.Finished:
-                                            item.TextureData = asset.AssetData;
-                                            PendingTextures.Enqueue(item);
-                                            break;
+                                        switch (state)
+                                        {
+                                            case TextureRequestState.Finished:
+                                                item.TextureData = asset.AssetData;
+                                                PendingTextures.Enqueue(item);
+                                                break;
 
-                                        case TextureRequestState.Aborted:
-                                        case TextureRequestState.NotFound:
-                                        case TextureRequestState.Timeout:
-                                            item.Data.TextureInfo.FetchFailed = true;
-                                            break;
-                                    }
-                                });
+                                            case TextureRequestState.Aborted:
+                                            case TextureRequestState.NotFound:
+                                            case TextureRequestState.Timeout:
+                                                item.Data.TextureInfo.FetchFailed = true;
+                                                break;
+                                        }
+                                    };
+
+                                if (item.ImageType == ImageType.ServerBaked && !string.IsNullOrEmpty(item.BakeName))
+                                { // Server side bake
+                                    Client.Assets.RequestServerBakedImage(item.AvatarID, item.TeFace.TextureID, item.BakeName, handler);
+                                }
+                                else
+                                { // Regular texture 
+                                    Client.Assets.RequestImage(item.TeFace.TextureID, item.ImageType, handler);
+                                }
                             }
                         }
                         else

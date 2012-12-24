@@ -86,6 +86,9 @@ namespace Radegast.Rendering
         public byte[] TextureData = null;
         public byte[] TGAData = null;
         public bool LoadAssetFromCache = false;
+        public OpenMetaverse.ImageType ImageType = OpenMetaverse.ImageType.Normal;
+        public string BakeName = string.Empty;
+        public UUID AvatarID = UUID.Zero;
     }
 
     public enum RenderPass
