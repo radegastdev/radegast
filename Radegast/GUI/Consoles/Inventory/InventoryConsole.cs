@@ -740,19 +740,6 @@ namespace Radegast
             }
         }
 
-        bool UseInventoryCaps
-        {
-            get
-            {
-                bool res =
-                    client.Network.CurrentSim != null
-                    && client.Network.CurrentSim.Caps != null
-                    && client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2") != null
-                    && !instance.MonoRuntime;
-                return res;
-            }
-        }
-
         private void StartTraverseNodes()
         {
             if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
@@ -776,52 +763,45 @@ namespace Radegast
             TreeUpdateInProgress = true;
             TreeUpdateTimer.Start();
 
-            if (!UseInventoryCaps)
+            lock (FolderFetchRetries)
             {
-                TraverseNodes(Inventory.RootNode);
+                FolderFetchRetries.Clear();
             }
-            else
+
+            do
             {
-                lock (FolderFetchRetries)
+                lock (QueuedFolders)
                 {
-                    FolderFetchRetries.Clear();
+                    QueuedFolders.Clear();
                 }
+                TraverseAndQueueNodes(Inventory.RootNode);
+                if (QueuedFolders.Count == 0) break;
+                Logger.DebugLog(string.Format("Queued {0} folders for update", QueuedFolders.Count));
 
-                do
+                Parallel.ForEach<UUID>(Math.Min(QueuedFolders.Count, 16), QueuedFolders, folderID =>
                 {
-                    lock (QueuedFolders)
-                    {
-                        QueuedFolders.Clear();
-                    }
-                    TraverseAndQueueNodes(Inventory.RootNode);
-                    if (QueuedFolders.Count == 0) break;
-                    Logger.DebugLog(string.Format("Queued {0} folders for update", QueuedFolders.Count));
+                    bool success = false;
 
-                    Parallel.ForEach<UUID>(Math.Min(QueuedFolders.Count, 16), QueuedFolders, folderID =>
-                    {
-                        bool success = false;
-
-                        AutoResetEvent gotFolder = new AutoResetEvent(false);
-                        EventHandler<FolderUpdatedEventArgs> handler = (sender, ev) =>
-                            {
-                                if (ev.FolderID == folderID)
-                                {
-                                    success = ev.Success;
-                                    gotFolder.Set();
-                                }
-                            };
-
-                        client.Inventory.FolderUpdated += handler;
-                        client.Inventory.RequestFolderContentsCap(folderID, client.Self.AgentID, true, true, InventorySortOrder.ByDate);
-                        if (!gotFolder.WaitOne(15 * 1000, false))
+                    AutoResetEvent gotFolder = new AutoResetEvent(false);
+                    EventHandler<FolderUpdatedEventArgs> handler = (sender, ev) =>
                         {
-                            success = false;
-                        }
-                        client.Inventory.FolderUpdated -= handler;
-                    });
-                }
-                while (QueuedFolders.Count > 0);
+                            if (ev.FolderID == folderID)
+                            {
+                                success = ev.Success;
+                                gotFolder.Set();
+                            }
+                        };
+
+                    client.Inventory.FolderUpdated += handler;
+                    client.Inventory.RequestFolderContents(folderID, client.Self.AgentID, true, true, InventorySortOrder.ByDate);
+                    if (!gotFolder.WaitOne(15 * 1000, false))
+                    {
+                        success = false;
+                    }
+                    client.Inventory.FolderUpdated -= handler;
+                });
             }
+            while (QueuedFolders.Count > 0);
 
             TreeUpdateTimer.Stop();
             if (IsHandleCreated)
@@ -1127,14 +1107,7 @@ namespace Radegast
                     fetchedFolders.Add(folderID);
                 }
 
-                if (!UseInventoryCaps)
-                {
-                    client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
-                }
-                else
-                {
-                    client.Inventory.RequestFolderContentsCap(folderID, ownerID, true, true, InventorySortOrder.ByDate);
-                }
+                client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
             }
         }
 
