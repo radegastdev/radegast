@@ -190,10 +190,10 @@ namespace Radegast.Rendering
             for (int vert = 0; vert < RenderData.Vertices.Length; vert = vert + 3)
             {
                 RenderData.Vertices[vert] += pos.X;
-                RenderData.Vertices[vert+1] += pos.Y;
-                RenderData.Vertices[vert+2] += pos.Z;
+                RenderData.Vertices[vert + 1] += pos.Y;
+                RenderData.Vertices[vert + 2] += pos.Z;
             }
-            
+
 
         }
 
@@ -358,9 +358,9 @@ namespace Radegast.Rendering
                             return;
 
                     }
-             
+
                     ba = av.skel.mBones[jointname];
-              
+
 
                     if (jointname2 == "")
                     {
@@ -406,7 +406,7 @@ namespace Radegast.Rendering
 
                     //move back to mesh local coords
                     posa = posa - offseta;
-   
+
                     // apply rotated offset
                     posa = ((posa + lerpa) * ba.scale) * rota;
                     //move back to avatar local coords
@@ -414,7 +414,7 @@ namespace Radegast.Rendering
 
                     //move back to mesh local coords
                     posb = posb - offsetb;
-                   
+
                     // apply rotated offset
                     posb = ((posb + lerpb) * bb.scale) * rotb;
                     //move back to avatar local coords
@@ -427,14 +427,14 @@ namespace Radegast.Rendering
                 else
                 {
                     lerpa = ba.getDeltaOffset();
-                    offseta = ba.getTotalOffset(); 
+                    offseta = ba.getTotalOffset();
                     rota = ba.getTotalRotation();
-                  
+
                     //move back to mesh local coords
                     posa = posa - offseta;
 
                     // apply rotated offset
-                    posa = ((posa + lerpa) *ba.scale) * rota;
+                    posa = ((posa + lerpa) * ba.scale) * rota;
                     //move back to avatar local coords
                     posa = posa + offseta;
 
@@ -471,7 +471,7 @@ namespace Radegast.Rendering
 
         public void morphmesh(Morph morph, float weight)
         {
-           // Logger.Log(String.Format("Applying morph {0} weight {1}",morph.Name,weight),Helpers.LogLevel.Debug);
+            // Logger.Log(String.Format("Applying morph {0} weight {1}",morph.Name,weight),Helpers.LogLevel.Debug);
 
             for (int v = 0; v < morph.NumVertices; v++)
             {
@@ -484,8 +484,8 @@ namespace Radegast.Rendering
                 MorphRenderData.Vertices[(i * 3) + 2] = MorphRenderData.Vertices[i * 3 + 2] + mvx.Coord.Z * weight;
 
                 MorphRenderData.Normals[i * 3] = MorphRenderData.Normals[i * 3] + mvx.Normal.X * weight;
-                MorphRenderData.Normals[(i * 3)+1] = MorphRenderData.Normals[(i * 3)+1] + mvx.Normal.Y * weight;
-                MorphRenderData.Normals[(i * 3)+2] = MorphRenderData.Normals[(i * 3)+2] + mvx.Normal.Z * weight;
+                MorphRenderData.Normals[(i * 3) + 1] = MorphRenderData.Normals[(i * 3) + 1] + mvx.Normal.Y * weight;
+                MorphRenderData.Normals[(i * 3) + 2] = MorphRenderData.Normals[(i * 3) + 2] + mvx.Normal.Z * weight;
 
                 RenderData.TexCoords[i * 2] = OrigRenderData.TexCoords[i * 2] + mvx.TexCoord.X * weight;
                 RenderData.TexCoords[(i * 2) + 1] = OrigRenderData.TexCoords[i * 2 + 1] + mvx.TexCoord.Y * weight;
@@ -514,11 +514,11 @@ namespace Radegast.Rendering
         public GLAvatar()
         {
             lock (_defaultmeshes) foreach (KeyValuePair<string, GLMesh> kvp in _defaultmeshes)
-            {
-                GLMesh mesh = new GLMesh(kvp.Value, this); // Instance our meshes
-                _meshes.Add(kvp.Key, mesh);
+                {
+                    GLMesh mesh = new GLMesh(kvp.Value, this); // Instance our meshes
+                    _meshes.Add(kvp.Key, mesh);
 
-            }
+                }
         }
 
         public static void dumptweaks()
@@ -686,7 +686,7 @@ namespace Radegast.Rendering
         {
 
             weight = Utils.Clamp(weight, 0.0f, 1.0f);
-            float value = Utils.Lerp(vpx.MinValue,vpx.MaxValue,weight);
+            float value = Utils.Lerp(vpx.MinValue, vpx.MaxValue, weight);
 
             // don't do anything for less than 1% change
             if (value > -0.001 && value < 0.001)
@@ -706,13 +706,13 @@ namespace Radegast.Rendering
                             if (mesh.Name == "skirtMesh" && _showSkirt == false)
                                 return;
 
-                           // Logger.Log(String.Format("Applying morph {0} ID {2} weight {1} mesh {3}",morph.Name,weight,vpx.ParamID,mesh.Name),Helpers.LogLevel.Debug);
+                            // Logger.Log(String.Format("Applying morph {0} ID {2} weight {1} mesh {3}",morph.Name,weight,vpx.ParamID,mesh.Name),Helpers.LogLevel.Debug);
 
                             mesh.morphmesh(morph, value);
 
                         }
                     }
-                }     
+                }
             }
 
 
@@ -749,7 +749,7 @@ namespace Radegast.Rendering
 
                     float min_weight = vpx.MinValue;
                     float max_weight = vpx.MaxValue;
-    
+
                     if (input_weight <= child.min1)
                     {
                         if (child.min1 == child.max1 &&
@@ -794,8 +794,8 @@ namespace Radegast.Rendering
 
                     /***** END UNGRACEFULL CODE STEALING ******/
 
-                  applyMorph(av, child.id, driven_weight);
- 
+                    applyMorph(av, child.id, driven_weight);
+
                 }
 
                 return;
@@ -807,7 +807,7 @@ namespace Radegast.Rendering
                 //  scale="0 0 .3" />
                 //   value_min="-1"
                 // value_max="1"
-                      
+
                 foreach (KeyValuePair<string, BoneDeform> kvp in vpx.BoneDeforms)
                 {
                     skel.scalebone(kvp.Key, Vector3.One + (kvp.Value.scale * value));
@@ -845,7 +845,7 @@ namespace Radegast.Rendering
 
                     foreach (GLMesh mesh in _meshes.Values)
                     {
-                      mesh.resetallmorphs();
+                        mesh.resetallmorphs();
                     }
 
                     skel.resetbonescales();
@@ -877,7 +877,7 @@ namespace Radegast.Rendering
                     vpsent = true;
                     this.skel.mNeedsMeshRebuild = true;
                     // Don't update actual meshes here anymore, we do it every frame because of animation anyway
-               
+
                 }
             });
         }
@@ -938,7 +938,7 @@ namespace Radegast.Rendering
         public static Dictionary<int, string> mLowerMeshMapping = new Dictionary<int, string>();
         public static Dictionary<int, string> mHeadMeshMapping = new Dictionary<int, string>();
 
-       // public List<BinBVHAnimationReader> mAnimations = new List<BinBVHAnimationReader>();
+        // public List<BinBVHAnimationReader> mAnimations = new List<BinBVHAnimationReader>();
         public Dictionary<UUID, animationwrapper> mAnimationsWrapper = new Dictionary<UUID, animationwrapper>();
 
         public static Dictionary<UUID, RenderAvatar> mAnimationTransactions = new Dictionary<UUID, RenderAvatar>();
@@ -977,10 +977,10 @@ namespace Radegast.Rendering
             mBones = new Dictionary<string, Bone>();
 
             lock (Bone.mBones) foreach (Bone src in Bone.mBones.Values)
-            {
-                Bone newbone = new Bone(src);
-                mBones.Add(newbone.name, newbone);
-            }
+                {
+                    Bone newbone = new Bone(src);
+                    mBones.Add(newbone.name, newbone);
+                }
 
             //rebuild the skeleton structure on the new copy
             foreach (Bone src in mBones.Values)
@@ -1049,7 +1049,7 @@ namespace Radegast.Rendering
 
         public void resetbonescales()
         {
-            foreach (KeyValuePair<string,Bone> src in mBones)
+            foreach (KeyValuePair<string, Bone> src in mBones)
             {
                 src.Value.scale = Vector3.One;
                 src.Value.offset_pos = Vector3.Zero;
@@ -1071,7 +1071,7 @@ namespace Radegast.Rendering
             Bone bone;
             if (mBones.TryGetValue(name, out bone))
             {
-               // Logger.Log(String.Format("scalebone() {0} {1}", name, scale.ToString()),Helpers.LogLevel.Info);
+                // Logger.Log(String.Format("scalebone() {0} {1}", name, scale.ToString()),Helpers.LogLevel.Info);
                 bone.scalebone(scale);
             }
         }
@@ -1145,7 +1145,7 @@ namespace Radegast.Rendering
                 {
                     if (ar.mPotentialyDead == true)
                     {
-                       // Logger.Log(string.Format("Animation {0} is being marked for easeout (dead)",ar.mAnimation.ToString()),Helpers.LogLevel.Info);
+                        // Logger.Log(string.Format("Animation {0} is being marked for easeout (dead)",ar.mAnimation.ToString()),Helpers.LogLevel.Info);
                         // Should we just stop dead? i think not it may get jerky
                         ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
                         ar.mRunTime = 0; //fix me nasty hack
@@ -1175,13 +1175,13 @@ namespace Radegast.Rendering
 
             if (!av.glavatar.skel.mAnimationsWrapper.ContainsKey(animKey))
             {
-                Logger.Log(String.Format("Animation {0} is not in mAnimationsWrapper! ",animKey), Helpers.LogLevel.Warning);
+                Logger.Log(String.Format("Animation {0} is not in mAnimationsWrapper! ", animKey), Helpers.LogLevel.Warning);
                 return;
             }
 
             // This sets the anim in the wrapper class;
             av.glavatar.skel.mAnimationsWrapper[animKey].anim = b;
-        
+
             int pos = 0;
             foreach (binBVHJoint joint in b.joints)
             {
@@ -1334,7 +1334,7 @@ namespace Radegast.Rendering
                         }
                         else
                         {
-                            factor = 1.0f- ((ar.anim.EaseInTime - ar.mRunTime) / ar.anim.EaseInTime);
+                            factor = 1.0f - ((ar.anim.EaseInTime - ar.mRunTime) / ar.anim.EaseInTime);
                         }
 
                         //Console.WriteLine(String.Format("EASE IN {0} {1}",factor.ToString(),ar.mAnimation));
@@ -1352,19 +1352,19 @@ namespace Radegast.Rendering
                         }
                         else
                         {
-                            factor = 1.0f-(ar.mRunTime/ar.anim.EaseOutTime);
+                            factor = 1.0f - (ar.mRunTime / ar.anim.EaseOutTime);
 
                         }
-                   
+
                         //Console.WriteLine(String.Format("EASE OUT {0} {1}", factor.ToString(), ar.mAnimation));
                     }
 
                     // we should not need this, this implies bad math above
-                   
-                    
+
+
                     factor = Utils.Clamp(factor, 0.0f, 1.0f);
                     //factor = 1.0f;
-                     
+
                     //END EASE FACTORS
 
 
@@ -1384,7 +1384,7 @@ namespace Radegast.Rendering
                         if (mPriority.TryGetValue(joint.Name, out prio))
                         {
                             //if (prio > (ar.anim.Priority))
-                                //continue;
+                            //continue;
                         }
 
                         Vector3 poslerp = Vector3.Zero;
@@ -1465,12 +1465,12 @@ namespace Radegast.Rendering
                             // it also fails when currenttime < last_time which occurs as keyframe[0] is not exactly at
                             // t(0).
                             float delta = (state.currenttime_pos - pos_last.time) / (pos_next.time - pos_last.time);
-                            
+
                             delta = Utils.Clamp(delta, 0f, 1f);
                             poslerp = Vector3.Lerp(pos_last.key_element, pos_next.key_element, delta) * factor;
 
                             //Console.WriteLine(string.Format("Time {0} {1} {2} {3} {4}", state.currenttime_pos, delta, poslerp.ToString(), state.lastkeyframe_pos, state.nextkeyframe_pos));
-      
+
                         }
 
                         // end of position
@@ -1520,7 +1520,7 @@ namespace Radegast.Rendering
                                     if (state.lastkeyframe_rot >= ar.anim.joints[jpos].rotationkeys.Length)
                                     {
                                         state.lastkeyframe_rot = ar.anim.joints[jpos].rotationkeys.Length - 1;
-                                        
+
                                         ar.playstate = animationwrapper.animstate.STATE_EASEOUT;
                                         //animation over
                                     }
@@ -1535,10 +1535,10 @@ namespace Radegast.Rendering
                             // it is not going to handle loop points when we wrap around as last will be > next
                             // it also fails when currenttime < last_time which occurs as keyframe[0] is not exactly at
                             // t(0).
-                            float delta = state.currenttime_rot - rot_last.time / (rot_next.time - rot_last.time);   
+                            float delta = state.currenttime_rot - rot_last.time / (rot_next.time - rot_last.time);
                             delta = Utils.Clamp(delta, 0f, 1f);
                             Vector3 rotlerpv = Vector3.Lerp(rot_last.key_element, rot_next.key_element, delta);
-                           // rotlerp = Quaternion.Slerp(Quaternion.Identity,new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z), factor);
+                            // rotlerp = Quaternion.Slerp(Quaternion.Identity,new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z), factor);
 
                             if (easeoutset == false && ar.playstate == animationwrapper.animstate.STATE_EASEOUT)
                             {
@@ -1549,7 +1549,7 @@ namespace Radegast.Rendering
                             else
                             {
                                 rotlerp = new Quaternion(rotlerpv.X, rotlerpv.Y, rotlerpv.Z);
-                            } 
+                            }
                         }
 
                         //end of rotation
@@ -1572,7 +1572,7 @@ namespace Radegast.Rendering
                                 }
                             }
 
-                           //jointstate.rotation= Quaternion.Slerp(jointstate.rotation, rotlerp, 0.5f);
+                            //jointstate.rotation= Quaternion.Slerp(jointstate.rotation, rotlerp, 0.5f);
                         }
                         else
                         {
@@ -1696,7 +1696,7 @@ namespace Radegast.Rendering
             string[] scaleparts = scale.Split(' ');
             b.scale = new Vector3(float.Parse(scaleparts[0], Utils.EnUsCulture), float.Parse(scaleparts[1], Utils.EnUsCulture), float.Parse(scaleparts[2], Utils.EnUsCulture));
             b.orig_scale = new Vector3(b.scale);
-         
+
 
             float[] deform = Math3D.CreateSRTMatrix(new Vector3(1, 1, 1), b.rot, b.orig_pos);
             b.mDeformMatrix = new Matrix4(deform[0], deform[1], deform[2], deform[3], deform[4], deform[5], deform[6], deform[7], deform[8], deform[9], deform[10], deform[11], deform[12], deform[13], deform[14], deform[15]);
@@ -1729,7 +1729,7 @@ namespace Radegast.Rendering
 
             //this.offset_pos += pos;
             //this.pos = pos;
-           // this.offset_pos = pos;
+            // this.offset_pos = pos;
 
             animation_offset = dpos;
 
@@ -1780,7 +1780,7 @@ namespace Radegast.Rendering
             {
                 Quaternion totalrot = getParentRot(); // we don't want this joints rotation included
                 Vector3 parento = parent.getOffset();
-                mTotalPos =  parento + pos * parent.scale * totalrot;
+                mTotalPos = parento + pos * parent.scale * totalrot;
                 Vector3 orig = getOrigOffset();
                 mDeltaPos = mTotalPos - orig;
 
@@ -1924,9 +1924,9 @@ namespace Radegast.Rendering
         static public SortedList tweakable_params = new SortedList();
 
         public Dictionary<string, BoneDeform> BoneDeforms = null;
-        
+
         public Dictionary<string, VolumeDeform> VolumeDeforms = null;
-        
+
         public List<driven> childparams = null;
 
         public List<VisualParamEx> identicalIds = new List<VisualParamEx>();
@@ -2049,7 +2049,7 @@ namespace Radegast.Rendering
 
         public bool matchchildnode(string test, XmlNode node)
         {
-            foreach(XmlNode n in node.ChildNodes)
+            foreach (XmlNode n in node.ChildNodes)
             {
                 if (n.Name == test)
                     return true;
@@ -2117,7 +2117,7 @@ namespace Radegast.Rendering
                 count++;
             }
 
-            if(allParams.ContainsKey(ParamID))
+            if (allParams.ContainsKey(ParamID))
             {
                 //Logger.Log("Shared VisualParam id " + ParamID.ToString() + " "+Name, Helpers.LogLevel.Info);
                 allParams[ParamID].identicalIds.Add(this);
@@ -2128,19 +2128,19 @@ namespace Radegast.Rendering
                 allParams.Add(ParamID, this);
             }
 
-           if (matchchildnode("param_skeleton", node))
-           {
+            if (matchchildnode("param_skeleton", node))
+            {
                 pType = ParamType.TYPE_BONEDEFORM;
                 // If we are in the skeleton section then we also have bone deforms to parse
                 BoneDeforms = new Dictionary<string, BoneDeform>();
                 if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes)
                 {
                     ParseBoneDeforms(node.ChildNodes[0].ChildNodes);
-                } 
+                }
             }
 
-           if (matchchildnode("param_morph", node))
-           {
+            if (matchchildnode("param_morph", node))
+            {
                 pType = ParamType.TYPE_MORPH;
 
                 VolumeDeforms = new Dictionary<string, VolumeDeform>();
@@ -2150,7 +2150,7 @@ namespace Radegast.Rendering
                 }
             }
 
-           if (matchchildnode("param_driver", node))
+            if (matchchildnode("param_driver", node))
             {
                 pType = ParamType.TYPE_DRIVER;
                 childparams = new List<driven>();
@@ -2187,7 +2187,7 @@ namespace Radegast.Rendering
                     Vector3 scale = Vector3.One;
                     Vector3 offset = Vector3.One;
 
-                    if(node.Attributes.GetNamedItem("scale")!=null)
+                    if (node.Attributes.GetNamedItem("scale") != null)
                         scale = XmlParseVector(node.Attributes.GetNamedItem("scale").Value);
 
                     if (node.Attributes.GetNamedItem("offset") != null)
@@ -2277,6 +2277,16 @@ namespace Radegast.Rendering
 
     public class RenderAvatar : SceneObject
     {
+        public static Dictionary<int, string> BakedTextures = new Dictionary<int, string>
+            {
+                { 8, "head" },
+                { 9, "upper" },
+                { 10, "lower" },
+                { 11, "eyes" },
+                { 19, "skirt" },
+                { 20, "hair" }
+            };
+
         public static readonly BoundingVolume AvatarBoundingVolume;
 
         // Static constructor

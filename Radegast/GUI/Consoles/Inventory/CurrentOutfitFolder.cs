@@ -44,13 +44,12 @@ namespace Radegast
         GridClient Client;
         RadegastInstance Instance;
         bool InitiCOF = false;
-        bool InvCAP = false;
         bool AppearanceSent = false;
         bool COFReady = false;
         bool InitialUpdateDone = false;
-        public List<InventoryItem> ContentLinks = new List<InventoryItem>();
         public Dictionary<UUID, InventoryItem> Content = new Dictionary<UUID, InventoryItem>();
         public InventoryFolder COF;
+
         #endregion Fields
 
         #region Construction and disposal
@@ -94,9 +93,7 @@ namespace Radegast
             client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             lock (Content) Content.Clear();
-            lock (ContentLinks) ContentLinks.Clear();
             InitiCOF = false;
-            InvCAP = false;
             AppearanceSent = false;
             COFReady = false;
             InitialUpdateDone = false;
@@ -113,33 +110,44 @@ namespace Radegast
 
         void Inventory_ItemReceived(object sender, ItemReceivedEventArgs e)
         {
-            lock (ContentLinks)
+            bool partOfCOF = false;
+            var links = ContentLinks();
+            foreach (var cofItem in links)
             {
-                bool partOfCOF = false;
-                foreach (var cofItem in ContentLinks)
+                if (cofItem.AssetUUID == e.Item.UUID)
                 {
-                    if (cofItem.AssetUUID == e.Item.UUID)
-                    {
-                        partOfCOF = true;
-                        break;
-                    }
-                }
-
-                if (partOfCOF)
-                {
-                    lock (Content)
-                    {
-                        Content[e.Item.UUID] = e.Item;
-                    }
+                    partOfCOF = true;
+                    break;
                 }
             }
 
-            if (Content.Count == ContentLinks.Count)
+            if (partOfCOF)
+            {
+                lock (Content)
+                {
+                    Content[e.Item.UUID] = e.Item;
+                }
+            }
+
+            if (Content.Count == links.Count)
             {
                 COFReady = true;
                 if (AppearanceSent)
                 {
                     InitialUpdate();
+                }
+                lock (Content)
+                {
+                    foreach (InventoryItem link in Content.Values)
+                    {
+                        if (link.InventoryType == InventoryType.Wearable)
+                        {
+                            InventoryWearable w = (InventoryWearable)link;
+                            InventoryItem lk = links.Find(l => l.AssetUUID == w.UUID);
+                            Logger.DebugLog(string.Format("\nName: {0}\nDescription: {1}\nType: {2} - {3}", w.Name, lk == null ? "" : lk.Description, w.Flags.ToString(), w.WearableType.ToString())); ;
+                        }
+                    }
+
                 }
             }
         }
@@ -152,34 +160,23 @@ namespace Radegast
 
             if (e.FolderID == COF.UUID && e.Success)
             {
+                COF = (InventoryFolder)Client.Inventory.Store[COF.UUID];
                 lock (FolderSync)
                 {
                     lock (Content) Content.Clear();
-                    lock (ContentLinks) ContentLinks.Clear();
 
-                    List<InventoryBase> content = Client.Inventory.Store.GetContents(COF);
-                    foreach (var baseItem in content)
-                    {
-                        if (baseItem is InventoryItem)
-                        {
-                            InventoryItem item = (InventoryItem)baseItem;
-                            if (item.AssetType == AssetType.Link)
-                            {
-                                ContentLinks.Add(item);
-                            }
-                        }
-                    }
 
                     List<UUID> items = new List<UUID>();
                     List<UUID> owners = new List<UUID>();
 
-                    lock (ContentLinks)
+                    foreach (var link in ContentLinks())
                     {
-                        foreach (var link in ContentLinks)
-                        {
-                            items.Add(link.AssetUUID);
-                            owners.Add(Client.Self.AgentID);
-                        }
+                        //if (Client.Inventory.Store.Contains(link.AssetUUID))
+                        //{
+                        //    continue;
+                        //}
+                        items.Add(link.AssetUUID);
+                        owners.Add(Client.Self.AgentID);
                     }
 
                     if (items.Count > 0)
@@ -218,30 +215,11 @@ namespace Radegast
         #region Private methods
         void RequestDescendants(UUID folderID)
         {
-            if (InvCAP)
-            {
-                Client.Inventory.RequestFolderContentsCap(folderID, Client.Self.AgentID, true, true, InventorySortOrder.ByDate);
-            }
-            else
-            {
-                Client.Inventory.RequestFolderContents(folderID, Client.Self.AgentID, true, true, InventorySortOrder.ByDate);
-            }
+            Client.Inventory.RequestFolderContents(folderID, Client.Self.AgentID, true, true, InventorySortOrder.ByDate);
         }
 
         void InitCOF()
         {
-            Uri url = null;
-
-            if (Client.Network.CurrentSim.Caps == null ||
-                null == (url = Client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2")))
-            {
-                InvCAP = false;
-            }
-            else
-            {
-                InvCAP = true;
-            }
-
             List<InventoryBase> rootContent = Client.Inventory.Store.GetContents(Client.Inventory.Store.RootFolder.UUID);
             foreach (InventoryBase baseItem in rootContent)
             {
@@ -299,6 +277,22 @@ namespace Radegast
         #endregion Private methods
 
         #region Public methods
+        /// <summary>
+        /// Get COF contents
+        /// </summary>
+        /// <returns>List if InventoryItems that can be part of appearance (attachments, wearables)</returns>
+        public List<InventoryItem> ContentLinks()
+        {
+            List<InventoryItem> ret = new List<InventoryItem>();
+            if (COF == null) return ret;
+
+            Client.Inventory.Store.GetContents(COF)
+                .FindAll(b => CanBeWorn(b) && ((InventoryItem)b).AssetType == AssetType.Link)
+                .ForEach(item => ret.Add((InventoryItem)item));
+
+            return ret;
+        }
+
         /// <summary>
         /// Get inventory ID of a prim
         /// </summary>
@@ -383,23 +377,39 @@ namespace Radegast
         /// <param name="item">Original item to be linked from COF</param>
         public void AddLink(InventoryItem item)
         {
+            if (item.InventoryType == InventoryType.Wearable && item.Flags > 3)
+            {
+                InventoryWearable w = (InventoryWearable)item;
+                int layer = 0;
+                string desc = string.Format("@{0}{1:00}", (int)w.WearableType, layer);
+                AddLink(item, desc);
+            }
+            else
+            {
+                AddLink(item, string.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new COF link
+        /// </summary>
+        /// <param name="item">Original item to be linked from COF</param>
+        /// <param name="newDescription">Description for the link</param>
+        public void AddLink(InventoryItem item, string newDescription)
+        {
             if (COF == null) return;
 
             bool linkExists = false;
-            lock (ContentLinks)
-            {
-                linkExists = null != ContentLinks.Find(itemLink => itemLink.AssetUUID == item.UUID);
-            }
+
+            linkExists = null != ContentLinks().Find(itemLink => itemLink.AssetUUID == item.UUID);
+
             if (!linkExists)
             {
-                Client.Inventory.CreateLink(COF.UUID, item, (success, newItem) =>
+                Client.Inventory.CreateLink(COF.UUID, item.UUID, item.Name, newDescription, AssetType.Link, item.InventoryType, UUID.Random(), (success, newItem) =>
                 {
                     if (success)
                     {
-                        lock (ContentLinks)
-                        {
-                            ContentLinks.Add(newItem);
-                        }
+                        Client.Inventory.RequestFetchInventory(newItem.UUID, newItem.OwnerID);
                     }
                 });
             }
@@ -411,17 +421,26 @@ namespace Radegast
         /// <param name="itemID">ID of the target inventory item for which we want link to be removed</param>
         public void RemoveLink(UUID itemID)
         {
+            RemoveLink(new List<UUID>(1) { itemID });
+        }
+
+        /// <summary>
+        /// Remove a link to specified inventory item
+        /// </summary>
+        /// <param name="itemIDs">List of IDs of the target inventory item for which we want link to be removed</param>
+        public void RemoveLink(List<UUID> itemIDs)
+        {
             if (COF == null) return;
 
-            lock (ContentLinks)
+            List<UUID> toRemove = new List<UUID>();
+
+            foreach (UUID itemID in itemIDs)
             {
-                InventoryItem attachment = ContentLinks.Find(itemLink => itemLink.AssetUUID == itemID);
-                if (attachment != null)
-                {
-                    Client.Inventory.RemoveItem(attachment.UUID);
-                    ContentLinks.Remove(attachment);
-                }
+                var links = ContentLinks().FindAll(itemLink => itemLink.AssetUUID == itemID);
+                links.ForEach(item => toRemove.Add(item.UUID));
             }
+
+            Client.Inventory.Remove(toRemove, null);
         }
 
         /// <summary>
@@ -463,26 +482,29 @@ namespace Radegast
                 outfit.Add(RealInventoryItem(item));
             }
 
-            Client.Appearance.ReplaceOutfit(outfit);
-            Client.Appearance.RequestSetAppearance(true);
+            // Remove links to all exiting items
+            List<UUID> toRemove = new List<UUID>();
+            ContentLinks().ForEach(item => toRemove.Add(item.AssetUUID));
+            RemoveLink(toRemove);
 
-            // Remove links to all exiting attachments
-            List<InventoryItem> allAttachments = null;
-            lock (ContentLinks)
-            {
-                allAttachments = ContentLinks.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
-            }
-            foreach (var item in allAttachments)
-            {
-                RemoveLink(item.AssetUUID);
-            }
-            
-            // Add links to new attachments
-            List<InventoryItem> newAttachments = outfit.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
-            foreach (var item in newAttachments)
+            // Add links to new items
+            List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
+            foreach (var item in newItems)
             {
                 AddLink(item);
             }
+
+            Client.Appearance.ReplaceOutfit(outfit);
+            //Client.Appearance.RequestSetAppearance(true);
+        }
+
+        /// <summary>
+        /// Add items to current outfit
+        /// </summary>
+        /// <param name="item">Item to add</param>
+        public void AddToOutfit(InventoryItem item)
+        {
+            AddToOutfit(new List<InventoryItem>(1) { item });
         }
 
         /// <summary>
@@ -491,21 +513,43 @@ namespace Radegast
         /// <param name="items">List of items to add</param>
         public void AddToOutfit(List<InventoryItem> items)
         {
-            // Resolve inventory links
+            List<InventoryItem> current = ContentLinks();
+            List<UUID> toRemove = new List<UUID>();
+
+            // Resolve inventory links and remove wearables of the same type from COF
             List<InventoryItem> outfit = new List<InventoryItem>();
             foreach (var item in items)
             {
-                outfit.Add(RealInventoryItem(item));
+                InventoryItem realItem = RealInventoryItem(item);
+                if (realItem is InventoryWearable)
+                {
+                    var wearables = current.FindAll(link => RealInventoryItem(link).Flags == realItem.Flags);
+                    foreach (var w in wearables)
+                    {
+                        toRemove.Add(w.AssetUUID);
+                    }
+                }
+                outfit.Add(realItem);
             }
+            RemoveLink(toRemove);
 
-            Client.Appearance.AddToOutfit(outfit);
-
-            // Add links to new attachments
-            List<InventoryItem> newAttachments = outfit.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
-            foreach (var item in newAttachments)
+            // Add links to new items
+            List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
+            foreach (var item in newItems)
             {
                 AddLink(item);
             }
+
+            Client.Appearance.AddToOutfit(outfit);
+        }
+
+        /// <summary>
+        /// Remove an item from the current outfit
+        /// </summary>
+        /// <param name="items">Item to remove</param>
+        public void RemoveFromOutfit(InventoryItem item)
+        {
+            RemoveFromOutfit(new List<InventoryItem>(1) { item });
         }
 
         /// <summary>
@@ -521,16 +565,18 @@ namespace Radegast
                 outfit.Add(RealInventoryItem(item));
             }
 
-            Client.Appearance.RemoveFromOutfit(outfit);
-
-            // Remove links to all attachments that were removed
-            List<InventoryItem> allAttachments = null;
-            allAttachments = outfit.FindAll(item => item.InventoryType == InventoryType.Attachment || item.InventoryType == InventoryType.Object);
-            foreach (var item in allAttachments)
+            // Remove links to all items that were removed
+            List<UUID> toRemove = new List<UUID>();
+            foreach (InventoryItem item in outfit.FindAll(item => CanBeWorn(item)))
             {
-                RemoveLink(item.UUID);
+                if (item is InventoryWearable && item.Flags > 3)
+                {
+                    toRemove.Add(item.UUID);
+                }
             }
+            RemoveLink(toRemove);
 
+            Client.Appearance.RemoveFromOutfit(outfit);
         }
 
         #endregion Public methods

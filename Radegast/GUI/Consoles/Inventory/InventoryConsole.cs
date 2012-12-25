@@ -1428,7 +1428,7 @@ namespace Radegast
                     }
 
                     instance.ContextActionManager.AddContributions(ctxInv, folder);
-                    #endregion Folder context menu
+                #endregion Folder context menu
                 }
                 else if (node.Tag is InventoryItem)
                 {
@@ -1840,7 +1840,7 @@ namespace Radegast
 
                     case "item_take_off":
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        client.Appearance.RemoveFromOutfit(item);
+                        instance.COF.RemoveFromOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         lock (WornItems)
                         {
@@ -1853,7 +1853,7 @@ namespace Radegast
 
                     case "item_wear":
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        client.Appearance.AddToOutfit(item);
+                        instance.COF.AddToOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 

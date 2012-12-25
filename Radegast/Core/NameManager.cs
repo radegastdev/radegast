@@ -361,14 +361,15 @@ namespace Radegast
                     OSDMap cache = (OSDMap)OSDParser.DeserializeLLSDBinary(data);
                     OSDArray namesOSD = (OSDArray)cache["names"];
                     DateTime now = DateTime.Now;
-                    TimeSpan maxAge = Mode == NameMode.Standard ? TimeSpan.MaxValue : new TimeSpan(24, 0, 0);
+                    TimeSpan maxAge = new TimeSpan(48, 0, 0);
+                    NameMode mode = (NameMode)(int)instance.GlobalSettings["display_name_mode"];
 
                     lock (names)
                     {
                         for (int i = 0; i < namesOSD.Count; i++)
                         {
                             AgentDisplayName name = AgentDisplayName.FromOSD(namesOSD[i]);
-                            if (now - name.Updated < maxAge)
+                            if (mode == NameMode.Standard || ((now - name.Updated) < maxAge))
                             {
                                 names[name.ID] = name;
                             }
