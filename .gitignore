@@ -13,4 +13,5 @@ compile.bat
 *.resources
 .DS_Store
 *.userprefs
+Radegast.app/Contents/Resources/*
 
