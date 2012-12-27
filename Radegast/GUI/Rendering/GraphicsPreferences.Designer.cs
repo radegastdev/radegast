@@ -74,7 +74,7 @@
             // tbDrawDistance
             // 
             this.tbDrawDistance.Location = new System.Drawing.Point(3, 115);
-            this.tbDrawDistance.Maximum = 176;
+            this.tbDrawDistance.Maximum = 256;
             this.tbDrawDistance.Minimum = 32;
             this.tbDrawDistance.Name = "tbDrawDistance";
             this.tbDrawDistance.Size = new System.Drawing.Size(277, 45);
