@@ -35,6 +35,12 @@ using FMOD;
 using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
+#if (COGBOT_LIBOMV || USE_STHREADS)
+using ThreadPoolUtil;
+using Thread = ThreadPoolUtil.Thread;
+using ThreadPool = ThreadPoolUtil.ThreadPool;
+using Monitor = ThreadPoolUtil.Monitor;
+#endif
 
 namespace Radegast.Media
 {
