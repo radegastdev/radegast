@@ -124,7 +124,9 @@ namespace Radegast
         PermissionsRequest,
         ScriptDialog,
         Teleport,
-        InventoryOffer
+        InventoryOffer,
+        RequestLure,
+        SendLureRequest
     }
 
     /// <summary>

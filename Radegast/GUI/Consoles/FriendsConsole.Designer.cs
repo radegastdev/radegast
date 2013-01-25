@@ -75,6 +75,7 @@ namespace Radegast
             this.pnlFriendsRights = new System.Windows.Forms.GroupBox();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.listFriends = new System.Windows.Forms.ListBox();
+            this.btnRequestTeleport = new System.Windows.Forms.Button();
             this.pnlActions.SuspendLayout();
             this.pnlFriendsRights.SuspendLayout();
             this.SuspendLayout();
@@ -110,8 +111,9 @@ namespace Radegast
             // 
             // pnlActions
             // 
-            this.pnlActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlActions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlActions.Controls.Add(this.btnRequestTeleport);
             this.pnlActions.Controls.Add(this.btnRemove);
             this.pnlActions.Controls.Add(this.btnPay);
             this.pnlActions.Controls.Add(this.btnOfferTeleport);
@@ -120,13 +122,13 @@ namespace Radegast
             this.pnlActions.Controls.Add(this.btnIM);
             this.pnlActions.Location = new System.Drawing.Point(209, 3);
             this.pnlActions.Name = "pnlActions";
-            this.pnlActions.Size = new System.Drawing.Size(470, 76);
+            this.pnlActions.Size = new System.Drawing.Size(470, 118);
             this.pnlActions.TabIndex = 1;
             this.pnlActions.TabStop = false;
             // 
             // btnRemove
             // 
-            this.btnRemove.Location = new System.Drawing.Point(367, 46);
+            this.btnRemove.Location = new System.Drawing.Point(87, 75);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(75, 23);
             this.btnRemove.TabIndex = 6;
@@ -136,7 +138,7 @@ namespace Radegast
             // 
             // btnPay
             // 
-            this.btnPay.Location = new System.Drawing.Point(286, 46);
+            this.btnPay.Location = new System.Drawing.Point(9, 76);
             this.btnPay.Name = "btnPay";
             this.btnPay.Size = new System.Drawing.Size(75, 23);
             this.btnPay.TabIndex = 5;
@@ -189,13 +191,13 @@ namespace Radegast
             // 
             // pnlFriendsRights
             // 
-            this.pnlFriendsRights.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlFriendsRights.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlFriendsRights.Controls.Add(this.chkModifyMyObjects);
             this.pnlFriendsRights.Controls.Add(this.chkSeeMeOnline);
             this.pnlFriendsRights.Controls.Add(this.chkSeeMeOnMap);
             this.pnlFriendsRights.Enabled = false;
-            this.pnlFriendsRights.Location = new System.Drawing.Point(218, 85);
+            this.pnlFriendsRights.Location = new System.Drawing.Point(215, 136);
             this.pnlFriendsRights.Name = "pnlFriendsRights";
             this.pnlFriendsRights.Size = new System.Drawing.Size(461, 92);
             this.pnlFriendsRights.TabIndex = 2;
@@ -211,8 +213,8 @@ namespace Radegast
             // 
             // listFriends
             // 
-            this.listFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.listFriends.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.listFriends.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.listFriends.FormattingEnabled = true;
             this.listFriends.ItemHeight = 18;
@@ -223,8 +225,19 @@ namespace Radegast
             this.listFriends.TabIndex = 0;
             this.listFriends.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listFriends_DrawItem);
             this.listFriends.SelectedIndexChanged += new System.EventHandler(this.listFriends_SelectedIndexChanged);
-            this.listFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listFriends_MouseDown);
             this.listFriends.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listFriends_KeyDown);
+            this.listFriends.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listFriends_MouseDown);
+            // 
+            // btnRequestTeleport
+            // 
+            this.btnRequestTeleport.AccessibleDescription = "Request from a friend to teleport you to their location";
+            this.btnRequestTeleport.Location = new System.Drawing.Point(168, 75);
+            this.btnRequestTeleport.Name = "btnRequestTeleport";
+            this.btnRequestTeleport.Size = new System.Drawing.Size(112, 23);
+            this.btnRequestTeleport.TabIndex = 7;
+            this.btnRequestTeleport.Text = "Request Teleport";
+            this.btnRequestTeleport.UseVisualStyleBackColor = true;
+            this.btnRequestTeleport.Click += new System.EventHandler(this.btnRequestTeleport_Click);
             // 
             // FriendsConsole
             // 
@@ -257,5 +270,6 @@ namespace Radegast
         public GroupBox pnlFriendsRights;
         public ImageList imageList1;
         public ListBox listFriends;
+        public Button btnRequestTeleport;
     }
 }

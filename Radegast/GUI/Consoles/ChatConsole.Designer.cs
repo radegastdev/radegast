@@ -91,6 +91,7 @@ namespace Radegast
             this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbChatType = new System.Windows.Forms.ComboBox();
             this.cbxInput = new Radegast.ChatInputBox();
+            this.ctxReqestLure = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -182,6 +183,7 @@ namespace Radegast
             this.ctxPoint,
             this.ctxOfferTP,
             this.ctxTeleportTo,
+            this.ctxReqestLure,
             this.goToToolStripMenuItem,
             this.faceToolStripMenuItem,
             this.ctxEject,
@@ -189,13 +191,13 @@ namespace Radegast
             this.ctxEstateEject,
             this.muteToolStripMenuItem});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(163, 400);
+            this.avatarContext.Size = new System.Drawing.Size(164, 422);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
             // 
             this.ctxProfile.Name = "ctxProfile";
-            this.ctxProfile.Size = new System.Drawing.Size(162, 22);
+            this.ctxProfile.Size = new System.Drawing.Size(163, 22);
             this.ctxProfile.Text = "Profile";
             this.ctxProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 
@@ -203,63 +205,63 @@ namespace Radegast
             // 
             this.ctxPay.Enabled = false;
             this.ctxPay.Name = "ctxPay";
-            this.ctxPay.Size = new System.Drawing.Size(162, 22);
+            this.ctxPay.Size = new System.Drawing.Size(163, 22);
             this.ctxPay.Text = "Pay";
             this.ctxPay.Click += new System.EventHandler(this.ctxPay_Click);
             // 
             // ctxStartIM
             // 
             this.ctxStartIM.Name = "ctxStartIM";
-            this.ctxStartIM.Size = new System.Drawing.Size(162, 22);
+            this.ctxStartIM.Size = new System.Drawing.Size(163, 22);
             this.ctxStartIM.Text = "Start IM";
             this.ctxStartIM.Click += new System.EventHandler(this.tbtnStartIM_Click);
             // 
             // ctxFollow
             // 
             this.ctxFollow.Name = "ctxFollow";
-            this.ctxFollow.Size = new System.Drawing.Size(162, 22);
+            this.ctxFollow.Size = new System.Drawing.Size(163, 22);
             this.ctxFollow.Text = "Follow";
             this.ctxFollow.Click += new System.EventHandler(this.tbtnFollow_Click);
             // 
             // ctxTextures
             // 
             this.ctxTextures.Name = "ctxTextures";
-            this.ctxTextures.Size = new System.Drawing.Size(162, 22);
+            this.ctxTextures.Size = new System.Drawing.Size(163, 22);
             this.ctxTextures.Text = "Textures";
             this.ctxTextures.Click += new System.EventHandler(this.dumpOufitBtn_Click);
             // 
             // ctxAttach
             // 
             this.ctxAttach.Name = "ctxAttach";
-            this.ctxAttach.Size = new System.Drawing.Size(162, 22);
+            this.ctxAttach.Size = new System.Drawing.Size(163, 22);
             this.ctxAttach.Text = "Attachments";
             this.ctxAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
             // 
             // ctxMaster
             // 
             this.ctxMaster.Name = "ctxMaster";
-            this.ctxMaster.Size = new System.Drawing.Size(162, 22);
+            this.ctxMaster.Size = new System.Drawing.Size(163, 22);
             this.ctxMaster.Text = "Master controls";
             this.ctxMaster.Click += new System.EventHandler(this.tbtnMaster_Click);
             // 
             // ctxAnim
             // 
             this.ctxAnim.Name = "ctxAnim";
-            this.ctxAnim.Size = new System.Drawing.Size(162, 22);
+            this.ctxAnim.Size = new System.Drawing.Size(163, 22);
             this.ctxAnim.Text = "Animations";
             this.ctxAnim.Click += new System.EventHandler(this.tbtnAnim_Click);
             // 
             // ctxPoint
             // 
             this.ctxPoint.Name = "ctxPoint";
-            this.ctxPoint.Size = new System.Drawing.Size(162, 22);
+            this.ctxPoint.Size = new System.Drawing.Size(163, 22);
             this.ctxPoint.Text = "Point at";
             this.ctxPoint.Click += new System.EventHandler(this.ctxPoint_Click);
             // 
             // ctxOfferTP
             // 
             this.ctxOfferTP.Name = "ctxOfferTP";
-            this.ctxOfferTP.Size = new System.Drawing.Size(162, 22);
+            this.ctxOfferTP.Size = new System.Drawing.Size(163, 22);
             this.ctxOfferTP.Text = "Offer Teleport";
             this.ctxOfferTP.ToolTipText = " Offer Teleport ";
             this.ctxOfferTP.Click += new System.EventHandler(this.ctxOfferTP_Click);
@@ -267,7 +269,7 @@ namespace Radegast
             // ctxTeleportTo
             // 
             this.ctxTeleportTo.Name = "ctxTeleportTo";
-            this.ctxTeleportTo.Size = new System.Drawing.Size(162, 22);
+            this.ctxTeleportTo.Size = new System.Drawing.Size(163, 22);
             this.ctxTeleportTo.Text = "Teleport To";
             this.ctxTeleportTo.ToolTipText = " Teleport To ";
             this.ctxTeleportTo.Click += new System.EventHandler(this.ctxTeleportTo_Click);
@@ -275,7 +277,7 @@ namespace Radegast
             // goToToolStripMenuItem
             // 
             this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
-            this.goToToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.goToToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.goToToolStripMenuItem.Text = "Walk To";
             this.goToToolStripMenuItem.ToolTipText = " Walk To ";
             this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem_Click);
@@ -283,7 +285,7 @@ namespace Radegast
             // faceToolStripMenuItem
             // 
             this.faceToolStripMenuItem.Name = "faceToolStripMenuItem";
-            this.faceToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.faceToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.faceToolStripMenuItem.Text = "Face";
             this.faceToolStripMenuItem.ToolTipText = " Face Avatar";
             this.faceToolStripMenuItem.Click += new System.EventHandler(this.faceToolStripMenuItem_Click);
@@ -291,7 +293,7 @@ namespace Radegast
             // ctxEject
             // 
             this.ctxEject.Name = "ctxEject";
-            this.ctxEject.Size = new System.Drawing.Size(162, 22);
+            this.ctxEject.Size = new System.Drawing.Size(163, 22);
             this.ctxEject.Text = "Eject";
             this.ctxEject.ToolTipText = " Eject ";
             this.ctxEject.Click += new System.EventHandler(this.ctxEject_Click);
@@ -299,7 +301,7 @@ namespace Radegast
             // ctxBan
             // 
             this.ctxBan.Name = "ctxBan";
-            this.ctxBan.Size = new System.Drawing.Size(162, 22);
+            this.ctxBan.Size = new System.Drawing.Size(163, 22);
             this.ctxBan.Text = "Ban";
             this.ctxBan.ToolTipText = " Ban ";
             this.ctxBan.Click += new System.EventHandler(this.ctxBan_Click);
@@ -307,7 +309,7 @@ namespace Radegast
             // ctxEstateEject
             // 
             this.ctxEstateEject.Name = "ctxEstateEject";
-            this.ctxEstateEject.Size = new System.Drawing.Size(162, 22);
+            this.ctxEstateEject.Size = new System.Drawing.Size(163, 22);
             this.ctxEstateEject.Text = "Eject from estate";
             this.ctxEstateEject.ToolTipText = " Eject from estate ";
             this.ctxEstateEject.Click += new System.EventHandler(this.ctxEstateEject_Click);
@@ -315,7 +317,7 @@ namespace Radegast
             // muteToolStripMenuItem
             // 
             this.muteToolStripMenuItem.Name = "muteToolStripMenuItem";
-            this.muteToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.muteToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.muteToolStripMenuItem.Text = "Mute";
             this.muteToolStripMenuItem.ToolTipText = " Mute ";
             this.muteToolStripMenuItem.Click += new System.EventHandler(this.muteToolStripMenuItem_Click);
@@ -430,6 +432,14 @@ namespace Radegast
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             // 
+            // ctxReqestLure
+            // 
+            this.ctxReqestLure.Name = "ctxReqestLure";
+            this.ctxReqestLure.Size = new System.Drawing.Size(163, 22);
+            this.ctxReqestLure.Text = "Request Teleport";
+            this.ctxReqestLure.ToolTipText = " Request Teleport ";
+            this.ctxReqestLure.Click += new System.EventHandler(this.ctxReqestLure_Click);
+            // 
             // ChatConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -483,5 +493,6 @@ namespace Radegast
         private ToolStripMenuItem muteToolStripMenuItem;
         private ToolStripMenuItem goToToolStripMenuItem;
         private ToolStripMenuItem faceToolStripMenuItem;
+        private ToolStripMenuItem ctxReqestLure;
     }
 }

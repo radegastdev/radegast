@@ -480,5 +480,12 @@ namespace Radegast
             }
         }
 
+        private void btnRequestTeleport_Click(object sender, EventArgs e)
+        {
+            if (selectedFriend == null) return;
+
+            instance.MainForm.AddNotification(new ntfSendLureRequest(instance, selectedFriend.UUID));
+        }
+
     }
 }

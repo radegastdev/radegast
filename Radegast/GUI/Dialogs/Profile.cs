@@ -709,5 +709,10 @@ namespace Radegast
                 client.Self.RemoveMuteListEntry(agentID, instance.Names.GetLegacyName(agentID));
             }
         }
+
+        private void btnRequestTeleport_Click(object sender, EventArgs e)
+        {
+            instance.MainForm.AddNotification(new ntfSendLureRequest(instance, agentID));
+        }
     }
 }

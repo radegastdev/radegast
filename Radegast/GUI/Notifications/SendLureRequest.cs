@@ -34,35 +34,41 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public partial class ntfRequestLure : Notification
+    public partial class ntfSendLureRequest : Notification
     {
         private RadegastInstance instance;
-        private InstantMessage msg;
+        private UUID agentID;
+        private string agentName;
 
-        public ntfRequestLure(RadegastInstance instance, InstantMessage msg)
-            : base(NotificationType.RequestLure)
+        public ntfSendLureRequest(RadegastInstance instance, UUID agentID)
+            : base(NotificationType.SendLureRequest)
         {
             InitializeComponent();
             this.instance = instance;
-            this.msg = msg;
+            this.agentID = agentID;
 
             txtHead.BackColor = instance.MainForm.NotificationBackground;
-            txtHead.Text = String.Format("{0} is requesting to be teleported to your location.", msg.FromAgentName);
+
+            agentName = instance.Names.Get(agentID, true);
+            txtHead.Text = String.Format("Request a teleport to {0}'s location with the following message:", agentName);
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
-            txtMessage.Text = msg.Message;
-            btnTeleport.Focus();
+            btnRequest.Focus();
 
             // Fire off event
             NotificationEventArgs args = new NotificationEventArgs(instance);
             args.Text = txtHead.Text + Environment.NewLine + txtMessage.Text;
-            args.Buttons.Add(btnTeleport);
+            args.Buttons.Add(btnRequest);
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);
         }
 
         private void btnTeleport_Click(object sender, EventArgs e)
         {
-            instance.Client.Self.SendTeleportLure(msg.FromAgentID, "Join me in " + instance.Client.Network.CurrentSim.Name + "!");
+            if (!instance.Client.Network.Connected) return;
+
+            instance.Client.Self.InstantMessage(instance.Client.Self.Name, agentID, txtMessage.Text,
+                instance.Client.Self.AgentID ^ agentID, InstantMessageDialog.RequestLure, InstantMessageOnline.Offline,
+                instance.Client.Self.SimPosition, instance.Client.Network.CurrentSim.ID, null);
             instance.MainForm.RemoveNotification(this);
         }
 

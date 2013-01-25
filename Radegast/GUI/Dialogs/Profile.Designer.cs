@@ -63,14 +63,16 @@ namespace Radegast
             this.tpgProfile = new System.Windows.Forms.TabPage();
             this.btnGive = new System.Windows.Forms.Button();
             this.lvwGroups = new Radegast.ListViewNoFlicker();
-            this.clGroupName = new System.Windows.Forms.ColumnHeader();
-            this.clGroupTitle = new System.Windows.Forms.ColumnHeader();
+            this.clGroupName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.clGroupTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.txtFullName = new Radegast.AgentNameTextBox();
             this.anPartner = new Radegast.AgentNameTextBox();
             this.btnIM = new System.Windows.Forms.Button();
             this.btnFriend = new System.Windows.Forms.Button();
             this.slPicPanel = new System.Windows.Forms.Panel();
             this.btnOfferTeleport = new System.Windows.Forms.Button();
+            this.btnUnmute = new System.Windows.Forms.Button();
+            this.btnMute = new System.Windows.Forms.Button();
             this.btnPay = new System.Windows.Forms.Button();
             this.rtbAccountInfo = new System.Windows.Forms.RichTextBox();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
@@ -107,8 +109,7 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.btnMute = new System.Windows.Forms.Button();
-            this.btnUnmute = new System.Windows.Forms.Button();
+            this.btnRequestTeleport = new System.Windows.Forms.Button();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
@@ -121,9 +122,9 @@ namespace Radegast
             // 
             // tabProfile
             // 
-            this.tabProfile.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabProfile.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tabProfile.Controls.Add(this.tpgProfile);
             this.tabProfile.Controls.Add(this.tpgWeb);
             this.tabProfile.Controls.Add(this.tbpPicks);
@@ -137,6 +138,7 @@ namespace Radegast
             // 
             // tpgProfile
             // 
+            this.tpgProfile.Controls.Add(this.btnRequestTeleport);
             this.tpgProfile.Controls.Add(this.btnGive);
             this.tpgProfile.Controls.Add(this.lvwGroups);
             this.tpgProfile.Controls.Add(this.txtFullName);
@@ -170,7 +172,7 @@ namespace Radegast
             this.btnGive.Enabled = false;
             this.btnGive.Location = new System.Drawing.Point(312, 418);
             this.btnGive.Name = "btnGive";
-            this.btnGive.Size = new System.Drawing.Size(96, 23);
+            this.btnGive.Size = new System.Drawing.Size(107, 23);
             this.btnGive.TabIndex = 24;
             this.btnGive.Text = "&Give Inventory";
             this.btnGive.UseVisualStyleBackColor = true;
@@ -178,9 +180,9 @@ namespace Radegast
             // 
             // lvwGroups
             // 
-            this.lvwGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lvwGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvwGroups.BackColor = System.Drawing.SystemColors.Window;
             this.lvwGroups.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.clGroupName,
@@ -214,6 +216,7 @@ namespace Radegast
             // txtFullName
             // 
             this.txtFullName.AccessibleName = "Name";
+            this.txtFullName.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtFullName.AgentID")));
             this.txtFullName.Location = new System.Drawing.Point(50, 6);
             this.txtFullName.Name = "txtFullName";
             this.txtFullName.ReadOnly = true;
@@ -223,6 +226,7 @@ namespace Radegast
             // anPartner
             // 
             this.anPartner.AccessibleName = "Partner";
+            this.anPartner.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("anPartner.AgentID")));
             this.anPartner.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.anPartner.Location = new System.Drawing.Point(306, 34);
             this.anPartner.Name = "anPartner";
@@ -271,6 +275,28 @@ namespace Radegast
             this.btnOfferTeleport.UseVisualStyleBackColor = true;
             this.btnOfferTeleport.Click += new System.EventHandler(this.btnOfferTeleport_Click);
             // 
+            // btnUnmute
+            // 
+            this.btnUnmute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnUnmute.Location = new System.Drawing.Point(210, 447);
+            this.btnUnmute.Name = "btnUnmute";
+            this.btnUnmute.Size = new System.Drawing.Size(96, 23);
+            this.btnUnmute.TabIndex = 27;
+            this.btnUnmute.Text = "Unmute";
+            this.btnUnmute.UseVisualStyleBackColor = true;
+            this.btnUnmute.Click += new System.EventHandler(this.btnUnmute_Click);
+            // 
+            // btnMute
+            // 
+            this.btnMute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnMute.Location = new System.Drawing.Point(108, 447);
+            this.btnMute.Name = "btnMute";
+            this.btnMute.Size = new System.Drawing.Size(96, 23);
+            this.btnMute.TabIndex = 26;
+            this.btnMute.Text = "Mute";
+            this.btnMute.UseVisualStyleBackColor = true;
+            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
+            // 
             // btnPay
             // 
             this.btnPay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -296,8 +322,8 @@ namespace Radegast
             // rtbAbout
             // 
             this.rtbAbout.AccessibleName = "Profile details";
-            this.rtbAbout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtbAbout.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbAbout.Location = new System.Drawing.Point(6, 296);
             this.rtbAbout.Name = "rtbAbout";
             this.rtbAbout.ReadOnly = true;
@@ -376,16 +402,16 @@ namespace Radegast
             this.tpgWeb.Location = new System.Drawing.Point(4, 22);
             this.tpgWeb.Name = "tpgWeb";
             this.tpgWeb.Padding = new System.Windows.Forms.Padding(3);
-            this.tpgWeb.Size = new System.Drawing.Size(460, 457);
+            this.tpgWeb.Size = new System.Drawing.Size(460, 476);
             this.tpgWeb.TabIndex = 1;
             this.tpgWeb.Text = "Web";
             this.tpgWeb.UseVisualStyleBackColor = true;
             // 
             // pnlWeb
             // 
-            this.pnlWeb.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlWeb.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlWeb.Location = new System.Drawing.Point(6, 33);
             this.pnlWeb.Name = "pnlWeb";
             this.pnlWeb.Size = new System.Drawing.Size(448, 418);
@@ -418,8 +444,8 @@ namespace Radegast
             // txtWebURL
             // 
             this.txtWebURL.AccessibleName = "Web profile link";
-            this.txtWebURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtWebURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtWebURL.Location = new System.Drawing.Point(42, 6);
             this.txtWebURL.Name = "txtWebURL";
             this.txtWebURL.ReadOnly = true;
@@ -443,7 +469,7 @@ namespace Radegast
             this.tbpPicks.Location = new System.Drawing.Point(4, 22);
             this.tbpPicks.Name = "tbpPicks";
             this.tbpPicks.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpPicks.Size = new System.Drawing.Size(460, 457);
+            this.tbpPicks.Size = new System.Drawing.Size(460, 476);
             this.tbpPicks.TabIndex = 3;
             this.tbpPicks.Text = "Picks";
             this.tbpPicks.UseVisualStyleBackColor = true;
@@ -458,7 +484,7 @@ namespace Radegast
             this.pickDetailPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pickDetailPanel.Location = new System.Drawing.Point(142, 3);
             this.pickDetailPanel.Name = "pickDetailPanel";
-            this.pickDetailPanel.Size = new System.Drawing.Size(315, 451);
+            this.pickDetailPanel.Size = new System.Drawing.Size(315, 470);
             this.pickDetailPanel.TabIndex = 1;
             this.pickDetailPanel.Visible = false;
             // 
@@ -471,7 +497,7 @@ namespace Radegast
             this.pickDetail.Name = "pickDetail";
             this.pickDetail.ReadOnly = true;
             this.pickDetail.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.pickDetail.Size = new System.Drawing.Size(315, 130);
+            this.pickDetail.Size = new System.Drawing.Size(315, 149);
             this.pickDetail.TabIndex = 2;
             this.pickDetail.Text = "";
             this.pickDetail.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbAbout_LinkClicked);
@@ -481,7 +507,7 @@ namespace Radegast
             // 
             this.pickLocation.AccessibleName = "Pick parcel";
             this.pickLocation.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pickLocation.Location = new System.Drawing.Point(0, 389);
+            this.pickLocation.Location = new System.Drawing.Point(0, 408);
             this.pickLocation.Name = "pickLocation";
             this.pickLocation.Size = new System.Drawing.Size(315, 21);
             this.pickLocation.TabIndex = 4;
@@ -492,7 +518,7 @@ namespace Radegast
             this.picksLowerPanel.Controls.Add(this.btnShowOnMap);
             this.picksLowerPanel.Controls.Add(this.btnTeleport);
             this.picksLowerPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.picksLowerPanel.Location = new System.Drawing.Point(0, 410);
+            this.picksLowerPanel.Location = new System.Drawing.Point(0, 429);
             this.picksLowerPanel.Name = "picksLowerPanel";
             this.picksLowerPanel.Size = new System.Drawing.Size(315, 41);
             this.picksLowerPanel.TabIndex = 3;
@@ -554,13 +580,13 @@ namespace Radegast
             this.pickListPanel.Dock = System.Windows.Forms.DockStyle.Left;
             this.pickListPanel.Location = new System.Drawing.Point(3, 3);
             this.pickListPanel.Name = "pickListPanel";
-            this.pickListPanel.Size = new System.Drawing.Size(139, 451);
+            this.pickListPanel.Size = new System.Drawing.Size(139, 470);
             this.pickListPanel.TabIndex = 0;
             // 
             // btnNewPick
             // 
             this.btnNewPick.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewPick.Location = new System.Drawing.Point(33, 420);
+            this.btnNewPick.Location = new System.Drawing.Point(33, 439);
             this.btnNewPick.Name = "btnNewPick";
             this.btnNewPick.Size = new System.Drawing.Size(75, 23);
             this.btnNewPick.TabIndex = 0;
@@ -580,7 +606,7 @@ namespace Radegast
             this.tpgFirstLife.Location = new System.Drawing.Point(4, 22);
             this.tpgFirstLife.Name = "tpgFirstLife";
             this.tpgFirstLife.Padding = new System.Windows.Forms.Padding(3);
-            this.tpgFirstLife.Size = new System.Drawing.Size(460, 457);
+            this.tpgFirstLife.Size = new System.Drawing.Size(460, 476);
             this.tpgFirstLife.TabIndex = 2;
             this.tpgFirstLife.Text = "First Life";
             this.tpgFirstLife.UseVisualStyleBackColor = true;
@@ -614,8 +640,8 @@ namespace Radegast
             // rtbAboutFL
             // 
             this.rtbAboutFL.AccessibleName = "About first life";
-            this.rtbAboutFL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtbAboutFL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbAboutFL.Location = new System.Drawing.Point(6, 201);
             this.rtbAboutFL.Name = "rtbAboutFL";
             this.rtbAboutFL.ReadOnly = true;
@@ -671,27 +697,17 @@ namespace Radegast
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
             // 
-            // btnMute
+            // btnRequestTeleport
             // 
-            this.btnMute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnMute.Location = new System.Drawing.Point(108, 447);
-            this.btnMute.Name = "btnMute";
-            this.btnMute.Size = new System.Drawing.Size(96, 23);
-            this.btnMute.TabIndex = 26;
-            this.btnMute.Text = "Mute";
-            this.btnMute.UseVisualStyleBackColor = true;
-            this.btnMute.Click += new System.EventHandler(this.btnMute_Click);
-            // 
-            // btnUnmute
-            // 
-            this.btnUnmute.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnUnmute.Location = new System.Drawing.Point(210, 447);
-            this.btnUnmute.Name = "btnUnmute";
-            this.btnUnmute.Size = new System.Drawing.Size(96, 23);
-            this.btnUnmute.TabIndex = 27;
-            this.btnUnmute.Text = "Unmute";
-            this.btnUnmute.UseVisualStyleBackColor = true;
-            this.btnUnmute.Click += new System.EventHandler(this.btnUnmute_Click);
+            this.btnRequestTeleport.AccessibleDescription = "Request this person to teleport you to their location";
+            this.btnRequestTeleport.Location = new System.Drawing.Point(312, 447);
+            this.btnRequestTeleport.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.btnRequestTeleport.Name = "btnRequestTeleport";
+            this.btnRequestTeleport.Size = new System.Drawing.Size(107, 23);
+            this.btnRequestTeleport.TabIndex = 28;
+            this.btnRequestTeleport.Text = "Request Teleport";
+            this.btnRequestTeleport.UseVisualStyleBackColor = true;
+            this.btnRequestTeleport.Click += new System.EventHandler(this.btnRequestTeleport_Click);
             // 
             // frmProfile
             // 
@@ -775,6 +791,7 @@ namespace Radegast
         private System.Windows.Forms.Button btnNewPick;
         public System.Windows.Forms.Button btnUnmute;
         public System.Windows.Forms.Button btnMute;
+        private System.Windows.Forms.Button btnRequestTeleport;
 
     }
 }
