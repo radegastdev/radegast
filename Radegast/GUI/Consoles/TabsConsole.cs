@@ -427,6 +427,10 @@ namespace Radegast
                     }
                     break;
 
+                case InstantMessageDialog.RequestLure:
+                    instance.MainForm.AddNotification(new ntfRequestLure(instance, e.IM));
+                    break;
+
                 case InstantMessageDialog.GroupInvitation:
                     instance.MainForm.AddNotification(new ntfGroupInvitation(instance, e.IM));
                     break;
