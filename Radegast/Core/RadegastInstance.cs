@@ -346,7 +346,6 @@ namespace Radegast
             client.Self.Movement.AutoResetControls = false;
             client.Self.Movement.UpdateInterval = 250;
 
-            client.Settings.MAX_PENDING_ACKS = 1;
             RegisterClientEvents(client);
             SetClientTag();
         }
