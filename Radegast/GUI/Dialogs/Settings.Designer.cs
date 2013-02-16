@@ -257,7 +257,7 @@ namespace Radegast
             this.cbHideLoginGraphics.Name = "cbHideLoginGraphics";
             this.cbHideLoginGraphics.Size = new System.Drawing.Size(141, 17);
             this.cbHideLoginGraphics.TabIndex = 3;
-            this.cbHideLoginGraphics.Text = "Hide login slpash screen";
+            this.cbHideLoginGraphics.Text = "Hide login splash screen";
             this.cbHideLoginGraphics.UseVisualStyleBackColor = true;
             this.cbHideLoginGraphics.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
@@ -440,7 +440,7 @@ namespace Radegast
             this.cbIMTimeStamps.Name = "cbIMTimeStamps";
             this.cbIMTimeStamps.Size = new System.Drawing.Size(137, 17);
             this.cbIMTimeStamps.TabIndex = 1;
-            this.cbIMTimeStamps.Text = "Show timestamps in  IM";
+            this.cbIMTimeStamps.Text = "Show timestamps in IM";
             this.cbIMTimeStamps.UseVisualStyleBackColor = true;
             // 
             // cbMUEmotes

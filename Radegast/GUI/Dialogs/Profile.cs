@@ -33,6 +33,14 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Radegast.Netcom;
 using OpenMetaverse;
+#if (COGBOT_LIBOMV || USE_STHREADS)
+using ThreadPoolUtil;
+using Thread = ThreadPoolUtil.Thread;
+using ThreadPool = ThreadPoolUtil.ThreadPool;
+using Monitor = ThreadPoolUtil.Monitor;
+#endif
+using System.Threading;
+
 
 namespace Radegast
 {
@@ -658,7 +666,7 @@ namespace Radegast
 
         private void btnNewPick_Click(object sender, EventArgs e)
         {
-            System.Threading.ThreadPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
                 {
                     UUID parcelID = client.Parcels.RequestRemoteParcelID(client.Self.SimPosition, client.Network.CurrentSim.Handle, client.Network.CurrentSim.ID);
                     newPickID = UUID.Random();
@@ -695,6 +703,11 @@ namespace Radegast
             {
                 client.Self.RemoveMuteListEntry(agentID, instance.Names.GetLegacyName(agentID));
             }
+        }
+
+        private void btnRequestTeleport_Click(object sender, EventArgs e)
+        {
+            instance.MainForm.AddNotification(new ntfSendLureRequest(instance, agentID));
         }
     }
 }

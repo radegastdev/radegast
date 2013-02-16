@@ -35,7 +35,14 @@ using System.Reflection;
 using System.Net;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+#if (COGBOT_LIBOMV || USE_STHREADS)
+using ThreadPoolUtil;
+using Thread = ThreadPoolUtil.Thread;
+using ThreadPool = ThreadPoolUtil.ThreadPool;
+using Monitor = ThreadPoolUtil.Monitor;
+#endif
 using System.Threading;
+
 
 namespace Radegast
 {

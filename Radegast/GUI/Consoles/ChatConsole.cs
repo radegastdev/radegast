@@ -989,6 +989,13 @@ namespace Radegast
                 instance.State.MoveTo(sim, targetPos, false);
             }
         }
+
+        private void ctxReqestLure_Click(object sender, EventArgs e)
+        {
+            if (lvwObjects.SelectedItems.Count != 1) return;
+            UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
+            instance.MainForm.AddNotification(new ntfSendLureRequest(instance, av));
+        }
     }
 
     public class SorterClass : System.Collections.IComparer

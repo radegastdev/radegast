@@ -35,6 +35,13 @@ using System.IO;
 using System.Reflection;
 using CommandLine;
 using CommandLine.Text;
+#if (COGBOT_LIBOMV || USE_STHREADS)
+using ThreadPoolUtil;
+using Thread = ThreadPoolUtil.Thread;
+using ThreadPool = ThreadPoolUtil.ThreadPool;
+using Monitor = ThreadPoolUtil.Monitor;
+#endif
+using System.Threading;
 
 namespace Radegast
 {
@@ -96,13 +103,13 @@ namespace Radegast
         {
             // Increase the number of IOCP threads available. Mono defaults to a tragically low number
             int workerThreads, iocpThreads;
-            System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
+            ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
 
             if (workerThreads < 500 || iocpThreads < 1000)
             {
                 if (workerThreads < 500) workerThreads = 500;
                 if (iocpThreads < 1000) iocpThreads = 1000;
-                System.Threading.ThreadPool.SetMaxThreads(workerThreads, iocpThreads);
+                ThreadPool.SetMaxThreads(workerThreads, iocpThreads);
             }
 
             // Read command line options

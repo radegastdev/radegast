@@ -30,6 +30,12 @@
 //
 using System;
 using System.Collections.Generic;
+#if (COGBOT_LIBOMV || USE_STHREADS)
+using ThreadPoolUtil;
+using Thread = ThreadPoolUtil.Thread;
+using ThreadPool = ThreadPoolUtil.ThreadPool;
+using Monitor = ThreadPoolUtil.Monitor;
+#endif
 using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
@@ -52,7 +58,7 @@ namespace Radegast
             if (res == DialogResult.OK)
             {
 
-                System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(delegate()
+                Thread t = new Thread(new System.Threading.ThreadStart(delegate()
                 {
                     try
                     {

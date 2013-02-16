@@ -34,6 +34,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Timers;
 using System.Windows.Forms;
+#if (COGBOT_LIBOMV || USE_STHREADS)
+using ThreadPoolUtil;
+using Thread = ThreadPoolUtil.Thread;
+using ThreadPool = ThreadPoolUtil.ThreadPool;
+using Monitor = ThreadPoolUtil.Monitor;
+#endif
 using System.Threading;
 using System.Drawing;
 using OpenMetaverse;
@@ -985,6 +991,18 @@ namespace Radegast
             (new frmPay(instance, currentPrim.ID, currentPrim.Properties.Name, true)).ShowDialog();
         }
 
+        private void btnDetach_Click(object sender, EventArgs e)
+        {
+            var toDetach = CurrentOutfitFolder.GetAttachmentItem(currentPrim);
+            if (toDetach != UUID.Zero)
+            {
+                if (client.Inventory.Store.Contains(toDetach))
+                {
+                    instance.COF.Detach(client.Inventory.Store[toDetach] as InventoryItem);
+                }
+            }
+        }
+
         private void btnView_Click(object sender, EventArgs e)
         {
             if (currentPrim.PrimData.PCode != PCode.Prim)
@@ -1100,6 +1118,9 @@ namespace Radegast
 
             ctxMenuObjects.Items.Clear();
             ctxMenuObjects.Items.Add("Click/Touch", null, btnTouch_Click);
+
+            if (currentPrim.ParentID == client.Self.LocalID)
+                ctxMenuObjects.Items.Add("Detach", null, btnDetach_Click);
 
             if ((currentPrim.Flags & PrimFlags.Money) != 0)
                 ctxMenuObjects.Items.Add("Pay", null, btnPay_Click);

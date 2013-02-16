@@ -87,6 +87,15 @@ Example:
 
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
         {
+            wl = WriteLine;
+            if (cmdArgs.Length == 0) { PrintUsage(); return; }
+
+            if (cmdArgs[0] == "help")
+            {
+                PrintFullUsage();
+                return;
+            }
+
             InventoryFolder folder = (InventoryFolder)Inv.GetContents(Inv.RootFolder).Find((InventoryBase b) => { return b.Name == FolderName && b is InventoryFolder; });
             if (folder == null)
             {
@@ -94,8 +103,6 @@ Example:
                 WriteLine(@"Could not find ""{0}"" folder in the inventory, creating one.", FolderName);
                 return;
             }
-            wl = WriteLine;
-            if (cmdArgs.Length == 0) { PrintUsage(); return; }
 
             List<InventoryLandmark> landmarks = new List<InventoryLandmark>();
             Inv.GetContents(folder)
@@ -109,12 +116,6 @@ Example:
             }
 
             string cmd = string.Join(" ", cmdArgs);
-
-            if (cmd == "help")
-            {
-                PrintFullUsage();
-                return;
-            }
 
             landmarks.Sort(new LMSorter());
 

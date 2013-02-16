@@ -294,6 +294,7 @@ namespace Radegast.Netcom
             loginParams.Start = startLocation;
             loginParams.AgreeToTos = AgreeToTos;
             loginParams.URI = grid.LoginURI;
+            loginParams.LastExecEvent = loginOptions.LastExecEvent;
             client.Network.BeginLogin(loginParams);
         }
 

@@ -34,7 +34,14 @@ using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
+#if (COGBOT_LIBOMV || USE_STHREADS)
+using ThreadPoolUtil;
+using Thread = ThreadPoolUtil.Thread;
+using ThreadPool = ThreadPoolUtil.ThreadPool;
+using Monitor = ThreadPoolUtil.Monitor;
+#endif
 using System.Threading;
+
 using System.Windows.Forms;
 using System.Resources;
 using System.IO;
@@ -1601,6 +1608,9 @@ namespace Radegast
 
         private void loginToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // We are logging in without exiting the client
+            // Mark last run as successful
+            instance.MarkEndExecution();
             TabConsole.InitializeMainTab();
             TabConsole.Tabs["login"].Select();
         }
