@@ -29,6 +29,8 @@
 // $Id$
 //
 
+using OpenMetaverse;
+
 namespace Radegast.Netcom
 {
     public class LoginOptions
@@ -44,6 +46,8 @@ namespace Radegast.Netcom
 
         private Grid grid;
         private string gridCustomLoginUri = string.Empty;
+        private LastExecStatus lastExecEvent = LastExecStatus.Normal;
+
 
         public LoginOptions()
         {
@@ -118,6 +122,12 @@ namespace Radegast.Netcom
         {
             get { return gridCustomLoginUri; }
             set { gridCustomLoginUri = value; }
+        }
+
+        public LastExecStatus LastExecEvent
+        {
+            get { return lastExecEvent; }
+            set { lastExecEvent = value; }
         }
     }
 }

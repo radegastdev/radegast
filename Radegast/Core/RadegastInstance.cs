@@ -216,6 +216,14 @@ namespace Radegast
 
         public CurrentOutfitFolder COF;
 
+        private string CrashMarkerFileName
+        {
+            get
+            {
+                return Path.Combine(UserDir, "crash_marker");
+            }
+        }
+
         #region Events
 
         #region ClientChanged event
@@ -421,6 +429,9 @@ namespace Radegast
 
         public void Reconnect()
         {
+            // We are logging in without exiting the client
+            // Mark last run as successful
+            MarkEndExecution();
             TabConsole.DisplayNotificationInChat("Attempting to reconnect...", ChatBufferTextStyle.StatusDarkBlue);
             Logger.Log("Attemting to reconnect", Helpers.LogLevel.Info, client);
             GridClient oldClient = client;
@@ -433,6 +444,8 @@ namespace Radegast
 
         public void CleanUp()
         {
+            MarkEndExecution();
+
             if (COF != null)
             {
                 COF.Dispose();
@@ -658,6 +671,41 @@ namespace Radegast
                 Helpers.LogLevel.Error,
                 client);
         }
+
+        public LastExecStatus GetLastExecStatus()
+        {
+            if (File.Exists(CrashMarkerFileName))
+            {
+                Logger.Log(string.Format("Found crash marker file {0}, reporting unclean shutdown to the grid", CrashMarkerFileName), Helpers.LogLevel.Warning);
+                return LastExecStatus.OtherCrash;
+            }
+            else
+            {
+                Logger.Log(string.Format("No crash marker file {0} found, reporting clean shutdown to the grid", CrashMarkerFileName), Helpers.LogLevel.Info);
+                return LastExecStatus.Normal;
+            }
+        }
+
+        public void MarkStartExecution()
+        {
+            Logger.Log(string.Format("Marking start of execution run, creating file: {0}", CrashMarkerFileName), Helpers.LogLevel.Info);
+            try
+            {
+                File.Create(CrashMarkerFileName).Dispose();
+            }
+            catch { }
+        }
+
+        public void MarkEndExecution()
+        {
+            Logger.Log(string.Format("Marking end of execution run, deleting file: {0}", CrashMarkerFileName), Helpers.LogLevel.Info);
+            try
+            {
+                File.Delete(CrashMarkerFileName);
+            }
+            catch { }
+        }
+
     }
 
     #region Event classes

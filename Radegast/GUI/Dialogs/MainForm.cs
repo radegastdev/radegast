@@ -1629,6 +1629,9 @@ namespace Radegast
 
         private void loginToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // We are logging in without exiting the client
+            // Mark last run as successful
+            instance.MarkEndExecution();
             TabConsole.InitializeMainTab();
             TabConsole.Tabs["login"].Select();
         }
