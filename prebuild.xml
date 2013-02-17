@@ -36,7 +36,7 @@
 
     <!-- Libraries -->
 
-    <Project name="OpenMetaverseTypes" path="../libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5">
+    <Project name="OpenMetaverseTypes" path="../libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core" >
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
@@ -61,7 +61,7 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse.StructuredData" path="../libopenmetaverse/OpenMetaverse.StructuredData" type="Library" rootNamespace="OpenMetaverse.StructuredData" frameworkVersion="v3_5">
+    <Project name="OpenMetaverse.StructuredData" path="../libopenmetaverse/OpenMetaverse.StructuredData" type="Library" rootNamespace="OpenMetaverse.StructuredData" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
@@ -86,7 +86,7 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse" path="../libopenmetaverse/OpenMetaverse" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5">
+    <Project name="OpenMetaverse" path="../libopenmetaverse/OpenMetaverse" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
@@ -118,7 +118,7 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse.Rendering.Meshmerizer" path="../libopenmetaverse/OpenMetaverse.Rendering.Meshmerizer" type="Library" rootNamespace="OpenMetaverse.Rendering" frameworkVersion="v3_5">
+    <Project name="OpenMetaverse.Rendering.Meshmerizer" path="../libopenmetaverse/OpenMetaverse.Rendering.Meshmerizer" type="Library" rootNamespace="OpenMetaverse.Rendering" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
@@ -148,7 +148,7 @@
 
     <!-- Main App -->
 
-    <Project name="Radegast" path="Radegast" type="WinExe" icon="radegast.ico" frameworkVersion="v3_5">
+    <Project name="Radegast" path="Radegast" type="WinExe" icon="radegast.ico" frameworkVersion="v3_5" filterGroups="core">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../bin/</OutputPath>
@@ -214,7 +214,7 @@
 
     <!-- Plugins -->
 
-    <Project name="Radegast.Plugin.Alice" path="plugins/Radegast.Plugin.Alice" type="Library" frameworkVersion="v3_5">
+    <Project name="Radegast.Plugin.Alice" path="plugins/Radegast.Plugin.Alice" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_alice">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -254,7 +254,7 @@
 
 
 
-    <Project name="Radegast.Plugin.Demo" path="plugins/Radegast.Plugin.Demo" type="Library" frameworkVersion="v3_5">
+    <Project name="Radegast.Plugin.Demo" path="plugins/Radegast.Plugin.Demo" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_demo">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -289,7 +289,7 @@
       </Files>
     </Project>
 
-    <Project name="Radegast.Plugin.Speech" path="plugins/Radegast.Plugin.Speech/RadSpeech" type="Library" frameworkVersion="v3_5">
+    <Project name="Radegast.Plugin.Speech" path="plugins/Radegast.Plugin.Speech/RadSpeech" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_speech|plug_speech_core">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../bin/</OutputPath>
@@ -325,7 +325,7 @@
       </Files>
     </Project>
 
-    <Project name="RadSpeechLin" path="plugins/Radegast.Plugin.Speech/RadSpeechLin" type="Library" frameworkVersion="v3_5">
+    <Project name="RadSpeechLin" path="plugins/Radegast.Plugin.Speech/RadSpeechLin" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_speech|plug_speech_linux">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../bin/</OutputPath>
@@ -357,7 +357,7 @@
       </Files>
     </Project>
 
-    <Project name="RadSpeechWin" path="plugins/Radegast.Plugin.Speech/RadSpeechWin" type="Library" frameworkVersion="v3_5">
+    <Project name="RadSpeechWin" path="plugins/Radegast.Plugin.Speech/RadSpeechWin" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_speech|plug_speech_windows">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../bin/</OutputPath>
@@ -392,7 +392,7 @@
     </Project>
 
 
-    <Project name="RadSpeechMac" path="plugins/Radegast.Plugin.Speech/RadSpeechMac" type="Library" frameworkVersion="v3_5">
+    <Project name="RadSpeechMac" path="plugins/Radegast.Plugin.Speech/RadSpeechMac" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_speech|plug_speech_mac">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../bin/</OutputPath>
