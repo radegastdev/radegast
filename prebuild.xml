@@ -413,8 +413,8 @@
 
       <Reference name="Radegast.exe" localCopy="false" />
       <Reference name="Radegast.Plugin.Speech" />
-      <Reference name="Assemblies/Monobjc" path="Assemblies" />
-      <Reference name="Assemblies/Monobjc.Cocoa" path="Assemblies" />
+      <Reference name="Monobjc" path="Assemblies" />
+      <Reference name="Monobjc.Cocoa" path="Assemblies" />
 
       <Reference name="Radegast.exe" />
       <Reference name="System" />
