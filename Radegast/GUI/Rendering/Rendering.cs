@@ -183,6 +183,7 @@ namespace Radegast.Rendering
             renderTimer.Start();
 
             // Camera initial setting
+            Instance.State.CameraTracksOwnAvatar = false;
             Camera = new Camera();
             InitCamera();
             SetWaterPlanes();
@@ -213,6 +214,8 @@ namespace Radegast.Rendering
         {
             RenderingEnabled = false;
             Application.Idle -= new EventHandler(Application_Idle);
+            Instance.State.CameraTracksOwnAvatar = true;
+            Instance.State.SetDefaultCamera();
 
             if (!PendingTextures.Closed)
             {
