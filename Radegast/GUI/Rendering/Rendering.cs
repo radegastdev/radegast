@@ -1538,7 +1538,7 @@ namespace Radegast.Rendering
                         screenPos.X -= size.Width / 2;
                         screenPos.Y -= size.Height;
 
-                        if (screenPos.Y > 0)
+                        if (screenPos.Y + size.Height > 0)
                         {
                             if (pass == RenderPass.Picking)
                             {
