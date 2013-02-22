@@ -828,9 +828,9 @@ namespace Radegast
             this.autoSitUUID.Location = new System.Drawing.Point(47, 40);
             this.autoSitUUID.MaxLength = 36;
             this.autoSitUUID.Name = "autoSitUUID";
-            this.autoSitUUID.ReadOnly = true;
             this.autoSitUUID.Size = new System.Drawing.Size(210, 20);
             this.autoSitUUID.TabIndex = 1;
+            this.autoSitUUID.Leave += new System.EventHandler(this.autoSitUUID_Leave);
             // 
             // autoSitName
             // 

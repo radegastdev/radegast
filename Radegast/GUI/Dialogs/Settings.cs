@@ -501,8 +501,35 @@ namespace Radegast
                 PrimitiveName = Instance.State.AutoSit.Preferences.PrimitiveName,
                 Enabled = autoSitEnabled.Checked
             };
+
+            if (Instance.State.AutoSit.Preferences.Enabled)
+            {
+                Instance.State.AutoSit.TrySit();
+            }
         }
 
+        private void autoSitUUID_Leave(object sender, EventArgs e)
+        {
+            UUID primID = UUID.Zero;
+            if (UUID.TryParse(autoSitUUID.Text, out primID))
+            {
+                Instance.State.AutoSit.Preferences = new AutoSitPreferences
+                {
+                    Primitive = primID,
+                    PrimitiveName = autoSitName.Text,
+                    Enabled = autoSitEnabled.Checked
+                };
+
+                if (Instance.State.AutoSit.Preferences.Enabled)
+                {
+                    Instance.State.AutoSit.TrySit();
+                }
+            }
+            else
+            {
+                autoSitUUID.Text = UUID.Zero.ToString();
+            }
+        }
         #endregion
 
         #region Pseudo Home
