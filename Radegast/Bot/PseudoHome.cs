@@ -46,6 +46,11 @@ namespace Radegast.Bot
         public Vector3 Position { get; set; }
         public uint Tolerance { get; set; }
 
+        public PseudoHomePreferences()
+        {
+            Tolerance = 256;
+        }
+
         public static explicit operator PseudoHomePreferences(OSD osd)
         {
             PseudoHomePreferences prefs = new PseudoHomePreferences();
@@ -56,7 +61,7 @@ namespace Radegast.Bot
                 prefs.Enabled = map.ContainsKey("Enabled") ? map["Enabled"].AsBoolean() : false;
                 prefs.Region = map.ContainsKey("Region") ? map["Region"].AsString().Trim() : "";
                 prefs.Position = map.ContainsKey("Position") ? map["Position"].AsVector3() : new Vector3();
-                prefs.Tolerance = map.ContainsKey("Tolerance") ? Math.Min(256, Math.Max(1, map["Tolerance"].AsUInteger())) : 1;
+                prefs.Tolerance = map.ContainsKey("Tolerance") ? Math.Min(256, Math.Max(1, map["Tolerance"].AsUInteger())) : 256;
             }
 
             return prefs;
@@ -72,9 +77,9 @@ namespace Radegast.Bot
             OSDMap map = new OSDMap(4);
 
             map["Enabled"] = prefs != null ? prefs.Enabled : false;
-            map["Region"] = prefs != null ? prefs.Region.Trim() : string.Empty;
+            map["Region"] = prefs != null && prefs.Region != null ? prefs.Region.Trim() : string.Empty;
             map["Position"] = prefs != null ? prefs.Position : Vector3.Zero;
-            map["Tolerance"] = prefs != null ? prefs.Tolerance : 1;
+            map["Tolerance"] = prefs != null ? prefs.Tolerance : 256;
 
             return map;
         }
@@ -86,7 +91,7 @@ namespace Radegast.Bot
                 Enabled = false,
                 Region = "",
                 Position = Vector3.Zero,
-                Tolerance = 1
+                Tolerance = 256
             };
         }
     }

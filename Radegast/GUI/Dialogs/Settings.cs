@@ -565,6 +565,11 @@ namespace Radegast
             };
         }
 
+        private void pseudoHomeClear_Click(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences();
+            pseudoHomePrefsUpdated();
+        }
         #endregion
     }
 }

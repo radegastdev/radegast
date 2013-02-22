@@ -438,7 +438,7 @@ namespace Radegast
             this.cbIMTimeStamps.AutoSize = true;
             this.cbIMTimeStamps.Location = new System.Drawing.Point(8, 35);
             this.cbIMTimeStamps.Name = "cbIMTimeStamps";
-            this.cbIMTimeStamps.Size = new System.Drawing.Size(137, 17);
+            this.cbIMTimeStamps.Size = new System.Drawing.Size(134, 17);
             this.cbIMTimeStamps.TabIndex = 1;
             this.cbIMTimeStamps.Text = "Show timestamps in IM";
             this.cbIMTimeStamps.UseVisualStyleBackColor = true;
@@ -690,7 +690,7 @@ namespace Radegast
             this.pseudoHomeSet.Location = new System.Drawing.Point(94, 73);
             this.pseudoHomeSet.Name = "pseudoHomeSet";
             this.pseudoHomeSet.Size = new System.Drawing.Size(75, 23);
-            this.pseudoHomeSet.TabIndex = 1;
+            this.pseudoHomeSet.TabIndex = 9;
             this.pseudoHomeSet.Text = "Set";
             this.pseudoHomeSet.UseVisualStyleBackColor = true;
             this.pseudoHomeSet.Click += new System.EventHandler(this.pseudoHomeSet_Click);
@@ -710,7 +710,7 @@ namespace Radegast
             0});
             this.pseudoHomeTolerance.Name = "pseudoHomeTolerance";
             this.pseudoHomeTolerance.Size = new System.Drawing.Size(40, 20);
-            this.pseudoHomeTolerance.TabIndex = 7;
+            this.pseudoHomeTolerance.TabIndex = 6;
             this.pseudoHomeTolerance.Value = new decimal(new int[] {
             256,
             0,
@@ -723,7 +723,7 @@ namespace Radegast
             this.pseudoHomeTP.Location = new System.Drawing.Point(6, 38);
             this.pseudoHomeTP.Name = "pseudoHomeTP";
             this.pseudoHomeTP.Size = new System.Drawing.Size(75, 23);
-            this.pseudoHomeTP.TabIndex = 2;
+            this.pseudoHomeTP.TabIndex = 6;
             this.pseudoHomeTP.Text = "Teleport";
             this.pseudoHomeTP.UseVisualStyleBackColor = true;
             this.pseudoHomeTP.Click += new System.EventHandler(this.pseudoHomeTP_Click);
@@ -734,16 +734,17 @@ namespace Radegast
             this.pseudoHomeLocation.Name = "pseudoHomeLocation";
             this.pseudoHomeLocation.ReadOnly = true;
             this.pseudoHomeLocation.Size = new System.Drawing.Size(170, 20);
-            this.pseudoHomeLocation.TabIndex = 5;
+            this.pseudoHomeLocation.TabIndex = 7;
             // 
             // pseudoHomeClear
             // 
             this.pseudoHomeClear.Location = new System.Drawing.Point(182, 73);
             this.pseudoHomeClear.Name = "pseudoHomeClear";
             this.pseudoHomeClear.Size = new System.Drawing.Size(75, 23);
-            this.pseudoHomeClear.TabIndex = 0;
+            this.pseudoHomeClear.TabIndex = 10;
             this.pseudoHomeClear.Text = "Clear";
             this.pseudoHomeClear.UseVisualStyleBackColor = true;
+            this.pseudoHomeClear.Click += new System.EventHandler(this.pseudoHomeClear_Click);
             // 
             // pseudoHomeToleranceLabel
             // 
@@ -760,7 +761,7 @@ namespace Radegast
             this.pseudoHomeEnabled.Location = new System.Drawing.Point(6, 77);
             this.pseudoHomeEnabled.Name = "pseudoHomeEnabled";
             this.pseudoHomeEnabled.Size = new System.Drawing.Size(65, 17);
-            this.pseudoHomeEnabled.TabIndex = 3;
+            this.pseudoHomeEnabled.TabIndex = 8;
             this.pseudoHomeEnabled.Text = "Enabled";
             this.pseudoHomeEnabled.UseVisualStyleBackColor = true;
             this.pseudoHomeEnabled.CheckedChanged += new System.EventHandler(this.pseudoHomeEnabled_CheckedChanged);
@@ -787,7 +788,7 @@ namespace Radegast
             this.autoSitEnabled.Location = new System.Drawing.Point(9, 70);
             this.autoSitEnabled.Name = "autoSitEnabled";
             this.autoSitEnabled.Size = new System.Drawing.Size(65, 17);
-            this.autoSitEnabled.TabIndex = 6;
+            this.autoSitEnabled.TabIndex = 2;
             this.autoSitEnabled.Text = "Enabled";
             this.autoSitEnabled.UseVisualStyleBackColor = true;
             this.autoSitEnabled.CheckedChanged += new System.EventHandler(this.autoSitEnabled_CheckedChanged);
@@ -797,7 +798,7 @@ namespace Radegast
             this.autoSitSit.Location = new System.Drawing.Point(94, 66);
             this.autoSitSit.Name = "autoSitSit";
             this.autoSitSit.Size = new System.Drawing.Size(75, 23);
-            this.autoSitSit.TabIndex = 5;
+            this.autoSitSit.TabIndex = 3;
             this.autoSitSit.Text = "Sit";
             this.autoSitSit.UseVisualStyleBackColor = true;
             this.autoSitSit.Click += new System.EventHandler(this.autoSitSit_Click);
@@ -807,7 +808,7 @@ namespace Radegast
             this.autoSitClear.Location = new System.Drawing.Point(182, 66);
             this.autoSitClear.Name = "autoSitClear";
             this.autoSitClear.Size = new System.Drawing.Size(75, 23);
-            this.autoSitClear.TabIndex = 0;
+            this.autoSitClear.TabIndex = 4;
             this.autoSitClear.Text = "Clear";
             this.autoSitClear.UseVisualStyleBackColor = true;
             this.autoSitClear.Click += new System.EventHandler(this.autoSitClear_Click);
@@ -829,7 +830,7 @@ namespace Radegast
             this.autoSitUUID.Name = "autoSitUUID";
             this.autoSitUUID.ReadOnly = true;
             this.autoSitUUID.Size = new System.Drawing.Size(210, 20);
-            this.autoSitUUID.TabIndex = 3;
+            this.autoSitUUID.TabIndex = 1;
             // 
             // autoSitName
             // 
@@ -837,7 +838,7 @@ namespace Radegast
             this.autoSitName.Name = "autoSitName";
             this.autoSitName.ReadOnly = true;
             this.autoSitName.Size = new System.Drawing.Size(210, 20);
-            this.autoSitName.TabIndex = 2;
+            this.autoSitName.TabIndex = 0;
             // 
             // autoSitNameLabel
             // 
