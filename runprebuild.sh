@@ -2,16 +2,11 @@
 
 cd `dirname "$0"`
 mkdir bin 2>/dev/null
-cp Radegast/assemblies/* bin
 
-mono Radegast/prebuild.exe /target nant
+mono Radegast/prebuild.exe /target vs2010 /exclude plug_speech
 
-cp -f NullBuild.txt plugins/Radegast.Plugin.Speech/RadSpeechWin/RadSpeechWin.dll.build
-cp -f NullBuild.txt plugins/Radegast.Plugin.Speech/RadSpeechMac/RadSpeechMac.dll.build
-cp -f NullBuild.txt plugins/Radegast.Plugin.Demo/Radegast.Plugin.Demo.dll.build
-
-if [ x$1 == xnant ]; then
-    nant -buildfile:Radegast.build
+if [ x$1 == xbuild ]; then
+    xbuild /p:Configuration=Release Radegast.sln
     RES=$?
     echo Build Exit Code: $RES
 
@@ -24,4 +19,8 @@ if [ x$1 == xnant ]; then
     fi
     
     exit $RES
+else
+    echo "Now run:"
+    echo
+    echo "xbuild Radegast.sln"
 fi
