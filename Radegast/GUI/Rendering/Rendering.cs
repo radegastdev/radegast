@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2011, Radegast Development Team
+// Copyright (c) 2009-2013, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -183,6 +183,7 @@ namespace Radegast.Rendering
             renderTimer.Start();
 
             // Camera initial setting
+            Instance.State.CameraTracksOwnAvatar = false;
             Camera = new Camera();
             InitCamera();
             SetWaterPlanes();
@@ -213,6 +214,8 @@ namespace Radegast.Rendering
         {
             RenderingEnabled = false;
             Application.Idle -= new EventHandler(Application_Idle);
+            Instance.State.CameraTracksOwnAvatar = true;
+            Instance.State.SetDefaultCamera();
 
             if (!PendingTextures.Closed)
             {
@@ -1535,7 +1538,7 @@ namespace Radegast.Rendering
                         screenPos.X -= size.Width / 2;
                         screenPos.Y -= size.Height;
 
-                        if (screenPos.Y > 0)
+                        if (screenPos.Y + size.Height > 0)
                         {
                             if (pass == RenderPass.Picking)
                             {

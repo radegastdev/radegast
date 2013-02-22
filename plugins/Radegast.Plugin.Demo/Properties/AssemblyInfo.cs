@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Radegast Development Team")]
 [assembly: AssemblyProduct("Radegast.Plugin.Demo")]
-[assembly: AssemblyCopyright("Copyright © Radegast Development Team 2010")]
+[assembly: AssemblyCopyright("Copyright © 2009-2013, Radegast Development Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

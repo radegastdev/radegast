@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2012, Radegast Development Team
+// Copyright (c) 2009-2013, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,7 @@ namespace Radegast
             // 
             this.txtTitle.AutoSize = true;
             this.txtTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTitle.Location = new System.Drawing.Point(161, 12);
+            this.txtTitle.Location = new System.Drawing.Point(161, 9);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(137, 17);
             this.txtTitle.TabIndex = 1;
@@ -121,15 +121,15 @@ namespace Radegast
             // txtWrittenBy
             // 
             this.txtWrittenBy.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtWrittenBy.Location = new System.Drawing.Point(165, 35);
+            this.txtWrittenBy.Location = new System.Drawing.Point(165, 27);
             this.txtWrittenBy.Multiline = true;
             this.txtWrittenBy.Name = "txtWrittenBy";
             this.txtWrittenBy.ReadOnly = true;
-            this.txtWrittenBy.Size = new System.Drawing.Size(162, 85);
+            this.txtWrittenBy.Size = new System.Drawing.Size(162, 102);
             this.txtWrittenBy.TabIndex = 1;
             this.txtWrittenBy.TabStop = false;
             this.txtWrittenBy.Text = "Written by Latif Khalifa\r\nwith contributions from\r\n- Douglas R. Miles\r\n- Mojito S" +
-                "orbet\r\n- Robin Cornelius\r\n- Revolution Smythe";
+    "orbet\r\n- Robin Cornelius\r\n- Revolution Smythe\r\n- Signpost Marv";
             // 
             // btnClose
             // 
@@ -161,13 +161,13 @@ namespace Radegast
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(335, 371);
+            this.ClientSize = new System.Drawing.Size(339, 375);
+            this.Controls.Add(this.txtTitle);
+            this.Controls.Add(this.txtLicense);
             this.Controls.Add(this.lblHomepage);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.txtOtherLicenses);
             this.Controls.Add(this.txtWrittenBy);
-            this.Controls.Add(this.txtLicense);
-            this.Controls.Add(this.txtTitle);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;

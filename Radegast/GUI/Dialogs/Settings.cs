@@ -1,7 +1,7 @@
 ﻿
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2012, Radegast Development Team
+// Copyright (c) 2009-2013, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -501,8 +501,35 @@ namespace Radegast
                 PrimitiveName = Instance.State.AutoSit.Preferences.PrimitiveName,
                 Enabled = autoSitEnabled.Checked
             };
+
+            if (Instance.State.AutoSit.Preferences.Enabled)
+            {
+                Instance.State.AutoSit.TrySit();
+            }
         }
 
+        private void autoSitUUID_Leave(object sender, EventArgs e)
+        {
+            UUID primID = UUID.Zero;
+            if (UUID.TryParse(autoSitUUID.Text, out primID))
+            {
+                Instance.State.AutoSit.Preferences = new AutoSitPreferences
+                {
+                    Primitive = primID,
+                    PrimitiveName = autoSitName.Text,
+                    Enabled = autoSitEnabled.Checked
+                };
+
+                if (Instance.State.AutoSit.Preferences.Enabled)
+                {
+                    Instance.State.AutoSit.TrySit();
+                }
+            }
+            else
+            {
+                autoSitUUID.Text = UUID.Zero.ToString();
+            }
+        }
         #endregion
 
         #region Pseudo Home
@@ -565,6 +592,11 @@ namespace Radegast
             };
         }
 
+        private void pseudoHomeClear_Click(object sender, EventArgs e)
+        {
+            Instance.State.PseudoHome.Preferences = new PseudoHomePreferences();
+            pseudoHomePrefsUpdated();
+        }
         #endregion
     }
 }
