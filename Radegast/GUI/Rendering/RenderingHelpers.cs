@@ -668,9 +668,41 @@ namespace Radegast.Rendering
         bool mModified;
 
         /// <summary>Camera position</summary>
-        public Vector3 Position { get { return mPosition; } set { mPosition = value; Modify(); } }
+        public Vector3 Position
+        {
+            get
+            {
+                return mPosition;
+            }
+            
+            set
+            {
+                if (mPosition != value)
+                {
+                    mPosition = value;
+                    Modify();
+                }
+            }
+        }
+
         /// <summary>Camera target</summary>
-        public Vector3 FocalPoint { get { return mFocalPoint; } set { mFocalPoint = value; Modify(); } }
+        public Vector3 FocalPoint
+        {
+            get
+            {
+                return mFocalPoint;
+            }
+            
+            set
+            {
+                if (mFocalPoint != value)
+                {
+                    mFocalPoint = value;
+                    Modify();
+                }
+            }
+        }
+
         /// <summary>Zoom level</summary>
         public float Zoom;
         /// <summary>Draw distance</summary>
@@ -702,6 +734,7 @@ namespace Radegast.Rendering
             }
         }
 
+#if OBSOLETE_CODE
         [Obsolete("Use Step(), left in here for reference")]
         public void Step2(float time)
         {
@@ -742,6 +775,7 @@ namespace Radegast.Rendering
             RenderPosition = Position;
             RenderFocalPoint = FocalPoint;
         }
+#endif
 
         public void Pan(float deltaX, float deltaY)
         {
