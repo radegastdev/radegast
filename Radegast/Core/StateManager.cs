@@ -45,6 +45,7 @@ namespace Radegast
         public string ID { get; set; }
         public string Name { get; set; }
         public Quaternion Heading { get; set; }
+
         public KnownHeading(string id, string name, Quaternion heading)
         {
             this.ID = id;
@@ -84,6 +85,8 @@ namespace Radegast
         private UUID typingAnimationID = new UUID("c541c47f-e0c0-058b-ad1a-d6ae3a4584d9");
         internal static Random rnd = new Random();
         private System.Threading.Timer lookAtTimer;
+
+        public float FOVVerticalAngle = Utils.TWO_PI - 0.05f;
 
         /// <summary>
         /// Passes walk state
@@ -183,6 +186,8 @@ namespace Radegast
         }
 
         public Dictionary<UUID, string> KnownAnimations;
+        public bool CameraTracksOwnAvatar = true;
+        public Vector3 DefaultCameraOffset = new Vector3(-5, 0, 0);
 
         public StateManager(RadegastInstance instance)
         {
@@ -206,6 +211,7 @@ namespace Radegast
 
         private void RegisterClientEvents(GridClient client)
         {
+            client.Objects.AvatarUpdate += new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
             client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             client.Objects.AvatarSitChanged += new EventHandler<AvatarSitChangedEventArgs>(Objects_AvatarSitChanged);
             client.Self.AlertMessage += new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
@@ -216,6 +222,7 @@ namespace Radegast
 
         private void UnregisterClientEvents(GridClient client)
         {
+            client.Objects.AvatarUpdate -= new EventHandler<AvatarUpdateEventArgs>(Objects_AvatarUpdate);
             client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             client.Objects.AvatarSitChanged -= new EventHandler<AvatarSitChangedEventArgs>(Objects_AvatarSitChanged);
             client.Self.AlertMessage -= new EventHandler<AlertMessageEventArgs>(Self_AlertMessage);
@@ -468,6 +475,7 @@ namespace Radegast
         {
             autosit.TrySit();
             pseudohome.ETGoHome();
+            SetFOVVerticalAngle(FOVVerticalAngle);
         }
 
         private UUID teleportEffect = UUID.Random();
@@ -520,9 +528,23 @@ namespace Radegast
             }
         }
 
+        void Objects_AvatarUpdate(object sender, AvatarUpdateEventArgs e)
+        {
+            if (e.Avatar.LocalID == client.Self.LocalID)
+            {
+                SetDefaultCamera();
+            }
+        }
+
         void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
             if (!e.Update.Avatar) return;
+            
+            if (e.Prim.LocalID == client.Self.LocalID)
+            {
+                SetDefaultCamera();
+            }
+
             if (!following) return;
 
             Avatar av;
@@ -551,6 +573,28 @@ namespace Radegast
                 client.Self.AutoPilotCancel();
                 client.Self.Movement.TurnToward(pos);
             }
+        }
+
+        public void SetDefaultCamera()
+        {
+            if (CameraTracksOwnAvatar)
+            {
+                client.Self.Movement.Camera.LookAt(
+                    client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation,
+                    client.Self.SimPosition
+                );
+            }
+        }
+
+        public void SetFOVVerticalAngle(float angle)
+        {
+            OpenMetaverse.Packets.AgentFOVPacket msg = new OpenMetaverse.Packets.AgentFOVPacket();
+            msg.AgentData.AgentID = client.Self.AgentID;
+            msg.AgentData.SessionID = client.Self.SessionID;
+            msg.AgentData.CircuitCode = client.Network.CircuitCode;
+            msg.FOVBlock.GenCounter = 0;
+            msg.FOVBlock.VerticalAngle = angle;
+            client.Network.SendPacket(msg);
         }
 
         public Quaternion AvatarRotation(Simulator sim, UUID avID)
