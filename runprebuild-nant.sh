@@ -3,6 +3,7 @@
 cd `dirname "$0"`
 mkdir bin 2>/dev/null
 cp Radegast/assemblies/* bin
+cp plugins/Radegast.Plugin.Alice/assemblies/*.dll bin
 
 mono Radegast/prebuild.exe /target nant
 
