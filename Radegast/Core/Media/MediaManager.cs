@@ -318,7 +318,7 @@ namespace Radegast.Media
             }
             catch (Exception ex)
             {
-                Logger.Log("Failed to initialize the sound system: ", Helpers.LogLevel.Warning, ex);
+                Logger.Log("Failed to initialize the sound system: " + ex.ToString(), Helpers.LogLevel.Warning);
             }
         }
 
