@@ -635,7 +635,7 @@ namespace Radegast
 
             globalLogFile = Path.Combine(userDir, Properties.Resources.ProgramName + ".log");
             globalSettings = new Settings(Path.Combine(userDir, "settings.xml"));
-            frmSettings.InitSettigs(globalSettings);
+            frmSettings.InitSettigs(globalSettings, monoRuntime);
         }
 
         public GridClient Client

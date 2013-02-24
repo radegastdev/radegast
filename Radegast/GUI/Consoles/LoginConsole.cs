@@ -475,6 +475,7 @@ namespace Radegast
             }
 
             instance.MarkStartExecution();
+            instance.Client.Settings.HTTP_INVENTORY = !instance.GlobalSettings["disable_http_inventory"];
             netcom.Login();
             SaveConfig();
         }

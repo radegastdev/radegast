@@ -121,6 +121,7 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
+            this.cbDisableHTTPInventory = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -147,7 +148,7 @@ namespace Radegast
             this.tcGraphics.Multiline = true;
             this.tcGraphics.Name = "tcGraphics";
             this.tcGraphics.SelectedIndex = 0;
-            this.tcGraphics.Size = new System.Drawing.Size(530, 403);
+            this.tcGraphics.Size = new System.Drawing.Size(530, 453);
             this.tcGraphics.TabIndex = 0;
             // 
             // tbpGeneral
@@ -159,7 +160,7 @@ namespace Radegast
             this.tbpGeneral.Location = new System.Drawing.Point(4, 22);
             this.tbpGeneral.Name = "tbpGeneral";
             this.tbpGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpGeneral.Size = new System.Drawing.Size(522, 377);
+            this.tbpGeneral.Size = new System.Drawing.Size(522, 427);
             this.tbpGeneral.TabIndex = 1;
             this.tbpGeneral.Text = "General";
             this.tbpGeneral.UseVisualStyleBackColor = true;
@@ -231,6 +232,7 @@ namespace Radegast
             // 
             // cbMisc
             // 
+            this.cbMisc.Controls.Add(this.cbDisableHTTPInventory);
             this.cbMisc.Controls.Add(this.cbHideLoginGraphics);
             this.cbMisc.Controls.Add(this.cbDisableLookAt);
             this.cbMisc.Controls.Add(this.cbTrasactDialog);
@@ -246,7 +248,7 @@ namespace Radegast
             this.cbMisc.Controls.Add(this.cbSyntaxHighlight);
             this.cbMisc.Location = new System.Drawing.Point(270, 6);
             this.cbMisc.Name = "cbMisc";
-            this.cbMisc.Size = new System.Drawing.Size(236, 260);
+            this.cbMisc.Size = new System.Drawing.Size(236, 310);
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
             // 
@@ -501,7 +503,7 @@ namespace Radegast
             this.gbDisplayNames.Controls.Add(this.rbDNDandUsernme);
             this.gbDisplayNames.Controls.Add(this.rbDNSmart);
             this.gbDisplayNames.Controls.Add(this.rbDNOff);
-            this.gbDisplayNames.Location = new System.Drawing.Point(270, 272);
+            this.gbDisplayNames.Location = new System.Drawing.Point(8, 319);
             this.gbDisplayNames.Name = "gbDisplayNames";
             this.gbDisplayNames.Size = new System.Drawing.Size(256, 100);
             this.gbDisplayNames.TabIndex = 3;
@@ -850,11 +852,21 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
+            // cbDisableHTTPInventory
+            // 
+            this.cbDisableHTTPInventory.AutoSize = true;
+            this.cbDisableHTTPInventory.Location = new System.Drawing.Point(6, 257);
+            this.cbDisableHTTPInventory.Name = "cbDisableHTTPInventory";
+            this.cbDisableHTTPInventory.Size = new System.Drawing.Size(140, 17);
+            this.cbDisableHTTPInventory.TabIndex = 16;
+            this.cbDisableHTTPInventory.Text = "Disable HTTP Inventory";
+            this.cbDisableHTTPInventory.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(530, 403);
+            this.ClientSize = new System.Drawing.Size(530, 453);
             this.Controls.Add(this.tcGraphics);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmSettings";
@@ -929,25 +941,26 @@ namespace Radegast
         public System.Windows.Forms.GroupBox cbHighLight;
         public System.Windows.Forms.CheckBox cbHighlightGroupIM;
         public System.Windows.Forms.CheckBox cbHighlightIM;
-        private System.Windows.Forms.CheckBox cbHighlightChat;
-        private System.Windows.Forms.TabPage tbpBot;
-        private System.Windows.Forms.GroupBox autoSit;
-        private System.Windows.Forms.Button autoSitClear;
-        private System.Windows.Forms.Button autoSitSit;
-        private System.Windows.Forms.Label autoSitUUIDLabel;
-        private System.Windows.Forms.TextBox autoSitUUID;
-        private System.Windows.Forms.TextBox autoSitName;
-        private System.Windows.Forms.Label autoSitNameLabel;
-        private System.Windows.Forms.CheckBox autoSitEnabled;
-        private System.Windows.Forms.GroupBox pseudoHome;
-        private System.Windows.Forms.TextBox pseudoHomeLocation;
-        private System.Windows.Forms.CheckBox pseudoHomeEnabled;
-        private System.Windows.Forms.Button pseudoHomeTP;
-        private System.Windows.Forms.Button pseudoHomeSet;
-        private System.Windows.Forms.Button pseudoHomeClear;
-        private System.Windows.Forms.NumericUpDown pseudoHomeTolerance;
-        private System.Windows.Forms.Label pseudoHomeToleranceLabel;
-        private System.Windows.Forms.CheckBox cbNameLinks;
+        public System.Windows.Forms.CheckBox cbDisableHTTPInventory;
+        public System.Windows.Forms.CheckBox cbHighlightChat;
+        public System.Windows.Forms.TabPage tbpBot;
+        public System.Windows.Forms.GroupBox autoSit;
+        public System.Windows.Forms.Button autoSitClear;
+        public System.Windows.Forms.Button autoSitSit;
+        public System.Windows.Forms.Label autoSitUUIDLabel;
+        public System.Windows.Forms.TextBox autoSitUUID;
+        public System.Windows.Forms.TextBox autoSitName;
+        public System.Windows.Forms.Label autoSitNameLabel;
+        public System.Windows.Forms.CheckBox autoSitEnabled;
+        public System.Windows.Forms.GroupBox pseudoHome;
+        public System.Windows.Forms.TextBox pseudoHomeLocation;
+        public System.Windows.Forms.CheckBox pseudoHomeEnabled;
+        public System.Windows.Forms.Button pseudoHomeTP;
+        public System.Windows.Forms.Button pseudoHomeSet;
+        public System.Windows.Forms.Button pseudoHomeClear;
+        public System.Windows.Forms.NumericUpDown pseudoHomeTolerance;
+        public System.Windows.Forms.Label pseudoHomeToleranceLabel;
+        public System.Windows.Forms.CheckBox cbNameLinks;
 
 
     }
