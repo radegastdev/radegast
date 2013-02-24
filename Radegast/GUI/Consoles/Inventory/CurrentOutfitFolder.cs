@@ -144,7 +144,7 @@ namespace Radegast
                         {
                             InventoryWearable w = (InventoryWearable)link;
                             InventoryItem lk = links.Find(l => l.AssetUUID == w.UUID);
-                            Logger.DebugLog(string.Format("\nName: {0}\nDescription: {1}\nType: {2} - {3}", w.Name, lk == null ? "" : lk.Description, w.Flags.ToString(), w.WearableType.ToString())); ;
+                            // Logger.DebugLog(string.Format("\nName: {0}\nDescription: {1}\nType: {2} - {3}", w.Name, lk == null ? "" : lk.Description, w.Flags.ToString(), w.WearableType.ToString())); ;
                         }
                     }
 
