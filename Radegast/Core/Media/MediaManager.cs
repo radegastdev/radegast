@@ -194,6 +194,48 @@ namespace Radegast.Media
                 FMOD.CAPS caps = FMOD.CAPS.NONE;
                 FMOD.SPEAKERMODE speakermode = FMOD.SPEAKERMODE._5POINT1;
 
+                // Try to detect soud system used
+                if (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)
+                {
+                    bool audioOK = false;
+                    var res = system.setOutput(FMOD.OUTPUTTYPE.COREAUDIO);
+                    if (res == RESULT.OK)
+                    {
+                        audioOK = true;
+                    }
+
+                    if (!audioOK)
+                    {
+                        res = system.setOutput(FMOD.OUTPUTTYPE.ALSA);
+                        if (res == RESULT.OK)
+                        {
+                            audioOK = true;
+                        }
+                    }
+
+                    if (!audioOK)
+                    {
+                        res = system.setOutput(FMOD.OUTPUTTYPE.OSS);
+                        if (res == RESULT.OK)
+                        {
+                            audioOK = true;
+                        }
+                    }
+
+                    if (!audioOK)
+                    {
+                        res = system.setOutput(FMOD.OUTPUTTYPE.AUTODETECT);
+                        if (res == RESULT.OK)
+                        {
+                            audioOK = true;
+                        }
+                    }
+
+                }
+
+                FMOD.OUTPUTTYPE outputType = OUTPUTTYPE.UNKNOWN;
+                FMODExec(system.getOutput(ref outputType));
+
                 // Fancy param checking on Linux can cause init to fail
                 try
                 {
@@ -207,11 +249,6 @@ namespace Radegast.Media
                    FMODExec(system.setSpeakerMode(speakermode));
                 }
                 catch {}
-
-                // Forcing the ALSA sound system on Linux seems to avoid a CPU loop
-                // LK - this causes fails on OSX and many linux distros
-                //if (System.Environment.OSVersion.Platform == PlatformID.Unix)
-                //    FMODExec(system.setOutput(FMOD.OUTPUTTYPE.ALSA));
 
                 // The user has the 'Acceleration' slider set to off, which
                 // is really bad for latency.  At 48khz, the latency between
@@ -269,7 +306,7 @@ namespace Radegast.Media
                 );
 
                 soundSystemAvailable = true;
-                Logger.Log("Initialized FMOD Ex", Helpers.LogLevel.Debug);
+                Logger.Log("Initialized FMOD Ex: " + outputType.ToString(), Helpers.LogLevel.Debug);
             }
             catch (Exception ex)
             {
