@@ -57,7 +57,7 @@ namespace Radegast
         private Settings s;
         private static bool settingInitialized = false;
 
-        public static void InitSettigs(Settings s)
+        public static void InitSettigs(Settings s, bool mono)
         {
             if (s["im_timestamps"].Type == OSDType.Unknown)
             {
@@ -130,6 +130,11 @@ namespace Radegast
             if (!s.ContainsKey("highlight_on_group_im")) s["highlight_on_group_im"] = true;
 
             if (!s.ContainsKey("av_name_link")) s["av_name_link"] = false;
+
+            if (!s.ContainsKey("disable_http_inventory"))
+            {
+                s["disable_http_inventory"] = mono;
+            }
         }
 
         public frmSettings(RadegastInstance instance)
@@ -137,10 +142,11 @@ namespace Radegast
         {
             if (settingInitialized)
             {
-                frmSettings.InitSettigs(instance.GlobalSettings);
+                frmSettings.InitSettigs(instance.GlobalSettings, instance.MonoRuntime);
             }
 
             InitializeComponent();
+            AutoSavePosition = true;
 
             s = instance.GlobalSettings;
             tbpGraphics.Controls.Add(new Radegast.Rendering.GraphicsPreferences(instance));
@@ -296,6 +302,13 @@ namespace Radegast
                     s["av_name_link"] = cbNameLinks.Checked;
                 };
             }
+
+            cbDisableHTTPInventory.Checked = s["disable_http_inventory"];
+            cbDisableHTTPInventory.CheckedChanged += (sender, e) =>
+            {
+                s["disable_http_inventory"] = cbDisableHTTPInventory.Checked;
+            };
+
 
             autoSitPrefsUpdate();
             pseudoHomePrefsUpdated();
