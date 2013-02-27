@@ -168,6 +168,11 @@ namespace Radegast.Netcom
                 }
             }
 
+            if (e.Status == LoginStatus.Failed)
+            {
+                instance.MarkEndExecution();
+            }
+
             LoginProgressEventArgs ea = new LoginProgressEventArgs(e.Status, e.Message, string.Empty);
 
             if (CanSyncInvoke)
