@@ -435,7 +435,6 @@ namespace Radegast
             netcom.LoginOptions.Channel = Properties.Resources.ProgramName; // Channel
             netcom.LoginOptions.Version = Properties.Resources.RadegastTitle; // Version
             netcom.AgreeToTos = cbTOS.Checked;
-            netcom.LoginOptions.LastExecEvent = instance.GetLastExecStatus();
 
             switch (cbxLocation.SelectedIndex)
             {
@@ -474,7 +473,6 @@ namespace Radegast
                 instance.Client.Settings.MULTIPLE_SIMS = true;
             }
 
-            instance.MarkStartExecution();
             instance.Client.Settings.HTTP_INVENTORY = !instance.GlobalSettings["disable_http_inventory"];
             netcom.Login();
             SaveConfig();

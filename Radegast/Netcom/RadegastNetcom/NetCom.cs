@@ -208,6 +208,7 @@ namespace Radegast.Netcom
         void Network_Disconnected(object sender, DisconnectedEventArgs e)
         {
             loggedIn = false;
+            instance.MarkEndExecution();
 
             if (CanSyncInvoke)
                 netcomSync.BeginInvoke(new OnClientDisconnectRaise(OnClientDisconnected), new object[] { e });
@@ -234,6 +235,21 @@ namespace Radegast.Netcom
         public void Login()
         {
             loggingIn = true;
+
+            // Report crashes only once and not on relogs/reconnects
+            LastExecStatus execStatus = instance.GetLastExecStatus();
+            if (execStatus != LastExecStatus.Normal && (!instance.ReportedCrash))
+            {
+                instance.ReportedCrash = true;
+                loginOptions.LastExecEvent = execStatus;
+                Logger.Log("Reporting crash of the last application run to the grid login service", Helpers.LogLevel.Warning);
+            }
+            else
+            {
+                loginOptions.LastExecEvent = LastExecStatus.Normal;
+                Logger.Log("Reporting normal shutdown of the last application run to the grid login service", Helpers.LogLevel.Info);
+            }
+            instance.MarkStartExecution();
 
             OverrideEventArgs ea = new OverrideEventArgs();
             OnClientLoggingIn(ea);

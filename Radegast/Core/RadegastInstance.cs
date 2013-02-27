@@ -212,9 +212,20 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Keyaboard handling manager (used in 3D scene viewer)
+        /// </summary>
         public Keyboard Keyboard;
 
+        /// <summary>
+        /// Current Outfit Folder (appearnce) manager
+        /// </summary>
         public CurrentOutfitFolder COF;
+
+        /// <summary>
+        /// Did we report crash to the grid login service
+        /// </summary>
+        public bool ReportedCrash = false;
 
         private string CrashMarkerFileName
         {
@@ -429,9 +440,6 @@ namespace Radegast
 
         public void Reconnect()
         {
-            // We are logging in without exiting the client
-            // Mark last run as successful
-            MarkEndExecution();
             TabConsole.DisplayNotificationInChat("Attempting to reconnect...", ChatBufferTextStyle.StatusDarkBlue);
             Logger.Log("Attemting to reconnect", Helpers.LogLevel.Info, client);
             GridClient oldClient = client;
@@ -676,19 +684,19 @@ namespace Radegast
         {
             if (File.Exists(CrashMarkerFileName))
             {
-                Logger.Log(string.Format("Found crash marker file {0}, reporting unclean shutdown to the grid", CrashMarkerFileName), Helpers.LogLevel.Warning);
+                Logger.Log(string.Format("Found crash marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
                 return LastExecStatus.OtherCrash;
             }
             else
             {
-                Logger.Log(string.Format("No crash marker file {0} found, reporting clean shutdown to the grid", CrashMarkerFileName), Helpers.LogLevel.Info);
+                Logger.Log(string.Format("No crash marker file {0} found", CrashMarkerFileName), Helpers.LogLevel.Debug);
                 return LastExecStatus.Normal;
             }
         }
 
         public void MarkStartExecution()
         {
-            Logger.Log(string.Format("Marking start of execution run, creating file: {0}", CrashMarkerFileName), Helpers.LogLevel.Info);
+            Logger.Log(string.Format("Marking start of execution run, creating file: {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
             try
             {
                 File.Create(CrashMarkerFileName).Dispose();
@@ -698,7 +706,7 @@ namespace Radegast
 
         public void MarkEndExecution()
         {
-            Logger.Log(string.Format("Marking end of execution run, deleting file: {0}", CrashMarkerFileName), Helpers.LogLevel.Info);
+            Logger.Log(string.Format("Marking end of execution run, deleting file: {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
             try
             {
                 File.Delete(CrashMarkerFileName);
