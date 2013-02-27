@@ -111,7 +111,7 @@ namespace Radegast
 
             if (!s.ContainsKey("taskbar_highlight")) s["taskbar_highlight"] = true;
 
-            if (!s.ContainsKey("rendering_occlusion_culling_enabled")) s["rendering_occlusion_culling_enabled"] = true;
+            if (!s.ContainsKey("rendering_occlusion_culling_enabled2")) s["rendering_occlusion_culling_enabled2"] = false;
 
             if (!s.ContainsKey("rendering_use_vbo")) s["rendering_use_vbo"] = true;
 
