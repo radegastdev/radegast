@@ -311,6 +311,14 @@ namespace Radegast.Rendering
                 }
                 catch (ObjectDisposedException)
                 { }
+#if !DEBUG
+                catch (Exception ex)
+                {
+                    RenderingEnabled = false;
+                    Logger.Log("Crash of the 3D scene viewer:\n" + ex.ToString(), Helpers.LogLevel.Error);
+                    Dispose();
+                }
+#endif
             }
         }
         #endregion Construction and disposal
