@@ -81,7 +81,7 @@ namespace Radegast.Bot
         }
     }
 
-    public class AutoSit
+    public class AutoSit : IDisposable
     {
         private const string c_label = "Use as Auto-Sit target";
 
@@ -91,11 +91,21 @@ namespace Radegast.Bot
         public AutoSit(RadegastInstance instance)
         {
             m_instance = instance;
-            m_Timer = new Timer(60000);
+            m_Timer = new Timer(10 * 1000);
             m_Timer.Elapsed += new ElapsedEventHandler((sender, args) => {
                 TrySit();
             });
             m_Timer.Enabled = false;
+        }
+
+        public void Dispose()
+        {
+            if (m_Timer != null)
+            {
+                m_Timer.Enabled = false;
+                m_Timer.Dispose();
+                m_Timer = null;
+            }
         }
 
         public AutoSitPreferences Preferences
@@ -156,6 +166,13 @@ namespace Radegast.Bot
                     {
                         m_instance.State.SetSitting(true, Preferences.Primitive);
                         m_Timer.Enabled = true;
+                    }
+                    else
+                    {
+                        if (!m_instance.Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(m_instance.Client.Self.SittingOn))
+                        {
+                            m_instance.State.SetSitting(false, UUID.Zero);
+                        }
                     }
                 }
                 else

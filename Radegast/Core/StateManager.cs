@@ -251,6 +251,12 @@ namespace Radegast
                 walkTimer.Dispose();
                 walkTimer = null;
             }
+
+            if (autosit != null)
+            {
+                autosit.Dispose();
+                autosit = null;
+            }
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -263,7 +269,13 @@ namespace Radegast
         {
             if (e.Avatar.LocalID != client.Self.LocalID) return;
 
-            this.sitting = e.SittingOn != 0;
+            sitting = e.SittingOn != 0;
+
+            if (client.Self.SittingOn != 0 && !client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(client.Self.SittingOn))
+            {
+                client.Objects.RequestObject(client.Network.CurrentSim, client.Self.SittingOn);
+            }
+
             if (SitStateChanged != null)
             {
                 SitStateChanged(this, new SitEventArgs(this.sitting));
@@ -579,10 +591,19 @@ namespace Radegast
         {
             if (CameraTracksOwnAvatar)
             {
-                client.Self.Movement.Camera.LookAt(
-                    client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation,
-                    client.Self.SimPosition
-                );
+                if (client.Self.SittingOn != 0 && !client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(client.Self.SittingOn))
+                {
+                    // We are sitting but don't have the information about the object we are sitting on
+                    // Sim seems to ignore RequestMutlipleObjects message
+                    // client.Objects.RequestObject(client.Network.CurrentSim, client.Self.SittingOn);
+                }
+                else
+                {
+                    client.Self.Movement.Camera.LookAt(
+                        client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation,
+                        client.Self.SimPosition
+                    );
+                }
             }
         }
 
