@@ -28,7 +28,6 @@
 //
 // $Id: Sound.cs 502 2010-03-14 23:13:46Z latifer $
 //
-#define GET_STREAM_TAGS
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -61,14 +60,10 @@ namespace Radegast.Media
         /// <summary>
         /// Fired when a stream meta data is received
         /// </summary>
-#pragma warning disable 0067
         public event StreamInfoCallback OnStreamInfo;
-#pragma warning restore 0067
 
-#if GET_STREAM_TAGS
-        Timer tagTimer = null;
-        uint tagCheckInterval = 1000;
-#endif
+        Timer updateTimer = null;
+        uint updateIntervl = 500;
         /// <summary>
         /// Creates a new sound object
         /// </summary>
@@ -89,13 +84,11 @@ namespace Radegast.Media
 
         public void StopStream()
         {
-#if GET_STREAM_TAGS
-            if (tagTimer != null)
+            if (updateTimer != null)
             {
-                tagTimer.Dispose();
-                tagTimer = null;
+                updateTimer.Dispose();
+                updateTimer = null;
             }
-#endif
 
             if (channel != null)
             {
@@ -135,6 +128,9 @@ namespace Radegast.Media
                     try
                     {
                         FMODExec(
+                            system.setStreamBufferSize(4 * 128 * 128, TIMEUNIT.RAWBYTES));
+
+                        FMODExec(
                             system.createSound(url,
                             (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM),
                             ref extraInfo,
@@ -150,27 +146,21 @@ namespace Radegast.Media
                             ref channel), "Stream channel");
                         FMODExec(channel.setVolume(volume), "Stream volume");
 
-#if GET_STREAM_TAGS
-                        if (Environment.OSVersion.Platform != PlatformID.Unix)
+                        if (updateTimer == null)
                         {
-                            if (tagTimer == null)
-                            {
-                                tagTimer = new Timer(CheckTags);
-                            }
-                            tagTimer.Change(0, tagCheckInterval);
+                            updateTimer = new Timer(Update);
                         }
-#endif
+                        updateTimer.Change(0, updateIntervl);
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log("Error playing stream: ", Helpers.LogLevel.Debug, ex);
+                        Logger.Log("Error playing stream: " + ex.ToString(), Helpers.LogLevel.Debug);
                     }
                 }));
         }
 
 
-#if GET_STREAM_TAGS
-        private void CheckTags(object sender)
+        private void Update(object sender)
         {
             if (sound == null) return;
 
@@ -178,15 +168,37 @@ namespace Radegast.Media
             {
                 try
                 {
-                    TAG tag = new TAG();
-                    while (sound.getTag(null, -1, ref tag) == RESULT.OK)
-                    {
-                        if (tag.datatype != TAGDATATYPE.STRING) continue;
+                    FMODExec(system.update());
 
-                        // Tell listeners about the Stream tag.  This can be
-                        // displayed to the user.
-                        if (OnStreamInfo != null)
-                            OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
+                    TAG tag = new TAG();
+                    int numTags = 0;
+                    int numTagsUpdated = 0;
+
+                    var res = sound.getNumTags(ref numTags, ref numTagsUpdated);
+
+                    if (res == RESULT.OK && numTagsUpdated > 0)
+                    {
+                        for (int i=0; i < numTags; i++)
+                        {
+                            if (sound.getTag(null, i, ref tag) != RESULT.OK)
+                            {
+                                continue;
+                            }
+
+                            if (tag.type == TAGTYPE.FMOD && tag.name == "Sample Rate Change")
+                            {
+                                float newfreq = (float)Marshal.PtrToStructure(tag.data, typeof(float));
+                                Logger.DebugLog("New stream frequency: " + newfreq.ToString("F" + 0));
+                                channel.setFrequency(newfreq);
+                            }
+
+                            if (tag.datatype != TAGDATATYPE.STRING) continue;
+
+                            // Tell listeners about the Stream tag.  This can be
+                            // displayed to the user.
+                            if (OnStreamInfo != null)
+                                OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -195,6 +207,5 @@ namespace Radegast.Media
                 }
             }));
         }
-#endif
     }
 }
