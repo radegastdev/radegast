@@ -78,7 +78,7 @@ namespace Radegast.Rendering
             {
                 cbWaterReflections.Checked = instance.GlobalSettings["water_reflections"];
             }
-            cbOcclusionCulling.Checked = Instance.GlobalSettings["rendering_occlusion_culling_enabled"];
+            cbOcclusionCulling.Checked = Instance.GlobalSettings["rendering_occlusion_culling_enabled2"];
             cbShiny.Checked = Instance.GlobalSettings["scene_viewer_shiny"];
             cbVBO.Checked = Instance.GlobalSettings["rendering_use_vbo"];
         }
@@ -134,10 +134,10 @@ namespace Radegast.Rendering
 
         private void cbOcclusionCulling_CheckedChanged(object sender, EventArgs e)
         {
-            Instance.GlobalSettings["rendering_occlusion_culling_enabled"] = cbOcclusionCulling.Checked;
+            Instance.GlobalSettings["rendering_occlusion_culling_enabled2"] = cbOcclusionCulling.Checked;
             if (Window != null)
             {
-                RenderSettings.OcclusionCullingEnabled = Instance.GlobalSettings["rendering_occlusion_culling_enabled"]
+                RenderSettings.OcclusionCullingEnabled = Instance.GlobalSettings["rendering_occlusion_culling_enabled2"]
                     && (RenderSettings.ARBQuerySupported || RenderSettings.CoreQuerySupported);
             }
         }

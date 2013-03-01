@@ -311,6 +311,14 @@ namespace Radegast.Rendering
                 }
                 catch (ObjectDisposedException)
                 { }
+#if !DEBUG
+                catch (Exception ex)
+                {
+                    RenderingEnabled = false;
+                    Logger.Log("Crash of the 3D scene viewer:\n" + ex.ToString(), Helpers.LogLevel.Error);
+                    Dispose();
+                }
+#endif
             }
         }
         #endregion Construction and disposal
@@ -684,7 +692,7 @@ namespace Radegast.Rendering
                 RenderSettings.ARBQuerySupported = context.GetAddress("glGetQueryObjectivARB") != IntPtr.Zero;
                 RenderSettings.CoreQuerySupported = context.GetAddress("glGetQueryObjectiv") != IntPtr.Zero;
                 RenderSettings.OcclusionCullingEnabled = (RenderSettings.CoreQuerySupported || RenderSettings.ARBQuerySupported)
-                    && instance.GlobalSettings["rendering_occlusion_culling_enabled"];
+                    && instance.GlobalSettings["rendering_occlusion_culling_enabled2"];
 
                 // Mipmap
                 RenderSettings.HasMipmap = context.GetAddress("glGenerateMipmap") != IntPtr.Zero;
@@ -705,7 +713,7 @@ namespace Radegast.Rendering
                 RenderSettings.TextureNonPowerOfTwoSupported = glExtensions.Contains("texture_non_power_of_two");
 
                 // Occlusion culling
-                RenderSettings.OcclusionCullingEnabled = Instance.GlobalSettings["rendering_occlusion_culling_enabled"]
+                RenderSettings.OcclusionCullingEnabled = Instance.GlobalSettings["rendering_occlusion_culling_enabled2"]
                     && (RenderSettings.ARBQuerySupported || RenderSettings.CoreQuerySupported);
 
                 // Shiny

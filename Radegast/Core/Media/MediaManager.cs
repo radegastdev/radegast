@@ -206,6 +206,15 @@ namespace Radegast.Media
 
                     if (!audioOK)
                     {
+                        res = system.setOutput(FMOD.OUTPUTTYPE.PULSEAUDIO);
+                        if (res == RESULT.OK)
+                        {
+                            audioOK = true;
+                        }
+                    }
+
+                    if (!audioOK)
+                    {
                         res = system.setOutput(FMOD.OUTPUTTYPE.ALSA);
                         if (res == RESULT.OK)
                         {
@@ -240,10 +249,9 @@ namespace Radegast.Media
                 try
                 {
                     // Get the capabilities of the driver.
-                    int minfrequency = 0, maxfrequency = 0;
+                    int outputRate = 0;
                     FMODExec(system.getDriverCaps(0, ref caps,
-                        ref minfrequency,
-                        ref maxfrequency,
+                        ref outputRate,
                         ref speakermode));
                     // Set FMOD speaker mode to what the driver supports.
                    FMODExec(system.setSpeakerMode(speakermode));
@@ -280,7 +288,7 @@ namespace Radegast.Media
                 catch {}
                 
                 // Try to initialize with all those settings, and Max 32 channels.
-                FMOD.RESULT result = system.init(32, FMOD.INITFLAG.NORMAL, (IntPtr)null);
+                FMOD.RESULT result = system.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)null);
                 if (result == FMOD.RESULT.ERR_OUTPUT_CREATEBUFFER)
                 {
                     // Can not handle surround sound - back to Stereo.
@@ -289,7 +297,7 @@ namespace Radegast.Media
                     // And init again.
                     FMODExec(system.init(
                         32,
-                        FMOD.INITFLAG.NORMAL,
+                        FMOD.INITFLAGS.NORMAL,
                         (IntPtr)null)
                     );
                 }
@@ -310,7 +318,7 @@ namespace Radegast.Media
             }
             catch (Exception ex)
             {
-                Logger.Log("Failed to initialize the sound system: ", Helpers.LogLevel.Warning, ex);
+                Logger.Log("Failed to initialize the sound system: " + ex.ToString(), Helpers.LogLevel.Warning);
             }
         }
 
