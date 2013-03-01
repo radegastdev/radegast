@@ -30,6 +30,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
+using System.Threading;
 
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
@@ -83,5 +85,106 @@ namespace Radegast.Automation
             catch { }
         }
 
+        /// <summary>
+        /// Dispatcher for incoming IM automation
+        /// </summary>
+        /// <param name="e">Incoming message</param>
+        /// <returns>If message processed correctly, should GUI processing be halted</returns>
+        public bool ProcessIM(InstantMessageEventArgs e)
+        {
+            LoadSettings();
+
+            if (!Enabled)
+            {
+                return false;
+            }
+
+            switch (e.IM.Dialog)
+            {
+                case InstantMessageDialog.MessageFromObject:
+                    {
+                        if (e.IM.FromAgentID != AllowedOwner)
+                        {
+                            return true;
+                        }
+                        string[] args = e.IM.Message.Trim().Split('^');
+                        if (args.Length < 1) return false;
+
+                        switch (args[0].Trim())
+                        {
+                            case "group_invite":
+                                {
+                                    if (args.Length < 4) return false;
+                                    ProcessInvite(args);
+                                    return true;
+                                }
+                        }
+                    }
+                    break;
+            }
+
+            return false;
+        }
+
+        private void ProcessInvite(string[] args)
+        {
+            if (args == null || args.Length < 4)
+                return;
+
+            ThreadPool.QueueUserWorkItem(sync =>
+            {
+                try
+                {
+                    UUID invitee = UUID.Zero;
+                    UUID groupID = UUID.Zero;
+                    UUID roleID = UUID.Zero;
+                    if (!UUID.TryParse(args[1].Trim(), out invitee)) return;
+                    if (!UUID.TryParse(args[2].Trim(), out groupID)) return;
+                    if (!UUID.TryParse(args[3].Trim(), out roleID)) return;
+
+                    if (instance.Groups.ContainsKey(groupID))
+                    {
+                        AutoResetEvent gotMembers = new AutoResetEvent(false);
+                        Dictionary<UUID, GroupMember> Members = null;
+                        EventHandler<GroupMembersReplyEventArgs> handler = (sender, e) =>
+                        {
+                            if (e.GroupID != groupID)
+                                return;
+                            Members = e.Members;
+                            gotMembers.Set();
+                        };
+
+                        client.Groups.GroupMembersReply += handler;
+                        client.Groups.RequestGroupMembers(groupID);
+                        bool success = gotMembers.WaitOne(30 * 1000, false);
+                        client.Groups.GroupMembersReply -= handler;
+
+                        if (Members != null && Members.ContainsKey(invitee))
+                        {
+                            instance.TabConsole.DisplayNotificationInChat(
+                                string.Format("Not inviting {0} ({1}) to {2} ({3}), already member", instance.Names.Get(invitee, true), invitee, instance.Groups[groupID].Name, groupID),
+                                ChatBufferTextStyle.ObjectChat);
+                        }
+                        else
+                        {
+                            instance.TabConsole.DisplayNotificationInChat(
+                                string.Format("Inviting {0} ({1}) to {2} ({3})", instance.Names.Get(invitee, true), invitee, instance.Groups[groupID].Name, groupID),
+                                ChatBufferTextStyle.ObjectChat);
+                            client.Groups.Invite(groupID, new List<UUID>(1) { roleID }, invitee);
+                        }
+                    }
+                    else
+                    {
+                        instance.TabConsole.DisplayNotificationInChat(
+                            string.Format("Cannot invite to group {0}, I don't appear to be in it.", groupID),
+                            ChatBufferTextStyle.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Failed proccessing automation IM: " + ex.ToString(), Helpers.LogLevel.Warning);
+                }
+            });
+        }
     }
 }
