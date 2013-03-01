@@ -127,6 +127,31 @@ namespace Radegast.Automation
                                     client.Self.InstantMessage(sendTo, msg);
                                     return true;
                                 }
+                            case "give_inventory":
+                                {
+                                    if (args.Length < 3) return false;
+                                    UUID sendTo = UUID.Zero;
+                                    UUID invItemID = UUID.Zero;
+                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
+                                    if (!UUID.TryParse(args[2].Trim(), out invItemID)) return false;
+                                    if (!client.Inventory.Store.Contains(invItemID))
+                                    {
+                                        instance.TabConsole.DisplayNotificationInChat(
+                                            string.Format("Tried to offer {0} but could not find it in my inventory", invItemID),
+                                            ChatBufferTextStyle.Error);
+                                        return false;
+                                    }
+                                    InventoryItem item = client.Inventory.Store[invItemID] as InventoryItem;
+                                    if (item == null)
+                                        return false;
+                                    client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, sendTo, true);
+                                    ThreadPool.QueueUserWorkItem(sync =>
+                                        instance.TabConsole.DisplayNotificationInChat(
+                                            string.Format("Gave {0} to {1}", item.Name, instance.Names.Get(sendTo, true)),
+                                            ChatBufferTextStyle.ObjectChat)
+                                    );
+                                    return true;
+                                }
                         }
                     }
                     break;
