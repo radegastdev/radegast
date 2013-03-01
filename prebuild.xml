@@ -27,8 +27,8 @@
         <WarningsAsErrors>false</WarningsAsErrors>
         <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
         <OutputPath>bin</OutputPath>
-        <DebugInformation>false</DebugInformation>
-        <IncrementalBuild>true</IncrementalBuild>
+        <DebugInformation>true</DebugInformation>
+        <IncrementalBuild>false</IncrementalBuild>
         <NoStdLib>false</NoStdLib>
         <PlatformTarget>x86</PlatformTarget>
       </Options>
@@ -40,14 +40,12 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
-          <XmlDocFile>OpenMetaverseTypes.XML</XmlDocFile>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
-          <XmlDocFile>OpenMetaverseTypes.XML</XmlDocFile>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
@@ -65,14 +63,12 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
-          <XmlDocFile>OpenMetaverse.StructuredData.XML</XmlDocFile>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
-          <XmlDocFile>OpenMetaverse.StructuredData.XML</XmlDocFile>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
@@ -90,14 +86,12 @@
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
-          <XmlDocFile>OpenMetaverse.XML</XmlDocFile>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
-          <XmlDocFile>OpenMetaverse.XML</XmlDocFile>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
@@ -128,7 +122,6 @@
       <Configuration name="Release">
         <Options>
           <OutputPath>../../radegast/bin/</OutputPath>
-          <XmlDocFile>OpenMetaverse.Rendering.Meshmerizer.XML</XmlDocFile>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
@@ -197,9 +190,7 @@
         <Match path="." pattern="*.so" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.dylib" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="fmodex.*" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
-        <Match path="." pattern="*.html" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.xml" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
-        <Match path="." pattern="*.txt" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.txt" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="*.png" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
         <Match path="." pattern="radegast.nsi" recurse="false" buildAction="Content" copyToOutput="PreserveNewest"/>
