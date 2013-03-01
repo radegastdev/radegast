@@ -97,7 +97,7 @@ namespace Radegast
             this.tabsInventory = new System.Windows.Forms.TabControl();
             this.tabSearch = new System.Windows.Forms.TabPage();
             this.lstInventorySearch = new Radegast.ListViewNoFlicker();
-            this.chResItemName = new System.Windows.Forms.ColumnHeader();
+            this.chResItemName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.pnlSearchOptions = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cbSrchRecent = new System.Windows.Forms.RadioButton();
@@ -113,6 +113,9 @@ namespace Radegast
             this.tabDetail = new System.Windows.Forms.TabPage();
             this.pnlDetail = new System.Windows.Forms.Panel();
             this.pnlItemProperties = new System.Windows.Forms.Panel();
+            this.txtInvID = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtAssetID = new System.Windows.Forms.TextBox();
             this.gbxPerms = new System.Windows.Forms.GroupBox();
             this.cbNextOwnTransfer = new System.Windows.Forms.CheckBox();
             this.cbNextOwnCopy = new System.Windows.Forms.CheckBox();
@@ -125,7 +128,6 @@ namespace Radegast
             this.btnProfile = new System.Windows.Forms.Button();
             this.txtCreator = new Radegast.AgentNameTextBox();
             this.txtCreated = new System.Windows.Forms.TextBox();
-            this.txtAssetID = new System.Windows.Forms.TextBox();
             this.lblCreated = new System.Windows.Forms.Label();
             this.txtItemDescription = new System.Windows.Forms.TextBox();
             this.txtItemName = new System.Windows.Forms.TextBox();
@@ -161,8 +163,8 @@ namespace Radegast
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.tabsInventory);
-            this.splitContainer1.Size = new System.Drawing.Size(791, 483);
-            this.splitContainer1.SplitterDistance = 346;
+            this.splitContainer1.Size = new System.Drawing.Size(834, 483);
+            this.splitContainer1.SplitterDistance = 364;
             this.splitContainer1.TabIndex = 1;
             // 
             // invTree
@@ -177,15 +179,15 @@ namespace Radegast
             this.invTree.LineColor = System.Drawing.Color.White;
             this.invTree.Location = new System.Drawing.Point(0, 25);
             this.invTree.Name = "invTree";
-            this.invTree.Size = new System.Drawing.Size(346, 458);
+            this.invTree.Size = new System.Drawing.Size(364, 458);
             this.invTree.TabIndex = 0;
+            this.invTree.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_BeforeLabelEdit);
             this.invTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_AfterLabelEdit);
+            this.invTree.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.invTree_ItemDrag);
             this.invTree.DragDrop += new System.Windows.Forms.DragEventHandler(this.invTree_DragDrop);
             this.invTree.DragEnter += new System.Windows.Forms.DragEventHandler(this.invTree_DragEnter);
-            this.invTree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.invTree_KeyUp);
-            this.invTree.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_BeforeLabelEdit);
-            this.invTree.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.invTree_ItemDrag);
             this.invTree.DragOver += new System.Windows.Forms.DragEventHandler(this.invTree_DragOver);
+            this.invTree.KeyUp += new System.Windows.Forms.KeyEventHandler(this.invTree_KeyUp);
             // 
             // ctxInv
             // 
@@ -205,7 +207,7 @@ namespace Radegast
             this.tbtbSort});
             this.tstripInventory.Location = new System.Drawing.Point(0, 0);
             this.tstripInventory.Name = "tstripInventory";
-            this.tstripInventory.Size = new System.Drawing.Size(346, 25);
+            this.tstripInventory.Size = new System.Drawing.Size(364, 25);
             this.tstripInventory.TabIndex = 1;
             this.tstripInventory.TabStop = true;
             this.tstripInventory.Text = "toolStrip1";
@@ -306,7 +308,7 @@ namespace Radegast
             this.tabsInventory.Location = new System.Drawing.Point(0, 0);
             this.tabsInventory.Name = "tabsInventory";
             this.tabsInventory.SelectedIndex = 0;
-            this.tabsInventory.Size = new System.Drawing.Size(441, 483);
+            this.tabsInventory.Size = new System.Drawing.Size(466, 483);
             this.tabsInventory.TabIndex = 3;
             // 
             // tabSearch
@@ -342,12 +344,12 @@ namespace Radegast
             this.lstInventorySearch.UseCompatibleStateImageBehavior = false;
             this.lstInventorySearch.View = System.Windows.Forms.View.Details;
             this.lstInventorySearch.VirtualMode = true;
-            this.lstInventorySearch.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseDoubleClick);
-            this.lstInventorySearch.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseClick);
             this.lstInventorySearch.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lstInventorySearch_DrawItem);
-            this.lstInventorySearch.SizeChanged += new System.EventHandler(this.lstInventorySearch_SizeChanged);
             this.lstInventorySearch.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.lstInventorySearch_RetrieveVirtualItem);
+            this.lstInventorySearch.SizeChanged += new System.EventHandler(this.lstInventorySearch_SizeChanged);
             this.lstInventorySearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstInventorySearch_KeyDown);
+            this.lstInventorySearch.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseClick);
+            this.lstInventorySearch.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstInventorySearch_MouseDoubleClick);
             // 
             // chResItemName
             // 
@@ -499,7 +501,7 @@ namespace Radegast
             this.tabDetail.Location = new System.Drawing.Point(4, 22);
             this.tabDetail.Name = "tabDetail";
             this.tabDetail.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDetail.Size = new System.Drawing.Size(433, 457);
+            this.tabDetail.Size = new System.Drawing.Size(458, 457);
             this.tabDetail.TabIndex = 0;
             this.tabDetail.Text = "Detail";
             this.tabDetail.UseVisualStyleBackColor = true;
@@ -509,16 +511,18 @@ namespace Radegast
             this.pnlDetail.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDetail.Location = new System.Drawing.Point(3, 3);
             this.pnlDetail.Name = "pnlDetail";
-            this.pnlDetail.Size = new System.Drawing.Size(427, 289);
+            this.pnlDetail.Size = new System.Drawing.Size(452, 289);
             this.pnlDetail.TabIndex = 2;
             // 
             // pnlItemProperties
             // 
+            this.pnlItemProperties.Controls.Add(this.txtInvID);
+            this.pnlItemProperties.Controls.Add(this.label2);
+            this.pnlItemProperties.Controls.Add(this.txtAssetID);
             this.pnlItemProperties.Controls.Add(this.gbxPerms);
             this.pnlItemProperties.Controls.Add(this.btnProfile);
             this.pnlItemProperties.Controls.Add(this.txtCreator);
             this.pnlItemProperties.Controls.Add(this.txtCreated);
-            this.pnlItemProperties.Controls.Add(this.txtAssetID);
             this.pnlItemProperties.Controls.Add(this.lblCreated);
             this.pnlItemProperties.Controls.Add(this.txtItemDescription);
             this.pnlItemProperties.Controls.Add(this.txtItemName);
@@ -529,8 +533,37 @@ namespace Radegast
             this.pnlItemProperties.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlItemProperties.Location = new System.Drawing.Point(3, 292);
             this.pnlItemProperties.Name = "pnlItemProperties";
-            this.pnlItemProperties.Size = new System.Drawing.Size(427, 162);
+            this.pnlItemProperties.Size = new System.Drawing.Size(452, 162);
             this.pnlItemProperties.TabIndex = 0;
+            // 
+            // txtInvID
+            // 
+            this.txtInvID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtInvID.Location = new System.Drawing.Point(258, 81);
+            this.txtInvID.Name = "txtInvID";
+            this.txtInvID.ReadOnly = true;
+            this.txtInvID.Size = new System.Drawing.Size(185, 20);
+            this.txtInvID.TabIndex = 16;
+            this.txtInvID.Enter += new System.EventHandler(this.txtInvID_Enter);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(213, 84);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(36, 13);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "Inv ID";
+            // 
+            // txtAssetID
+            // 
+            this.txtAssetID.Location = new System.Drawing.Point(51, 81);
+            this.txtAssetID.Name = "txtAssetID";
+            this.txtAssetID.ReadOnly = true;
+            this.txtAssetID.Size = new System.Drawing.Size(156, 20);
+            this.txtAssetID.TabIndex = 14;
+            this.txtAssetID.Enter += new System.EventHandler(this.txtAssetID_Enter);
             // 
             // gbxPerms
             // 
@@ -545,7 +578,7 @@ namespace Radegast
             this.gbxPerms.Location = new System.Drawing.Point(6, 100);
             this.gbxPerms.Name = "gbxPerms";
             this.gbxPerms.Size = new System.Drawing.Size(267, 58);
-            this.gbxPerms.TabIndex = 15;
+            this.gbxPerms.TabIndex = 17;
             this.gbxPerms.TabStop = false;
             // 
             // cbNextOwnTransfer
@@ -652,21 +685,13 @@ namespace Radegast
             // 
             // txtCreated
             // 
-            this.txtCreated.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtCreated.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtCreated.Location = new System.Drawing.Point(305, 55);
             this.txtCreated.Name = "txtCreated";
             this.txtCreated.ReadOnly = true;
-            this.txtCreated.Size = new System.Drawing.Size(113, 20);
+            this.txtCreated.Size = new System.Drawing.Size(138, 20);
             this.txtCreated.TabIndex = 13;
-            // 
-            // txtAssetID
-            // 
-            this.txtAssetID.Location = new System.Drawing.Point(80, 81);
-            this.txtAssetID.Name = "txtAssetID";
-            this.txtAssetID.ReadOnly = true;
-            this.txtAssetID.Size = new System.Drawing.Size(169, 20);
-            this.txtAssetID.TabIndex = 14;
             // 
             // lblCreated
             // 
@@ -679,21 +704,21 @@ namespace Radegast
             // 
             // txtItemDescription
             // 
-            this.txtItemDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtItemDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtItemDescription.Location = new System.Drawing.Point(80, 29);
             this.txtItemDescription.Name = "txtItemDescription";
-            this.txtItemDescription.Size = new System.Drawing.Size(338, 20);
+            this.txtItemDescription.Size = new System.Drawing.Size(363, 20);
             this.txtItemDescription.TabIndex = 11;
             this.txtItemDescription.Leave += new System.EventHandler(this.txtItemDescription_Leave);
             // 
             // txtItemName
             // 
-            this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtItemName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtItemName.Location = new System.Drawing.Point(80, 3);
             this.txtItemName.Name = "txtItemName";
-            this.txtItemName.Size = new System.Drawing.Size(338, 20);
+            this.txtItemName.Size = new System.Drawing.Size(363, 20);
             this.txtItemName.TabIndex = 10;
             this.txtItemName.Leave += new System.EventHandler(this.txtItemName_Leave);
             // 
@@ -739,7 +764,7 @@ namespace Radegast
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
             this.Name = "InventoryConsole";
-            this.Size = new System.Drawing.Size(791, 483);
+            this.Size = new System.Drawing.Size(834, 483);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -818,5 +843,7 @@ namespace Radegast
         public System.Windows.Forms.ColumnHeader chResItemName;
         public System.Windows.Forms.TextBox txtItemDescription;
         public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.TextBox txtInvID;
+        public System.Windows.Forms.Label label2;
     }
 }

@@ -964,6 +964,8 @@ namespace Radegast
                 txtAssetID.Text = String.Empty;
             }
 
+            txtInvID.Text = item.UUID.ToString();
+
             Permissions p = item.Permissions;
             cbOwnerModify.Checked = (p.OwnerMask & PermissionMask.Modify) != 0;
             cbOwnerCopy.Checked = (p.OwnerMask & PermissionMask.Copy) != 0;
@@ -2628,6 +2630,16 @@ namespace Radegast
 
         }
         #endregion Search
+
+        private void txtAssetID_Enter(object sender, EventArgs e)
+        {
+            txtAssetID.SelectAll();
+        }
+
+        private void txtInvID_Enter(object sender, EventArgs e)
+        {
+            txtInvID.SelectAll();
+        }
 
 
     }
