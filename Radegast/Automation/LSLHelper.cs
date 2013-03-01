@@ -118,6 +118,15 @@ namespace Radegast.Automation
                                     ProcessInvite(args);
                                     return true;
                                 }
+                            case "send_im":
+                                {
+                                    if (args.Length < 3) return false;
+                                    UUID sendTo = UUID.Zero;
+                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
+                                    string msg = args[2].Trim();
+                                    client.Self.InstantMessage(sendTo, msg);
+                                    return true;
+                                }
                         }
                     }
                     break;
