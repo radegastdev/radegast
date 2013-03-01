@@ -196,6 +196,7 @@ namespace Radegast
             KnownAnimations = Animations.ToDictionary();
             autosit = new AutoSit(this.instance);
             pseudohome = new PseudoHome(this.instance);
+            lslHelper = new LSLHelper(this.instance);
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -256,6 +257,12 @@ namespace Radegast
             {
                 autosit.Dispose();
                 autosit = null;
+            }
+
+            if (lslHelper == null)
+            {
+                lslHelper.Dispose();
+                lslHelper = null;
             }
         }
 
@@ -1188,6 +1195,12 @@ namespace Radegast
         public AutoSit AutoSit
         {
             get { return autosit; }
+        }
+
+        private LSLHelper lslHelper;
+        public LSLHelper LSLHelper
+        {
+            get { return lslHelper; }
         }
 
         private PseudoHome pseudohome;

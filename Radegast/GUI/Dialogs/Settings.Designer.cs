@@ -702,7 +702,6 @@ namespace Radegast
             this.gbLSLHelper.TabIndex = 2;
             this.gbLSLHelper.TabStop = false;
             this.gbLSLHelper.Text = "LSL Helper";
-            this.gbLSLHelper.Visible = false;
             // 
             // llLSLHelperInstructios
             // 
@@ -724,6 +723,7 @@ namespace Radegast
             this.cbLSLHelperEnabled.TabIndex = 3;
             this.cbLSLHelperEnabled.Text = "Enabled";
             this.cbLSLHelperEnabled.UseVisualStyleBackColor = true;
+            this.cbLSLHelperEnabled.CheckedChanged += new System.EventHandler(this.cbLSLHelperEnabled_CheckedChanged);
             // 
             // lblLSLUUID
             // 
@@ -738,7 +738,7 @@ namespace Radegast
             // tbLSLAllowedOwner
             // 
             this.tbLSLAllowedOwner.Location = new System.Drawing.Point(47, 32);
-            this.tbLSLAllowedOwner.MaxLength = 2;
+            this.tbLSLAllowedOwner.MaxLength = 36;
             this.tbLSLAllowedOwner.Name = "tbLSLAllowedOwner";
             this.tbLSLAllowedOwner.Size = new System.Drawing.Size(210, 20);
             this.tbLSLAllowedOwner.TabIndex = 2;

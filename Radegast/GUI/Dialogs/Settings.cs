@@ -613,8 +613,35 @@ namespace Radegast
         }
         #endregion
 
+        #region LSL Helper
         private void LSLHelperPrefsUpdate()
         {
+            gbLSLHelper.Enabled = (Instance.Client.Network.Connected && Instance.ClientSettings != null);
+
+            if (!gbLSLHelper.Enabled)
+            {
+                return;
+            }
+
+            Instance.State.LSLHelper.LoadSettings();
+            tbLSLAllowedOwner.Text = Instance.State.LSLHelper.AllowedOwner.ToString();
+            cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
+            cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
+            cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
+        }
+
+        private void LSLHelperPrefsSave()
+        {
+            if (Instance.ClientSettings == null)
+            {
+                return;
+            }
+
+            Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
+            UUID allowedOwnner = UUID.Zero;
+            UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwnner);
+            Instance.State.LSLHelper.AllowedOwner = allowedOwnner;
+            Instance.State.LSLHelper.SaveSettings();
         }
 
         private void llLSLHelperInstructios_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -632,12 +659,19 @@ namespace Radegast
             {
                 tbLSLAllowedOwner.Text = UUID.Zero.ToString();
             }
+            LSLHelperPrefsSave();
         }
 
         private void lblLSLUUID_Click(object sender, EventArgs e)
         {
             tbLSLAllowedOwner.SelectAll();
         }
+
+        private void cbLSLHelperEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            LSLHelperPrefsSave();
+        }
+        #endregion LSL Helper
 
     }
 }
