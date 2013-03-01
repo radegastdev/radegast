@@ -41,7 +41,7 @@ using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
-using Radegast.Bot;
+using Radegast.Automation;
 
 namespace Radegast
 {
@@ -312,6 +312,7 @@ namespace Radegast
 
             autoSitPrefsUpdate();
             pseudoHomePrefsUpdated();
+            LSLHelperPrefsUpdate();
 
             UpdateEnabled();
         }
@@ -611,5 +612,32 @@ namespace Radegast
             pseudoHomePrefsUpdated();
         }
         #endregion
+
+        private void LSLHelperPrefsUpdate()
+        {
+        }
+
+        private void llLSLHelperInstructios_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Instance.MainForm.ProcessLink("http://radegast.org/wiki/LSL_Helper", false);
+        }
+
+        private void tbLSLAllowedOwner_Leave(object sender, EventArgs e)
+        {
+            UUID allowedOwner = UUID.Zero;
+            if (UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner))
+            {
+            }
+            else
+            {
+                tbLSLAllowedOwner.Text = UUID.Zero.ToString();
+            }
+        }
+
+        private void lblLSLUUID_Click(object sender, EventArgs e)
+        {
+            tbLSLAllowedOwner.SelectAll();
+        }
+
     }
 }

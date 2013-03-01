@@ -35,7 +35,7 @@ using System.Timers;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
-namespace Radegast.Bot
+namespace Radegast.Automation
 {
     public class AutoSitPreferences
     {

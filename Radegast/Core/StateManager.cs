@@ -35,7 +35,7 @@ using System.Threading;
 
 using OpenMetaverse;
 
-using Radegast.Bot;
+using Radegast.Automation;
 using Radegast.Netcom;
 
 namespace Radegast
