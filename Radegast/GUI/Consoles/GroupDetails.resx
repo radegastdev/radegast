@@ -120,4 +120,22 @@
   <metadata name="memberListContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <metadata name="rolesContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>206, 17</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="btnRemoveAttachment.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAGYktHRAD+AP4A/usY1IIAAAAJdnBBZwAAABAAAAAQAFzGrcMAAAAldEVYdGNyZWF0ZS1kYXRl
+        ADIwMTItMDMtMThUMDE6MjA6MzYrMDE6MDCw6GrXAAAAJXRFWHRtb2RpZnktZGF0ZQAyMDEyLTAzLTE4
+        VDAxOjIwOjM2KzAxOjAw71kc4wAAAWNJREFUOE+VUktqAkEU9BRzjEiMVxBxE08wGDEjE3XpBeImghvB
+        Dwjjyk1w6TKeQSGJv7WrZHbRA1T6ldMvDk4Iaaipet1VxfxSABJhllyMTD63iA9RKAoi/Ah1jvZifsGP
+        iEKy5i9z9Pt99Ho9OI6DQqGA1esqseR0icLhZ4j12xrT5ykGg0EsfPg6oOSWLkq0QIKb900Msnce/rWA
+        wki57eFwiOPhqJBwp9NBLpe7CDOnwkjXdREEATEajdCoNVC9ryJznUH6Kv13ged5NJXvyuR8Pk/O3mTJ
+        AuvXnAojJ5MJTc1mk1y8LZK9yqlYYP2aU2Hkfr+naTabkVuPLbI8hrDA+jWnwkhbsFgsyN1ul+xXfbLA
+        +jWn4nRI0263I8uPJFzza2SBvA+BWGlXQQlst1ssl0ua5bMK1x/qqJQrsQJbogUczGgLxsGYBe2nNj9n
+        UpgZK3TDbCUhKUz/+fB/IPUN4nltnG+SPzAAAAAASUVORK5CYII=
+</value>
+  </data>
 </root>

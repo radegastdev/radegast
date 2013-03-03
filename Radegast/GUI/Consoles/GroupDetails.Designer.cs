@@ -59,6 +59,7 @@ namespace Radegast
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GroupDetails));
             this.tcGroupDetails = new System.Windows.Forms.TabControl();
             this.tpGeneral = new System.Windows.Forms.TabPage();
             this.txtGroupID = new System.Windows.Forms.TextBox();
@@ -124,6 +125,7 @@ namespace Radegast
             this.lvwRoles = new Radegast.ListViewNoFlicker();
             this.chRoleListName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chRoleTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cbRoleID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label2 = new System.Windows.Forms.Label();
             this.tpNotices = new System.Windows.Forms.TabPage();
             this.btnNewNotice = new System.Windows.Forms.Button();
@@ -156,6 +158,8 @@ namespace Radegast
             this.btnClose = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.rolesContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyRoleIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tcGroupDetails.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.memberListContextMenu.SuspendLayout();
@@ -174,6 +178,7 @@ namespace Radegast
             this.pnlArchivedNotice.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).BeginInit();
             this.pnlBottomControls.SuspendLayout();
+            this.rolesContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcGroupDetails
@@ -845,7 +850,9 @@ namespace Radegast
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lvwRoles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.chRoleListName,
-            this.chRoleTitle});
+            this.chRoleTitle,
+            this.cbRoleID});
+            this.lvwRoles.ContextMenuStrip = this.rolesContextMenu;
             this.lvwRoles.FullRowSelect = true;
             this.lvwRoles.GridLines = true;
             this.lvwRoles.HideSelection = false;
@@ -869,6 +876,11 @@ namespace Radegast
             // 
             this.chRoleTitle.Text = "Role Title";
             this.chRoleTitle.Width = 198;
+            // 
+            // cbRoleID
+            // 
+            this.cbRoleID.Text = "Role ID";
+            this.cbRoleID.Width = 100;
             // 
             // label2
             // 
@@ -1008,7 +1020,7 @@ namespace Radegast
             this.btnRemoveAttachment.AccessibleName = "Remove attachment";
             this.btnRemoveAttachment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveAttachment.Enabled = false;
-            this.btnRemoveAttachment.Image = global::Radegast.Properties.Resources.inv_folder_trash;
+            this.btnRemoveAttachment.Image = ((System.Drawing.Image)(resources.GetObject("btnRemoveAttachment.Image")));
             this.btnRemoveAttachment.Location = new System.Drawing.Point(170, 15);
             this.btnRemoveAttachment.Name = "btnRemoveAttachment";
             this.btnRemoveAttachment.Size = new System.Drawing.Size(26, 23);
@@ -1238,6 +1250,20 @@ namespace Radegast
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // rolesContextMenu
+            // 
+            this.rolesContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyRoleIDToolStripMenuItem});
+            this.rolesContextMenu.Name = "rolesContextMenu";
+            this.rolesContextMenu.Size = new System.Drawing.Size(153, 48);
+            // 
+            // copyRoleIDToolStripMenuItem
+            // 
+            this.copyRoleIDToolStripMenuItem.Name = "copyRoleIDToolStripMenuItem";
+            this.copyRoleIDToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.copyRoleIDToolStripMenuItem.Text = "Copy Role ID";
+            this.copyRoleIDToolStripMenuItem.Click += new System.EventHandler(this.copyRoleIDToolStripMenuItem_Click);
+            // 
             // GroupDetails
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -1273,6 +1299,7 @@ namespace Radegast
             this.pnlArchivedNotice.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).EndInit();
             this.pnlBottomControls.ResumeLayout(false);
+            this.rolesContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1376,6 +1403,9 @@ namespace Radegast
         private System.Windows.Forms.ContextMenuStrip memberListContextMenu;
         private System.Windows.Forms.ToolStripMenuItem memberListContextMenuSave;
         public System.Windows.Forms.TextBox txtGroupID;
+        private System.Windows.Forms.ColumnHeader cbRoleID;
+        private System.Windows.Forms.ContextMenuStrip rolesContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem copyRoleIDToolStripMenuItem;
 
     }
 }

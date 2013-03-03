@@ -522,6 +522,7 @@ namespace Radegast
                     item.Name = role.ID.ToString();
                     item.Text = role.Name;
                     item.SubItems.Add(role.Title);
+                    item.SubItems.Add(role.ID.ToString());
                     item.Tag = role;
                     lvwRoles.Items.Add(item);
                 }
@@ -1194,6 +1195,15 @@ namespace Radegast
                 {
                     instance.TabConsole.DisplayNotificationInChat("Failed to save member list: " + ex.Message, ChatBufferTextStyle.Error);
                 }
+            }
+        }
+
+        private void copyRoleIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (lvwRoles.SelectedItems.Count != 1) return;
+            if (lvwRoles.SelectedItems[0].Tag is GroupRole)
+            {
+                Clipboard.SetText(((GroupRole)lvwRoles.SelectedItems[0].Tag).ID.ToString());
             }
         }
 
