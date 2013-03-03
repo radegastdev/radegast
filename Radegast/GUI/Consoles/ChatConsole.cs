@@ -177,45 +177,51 @@ namespace Radegast
         }
         private void Network_SimDisconnected(object sender, SimDisconnectedEventArgs e)
         {
+            try
+            {
+                if (InvokeRequired)
+                {
+                    if (!instance.MonoRuntime || IsHandleCreated)
+                        BeginInvoke(new MethodInvoker(() => Network_SimDisconnected(sender, e)));
+                    return;
+                }
+                lock (agentSimHandle)
+                {
+                    var h = e.Simulator.Handle;
+                    List<UUID> remove = new List<UUID>();
+                    foreach (var uh in agentSimHandle)
+                    {
+                        if (uh.Value == h)
+                        {
+                            remove.Add(uh.Key);
+                        }
+                    }
+                    if (remove.Count == 0) return;
+                    lvwObjects.BeginUpdate();
+                    try
+                    {
+                        foreach (UUID key in remove)
+                        {
+                            agentSimHandle.Remove(key);
+                            try
+                            {
+                                lvwObjects.Items.RemoveByKey("" + key);
+                            }
+                            catch (Exception)
+                            {
 
-            if (InvokeRequired)
-            {
-                if (!instance.MonoRuntime || IsHandleCreated)
-                    BeginInvoke(new MethodInvoker(() => Network_SimDisconnected(sender, e)));
-                return;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        lvwObjects.EndUpdate();
+                    }
+                }
             }
-            lock (agentSimHandle)
+            catch (Exception ex)
             {
-                var h = e.Simulator.Handle;
-                List<UUID> remove = new List<UUID>();
-                foreach (var uh in agentSimHandle)
-                {
-                    if (uh.Value == h)
-                    {
-                        remove.Add(uh.Key);
-                    }
-                }
-                if (remove.Count == 0) return;
-                lvwObjects.BeginUpdate();
-                try
-                {
-                    foreach (UUID key in remove)
-                    {
-                        agentSimHandle.Remove(key);
-                        try
-                        {
-                            lvwObjects.Items.RemoveByKey("" + key);
-                        }
-                        catch (Exception)
-                        {
-                            
-                        }
-                    }
-                }
-                finally
-                {
-                    lvwObjects.EndUpdate();
-                }
+                Logger.DebugLog("Failed to update radar: " + ex.ToString());
             }
         }
 
