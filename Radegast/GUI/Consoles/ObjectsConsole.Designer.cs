@@ -106,16 +106,16 @@ namespace Radegast
             this.gbxContents = new System.Windows.Forms.GroupBox();
             this.btnOpen = new System.Windows.Forms.Button();
             this.lstContents = new Radegast.ListViewNoFlicker();
-            this.invIcon = new System.Windows.Forms.ColumnHeader();
-            this.invName = new System.Windows.Forms.ColumnHeader();
+            this.invIcon = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.invName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ctxContents = new Radegast.RadegastContextMenuStrip(this.components);
             this.btnCloseContents = new System.Windows.Forms.Button();
             this.pnlList = new System.Windows.Forms.Panel();
             this.lstPrims = new Radegast.ListViewNoFlicker();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ctxMenuObjects = new Radegast.RadegastContextMenuStrip(this.components);
             this.lstChildren = new Radegast.ListViewNoFlicker();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbSearch = new System.Windows.Forms.GroupBox();
             this.comboFilter = new System.Windows.Forms.ComboBox();
             this.ctxopen = new Radegast.RadegastContextMenuStrip(this.components);
@@ -316,8 +316,8 @@ namespace Radegast
             0,
             0,
             0});
-            this.nudRadius.KeyUp += new System.Windows.Forms.KeyEventHandler(this.nudRadius_KeyUp);
             this.nudRadius.KeyDown += new System.Windows.Forms.KeyEventHandler(this.nudRadius_KeyDown);
+            this.nudRadius.KeyUp += new System.Windows.Forms.KeyEventHandler(this.nudRadius_KeyUp);
             // 
             // lblDistance
             // 
@@ -637,9 +637,9 @@ namespace Radegast
             // lstContents
             // 
             this.lstContents.AccessibleName = "Contents";
-            this.lstContents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstContents.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstContents.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.invIcon,
             this.invName});
@@ -655,8 +655,8 @@ namespace Radegast
             this.lstContents.TabIndex = 17;
             this.lstContents.UseCompatibleStateImageBehavior = false;
             this.lstContents.View = System.Windows.Forms.View.Details;
-            this.lstContents.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstContents_MouseDoubleClick);
             this.lstContents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lstContents_KeyDown);
+            this.lstContents.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lstContents_MouseDoubleClick);
             // 
             // invIcon
             // 
@@ -687,9 +687,9 @@ namespace Radegast
             // 
             // pnlList
             // 
-            this.pnlList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlList.Controls.Add(this.lstPrims);
             this.pnlList.Controls.Add(this.lstChildren);
             this.pnlList.Location = new System.Drawing.Point(15, 52);
@@ -716,6 +716,8 @@ namespace Radegast
             this.lstPrims.TabIndex = 0;
             this.lstPrims.UseCompatibleStateImageBehavior = false;
             this.lstPrims.View = System.Windows.Forms.View.Details;
+            this.lstPrims.VirtualMode = true;
+            this.lstPrims.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.lstPrims_RetrieveVirtualItem);
             this.lstPrims.SelectedIndexChanged += new System.EventHandler(this.lstPrims_SelectedIndexChanged);
             this.lstPrims.DoubleClick += new System.EventHandler(this.lstPrims_DoubleClick);
             this.lstPrims.Enter += new System.EventHandler(this.lstPrims_Enter);
@@ -759,8 +761,8 @@ namespace Radegast
             // 
             // gbSearch
             // 
-            this.gbSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gbSearch.Controls.Add(this.comboFilter);
             this.gbSearch.Controls.Add(this.txtSearch);
             this.gbSearch.Controls.Add(this.lblDistance);
