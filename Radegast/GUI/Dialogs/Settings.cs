@@ -309,6 +309,11 @@ namespace Radegast
                 s["disable_http_inventory"] = cbDisableHTTPInventory.Checked;
             };
 
+            cbShowScriptErrors.Checked = s["show_script_errors"];
+            cbShowScriptErrors.CheckedChanged += (sender, e) =>
+            {
+                s["show_script_errors"] = cbShowScriptErrors.Checked;
+            };
 
             autoSitPrefsUpdate();
             pseudoHomePrefsUpdated();

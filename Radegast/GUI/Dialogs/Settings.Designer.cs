@@ -128,6 +128,7 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
+            this.cbShowScriptErrors = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -239,6 +240,7 @@ namespace Radegast
             // 
             // cbMisc
             // 
+            this.cbMisc.Controls.Add(this.cbShowScriptErrors);
             this.cbMisc.Controls.Add(this.cbDisableHTTPInventory);
             this.cbMisc.Controls.Add(this.cbHideLoginGraphics);
             this.cbMisc.Controls.Add(this.cbDisableLookAt);
@@ -934,6 +936,16 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
+            // cbShowScriptErrors
+            // 
+            this.cbShowScriptErrors.AutoSize = true;
+            this.cbShowScriptErrors.Location = new System.Drawing.Point(6, 280);
+            this.cbShowScriptErrors.Name = "cbShowScriptErrors";
+            this.cbShowScriptErrors.Size = new System.Drawing.Size(110, 17);
+            this.cbShowScriptErrors.TabIndex = 17;
+            this.cbShowScriptErrors.Text = "Show Script Erros";
+            this.cbShowScriptErrors.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1041,6 +1053,7 @@ namespace Radegast
         public System.Windows.Forms.Label lblLSLUUID;
         public System.Windows.Forms.TextBox tbLSLAllowedOwner;
         private System.Windows.Forms.Label label3;
+        public System.Windows.Forms.CheckBox cbShowScriptErrors;
 
 
     }
