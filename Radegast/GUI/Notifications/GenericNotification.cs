@@ -45,6 +45,10 @@ namespace Radegast
             this.instance = instance;
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
             txtMessage.Text = msg.Replace("\n", "\r\n");
+            if (msg.Length < 100)
+            {
+                txtMessage.ScrollBars = ScrollBars.None;
+            }
             btnOk.Focus();
 
             // Fire off event
