@@ -69,6 +69,7 @@ namespace Radegast
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.ReadOnly = true;
+            this.txtMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtMessage.Size = new System.Drawing.Size(237, 64);
             this.txtMessage.TabIndex = 5;
             this.txtMessage.TabStop = false;
