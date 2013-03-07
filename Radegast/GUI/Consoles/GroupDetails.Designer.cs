@@ -126,6 +126,8 @@ namespace Radegast
             this.chRoleListName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chRoleTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cbRoleID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.rolesContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyRoleIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.tpNotices = new System.Windows.Forms.TabPage();
             this.btnNewNotice = new System.Windows.Forms.Button();
@@ -158,8 +160,6 @@ namespace Radegast
             this.btnClose = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
-            this.rolesContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyRoleIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tcGroupDetails.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.memberListContextMenu.SuspendLayout();
@@ -171,6 +171,7 @@ namespace Radegast
             this.panel1.SuspendLayout();
             this.tpRoles.SuspendLayout();
             this.pnlRoleDetaiils.SuspendLayout();
+            this.rolesContextMenu.SuspendLayout();
             this.tpNotices.SuspendLayout();
             this.pnlNewNotice.SuspendLayout();
             this.pnlNoticeAttachment.SuspendLayout();
@@ -178,7 +179,6 @@ namespace Radegast
             this.pnlArchivedNotice.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).BeginInit();
             this.pnlBottomControls.SuspendLayout();
-            this.rolesContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcGroupDetails
@@ -262,6 +262,7 @@ namespace Radegast
             this.lvwGeneralMembers.VirtualMode = true;
             this.lvwGeneralMembers.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGeneralMembers_ColumnClick);
             this.lvwGeneralMembers.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.lvwGeneralMembers_RetrieveVirtualItem);
+            this.lvwGeneralMembers.SearchForVirtualItem += new System.Windows.Forms.SearchForVirtualItemEventHandler(this.lvwMemberDetails_SearchForVirtualItem);
             this.lvwGeneralMembers.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwGeneralMembers_MouseDoubleClick);
             // 
             // chGenMemberName
@@ -638,6 +639,7 @@ namespace Radegast
             this.lvwMemberDetails.VirtualMode = true;
             this.lvwMemberDetails.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGeneralMembers_ColumnClick);
             this.lvwMemberDetails.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.lvwMemberDetails_RetrieveVirtualItem);
+            this.lvwMemberDetails.SearchForVirtualItem += new System.Windows.Forms.SearchForVirtualItemEventHandler(this.lvwMemberDetails_SearchForVirtualItem);
             this.lvwMemberDetails.SelectedIndexChanged += new System.EventHandler(this.lvwMemberDetails_SelectedIndexChanged);
             this.lvwMemberDetails.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvwMemberDetails_MouseDoubleClick);
             // 
@@ -881,6 +883,20 @@ namespace Radegast
             // 
             this.cbRoleID.Text = "Role ID";
             this.cbRoleID.Width = 100;
+            // 
+            // rolesContextMenu
+            // 
+            this.rolesContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyRoleIDToolStripMenuItem});
+            this.rolesContextMenu.Name = "rolesContextMenu";
+            this.rolesContextMenu.Size = new System.Drawing.Size(143, 26);
+            // 
+            // copyRoleIDToolStripMenuItem
+            // 
+            this.copyRoleIDToolStripMenuItem.Name = "copyRoleIDToolStripMenuItem";
+            this.copyRoleIDToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.copyRoleIDToolStripMenuItem.Text = "Copy Role ID";
+            this.copyRoleIDToolStripMenuItem.Click += new System.EventHandler(this.copyRoleIDToolStripMenuItem_Click);
             // 
             // label2
             // 
@@ -1250,20 +1266,6 @@ namespace Radegast
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
-            // rolesContextMenu
-            // 
-            this.rolesContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyRoleIDToolStripMenuItem});
-            this.rolesContextMenu.Name = "rolesContextMenu";
-            this.rolesContextMenu.Size = new System.Drawing.Size(153, 48);
-            // 
-            // copyRoleIDToolStripMenuItem
-            // 
-            this.copyRoleIDToolStripMenuItem.Name = "copyRoleIDToolStripMenuItem";
-            this.copyRoleIDToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.copyRoleIDToolStripMenuItem.Text = "Copy Role ID";
-            this.copyRoleIDToolStripMenuItem.Click += new System.EventHandler(this.copyRoleIDToolStripMenuItem_Click);
-            // 
             // GroupDetails
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -1288,6 +1290,7 @@ namespace Radegast
             this.tpRoles.ResumeLayout(false);
             this.pnlRoleDetaiils.ResumeLayout(false);
             this.pnlRoleDetaiils.PerformLayout();
+            this.rolesContextMenu.ResumeLayout(false);
             this.tpNotices.ResumeLayout(false);
             this.tpNotices.PerformLayout();
             this.pnlNewNotice.ResumeLayout(false);
@@ -1299,7 +1302,6 @@ namespace Radegast
             this.pnlArchivedNotice.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).EndInit();
             this.pnlBottomControls.ResumeLayout(false);
-            this.rolesContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

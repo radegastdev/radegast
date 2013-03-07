@@ -38,6 +38,7 @@ using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
 using System.Threading;
+using System.Timers;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
@@ -55,6 +56,7 @@ namespace Radegast
         private Dictionary<UUID, GroupRole> roles;
         private bool isMember;
         private GroupMemberSorter memberSorter = new GroupMemberSorter();
+        private System.Threading.Timer nameUpdateTimer;
 
         private UUID groupTitlesRequest, groupMembersRequest, groupRolesRequest, groupRolesMembersRequest;
 
@@ -72,6 +74,9 @@ namespace Radegast
                 insignia.Dock = DockStyle.Fill;
                 pnlInsignia.Controls.Add(insignia);
             }
+
+            nameUpdateTimer = new System.Threading.Timer(nameUpdateTimer_Elapsed, this,
+                System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
             txtGroupID.Text = group.ID.ToString();
 
@@ -122,6 +127,11 @@ namespace Radegast
             if (instance != null && instance.Names != null)
             {
                 instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            }
+            if (nameUpdateTimer != null)
+            {
+                nameUpdateTimer.Dispose();
+                nameUpdateTimer = null;
             }
         }
 
@@ -342,6 +352,8 @@ namespace Radegast
             ProcessNameUpdate(e.Names);
         }
 
+        int lastTick = 0;
+
         void ProcessNameUpdate(Dictionary<UUID, string> Names)
         {
             if (Names.ContainsKey(group.FounderID))
@@ -360,8 +372,6 @@ namespace Radegast
             {
                 try
                 {
-                    int minIndex = int.MaxValue;
-                    int maxIndex = int.MinValue;
                     bool hasUpdates = false;
 
                     foreach (var name in Names)
@@ -371,32 +381,18 @@ namespace Radegast
 
                         hasUpdates = true;
                         member.Name = name.Value;
-                        int ix = GroupMembers.IndexOf(member);
-                        if (ix < minIndex) minIndex = ix;
-                        if (ix > maxIndex) maxIndex = ix;
                     }
 
                     if (hasUpdates)
                     {
-                        if (minIndex < 0) minIndex = 0;
-                        if (maxIndex < 0) maxIndex = 0;
-                        if (InvokeRequired)
+                        int tick = Environment.TickCount;
+                        int elapsed = tick - lastTick;
+                        if (elapsed > 500)
                         {
-                            BeginInvoke(new MethodInvoker(() =>
-                            {
-                                try
-                                {
-                                    lvwGeneralMembers.RedrawItems(minIndex, maxIndex, true);
-                                    lvwMemberDetails.RedrawItems(minIndex, maxIndex, true);
-                                }
-                                catch { }
-                            }));
+                            lastTick = tick;
+                            nameUpdateTimer_Elapsed(this);
                         }
-                        else
-                        {
-                            lvwGeneralMembers.RedrawItems(minIndex, maxIndex, true);
-                            lvwMemberDetails.RedrawItems(minIndex, maxIndex, true);
-                        }
+                        nameUpdateTimer.Change(500, System.Threading.Timeout.Infinite);
                     }
                 }
                 catch (Exception ex)
@@ -442,16 +438,14 @@ namespace Radegast
 
             lvwGeneralMembers.VirtualListSize = 0;
             lvwMemberDetails.VirtualListSize = 0;
-            
-            GroupMembers = new List<EnhancedGroupMember>(e.Members.Count);
-            lock (GroupMembers)
+
+            var members = new List<EnhancedGroupMember>(e.Members.Count);
+            foreach (var member in e.Members)
             {
-                foreach (var member in e.Members)
-                {
-                    GroupMembers.Add(new EnhancedGroupMember(instance.Names.Get(member.Key), member.Value));
-                }
+                members.Add(new EnhancedGroupMember(instance.Names.Get(member.Key), member.Value));
             }
 
+            GroupMembers = members;
             GroupMembers.Sort(memberSorter);
             lvwGeneralMembers.VirtualListSize = GroupMembers.Count;
             lvwMemberDetails.VirtualListSize = GroupMembers.Count;
@@ -509,6 +503,19 @@ namespace Radegast
         #endregion
 
         #region Privatate methods
+
+        private void nameUpdateTimer_Elapsed(object sync)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => nameUpdateTimer_Elapsed(sync)));
+                return;
+            }
+
+            GroupMembers.Sort(memberSorter);
+            lvwGeneralMembers.Invalidate();
+            lvwMemberDetails.Invalidate();
+        }
 
         private void DisplayGroupRoles()
         {
@@ -1004,7 +1011,7 @@ namespace Radegast
             }
 
             btnSaveRole.Tag = role;
-            
+
             lvwAssignedMembers.BeginUpdate();
             if (role.ID == UUID.Zero)
             {
@@ -1204,6 +1211,21 @@ namespace Radegast
             if (lvwRoles.SelectedItems[0].Tag is GroupRole)
             {
                 Clipboard.SetText(((GroupRole)lvwRoles.SelectedItems[0].Tag).ID.ToString());
+            }
+        }
+
+        private void lvwMemberDetails_SearchForVirtualItem(object sender, SearchForVirtualItemEventArgs e)
+        {
+            if (e.IsTextSearch)
+            {
+                for (int i = 0; i < GroupMembers.Count; i++)
+                {
+                    if (GroupMembers[i].Name.StartsWith(e.Text, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        e.Index = i;
+                        break;
+                    }
+                }
             }
         }
 
