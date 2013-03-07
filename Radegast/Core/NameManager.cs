@@ -109,6 +109,11 @@ namespace Radegast
         Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
         Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
 
+        BlockingQueue<List<UUID>> PendingLookups;
+        Thread requestThread = null;
+        Semaphore lookupGate;
+        bool useRequestThread;
+
         #endregion private fields and properties
 
         #region construction and disposal
@@ -122,6 +127,19 @@ namespace Radegast
             LoadCachedNames();
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterEvents(client);
+
+            // Mono HTTPWebRequest sucks balls
+            useRequestThread = instance.MonoRuntime;
+
+            if (useRequestThread)
+            {
+                PendingLookups = new BlockingQueue<List<UUID>>();
+                lookupGate = new Semaphore(4, 4);
+                requestThread = new Thread(new ThreadStart(RequestThread));
+                requestThread.IsBackground = true;
+                requestThread.Name = "Display Name Request Thread";
+                requestThread.Start();
+            }
         }
 
         public void Dispose()
@@ -144,10 +162,51 @@ namespace Radegast
                 cacheTimer.Dispose();
                 cacheTimer = null;
             }
+
+            try
+            {
+                if (useRequestThread)
+                {
+                    PendingLookups.Close();
+                    if (requestThread != null)
+                    {
+                        if (!requestThread.Join(5 * 1000))
+                        {
+                            requestThread.Abort();
+                        }
+                        requestThread = null;
+                    }
+                }
+            }
+            catch { }
         }
         #endregion construction and disposal
 
         #region private methods
+        public void RequestThread()
+        {
+            PendingLookups.Open();
+
+            while (true)
+            {
+                List<UUID> req = null;
+                if (!PendingLookups.Dequeue(Timeout.Infinite, ref req)) break;
+                lookupGate.WaitOne(90 * 1000);
+                client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
+                {
+                    if (success)
+                    {
+                        ProcessDisplayNames(names);
+                    }
+                    else
+                    {
+                        Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
+                    }
+                    lookupGate.Release(1);
+                });
+            }
+        }
+
         void RegisterEvents(GridClient c)
         {
             c.Avatars.UUIDNameReply += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
@@ -312,7 +371,13 @@ namespace Radegast
                 }
                 else // Use display names
                 {
-                    client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
+                    if (useRequestThread)
+                    {
+                        PendingLookups.Enqueue(new List<UUID>(req));
+                    }
+                    else
+                    {
+                        client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
                         {
                             if (success)
                             {
@@ -322,8 +387,8 @@ namespace Radegast
                             {
                                 Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
                             }
-                        }
-                    );
+                        });
+                    }
                 }
             }
         }
@@ -340,12 +405,12 @@ namespace Radegast
                         namesOSD.Add(name.Value.GetOSD());
                     }
                 }
-                
+
                 OSDMap cache = new OSDMap(1);
                 cache["names"] = namesOSD;
                 byte[] data = OSDParser.SerializeLLSDBinary(cache, false);
                 Logger.DebugLog(string.Format("Caching {0} avatar names to {1}", namesOSD.Count, cacheFileName));
-                
+
                 try
                 {
                     File.WriteAllBytes(cacheFileName, data);
