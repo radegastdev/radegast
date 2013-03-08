@@ -1353,7 +1353,8 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    if (folder.PreferredType == AssetType.Unknown)
+                    if (folder.PreferredType == AssetType.Unknown ||
+                        folder.PreferredType == AssetType.OutfitFolder)
                     {
                         ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                         ctxItem.Name = "rename_folder";
@@ -1384,7 +1385,8 @@ namespace Radegast
                         }
                     }
 
-                    if (folder.PreferredType == AssetType.Unknown)
+                    if (folder.PreferredType == AssetType.Unknown ||
+                        folder.PreferredType == AssetType.OutfitFolder)
                     {
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
                         ctxItem.Name = "delete_folder";
@@ -2079,7 +2081,9 @@ namespace Radegast
         {
             if (e.Node == null ||
                 !(e.Node.Tag is InventoryBase) ||
-                (e.Node.Tag is InventoryFolder && ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown)
+                (e.Node.Tag is InventoryFolder &&
+                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown &&
+                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.OutfitFolder)
                 )
             {
                 e.CancelEdit = true;
