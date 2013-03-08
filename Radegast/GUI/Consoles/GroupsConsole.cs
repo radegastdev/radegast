@@ -308,7 +308,7 @@ namespace Radegast
         private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
-            
+
             try
             {
                 if (e.Index >= 0)
@@ -317,7 +317,7 @@ namespace Radegast
                     string title = item.ToString();
                     using (var brush = new SolidBrush(e.ForeColor))
                     {
-                        e.Graphics.DrawString(title, e.Font, brush, e.Bounds.X, e.Bounds.Y);
+                        e.Graphics.DrawString(title, e.Font, brush, e.Bounds.X, e.Bounds.Y + 2);
                         if (item is Group)
                         {
                             UUID gid = ((Group)item).ID;
@@ -328,7 +328,7 @@ namespace Radegast
 
                                 using (var font = new Font(e.Font, FontStyle.Italic))
                                 {
-                                    e.Graphics.DrawString("(muted)", font, brush, e.Bounds.X + tsize.Width + 10, e.Bounds.Y);
+                                    e.Graphics.DrawString("(muted)", font, brush, e.Bounds.X + tsize.Width + 10, e.Bounds.Y + 2);
                                 }
                             }
                         }
@@ -355,5 +355,15 @@ namespace Radegast
                 client.Groups.RequestGroupRoles(g.ID);
             }
         }
-     }
+
+        private void listBox1_MeasureItem(object sender, MeasureItemEventArgs e)
+        {
+            try
+            {
+                e.ItemHeight = Font.Height + 2;
+                e.ItemWidth = listBox1.Width - 4;
+            }
+            catch { }
+        }
+    }
 }
