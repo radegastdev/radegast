@@ -377,7 +377,7 @@ namespace Radegast
         /// <param name="item">Original item to be linked from COF</param>
         public void AddLink(InventoryItem item)
         {
-            if (item.InventoryType == InventoryType.Wearable && item.Flags > 3)
+            if (item.InventoryType == InventoryType.Wearable && !IsBodyPart(item))
             {
                 InventoryWearable w = (InventoryWearable)item;
                 int layer = 0;
@@ -453,6 +453,25 @@ namespace Radegast
             RemoveLink(item.UUID);
         }
 
+        public List<InventoryItem> GetWornAt(WearableType type)
+        {
+            var ret = new List<InventoryItem>();
+            ContentLinks().ForEach(link =>
+            {
+                var item = RealInventoryItem(link);
+                if (item is InventoryWearable)
+                {
+                    var w = (InventoryWearable)item;
+                    if (w.WearableType == type)
+                    {
+                        ret.Add(item);
+                    }
+                }
+            });
+
+            return ret;
+        }
+
         /// <summary>
         /// Resolves inventory links and returns a real inventory item that
         /// the link is pointing to
@@ -484,8 +503,36 @@ namespace Radegast
 
             // Remove links to all exiting items
             List<UUID> toRemove = new List<UUID>();
-            ContentLinks().ForEach(item => toRemove.Add(item.AssetUUID));
-            RemoveLink(toRemove);
+            ContentLinks().ForEach(item =>
+            {
+                if (IsBodyPart(item))
+                {
+                    WearableType linkType = ((InventoryWearable)RealInventoryItem(item)).WearableType;
+                    bool hasBodyPart = false;
+
+                    foreach (var newItem in newOutfit)
+                    {
+                        if (IsBodyPart(newItem))
+                        {
+                            if (((InventoryWearable)newItem).WearableType == linkType)
+                            {
+                                hasBodyPart = true;
+                            }
+                        }
+                    }
+
+                    if (hasBodyPart)
+                    {
+                        toRemove.Add(item.UUID);
+                    }
+                }
+                else
+                {
+                    toRemove.Add(item.UUID);
+                }
+            });
+
+            Client.Inventory.Remove(toRemove, null);
 
             // Add links to new items
             List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
@@ -502,16 +549,18 @@ namespace Radegast
         /// Add items to current outfit
         /// </summary>
         /// <param name="item">Item to add</param>
-        public void AddToOutfit(InventoryItem item)
+        /// <param name="replace">Should existing wearable of the same type be removed</param>
+        public void AddToOutfit(InventoryItem item, bool replace)
         {
-            AddToOutfit(new List<InventoryItem>(1) { item });
+            AddToOutfit(new List<InventoryItem>(1) { item }, replace);
         }
 
         /// <summary>
         /// Add items to current outfit
         /// </summary>
         /// <param name="items">List of items to add</param>
-        public void AddToOutfit(List<InventoryItem> items)
+        /// <param name="replace">Should existing wearable of the same type be removed</param>
+        public void AddToOutfit(List<InventoryItem> items, bool replace)
         {
             List<InventoryItem> current = ContentLinks();
             List<UUID> toRemove = new List<UUID>();
@@ -523,15 +572,26 @@ namespace Radegast
                 InventoryItem realItem = RealInventoryItem(item);
                 if (realItem is InventoryWearable)
                 {
-                    var wearables = current.FindAll(link => RealInventoryItem(link).Flags == realItem.Flags);
-                    foreach (var w in wearables)
+                    foreach (var link in current)
                     {
-                        toRemove.Add(w.AssetUUID);
+                        var currentItem = RealInventoryItem(link);
+                        if (link.AssetUUID == item.UUID)
+                        {
+                            toRemove.Add(link.UUID);
+                        }
+                        else if (currentItem is InventoryWearable)
+                        {
+                            var w = (InventoryWearable)currentItem;
+                            if (w.WearableType == ((InventoryWearable)realItem).WearableType)
+                            {
+                                toRemove.Add(link.UUID);
+                            }
+                        }
                     }
                 }
                 outfit.Add(realItem);
             }
-            RemoveLink(toRemove);
+            Client.Inventory.Remove(toRemove, null);
 
             // Add links to new items
             List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
@@ -540,7 +600,7 @@ namespace Radegast
                 AddLink(item);
             }
 
-            Client.Appearance.AddToOutfit(outfit);
+            Client.Appearance.AddToOutfit(outfit, replace);
         }
 
         /// <summary>
@@ -567,16 +627,31 @@ namespace Radegast
 
             // Remove links to all items that were removed
             List<UUID> toRemove = new List<UUID>();
-            foreach (InventoryItem item in outfit.FindAll(item => CanBeWorn(item)))
+            foreach (InventoryItem item in outfit.FindAll(item => CanBeWorn(item) && !IsBodyPart(item)))
             {
-                if (item is InventoryWearable && item.Flags > 3)
-                {
-                    toRemove.Add(item.UUID);
-                }
+                toRemove.Add(item.UUID);
             }
             RemoveLink(toRemove);
 
             Client.Appearance.RemoveFromOutfit(outfit);
+        }
+
+        public bool IsBodyPart(InventoryItem item)
+        {
+            var realItem = RealInventoryItem(item);
+            if (realItem is InventoryWearable)
+            {
+                var w = (InventoryWearable)realItem;
+                var t = w.WearableType;
+                if (t == WearableType.Shape ||
+                    t == WearableType.Skin ||
+                    t == WearableType.Eyes ||
+                    t == WearableType.Hair)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         #endregion Public methods

@@ -1735,7 +1735,7 @@ namespace Radegast
                                 addToOutfit.Add((InventoryItem)item);
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        instance.COF.AddToOutfit(addToOutfit);
+                        instance.COF.AddToOutfit(addToOutfit, true);
                         UpdateWornLabels();
                         break;
 
@@ -1834,7 +1834,7 @@ namespace Radegast
 
                     case "item_wear":
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        instance.COF.AddToOutfit(item);
+                        instance.COF.AddToOutfit(item, true);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 
