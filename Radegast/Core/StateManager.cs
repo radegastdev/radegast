@@ -494,7 +494,7 @@ namespace Radegast
         {
             autosit.TrySit();
             pseudohome.ETGoHome();
-            SetFOVVerticalAngle(FOVVerticalAngle);
+            client.Self.Movement.SetFOVVerticalAngle(FOVVerticalAngle);
         }
 
         private UUID teleportEffect = UUID.Random();
@@ -612,17 +612,6 @@ namespace Radegast
                     );
                 }
             }
-        }
-
-        public void SetFOVVerticalAngle(float angle)
-        {
-            OpenMetaverse.Packets.AgentFOVPacket msg = new OpenMetaverse.Packets.AgentFOVPacket();
-            msg.AgentData.AgentID = client.Self.AgentID;
-            msg.AgentData.SessionID = client.Self.SessionID;
-            msg.AgentData.CircuitCode = client.Network.CircuitCode;
-            msg.FOVBlock.GenCounter = 0;
-            msg.FOVBlock.VerticalAngle = angle;
-            client.Network.SendPacket(msg);
         }
 
         public Quaternion AvatarRotation(Simulator sim, UUID avID)
