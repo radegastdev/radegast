@@ -68,6 +68,7 @@ namespace Radegast
             this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
             this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbMisc = new System.Windows.Forms.GroupBox();
+            this.cbDisableHTTPInventory = new System.Windows.Forms.CheckBox();
             this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
             this.cbDisableLookAt = new System.Windows.Forms.CheckBox();
             this.cbTrasactDialog = new System.Windows.Forms.CheckBox();
@@ -105,6 +106,12 @@ namespace Radegast
             this.rbAutobusy = new System.Windows.Forms.RadioButton();
             this.tbpGraphics = new System.Windows.Forms.TabPage();
             this.tbpBot = new System.Windows.Forms.TabPage();
+            this.gbLSLHelper = new System.Windows.Forms.GroupBox();
+            this.llLSLHelperInstructios = new System.Windows.Forms.LinkLabel();
+            this.cbLSLHelperEnabled = new System.Windows.Forms.CheckBox();
+            this.lblLSLUUID = new System.Windows.Forms.Label();
+            this.tbLSLAllowedOwner = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.pseudoHome = new System.Windows.Forms.GroupBox();
             this.pseudoHomeSet = new System.Windows.Forms.Button();
             this.pseudoHomeTolerance = new System.Windows.Forms.NumericUpDown();
@@ -121,7 +128,7 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
-            this.cbDisableHTTPInventory = new System.Windows.Forms.CheckBox();
+            this.cbShowScriptErrors = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -132,6 +139,7 @@ namespace Radegast
             this.gnAutoInventory.SuspendLayout();
             this.gbAutoResponse.SuspendLayout();
             this.tbpBot.SuspendLayout();
+            this.gbLSLHelper.SuspendLayout();
             this.pseudoHome.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).BeginInit();
             this.autoSit.SuspendLayout();
@@ -232,6 +240,7 @@ namespace Radegast
             // 
             // cbMisc
             // 
+            this.cbMisc.Controls.Add(this.cbShowScriptErrors);
             this.cbMisc.Controls.Add(this.cbDisableHTTPInventory);
             this.cbMisc.Controls.Add(this.cbHideLoginGraphics);
             this.cbMisc.Controls.Add(this.cbDisableLookAt);
@@ -251,6 +260,16 @@ namespace Radegast
             this.cbMisc.Size = new System.Drawing.Size(236, 310);
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
+            // 
+            // cbDisableHTTPInventory
+            // 
+            this.cbDisableHTTPInventory.AutoSize = true;
+            this.cbDisableHTTPInventory.Location = new System.Drawing.Point(6, 257);
+            this.cbDisableHTTPInventory.Name = "cbDisableHTTPInventory";
+            this.cbDisableHTTPInventory.Size = new System.Drawing.Size(140, 17);
+            this.cbDisableHTTPInventory.TabIndex = 16;
+            this.cbDisableHTTPInventory.Text = "Disable HTTP Inventory";
+            this.cbDisableHTTPInventory.UseVisualStyleBackColor = true;
             // 
             // cbHideLoginGraphics
             // 
@@ -566,7 +585,7 @@ namespace Radegast
             this.tbpAutoResponse.Location = new System.Drawing.Point(4, 22);
             this.tbpAutoResponse.Name = "tbpAutoResponse";
             this.tbpAutoResponse.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpAutoResponse.Size = new System.Drawing.Size(522, 377);
+            this.tbpAutoResponse.Size = new System.Drawing.Size(522, 427);
             this.tbpAutoResponse.TabIndex = 2;
             this.tbpAutoResponse.Text = "Auto Response";
             this.tbpAutoResponse.UseVisualStyleBackColor = true;
@@ -655,21 +674,86 @@ namespace Radegast
             this.tbpGraphics.Location = new System.Drawing.Point(4, 22);
             this.tbpGraphics.Name = "tbpGraphics";
             this.tbpGraphics.Padding = new System.Windows.Forms.Padding(3);
-            this.tbpGraphics.Size = new System.Drawing.Size(522, 377);
+            this.tbpGraphics.Size = new System.Drawing.Size(522, 427);
             this.tbpGraphics.TabIndex = 3;
             this.tbpGraphics.Text = "Graphics Settings";
             this.tbpGraphics.UseVisualStyleBackColor = true;
             // 
             // tbpBot
             // 
+            this.tbpBot.Controls.Add(this.gbLSLHelper);
             this.tbpBot.Controls.Add(this.pseudoHome);
             this.tbpBot.Controls.Add(this.autoSit);
             this.tbpBot.Location = new System.Drawing.Point(4, 22);
             this.tbpBot.Name = "tbpBot";
-            this.tbpBot.Size = new System.Drawing.Size(522, 377);
+            this.tbpBot.Size = new System.Drawing.Size(522, 427);
             this.tbpBot.TabIndex = 4;
-            this.tbpBot.Text = "Bot";
+            this.tbpBot.Text = "Automation";
             this.tbpBot.UseVisualStyleBackColor = true;
+            // 
+            // gbLSLHelper
+            // 
+            this.gbLSLHelper.Controls.Add(this.llLSLHelperInstructios);
+            this.gbLSLHelper.Controls.Add(this.cbLSLHelperEnabled);
+            this.gbLSLHelper.Controls.Add(this.lblLSLUUID);
+            this.gbLSLHelper.Controls.Add(this.tbLSLAllowedOwner);
+            this.gbLSLHelper.Controls.Add(this.label3);
+            this.gbLSLHelper.Location = new System.Drawing.Point(8, 218);
+            this.gbLSLHelper.Name = "gbLSLHelper";
+            this.gbLSLHelper.Size = new System.Drawing.Size(263, 83);
+            this.gbLSLHelper.TabIndex = 2;
+            this.gbLSLHelper.TabStop = false;
+            this.gbLSLHelper.Text = "LSL Helper";
+            // 
+            // llLSLHelperInstructios
+            // 
+            this.llLSLHelperInstructios.AutoSize = true;
+            this.llLSLHelperInstructios.Location = new System.Drawing.Point(196, 59);
+            this.llLSLHelperInstructios.Name = "llLSLHelperInstructios";
+            this.llLSLHelperInstructios.Size = new System.Drawing.Size(61, 13);
+            this.llLSLHelperInstructios.TabIndex = 4;
+            this.llLSLHelperInstructios.TabStop = true;
+            this.llLSLHelperInstructios.Text = "Instructions";
+            this.llLSLHelperInstructios.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llLSLHelperInstructios_LinkClicked);
+            // 
+            // cbLSLHelperEnabled
+            // 
+            this.cbLSLHelperEnabled.AutoSize = true;
+            this.cbLSLHelperEnabled.Location = new System.Drawing.Point(9, 58);
+            this.cbLSLHelperEnabled.Name = "cbLSLHelperEnabled";
+            this.cbLSLHelperEnabled.Size = new System.Drawing.Size(65, 17);
+            this.cbLSLHelperEnabled.TabIndex = 3;
+            this.cbLSLHelperEnabled.Text = "Enabled";
+            this.cbLSLHelperEnabled.UseVisualStyleBackColor = true;
+            this.cbLSLHelperEnabled.CheckedChanged += new System.EventHandler(this.cbLSLHelperEnabled_CheckedChanged);
+            // 
+            // lblLSLUUID
+            // 
+            this.lblLSLUUID.AutoSize = true;
+            this.lblLSLUUID.Location = new System.Drawing.Point(6, 35);
+            this.lblLSLUUID.Name = "lblLSLUUID";
+            this.lblLSLUUID.Size = new System.Drawing.Size(34, 13);
+            this.lblLSLUUID.TabIndex = 1;
+            this.lblLSLUUID.Text = "UUID";
+            this.lblLSLUUID.Click += new System.EventHandler(this.lblLSLUUID_Click);
+            // 
+            // tbLSLAllowedOwner
+            // 
+            this.tbLSLAllowedOwner.Location = new System.Drawing.Point(47, 32);
+            this.tbLSLAllowedOwner.MaxLength = 36;
+            this.tbLSLAllowedOwner.Name = "tbLSLAllowedOwner";
+            this.tbLSLAllowedOwner.Size = new System.Drawing.Size(210, 20);
+            this.tbLSLAllowedOwner.TabIndex = 2;
+            this.tbLSLAllowedOwner.Leave += new System.EventHandler(this.tbLSLAllowedOwner_Leave);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(108, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Allowed object owner";
             // 
             // pseudoHome
             // 
@@ -852,15 +936,15 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
-            // cbDisableHTTPInventory
+            // cbShowScriptErrors
             // 
-            this.cbDisableHTTPInventory.AutoSize = true;
-            this.cbDisableHTTPInventory.Location = new System.Drawing.Point(6, 257);
-            this.cbDisableHTTPInventory.Name = "cbDisableHTTPInventory";
-            this.cbDisableHTTPInventory.Size = new System.Drawing.Size(140, 17);
-            this.cbDisableHTTPInventory.TabIndex = 16;
-            this.cbDisableHTTPInventory.Text = "Disable HTTP Inventory";
-            this.cbDisableHTTPInventory.UseVisualStyleBackColor = true;
+            this.cbShowScriptErrors.AutoSize = true;
+            this.cbShowScriptErrors.Location = new System.Drawing.Point(6, 280);
+            this.cbShowScriptErrors.Name = "cbShowScriptErrors";
+            this.cbShowScriptErrors.Size = new System.Drawing.Size(110, 17);
+            this.cbShowScriptErrors.TabIndex = 17;
+            this.cbShowScriptErrors.Text = "Show Script Erros";
+            this.cbShowScriptErrors.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -887,6 +971,8 @@ namespace Radegast
             this.gbAutoResponse.ResumeLayout(false);
             this.gbAutoResponse.PerformLayout();
             this.tbpBot.ResumeLayout(false);
+            this.gbLSLHelper.ResumeLayout(false);
+            this.gbLSLHelper.PerformLayout();
             this.pseudoHome.ResumeLayout(false);
             this.pseudoHome.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).EndInit();
@@ -961,6 +1047,13 @@ namespace Radegast
         public System.Windows.Forms.NumericUpDown pseudoHomeTolerance;
         public System.Windows.Forms.Label pseudoHomeToleranceLabel;
         public System.Windows.Forms.CheckBox cbNameLinks;
+        private System.Windows.Forms.GroupBox gbLSLHelper;
+        private System.Windows.Forms.LinkLabel llLSLHelperInstructios;
+        public System.Windows.Forms.CheckBox cbLSLHelperEnabled;
+        public System.Windows.Forms.Label lblLSLUUID;
+        public System.Windows.Forms.TextBox tbLSLAllowedOwner;
+        private System.Windows.Forms.Label label3;
+        public System.Windows.Forms.CheckBox cbShowScriptErrors;
 
 
     }

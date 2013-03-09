@@ -106,6 +106,7 @@ namespace Radegast
             RLVWearables.Add(new RLVWearable() { Name = "shape", Type = WearableType.Shape });
             RLVWearables.Add(new RLVWearable() { Name = "alpha", Type = WearableType.Alpha });
             RLVWearables.Add(new RLVWearable() { Name = "tattoo", Type = WearableType.Tattoo });
+            RLVWearables.Add(new RLVWearable() { Name = "physics", Type = WearableType.Physics });
 
             RLVAttachments = new List<RLVAttachment>();
             RLVAttachments.Add(new RLVAttachment() { Name = "none", Point = AttachmentPoint.Default });
@@ -348,7 +349,7 @@ namespace Radegast
                         int chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            client.Self.Chat("RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
+                            Respond(chan, "RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")");
                         }
                         break;
 
@@ -356,7 +357,7 @@ namespace Radegast
                         chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            client.Self.Chat("RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")", chan, ChatType.Normal);
+                            Respond(chan, "RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")");
                         }
                         break;
 
@@ -364,7 +365,7 @@ namespace Radegast
                     case "versionnum":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            client.Self.Chat("1230100", chan, ChatType.Normal);
+                            Respond(chan, "1230100");
                         }
                         break;
 
@@ -374,7 +375,7 @@ namespace Radegast
                             UUID gid = client.Self.ActiveGroup;
                             if (instance.Groups.ContainsKey(gid))
                             {
-                                client.Self.Chat(instance.Groups[gid].Name, chan, ChatType.Normal);
+                                Respond(chan, instance.Groups[gid].Name);
                             }
                         }
                         break;
@@ -405,12 +406,12 @@ namespace Radegast
                                     Primitive seat;
                                     if (client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(me.ParentID, out seat))
                                     {
-                                        client.Self.Chat(seat.ID.ToString(), chan, ChatType.Normal);
+                                        Respond(chan, seat.ID.ToString());
                                         break;
                                     }
                                 }
                             }
-                            client.Self.Chat(UUID.Zero.ToString(), chan, ChatType.Normal);
+                            Respond(chan, UUID.Zero.ToString());
                         }
                         break;
 
@@ -447,7 +448,7 @@ namespace Radegast
                                         res += ":" + objRule.Option;
                                     }
                                 });
-                                client.Self.Chat(res, chan, ChatType.Normal);
+                                Respond(chan, res);
                             }
                         }
                         break;
@@ -529,7 +530,7 @@ namespace Radegast
 
                                 }
                             }
-                            client.Self.Chat(res, chan, ChatType.Normal);
+                            Respond(chan, res);
                         }
                         break;
 
@@ -578,7 +579,7 @@ namespace Radegast
 
 
                             }
-                            client.Self.Chat(res, chan, ChatType.Normal);
+                            Respond(chan, res);
                         }
                         break;
 
@@ -597,6 +598,22 @@ namespace Radegast
                                         instance.COF.Detach((InventoryItem)client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)].Data);
                                     }
                                 }
+                                else
+                                {
+                                    InventoryNode folder = FindFolder(rule.Option);
+                                    if (folder != null)
+                                    {
+                                        var outfit = new List<InventoryItem>();
+                                        foreach (var item in folder.Nodes.Values)
+                                        {
+                                            if (CurrentOutfitFolder.CanBeWorn(item.Data))
+                                            {
+                                                outfit.Add((InventoryItem)(item.Data));
+                                            }
+                                        }
+                                        instance.COF.RemoveFromOutfit(outfit);
+                                    }
+                                }
                             }
                             else
                             {
@@ -607,6 +624,52 @@ namespace Radegast
                                         instance.COF.Detach((InventoryItem)client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)].Data);
                                     }
                                 });
+                            }
+                        }
+                        break;
+                    
+                    case "remoutfit":
+                        if (rule.Param == "force")
+                        {
+                            if (!string.IsNullOrEmpty(rule.Option))
+                            {
+                                var w = RLVWearables.Find(a => a.Name == rule.Option);
+                                if (w.Name == rule.Option)
+                                {
+                                    var items = instance.COF.GetWornAt(w.Type);
+                                    instance.COF.RemoveFromOutfit(items);
+                                }
+                            }
+                        }
+                        break;
+
+                    case "attach":
+                    case "attachoverorreplace":
+                    case "attachover":
+                        if (rule.Param == "force")
+                        {
+                            if (!string.IsNullOrEmpty(rule.Option))
+                            {
+                                InventoryNode folder = FindFolder(rule.Option);
+                                if (folder != null)
+                                {
+                                    List<InventoryItem> outfit = new List<InventoryItem>();
+                                    foreach (var item in folder.Nodes.Values)
+                                    {
+                                        if (CurrentOutfitFolder.CanBeWorn(item.Data))
+                                        {
+                                            outfit.Add((InventoryItem)item.Data); 
+                                        }
+                                    }
+                                    if (rule.Behaviour == "attachover")
+                                    {
+                                        instance.COF.AddToOutfit(outfit, false);
+                                    }
+                                    else
+                                    {
+                                        instance.COF.AddToOutfit(outfit, true);
+                                    }
+                                }
                             }
                         }
                         break;
@@ -627,7 +690,7 @@ namespace Radegast
                                 }
                             }
                             
-                            client.Self.Chat(res.TrimEnd(','), chan, ChatType.Normal);
+                            Respond(chan, res.TrimEnd(','));
                         }
                         break;
 
@@ -648,7 +711,7 @@ namespace Radegast
                                 }
                             }
 
-                            client.Self.Chat(res.TrimEnd(','), chan, ChatType.Normal);
+                            Respond(chan, res.TrimEnd(','));
                         }
                         break;
 
@@ -659,6 +722,14 @@ namespace Radegast
 
 
             return true;
+        }
+
+        private void Respond(int chan, string msg)
+        {
+#if DEBUG
+            instance.TabConsole.DisplayNotificationInChat(string.Format("{0}: {1}", chan, msg), ChatBufferTextStyle.OwnerSay);
+#endif
+            client.Self.Chat(msg, chan, ChatType.Normal);
         }
 
 
@@ -848,6 +919,25 @@ namespace Radegast
                 return false;
             }
 
+            return true;
+        }
+
+        public bool AllowDetach(InventoryItem item)
+        {
+            if (!Enabled || item == null) return true;
+
+            List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == client.Self.LocalID);
+            foreach (var att in myAtt)
+            {
+                if (CurrentOutfitFolder.GetAttachmentItem(att) == item.UUID)
+                {
+                    if (rules.FindAll((RLVRule r) => { return r.Behaviour == "detach" && r.Sender == att.ID; }).Count > 0)
+                    {
+                        return false;
+                    }
+                    break;
+                }
+            }
             return true;
         }
 

@@ -58,9 +58,10 @@ namespace Radegast.Plugin.Alice
         private int respondRange = -1;
         private bool shout2shout = false;
         private bool whisper2whisper = false;
-        private ToolStripMenuItem respondWithoutNameButton, distance_5m, distance_10m, distance_15m, distance_20m, btn_shout2shout, btn_whisper2whisper;
+        private ToolStripMenuItem respondWithoutNameButton, distance_5m, distance_10m, distance_15m, distance_20m, btn_shout2shout, btn_whisper2whisper, btn_enableDelay;
         private bool DisableOnStart = false;
         private ToolStripMenuItem btn_DisableOnStart;
+        private bool EnableRandomDelay = false;
 
         public void StartPlugin(RadegastInstance inst)
         {
@@ -223,7 +224,7 @@ namespace Radegast.Plugin.Alice
 
             btn_whisper2whisper = new ToolStripMenuItem("Whisper response to Whisper", null, (object sender, EventArgs e) =>
             {
-                whisper2whisper= btn_whisper2whisper.Checked = !whisper2whisper;
+                whisper2whisper = btn_whisper2whisper.Checked = !whisper2whisper;
                 Instance.GlobalSettings["plugin.alice.whisper2whisper"] = OSD.FromBoolean(whisper2whisper);
             });
 
@@ -232,6 +233,13 @@ namespace Radegast.Plugin.Alice
                 Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
                 Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
             });
+
+            btn_enableDelay = new ToolStripMenuItem("Enable random delay", null, (sender, e) =>
+            {
+                btn_enableDelay.Checked = !btn_enableDelay.Checked;
+                Instance.GlobalSettings["plugin.alice.enable_delay"] = EnableRandomDelay = btn_enableDelay.Checked;
+            });
+            btn_enableDelay.Checked = EnableRandomDelay = Instance.GlobalSettings["plugin.alice.enable_delay"];
 
             Instance.MainForm.PluginsMenu.DropDownItems.Add(MenuButton);
             Instance.MainForm.PluginsMenu.Visible = true;
@@ -266,16 +274,17 @@ namespace Radegast.Plugin.Alice
             btn_shout2shout.Checked = shout2shout;
             btn_whisper2whisper.Checked = whisper2whisper;
 
+            MenuButton.DropDownItems.Add(btn_enableDelay);
             MenuButton.DropDownItems.Add(btn_DisableOnStart);
             MenuButton.DropDownItems.Add("Reload AIML", null, (object sender, EventArgs e) =>
             {
                 Alice = null;
                 GC.Collect();
-                LoadALICE();                
+                LoadALICE();
             });
 
             LoadALICE();
-            if (Alice!=null)
+            if (Alice != null)
             {
                 talkToAvatar = new TalkToAvatar(Instance, Alice);
                 Instance.ContextActionManager.RegisterContextAction(talkToAvatar);
@@ -366,6 +375,9 @@ namespace Radegast.Plugin.Alice
             }
         }
 
+        private object syncChat = new object();
+        private Random rand = new Random();
+
         void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
@@ -384,46 +396,61 @@ namespace Radegast.Plugin.Alice
 
             if (parseForResponse)
             {
-                Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
-                string msg = e.Message.ToLower();
-                msg = msg.Replace(FirstName(Client.Self.Name).ToLower(), "");
-                AIMLbot.User user;
-                if (AliceUsers.ContainsKey(e.FromName))
+                ThreadPool.QueueUserWorkItem(sync =>
                 {
-                    user = (AIMLbot.User)AliceUsers[e.FromName];
-                }
-                else
-                {
-                    user = new User(e.FromName, Alice);
-                    user.Predicates.removeSetting("name");
-                    user.Predicates.addSetting("name", FirstName(e.FromName));
-                    AliceUsers[e.FromName] = user;
-                }
-                Client.Self.Movement.TurnToward(e.Position);
-                if (!Instance.State.IsTyping)
-                {
-                    Instance.State.SetTyping(true);
-                }
-                System.Threading.Thread.Sleep(1000);
-                Instance.State.SetTyping(false);
-                AIMLbot.Request req = new Request(msg, user, Alice);
-                AIMLbot.Result res = Alice.Chat(req);
-                string outp = res.Output;
-                if (outp.Length > 1000)
-                {
-                    outp = outp.Substring(0, 1000);
-                }
+                    lock (syncChat)
+                    {
+                        Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
+                        string msg = e.Message.ToLower();
+                        msg = msg.Replace(FirstName(Client.Self.Name).ToLower(), "");
+                        AIMLbot.User user;
+                        if (AliceUsers.ContainsKey(e.FromName))
+                        {
+                            user = (AIMLbot.User)AliceUsers[e.FromName];
+                        }
+                        else
+                        {
+                            user = new User(e.FromName, Alice);
+                            user.Predicates.removeSetting("name");
+                            user.Predicates.addSetting("name", FirstName(e.FromName));
+                            AliceUsers[e.FromName] = user;
+                        }
 
-                ChatType useChatType = ChatType.Normal;
-                if (shout2shout && e.Type == ChatType.Shout)
-                {
-                    useChatType = ChatType.Shout;
-                }
-                else if (whisper2whisper && e.Type == ChatType.Whisper)
-                {
-                    useChatType = ChatType.Whisper;
-                }
-                Client.Self.Chat(outp, 0, useChatType);
+                        Client.Self.Movement.TurnToward(e.Position);
+                        if (EnableRandomDelay) System.Threading.Thread.Sleep(1000 + 1000 * rand.Next(2));
+                        if (!Instance.State.IsTyping)
+                        {
+                            Instance.State.SetTyping(true);
+                        }
+                        if (EnableRandomDelay)
+                        {
+                            System.Threading.Thread.Sleep(2000 + 1000 * rand.Next(5));
+                        }
+                        else
+                        {
+                            System.Threading.Thread.Sleep(1000);
+                        }
+                        Instance.State.SetTyping(false);
+                        AIMLbot.Request req = new Request(msg, user, Alice);
+                        AIMLbot.Result res = Alice.Chat(req);
+                        string outp = res.Output;
+                        if (outp.Length > 1000)
+                        {
+                            outp = outp.Substring(0, 1000);
+                        }
+
+                        ChatType useChatType = ChatType.Normal;
+                        if (shout2shout && e.Type == ChatType.Shout)
+                        {
+                            useChatType = ChatType.Shout;
+                        }
+                        else if (whisper2whisper && e.Type == ChatType.Whisper)
+                        {
+                            useChatType = ChatType.Whisper;
+                        }
+                        Client.Self.Chat(outp, 0, useChatType);
+                    }
+                });
             }
         }
 
@@ -456,28 +483,51 @@ namespace Radegast.Plugin.Alice
                 && Enabled                                       // Alice bot is enabled
                 )
             {
-                Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
-                AIMLbot.User user;
-                if (AliceUsers.ContainsKey(e.IM.FromAgentName))
+                ThreadPool.QueueUserWorkItem(sync =>
                 {
-                    user = (AIMLbot.User)AliceUsers[e.IM.FromAgentName];
-                }
-                else
-                {
-                    user = new User(e.IM.FromAgentName, Alice);
-                    user.Predicates.removeSetting("name");
-                    user.Predicates.addSetting("name", FirstName(e.IM.FromAgentName));
-                    AliceUsers[e.IM.FromAgentName] = user;
-                }
-                AIMLbot.Request req = new Request(e.IM.Message, user, Alice);
-                AIMLbot.Result res = Alice.Chat(req);
-                string msg = res.Output;
-                if (msg.Length > 1000)
-                {
-                    msg = msg.Substring(0, 1000);
-                }
-                Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID);
-
+                    lock (syncChat)
+                    {
+                        Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
+                        AIMLbot.User user;
+                        if (AliceUsers.ContainsKey(e.IM.FromAgentName))
+                        {
+                            user = (AIMLbot.User)AliceUsers[e.IM.FromAgentName];
+                        }
+                        else
+                        {
+                            user = new User(e.IM.FromAgentName, Alice);
+                            user.Predicates.removeSetting("name");
+                            user.Predicates.addSetting("name", FirstName(e.IM.FromAgentName));
+                            AliceUsers[e.IM.FromAgentName] = user;
+                        }
+                        AIMLbot.Request req = new Request(e.IM.Message, user, Alice);
+                        AIMLbot.Result res = Alice.Chat(req);
+                        string msg = res.Output;
+                        if (msg.Length > 1000)
+                        {
+                            msg = msg.Substring(0, 1000);
+                        }
+                        if (EnableRandomDelay) System.Threading.Thread.Sleep(2000 + 1000 * rand.Next(3));
+                        Instance.Netcom.SendIMStartTyping(e.IM.FromAgentID, e.IM.IMSessionID);
+                        if (EnableRandomDelay)
+                        {
+                            System.Threading.Thread.Sleep(2000 + 1000 * rand.Next(5));
+                        }
+                        else
+                        {
+                            System.Threading.Thread.Sleep(1000);
+                        }
+                        Instance.Netcom.SendIMStopTyping(e.IM.FromAgentID, e.IM.IMSessionID);
+                        if (Instance.MainForm.InvokeRequired)
+                        {
+                            Instance.MainForm.BeginInvoke(new MethodInvoker(() => Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID)));
+                        }
+                        else
+                        {
+                            Instance.Netcom.SendInstantMessage(msg, e.IM.FromAgentID, e.IM.IMSessionID);
+                        }
+                    }
+                });
             }
         }
 

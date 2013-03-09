@@ -35,7 +35,7 @@ using System.Threading;
 
 using OpenMetaverse;
 
-using Radegast.Bot;
+using Radegast.Automation;
 using Radegast.Netcom;
 
 namespace Radegast
@@ -196,6 +196,7 @@ namespace Radegast
             KnownAnimations = Animations.ToDictionary();
             autosit = new AutoSit(this.instance);
             pseudohome = new PseudoHome(this.instance);
+            lslHelper = new LSLHelper(this.instance);
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -251,6 +252,18 @@ namespace Radegast
                 walkTimer.Dispose();
                 walkTimer = null;
             }
+
+            if (autosit != null)
+            {
+                autosit.Dispose();
+                autosit = null;
+            }
+
+            if (lslHelper == null)
+            {
+                lslHelper.Dispose();
+                lslHelper = null;
+            }
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)
@@ -263,7 +276,13 @@ namespace Radegast
         {
             if (e.Avatar.LocalID != client.Self.LocalID) return;
 
-            this.sitting = e.SittingOn != 0;
+            sitting = e.SittingOn != 0;
+
+            if (client.Self.SittingOn != 0 && !client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(client.Self.SittingOn))
+            {
+                client.Objects.RequestObject(client.Network.CurrentSim, client.Self.SittingOn);
+            }
+
             if (SitStateChanged != null)
             {
                 SitStateChanged(this, new SitEventArgs(this.sitting));
@@ -475,7 +494,7 @@ namespace Radegast
         {
             autosit.TrySit();
             pseudohome.ETGoHome();
-            SetFOVVerticalAngle(FOVVerticalAngle);
+            client.Self.Movement.SetFOVVerticalAngle(FOVVerticalAngle);
         }
 
         private UUID teleportEffect = UUID.Random();
@@ -579,22 +598,20 @@ namespace Radegast
         {
             if (CameraTracksOwnAvatar)
             {
-                client.Self.Movement.Camera.LookAt(
-                    client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation,
-                    client.Self.SimPosition
-                );
+                if (client.Self.SittingOn != 0 && !client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(client.Self.SittingOn))
+                {
+                    // We are sitting but don't have the information about the object we are sitting on
+                    // Sim seems to ignore RequestMutlipleObjects message
+                    // client.Objects.RequestObject(client.Network.CurrentSim, client.Self.SittingOn);
+                }
+                else
+                {
+                    client.Self.Movement.Camera.LookAt(
+                        client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation,
+                        client.Self.SimPosition
+                    );
+                }
             }
-        }
-
-        public void SetFOVVerticalAngle(float angle)
-        {
-            OpenMetaverse.Packets.AgentFOVPacket msg = new OpenMetaverse.Packets.AgentFOVPacket();
-            msg.AgentData.AgentID = client.Self.AgentID;
-            msg.AgentData.SessionID = client.Self.SessionID;
-            msg.AgentData.CircuitCode = client.Network.CircuitCode;
-            msg.FOVBlock.GenCounter = 0;
-            msg.FOVBlock.VerticalAngle = angle;
-            client.Network.SendPacket(msg);
         }
 
         public Quaternion AvatarRotation(Simulator sim, UUID avID)
@@ -1167,6 +1184,12 @@ namespace Radegast
         public AutoSit AutoSit
         {
             get { return autosit; }
+        }
+
+        private LSLHelper lslHelper;
+        public LSLHelper LSLHelper
+        {
+            get { return lslHelper; }
         }
 
         private PseudoHome pseudohome;

@@ -238,6 +238,12 @@ namespace Radegast
                 null != client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == e.SourceID)
                 ) return;
 
+            // Check if it's script debug
+            if (e.Type == ChatType.Debug && !instance.GlobalSettings["show_script_errors"])
+            {
+                return;
+            }
+
             // Check if sender object is muted
             if (e.SourceType == ChatSourceType.Object &&
                 null != client.Self.MuteList.Find(me =>
@@ -316,6 +322,10 @@ namespace Radegast
                     if (e.Type == ChatType.OwnerSay)
                     {
                         item.Style = ChatBufferTextStyle.OwnerSay;
+                    }
+                    else if (e.Type == ChatType.Debug)
+                    {
+                        item.Style = ChatBufferTextStyle.Error;
                     }
                     else
                     {

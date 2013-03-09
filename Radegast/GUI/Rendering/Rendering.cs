@@ -312,6 +312,8 @@ namespace Radegast.Rendering
                 catch (ObjectDisposedException)
                 { }
 #if !DEBUG
+                catch (NullReferenceException)
+                { }
                 catch (Exception ex)
                 {
                     RenderingEnabled = false;
@@ -839,6 +841,8 @@ namespace Radegast.Rendering
 
         SceneObject RightclickedObject;
         int RightclickedFaceID;
+        int LeftclickedFaceID;
+
         Vector3 RightclickedPosition;
 
         private void glControl_MouseDown(object sender, MouseEventArgs e)
@@ -852,7 +856,6 @@ namespace Radegast.Rendering
                 if (ModifierKeys == Keys.None)
                 {
                     object picked;
-                    int LeftclickedFaceID;
                     if (TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
                     {
                         if (picked is RenderPrimitive)
@@ -907,17 +910,17 @@ namespace Radegast.Rendering
 
                         //Then set the new one and touch it for the first time
                         m_currentlyTouchingObject = LeftclickedObject;
-                        Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                        Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, LeftclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
                         Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
                     }
                     else
-                        Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
+                        Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, LeftclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
                 }
                 else
                 {
                     m_currentlyTouchingObject = LeftclickedObject;
-                    Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                    Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero);
+                    Client.Self.Grab(LeftclickedObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, LeftclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
+                    Client.Self.GrabUpdate(LeftclickedObject.Prim.ID, Vector3.Zero, Vector3.Zero, Vector3.Zero, Vector3.Zero, LeftclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
                 }
             }
         }
@@ -925,7 +928,7 @@ namespace Radegast.Rendering
         private void TryEndTouchObject()
         {
             if (m_currentlyTouchingObject != null)
-                Client.Self.DeGrab(m_currentlyTouchingObject.Prim.LocalID);
+                Client.Self.DeGrab(m_currentlyTouchingObject.Prim.LocalID, Vector3.Zero, Vector3.Zero, LeftclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
             m_currentlyTouchingObject = null;
         }
 
@@ -3344,7 +3347,7 @@ namespace Radegast.Rendering
                     {
                         Client.Self.Grab(prim.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
                         Thread.Sleep(100);
-                        Client.Self.DeGrab(prim.Prim.LocalID);
+                        Client.Self.DeGrab(prim.Prim.LocalID, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
                     });
 
                     if (prim.Prim.Properties != null

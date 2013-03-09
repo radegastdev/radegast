@@ -508,7 +508,7 @@ namespace Radegast.Rendering
                     if (TryPick(e.X, e.Y, out picked, out faceID))
                     {
                         Client.Self.Grab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
-                        Client.Self.DeGrab(picked.Prim.LocalID);
+                        Client.Self.DeGrab(picked.Prim.LocalID, Vector3.Zero, Vector3.Zero, faceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
                     }
                 }
                 SafeInvalidate();
@@ -1185,7 +1185,7 @@ namespace Radegast.Rendering
 
             Client.Self.Grab(RightclickedPrim.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
             Thread.Sleep(100);
-            Client.Self.DeGrab(RightclickedPrim.Prim.LocalID);
+            Client.Self.DeGrab(RightclickedPrim.Prim.LocalID, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
         }
 
         private void sitToolStripMenuItem_Click(object sender, EventArgs e)

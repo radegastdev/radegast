@@ -964,6 +964,8 @@ namespace Radegast
                 txtAssetID.Text = String.Empty;
             }
 
+            txtInvID.Text = item.UUID.ToString();
+
             Permissions p = item.Permissions;
             cbOwnerModify.Checked = (p.OwnerMask & PermissionMask.Modify) != 0;
             cbOwnerCopy.Checked = (p.OwnerMask & PermissionMask.Copy) != 0;
@@ -1352,7 +1354,8 @@ namespace Radegast
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    if (folder.PreferredType == AssetType.Unknown)
+                    if (folder.PreferredType == AssetType.Unknown ||
+                        folder.PreferredType == AssetType.OutfitFolder)
                     {
                         ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                         ctxItem.Name = "rename_folder";
@@ -1383,7 +1386,8 @@ namespace Radegast
                         }
                     }
 
-                    if (folder.PreferredType == AssetType.Unknown)
+                    if (folder.PreferredType == AssetType.Unknown ||
+                        folder.PreferredType == AssetType.OutfitFolder)
                     {
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
                         ctxItem.Name = "delete_folder";
@@ -1734,7 +1738,7 @@ namespace Radegast
                                 addToOutfit.Add((InventoryItem)item);
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        instance.COF.AddToOutfit(addToOutfit);
+                        instance.COF.AddToOutfit(addToOutfit, true);
                         UpdateWornLabels();
                         break;
 
@@ -1833,7 +1837,7 @@ namespace Radegast
 
                     case "item_wear":
                         appearnceWasBusy = client.Appearance.ManagerBusy;
-                        instance.COF.AddToOutfit(item);
+                        instance.COF.AddToOutfit(item, true);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 
@@ -2078,7 +2082,9 @@ namespace Radegast
         {
             if (e.Node == null ||
                 !(e.Node.Tag is InventoryBase) ||
-                (e.Node.Tag is InventoryFolder && ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown)
+                (e.Node.Tag is InventoryFolder &&
+                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown &&
+                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.OutfitFolder)
                 )
             {
                 e.CancelEdit = true;
@@ -2629,6 +2635,16 @@ namespace Radegast
 
         }
         #endregion Search
+
+        private void txtAssetID_Enter(object sender, EventArgs e)
+        {
+            txtAssetID.SelectAll();
+        }
+
+        private void txtInvID_Enter(object sender, EventArgs e)
+        {
+            txtInvID.SelectAll();
+        }
 
 
     }

@@ -52,12 +52,13 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private Primitive currentPrim = new Primitive();
-        private ListViewItem currentItem = new ListViewItem();
         private float searchRadius = 40.0f;
         //public List<InventoryBase> subitems;
         PropertiesQueue propRequester;
         private Thread ContentsThread;
         private ObjectConsoleFilter filter;
+        private List<Primitive> Prims = new List<Primitive>();
+        private ObjectSorter PrimSorter;
 
         public Primitive CurrentPrim { get { return currentPrim; } }
 
@@ -77,14 +78,16 @@ namespace Radegast
             nudRadius.Value = (decimal)searchRadius;
             nudRadius.ValueChanged += nudRadius_ValueChanged;
 
-            lstPrims.ListViewItemSorter = new ObjectSorter(client.Self);
-			lstPrims.MouseClick += (sender, e) => {
-				if (e.Button == MouseButtons.Right)
-				{
-					ctxMenuObjects.Show(lstPrims, e.X, e.Y);
-					ctxMenuObjects.BringToFront();
-				}
-			};
+            lstPrims.MouseClick += (sender, e) =>
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    ctxMenuObjects.Show(lstPrims, e.X, e.Y);
+                    ctxMenuObjects.BringToFront();
+                }
+             };
+
+            PrimSorter = new ObjectSorter(client.Self);
 
             lstContents.LargeImageList = frmMain.ResourceImages;
             lstContents.SmallImageList = frmMain.ResourceImages;
@@ -112,7 +115,7 @@ namespace Radegast
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             instance.State.SitStateChanged += new EventHandler<SitEventArgs>(State_SitStateChanged);
             client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Objects.KillObjects += new EventHandler<KillObjectsEventArgs>(Objects_KillObjects);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Objects.ObjectPropertiesFamily += new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
             client.Network.SimChanged += new EventHandler<SimChangedEventArgs>(Network_SimChanged);
@@ -133,7 +136,7 @@ namespace Radegast
             instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             instance.State.SitStateChanged -= new EventHandler<SitEventArgs>(State_SitStateChanged);
             client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
-            client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            client.Objects.KillObjects -= new EventHandler<KillObjectsEventArgs>(Objects_KillObjects);
             client.Objects.ObjectProperties -= new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
             client.Objects.ObjectPropertiesFamily -= new EventHandler<ObjectPropertiesFamilyEventArgs>(Objects_ObjectPropertiesFamily);
             client.Network.SimChanged -= new EventHandler<SimChangedEventArgs>(Network_SimChanged);
@@ -163,16 +166,7 @@ namespace Radegast
 
         public List<Primitive> GetObjectList()
         {
-            lock (lstPrims.Items)
-            {
-                List<Primitive> ret = new List<Primitive>(lstPrims.Items.Count);
-                foreach (ListViewItem item in lstPrims.Items)
-                {
-                    if (item.Tag is Primitive)
-                        ret.Add(item.Tag as Primitive);
-                }
-                return ret;
-            }
+            return new List<Primitive>(Prims);
         }
 
         void propRequester_OnTick(int remaining)
@@ -188,7 +182,7 @@ namespace Radegast
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Tracking {0} objects", lstPrims.Items.Count);
+            sb.AppendFormat("Tracking {0} objects", Prims.Count);
 
             if (remaining > 10)
             {
@@ -199,6 +193,12 @@ namespace Radegast
                 sb.Append(".");
             }
 
+            lock (Prims)
+            {
+                Prims.Sort(PrimSorter);
+                lstPrims.VirtualListSize = Prims.Count;
+            }
+            lstPrims.Invalidate();
             lblStatus.Text = sb.ToString();
         }
 
@@ -215,36 +215,60 @@ namespace Radegast
 
         void Avatars_UUIDNameReply(object sender, UUIDNameReplyEventArgs e)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(delegate() { Avatars_UUIDNameReply(sender, e); }));
-                return;
-            }
+            int minIndex = -1;
+            int maxIndex = -1;
+            bool updated = false;
 
-            lstPrims.BeginUpdate();
-            lock (lstPrims.Items)
+            lock (Prims)
             {
-                foreach (ListViewItem item in lstPrims.Items)
+                for (int i=0; i<Prims.Count; i++)
                 {
-                    Primitive prim = item.Tag as Primitive;
+                    Primitive prim = Prims[i];
                     if (prim.Properties != null && e.Names.ContainsKey(prim.Properties.OwnerID))
                     {
-                        item.Text = GetObjectName(prim);
+                        if (minIndex == -1 || i < minIndex) minIndex = i;
+                        if (i > maxIndex) maxIndex = i;
+                        updated = true;
                     }
                 }
             }
-            lstPrims.EndUpdate();
+
+            if (updated)
+            {
+                if (InvokeRequired)
+                {
+                    BeginInvoke(new MethodInvoker(() =>
+                    {
+                        try
+                        {
+                            lstPrims.RedrawItems(minIndex, maxIndex, true);
+                        }
+                        catch { }
+                    }));
+                }
+                else
+                {
+                    lstPrims.RedrawItems(minIndex, maxIndex, true);
+                }
+            }
         }
 
         void UpdateProperties(Primitive.ObjectProperties props)
         {
-            lock (lstPrims.Items)
+            lock (Prims)
             {
-                if (lstPrims.Items.ContainsKey(props.ObjectID.ToString()))
+                for (int i=0; i<Prims.Count; i++)
                 {
-                    Primitive prim = lstPrims.Items[props.ObjectID.ToString()].Tag as Primitive;
-                    prim.Properties = props;
-                    lstPrims.Items[props.ObjectID.ToString()].Text = GetObjectName(prim);
+                    if (Prims[i].ID == props.ObjectID)
+                    {
+                        Prims[i].Properties = props;
+                        try
+                        {
+                            lstPrims.RedrawItems(i, i, true);
+                        }
+                        catch { }
+                        break;
+                    }
                 }
             }
 
@@ -641,12 +665,7 @@ namespace Radegast
             string name = "Loading...";
             string ownerName = "Loading...";
 
-            if (prim.Properties == null)
-            {
-                //if (prim.ParentID != 0) throw new Exception("Requested properties for non root prim");
-                propRequester.RequestProps(prim);
-            }
-            else
+            if (prim.Properties != null)
             {
                 name = prim.Properties.Name;
                 // prim.Properties.GroupID is the actual group when group owned, not prim.GroupID
@@ -676,13 +695,18 @@ namespace Radegast
                 else
                     ownerName = instance.Names.Get(prim.Properties.OwnerID);
             }
+
             if (prim.ParentID == client.Self.LocalID)
             {
                 return string.Format("{0} attached to {1}", name, prim.PrimData.AttachmentPoint.ToString());
             }
-            else
+            else if (ownerName != "Loading...")
             {
                 return String.Format("{0} ({1}m) owned by {2}", name, distance, ownerName);
+            }
+            else
+            {
+                return String.Format("{0} ({1}m)", name, distance);
             }
 
         }
@@ -696,45 +720,17 @@ namespace Radegast
 
         private void AddPrim(Primitive prim)
         {
-            if (InvokeRequired)
+            lock (Prims)
             {
-                BeginInvoke(new MethodInvoker(delegate()
-                    {
-                        AddPrim(prim);
-                    }
-                ));
-                return;
-            }
-
-            ListViewItem item = null;
-
-            lock (lstPrims.Items)
-            {
-                if (lstPrims.Items.ContainsKey(prim.ID.ToString()))
+                string name = GetObjectName(prim);
+                if (!Prims.Contains(prim) && (txtSearch.Text.Length == 0 || name.ToLower().Contains(txtSearch.Text.ToLower())))
                 {
-                    item = lstPrims.Items[prim.ID.ToString()];
-                }
-            }
-
-            if (item == null)
-            {
-                item = new ListViewItem();
-                item.Text = GetObjectName(prim);
-                item.Tag = prim;
-                item.Name = prim.ID.ToString();
-
-                if (txtSearch.Text.Length == 0 || item.Text.ToLower().Contains(txtSearch.Text.ToLower()))
-                {
-                    lock (lstPrims.Items)
+                    Prims.Add(prim);
+                    if (prim.Properties == null)
                     {
-                        lstPrims.Items.Add(item);
+                        propRequester.RequestProps(prim);
                     }
                 }
-            }
-            else
-            {
-                item.Text = GetObjectName(prim);
-                item.Tag = prim;
             }
         }
 
@@ -749,19 +745,11 @@ namespace Radegast
                     int distance = (int)Vector3.Distance(client.Self.SimPosition, e.Prim.Position);
                     if (distance < searchRadius)
                     {
-                        if (e.Prim.Properties == null)
-                        {
-                            propRequester.RequestProps(e.Prim);
-                        }
                         AddPrim(e.Prim);
                     }
                 }
                 else if (e.Prim.ParentID == client.Self.LocalID)
                 {
-                    if (e.Prim.Properties == null)
-                    {
-                        propRequester.RequestProps(e.Prim);
-                    }
                     AddPrim(e.Prim);
                 }
             }
@@ -772,29 +760,47 @@ namespace Radegast
                 {
                     UpdateCurrentObject(false);
                 }
-                propRequester.RequestProps(e.Prim);
             }
         }
 
-        void Objects_KillObject(object sender, KillObjectEventArgs e)
+        void Objects_KillObjects(object sender, KillObjectsEventArgs e)
         {
             if (e.Simulator.Handle != client.Network.CurrentSim.Handle) return;
 
-            Primitive prim;
-
-            if (client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(e.ObjectLocalID, out prim))
+            lock (Prims)
             {
-                lstPrims.BeginInvoke(new MethodInvoker(() =>
+                List<Primitive> killed = Prims.FindAll((p) =>
+                {
+                    for (int i = 0; i < e.ObjectLocalIDs.Length; i++)
                     {
-                        lock (lstPrims.Items)
+                        if (p.LocalID == e.ObjectLocalIDs[i])
                         {
-                            if (lstPrims.Items.ContainsKey(prim.ID.ToString()))
-                            {
-                                lstPrims.Items[prim.ID.ToString()].Remove();
-                            }
+                            return true;
                         }
-                    }));
+                    }
+                    return false;
+                });
+
+                foreach (Primitive prim in killed)
+                {
+                    Prims.Remove(prim);
+                }
             }
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() =>
+                {
+                    lstPrims.VirtualListSize = Prims.Count;
+                    lstPrims.Invalidate();
+                }));
+            }
+            else
+            {
+                lstPrims.VirtualListSize = Prims.Count;
+                lstPrims.Invalidate();
+            }
+
         }
 
         private bool IncludePrim(Primitive prim)
@@ -816,34 +822,35 @@ namespace Radegast
         private void AddAllObjects()
         {
             Vector3 location = client.Self.SimPosition;
-            List<ListViewItem> items = new List<ListViewItem>();
 
-            client.Network.CurrentSim.ObjectsPrimitives.ForEach(
-                new Action<Primitive>(
-                delegate(Primitive prim)
-                {
-                    int distance = (int)Vector3.Distance(prim.Position, location);
-                    if (prim.ParentID == client.Self.LocalID)
-                    {
-                        distance = 0;
-                    }
-                    if (IncludePrim(prim) &&
-                        (prim.Position != Vector3.Zero) &&
-                        (distance < searchRadius) &&
-                        (txtSearch.Text.Length == 0 || (prim.Properties != null && prim.Properties.Name.ToLower().Contains(txtSearch.Text.ToLower())))) //root prims and attachments only
-                    {
-                        ListViewItem item = new ListViewItem();
-                        item.Text = GetObjectName(prim);
-                        item.Tag = prim;
-                        item.Name = prim.ID.ToString();
-                        items.Add(item);
-                    }
-                }
-                ));
-
-            lock (lstPrims.Items)
+            lock (Prims)
             {
-                lstPrims.Items.AddRange(items.ToArray());
+                client.Network.CurrentSim.ObjectsPrimitives.ForEach(
+                    new Action<Primitive>(
+                    delegate(Primitive prim)
+                    {
+                        int distance = (int)Vector3.Distance(prim.Position, location);
+                        if (prim.ParentID == client.Self.LocalID)
+                        {
+                            distance = 0;
+                        }
+                        if (IncludePrim(prim) &&
+                            (prim.Position != Vector3.Zero) &&
+                            (distance < searchRadius) &&
+                            (txtSearch.Text.Length == 0 || (prim.Properties != null && prim.Properties.Name.ToLower().Contains(txtSearch.Text.ToLower()))) && //root prims and attachments only
+                            !Prims.Contains(prim))
+                        {
+                            Prims.Add(prim);
+                            if (prim.Properties == null)
+                            {
+                                propRequester.RequestProps(prim);
+                            }
+                        }
+                    }
+                    ));
+                Prims.Sort(PrimSorter);
+                lstPrims.VirtualListSize = Prims.Count;
+                lstPrims.Invalidate();
             }
         }
 
@@ -892,24 +899,30 @@ namespace Radegast
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            lstPrims.BeginUpdate();
             Cursor.Current = Cursors.WaitCursor;
-            lock (lstPrims.Items)
-            {
-                lstPrims.Items.Clear();
-            }
+            Prims.Clear();
             AddAllObjects();
             Cursor.Current = Cursors.Default;
-            lstPrims.EndUpdate();
         }
 
         private void lstPrims_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstPrims.SelectedItems.Count == 1)
+            if (lstPrims.SelectedIndices.Count == 1)
             {
+                lock (Prims)
+                {
+                    try
+                    {
+                        currentPrim = Prims[lstPrims.SelectedIndices[0]];
+                    }
+                    catch
+                    {
+                        gbxInworld.Enabled = false;
+                        return;
+                    }
+                }
+
                 gbxInworld.Enabled = true;
-                currentItem = lstPrims.SelectedItems[0];
-                currentPrim = currentItem.Tag as Primitive;
                 btnBuy.Tag = currentPrim;
 
                 if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.CreatorID == UUID.Zero))
@@ -1023,7 +1036,7 @@ namespace Radegast
 
         private void btnBuy_Click(object sender, EventArgs e)
         {
-            if (lstPrims.SelectedItems.Count != 1) return;
+            if (lstPrims.SelectedIndices.Count != 1) return;
             btnBuy.Enabled = false;
             client.Objects.BuyObject(client.Network.CurrentSim, currentPrim.LocalID, currentPrim.Properties.SaleType, currentPrim.Properties.SalePrice, client.Self.ActiveGroup, client.Inventory.FindFolderForType(AssetType.Object));
         }
@@ -1032,10 +1045,9 @@ namespace Radegast
         {
             if (rbDistance.Checked)
             {
-                lstPrims.BeginUpdate();
-                ((ObjectSorter)lstPrims.ListViewItemSorter).SortByName = false;
-                lstPrims.Sort();
-                lstPrims.EndUpdate();
+                PrimSorter.SortByName = false;
+                lock (Prims) Prims.Sort(PrimSorter);
+                lstPrims.Invalidate();
             }
         }
 
@@ -1043,22 +1055,21 @@ namespace Radegast
         {
             if (rbName.Checked)
             {
-                lstPrims.BeginUpdate();
-                ((ObjectSorter)lstPrims.ListViewItemSorter).SortByName = true;
-                lstPrims.Sort();
-                lstPrims.EndUpdate();
+                PrimSorter.SortByName = true;
+                lock (Prims) Prims.Sort(PrimSorter);
+                lstPrims.Invalidate();
             }
         }
 
         private void btnTurnTo_Click(object sender, EventArgs e)
         {
-            if (lstPrims.SelectedItems.Count != 1) return;
+            if (lstPrims.SelectedIndices.Count != 1) return;
             client.Self.Movement.TurnToward(currentPrim.Position);
         }
 
         private void btnWalkTo_Click(object sender, EventArgs e)
         {
-            if (lstPrims.SelectedItems.Count != 1) return;
+            if (lstPrims.SelectedIndices.Count != 1) return;
 
             if (instance.State.IsWalking)
             {
@@ -1110,7 +1121,7 @@ namespace Radegast
             e.Cancel = false;
 			ctxMenuObjects.BringToFront();
 
-            if (lstPrims.SelectedItems.Count != 1)
+            if (lstPrims.SelectedIndices.Count != 1)
             {
                 e.Cancel = true;
                 return;
@@ -1242,18 +1253,6 @@ namespace Radegast
 
         }
 
-        //private void lstPrims_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (e.KeyCode == Keys.Apps && lstPrims.SelectedItems.Count == 1)
-        //    {
-        //        Point pos = lstPrims.SelectedItems[0].Position;
-        //        pos.Y += 10;
-        //        pos.X += 120;
-        //        ctxMenuObjects.Show(lstPrims, pos);
-        //        e.SuppressKeyPress = e.Handled = true;
-        //    }
-        //}
-
         private void lstContents_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -1292,7 +1291,7 @@ namespace Radegast
                 return;
             }
 
-            if (lstPrims.SelectedItems.Count != 1) return;
+            if (lstPrims.SelectedIndices.Count != 1) return;
 
             UpdateMuteButton();
         }
@@ -1313,7 +1312,7 @@ namespace Radegast
 
         private void btnMute_Click(object sender, EventArgs e)
         {
-            if (lstPrims.SelectedItems.Count != 1) return;
+            if (lstPrims.SelectedIndices.Count != 1) return;
 
             if (currentPrim.Properties == null) return;
 
@@ -1374,6 +1373,29 @@ namespace Radegast
             btnView.PerformClick();
         }
 
+        private void lstPrims_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            Primitive prim = null;
+            try
+            {
+                lock (Prims)
+                {
+                    prim = Prims[e.ItemIndex];
+                }
+            }
+            catch
+            {
+                e.Item = new ListViewItem();
+                return;
+            }
+
+            string name = GetObjectName(prim);
+            var item = new ListViewItem(name);
+            item.Tag = prim;
+            item.Name = prim.ID.ToString();
+            e.Item = item;
+        }
+
     }
 
     public enum ObjectConsoleFilter : int
@@ -1383,7 +1405,7 @@ namespace Radegast
         Both = 2
     }
 
-    public class ObjectSorter : IComparer
+    public class ObjectSorter : IComparer<Primitive>
     {
         private AgentManager me;
         private bool sortByName = false;
@@ -1395,25 +1417,38 @@ namespace Radegast
             this.me = me;
         }
 
-
-        //this routine should return -1 if xy and 0 if x==y.
-        // for our sample we'll just use string comparison
-        public int Compare(object x, object y)
+        private int NameCompare(Primitive prim1, Primitive prim2)
         {
-            ListViewItem item1 = (ListViewItem)x;
-            ListViewItem item2 = (ListViewItem)y;
-
-            if (sortByName)
+            if (prim1.Properties == null && prim2.Properties == null)
             {
-                return string.Compare(item1.Text, item2.Text);
+                return 0;
+            }
+            else if (prim1.Properties != null && prim2.Properties == null)
+            {
+                return -1;
+            }
+            else if (prim1.Properties == null && prim2.Properties != null)
+            {
+                return 1;
             }
 
-            float dist1 = ((Primitive)item1.Tag).ParentID == me.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item1.Tag).Position);
-            float dist2 = ((Primitive)item2.Tag).ParentID == me.LocalID ? 0 : Vector3.Distance(me.SimPosition, ((Primitive)item2.Tag).Position);
+            return string.Compare(prim1.Properties.Name, prim2.Properties.Name);
+        }
+        //this routine should return -1 if xy and 0 if x==y.
+        // for our sample we'll just use string comparison
+        public int Compare(Primitive prim1, Primitive prim2)
+        {
+            if (sortByName)
+            {
+                return NameCompare(prim1, prim2);
+            }
+
+            float dist1 = prim1.ParentID == me.LocalID ? 0 : Vector3.Distance(me.SimPosition, prim1.Position);
+            float dist2 = prim2.ParentID == me.LocalID ? 0 : Vector3.Distance(me.SimPosition, prim2.Position);
 
             if (dist1 == dist2)
             {
-                return String.Compare(item1.Text, item2.Text);
+                return NameCompare(prim1, prim2);
             }
             else
             {
@@ -1439,7 +1474,7 @@ namespace Radegast
         public PropertiesQueue(RadegastInstance instance)
         {
             this.instance = instance;
-            qTimer = new System.Timers.Timer(1500);
+            qTimer = new System.Timers.Timer(2500);
             qTimer.Enabled = true;
             qTimer.Elapsed += new ElapsedEventHandler(qTimer_Elapsed);
         }

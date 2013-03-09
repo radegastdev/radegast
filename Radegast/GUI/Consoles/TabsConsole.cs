@@ -347,6 +347,18 @@ namespace Radegast
             // Messaage from someone we muted?
             if (null != client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == e.IM.FromAgentID)) return;
 
+            try
+            {
+                if (instance.State.LSLHelper.ProcessIM(e))
+                {
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed executing automation action: " + ex.ToString(), Helpers.LogLevel.Warning);
+            }
+
             switch (e.IM.Dialog)
             {
                 case InstantMessageDialog.SessionSend:
