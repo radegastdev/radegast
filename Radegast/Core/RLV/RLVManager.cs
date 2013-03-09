@@ -922,6 +922,25 @@ namespace Radegast
             return true;
         }
 
+        public bool AllowDetach(InventoryItem item)
+        {
+            if (!Enabled || item == null) return true;
+
+            List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == client.Self.LocalID);
+            foreach (var att in myAtt)
+            {
+                if (CurrentOutfitFolder.GetAttachmentItem(att) == item.UUID)
+                {
+                    if (rules.FindAll((RLVRule r) => { return r.Behaviour == "detach" && r.Sender == att.ID; }).Count > 0)
+                    {
+                        return false;
+                    }
+                    break;
+                }
+            }
+            return true;
+        }
+
         public bool AutoAcceptTP(UUID agent)
         {
             if (!Enabled || agent == UUID.Zero) return false;

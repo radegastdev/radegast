@@ -567,6 +567,7 @@ namespace Radegast
 
             // Resolve inventory links and remove wearables of the same type from COF
             List<InventoryItem> outfit = new List<InventoryItem>();
+
             foreach (var item in items)
             {
                 InventoryItem realItem = RealInventoryItem(item);
@@ -589,6 +590,7 @@ namespace Radegast
                         }
                     }
                 }
+
                 outfit.Add(realItem);
             }
             Client.Inventory.Remove(toRemove, null);
@@ -622,7 +624,11 @@ namespace Radegast
             List<InventoryItem> outfit = new List<InventoryItem>();
             foreach (var item in items)
             {
-                outfit.Add(RealInventoryItem(item));
+                var realItem = RealInventoryItem(item);
+                if (Instance.RLV.AllowDetach(realItem))
+                {
+                    outfit.Add(realItem);
+                }
             }
 
             // Remove links to all items that were removed
