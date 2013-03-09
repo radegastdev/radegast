@@ -312,6 +312,8 @@ namespace Radegast.Rendering
                 catch (ObjectDisposedException)
                 { }
 #if !DEBUG
+                catch (NullReferenceException)
+                { }
                 catch (Exception ex)
                 {
                     RenderingEnabled = false;
