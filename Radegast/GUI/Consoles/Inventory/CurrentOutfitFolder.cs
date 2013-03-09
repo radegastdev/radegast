@@ -510,13 +510,15 @@ namespace Radegast
                     WearableType linkType = ((InventoryWearable)RealInventoryItem(item)).WearableType;
                     bool hasBodyPart = false;
 
-                    foreach (var newItem in newOutfit)
+                    foreach (var newItemTmp in newOutfit)
                     {
+                        var newItem = RealInventoryItem(newItemTmp);
                         if (IsBodyPart(newItem))
                         {
                             if (((InventoryWearable)newItem).WearableType == linkType)
                             {
                                 hasBodyPart = true;
+                                break;
                             }
                         }
                     }
