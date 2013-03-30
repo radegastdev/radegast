@@ -689,14 +689,14 @@ namespace Radegast
             if (MarkerLock != null && MarkerLock.CanWrite)
             {
                 Logger.Log("No other instances detected, marker file already locked", Helpers.LogLevel.Debug);
-                return false;
+                return false || MonoRuntime;
             }
 
             try
             {
                 MarkerLock = new FileStream(CrashMarkerFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
                 Logger.Log(string.Format("Successfully created and locked marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
-                return false;
+                return false || MonoRuntime;
             }
             catch (Exception ex)
             {
