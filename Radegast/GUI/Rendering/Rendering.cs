@@ -1232,7 +1232,7 @@ namespace Radegast.Rendering
             if (Client != null)
             {
                 Client.Self.Movement.Camera.LookAt(Camera.Position, Camera.FocalPoint);
-                Client.Self.Movement.Camera.Far = Camera.Far = DrawDistance;
+                Client.Self.Movement.Camera.Far = 4 * (Camera.Far = DrawDistance);
             }
         }
 
@@ -2983,8 +2983,6 @@ namespace Radegast.Rendering
         {
             if (force || texturesRequestedThisFrame < RenderSettings.TexturesToDownloadPerFrame)
             {
-                texturesRequestedThisFrame++;
-
                 lock (TexturesPtrMap)
                 {
                     if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
@@ -3039,6 +3037,8 @@ namespace Radegast.Rendering
                                 { // Regular texture 
                                     Client.Assets.RequestImage(item.TeFace.TextureID, item.ImageType, handler);
                                 }
+
+                                texturesRequestedThisFrame++;
                             }
                         }
                         else
