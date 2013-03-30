@@ -243,7 +243,7 @@ namespace Radegast.Netcom
 
             // Report crashes only once and not on relogs/reconnects
             LastExecStatus execStatus = instance.GetLastExecStatus();
-            if (execStatus != LastExecStatus.Normal && (!instance.ReportedCrash))
+            if (!instance.AnotherInstanceRunning() && execStatus != LastExecStatus.Normal && (!instance.ReportedCrash))
             {
                 instance.ReportedCrash = true;
                 loginOptions.LastExecEvent = execStatus;

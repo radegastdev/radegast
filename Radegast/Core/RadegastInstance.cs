@@ -680,9 +680,36 @@ namespace Radegast
                 client);
         }
 
+        #region Crash reporting
+        FileStream MarkerLock = null;
+
+        public bool AnotherInstanceRunning()
+        {
+            // We have successfuly obtained lock
+            if (MarkerLock != null && MarkerLock.CanWrite)
+            {
+                Logger.Log("No other instances detected, marker file already locked", Helpers.LogLevel.Debug);
+                return false;
+            }
+
+            try
+            {
+                MarkerLock = new FileStream(CrashMarkerFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                Logger.Log(string.Format("Successfully created and locked marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MarkerLock = null;
+                Logger.Log(string.Format("Another instance detected, marker fils {0} locked", CrashMarkerFileName), Helpers.LogLevel.Debug);
+                return true;
+            }
+        }
+
         public LastExecStatus GetLastExecStatus()
         {
-            if (File.Exists(CrashMarkerFileName))
+            // Crash marker file found and is not locked by us
+            if (File.Exists(CrashMarkerFileName) && MarkerLock == null)
             {
                 Logger.Log(string.Format("Found crash marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
                 return LastExecStatus.OtherCrash;
@@ -709,10 +736,19 @@ namespace Radegast
             Logger.Log(string.Format("Marking end of execution run, deleting file: {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
             try
             {
+                if (MarkerLock != null)
+                {
+                    MarkerLock.Close();
+                    MarkerLock.Dispose();
+                    MarkerLock = null;
+                }
+
                 File.Delete(CrashMarkerFileName);
             }
             catch { }
         }
+
+        #endregion Crash reporting
 
     }
 
