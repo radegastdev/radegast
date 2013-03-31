@@ -1609,7 +1609,7 @@ namespace Radegast.Rendering
     public class Bone
     {
         public string name;
-        private Vector3 pos;
+        public Vector3 pos;
         public Quaternion rot;
         public Vector3 scale;
         public Vector3 piviot;
@@ -2294,6 +2294,11 @@ namespace Radegast.Rendering
                 { 20, "hair" }
             };
 
+        public GLAvatar glavatar = new GLAvatar();
+        public Avatar avatar;
+        public FaceData[] data = new FaceData[32];
+        public Dictionary<UUID, Animation> animlist = new Dictionary<UUID, Animation>();
+        public Dictionary<WearableType, AppearanceManager.WearableData> Wearables = new Dictionary<WearableType, AppearanceManager.WearableData>();
         public static readonly BoundingVolume AvatarBoundingVolume;
 
         // Static constructor
@@ -2329,12 +2334,65 @@ namespace Radegast.Rendering
             base.Step(time);
         }
 
-        public GLAvatar glavatar = new GLAvatar();
-        public Avatar avatar;
-        public FaceData[] data = new FaceData[32];
-        public Dictionary<UUID, Animation> animlist = new Dictionary<UUID, Animation>();
-        public Dictionary<WearableType, AppearanceManager.WearableData> Wearables = new Dictionary<WearableType, AppearanceManager.WearableData>();
+        public float Height;
+        public float PelvisToFoot;
 
+        public void UpdateSize()
+        {
+            float F_SQRT2 = 1.4142135623730950488016887242097f;
+
+            Vector3 pelvis_scale = glavatar.skel.mBones["mPelvis"].scale;
+
+            Vector3 skull = glavatar.skel.mBones["mSkull"].pos;
+            Vector3 skull_scale = glavatar.skel.mBones["mSkull"].scale;
+
+            Vector3 neck = glavatar.skel.mBones["mNeck"].pos;
+            Vector3 neck_scale = glavatar.skel.mBones["mNeck"].scale;
+
+            Vector3 chest = glavatar.skel.mBones["mChest"].pos;
+            Vector3 chest_scale = glavatar.skel.mBones["mChest"].scale;
+
+            Vector3 head = glavatar.skel.mBones["mHead"].pos;
+            Vector3 head_scale = glavatar.skel.mBones["mHead"].scale;
+
+            Vector3 torso = glavatar.skel.mBones["mTorso"].pos;
+            Vector3 torso_scale = glavatar.skel.mBones["mTorso"].scale;
+
+            Vector3 hip = glavatar.skel.mBones["mHipLeft"].pos;
+            Vector3 hip_scale = glavatar.skel.mBones["mHipLeft"].scale;
+
+            Vector3 knee = glavatar.skel.mBones["mKneeLeft"].pos;
+            Vector3 knee_scale = glavatar.skel.mBones["mKneeLeft"].scale;
+
+            Vector3 ankle = glavatar.skel.mBones["mAnkleLeft"].pos;
+            Vector3 ankle_scale = glavatar.skel.mBones["mAnkleLeft"].scale;
+
+            Vector3 foot = glavatar.skel.mBones["mFootLeft"].pos;
+
+            // mAvatarOffset.Z = getVisualParamWeight(11001);
+
+            float mPelvisToFoot = hip.Z * pelvis_scale.Z -
+                            knee.Z * hip_scale.Z -
+                            ankle.Z * knee_scale.Z -
+                            foot.Z * ankle_scale.Z;
+
+            Vector3 new_body_size;
+            new_body_size.Z = mPelvisToFoot +
+                // the sqrt(2) correction below is an approximate
+                // correction to get to the top of the head
+                               F_SQRT2 * (skull.Z * head_scale.Z) +
+                               head.Z * neck_scale.Z +
+                               neck.Z * chest_scale.Z +
+                               chest.Z * torso_scale.Z +
+                               torso.Z * pelvis_scale.Z;
+
+            Height = new_body_size.Z;
+            PelvisToFoot = mPelvisToFoot;
+        }
+
+        public Vector3 AdjustedPosition(Vector3 source)
+        {
+            return new Vector3(source.X, source.Y, source.Z - Height + PelvisToFoot);
+        }
     }
-
 }
