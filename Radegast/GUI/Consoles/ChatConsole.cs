@@ -255,7 +255,17 @@ namespace Radegast
                 }
             }
         }
+
         void Grid_CoarseLocationUpdate(object sender, CoarseLocationUpdateEventArgs e)
+        {
+            try
+            {
+                UpdateRadar(e);
+            }
+            catch { }
+        }
+
+        void UpdateRadar(CoarseLocationUpdateEventArgs e)
         {
             if (client.Network.CurrentSim == null /*|| client.Network.CurrentSim.Handle != sim.Handle*/)
             {
@@ -265,7 +275,7 @@ namespace Radegast
             if (InvokeRequired)
             {
                 if (!instance.MonoRuntime || IsHandleCreated)
-                    BeginInvoke(new MethodInvoker(() => Grid_CoarseLocationUpdate(sender, e)));
+                    BeginInvoke(new MethodInvoker(() => UpdateRadar(e)));
                 return;
             }
 
@@ -338,8 +348,9 @@ namespace Radegast
                         Avatar foundAvi = e.Simulator.ObjectsAvatars.Find((Avatar av) => { return av.ID == key; });
 
                         // CoarseLocationUpdate gives us hight of 0 when actual height is
-                        // between 1024-4096m.
-                        if (pos.Z < 0.1)
+                        // between 1024-4096m on OpenSim grids. 1020 on SL
+                        bool unkownAltitude = instance.Netcom.LoginOptions.Grid.Platform == "SecondLife" ? pos.Z == 1020f : pos.Z == 0f;
+                        if (unkownAltitude) 
                         {
                             if (foundAvi != null)
                             {
@@ -365,7 +376,7 @@ namespace Radegast
                             continue;
                         }
 
-                        if (pos.Z < 0.1)
+                        if (unkownAltitude)
                         {
                             item.Text = instance.Names.Get(key) + " (?m)";
                         }
@@ -732,7 +743,7 @@ namespace Radegast
 
             if (!instance.TabConsole.TabExists("AT: " + av.ID.ToString()))
             {
-               instance.TabConsole.AddTab("AT: " + av.ID.ToString(), "AT: " + av.Name, new AttachmentTab(instance, av));
+                instance.TabConsole.AddTab("AT: " + av.ID.ToString(), "AT: " + av.Name, new AttachmentTab(instance, av));
 
             }
             instance.TabConsole.SelectTab("AT: " + av.ID.ToString());
