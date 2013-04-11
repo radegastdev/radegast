@@ -61,6 +61,7 @@ namespace Radegast
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmProfile));
             this.tabProfile = new System.Windows.Forms.TabControl();
             this.tpgProfile = new System.Windows.Forms.TabPage();
+            this.btnRequestTeleport = new System.Windows.Forms.Button();
             this.btnGive = new System.Windows.Forms.Button();
             this.lvwGroups = new Radegast.ListViewNoFlicker();
             this.clGroupName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -109,7 +110,6 @@ namespace Radegast
             this.label7 = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.btnRequestTeleport = new System.Windows.Forms.Button();
             this.tabProfile.SuspendLayout();
             this.tpgProfile.SuspendLayout();
             this.tpgWeb.SuspendLayout();
@@ -166,9 +166,22 @@ namespace Radegast
             this.tpgProfile.Text = "Profile";
             this.tpgProfile.UseVisualStyleBackColor = true;
             // 
+            // btnRequestTeleport
+            // 
+            this.btnRequestTeleport.AccessibleDescription = "Request this person to teleport you to their location";
+            this.btnRequestTeleport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRequestTeleport.Location = new System.Drawing.Point(312, 447);
+            this.btnRequestTeleport.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.btnRequestTeleport.Name = "btnRequestTeleport";
+            this.btnRequestTeleport.Size = new System.Drawing.Size(107, 23);
+            this.btnRequestTeleport.TabIndex = 28;
+            this.btnRequestTeleport.Text = "Request Teleport";
+            this.btnRequestTeleport.UseVisualStyleBackColor = true;
+            this.btnRequestTeleport.Click += new System.EventHandler(this.btnRequestTeleport_Click);
+            // 
             // btnGive
             // 
-            this.btnGive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnGive.Enabled = false;
             this.btnGive.Location = new System.Drawing.Point(312, 418);
             this.btnGive.Name = "btnGive";
@@ -694,18 +707,6 @@ namespace Radegast
             this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.textBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox1_DragDrop);
             this.textBox1.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox1_DragEnter);
-            // 
-            // btnRequestTeleport
-            // 
-            this.btnRequestTeleport.AccessibleDescription = "Request this person to teleport you to their location";
-            this.btnRequestTeleport.Location = new System.Drawing.Point(312, 447);
-            this.btnRequestTeleport.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.btnRequestTeleport.Name = "btnRequestTeleport";
-            this.btnRequestTeleport.Size = new System.Drawing.Size(107, 23);
-            this.btnRequestTeleport.TabIndex = 28;
-            this.btnRequestTeleport.Text = "Request Teleport";
-            this.btnRequestTeleport.UseVisualStyleBackColor = true;
-            this.btnRequestTeleport.Click += new System.EventHandler(this.btnRequestTeleport_Click);
             // 
             // frmProfile
             // 

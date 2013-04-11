@@ -101,6 +101,7 @@ namespace Radegast
                 txtWebURL.ReadOnly = false;
                 pickTitle.ReadOnly = false;
                 pickDetail.ReadOnly = false;
+                btnRequestTeleport.Visible = false;
                 btnDeletePick.Visible = true;
                 btnNewPick.Visible = true;
             }
