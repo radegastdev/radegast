@@ -853,7 +853,7 @@ namespace Radegast
             {
                 if (n.Data.Name.StartsWith(".")) continue;
 
-                var res = FindFolderInternal(n, currentPath + n.Data.Name.ToLower(), desiredPath);
+                var res = FindFolderInternal(n, (currentPath == "/" ? currentPath : currentPath + "/") + n.Data.Name.ToLower(), desiredPath);
                 if (res != null)
                 {
                     return res;
