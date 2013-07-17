@@ -296,6 +296,10 @@ namespace Radegast.Plugin.Alice
         {
             if (!e || AimlLoaded) return e;
             if (!LoadALICE()) return false;
+            if (Client.Network.Connected)
+            {
+                Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
+            }
             AimlLoaded = true;
             talkToAvatar = new TalkToAvatar(Instance, Alice);
             Instance.ContextActionManager.RegisterContextAction(talkToAvatar);
@@ -361,12 +365,15 @@ namespace Radegast.Plugin.Alice
 
         void Netcom_ClientConnected(object sender, EventArgs e)
         {
-            Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
+            if (AimlLoaded)
+            {
+                Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
+            }
         }
 
         void Avatars_AvatarPropertiesReply(object sender, AvatarPropertiesReplyEventArgs e)
         {
-            if (e.AvatarID == Client.Self.AgentID)
+            if (e.AvatarID == Client.Self.AgentID && AimlLoaded)
             {
                 MyProfile = e.Properties;
                 Alice.GlobalSettings.updateSetting("birthday", MyProfile.BornOn);
