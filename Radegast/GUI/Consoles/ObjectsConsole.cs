@@ -49,6 +49,8 @@ namespace Radegast
 {
     public partial class ObjectsConsole : UserControl, IContextMenuProvider
     {
+        public List<Primitive> Prims = new List<Primitive>();
+
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private Primitive currentPrim = new Primitive();
@@ -57,7 +59,6 @@ namespace Radegast
         PropertiesQueue propRequester;
         private Thread ContentsThread;
         private ObjectConsoleFilter filter;
-        private List<Primitive> Prims = new List<Primitive>();
         private ObjectSorter PrimSorter;
 
         public Primitive CurrentPrim { get { return currentPrim; } }

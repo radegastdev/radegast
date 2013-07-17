@@ -35,8 +35,11 @@ namespace RadegastSpeech.Conversation
 
         internal override void Stop()
         {
-            vTab.gateway.OnSessionCreate -= new EventHandler(OnSessionCreate);
-            vTab.gateway.OnSessionRemove -= new EventHandler(gateway_OnSessionRemove);
+            if (vTab.gateway != null)
+            {
+                vTab.gateway.OnSessionCreate -= new EventHandler(OnSessionCreate);
+                vTab.gateway.OnSessionRemove -= new EventHandler(gateway_OnSessionRemove);
+            }
             vTab.chkVoiceEnable.CheckStateChanged -= new EventHandler(chkVoiceEnable_CheckStateChanged);
         }
 #endregion

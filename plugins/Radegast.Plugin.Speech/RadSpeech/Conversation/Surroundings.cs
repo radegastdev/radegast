@@ -42,7 +42,6 @@ namespace RadegastSpeech.Conversation
     {
         private Radegast.ObjectsConsole obTab;
         public bool Announce { get; set; }
-        private ListViewNoFlicker objects;
         private Primitive currentPrim = new Primitive();
         private ListViewItem currentItem ;
         
@@ -53,7 +52,6 @@ namespace RadegastSpeech.Conversation
             Title = "surroundings";
             Announce = false;
             obTab = (ObjectsConsole)control.instance.TabConsole.Tabs["objects"].Control;
-            objects = obTab.lstPrims;
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace RadegastSpeech.Conversation
         internal override void Start()
         {
             base.Start();
-            objects.SelectedIndexChanged += Objects_SelectedIndexChanged;
+            obTab.lstPrims.SelectedIndexChanged += Objects_SelectedIndexChanged;
             Talker.SayMore("Surroundings");
             Objects_SelectedIndexChanged(null, null);
         }
@@ -72,7 +70,7 @@ namespace RadegastSpeech.Conversation
         /// </summary>
         internal override void Stop()
         {
-            objects.SelectedIndexChanged -= Objects_SelectedIndexChanged;
+            obTab.lstPrims.SelectedIndexChanged -= Objects_SelectedIndexChanged;
             base.Stop();
         }
         #endregion
@@ -108,11 +106,16 @@ namespace RadegastSpeech.Conversation
         {
             string description;
 
-            if (objects.SelectedItems.Count != 1)
+            if (obTab.lstPrims.SelectedIndices.Count != 1)
                 return;
 
-            currentItem = objects.SelectedItems[0];
-            currentPrim = currentItem.Tag as Primitive;
+            currentPrim = obTab.Prims[obTab.lstPrims.SelectedIndices[0]];
+
+            Vector3 pos = Vector3.Zero;
+            if (currentPrim.ParentID == 0)
+            {
+                pos = currentPrim.Position;
+            }
 
             if (currentPrim.Properties == null)
             {
@@ -121,7 +124,7 @@ namespace RadegastSpeech.Conversation
             }
             else
             {
-                description = control.env.people.Location(currentPrim.Position);
+                description = control.env.people.Location(pos);
 
                 if ((currentPrim.Flags & PrimFlags.Scripted) != 0)
                     description += " scripted,";
@@ -134,7 +137,7 @@ namespace RadegastSpeech.Conversation
             Talker.SayObject(
                 currentPrim.Properties.Name,
                 description,
-                control.env.people.SameDirection( currentPrim.Position ) );
+                control.env.people.SameDirection( pos ) );
       }
 
         /// <summary>
