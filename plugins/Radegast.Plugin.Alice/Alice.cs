@@ -62,6 +62,7 @@ namespace Radegast.Plugin.Alice
         private bool DisableOnStart = false;
         private ToolStripMenuItem btn_DisableOnStart;
         private bool EnableRandomDelay = false;
+        private bool AimlLoaded = false;
 
         public void StartPlugin(RadegastInstance inst)
         {
@@ -98,7 +99,8 @@ namespace Radegast.Plugin.Alice
 
             EnabledButton = new ToolStripMenuItem("Enabled", null, (object sender, EventArgs e) =>
             {
-                Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
+                Enabled = SetEnabled(!Enabled);
+                EnabledButton.Checked = MenuButton.Checked = Enabled;
                 Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
             });
 
@@ -230,7 +232,8 @@ namespace Radegast.Plugin.Alice
 
             MenuButton = new ToolStripMenuItem("ALICE chatbot", null, (object sender, EventArgs e) =>
             {
-                Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
+                Enabled = SetEnabled(!Enabled);
+                EnabledButton.Checked = MenuButton.Checked = Enabled;
                 Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
             });
 
@@ -283,17 +286,23 @@ namespace Radegast.Plugin.Alice
                 LoadALICE();
             });
 
-            LoadALICE();
-            if (Alice != null)
-            {
-                talkToAvatar = new TalkToAvatar(Instance, Alice);
-                Instance.ContextActionManager.RegisterContextAction(talkToAvatar);
-            }
+            SetEnabled(Enabled);
+
             // Events
             RegisterClientEvents(Client);
         }
 
-        private void LoadALICE()
+        private bool SetEnabled(bool e)
+        {
+            if (!e || AimlLoaded) return e;
+            if (!LoadALICE()) return false;
+            AimlLoaded = true;
+            talkToAvatar = new TalkToAvatar(Instance, Alice);
+            Instance.ContextActionManager.RegisterContextAction(talkToAvatar);
+            return true;
+        }
+
+        private bool LoadALICE()
         {
             try
             {
@@ -304,10 +313,12 @@ namespace Radegast.Plugin.Alice
                 Alice.isAcceptingUserInput = false;
                 loader.loadAIML(Alice.PathToAIML);
                 Alice.isAcceptingUserInput = true;
+                return true;
             }
             catch (Exception ex)
             {
                 System.Console.WriteLine("Failed loading ALICE: " + ex.Message);
+                return false;
             }
         }
 
