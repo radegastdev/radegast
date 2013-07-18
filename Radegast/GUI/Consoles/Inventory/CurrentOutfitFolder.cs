@@ -671,6 +671,14 @@ namespace Radegast
             return false;
         }
 
+        /// <summary>
+        /// Force rebaking textures
+        /// </summary>
+        public void RebakeTextures()
+        {
+            Client.Appearance.RequestSetAppearance(true);
+        }
+
         #endregion Public methods
     }
 }

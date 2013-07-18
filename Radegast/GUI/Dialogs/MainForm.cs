@@ -1127,7 +1127,7 @@ namespace Radegast
 
         private void rebakeTexturesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            client.Appearance.RequestSetAppearance(true);
+            instance.COF.RebakeTextures();
         }
 
         public void MapToCurrentLocation()
