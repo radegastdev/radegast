@@ -96,7 +96,7 @@ namespace Radegast
 
         private void StartDisplayNameChage(string name)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
                 {
                     Client.Avatars.GetDisplayNames(new List<OpenMetaverse.UUID>() { Client.Self.AgentID },
                         (bool success, AgentDisplayName[] names, UUID[] badIDs) =>

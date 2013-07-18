@@ -3,7 +3,7 @@
   <Solution name="Radegast" activeConfig="Debug" version="$Rev$">
     <Configuration name="Debug">
       <Options>
-        <CompilerDefines>TRACE;DEBUG</CompilerDefines>
+        <CompilerDefines>TRACE;DEBUG;SMARTHREADPOOL_REF</CompilerDefines>
         <OptimizeCode>false</OptimizeCode>
         <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
         <AllowUnsafe>true</AllowUnsafe>
@@ -19,7 +19,7 @@
     </Configuration>
     <Configuration name="Release">
       <Options>
-        <CompilerDefines>TRACE</CompilerDefines>
+        <CompilerDefines>TRACE;SMARTHREADPOOL_REF</CompilerDefines>
         <OptimizeCode>true</OptimizeCode>
         <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
         <AllowUnsafe>true</AllowUnsafe>
@@ -50,10 +50,11 @@
         </Options>
       </Configuration>
 
-      <ReferencePath>../../radegast/bin/</ReferencePath>
+      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
+      <Reference name="SmartThreadPool" localCopy="true"/>
       <Files>
         <Match pattern="*.cs" recurse="true"/>
       </Files>

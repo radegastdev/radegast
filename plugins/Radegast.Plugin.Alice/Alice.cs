@@ -33,7 +33,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using Radegast;
 using OpenMetaverse;
@@ -414,7 +413,7 @@ namespace Radegast.Plugin.Alice
 
             if (parseForResponse)
             {
-                ThreadPool.QueueUserWorkItem(sync =>
+                WorkPool.QueueUserWorkItem(sync =>
                 {
                     lock (syncChat)
                     {
@@ -501,7 +500,7 @@ namespace Radegast.Plugin.Alice
                 && Enabled                                       // Alice bot is enabled
                 )
             {
-                ThreadPool.QueueUserWorkItem(sync =>
+                WorkPool.QueueUserWorkItem(sync =>
                 {
                     lock (syncChat)
                     {

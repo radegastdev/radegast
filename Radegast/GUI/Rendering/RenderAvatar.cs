@@ -829,7 +829,7 @@ namespace Radegast.Rendering
             if (av.VisualParameters == null)
                 return;
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 int x = 0;
 

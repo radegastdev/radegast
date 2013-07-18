@@ -492,7 +492,7 @@ namespace Radegast
 
         void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(15 * 1000);
                 autosit.TrySit();

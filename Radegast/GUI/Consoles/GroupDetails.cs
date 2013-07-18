@@ -368,7 +368,7 @@ namespace Radegast
                 }
             }
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 try
                 {

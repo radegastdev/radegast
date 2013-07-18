@@ -1149,7 +1149,7 @@ namespace Radegast.Rendering
         {
             if (!Client.Network.Connected) return;
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 if (RenderSettings.PrimitiveRenderingEnabled)
                 {
@@ -1188,7 +1188,7 @@ namespace Radegast.Rendering
 
         private void ControlLoaded(object sender, EventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 InitAvatarData();
                 AvatarDataInitialzied();
@@ -2122,7 +2122,7 @@ namespace Radegast.Rendering
         {
             if (Client.Network.CurrentSim == null || Client.Network.CurrentSim.Terrain == null) return;
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 int step = 1;
 
@@ -2172,7 +2172,7 @@ namespace Radegast.Rendering
             if (!fetchingTerrainTexture)
             {
                 fetchingTerrainTexture = true;
-                ThreadPool.QueueUserWorkItem(sync =>
+                WorkPool.QueueUserWorkItem(sync =>
                 {
                     Simulator sim = Client.Network.CurrentSim;
                     terrainImage = TerrainSplat.Splat(instance, heightTable,

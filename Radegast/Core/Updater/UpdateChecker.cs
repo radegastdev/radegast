@@ -78,7 +78,7 @@ namespace Radegast
                 client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(OnDownloadStringCompleted);
             }
 
-            ThreadPool.QueueUserWorkItem((object state) =>
+            WorkPool.QueueUserWorkItem((object state) =>
                 {
                     client.DownloadStringAsync(new Uri(Properties.Resources.UpdateCheckUri));
                 }

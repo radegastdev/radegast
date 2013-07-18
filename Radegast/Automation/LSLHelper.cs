@@ -145,7 +145,7 @@ namespace Radegast.Automation
                                     if (item == null)
                                         return false;
                                     client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, sendTo, true);
-                                    ThreadPool.QueueUserWorkItem(sync =>
+                                    WorkPool.QueueUserWorkItem(sync =>
                                         instance.TabConsole.DisplayNotificationInChat(
                                             string.Format("Gave {0} to {1}", item.Name, instance.Names.Get(sendTo, true)),
                                             ChatBufferTextStyle.ObjectChat)
@@ -165,7 +165,7 @@ namespace Radegast.Automation
             if (args == null || args.Length < 4)
                 return;
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 try
                 {

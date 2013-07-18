@@ -147,6 +147,7 @@ namespace Radegast
             // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
             Application.Run(instance.MainForm);
+            OpenMetaverse.WorkPool.Shutdown();
         }
 
         /// <summary>

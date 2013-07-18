@@ -672,7 +672,7 @@ namespace Radegast
 
         private void btnNewPick_Click(object sender, EventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
                 {
                     UUID parcelID = client.Parcels.RequestRemoteParcelID(client.Self.SimPosition, client.Network.CurrentSim.Handle, client.Network.CurrentSim.ID);
                     newPickID = UUID.Random();

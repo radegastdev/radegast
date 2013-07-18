@@ -395,7 +395,7 @@ namespace Radegast
 
         void SaveCache(object sync)
         {
-            ThreadPool.QueueUserWorkItem(syncx =>
+            WorkPool.QueueUserWorkItem(syncx =>
             {
                 OSDArray namesOSD = new OSDArray(names.Count);
                 lock (names)
@@ -424,7 +424,7 @@ namespace Radegast
 
         void LoadCachedNames()
         {
-            ThreadPool.QueueUserWorkItem(syncx =>
+            WorkPool.QueueUserWorkItem(syncx =>
             {
                 try
                 {
