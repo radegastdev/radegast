@@ -150,7 +150,7 @@ namespace Radegast.Rendering
                 GL.Enable(EnableCap.ClipPlane0);
                 GL.ClipPlane(ClipPlaneName.ClipPlane0, AboveWaterPlane);
                 GL.CullFace(CullFaceMode.Front);
-                RenderTerrain(RenderPass.Simple);
+                terrain.Render(RenderPass.Simple, 0, this, lastFrameTime);
                 RenderObjects(RenderPass.Simple);
                 RenderAvatars(RenderPass.Simple);
                 RenderObjects(RenderPass.Alpha);
@@ -175,7 +175,7 @@ namespace Radegast.Rendering
             {
                 GL.Enable(EnableCap.ClipPlane0);
                 GL.ClipPlane(ClipPlaneName.ClipPlane0, BelowWaterPlane);
-                RenderTerrain(RenderPass.Simple);
+                terrain.Render(RenderPass.Simple, 0, this, lastFrameTime);
                 GL.Disable(EnableCap.ClipPlane0);
             }
 
