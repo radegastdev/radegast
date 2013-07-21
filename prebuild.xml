@@ -54,7 +54,6 @@
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
-      <Reference name="SmartThreadPool" localCopy="true"/>
       <Files>
         <Match pattern="*.cs" recurse="true"/>
       </Files>
@@ -106,6 +105,7 @@
       <Reference name="log4net" localCopy="true"/>
       <Reference name="OpenMetaverseTypes"/>
       <Reference name="OpenMetaverse.StructuredData"/>
+      <Reference name="SmartThreadPool" localCopy="true"/>
       <Reference name="XMLRPC" localCopy="true"/>
       <Reference name="zlib.net" localCopy="true"/>
       <Files>
