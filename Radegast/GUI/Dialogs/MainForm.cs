@@ -1075,7 +1075,8 @@ namespace Radegast
 
         private void importObjectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PrimDeserializer.ImportFromFile(client);
+            //PrimDeserializer.ImportFromFile(client);
+            DisplayImportConsole();
         }
 
         private void autopilotToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1540,6 +1541,31 @@ namespace Radegast
                 tabsConsole.AddTab("current region info", "Region info", new RegionInfo(instance));
                 tabsConsole.Tabs["current region info"].Select();
             }
+        }
+        
+        public void DisplayExportConsole(uint localID)
+        {
+        	if (tabsConsole.TabExists("export console"))
+        	{
+        		tabsConsole.Tabs["export console"].Close();
+        	}
+        	RadegastTab tab = tabsConsole.AddTab("export console","Export Object", new ExportConsole(client,localID));
+        	tab.Select();
+        }
+        
+        public void DisplayImportConsole()
+        {
+        	if (TabConsole.TabExists("import console"))
+        	{
+        		TabConsole.Tabs["import console"].Select();
+        	}
+        	else
+        	{
+        		RadegastTab tab = tabsConsole.AddTab("import console","Import Object", new ImportConsole(client));
+        		tab.AllowClose = false;
+        		tab.AllowHide = true;
+        		tab.Select();
+        	}
         }
 
         private void regionParcelToolStripMenuItem_Click(object sender, EventArgs e)

@@ -1143,6 +1143,15 @@ namespace Radegast
             ctxMenuObjects.Items.Add("Take", null, btnTake_Click);
             ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);
             ctxMenuObjects.Items.Add("Return", null, btnReturn_Click);
+            
+            if (currentPrim.Properties != null)
+            {
+            	if (currentPrim.Properties.CreatorID == client.Self.AgentID &&
+            	    currentPrim.Properties.OwnerID == client.Self.AgentID)
+            	{
+					ctxMenuObjects.Items.Add("Export", null, btnExport_Click);
+            	}
+            }
 
             if (currentPrim.Properties != null)
             {
@@ -1221,6 +1230,11 @@ namespace Radegast
             gbxContents.Show();
             UpdateObjectContents();
             lstContents.Focus();
+        }
+        
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+        	instance.MainForm.DisplayExportConsole(currentPrim.LocalID);
         }
 
         private void lstContents_MouseDoubleClick(object sender, MouseEventArgs e)
