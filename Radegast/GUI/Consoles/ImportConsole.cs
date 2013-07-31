@@ -57,7 +57,7 @@ namespace Radegast
 		#region Private Varaibles
 		PrimImporter Importer;
 		GridClient Client;
-		List<UUID> FailedUploads;
+		List<UUID> FailedUploads = new List<UUID>();
 		DateTime start;
 		string sFileName;
 		#endregion
@@ -159,7 +159,7 @@ namespace Radegast
 			string path = Path.Combine(Path.GetDirectoryName(txtFileName.Text),Path.GetFileNameWithoutExtension(txtFileName.Text));
 			
 			UUID uploaddir = FindOrMakeInventoryFolder("Import_" + Path.GetFileNameWithoutExtension(txtFileName.Text));
-			FailedUploads = new List<UUID>();
+            FailedUploads.Clear();
 			LogMessage("Begining Uploading of Textures...");
 			
 			List<UUID> textures = new List<UUID>();
