@@ -318,6 +318,7 @@ namespace Radegast
             mediaManager = new MediaManager(this);
             commandsManager = new CommandsManager(this);
             ContextActionManager = new ContextActionsManager(this);
+            RegisterContextActions();
             movement = new RadegastMovement(this);
 
             InitializeLoggingAndConfig();
@@ -749,6 +750,26 @@ namespace Radegast
         }
 
         #endregion Crash reporting
+
+        #region Context Actions
+        void RegisterContextActions()
+        {
+            ContextActionManager.RegisterContextAction(typeof(Primitive), "Save as DAE...", ExportDAEHander);
+        }
+
+        void DeregisterContextActions()
+        {
+            ContextActionManager.DeregisterContextAction(typeof(Primitive), "Save as DAE...");
+        }
+
+        void ExportDAEHander(object sender, EventArgs e)
+        {
+            var exporter = new DAEExport(this);
+            exporter.Export(Client.Network.CurrentSim, (Primitive)sender);
+        }
+
+
+        #endregion Context Actions
 
     }
 
