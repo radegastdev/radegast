@@ -1575,6 +1575,7 @@ namespace Radegast
 
         private void tlblParcel_Click(object sender, EventArgs e)
         {
+            if (!client.Network.Connected) return;
             DisplayRegionParcelConsole();
         }
 
