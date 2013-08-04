@@ -400,7 +400,7 @@ namespace Radegast.Plugin.Alice
             // We ignore everything except normal chat from other avatars
             if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0) return;
 
-            bool parseForResponse = Alice.isAcceptingUserInput && Enabled;
+            bool parseForResponse = Alice != null && Alice.isAcceptingUserInput && Enabled;
             if (parseForResponse && respondRange >= 0)
             {
                 parseForResponse = Vector3.Distance(Client.Self.SimPosition, e.Position) <= respondRange;
