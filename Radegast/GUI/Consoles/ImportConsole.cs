@@ -321,7 +321,7 @@ namespace Radegast
 			else
 			{
 				Importer.RezAt = Client.Self.SimPosition;
-				Importer.RezAt.Z += 0.5f;
+				Importer.RezAt.Z += 3.5f;
 			}
 			
 			Thread t = new Thread(new System.Threading.ThreadStart(delegate()
