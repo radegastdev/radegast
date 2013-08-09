@@ -29,12 +29,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using System.IO;
 using System.Drawing;
-using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using OpenMetaverse.Imaging;
@@ -46,37 +44,52 @@ namespace Radegast
     {
         public string FileName { get; set; }
         public Primitive RootPrim { get; set; }
-
+        public List<Primitive> Prims = new List<Primitive>();
+        public List<FacetedMesh> MeshedPrims = new List<FacetedMesh>();
+        public List<UUID> Textures = new List<UUID>();
+        public string[] TextureNames;
+        public int ExportablePrims { get; set; }
+        public int ExportableTextures { get; set; }
+        public bool ExportTextures { get; set; }
+        public string ImageFormat { get; set; }
+        public static readonly List<UUID> BuiltInTextures = new List<UUID>() {
+            new UUID("89556747-24cb-43ed-920b-47caed15465f"), // default
+            new UUID("be293869-d0d9-0a69-5989-ad27f1946fd4"), // default sculpt 
+            new UUID("5748decc-f629-461c-9a36-a35a221fe21f"), // blank
+            new UUID("38b86f85-2575-52a9-a531-23108d8da837"), // invisible
+            new UUID("8dcd4a48-2d37-4909-9f78-f7a9eb4ef903"), // tranparent
+        };
         RadegastInstance Instance;
         GridClient Client { get { return Instance.Client; } }
-
         System.Globalization.CultureInfo invariant = System.Globalization.CultureInfo.InvariantCulture;
-
-        List<Primitive> Prims;
-        List<FacetedMesh> MeshedPrims;
         MeshmerizerR Mesher;
-
         XmlDocument Doc;
 
-        public DAEExport(RadegastInstance instance)
+        public event EventHandler<DAEStatutsEventArgs> Progress;
+
+        void OnProgress(string message)
+        {
+            if (Progress != null)
+            {
+                Progress(this, new DAEStatutsEventArgs(message));
+            }
+        }
+
+        public DAEExport(RadegastInstance instance, Primitive requestedPrim)
         {
             Instance = instance;
+            ImageFormat = "PNG";
             Mesher = new MeshmerizerR();
+            Init(Client.Network.CurrentSim, requestedPrim);
         }
 
         public void Dispose()
         {
         }
 
-        public void Export(Simulator sim, Primitive requestedPrim)
+        public void Init(Simulator sim, Primitive requestedPrim)
         {
             if (requestedPrim == null || !Client.Network.Connected) return;
-
-            if (Instance.MainForm.InvokeRequired)
-            {
-                Instance.MainForm.BeginInvoke(new MethodInvoker(() => Export(sim, requestedPrim)));
-                return;
-            }
 
             RootPrim = requestedPrim;
 
@@ -89,7 +102,7 @@ namespace Radegast
                 }
             }
 
-            Prims = new List<Primitive>();
+            Prims.Clear();
             Primitive root = new Primitive(RootPrim);
             root.Position = Vector3.Zero;
             root.Rotation = Quaternion.Identity;
@@ -100,9 +113,48 @@ namespace Radegast
             Prims.ForEach(p => select.Add(p.LocalID));
             Client.Objects.SelectObjects(sim, select.ToArray(), true);
 
-            MeshedPrims = new List<FacetedMesh>(Prims.Count);
+            OnProgress("Checking permissions");
+            ExportablePrims = 0;
+            for (int i = 0; i < Prims.Count; i++)
+            {
+                if (!CanExport(Prims[i])) continue;
+                ExportablePrims++;
 
-            FileName = PickFileName();
+                var defaultTexture = Prims[i].Textures.DefaultTexture;
+                if (defaultTexture != null && !Textures.Contains(defaultTexture.TextureID))
+                {
+                    Textures.Add(defaultTexture.TextureID);
+                }
+                for (int j = 0; j < Prims[i].Textures.FaceTextures.Length; j++)
+                {
+                    var te = Prims[i].Textures.FaceTextures[j];
+                    if (te == null) continue;
+                    UUID id = te.TextureID;
+                    if (!Textures.Contains(id))
+                    {
+                        Textures.Add(id);
+                    }
+                }
+            }
+
+            TextureNames = new string[Textures.Count];
+            ExportableTextures = 0;
+            for (int i = 0; i < Textures.Count; i++)
+            {
+                string name;
+                if (CanExportTexture(Textures[i], out name))
+                {
+                    ExportableTextures++;
+                    TextureNames[i] = RadegastInstance.SafeFileName(name).Replace(' ', '_');
+                }
+            }
+        }
+
+        public void Export(string Filename)
+        {
+            this.FileName = Filename;
+
+            MeshedPrims.Clear();
 
             if (string.IsNullOrEmpty(FileName))
             {
@@ -111,8 +163,11 @@ namespace Radegast
 
             WorkPool.QueueUserWorkItem(sync =>
             {
-
-                for (int i = 0; i < Prims.Count(); i++)
+                if (ExportTextures)
+                {
+                    SaveTextures();
+                }
+                for (int i = 0; i < Prims.Count; i++)
                 {
                     if (!CanExport(Prims[i])) continue;
 
@@ -152,8 +207,86 @@ namespace Radegast
                 }
                 GenerateCollada();
                 File.WriteAllText(FileName, DocToString(Doc));
-                Instance.MainForm.AddNotification(new ntfGeneric(Instance, msg));
+                OnProgress(msg);
             });
+        }
+
+        void SaveTextures()
+        {
+            OnProgress("Exporting textures...");
+            for (int i = 0; i < Textures.Count; i++)
+            {
+                var id = Textures[i];
+                if (TextureNames[i] == null)
+                {
+                    OnProgress("Skipping " + id.ToString() + " due to insufficient permissions");
+                    continue;
+                }
+
+                string filename = TextureNames[i] + "." + ImageFormat.ToLower();
+
+                OnProgress("Fetching texture" + id);
+
+                ManagedImage mImage = null;
+                Image wImage = null;
+                byte[] jpegData = null;
+
+                try
+                {
+                    System.Threading.AutoResetEvent gotImage = new System.Threading.AutoResetEvent(false);
+                    Client.Assets.RequestImage(id, ImageType.Normal, (state, asset) =>
+                    {
+                        if (state == TextureRequestState.Finished && asset != null)
+                        {
+                            jpegData = asset.AssetData;
+                            OpenJPEG.DecodeToImage(jpegData, out mImage, out wImage);
+                            gotImage.Set();
+                        }
+                        else if (state != TextureRequestState.Pending && state != TextureRequestState.Started && state != TextureRequestState.Progress)
+                        {
+                            gotImage.Set();
+                        }
+                    });
+                    gotImage.WaitOne(120 * 1000, false);
+
+                    if (wImage != null)
+                    {
+                        string fullFileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(FileName), filename);
+                        switch (ImageFormat)
+                        {
+                            case "PNG":
+                                wImage.Save(fullFileName, System.Drawing.Imaging.ImageFormat.Png);
+                                break;
+                            case "JPG":
+                                wImage.Save(fullFileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                break;
+                            case "BMP":
+                                wImage.Save(fullFileName, System.Drawing.Imaging.ImageFormat.Bmp);
+                                break;
+                            case "J2C":
+                                File.WriteAllBytes(fullFileName, jpegData);
+                                break;
+                            case "TGA":
+                                File.WriteAllBytes(fullFileName, mImage.ExportTGA());
+                                break;
+                            default:
+                                throw new Exception("Unsupported image format");
+                        }
+                        OnProgress("Saved to " + fullFileName);
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to decode image");
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    OnProgress("Failed: " + ex.ToString());
+                    TextureNames[i] = null;
+                }
+
+            }
         }
 
         bool CanExport(Primitive prim)
@@ -163,6 +296,43 @@ namespace Radegast
             return (prim.OwnerID == Client.Self.AgentID) &&
                 (prim.Properties.CreatorID == Client.Self.AgentID) ||
                 Instance.advancedDebugging;
+        }
+
+        bool CanExportTexture(UUID id, out string name)
+        {
+            name = id.ToString();
+            if (BuiltInTextures.Contains(id))
+            {
+                return true;
+            }
+
+            InventoryItem item = null;
+            foreach (var pair in Client.Inventory.Store.Items)
+            {
+                if (pair.Value.Data is InventoryItem)
+                {
+                    var i = (InventoryItem)pair.Value.Data;
+                    if (i.AssetUUID == id && (InventoryConsole.IsFullPerm(i) || Instance.advancedDebugging))
+                    {
+                        item = i;
+                        break;
+                    }
+                }
+            }
+
+            if (item != null)
+            {
+                name = item.Name;
+                return true;
+            }
+            else if (Instance.advancedDebugging)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         FacetedMesh MeshPrim(Primitive prim)
@@ -238,33 +408,6 @@ namespace Radegast
             {
                 Logger.Log(e.Message, Helpers.LogLevel.Error, Client, e);
                 return false;
-            }
-        }
-
-        string PickFileName()
-        {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.AddExtension = true;
-            dlg.RestoreDirectory = true;
-            dlg.Title = "Save object as...";
-            dlg.Filter = "Collada (*.dae)|*.dae";
-
-            if (RootPrim.Properties != null && !string.IsNullOrEmpty(RootPrim.Properties.Name))
-            {
-                dlg.FileName = RadegastInstance.SafeFileName(RootPrim.Properties.Name) + ".dae";
-            }
-            else
-            {
-                dlg.FileName = "Object.dae";
-            }
-
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                return dlg.FileName;
-            }
-            else
-            {
-                return string.Empty;
             }
         }
 
@@ -389,9 +532,24 @@ namespace Radegast
             polylist.Attributes.Append(Doc.CreateAttribute("count")).InnerText = num_tris.ToString();
         }
 
+        void GenerateImagesSection(XmlNode images)
+        {
+            for (int i = 0; i < TextureNames.Length; i++)
+            {
+                string name = TextureNames[i];
+                if (name == null) continue;
+                string colladaName = name + "_" + ImageFormat.ToLower();
+                var image = images.AppendChild(Doc.CreateElement("image"));
+                image.Attributes.Append(Doc.CreateAttribute("id")).InnerText = colladaName;
+                image.Attributes.Append(Doc.CreateAttribute("name")).InnerText = colladaName;
+                image.AppendChild(Doc.CreateElement("init_from")).InnerText = System.Web.HttpUtility.UrlEncode(name + "." + ImageFormat.ToLower());
+            }
+        }
+
         void GenerateCollada()
         {
             var root = ColladaInit();
+            var images = root.AppendChild(Doc.CreateElement("library_images"));
             var geomLib = root.AppendChild(Doc.CreateElement("library_geometries"));
             var effects = root.AppendChild(Doc.CreateElement("library_effects"));
             var materials = root.AppendChild(Doc.CreateElement("library_materials"));
@@ -399,6 +557,10 @@ namespace Radegast
                 .AppendChild(Doc.CreateElement("visual_scene"));
             scene.Attributes.Append(Doc.CreateAttribute("id")).InnerText = "Scene";
             scene.Attributes.Append(Doc.CreateAttribute("name")).InnerText = "Scene";
+            if (ExportTextures)
+            {
+                GenerateImagesSection(images);
+            }
 
             int prim_nr = 0;
             foreach (var obj in MeshedPrims)
@@ -460,16 +622,53 @@ namespace Radegast
                 // Effects (face color, alpha)
                 for (uint face_num = 0; face_num < num_faces; face_num++)
                 {
-                    var color = obj.Faces[(int)face_num].TextureFace.RGBA;
+                    var te = obj.Faces[(int)face_num].TextureFace;
+                    var color = te.RGBA;
                     var effect = effects.AppendChild(Doc.CreateElement("effect"));
                     effect.Attributes.Append(Doc.CreateAttribute("id")).InnerText = string.Format("{0}-f{1}-{2}", geomID, face_num, "fx");
-                    var t = effect.AppendChild(Doc.CreateElement("profile_COMMON"))
-                        .AppendChild(Doc.CreateElement("technique"));
+                    var profile = effect.AppendChild(Doc.CreateElement("profile_COMMON"));
+                    string colladaName = null;
+                    if (ExportTextures)
+                    {
+                        UUID textID = UUID.Zero;
+                        int i = 0;
+                        for (; i < Textures.Count; i++)
+                        {
+                            if (te.TextureID == Textures[i])
+                            {
+                                textID = te.TextureID;
+                                break;
+                            }
+                        }
+
+                        if (textID != UUID.Zero && TextureNames[i] != null)
+                        {
+                            colladaName = TextureNames[i] + "_" + ImageFormat.ToLower();
+                            var newparam = profile.AppendChild(Doc.CreateElement("newparam"));
+                            newparam.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = colladaName + "-surface";
+                            var surface = newparam.AppendChild(Doc.CreateElement("surface"));
+                            surface.Attributes.Append(Doc.CreateAttribute("type")).InnerText = "2D";
+                            surface.AppendChild(Doc.CreateElement("init_from")).InnerText = colladaName;
+                            newparam = profile.AppendChild(Doc.CreateElement("newparam"));
+                            newparam.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = colladaName + "-sampler";
+                            newparam.AppendChild(Doc.CreateElement("sampler2D"))
+                                .AppendChild(Doc.CreateElement("source"))
+                                .InnerText = colladaName + "-surface";
+                        }
+
+                    }
+                    var t = profile.AppendChild(Doc.CreateElement("technique"));
                     t.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = "common";
                     var phong = t.AppendChild(Doc.CreateElement("phong"));
 
-                    phong.AppendChild(Doc.CreateElement("diffuse"))
-                        .AppendChild(Doc.CreateElement("color"))
+                    var diffuse = phong.AppendChild(Doc.CreateElement("diffuse"));
+                    if (colladaName != null)
+                    {
+                        var txtr = diffuse.AppendChild(Doc.CreateElement("texture"));
+                        txtr.Attributes.Append(Doc.CreateAttribute("texture")).InnerText = colladaName + "-sampler";
+                        txtr.Attributes.Append(Doc.CreateAttribute("texcoord")).InnerText = colladaName;
+                    }
+                    diffuse.AppendChild(Doc.CreateElement("color"))
                         .InnerText = string.Format("{0} {1} {2} {3}",
                         color.R.ToString(invariant),
                         color.G.ToString(invariant),
@@ -557,6 +756,16 @@ namespace Radegast
             catch { }
 
             return ret;
+        }
+    }
+
+    public class DAEStatutsEventArgs : EventArgs
+    {
+        public string Message;
+
+        public DAEStatutsEventArgs(string message)
+        {
+            Message = message;
         }
     }
 }

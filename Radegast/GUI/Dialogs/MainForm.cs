@@ -1545,6 +1545,13 @@ namespace Radegast
         
         public void DisplayExportConsole(uint localID)
         {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                    BeginInvoke(new MethodInvoker(() => DisplayExportConsole(localID)));
+                return;
+            }
+
         	if (tabsConsole.TabExists("export console"))
         	{
         		tabsConsole.Tabs["export console"].Close();
@@ -1566,6 +1573,23 @@ namespace Radegast
         		tab.AllowHide = true;
         		tab.Select();
         	}
+        }
+
+        public void DisplayColladaConsole(Primitive prim)
+        {
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated || !instance.MonoRuntime)
+                    BeginInvoke(new MethodInvoker(() => DisplayColladaConsole(prim)));
+                return;
+            }
+
+            if (tabsConsole.TabExists("collada console"))
+            {
+                tabsConsole.Tabs["collada console"].Close();
+            }
+            RadegastTab tab = tabsConsole.AddTab("collada console", "Export Collada", new ExportCollada(instance, prim));
+            tab.Select();
         }
 
         private void regionParcelToolStripMenuItem_Click(object sender, EventArgs e)

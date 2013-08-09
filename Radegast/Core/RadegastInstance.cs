@@ -764,8 +764,7 @@ namespace Radegast
 
         void ExportDAEHander(object sender, EventArgs e)
         {
-            var exporter = new DAEExport(this);
-            exporter.Export(Client.Network.CurrentSim, (Primitive)sender);
+            MainForm.DisplayColladaConsole((Primitive)sender);
         }
 
 
