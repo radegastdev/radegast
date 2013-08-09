@@ -105,10 +105,17 @@ namespace Radegast
             Prims.Clear();
             Primitive root = new Primitive(RootPrim);
             root.Position = Vector3.Zero;
-            root.Rotation = Quaternion.Identity;
             Prims.Add(root);
 
-            Prims.AddRange(sim.ObjectsPrimitives.FindAll(p => p.ParentID == RootPrim.LocalID));
+            sim.ObjectsPrimitives
+                .FindAll(p => p.ParentID == RootPrim.LocalID)
+                .ForEach(p =>
+                    {
+                        var child = new Primitive(p);
+                        child.Position = root.Position + child.Position * root.Rotation;
+                        child.Rotation = root.Rotation * child.Rotation;
+                        Prims.Add(child);
+                    });
             List<uint> select = new List<uint>(Prims.Count);
             Prims.ForEach(p => select.Add(p.LocalID));
             Client.Objects.SelectObjects(sim, select.ToArray(), true);
@@ -668,12 +675,16 @@ namespace Radegast
                         txtr.Attributes.Append(Doc.CreateAttribute("texture")).InnerText = colladaName + "-sampler";
                         txtr.Attributes.Append(Doc.CreateAttribute("texcoord")).InnerText = colladaName;
                     }
-                    diffuse.AppendChild(Doc.CreateElement("color"))
-                        .InnerText = string.Format("{0} {1} {2} {3}",
-                        color.R.ToString(invariant),
-                        color.G.ToString(invariant),
-                        color.B.ToString(invariant),
-                        color.A.ToString(invariant));
+                    else
+                    {
+                        var diffuseColor = diffuse.AppendChild(Doc.CreateElement("color"));
+                        diffuseColor.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = "diffuse";
+                        diffuseColor.InnerText = string.Format("{0} {1} {2} {3}",
+                            color.R.ToString(invariant),
+                            color.G.ToString(invariant),
+                            color.B.ToString(invariant),
+                            color.A.ToString(invariant));
+                    }
 
                     phong.AppendChild(Doc.CreateElement("transparency"))
                         .AppendChild(Doc.CreateElement("float"))
