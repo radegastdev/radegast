@@ -296,19 +296,38 @@ namespace Radegast
             }
         }
 
+        public static bool IsFullPerm(Permissions Permissions)
+        {
+            if (
+                ((Permissions.OwnerMask & PermissionMask.Modify) != 0) &&
+                ((Permissions.OwnerMask & PermissionMask.Copy) != 0) &&
+                ((Permissions.OwnerMask & PermissionMask.Transfer) != 0)
+                )
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         bool CanExport(Primitive prim)
         {
             if (prim.Properties == null) return false;
 
             return (prim.OwnerID == Client.Self.AgentID) &&
                 (prim.Properties.CreatorID == Client.Self.AgentID) ||
+                (Instance.Netcom.LoginOptions.Grid.Platform != "SecondLife"
+                && prim.OwnerID == Client.Self.AgentID
+                && IsFullPerm(prim.Properties.Permissions)) ||
                 Instance.advancedDebugging;
         }
 
         bool CanExportTexture(UUID id, out string name)
         {
             name = id.ToString();
-            if (BuiltInTextures.Contains(id))
+            if (BuiltInTextures.Contains(id) || Instance.Netcom.LoginOptions.Grid.Platform != "SecondLife")
             {
                 return true;
             }
@@ -669,6 +688,7 @@ namespace Radegast
                     var phong = t.AppendChild(Doc.CreateElement("phong"));
 
                     var diffuse = phong.AppendChild(Doc.CreateElement("diffuse"));
+                    // Only one <color> or <texture> can appear inside diffuse element
                     if (colladaName != null)
                     {
                         var txtr = diffuse.AppendChild(Doc.CreateElement("texture"));
