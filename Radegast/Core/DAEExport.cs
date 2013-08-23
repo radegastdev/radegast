@@ -453,7 +453,7 @@ namespace Radegast
             asset.AppendChild(Doc.CreateElement("modified")).InnerText = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
 
             var unit = asset.AppendChild(Doc.CreateElement("unit"));
-            unit.Attributes.Append(Doc.CreateAttribute("name")).Value = "mater";
+            unit.Attributes.Append(Doc.CreateAttribute("name")).Value = "meter";
             unit.Attributes.Append(Doc.CreateAttribute("meter")).Value = "1";
 
             asset.AppendChild(Doc.CreateElement("up_axis")).InnerText = "Z_UP";
