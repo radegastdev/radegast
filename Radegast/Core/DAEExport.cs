@@ -316,10 +316,10 @@ namespace Radegast
         {
             if (prim.Properties == null) return false;
 
-            return (prim.OwnerID == Client.Self.AgentID) &&
+            return (prim.Properties.OwnerID == Client.Self.AgentID) &&
                 (prim.Properties.CreatorID == Client.Self.AgentID) ||
                 (Instance.Netcom.LoginOptions.Grid.Platform != "SecondLife"
-                && prim.OwnerID == Client.Self.AgentID
+                && prim.Properties.OwnerID == Client.Self.AgentID
                 && IsFullPerm(prim.Properties.Permissions)) ||
                 Instance.advancedDebugging;
         }

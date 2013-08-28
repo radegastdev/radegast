@@ -923,7 +923,7 @@ namespace Radegast
                 gbxInworld.Enabled = true;
                 btnBuy.Tag = currentPrim;
 
-                if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.CreatorID == UUID.Zero))
+                if (currentPrim.Properties == null || currentPrim.OwnerID == UUID.Zero || (currentPrim.Properties != null && currentPrim.Properties.CreatorID == UUID.Zero))
                 {
                     client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
                 }
