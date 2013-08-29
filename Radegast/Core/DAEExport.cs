@@ -52,6 +52,9 @@ namespace Radegast
         public int ExportableTextures { get; set; }
         public bool ExportTextures { get; set; }
         public string ImageFormat { get; set; }
+        public bool ConsolidateMaterials { get; set; }
+        public bool SkipTransparentFaces { get; set; }
+
         public static readonly List<UUID> BuiltInTextures = new List<UUID>() {
             new UUID("89556747-24cb-43ed-920b-47caed15465f"), // default
             new UUID("be293869-d0d9-0a69-5989-ad27f1946fd4"), // default sculpt 
@@ -59,6 +62,7 @@ namespace Radegast
             new UUID("38b86f85-2575-52a9-a531-23108d8da837"), // invisible
             new UUID("8dcd4a48-2d37-4909-9f78-f7a9eb4ef903"), // tranparent
         };
+
         RadegastInstance Instance;
         GridClient Client { get { return Instance.Client; } }
         System.Globalization.CultureInfo invariant = System.Globalization.CultureInfo.InvariantCulture;
@@ -79,6 +83,8 @@ namespace Radegast
         {
             Instance = instance;
             ImageFormat = "PNG";
+            ConsolidateMaterials = true;
+            SkipTransparentFaces = true;
             Mesher = new MeshmerizerR();
             Init(Client.Network.CurrentSim, requestedPrim);
         }
@@ -496,7 +502,7 @@ namespace Radegast
 
         }
 
-        void AddPolygons(XmlNode mesh, string geomID, string materialID, FacetedMesh obj, int face_to_include)
+        void AddPolygons(XmlNode mesh, string geomID, string materialID, FacetedMesh obj, List<int> faces_to_include)
         {
             var polylist = mesh.AppendChild(Doc.CreateElement("polylist"));
             polylist.Attributes.Append(Doc.CreateAttribute("material")).InnerText = materialID;
@@ -536,7 +542,7 @@ namespace Radegast
             for (int face_num = 0; face_num < obj.Faces.Count; face_num++)
             {
                 var face = obj.Faces[face_num];
-                if (face_to_include == -1 || face_to_include == face_num)
+                if (faces_to_include == null || faces_to_include.Contains(face_num))
                 {
                     for (int i = 0; i < face.Indices.Count; i++)
                     {
@@ -572,8 +578,151 @@ namespace Radegast
             }
         }
 
+        class MaterialInfo
+        {
+            public UUID TextureID;
+            public Color4 Color;
+            public string Name;
+
+            public bool Matches(Primitive.TextureEntryFace TextureEntry)
+            {
+                return TextureID == TextureEntry.TextureID && Color == TextureEntry.RGBA;
+            }
+        }
+
+        List<MaterialInfo> AllMeterials = new List<MaterialInfo>();
+
+        MaterialInfo GetMaterial(Primitive.TextureEntryFace te)
+        {
+            MaterialInfo ret = null;
+            foreach (var mat in AllMeterials)
+            {
+                if (mat.Matches(te))
+                {
+                    ret = mat;
+                    break;
+                }
+            }
+
+            if (ret == null)
+            {
+                ret = new MaterialInfo()
+                {
+                    TextureID = te.TextureID,
+                    Color = te.RGBA
+                };
+                ret.Name = string.Format("Material{0}", AllMeterials.Count);
+                AllMeterials.Add(ret);
+            }
+
+            return ret;
+        }
+
+        List<MaterialInfo> GetMaterials(FacetedMesh obj)
+        {
+            var ret = new List<MaterialInfo>();
+
+            for (int face_num = 0; face_num < obj.Faces.Count; face_num++)
+            {
+                var te = obj.Faces[(int)face_num].TextureFace;
+                if (SkipTransparentFaces && te.RGBA.A < 0.01f)
+                {
+                    continue;
+                }
+                var mat = GetMaterial(te);
+                if (!ret.Contains(mat))
+                {
+                    ret.Add(mat);
+                }
+            }
+            return ret;
+        }
+
+        List<int> GetFacesWithMaterial(FacetedMesh obj, MaterialInfo mat)
+        {
+            var ret = new List<int>();
+            for (int face_num = 0; face_num < obj.Faces.Count; face_num++)
+            {
+                if (mat == GetMaterial(obj.Faces[(int)face_num].TextureFace))
+                {
+                    ret.Add(face_num);
+                }
+            }
+            return ret;
+        }
+
+        void GenerateEffects(XmlNode effects)
+        {
+            // Effects (face color, alpha)
+            foreach (var mat in AllMeterials)
+            {
+                var color = mat.Color;
+                var effect = effects.AppendChild(Doc.CreateElement("effect"));
+                effect.Attributes.Append(Doc.CreateAttribute("id")).InnerText = mat.Name + "-fx";
+                var profile = effect.AppendChild(Doc.CreateElement("profile_COMMON"));
+                string colladaName = null;
+                if (ExportTextures)
+                {
+                    UUID textID = UUID.Zero;
+                    int i = 0;
+                    for (; i < Textures.Count; i++)
+                    {
+                        if (mat.TextureID == Textures[i])
+                        {
+                            textID = mat.TextureID;
+                            break;
+                        }
+                    }
+
+                    if (textID != UUID.Zero && TextureNames[i] != null)
+                    {
+                        colladaName = TextureNames[i] + "_" + ImageFormat.ToLower();
+                        var newparam = profile.AppendChild(Doc.CreateElement("newparam"));
+                        newparam.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = colladaName + "-surface";
+                        var surface = newparam.AppendChild(Doc.CreateElement("surface"));
+                        surface.Attributes.Append(Doc.CreateAttribute("type")).InnerText = "2D";
+                        surface.AppendChild(Doc.CreateElement("init_from")).InnerText = colladaName;
+                        newparam = profile.AppendChild(Doc.CreateElement("newparam"));
+                        newparam.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = colladaName + "-sampler";
+                        newparam.AppendChild(Doc.CreateElement("sampler2D"))
+                            .AppendChild(Doc.CreateElement("source"))
+                            .InnerText = colladaName + "-surface";
+                    }
+
+                }
+                var t = profile.AppendChild(Doc.CreateElement("technique"));
+                t.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = "common";
+                var phong = t.AppendChild(Doc.CreateElement("phong"));
+
+                var diffuse = phong.AppendChild(Doc.CreateElement("diffuse"));
+                // Only one <color> or <texture> can appear inside diffuse element
+                if (colladaName != null)
+                {
+                    var txtr = diffuse.AppendChild(Doc.CreateElement("texture"));
+                    txtr.Attributes.Append(Doc.CreateAttribute("texture")).InnerText = colladaName + "-sampler";
+                    txtr.Attributes.Append(Doc.CreateAttribute("texcoord")).InnerText = colladaName;
+                }
+                else
+                {
+                    var diffuseColor = diffuse.AppendChild(Doc.CreateElement("color"));
+                    diffuseColor.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = "diffuse";
+                    diffuseColor.InnerText = string.Format("{0} {1} {2} {3}",
+                        color.R.ToString(invariant),
+                        color.G.ToString(invariant),
+                        color.B.ToString(invariant),
+                        color.A.ToString(invariant));
+                }
+
+                phong.AppendChild(Doc.CreateElement("transparency"))
+                    .AppendChild(Doc.CreateElement("float"))
+                    .InnerText = color.A.ToString(invariant);
+
+            }
+        }
+
         void GenerateCollada()
         {
+            AllMeterials.Clear();
             var root = ColladaInit();
             var images = root.AppendChild(Doc.CreateElement("library_images"));
             var geomLib = root.AppendChild(Doc.CreateElement("library_geometries"));
@@ -639,86 +788,12 @@ namespace Radegast
                     verticesInput.Attributes.Append(Doc.CreateAttribute("source")).InnerText = string.Format("#{0}-{1}", geomID, "positions");
                 }
 
+                var objMaterials = GetMaterials(obj);
+
                 // Add triangles
-                for (int face_num = 0; face_num < num_faces; face_num++)
+                foreach (var objMaterial in objMaterials)
                 {
-                    AddPolygons(mesh, geomID, string.Format("{0}-f{1}-{2}", geomID, face_num, "material"), obj, face_num);
-                }
-
-                // Effects (face color, alpha)
-                for (uint face_num = 0; face_num < num_faces; face_num++)
-                {
-                    var te = obj.Faces[(int)face_num].TextureFace;
-                    var color = te.RGBA;
-                    var effect = effects.AppendChild(Doc.CreateElement("effect"));
-                    effect.Attributes.Append(Doc.CreateAttribute("id")).InnerText = string.Format("{0}-f{1}-{2}", geomID, face_num, "fx");
-                    var profile = effect.AppendChild(Doc.CreateElement("profile_COMMON"));
-                    string colladaName = null;
-                    if (ExportTextures)
-                    {
-                        UUID textID = UUID.Zero;
-                        int i = 0;
-                        for (; i < Textures.Count; i++)
-                        {
-                            if (te.TextureID == Textures[i])
-                            {
-                                textID = te.TextureID;
-                                break;
-                            }
-                        }
-
-                        if (textID != UUID.Zero && TextureNames[i] != null)
-                        {
-                            colladaName = TextureNames[i] + "_" + ImageFormat.ToLower();
-                            var newparam = profile.AppendChild(Doc.CreateElement("newparam"));
-                            newparam.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = colladaName + "-surface";
-                            var surface = newparam.AppendChild(Doc.CreateElement("surface"));
-                            surface.Attributes.Append(Doc.CreateAttribute("type")).InnerText = "2D";
-                            surface.AppendChild(Doc.CreateElement("init_from")).InnerText = colladaName;
-                            newparam = profile.AppendChild(Doc.CreateElement("newparam"));
-                            newparam.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = colladaName + "-sampler";
-                            newparam.AppendChild(Doc.CreateElement("sampler2D"))
-                                .AppendChild(Doc.CreateElement("source"))
-                                .InnerText = colladaName + "-surface";
-                        }
-
-                    }
-                    var t = profile.AppendChild(Doc.CreateElement("technique"));
-                    t.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = "common";
-                    var phong = t.AppendChild(Doc.CreateElement("phong"));
-
-                    var diffuse = phong.AppendChild(Doc.CreateElement("diffuse"));
-                    // Only one <color> or <texture> can appear inside diffuse element
-                    if (colladaName != null)
-                    {
-                        var txtr = diffuse.AppendChild(Doc.CreateElement("texture"));
-                        txtr.Attributes.Append(Doc.CreateAttribute("texture")).InnerText = colladaName + "-sampler";
-                        txtr.Attributes.Append(Doc.CreateAttribute("texcoord")).InnerText = colladaName;
-                    }
-                    else
-                    {
-                        var diffuseColor = diffuse.AppendChild(Doc.CreateElement("color"));
-                        diffuseColor.Attributes.Append(Doc.CreateAttribute("sid")).InnerText = "diffuse";
-                        diffuseColor.InnerText = string.Format("{0} {1} {2} {3}",
-                            color.R.ToString(invariant),
-                            color.G.ToString(invariant),
-                            color.B.ToString(invariant),
-                            color.A.ToString(invariant));
-                    }
-
-                    phong.AppendChild(Doc.CreateElement("transparency"))
-                        .AppendChild(Doc.CreateElement("float"))
-                        .InnerText = color.A.ToString(invariant);
-
-                }
-
-                // Materials
-                for (uint face_num = 0; face_num < num_faces; face_num++)
-                {
-                    var mat = materials.AppendChild(Doc.CreateElement("material"));
-                    mat.Attributes.Append(Doc.CreateAttribute("id")).InnerText = string.Format("{0}-f{1}-{2}", geomID, face_num, "material");
-                    var matEffect = mat.AppendChild(Doc.CreateElement("instance_effect"));
-                    matEffect.Attributes.Append(Doc.CreateAttribute("url")).InnerText = string.Format("#{0}-f{1}-{2}", geomID, face_num, "fx");
+                    AddPolygons(mesh, geomID, objMaterial.Name + "-material", obj, GetFacesWithMaterial(obj, objMaterial));
                 }
 
                 var node = scene.AppendChild(Doc.CreateElement("node"));
@@ -747,14 +822,25 @@ namespace Radegast
                 // Bind materials
                 var tq = nodeGeometry.AppendChild(Doc.CreateElement("bind_material"))
                     .AppendChild(Doc.CreateElement("technique_common"));
-                for (int face_num = 0; face_num < num_faces; face_num++)
+                foreach (var objMaterial in objMaterials)
                 {
                     var instanceMaterial = tq.AppendChild(Doc.CreateElement("instance_material"));
-                    instanceMaterial.Attributes.Append(Doc.CreateAttribute("symbol")).InnerText = string.Format("{0}-f{1}-{2}", geomID, face_num, "material");
-                    instanceMaterial.Attributes.Append(Doc.CreateAttribute("target")).InnerText = string.Format("#{0}-f{1}-{2}", geomID, face_num, "material");
+                    instanceMaterial.Attributes.Append(Doc.CreateAttribute("symbol")).InnerText = string.Format("{0}-{1}", objMaterial.Name, "material");
+                    instanceMaterial.Attributes.Append(Doc.CreateAttribute("target")).InnerText = string.Format("#{0}-{1}", objMaterial.Name, "material");
                 }
 
                 nodeGeometry.Attributes.Append(Doc.CreateAttribute("url")).InnerText = string.Format("#{0}-{1}", geomID, "mesh");
+            }
+
+            GenerateEffects(effects);
+
+            // Materials
+            foreach (var objMaterial in AllMeterials)
+            {
+                var mat = materials.AppendChild(Doc.CreateElement("material"));
+                mat.Attributes.Append(Doc.CreateAttribute("id")).InnerText = objMaterial.Name + "-material";
+                var matEffect = mat.AppendChild(Doc.CreateElement("instance_effect"));
+                matEffect.Attributes.Append(Doc.CreateAttribute("url")).InnerText = string.Format("#{0}-{1}", objMaterial.Name, "fx");
             }
 
             root.AppendChild(Doc.CreateElement("scene"))
