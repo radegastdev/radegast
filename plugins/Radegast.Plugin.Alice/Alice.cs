@@ -492,12 +492,12 @@ namespace Radegast.Plugin.Alice
             }
 
             // We need to filter out all sorts of things that come in as a instante message
-            if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
+            if (Enabled                                       // Alice bot is enabled
+                && e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
                 && !Instance.Groups.ContainsKey(e.IM.IMSessionID)  // Message is not group IM (sessionID == groupID)
                 && e.IM.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
                 && e.IM.FromAgentName != "Second Life"             // Not a system message
                 && Alice.isAcceptingUserInput                    // Alice bot loaded successfully
-                && Enabled                                       // Alice bot is enabled
                 )
             {
                 WorkPool.QueueUserWorkItem(sync =>
