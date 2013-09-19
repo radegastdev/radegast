@@ -755,11 +755,13 @@ namespace Radegast
         void RegisterContextActions()
         {
             ContextActionManager.RegisterContextAction(typeof(Primitive), "Save as DAE...", ExportDAEHander);
+            ContextActionManager.RegisterContextAction(typeof(Primitive),"Copy UUID to clipboard", CopyObjectUUIDHandler);
         }
 
         void DeregisterContextActions()
         {
             ContextActionManager.DeregisterContextAction(typeof(Primitive), "Save as DAE...");
+            ContextActionManager.DeregisterContextAction(typeof(Primitive), "Copy UUID to clipboard");
         }
 
         void ExportDAEHander(object sender, EventArgs e)
@@ -767,6 +769,19 @@ namespace Radegast
             MainForm.DisplayColladaConsole((Primitive)sender);
         }
 
+        void CopyObjectUUIDHandler(object sender, EventArgs e)
+        {
+            if (mainForm.InvokeRequired)
+            {
+                if (mainForm.IsHandleCreated || !MonoRuntime)
+                {
+                    mainForm.Invoke(new MethodInvoker(() => CopyObjectUUIDHandler(sender, e)));
+                }
+                return;
+            }
+
+            Clipboard.SetText(((Primitive)sender).ID.ToString());
+        }
 
         #endregion Context Actions
 
