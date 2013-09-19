@@ -398,7 +398,7 @@ namespace Radegast.Plugin.Alice
         void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
-            if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0) return;
+            if (!Enabled || e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0) return;
 
             bool parseForResponse = Alice != null && Alice.isAcceptingUserInput && Enabled;
             if (parseForResponse && respondRange >= 0)
@@ -473,6 +473,7 @@ namespace Radegast.Plugin.Alice
 
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
+            if (!Enabled) return;
             // Every event coming from a different thread (almost all of them, most certanly those
             // from libomv) needs to be executed on the GUI thread. This code can be basically
             // copy-pasted on the begining of each libomv event handler that results in update 
@@ -492,8 +493,7 @@ namespace Radegast.Plugin.Alice
             }
 
             // We need to filter out all sorts of things that come in as a instante message
-            if (Enabled                                       // Alice bot is enabled
-                && e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
+            if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent // Message is not notice, inv. offer, etc etc
                 && !Instance.Groups.ContainsKey(e.IM.IMSessionID)  // Message is not group IM (sessionID == groupID)
                 && e.IM.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
                 && e.IM.FromAgentName != "Second Life"             // Not a system message
