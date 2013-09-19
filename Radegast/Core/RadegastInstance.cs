@@ -235,6 +235,9 @@ namespace Radegast
             }
         }
 
+        private InventoryLoader invLoader;
+        public InventoryLoader InvLoader { get { return invLoader; } }
+
         #region Events
 
         #region ClientChanged event
@@ -337,6 +340,8 @@ namespace Radegast
             mainForm.Load += new EventHandler(mainForm_Load);
             pluginManager = new PluginManager(this);
             pluginManager.ScanAndLoadPlugins();
+
+            invLoader = new InventoryLoader(this);
         }
 
         private void InitializeClient(GridClient client)
@@ -475,6 +480,12 @@ namespace Radegast
         public void CleanUp()
         {
             MarkEndExecution();
+
+            if (invLoader != null)
+            {
+                invLoader.Dispose();
+                invLoader = null;
+            }
 
             if (COF != null)
             {

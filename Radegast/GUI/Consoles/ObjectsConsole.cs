@@ -817,13 +817,11 @@ namespace Radegast
 
             lock (Prims)
             {
-                /*
                 var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll(prim =>
                 {
                     return ((prim.ParentID == client.Self.LocalID) && (filter == ObjectConsoleFilter.Attached || filter == ObjectConsoleFilter.Both)) ||
                         ((prim.ParentID == 0) && (filter == ObjectConsoleFilter.Rezzed || filter == ObjectConsoleFilter.Both));
                 });
-                */
                 client.Network.CurrentSim.ObjectsPrimitives.ForEach(prim =>
                 {
                     int distance = (int)Vector3.Distance(prim.Position, location);

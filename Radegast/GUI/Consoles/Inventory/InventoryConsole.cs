@@ -97,7 +97,7 @@ namespace Radegast
             invTree.ImageList = frmMain.ResourceImages;
             invRootNode = AddDir(null, Inventory.RootFolder);
             UpdateStatus("Reading cache");
-            Init1();
+            //Init1();
         }
 
         public void Init1()
