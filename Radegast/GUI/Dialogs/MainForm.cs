@@ -336,7 +336,7 @@ namespace Radegast
             {
                 if (InAutoReconnect)
                 {
-                    if (instance.GlobalSettings["auto_reconnect"].AsBoolean())
+                    if (instance.GlobalSettings["auto_reconnect"].AsBoolean() && e.FailReason != "tos")
                         BeginAutoReconnect();
                     else
                         InAutoReconnect = false;
