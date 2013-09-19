@@ -450,8 +450,7 @@ namespace Radegast.Rendering
 
             try
             {
-                string fname = System.IO.Path.Combine(RadegastInstance.GlobalInstance.Client.Settings.ASSET_CACHE_DIR, string.Format("{0}.rzi", textureID));
-                //string fname = System.IO.Path.Combine(".", string.Format("{0}.rzi", textureID));
+                string fname = RadegastInstance.GlobalInstance.ComputeCacheName(RadegastInstance.GlobalInstance.Client.Settings.ASSET_CACHE_DIR, textureID) + ".rzi";
 
                 using (var f = File.Open(fname, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
@@ -499,8 +498,7 @@ namespace Radegast.Rendering
         {
             try
             {
-                string fname = System.IO.Path.Combine(RadegastInstance.GlobalInstance.Client.Settings.ASSET_CACHE_DIR, string.Format("{0}.rzi", textureID));
-                //string fname = System.IO.Path.Combine(".", string.Format("{0}.rzi", textureID));
+                string fname = RadegastInstance.GlobalInstance.ComputeCacheName(RadegastInstance.GlobalInstance.Client.Settings.ASSET_CACHE_DIR, textureID) + ".rzi";
 
                 using (var f = File.Open(fname, FileMode.Create, FileAccess.Write, FileShare.None))
                 {

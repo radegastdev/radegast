@@ -356,6 +356,7 @@ namespace Radegast
             client.Settings.USE_ASSET_CACHE = true;
             client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir, "cache");
             client.Assets.Cache.AutoPruneEnabled = false;
+            client.Assets.Cache.ComputeAssetCacheFilename = ComputeCacheName;
 
             client.Throttle.Total = 5000000f;
             client.Settings.THROTTLE_OUTGOING_PACKETS = false;
@@ -368,6 +369,26 @@ namespace Radegast
 
             RegisterClientEvents(client);
             SetClientTag();
+        }
+
+        public string ComputeCacheName(string cacheDir, UUID assetID)
+        {
+            string fileName = assetID.ToString();
+            string dir = cacheDir
+                + Path.DirectorySeparatorChar + fileName.Substring(0, 1)
+                + Path.DirectorySeparatorChar + fileName.Substring(1, 1);
+            try
+            {
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+            }
+            catch
+            {
+                return Path.Combine(cacheDir, fileName);
+            }
+            return Path.Combine(dir, fileName);
         }
 
         private void RegisterClientEvents(GridClient client)

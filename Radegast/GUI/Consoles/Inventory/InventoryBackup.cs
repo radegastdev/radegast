@@ -82,16 +82,16 @@ namespace Radegast
             {
                 try
                 {
-                    for (int i=0; i<args.Length; i++)
+                    for (int i = 0; i < args.Length; i++)
                     {
                         string s = args[i].ToString();
                         s = s.Replace("\"", "\"\"");
                         csvFile.Write("\"{0}\"", s);
-                        if (i != args.Length-1) csvFile.Write(",");
+                        if (i != args.Length - 1) csvFile.Write(",");
                     }
                     csvFile.WriteLine();
                 }
-                catch {}
+                catch { }
             }
         }
 
@@ -143,7 +143,7 @@ namespace Radegast
                             csvFile.Close();
                             csvFile.Dispose();
                         }
-                        catch {}
+                        catch { }
                     }
                     BeginInvoke(new MethodInvoker(() =>
                     {
@@ -169,189 +169,198 @@ namespace Radegast
             foreach (InventoryNode n in nodes)
             {
                 traversed++;
-                if (IsHandleCreated && (traversed % 13 == 0))
+                try
                 {
-                    BeginInvoke(new MethodInvoker(() =>
+                    if (IsHandleCreated && (traversed % 13 == 0))
                     {
-                        lblStatus.Text = string.Format("Traversed {0} nodes...", traversed);
-                    }));
-                }
-
-                if (n.Data is InventoryFolder)
-                {
-                    WriteCSVLine("Folder", path, n.Data.Name, "", "", "", "");
-                    TraverseDir(n, Path.Combine(path, RadegastInstance.SafeFileName(n.Data.Name)));
-                }
-                else
-                {
-                    InventoryItem item = (InventoryItem)n.Data;
-                    string creator = item.CreatorID == UUID.Zero ? string.Empty : instance.Names.Get(item.CreatorID, true);
-                    string lastOwner = item.LastOwnerID == UUID.Zero ? string.Empty : instance.Names.Get(item.LastOwnerID, true);
-                    string type = item.AssetType.ToString();
-                    if (item.InventoryType == InventoryType.Wearable) type = ((WearableType)item.Flags).ToString();
-                    string created = item.CreationDate.ToString("yyyy-MM-dd HH:mm:ss");
-                    WriteCSVLine(type, path, item.Name, item.Description, created, creator, lastOwner);
-
-                    PermissionMask fullPerm = PermissionMask.Modify | PermissionMask.Copy | PermissionMask.Transfer;
-                    if ((item.Permissions.OwnerMask & fullPerm) != fullPerm)
-                        continue;
-
-                    string filePartial = Path.Combine(path, RadegastInstance.SafeFileName(n.Data.Name));
-                    string fullName = folderName + filePartial;
-                    switch (item.AssetType)
-                    {
-                        case AssetType.LSLText: fullName += ".lsl"; break;
-                        case AssetType.Notecard: fullName += ".txt"; break;
-                        case AssetType.Texture: fullName += ".png"; break;
-                        default: fullName += ".bin"; break;
-                    }
-                    string dirName = Path.GetDirectoryName(fullName);
-                    bool dateOK = item.CreationDate > new DateTime(1970, 1, 2);
-
-                    if (
-                        (item.AssetType == AssetType.LSLText && cbScripts.Checked) ||
-                        (item.AssetType == AssetType.Notecard && cbNoteCards.Checked) ||
-                        (item.AssetType == AssetType.Texture && cbImages.Checked)
-                        )
-                    {
-                        ListViewItem lvi = new ListViewItem();
-                        lvi.Text = n.Data.Name;
-                        lvi.Tag = n.Data;
-                        lvi.Name = n.Data.UUID.ToString();
-
-                        ListViewItem.ListViewSubItem fileName = new ListViewItem.ListViewSubItem(lvi, filePartial);
-                        lvi.SubItems.Add(fileName);
-
-                        ListViewItem.ListViewSubItem status = new ListViewItem.ListViewSubItem(lvi, "Fetching asset");
-                        lvi.SubItems.Add(status);
-
-                        //bool cached = dateOK && File.Exists(fullName) && File.GetCreationTimeUtc(fullName) == item.CreationDate;
-
-                        //if (cached)
-                        //{
-                        //    status.Text = "Cached";
-                        //}
-
                         BeginInvoke(new MethodInvoker(() =>
                         {
-                            lvwFiles.Items.Add(lvi);
-                            lvwFiles.EnsureVisible(lvwFiles.Items.Count - 1);
+                            lblStatus.Text = string.Format("Traversed {0} nodes...", traversed);
                         }));
+                    }
 
-                        //if (cached) continue;
+                    if (n.Data is InventoryFolder)
+                    {
+                        WriteCSVLine("Folder", path, n.Data.Name, "", "", "", "");
+                        TraverseDir(n, Path.Combine(path, RadegastInstance.SafeFileName(n.Data.Name)));
+                    }
+                    else
+                    {
+                        InventoryItem item = (InventoryItem)n.Data;
+                        string creator = item.CreatorID == UUID.Zero ? string.Empty : instance.Names.Get(item.CreatorID, true);
+                        string lastOwner = item.LastOwnerID == UUID.Zero ? string.Empty : instance.Names.Get(item.LastOwnerID, true);
+                        string type = item.AssetType.ToString();
+                        if (item.InventoryType == InventoryType.Wearable) type = ((WearableType)item.Flags).ToString();
+                        string created = item.CreationDate.ToString("yyyy-MM-dd HH:mm:ss");
+                        WriteCSVLine(type, path, item.Name, item.Description, created, creator, lastOwner);
 
-                        Asset receivedAsset = null;
-                        using (AutoResetEvent done = new AutoResetEvent(false))
+                        PermissionMask fullPerm = PermissionMask.Modify | PermissionMask.Copy | PermissionMask.Transfer;
+                        if ((item.Permissions.OwnerMask & fullPerm) != fullPerm)
+                            continue;
+
+                        string filePartial = Path.Combine(path, RadegastInstance.SafeFileName(n.Data.Name));
+                        string fullName = folderName + filePartial;
+                        switch (item.AssetType)
                         {
-                            if (item.AssetType == AssetType.Texture)
+                            case AssetType.LSLText:
+                                client.Settings.USE_ASSET_CACHE = false;
+                                fullName += ".lsl";
+                                break;
+                            case AssetType.Notecard: fullName += ".txt"; break;
+                            case AssetType.Texture: fullName += ".png"; break;
+                            default: fullName += ".bin"; break;
+                        }
+                        string dirName = Path.GetDirectoryName(fullName);
+                        bool dateOK = item.CreationDate > new DateTime(1970, 1, 2);
+
+                        if (
+                            (item.AssetType == AssetType.LSLText && cbScripts.Checked) ||
+                            (item.AssetType == AssetType.Notecard && cbNoteCards.Checked) ||
+                            (item.AssetType == AssetType.Texture && cbImages.Checked)
+                            )
+                        {
+                            ListViewItem lvi = new ListViewItem();
+                            lvi.Text = n.Data.Name;
+                            lvi.Tag = n.Data;
+                            lvi.Name = n.Data.UUID.ToString();
+
+                            ListViewItem.ListViewSubItem fileName = new ListViewItem.ListViewSubItem(lvi, filePartial);
+                            lvi.SubItems.Add(fileName);
+
+                            ListViewItem.ListViewSubItem status = new ListViewItem.ListViewSubItem(lvi, "Fetching asset");
+                            lvi.SubItems.Add(status);
+
+                            //bool cached = dateOK && File.Exists(fullName) && File.GetCreationTimeUtc(fullName) == item.CreationDate;
+
+                            //if (cached)
+                            //{
+                            //    status.Text = "Cached";
+                            //}
+
+                            BeginInvoke(new MethodInvoker(() =>
                             {
-                                client.Assets.RequestImage(item.AssetUUID, (state, asset) =>
+                                lvwFiles.Items.Add(lvi);
+                                lvwFiles.EnsureVisible(lvwFiles.Items.Count - 1);
+                            }));
+
+                            //if (cached) continue;
+
+                            Asset receivedAsset = null;
+                            using (AutoResetEvent done = new AutoResetEvent(false))
+                            {
+                                if (item.AssetType == AssetType.Texture)
                                 {
-                                    if (state == TextureRequestState.Finished && asset != null && asset.Decode())
+                                    client.Assets.RequestImage(item.AssetUUID, (state, asset) =>
                                     {
-                                        receivedAsset = asset;
-                                        done.Set();
-                                    }
-                                });
+                                        if (state == TextureRequestState.Finished && asset != null && asset.Decode())
+                                        {
+                                            receivedAsset = asset;
+                                            done.Set();
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    client.Assets.RequestInventoryAsset(item, true, (AssetDownload transfer, Asset asset) =>
+                                        {
+                                            if (transfer.Success)
+                                            {
+                                                receivedAsset = asset;
+                                            }
+                                            done.Set();
+                                        }
+                                    );
+                                }
+
+                                done.WaitOne(30 * 1000, false);
+                            }
+
+                            client.Settings.USE_ASSET_CACHE = true;
+
+                            if (receivedAsset == null)
+                            {
+                                BeginInvoke(new MethodInvoker(() => status.Text = "Failed to fetch asset"));
                             }
                             else
                             {
-                                client.Assets.RequestInventoryAsset(item, true, (AssetDownload transfer, Asset asset) =>
+                                BeginInvoke(new MethodInvoker(() => status.Text = "Saving..."));
+
+                                try
+                                {
+                                    if (!Directory.Exists(dirName))
                                     {
-                                        if (transfer.Success)
-                                        {
-                                            receivedAsset = asset;
-                                        }
-                                        done.Set();
+                                        Directory.CreateDirectory(dirName);
                                     }
-                                );
-                            }
 
-                            done.WaitOne(30 * 1000, false);
-                        }
+                                    switch (item.AssetType)
+                                    {
+                                        case AssetType.Notecard:
+                                            AssetNotecard note = (AssetNotecard)receivedAsset;
+                                            if (note.Decode())
+                                            {
+                                                File.WriteAllText(fullName, note.BodyText, System.Text.Encoding.UTF8);
+                                                if (dateOK)
+                                                {
+                                                    File.SetCreationTimeUtc(fullName, item.CreationDate);
+                                                    File.SetLastWriteTimeUtc(fullName, item.CreationDate);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Logger.Log(string.Format("Falied to decode asset for '{0}' - {1}", item.Name, receivedAsset.AssetID), Helpers.LogLevel.Warning, client);
+                                            }
 
-                        if (receivedAsset == null)
-                        {
-                            BeginInvoke(new MethodInvoker(() => status.Text = "Failed to fetch asset"));
-                        }
-                        else
-                        {
-                            BeginInvoke(new MethodInvoker(() => status.Text = "Saving..."));
+                                            break;
 
-                            try
-                            {
-                                if (!Directory.Exists(dirName))
-                                {
-                                    Directory.CreateDirectory(dirName);
-                                }
+                                        case AssetType.LSLText:
+                                            AssetScriptText script = (AssetScriptText)receivedAsset;
+                                            if (script.Decode())
+                                            {
+                                                File.WriteAllText(fullName, script.Source, System.Text.Encoding.UTF8);
+                                                if (dateOK)
+                                                {
+                                                    File.SetCreationTimeUtc(fullName, item.CreationDate);
+                                                    File.SetLastWriteTimeUtc(fullName, item.CreationDate);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Logger.Log(string.Format("Falied to decode asset for '{0}' - {1}", item.Name, receivedAsset.AssetID), Helpers.LogLevel.Warning, client);
+                                            }
 
-                                switch (item.AssetType)
-                                {
-                                    case AssetType.Notecard:
-                                        AssetNotecard note = (AssetNotecard)receivedAsset;
-                                        if (note.Decode())
-                                        {
-                                            File.WriteAllText(fullName, note.BodyText, System.Text.Encoding.UTF8);
+                                            break;
+
+                                        case AssetType.Texture:
+                                            AssetTexture imgAsset = (AssetTexture)receivedAsset;
+                                            var img = LoadTGAClass.LoadTGA(new MemoryStream(imgAsset.Image.ExportTGA()));
+                                            img.Save(fullName, System.Drawing.Imaging.ImageFormat.Png);
                                             if (dateOK)
                                             {
                                                 File.SetCreationTimeUtc(fullName, item.CreationDate);
                                                 File.SetLastWriteTimeUtc(fullName, item.CreationDate);
                                             }
-                                        }
-                                        else
-                                        {
-                                            Logger.Log(string.Format("Falied to decode asset for '{0}' - {1}", item.Name, receivedAsset.AssetID), Helpers.LogLevel.Warning, client);
-                                        }
+                                            break;
 
-                                        break;
+                                    }
 
-                                    case AssetType.LSLText:
-                                        AssetScriptText script = (AssetScriptText)receivedAsset;
-                                        if (script.Decode())
-                                        {
-                                            File.WriteAllText(fullName, script.Source, System.Text.Encoding.UTF8);
-                                            if (dateOK)
-                                            {
-                                                File.SetCreationTimeUtc(fullName, item.CreationDate);
-                                                File.SetLastWriteTimeUtc(fullName, item.CreationDate);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Logger.Log(string.Format("Falied to decode asset for '{0}' - {1}", item.Name, receivedAsset.AssetID), Helpers.LogLevel.Warning, client);
-                                        }
-
-                                        break;
-
-                                    case AssetType.Texture:
-                                        AssetTexture imgAsset = (AssetTexture)receivedAsset;
-                                        var img = LoadTGAClass.LoadTGA(new MemoryStream(imgAsset.Image.ExportTGA()));
-                                        img.Save(fullName, System.Drawing.Imaging.ImageFormat.Png);
-                                        if (dateOK)
-                                        {
-                                            File.SetCreationTimeUtc(fullName, item.CreationDate);
-                                            File.SetLastWriteTimeUtc(fullName, item.CreationDate);
-                                        }
-                                        break;
+                                    BeginInvoke(new MethodInvoker(() =>
+                                    {
+                                        fileName.Text = fullName;
+                                        status.Text = "Saved";
+                                        lblStatus.Text = string.Format("Saved {0} items", ++fetched);
+                                    }));
 
                                 }
-
-                                BeginInvoke(new MethodInvoker(() =>
+                                catch (Exception ex)
                                 {
-                                    fileName.Text = fullName;
-                                    status.Text = "Saved";
-                                    lblStatus.Text = string.Format("Saved {0} items", ++fetched);
-                                }));
+                                    BeginInvoke(new MethodInvoker(() => status.Text = "Failed to save " + Path.GetFileName(fullName) + ": " + ex.Message));
+                                }
 
                             }
-                            catch (Exception ex)
-                            {
-                                BeginInvoke(new MethodInvoker(() => status.Text = "Failed to save " + Path.GetFileName(fullName) + ": " + ex.Message));
-                            }
-
                         }
                     }
                 }
+                catch { }
             }
         }
 

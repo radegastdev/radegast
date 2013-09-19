@@ -1120,9 +1120,38 @@ namespace Radegast
 
         }
 
+        int filesDeleted;
+
+        private void deleteFolder(DirectoryInfo dir)
+        {
+            foreach (var file in dir.GetFiles())
+            {
+                try 
+                {
+                    file.Delete();
+                    filesDeleted++;
+                }
+                catch { }
+            }
+
+            foreach (var subDir in dir.GetDirectories())
+            {
+                deleteFolder(subDir);
+            }
+
+            try { dir.Delete(); }
+            catch { }
+        }
+
         private void cleanCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            WorkPool.QueueUserWorkItem(sync => client.Assets.Cache.Clear());
+            WorkPool.QueueUserWorkItem(sync =>
+            {
+                filesDeleted = 0;
+                try { deleteFolder(new DirectoryInfo(client.Settings.ASSET_CACHE_DIR)); }
+                catch { }
+                Logger.DebugLog("Wiped out " + filesDeleted + " files from the cache directory.");
+            });
             instance.Names.CleanCache();
         }
 
@@ -1542,7 +1571,7 @@ namespace Radegast
                 tabsConsole.Tabs["current region info"].Select();
             }
         }
-        
+
         public void DisplayExportConsole(uint localID)
         {
             if (InvokeRequired)
@@ -1552,27 +1581,27 @@ namespace Radegast
                 return;
             }
 
-        	if (tabsConsole.TabExists("export console"))
-        	{
-        		tabsConsole.Tabs["export console"].Close();
-        	}
-        	RadegastTab tab = tabsConsole.AddTab("export console","Export Object", new ExportConsole(client,localID));
-        	tab.Select();
+            if (tabsConsole.TabExists("export console"))
+            {
+                tabsConsole.Tabs["export console"].Close();
+            }
+            RadegastTab tab = tabsConsole.AddTab("export console", "Export Object", new ExportConsole(client, localID));
+            tab.Select();
         }
-        
+
         public void DisplayImportConsole()
         {
-        	if (TabConsole.TabExists("import console"))
-        	{
-        		TabConsole.Tabs["import console"].Select();
-        	}
-        	else
-        	{
-        		RadegastTab tab = tabsConsole.AddTab("import console","Import Object", new ImportConsole(client));
-        		tab.AllowClose = false;
-        		tab.AllowHide = true;
-        		tab.Select();
-        	}
+            if (TabConsole.TabExists("import console"))
+            {
+                TabConsole.Tabs["import console"].Select();
+            }
+            else
+            {
+                RadegastTab tab = tabsConsole.AddTab("import console", "Import Object", new ImportConsole(client));
+                tab.AllowClose = false;
+                tab.AllowHide = true;
+                tab.Select();
+            }
         }
 
         public void DisplayColladaConsole(Primitive prim)
