@@ -754,8 +754,6 @@ namespace Radegast
 
         protected string GetWornIndicator(InventoryNode node)
         {
-            var currentOutfit = client.Appearance.GetWearables();
-            var currentAttachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
             int myItemsCount = 0;
             int myItemsWornCount = 0;
 
@@ -764,8 +762,8 @@ namespace Radegast
                 if (CurrentOutfitFolder.CanBeWorn(n.Data) && !n.Data.Name.StartsWith("."))
                 {
                     myItemsCount++;
-                    if ((n.Data is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, (InventoryItem)n.Data)) ||
-                        CurrentOutfitFolder.IsAttached(currentAttachments, (InventoryItem)n.Data))
+                    if ((n.Data is InventoryWearable && instance.COF.IsWorn((InventoryItem)n.Data)) ||
+                        instance.COF.IsAttached((InventoryItem)n.Data))
                     {
                         myItemsWornCount++;
                     }
@@ -789,8 +787,8 @@ namespace Radegast
                 if (CurrentOutfitFolder.CanBeWorn(n) && !n.Name.StartsWith("."))
                 {
                     allItemsCount++;
-                    if ((n is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, n)) ||
-                        CurrentOutfitFolder.IsAttached(currentAttachments, n))
+                    if ((n is InventoryWearable && instance.COF.IsWorn(n)) ||
+                        instance.COF.IsAttached(n))
                     {
                         allItemsWornCount++;
                     }
@@ -908,18 +906,6 @@ namespace Radegast
             }
 
             return ret;
-        }
-
-        public bool AllowDetach(AttachmentInfo a)
-        {
-            if (!Enabled || a == null) return true;
-
-            if (rules.FindAll((RLVRule r) => { return r.Behaviour == "detach" && r.Sender == a.Prim.ID; }).Count > 0)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public bool AllowDetach(InventoryItem item)

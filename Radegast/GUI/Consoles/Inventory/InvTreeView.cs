@@ -75,7 +75,7 @@ namespace Radegast
         Inventory Inv { get { return Client.Inventory.Store; } }
         List<Node> Mapper = new List<Node>(64);
         int IconWidth = 16;
-        static Image IcnPlus, IcnMinus;
+        static Image IcnPlus, IcnMinus, IcnLinkOverlay;
 
         public InvTreeView(RadegastInstance instance)
             : base()
@@ -173,6 +173,7 @@ namespace Radegast
             {
                 IcnPlus = frmMain.ResourceImages.Images[frmMain.ImageNames.IndexOf("arrow_right")];
                 IcnMinus = frmMain.ResourceImages.Images[frmMain.ImageNames.IndexOf("arrow_down")];
+                IcnLinkOverlay = frmMain.ResourceImages.Images[frmMain.ImageNames.IndexOf("inv_link_overlay")];
             }
         }
 
@@ -306,14 +307,36 @@ namespace Radegast
             Node node = e.Item.Tag as Node;
 
             Image icon = null;
-            int iconIx = InventoryConsole.GetIconIndex(node.ONode.Data);
             int offset = (IconWidth + 2) * (node.Level + 2);
             Rectangle rec = new Rectangle(e.Bounds.X + offset, e.Bounds.Y, e.Bounds.Width - offset, e.Bounds.Height);
+            bool isLink = false;
+            int iconIx = 0;
+
+            if (!node.IsDir)
+            {
+                InventoryItem invItem = (InventoryItem)node.ONode.Data;
+                isLink = invItem.IsLink();
+                if (isLink)
+                {
+                    invItem = Instance.COF.RealInventoryItem(invItem);
+                }
+                iconIx = InventoryConsole.GetIconIndex(Instance.COF.RealInventoryItem(invItem));
+            }
+            else
+            {
+                iconIx = InventoryConsole.GetIconIndex(node.ONode.Data);
+            }
+
 
             try
             {
                 icon = frmMain.ResourceImages.Images[iconIx];
                 g.DrawImageUnscaled(icon, e.Bounds.X + offset - IconWidth, e.Bounds.Y);
+                if (isLink)
+                {
+                    g.DrawImageUnscaled(IcnLinkOverlay, e.Bounds.X + offset - IconWidth, e.Bounds.Y);
+                }
+
                 if (node.IsDir && node.ONode.Nodes.Count > 0)
                 {
                     Image exp;

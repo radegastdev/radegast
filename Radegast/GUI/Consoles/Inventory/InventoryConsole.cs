@@ -57,111 +57,35 @@ namespace Radegast
 
         private InventoryManager Manager;
         private OpenMetaverse.Inventory Inventory;
-        private TreeNode invRootNode;
         private string newItemName = string.Empty;
-        private List<UUID> fetchedFolders = new List<UUID>();
         private System.Threading.Timer _EditTimer;
-        private TreeNode _EditNode;
-        private Dictionary<UUID, AttachmentInfo> attachments = new Dictionary<UUID, AttachmentInfo>();
-        private System.Timers.Timer TreeUpdateTimer;
-        private Queue<InventoryBase> ItemsToAdd = new Queue<InventoryBase>();
-        private Queue<InventoryBase> ItemsToUpdate = new Queue<InventoryBase>();
-        private bool TreeUpdateInProgress = false;
-        private Dictionary<UUID, TreeNode> UUID2NodeCache = new Dictionary<UUID, TreeNode>();
-        private int updateInterval = 1000;
-        private Thread InventoryUpdate;
-        private List<UUID> WornItems = new List<UUID>();
+        private ListViewItem _EditNode;
         private bool appearnceWasBusy;
-        private InvNodeSorter sorter;
-        private List<UUID> QueuedFolders = new List<UUID>();
-        private Dictionary<UUID, int> FolderFetchRetries = new Dictionary<UUID, int>();
-
+        List<InvTreeView> trees = new List<InvTreeView>();
+        int treeIDs = 0;
         #region Construction and disposal
+
         public InventoryConsole(RadegastInstance instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(InventoryConsole_Disposed);
-
-            TreeUpdateTimer = new System.Timers.Timer()
-            {
-                Interval = updateInterval,
-                Enabled = false,
-                SynchronizingObject = invTree
-            };
-            TreeUpdateTimer.Elapsed += TreeUpdateTimerTick;
-
             this.instance = instance;
             Manager = client.Inventory;
             Inventory = Manager.Store;
             Inventory.RootFolder.OwnerID = client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
-            invRootNode = AddDir(null, Inventory.RootFolder);
-            UpdateStatus("Reading cache");
-            //Init1();
-        }
 
-        public void Init1()
-        {
-            WorkPool.QueueUserWorkItem(sync =>
-            {
-                Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
-                Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
-                Init2();
-            });
-        }
+            trees.Add(new InvTreeView(instance) { ID = treeIDs++, Dock = DockStyle.Fill });
+            splitContainer1.Panel1.Controls.Remove(invTree);
+            splitContainer1.Panel1.Controls.Add(trees[0]);
+            splitContainer1.Panel1.Controls.SetChildIndex(trees[0], 0);
 
-        public void Init2()
-        {
-            if (instance.MainForm.InvokeRequired)
-            {
-                instance.MainForm.BeginInvoke(new MethodInvoker(() => Init2()));
-                return;
-            }
+            tbtnSortByDate.Checked = InvTreeView.Sorter.ByDate;
+            tbtbSortByName.Checked = !InvTreeView.Sorter.ByDate;
+            tbtnSystemFoldersFirst.Checked = InvTreeView.Sorter.SystemFoldersFirst;
 
-            AddFolderFromStore(invRootNode, Inventory.RootFolder);
-
-            sorter = new InvNodeSorter();
-
-            if (!instance.GlobalSettings.ContainsKey("inv_sort_bydate"))
-                instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(true);
-            if (!instance.GlobalSettings.ContainsKey("inv_sort_sysfirst"))
-                instance.GlobalSettings["inv_sort_sysfirst"] = OSD.FromBoolean(true);
-
-            sorter.ByDate = instance.GlobalSettings["inv_sort_bydate"].AsBoolean();
-            sorter.SystemFoldersFirst = instance.GlobalSettings["inv_sort_sysfirst"].AsBoolean();
-
-            tbtnSortByDate.Checked = sorter.ByDate;
-            tbtbSortByName.Checked = !sorter.ByDate;
-            tbtnSystemFoldersFirst.Checked = sorter.SystemFoldersFirst;
-
-            invTree.TreeViewNodeSorter = sorter;
-
-            if (instance.MonoRuntime)
-            {
-                invTree.BackColor = Color.FromKnownColor(KnownColor.Window);
-                invTree.ForeColor = invTree.LineColor = Color.FromKnownColor(KnownColor.WindowText);
-                InventoryFolder f = new InventoryFolder(UUID.Random());
-                f.Name = "";
-                f.ParentUUID = UUID.Zero;
-                f.PreferredType = AssetType.Unknown;
-                TreeNode dirNode = new TreeNode();
-                dirNode.Name = f.UUID.ToString();
-                dirNode.Text = f.Name;
-                dirNode.Tag = f;
-                dirNode.ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower());
-                dirNode.SelectedImageIndex = dirNode.ImageIndex;
-                invTree.Nodes.Add(dirNode);
-                invTree.Sort();
-            }
-
+            UpdateStatus(client.Inventory.Store.Items.Count.ToString());
             saveAllTToolStripMenuItem.Enabled = false;
-            InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
-            InventoryUpdate.Name = "InventoryUpdate";
-            InventoryUpdate.IsBackground = true;
-            InventoryUpdate.Start();
-
-            invRootNode.Expand();
-
             invTree.AfterExpand += new TreeViewEventHandler(TreeView_AfterExpand);
             invTree.NodeMouseClick += new TreeNodeMouseClickEventHandler(invTree_MouseClick);
             invTree.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(invTree_NodeMouseDoubleClick);
@@ -173,284 +97,124 @@ namespace Radegast
             Inventory.InventoryObjectUpdated += new EventHandler<InventoryObjectUpdatedEventArgs>(Inventory_InventoryObjectUpdated);
             Inventory.InventoryObjectRemoved += new EventHandler<InventoryObjectRemovedEventArgs>(Inventory_InventoryObjectRemoved);
 
-            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
+            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
         }
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
         {
-            if (TreeUpdateTimer != null)
-            {
-                TreeUpdateTimer.Stop();
-                TreeUpdateTimer.Dispose();
-                TreeUpdateTimer = null;
-            }
-            if (InventoryUpdate != null)
-            {
-                if (InventoryUpdate.IsAlive)
-                    InventoryUpdate.Abort();
-                InventoryUpdate = null;
-            }
-
             Inventory.InventoryObjectAdded -= new EventHandler<InventoryObjectAddedEventArgs>(Inventory_InventoryObjectAdded);
             Inventory.InventoryObjectUpdated -= new EventHandler<InventoryObjectUpdatedEventArgs>(Inventory_InventoryObjectUpdated);
             Inventory.InventoryObjectRemoved -= new EventHandler<InventoryObjectRemovedEventArgs>(Inventory_InventoryObjectRemoved);
 
-            client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
+            client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
             client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
         }
         #endregion
 
         #region Network callbacks
+        void Objects_ObjectUpdate(object sender, PrimEventArgs e)
+        {
+        }
+
         void Appearance_AppearanceSet(object sender, AppearanceSetEventArgs e)
         {
-            UpdateWornLabels();
-            if (appearnceWasBusy)
+        }
+
+        int tickLastUpdate = 0;
+        int updateInterval = 500;
+        object lastUpdateState;
+        System.Threading.Timer lastUpdte = null;
+
+        void CheckUpdateTimer()
+        {
+            if (lastUpdte == null)
             {
-                appearnceWasBusy = false;
-                client.Appearance.RequestSetAppearance(true);
+                lastUpdte = new System.Threading.Timer(UpdateTimerTick, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
             }
+        }
+
+        void UpdateTimerTick(object sender)
+        {
+            tickLastUpdate = 0;
+            RefreshTrees();
+            lastUpdte.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+        }
+
+        void RefreshTrees()
+        {
+            CheckUpdateTimer();
+
+            if (Environment.TickCount - tickLastUpdate < updateInterval)
+            {
+                lastUpdte.Change(updateInterval, System.Threading.Timeout.Infinite);
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => RefreshTrees()));
+                return;
+            }
+
+
+            tickLastUpdate = Environment.TickCount;
+            foreach (var t in trees)
+            {
+                t.UpdateMapper();
+            }
+            UpdateStatus(client.Inventory.Store.Items.Count.ToString());
         }
 
         void Objects_KillObject(object sender, KillObjectEventArgs e)
         {
-            AttachmentInfo attachment = null;
-            lock (attachments)
-            {
-                foreach (AttachmentInfo att in attachments.Values)
-                {
-                    if (att.Prim != null && att.Prim.LocalID == e.ObjectLocalID)
-                    {
-                        attachment = att;
-                        break;
-                    }
-                }
-
-                if (attachment != null)
-                {
-                    attachments.Remove(attachment.InventoryID);
-                    UpdateNodeLabel(attachment.InventoryID);
-                }
-            }
         }
 
-        void Objects_AttachmentUpdate(object sender, PrimEventArgs e)
-        {
-            Primitive prim = e.Prim;
-
-            if (client.Self.LocalID == 0 ||
-                prim.ParentID != client.Self.LocalID ||
-                prim.NameValues == null) return;
-
-            for (int i = 0; i < prim.NameValues.Length; i++)
-            {
-                if (prim.NameValues[i].Name == "AttachItemID")
-                {
-                    AttachmentInfo attachment = new AttachmentInfo();
-                    attachment.Prim = prim;
-                    attachment.InventoryID = new UUID(prim.NameValues[i].Value.ToString());
-                    attachment.PrimID = prim.ID;
-
-                    lock (attachments)
-                    {
-                        // Add new attachment info
-                        if (!attachments.ContainsKey(attachment.InventoryID))
-                        {
-                            attachments.Add(attachment.InventoryID, attachment);
-
-                        }
-                        else
-                        {
-                            attachment = attachments[attachment.InventoryID];
-                            if (attachment.Prim == null)
-                            {
-                                attachment.Prim = prim;
-                            }
-                        }
-
-                        // Don't update the tree yet if we're still updating invetory tree from server
-                        if (!TreeUpdateInProgress)
-                        {
-                            if (Inventory.Contains(attachment.InventoryID))
-                            {
-                                if (attachment.Item == null)
-                                {
-                                    InventoryItem item = (InventoryItem)Inventory[attachment.InventoryID];
-                                    attachment.Item = item;
-                                }
-                                if (!attachment.MarkedAttached)
-                                {
-                                    attachment.MarkedAttached = true;
-                                    UpdateNodeLabel(attachment.InventoryID);
-                                }
-                            }
-                            else
-                            {
-                                client.Inventory.RequestFetchInventory(attachment.InventoryID, client.Self.AgentID);
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-        }
 
         void Inventory_InventoryObjectAdded(object sender, InventoryObjectAddedEventArgs e)
         {
-            if (TreeUpdateInProgress)
-            {
-                lock (ItemsToAdd)
-                {
-                    ItemsToAdd.Enqueue(e.Obj);
-                }
-            }
-            else
-            {
-                Exec_OnInventoryObjectAdded(e.Obj);
-            }
+            RefreshTrees();
         }
 
-        void Exec_OnInventoryObjectAdded(InventoryBase obj)
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new MethodInvoker(delegate()
-                    {
-                        Exec_OnInventoryObjectAdded(obj);
-                    }
-                ));
-                return;
-            }
-
-            lock (attachments)
-            {
-                if (attachments.ContainsKey(obj.UUID))
-                {
-                    attachments[obj.UUID].Item = (InventoryItem)obj;
-                }
-            }
-
-            TreeNode parent = findNodeForItem(obj.ParentUUID);
-
-            if (parent != null)
-            {
-                TreeNode newNode = AddBase(parent, obj);
-                if (obj.Name == newItemName)
-                {
-                    if (newNode.Parent.IsExpanded)
-                    {
-                        newNode.BeginEdit();
-                    }
-                    else
-                    {
-                        newNode.Parent.Expand();
-                    }
-                }
-            }
-            newItemName = string.Empty;
-        }
 
         void Inventory_InventoryObjectRemoved(object sender, InventoryObjectRemovedEventArgs e)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(() => Inventory_InventoryObjectRemoved(sender, e)));
-                return;
-            }
-
-            lock (attachments)
-            {
-                if (attachments.ContainsKey(e.Obj.UUID))
-                {
-                    attachments.Remove(e.Obj.UUID);
-                }
-            }
-
-            TreeNode currentNode = findNodeForItem(e.Obj.UUID);
-            if (currentNode != null)
-            {
-                removeNode(currentNode);
-            }
+            RefreshTrees();
         }
 
         void Inventory_InventoryObjectUpdated(object sender, InventoryObjectUpdatedEventArgs e)
         {
-            if (TreeUpdateInProgress)
-            {
-                lock (ItemsToUpdate)
-                {
-                    if (e.NewObject is InventoryFolder)
-                    {
-                        TreeNode currentNode = findNodeForItem(e.NewObject.UUID);
-                        if (currentNode != null && currentNode.Text == e.NewObject.Name) return;
-                    }
-
-                    if (!ItemsToUpdate.Contains(e.NewObject))
-                    {
-                        ItemsToUpdate.Enqueue(e.NewObject);
-                    }
-                }
-            }
-            else
-            {
-                Exec_OnInventoryObjectUpdated(e.OldObject, e.NewObject);
-            }
         }
 
-        void Exec_OnInventoryObjectUpdated(InventoryBase oldObject, InventoryBase newObject)
-        {
-            if (newObject == null) return;
-
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(() => Exec_OnInventoryObjectUpdated(oldObject, newObject)));
-                return;
-            }
-
-            lock (attachments)
-            {
-                if (attachments.ContainsKey(newObject.UUID))
-                {
-                    attachments[newObject.UUID].Item = (InventoryItem)newObject;
-                }
-            }
-
-            // Find our current node in the tree
-            TreeNode currentNode = findNodeForItem(newObject.UUID);
-
-            // Find which node should be our parrent
-            TreeNode parent = findNodeForItem(newObject.ParentUUID);
-
-            if (parent == null) return;
-
-            if (currentNode != null)
-            {
-                // Did we move to a different folder
-                if (currentNode.Parent != parent)
-                {
-                    TreeNode movedNode = (TreeNode)currentNode.Clone();
-                    movedNode.Tag = newObject;
-                    parent.Nodes.Add(movedNode);
-                    removeNode(currentNode);
-                    cacheNode(movedNode);
-                }
-                else // Update
-                {
-                    currentNode.Tag = newObject;
-                    currentNode.Text = ItemLabel(newObject, false);
-                    currentNode.Name = newObject.Name;
-                }
-            }
-            else // We are not in the tree already, add
-            {
-                AddBase(parent, newObject);
-            }
-        }
         #endregion
 
-        #region Node manipulation
+        public static int GetIconIndex(InventoryBase inv)
+        {
+            int iconIx = 0;
+
+            if (inv is InventoryFolder)
+            {
+                iconIx = GetDirImageIndex(((InventoryFolder)inv).PreferredType.ToString().ToLower());
+            }
+            else if (inv is InventoryWearable)
+            {
+                iconIx = GetItemImageIndex(((InventoryWearable)inv).WearableType.ToString().ToLower());
+            }
+            else if (inv is InventoryItem)
+            {
+                iconIx = GetItemImageIndex(((InventoryItem)inv).AssetType.ToString().ToLower());
+            }
+
+            if (iconIx < 0)
+            {
+                iconIx = 0;
+            }
+
+            return iconIx;
+        }
+
         public static int GetDirImageIndex(string t)
         {
             t = System.Text.RegularExpressions.Regex.Replace(t, @"folder$", "");
@@ -487,445 +251,21 @@ namespace Radegast
             return res;
         }
 
-        TreeNode AddBase(TreeNode parent, InventoryBase obj)
-        {
-            if (obj is InventoryItem)
-            {
-                return AddItem(parent, (InventoryItem)obj);
-            }
-            else
-            {
-                return AddDir(parent, (InventoryFolder)obj);
-            }
-        }
-
-        TreeNode AddDir(TreeNode parentNode, InventoryFolder f)
-        {
-            TreeNode dirNode = new TreeNode();
-            dirNode.Name = f.UUID.ToString();
-            dirNode.Text = f.Name;
-            dirNode.Tag = f;
-            dirNode.ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower());
-            dirNode.SelectedImageIndex = dirNode.ImageIndex;
-            if (parentNode == null)
-            {
-                invTree.Nodes.Add(dirNode);
-            }
-            else
-            {
-                parentNode.Nodes.Add(dirNode);
-            }
-            lock (UUID2NodeCache)
-            {
-                UUID2NodeCache[f.UUID] = dirNode;
-            }
-            return dirNode;
-        }
-
-
-        TreeNode AddItem(TreeNode parent, InventoryItem item)
-        {
-            TreeNode itemNode = new TreeNode();
-            itemNode.Name = item.UUID.ToString();
-            itemNode.Text = ItemLabel(item, false);
-            itemNode.Tag = item;
-            int img = -1;
-            InventoryItem linkedItem = null;
-
-            if (item.IsLink() && Inventory.Contains(item.AssetUUID) && Inventory[item.AssetUUID] is InventoryItem)
-            {
-                linkedItem = (InventoryItem)Inventory[item.AssetUUID];
-            }
-            else
-            {
-                linkedItem = item;
-            }
-
-            if (linkedItem is InventoryWearable)
-            {
-                InventoryWearable w = linkedItem as InventoryWearable;
-                img = GetItemImageIndex(w.WearableType.ToString().ToLower());
-            }
-            else
-            {
-                img = GetItemImageIndex(linkedItem.AssetType.ToString().ToLower());
-            }
-
-            itemNode.ImageIndex = img;
-            itemNode.SelectedImageIndex = img;
-            parent.Nodes.Add(itemNode);
-            lock (UUID2NodeCache)
-            {
-                UUID2NodeCache[item.UUID] = itemNode;
-            }
-            return itemNode;
-        }
-
-        TreeNode findNodeForItem(UUID itemID)
-        {
-            lock (UUID2NodeCache)
-            {
-                if (UUID2NodeCache.ContainsKey(itemID))
-                {
-                    return UUID2NodeCache[itemID];
-                }
-            }
-            return null;
-        }
-
-        void cacheNode(TreeNode node)
-        {
-            InventoryBase item = (InventoryBase)node.Tag;
-            if (item != null)
-            {
-                foreach (TreeNode child in node.Nodes)
-                {
-                    cacheNode(child);
-                }
-                lock (UUID2NodeCache)
-                {
-                    UUID2NodeCache[item.UUID] = node;
-                }
-            }
-        }
-
-        void removeNode(TreeNode node)
-        {
-            InventoryBase item = (InventoryBase)node.Tag;
-            if (item != null)
-            {
-                foreach (TreeNode child in node.Nodes)
-                {
-                    removeNode(child);
-                }
-
-                lock (UUID2NodeCache)
-                {
-                    UUID2NodeCache.Remove(item.UUID);
-                }
-            }
-            node.Remove();
-        }
-
-        #endregion
-
-        #region Private methods
         private void UpdateStatus(string text)
         {
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(delegate() { UpdateStatus(text); }));
+                BeginInvoke(new MethodInvoker(delegate() { UpdateStatus(text); }));
                 return;
             }
 
-            if (text == "OK")
+            if (!saveAllTToolStripMenuItem.Enabled && !instance.InvLoader.IsRunning())
             {
                 saveAllTToolStripMenuItem.Enabled = true;
             }
 
             tlabelStatus.Text = text;
         }
-
-        private void UpdateNodeLabel(UUID itemID)
-        {
-            if (instance.MainForm.InvokeRequired)
-            {
-                instance.MainForm.BeginInvoke(new MethodInvoker(() => UpdateNodeLabel(itemID)));
-                return;
-            }
-
-            TreeNode node = findNodeForItem(itemID);
-            if (node != null)
-            {
-                node.Text = ItemLabel((InventoryBase)node.Tag, false);
-            }
-        }
-
-        private void AddFolderFromStore(TreeNode parent, InventoryFolder f)
-        {
-            List<InventoryBase> contents = Inventory.GetContents(f);
-            foreach (InventoryBase item in contents)
-            {
-                TreeNode node = AddBase(parent, item);
-                if (item is InventoryFolder)
-                {
-                    AddFolderFromStore(node, (InventoryFolder)item);
-                }
-            }
-        }
-
-        private void TraverseAndQueueNodes(InventoryNode start)
-        {
-            bool has_items = false;
-
-            foreach (InventoryNode node in start.Nodes.Values)
-            {
-                if (node.Data is InventoryItem)
-                {
-                    has_items = true;
-                    break;
-                }
-            }
-
-            if (!has_items || start.NeedsUpdate)
-            {
-                lock (QueuedFolders)
-                {
-                    lock (FolderFetchRetries)
-                    {
-                        int retries = 0;
-                        FolderFetchRetries.TryGetValue(start.Data.UUID, out retries);
-                        if (retries < 3)
-                        {
-                            if (!QueuedFolders.Contains(start.Data.UUID))
-                            {
-                                QueuedFolders.Add(start.Data.UUID);
-                            }
-                        }
-                        FolderFetchRetries[start.Data.UUID] = retries + 1;
-                    }
-                }
-            }
-
-            foreach (InventoryBase item in Inventory.GetContents((InventoryFolder)start.Data))
-            {
-                if (item is InventoryFolder)
-                {
-                    TraverseAndQueueNodes(Inventory.GetNodeFor(item.UUID));
-                }
-            }
-        }
-
-        private void TraverseNodes(InventoryNode start)
-        {
-            bool has_items = false;
-
-            foreach (InventoryNode node in start.Nodes.Values)
-            {
-                if (node.Data is InventoryItem)
-                {
-                    has_items = true;
-                    break;
-                }
-            }
-
-            if (!has_items || start.NeedsUpdate)
-            {
-                InventoryFolder f = (InventoryFolder)start.Data;
-                AutoResetEvent gotFolderEvent = new AutoResetEvent(false);
-                bool success = false;
-
-                EventHandler<FolderUpdatedEventArgs> callback = delegate(object sender, FolderUpdatedEventArgs ea)
-                {
-                    if (f.UUID == ea.FolderID)
-                    {
-                        if (((InventoryFolder)Inventory.Items[ea.FolderID].Data).DescendentCount <= Inventory.Items[ea.FolderID].Nodes.Count)
-                        {
-                            success = true;
-                            gotFolderEvent.Set();
-                        }
-                    }
-                };
-
-                client.Inventory.FolderUpdated += callback;
-                fetchFolder(f.UUID, f.OwnerID, true);
-                gotFolderEvent.WaitOne(30 * 1000, false);
-                client.Inventory.FolderUpdated -= callback;
-
-                if (!success)
-                {
-                    Logger.Log(string.Format("Failed fetching folder {0}, got {1} items out of {2}", f.Name, Inventory.Items[f.UUID].Nodes.Count, ((InventoryFolder)Inventory.Items[f.UUID].Data).DescendentCount), Helpers.LogLevel.Error, client);
-                }
-            }
-
-            foreach (InventoryBase item in Inventory.GetContents((InventoryFolder)start.Data))
-            {
-                if (item is InventoryFolder)
-                {
-                    TraverseNodes(Inventory.GetNodeFor(item.UUID));
-                }
-            }
-        }
-
-        private void StartTraverseNodes()
-        {
-            if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
-            {
-                AutoResetEvent EQRunning = new AutoResetEvent(false);
-                EventHandler<EventQueueRunningEventArgs> handler = (sender, e) =>
-                    {
-                        EQRunning.Set();
-                    };
-                client.Network.EventQueueRunning += handler;
-                EQRunning.WaitOne(10 * 1000, false);
-                client.Network.EventQueueRunning -= handler;
-            }
-
-            if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
-            {
-                return;
-            }
-
-            UpdateStatus("Loading...");
-            TreeUpdateInProgress = true;
-            TreeUpdateTimer.Start();
-
-            lock (FolderFetchRetries)
-            {
-                FolderFetchRetries.Clear();
-            }
-
-            do
-            {
-                lock (QueuedFolders)
-                {
-                    QueuedFolders.Clear();
-                }
-                TraverseAndQueueNodes(Inventory.RootNode);
-                if (QueuedFolders.Count == 0) break;
-                Logger.DebugLog(string.Format("Queued {0} folders for update", QueuedFolders.Count));
-
-                Parallel.ForEach<UUID>(Math.Min(QueuedFolders.Count, 6), QueuedFolders, folderID =>
-                {
-                    bool success = false;
-
-                    AutoResetEvent gotFolder = new AutoResetEvent(false);
-                    EventHandler<FolderUpdatedEventArgs> handler = (sender, ev) =>
-                        {
-                            if (ev.FolderID == folderID)
-                            {
-                                success = ev.Success;
-                                gotFolder.Set();
-                            }
-                        };
-
-                    client.Inventory.FolderUpdated += handler;
-                    client.Inventory.RequestFolderContents(folderID, client.Self.AgentID, true, true, InventorySortOrder.ByDate);
-                    if (!gotFolder.WaitOne(15 * 1000, false))
-                    {
-                        success = false;
-                    }
-                    client.Inventory.FolderUpdated -= handler;
-                });
-            }
-            while (QueuedFolders.Count > 0);
-
-            TreeUpdateTimer.Stop();
-            if (IsHandleCreated)
-            {
-                Invoke(new MethodInvoker(() => TreeUpdateTimerTick(null, null)));
-            }
-            TreeUpdateInProgress = false;
-            UpdateStatus("OK");
-            instance.TabConsole.DisplayNotificationInChat("Inventory update completed.");
-
-            // Updated labels on clothes that we are wearing
-            UpdateWornLabels();
-
-            // Update attachments now that we are done
-            lock (attachments)
-            {
-                foreach (AttachmentInfo a in attachments.Values)
-                {
-                    if (a.Item == null)
-                    {
-                        if (Inventory.Contains(a.InventoryID))
-                        {
-                            a.MarkedAttached = true;
-                            a.Item = (InventoryItem)Inventory[a.InventoryID];
-                            UpdateNodeLabel(a.InventoryID);
-                        }
-                        else
-                        {
-                            client.Inventory.RequestFetchInventory(a.InventoryID, client.Self.AgentID);
-                            return;
-                        }
-                    }
-                }
-            }
-
-            Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
-            WorkPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
-
-            if (!instance.MonoRuntime || IsHandleCreated)
-                Invoke(new MethodInvoker(() =>
-                    {
-                        invTree.Sort();
-                    }
-            ));
-
-
-        }
-
-        public void ReloadInventory()
-        {
-            if (TreeUpdateInProgress)
-            {
-                TreeUpdateTimer.Stop();
-                InventoryUpdate.Abort();
-                InventoryUpdate = null;
-            }
-
-            saveAllTToolStripMenuItem.Enabled = false;
-
-            Inventory.Items = new Dictionary<UUID, InventoryNode>();
-            Inventory.RootFolder = Inventory.RootFolder;
-
-            invTree.Nodes.Clear();
-            UUID2NodeCache.Clear();
-            invRootNode = AddDir(null, Inventory.RootFolder);
-            Inventory.RootNode.NeedsUpdate = true;
-
-            InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes));
-            InventoryUpdate.Name = "InventoryUpdate";
-            InventoryUpdate.IsBackground = true;
-            InventoryUpdate.Start();
-            invRootNode.Expand();
-        }
-
-        private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ReloadInventory();
-        }
-
-        private void TreeUpdateTimerTick(Object sender, EventArgs e)
-        {
-            lock (ItemsToAdd)
-            {
-                if (ItemsToAdd.Count > 0)
-                {
-                    invTree.BeginUpdate();
-                    while (ItemsToAdd.Count > 0)
-                    {
-                        InventoryBase item = ItemsToAdd.Dequeue();
-                        TreeNode node = findNodeForItem(item.ParentUUID);
-                        if (node != null)
-                        {
-                            AddBase(node, item);
-                        }
-                    }
-                    invTree.EndUpdate();
-                }
-            }
-
-            lock (ItemsToUpdate)
-            {
-                if (ItemsToUpdate.Count > 0)
-                {
-                    invTree.BeginUpdate();
-                    while (ItemsToUpdate.Count > 0)
-                    {
-                        InventoryBase item = ItemsToUpdate.Dequeue();
-                        Exec_OnInventoryObjectUpdated(item, item);
-                    }
-                    invTree.EndUpdate();
-                }
-            }
-
-            UpdateStatus("Loading... " + UUID2NodeCache.Count.ToString() + " items");
-        }
-
-        #endregion
 
         private void btnProfile_Click(object sender, EventArgs e)
         {
@@ -1107,87 +447,18 @@ namespace Radegast
             }
         }
 
-        private void fetchFolder(UUID folderID, UUID ownerID, bool force)
+        public InventoryItem AttachmentAt(AttachmentPoint point)
         {
-            if (force || !fetchedFolders.Contains(folderID))
-            {
-                if (!fetchedFolders.Contains(folderID))
-                {
-                    fetchedFolders.Add(folderID);
-                }
-
-                client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
-            }
-        }
-
-        public bool IsWorn(InventoryItem item)
-        {
-            bool worn = client.Appearance.IsItemWorn(item) != WearableType.Invalid;
-
-            lock (WornItems)
-            {
-                if (worn && !WornItems.Contains(item.UUID))
-                    WornItems.Add(item.UUID);
-            }
-            return worn;
-        }
-
-        public AttachmentPoint AttachedTo(InventoryItem item)
-        {
-            lock (attachments)
-            {
-                if (attachments.ContainsKey(item.UUID))
-                {
-                    return attachments[item.UUID].Point;
-                }
-            }
-
-            return AttachmentPoint.Default;
-        }
-
-        public bool IsAttached(InventoryItem item)
-        {
+            // Prim.PrimData.AttachmentPoint
             List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == client.Self.LocalID);
             foreach (Primitive prim in myAtt)
             {
-                if (prim.NameValues == null) continue;
-                UUID invID = UUID.Zero;
-                for (int i = 0; i < prim.NameValues.Length; i++)
+                if (prim.PrimData.AttachmentPoint == point)
                 {
-                    if (prim.NameValues[i].Name == "AttachItemID")
+                    UUID id = CurrentOutfitFolder.GetAttachmentItem(prim);
+                    if (Inventory.Contains(id) && Inventory[id] is InventoryItem)
                     {
-                        invID = (UUID)prim.NameValues[i].Value.ToString();
-                        break;
-                    }
-                }
-                if (invID == item.UUID)
-                {
-                    lock (attachments)
-                    {
-                        AttachmentInfo inf = new AttachmentInfo();
-                        inf.InventoryID = item.UUID;
-                        inf.Item = item;
-                        inf.MarkedAttached = true;
-                        inf.Prim = prim;
-                        inf.PrimID = prim.ID;
-                        attachments[invID] = inf;
-                    }
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public InventoryItem AttachmentAt(AttachmentPoint point)
-        {
-            lock (attachments)
-            {
-                foreach (KeyValuePair<UUID, AttachmentInfo> att in attachments)
-                {
-                    if (att.Value.Point == point)
-                    {
-                        return att.Value.Item;
+                        return (InventoryItem)Inventory[id];
                     }
                 }
             }
@@ -1228,12 +499,13 @@ namespace Radegast
             if ((item.Permissions.OwnerMask & PermissionMask.Transfer) == 0)
                 raw += " (no transfer)";
 
-            if (IsWorn(item))
+            if (instance.COF.IsWorn(item))
                 raw += " (worn)";
 
-            if (IsAttached(item))
+            if (instance.COF.IsAttached(item))
             {
-                raw += " (worn on " + AttachedTo(item).ToString() + ")";
+                // TODO
+                //raw += " (worn on " + AttachedTo(item).ToString() + ")";
             }
 
             return raw;
@@ -1315,10 +587,6 @@ namespace Radegast
 
                     ctxItem = new ToolStripMenuItem("New Script", null, OnInvContextClick);
                     ctxItem.Name = "new_script";
-                    ctxInv.Items.Add(ctxItem);
-
-                    ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
-                    ctxItem.Name = "refresh";
                     ctxInv.Items.Add(ctxItem);
 
                     ctxItem = new ToolStripMenuItem("Backup...", null, OnInvContextClick);
@@ -1518,20 +786,20 @@ namespace Radegast
                     ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
                     ctxItem.Name = "delete_item";
 
-                    if (IsAttached(item) || IsWorn(item))
+                    if (instance.COF.IsAttached(item) || instance.COF.IsWorn(item))
                     {
                         ctxItem.Enabled = false;
                     }
                     ctxInv.Items.Add(ctxItem);
 
-                    if (IsAttached(item) && instance.RLV.AllowDetach(attachments[item.UUID]))
+                    if (instance.COF.IsAttached(item) && instance.RLV.AllowDetach(item))
                     {
                         ctxItem = new ToolStripMenuItem("Detach from yourself", null, OnInvContextClick);
                         ctxItem.Name = "detach";
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    if (!IsAttached(item) && (item.InventoryType == InventoryType.Object || item.InventoryType == InventoryType.Attachment))
+                    if (!instance.COF.IsAttached(item) && (item.InventoryType == InventoryType.Object || item.InventoryType == InventoryType.Attachment))
                     {
                         ToolStripMenuItem ctxItemAttach = new ToolStripMenuItem("Attach to");
                         ctxInv.Items.Add(ctxItemAttach);
@@ -1588,7 +856,7 @@ namespace Radegast
                     {
                         ctxInv.Items.Add(new ToolStripSeparator());
 
-                        if (IsWorn(item))
+                        if (instance.COF.IsWorn(item))
                         {
                             ctxItem = new ToolStripMenuItem("Take off", null, OnInvContextClick);
                             ctxItem.Name = "item_take_off";
@@ -1625,17 +893,6 @@ namespace Radegast
 
                 switch (cmd)
                 {
-                    case "refresh":
-                        foreach (TreeNode old in invTree.SelectedNode.Nodes)
-                        {
-                            if (!(old.Tag is InventoryFolder))
-                            {
-                                removeNode(old);
-                            }
-                        }
-                        fetchFolder(f.UUID, f.OwnerID, true);
-                        break;
-
                     case "backup":
                         (new InventoryBackup(instance, f.UUID)).Show();
                         break;
@@ -1726,7 +983,6 @@ namespace Radegast
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.ReplaceOutfit(newOutfit);
-                        UpdateWornLabels();
                         break;
 
                     case "outfit_add":
@@ -1738,7 +994,6 @@ namespace Radegast
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.AddToOutfit(addToOutfit, true);
-                        UpdateWornLabels();
                         break;
 
                     case "outfit_take_off":
@@ -1750,7 +1005,6 @@ namespace Radegast
                         }
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.RemoveFromOutfit(removeFromOutfit);
-                        UpdateWornLabels();
                         break;
                 }
                 #endregion
@@ -1795,7 +1049,6 @@ namespace Radegast
 
                     case "detach":
                         instance.COF.Detach(item);
-                        lock (attachments) attachments.Remove(item.UUID);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 
@@ -1825,13 +1078,6 @@ namespace Radegast
                         appearnceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.RemoveFromOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
-                        lock (WornItems)
-                        {
-                            if (WornItems.Contains(item.UUID))
-                            {
-                                WornItems.Remove(item.UUID);
-                            }
-                        }
                         break;
 
                     case "item_wear":
@@ -1899,6 +1145,7 @@ namespace Radegast
             }
 
             instance.TabConsole.DisplayNotificationInChat("New notecard created, enter notecard name and press enter", ChatBufferTextStyle.Invisible);
+            /* TODO
             var node = findNodeForItem(item.ParentUUID);
             if (node != null) node.Expand();
             node = findNodeForItem(item.UUID);
@@ -1907,6 +1154,7 @@ namespace Radegast
                 invTree.SelectedNode = node;
                 node.BeginEdit();
             }
+             */
         }
 
         void ScriptCreated(bool success, InventoryItem item)
@@ -1924,6 +1172,7 @@ namespace Radegast
             }
 
             instance.TabConsole.DisplayNotificationInChat("New script created, enter script name and press enter", ChatBufferTextStyle.Invisible);
+            /* TODO
             var node = findNodeForItem(item.ParentUUID);
             if (node != null) node.Expand();
             node = findNodeForItem(item.UUID);
@@ -1932,6 +1181,7 @@ namespace Radegast
                 invTree.SelectedNode = node;
                 node.BeginEdit();
             }
+             */
         }
 
         void PerformClipboardOperation(InventoryFolder dest)
@@ -2009,35 +1259,6 @@ namespace Radegast
 
         #endregion
 
-        private void UpdateWornLabels()
-        {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new MethodInvoker(UpdateWornLabels));
-                return;
-            }
-
-            invTree.BeginUpdate();
-            foreach (UUID itemID in WornItems)
-            {
-                TreeNode node = findNodeForItem(itemID);
-                if (node != null)
-                {
-                    node.Text = ItemLabel((InventoryBase)node.Tag, false);
-                }
-            }
-            WornItems.Clear();
-            foreach (AppearanceManager.WearableData wearable in client.Appearance.GetWearables().Values)
-            {
-                TreeNode node = findNodeForItem(wearable.ItemID);
-                if (node != null)
-                {
-                    node.Text = ItemLabel((InventoryBase)node.Tag, false);
-                }
-            }
-            invTree.EndUpdate();
-        }
-
         void TreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
             // Check if we need to go into edit mode for new items
@@ -2097,7 +1318,8 @@ namespace Radegast
             else
             {
                 e.CancelEdit = true;
-                _EditNode = e.Node;
+                // TODO
+                // _EditNode = e.Node;
                 _EditTimer.Change(20, System.Threading.Timeout.Infinite);
             }
         }
@@ -2136,14 +1358,6 @@ namespace Radegast
             if (e.KeyCode == Keys.F2 && invTree.SelectedNode != null)
             {
                 invTree.SelectedNode.BeginEdit();
-            }
-            else if (e.KeyCode == Keys.F5 && invTree.SelectedNode != null)
-            {
-                if (invTree.SelectedNode.Tag is InventoryFolder)
-                {
-                    InventoryFolder f = (InventoryFolder)invTree.SelectedNode.Tag;
-                    fetchFolder(f.UUID, f.OwnerID, true);
-                }
             }
             else if (e.KeyCode == Keys.Delete && invTree.SelectedNode != null)
             {
@@ -2272,11 +1486,19 @@ namespace Radegast
             (new InventoryBackup(instance, Inventory.RootFolder.UUID)).Show();
         }
 
+        void ReloadTrees()
+        {
+            foreach (var t in trees)
+            {
+                t.UpdateMapper();
+            }
+        }
+
         private void tbtnSystemFoldersFirst_Click(object sender, EventArgs e)
         {
-            sorter.SystemFoldersFirst = tbtnSystemFoldersFirst.Checked = !sorter.SystemFoldersFirst;
-            instance.GlobalSettings["inv_sort_sysfirst"] = OSD.FromBoolean(sorter.SystemFoldersFirst);
-            invTree.Sort();
+            InvTreeView.Sorter.SystemFoldersFirst = tbtnSystemFoldersFirst.Checked = !InvTreeView.Sorter.SystemFoldersFirst;
+            instance.GlobalSettings["inv_sort_sysfirst"] = OSD.FromBoolean(InvTreeView.Sorter.SystemFoldersFirst);
+            ReloadTrees();
         }
 
         private void tbtbSortByName_Click(object sender, EventArgs e)
@@ -2284,10 +1506,9 @@ namespace Radegast
             if (tbtbSortByName.Checked) return;
 
             tbtbSortByName.Checked = true;
-            tbtnSortByDate.Checked = sorter.ByDate = false;
-            instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(sorter.ByDate);
-
-            invTree.Sort();
+            tbtnSortByDate.Checked = InvTreeView.Sorter.ByDate = false;
+            instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(InvTreeView.Sorter.ByDate);
+            ReloadTrees();
         }
 
         private void tbtnSortByDate_Click(object sender, EventArgs e)
@@ -2295,10 +1516,9 @@ namespace Radegast
             if (tbtnSortByDate.Checked) return;
 
             tbtbSortByName.Checked = false;
-            tbtnSortByDate.Checked = sorter.ByDate = true;
-            instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(sorter.ByDate);
-
-            invTree.Sort();
+            tbtnSortByDate.Checked = InvTreeView.Sorter.ByDate = true;
+            instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(InvTreeView.Sorter.ByDate);
+            ReloadTrees();
         }
 
         #region Search
@@ -2365,8 +1585,8 @@ namespace Radegast
 
                     if (cbSrchWorn.Checked && add &&
                             !(
-                                (it.InventoryType == InventoryType.Wearable && IsWorn(it)) ||
-                                ((it.InventoryType == InventoryType.Attachment || it.InventoryType == InventoryType.Object) && IsAttached(it))
+                                (it.InventoryType == InventoryType.Wearable && instance.COF.IsWorn(it)) ||
+                                ((it.InventoryType == InventoryType.Attachment || it.InventoryType == InventoryType.Object) && instance.COF.IsAttached(it))
                             )
                     )
                     {
@@ -2498,25 +1718,7 @@ namespace Radegast
             Rectangle rec = new Rectangle(e.Bounds.X + offset, e.Bounds.Y, e.Bounds.Width - offset, e.Bounds.Height);
 
             Image icon = null;
-            int iconIx = 0;
-
-            if (res.Inv is InventoryFolder)
-            {
-                iconIx = GetDirImageIndex(((InventoryFolder)res.Inv).PreferredType.ToString().ToLower());
-            }
-            else if (res.Inv is InventoryWearable)
-            {
-                iconIx = GetItemImageIndex(((InventoryWearable)res.Inv).WearableType.ToString().ToLower());
-            }
-            else if (res.Inv is InventoryItem)
-            {
-                iconIx = GetItemImageIndex(((InventoryItem)res.Inv).AssetType.ToString().ToLower());
-            }
-
-            if (iconIx < 0)
-            {
-                iconIx = 0;
-            }
+            int iconIx = GetIconIndex(res.Inv);
 
             try
             {
@@ -2586,14 +1788,7 @@ namespace Radegast
         /// <param name="itemID">Inventory of ID of the item to select</param>
         public void SelectInventoryNode(UUID itemID)
         {
-            TreeNode node = findNodeForItem(itemID);
-            if (node == null)
-                return;
-            invTree.SelectedNode = node;
-            if (node.Tag is InventoryItem)
-            {
-                UpdateItemInfo(node.Tag as InventoryItem);
-            }
+            // TODO
         }
 
         private void lstInventorySearch_MouseClick(object sender, MouseEventArgs e)
@@ -2604,6 +1799,7 @@ namespace Radegast
             try
             {
                 SearchResult res = searchRes[lstInventorySearch.SelectedIndices[0]];
+                /* TODO
                 TreeNode node = findNodeForItem(res.Inv.UUID);
                 if (node == null)
                     return;
@@ -2612,6 +1808,7 @@ namespace Radegast
                 {
                     ctxInv.Show(lstInventorySearch, e.X, e.Y);
                 }
+                */
             }
             catch { }
         }
@@ -2624,11 +1821,13 @@ namespace Radegast
             try
             {
                 SearchResult res = searchRes[lstInventorySearch.SelectedIndices[0]];
+                /* TODO
                 TreeNode node = findNodeForItem(res.Inv.UUID);
                 if (node == null)
                     return;
                 invTree.SelectedNode = node;
                 invTree_NodeMouseDoubleClick(null, null);
+                */
             }
             catch { }
 
@@ -2650,102 +1849,5 @@ namespace Radegast
             var c = new FolderCopy(instance);
             c.GetFolders("Initial Outfits");
         }
-
-
     }
-
-    #region Sorter class
-    // Create a node sorter that implements the IComparer interface.
-    public class InvNodeSorter : System.Collections.IComparer
-    {
-        bool _sysfirst = true;
-        bool _bydate = true;
-
-        int CompareFolders(InventoryFolder x, InventoryFolder y)
-        {
-            if (_sysfirst)
-            {
-                if (x.PreferredType != AssetType.Unknown && y.PreferredType == AssetType.Unknown)
-                {
-                    return -1;
-                }
-                else if (x.PreferredType == AssetType.Unknown && y.PreferredType != AssetType.Unknown)
-                {
-                    return 1;
-                }
-            }
-            return String.Compare(x.Name, y.Name);
-        }
-
-        public bool SystemFoldersFirst { set { _sysfirst = value; } get { return _sysfirst; } }
-        public bool ByDate { set { _bydate = value; } get { return _bydate; } }
-
-        public int Compare(object x, object y)
-        {
-            TreeNode tx = x as TreeNode;
-            TreeNode ty = y as TreeNode;
-
-            if (tx.Tag is InventoryFolder && ty.Tag is InventoryFolder)
-            {
-                return CompareFolders(tx.Tag as InventoryFolder, ty.Tag as InventoryFolder);
-            }
-            else if (tx.Tag is InventoryFolder && ty.Tag is InventoryItem)
-            {
-                return -1;
-            }
-            else if (tx.Tag is InventoryItem && ty.Tag is InventoryFolder)
-            {
-                return 1;
-            }
-
-            // Two items
-            if (!(tx.Tag is InventoryItem) || !(ty.Tag is InventoryItem))
-            {
-                return 0;
-            }
-
-            InventoryItem item1 = (InventoryItem)tx.Tag;
-            InventoryItem item2 = (InventoryItem)ty.Tag;
-
-            if (_bydate)
-            {
-                if (item1.CreationDate < item2.CreationDate)
-                {
-                    return 1;
-                }
-                else if (item1.CreationDate > item2.CreationDate)
-                {
-                    return -1;
-                }
-            }
-            return string.Compare(item1.Name, item2.Name);
-        }
-    }
-    #endregion
-
-    public class AttachmentInfo
-    {
-        public Primitive Prim;
-        public InventoryItem Item;
-        public UUID InventoryID;
-        public UUID PrimID;
-        public bool MarkedAttached = false;
-
-        public AttachmentPoint Point
-        {
-            get
-            {
-                if (Prim != null)
-                {
-                    return Prim.PrimData.AttachmentPoint;
-                }
-                else
-                {
-                    return AttachmentPoint.Default;
-                }
-            }
-        }
-    }
-
-
 }

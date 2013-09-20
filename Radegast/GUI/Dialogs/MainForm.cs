@@ -1363,7 +1363,17 @@ namespace Radegast
 
         private void tbtnInventory_Click(object sender, EventArgs e)
         {
-            ToggleHidden("inventory");
+            if (tabsConsole.TabExists("inventory"))
+            {
+                ToggleHidden("inventory");
+            }
+            else
+            {
+                var tab = tabsConsole.AddTab("inventory", "Inventory", new InventoryConsole(instance));
+                tab.AllowClose = false;
+                tab.AllowDetach = true;
+                tab.Visible = true;
+            }
         }
 
         private void tbtnSearch_Click(object sender, EventArgs e)
@@ -1495,15 +1505,6 @@ namespace Radegast
         // Menu item for testing out stuff
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
         {
-        }
-
-        private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (tabsConsole.TabExists("inventory"))
-            {
-                ((InventoryConsole)tabsConsole.Tabs["inventory"].Control).ReloadInventory();
-                tabsConsole.Tabs["inventory"].Select();
-            }
         }
 
         private void btnLoadScript_Click(object sender, EventArgs e)

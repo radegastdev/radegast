@@ -47,22 +47,10 @@ namespace Radegast
         {
             if (disposing && (components != null))
             {
-                if (InventoryUpdate != null)
-                {
-                    InventoryUpdate.Abort();
-                    InventoryUpdate = null;
-                }
-
                 if (_EditTimer != null)
                 {
                     _EditTimer.Dispose();
                     _EditTimer = null;
-                }
-
-                if (TreeUpdateTimer != null)
-                {
-                    TreeUpdateTimer.Dispose();
-                    TreeUpdateTimer = null;
                 }
 
                 components.Dispose();
@@ -86,7 +74,6 @@ namespace Radegast
             this.tstripInventory = new System.Windows.Forms.ToolStrip();
             this.tlabelStatus = new System.Windows.Forms.ToolStripLabel();
             this.tbtnFile = new System.Windows.Forms.ToolStripDropDownButton();
-            this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAllTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbtbSort = new System.Windows.Forms.ToolStripDropDownButton();
             this.tbtbSortByName = new System.Windows.Forms.ToolStripMenuItem();
@@ -224,7 +211,6 @@ namespace Radegast
             // 
             this.tbtnFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.reloadInventoryToolStripMenuItem,
             this.saveAllTToolStripMenuItem});
             this.tbtnFile.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFile.Image")));
             this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -232,19 +218,11 @@ namespace Radegast
             this.tbtnFile.Size = new System.Drawing.Size(70, 22);
             this.tbtnFile.Text = "&Inventory";
             // 
-            // reloadInventoryToolStripMenuItem
-            // 
-            this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
-            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.reloadInventoryToolStripMenuItem.Text = "&Reload Inventory";
-            this.reloadInventoryToolStripMenuItem.ToolTipText = "Clears inventory cache, and downloads whole inventory from server again";
-            this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
-            // 
             // saveAllTToolStripMenuItem
             // 
             this.saveAllTToolStripMenuItem.Enabled = false;
             this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
-            this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveAllTToolStripMenuItem.Text = "&Backup";
             this.saveAllTToolStripMenuItem.ToolTipText = "Saves all notecards and scripts to folder on local disk";
             this.saveAllTToolStripMenuItem.Click += new System.EventHandler(this.saveAllTToolStripMenuItem_Click);
@@ -319,7 +297,7 @@ namespace Radegast
             this.tabSearch.Location = new System.Drawing.Point(4, 22);
             this.tabSearch.Name = "tabSearch";
             this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSearch.Size = new System.Drawing.Size(433, 457);
+            this.tabSearch.Size = new System.Drawing.Size(458, 457);
             this.tabSearch.TabIndex = 1;
             this.tabSearch.Text = "Search";
             this.tabSearch.UseVisualStyleBackColor = true;
@@ -338,7 +316,7 @@ namespace Radegast
             this.lstInventorySearch.Name = "lstInventorySearch";
             this.lstInventorySearch.OwnerDraw = true;
             this.lstInventorySearch.ShowGroups = false;
-            this.lstInventorySearch.Size = new System.Drawing.Size(427, 363);
+            this.lstInventorySearch.Size = new System.Drawing.Size(452, 363);
             this.lstInventorySearch.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lstInventorySearch.TabIndex = 30;
             this.lstInventorySearch.UseCompatibleStateImageBehavior = false;
@@ -366,7 +344,7 @@ namespace Radegast
             this.pnlSearchOptions.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSearchOptions.Location = new System.Drawing.Point(3, 3);
             this.pnlSearchOptions.Name = "pnlSearchOptions";
-            this.pnlSearchOptions.Size = new System.Drawing.Size(427, 88);
+            this.pnlSearchOptions.Size = new System.Drawing.Size(452, 88);
             this.pnlSearchOptions.TabIndex = 20;
             // 
             // groupBox2
@@ -676,6 +654,7 @@ namespace Radegast
             // 
             // txtCreator
             // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
             this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
             this.txtCreator.Location = new System.Drawing.Point(80, 55);
             this.txtCreator.Name = "txtCreator";
@@ -835,7 +814,6 @@ namespace Radegast
         public System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         public System.Windows.Forms.ToolStripMenuItem tbtbFoldersByName;
         public System.Windows.Forms.ToolStripMenuItem tbtnSystemFoldersFirst;
-        public System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
         public System.Windows.Forms.TabControl tabsInventory;
         public System.Windows.Forms.TabPage tabDetail;
         public System.Windows.Forms.TabPage tabSearch;

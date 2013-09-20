@@ -104,7 +104,6 @@ namespace Radegast
             this.tbnTools = new System.Windows.Forms.ToolStripDropDownButton();
             this.autopilotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanCacheToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reloadInventoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.myAttachmentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -427,7 +426,6 @@ namespace Radegast
             this.tbnTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.autopilotToolStripMenuItem,
             this.cleanCacheToolStripMenuItem,
-            this.reloadInventoryToolStripMenuItem,
             this.setAppearanceToolStripMenuItem,
             this.rebakeTexturesToolStripMenuItem,
             this.myAttachmentsToolStripMenuItem});
@@ -452,13 +450,6 @@ namespace Radegast
             this.cleanCacheToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.cleanCacheToolStripMenuItem.Text = "Clean Cache";
             this.cleanCacheToolStripMenuItem.Click += new System.EventHandler(this.cleanCacheToolStripMenuItem_Click);
-            // 
-            // reloadInventoryToolStripMenuItem
-            // 
-            this.reloadInventoryToolStripMenuItem.Name = "reloadInventoryToolStripMenuItem";
-            this.reloadInventoryToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.reloadInventoryToolStripMenuItem.Text = "Reload Inventory";
-            this.reloadInventoryToolStripMenuItem.Click += new System.EventHandler(this.reloadInventoryToolStripMenuItem_Click);
             // 
             // setAppearanceToolStripMenuItem
             // 
@@ -936,7 +927,6 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem ctxTreyExit;
         public System.Windows.Forms.ToolStripMenuItem keyboardShortcutsToolStripMenuItem;
         public System.Windows.Forms.ToolStripButton tbtnVoice;
-        public System.Windows.Forms.ToolStripMenuItem reloadInventoryToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem btnPluginsTab;
         public System.Windows.Forms.NotifyIcon trayIcon;
         public System.Windows.Forms.ToolStrip toolStrip1;

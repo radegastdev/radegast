@@ -260,13 +260,11 @@ namespace Radegast
             InitialUpdateDone = true;
             lock (Content)
             {
-                List<Primitive> myAtt = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == Client.Self.LocalID);
-
                 foreach (InventoryItem item in Content.Values)
                 {
                     if (item is InventoryObject || item is InventoryAttachment)
                     {
-                        if (!IsAttached(myAtt, item))
+                        if (!IsAttached(item))
                         {
                             Client.Appearance.Attach(item, AttachmentPoint.Default, false);
                         }
@@ -315,11 +313,12 @@ namespace Radegast
         /// <summary>
         /// Is an inventory item currently attached
         /// </summary>
-        /// <param name="attachments">List of root prims that are attached to our avatar</param>
         /// <param name="item">Inventory item to check</param>
         /// <returns>True if the inventory item is attached to avatar</returns>
-        public static bool IsAttached(List<Primitive> attachments, InventoryItem item)
+        public bool IsAttached(InventoryItem item)
         {
+            List<Primitive> attachments = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == Client.Self.LocalID);
+
             foreach (Primitive prim in attachments)
             {
                 if (GetAttachmentItem(prim) == item.UUID)
@@ -334,12 +333,11 @@ namespace Radegast
         /// <summary>
         /// Checks if inventory item of Wearable type is worn
         /// </summary>
-        /// <param name="currentlyWorn">Current outfit</param>
         /// <param name="item">Item to check</param>
         /// <returns>True if the item is worn</returns>
-        public static bool IsWorn(Dictionary<WearableType, AppearanceManager.WearableData> currentlyWorn, InventoryItem item)
+        public bool IsWorn(InventoryItem item)
         {
-            foreach (var n in currentlyWorn.Values)
+            foreach (var n in Client.Appearance.GetWearables().Values)
             {
                 if (n.ItemID == item.UUID)
                 {

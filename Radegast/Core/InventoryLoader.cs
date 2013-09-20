@@ -271,6 +271,7 @@ namespace Radegast
             AddFoldersToUpdate(ref LibraryToFetch, Inventory.LibraryRootNode);
 
             bool useCaps = Client.Settings.HTTP_INVENTORY && Client.Network.CurrentSim.Caps != null;
+            useCaps = false;
 
             if (useCaps && (Client.Network.CurrentSim.Caps.CapabilityURI("FetchInventoryDescendents2") != null))
             {
