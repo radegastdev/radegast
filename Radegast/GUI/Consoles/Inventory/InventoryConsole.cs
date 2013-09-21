@@ -51,6 +51,8 @@ namespace Radegast
 
     public partial class InventoryConsole : UserControl
     {
+        public List<InventoryPanel> InvPanels = new List<InventoryPanel>();
+
         RadegastInstance instance;
         GridClient client { get { return instance.Client; } }
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
@@ -61,8 +63,6 @@ namespace Radegast
         private System.Threading.Timer _EditTimer;
         private ListViewItem _EditNode;
         private bool appearnceWasBusy;
-        List<InvTreeView> trees = new List<InvTreeView>();
-        int treeIDs = 0;
         #region Construction and disposal
 
         public InventoryConsole(RadegastInstance instance)
@@ -75,14 +75,18 @@ namespace Radegast
             Inventory.RootFolder.OwnerID = client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
 
-            trees.Add(new InvTreeView(instance) { Dock = DockStyle.Fill });
+            var p = new InventoryPanel(instance, this);
+            p.Dock = DockStyle.Fill;
+            InvPanels.Add(p);
             splitContainer1.Panel1.Controls.Remove(invTree);
-            splitContainer1.Panel1.Controls.Add(trees[0]);
-            splitContainer1.Panel1.Controls.SetChildIndex(trees[0], 0);
-
+            splitContainer1.Panel1.Controls.Add(p);
+            splitContainer1.Panel1.Controls.SetChildIndex(p, 0);
+            
+            /*
             tbtnSortByDate.Checked = InvTreeView.Sorter.ByDate;
             tbtbSortByName.Checked = !InvTreeView.Sorter.ByDate;
             tbtnSystemFoldersFirst.Checked = InvTreeView.Sorter.SystemFoldersFirst;
+            */
 
             UpdateStatus(client.Inventory.Store.Items.Count.ToString());
             saveAllTToolStripMenuItem.Enabled = false;
@@ -161,9 +165,9 @@ namespace Radegast
 
 
             tickLastUpdate = Environment.TickCount;
-            foreach (var t in trees)
+            foreach (var p in InvPanels)
             {
-                t.UpdateMapper();
+                p.UpdateMapper();
             }
             UpdateStatus(client.Inventory.Store.Items.Count.ToString());
         }
@@ -1486,11 +1490,11 @@ namespace Radegast
             (new InventoryBackup(instance, Inventory.RootFolder.UUID)).Show();
         }
 
-        void ReloadTrees()
+        void ReloadPanels()
         {
-            foreach (var t in trees)
+            foreach (var p in InvPanels)
             {
-                t.UpdateMapper();
+                p.UpdateMapper();
             }
         }
 
@@ -1498,7 +1502,7 @@ namespace Radegast
         {
             InvTreeView.Sorter.SystemFoldersFirst = tbtnSystemFoldersFirst.Checked = !InvTreeView.Sorter.SystemFoldersFirst;
             instance.GlobalSettings["inv_sort_sysfirst"] = OSD.FromBoolean(InvTreeView.Sorter.SystemFoldersFirst);
-            ReloadTrees();
+            ReloadPanels();
         }
 
         private void tbtbSortByName_Click(object sender, EventArgs e)
@@ -1508,7 +1512,7 @@ namespace Radegast
             tbtbSortByName.Checked = true;
             tbtnSortByDate.Checked = InvTreeView.Sorter.ByDate = false;
             instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(InvTreeView.Sorter.ByDate);
-            ReloadTrees();
+            ReloadPanels();
         }
 
         private void tbtnSortByDate_Click(object sender, EventArgs e)
@@ -1518,7 +1522,7 @@ namespace Radegast
             tbtbSortByName.Checked = false;
             tbtnSortByDate.Checked = InvTreeView.Sorter.ByDate = true;
             instance.GlobalSettings["inv_sort_bydate"] = OSD.FromBoolean(InvTreeView.Sorter.ByDate);
-            ReloadTrees();
+            ReloadPanels();
         }
 
         #region Search

@@ -803,7 +803,6 @@ namespace Radegast
 
                 // Set tranform matrix (node position, rotation and scale)
                 var matrix = node.AppendChild(Doc.CreateElement("matrix"));
-                OpenTK.Matrix4 m;
 
                 var srt = Radegast.Rendering.Math3D.CreateSRTMatrix(obj.Prim.Scale, obj.Prim.Rotation, obj.Prim.Position);
                 string matrixVal = "";

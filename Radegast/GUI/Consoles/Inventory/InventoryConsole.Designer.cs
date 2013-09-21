@@ -122,6 +122,7 @@ namespace Radegast
             this.lblCreator = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.lblItemName = new System.Windows.Forms.Label();
+            this.newPanelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -159,14 +160,13 @@ namespace Radegast
             this.invTree.AllowDrop = true;
             this.invTree.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(62)))), ((int)(((byte)(62)))), ((int)(((byte)(62)))));
             this.invTree.ContextMenuStrip = this.ctxInv;
-            this.invTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.invTree.ForeColor = System.Drawing.Color.White;
             this.invTree.HideSelection = false;
             this.invTree.LabelEdit = true;
             this.invTree.LineColor = System.Drawing.Color.White;
-            this.invTree.Location = new System.Drawing.Point(0, 25);
+            this.invTree.Location = new System.Drawing.Point(3, 166);
             this.invTree.Name = "invTree";
-            this.invTree.Size = new System.Drawing.Size(364, 458);
+            this.invTree.Size = new System.Drawing.Size(204, 278);
             this.invTree.TabIndex = 0;
             this.invTree.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_BeforeLabelEdit);
             this.invTree.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.invTree_AfterLabelEdit);
@@ -211,7 +211,8 @@ namespace Radegast
             // 
             this.tbtnFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.tbtnFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveAllTToolStripMenuItem});
+            this.saveAllTToolStripMenuItem,
+            this.newPanelToolStripMenuItem});
             this.tbtnFile.Image = ((System.Drawing.Image)(resources.GetObject("tbtnFile.Image")));
             this.tbtnFile.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbtnFile.Name = "tbtnFile";
@@ -220,7 +221,6 @@ namespace Radegast
             // 
             // saveAllTToolStripMenuItem
             // 
-            this.saveAllTToolStripMenuItem.Enabled = false;
             this.saveAllTToolStripMenuItem.Name = "saveAllTToolStripMenuItem";
             this.saveAllTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveAllTToolStripMenuItem.Text = "&Backup";
@@ -654,6 +654,7 @@ namespace Radegast
             // 
             // txtCreator
             // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
             this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
             this.txtCreator.Location = new System.Drawing.Point(80, 55);
             this.txtCreator.Name = "txtCreator";
@@ -735,6 +736,12 @@ namespace Radegast
             this.lblItemName.Size = new System.Drawing.Size(27, 13);
             this.lblItemName.TabIndex = 0;
             this.lblItemName.Text = "Item";
+            // 
+            // newPanelToolStripMenuItem
+            // 
+            this.newPanelToolStripMenuItem.Name = "newPanelToolStripMenuItem";
+            this.newPanelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newPanelToolStripMenuItem.Text = "&New Panel";
             // 
             // InventoryConsole
             // 
@@ -822,5 +829,6 @@ namespace Radegast
         public System.Windows.Forms.Label label1;
         public System.Windows.Forms.TextBox txtInvID;
         public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.ToolStripMenuItem newPanelToolStripMenuItem;
     }
 }

@@ -67,6 +67,15 @@ namespace Radegast
 
         public static InvTreeSorter Sorter;
 
+        public enum TreeType
+        {
+            All,
+            Recent,
+            Worn
+        }
+
+        public TreeType InvType;
+
         RadegastInstance Instance;
         GridClient Client { get { return Instance.Client; } }
         Inventory Inv { get { return Client.Inventory.Store; } }
@@ -76,6 +85,7 @@ namespace Radegast
         static int Serial;
         int ID;
 
+        public InvTreeView() : base() { }
         public InvTreeView(RadegastInstance instance)
             : base()
         {
@@ -95,40 +105,7 @@ namespace Radegast
             InitSorter();
             InitIcons();
             VirtualMode = true;
-
-            UpdateMapper();
         }
-
-        protected new virtual int VirtualListSize
-        {
-            get
-            {
-                return base.VirtualListSize;
-            }
-
-            set
-            {
-                if (Instance.MonoRuntime)
-                {
-                    base.VirtualListSize = value;
-                    return;
-                }
-
-                if (value == this.VirtualListSize || value < 0) return; // Get around the 'private' marker on 'virtualListSize' field using reflection
-                if (virtualListSizeFieldInfo == null)
-                {
-                    virtualListSizeFieldInfo = typeof(ListView).GetField("virtualListSize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    System.Diagnostics.Debug.Assert(virtualListSizeFieldInfo != null);
-                } // Set the base class private field so that it keeps on working
-                virtualListSizeFieldInfo.SetValue(this, value); // Send a raw message to change the virtual list size *without* changing the scroll position
-                if (this.IsHandleCreated && !this.DesignMode)
-                {
-                    Win32.SendMessage(this.Handle, Win32.LVM_SETITEMCOUNT, value, (IntPtr)Win32.LVSICF_NOSCROLL);
-                }
-            }
-        }
-
-        static private System.Reflection.FieldInfo virtualListSizeFieldInfo;
 
         public void UpdateMapper()
         {
@@ -139,15 +116,18 @@ namespace Radegast
                 ONode = Inv.RootNode,
                 Level = 0
             };
-            var lib = new Node()
-            {
-                ONode = Inv.LibraryRootNode,
-                Level = 0
-            };
             Mapper.Add(inv);
             PrepareNodes(Mapper.Count - 1, inv.IsExpanded(ID));
-            Mapper.Add(lib);
-            PrepareNodes(Mapper.Count - 1, lib.IsExpanded(ID));
+            if (InvType == TreeType.All)
+            {
+                var lib = new Node()
+                {
+                    ONode = Inv.LibraryRootNode,
+                    Level = 0
+                };
+                Mapper.Add(lib);
+                PrepareNodes(Mapper.Count - 1, lib.IsExpanded(ID));
+            }
             VirtualListSize = Mapper.Count;
             EndUpdate();
         }
@@ -378,6 +358,37 @@ namespace Radegast
             }
             base.OnResize(e);
         }
+
+        protected new virtual int VirtualListSize
+        {
+            get
+            {
+                return base.VirtualListSize;
+            }
+
+            set
+            {
+                if (Instance.MonoRuntime)
+                {
+                    base.VirtualListSize = value;
+                    return;
+                }
+
+                if (value == this.VirtualListSize || value < 0) return; // Get around the 'private' marker on 'virtualListSize' field using reflection
+                if (virtualListSizeFieldInfo == null)
+                {
+                    virtualListSizeFieldInfo = typeof(ListView).GetField("virtualListSize", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    System.Diagnostics.Debug.Assert(virtualListSizeFieldInfo != null);
+                } // Set the base class private field so that it keeps on working
+                virtualListSizeFieldInfo.SetValue(this, value); // Send a raw message to change the virtual list size *without* changing the scroll position
+                if (this.IsHandleCreated && !this.DesignMode)
+                {
+                    Win32.SendMessage(this.Handle, Win32.LVM_SETITEMCOUNT, value, (IntPtr)Win32.LVSICF_NOSCROLL);
+                }
+            }
+        }
+
+        static private System.Reflection.FieldInfo virtualListSizeFieldInfo;
 
         #region Sorter class
         // Create a node sorter that implements the IComparer interface.
