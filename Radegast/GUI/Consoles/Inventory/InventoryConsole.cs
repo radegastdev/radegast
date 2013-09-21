@@ -75,7 +75,7 @@ namespace Radegast
             Inventory.RootFolder.OwnerID = client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
 
-            trees.Add(new InvTreeView(instance) { ID = treeIDs++, Dock = DockStyle.Fill });
+            trees.Add(new InvTreeView(instance) { Dock = DockStyle.Fill });
             splitContainer1.Panel1.Controls.Remove(invTree);
             splitContainer1.Panel1.Controls.Add(trees[0]);
             splitContainer1.Panel1.Controls.SetChildIndex(trees[0], 0);

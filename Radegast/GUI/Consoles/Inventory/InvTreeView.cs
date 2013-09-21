@@ -15,71 +15,71 @@ namespace Radegast
             {
                 public bool IsExpanded;
             }
-            public Dictionary<int, NodeData> Data = new Dictionary<int, NodeData>(2);
+
+            public Dictionary<int, NodeData> Data = new Dictionary<int, NodeData>(4);
+            
+            public bool IsExpanded(int id)
+            {
+                return Data.ContainsKey(id) && Data[id].IsExpanded;
+            }
+
+            public void SetExpanded(int id, bool val)
+            {
+                if (!Data.ContainsKey(id))
+                {
+                    Data[id] = new NodeData();
+                }
+                Data[id].IsExpanded = val;
+            }
         }
 
         public class Node
         {
-            int Id;
-            public Node(int id)
+            public Node()
             {
-                Id = id;
             }
 
             public InventoryNode ONode;
-            public bool IsDir { get { return ONode.Data is InventoryFolder; } }
-            public bool IsExpanded
-            {
-                get
-                {
-                    if (ONode.Tag is NodeMeta)
-                    {
-                        var meta = ONode.Tag as NodeMeta;
-                        if (meta.Data.ContainsKey(Id))
-                        {
-                            return meta.Data[Id].IsExpanded;
-                        }
-                    }
-                    return false;
-                }
-                set
-                {
-                    if (ONode.Tag is NodeMeta)
-                    {
-                        var meta = ONode.Tag as NodeMeta;
-                        if (meta.Data.ContainsKey(Id))
-                        {
-                            meta.Data[Id].IsExpanded = value;
-                        }
-                        else
-                        {
-                            meta.Data[Id] = new NodeMeta.NodeData() { IsExpanded = value };
-                        }
-                    }
-                    else
-                    {
-                        var meta = new NodeMeta();
-                        meta.Data[Id] = new NodeMeta.NodeData() { IsExpanded = value };
-                        ONode.Tag = meta;
-                    }
-                }
-            }
             public int Level;
+            public bool IsDir { get { return ONode.Data is InventoryFolder; } }
+
+            public bool IsExpanded(int id)
+            {
+                return (ONode.Tag is NodeMeta) && ((NodeMeta)ONode.Tag).IsExpanded(id);
+            }
+
+            public void SetExpanded(int id, bool val)
+            {
+                NodeMeta meta;
+                if (ONode.Tag is NodeMeta)
+                {
+                    meta = (NodeMeta)ONode.Tag;
+                }
+                else
+                {
+                    meta = new NodeMeta();
+                    ONode.Tag = meta;
+                }
+
+                meta.SetExpanded(id, val);
+            }
         }
 
-        public int ID;
         public static InvTreeSorter Sorter;
 
         RadegastInstance Instance;
         GridClient Client { get { return Instance.Client; } }
         Inventory Inv { get { return Client.Inventory.Store; } }
         List<Node> Mapper = new List<Node>(64);
-        int IconWidth = 16;
+        static int IconWidth = 16;
         static Image IcnPlus, IcnMinus, IcnLinkOverlay;
+        static int Serial;
+        int ID;
 
         public InvTreeView(RadegastInstance instance)
             : base()
         {
+            ID = Serial++;
             Instance = instance;
 
             FullRowSelect = false;
@@ -134,20 +134,20 @@ namespace Radegast
         {
             BeginUpdate();
             Mapper.Clear();
-            var inv = new Node(ID)
+            var inv = new Node()
             {
                 ONode = Inv.RootNode,
                 Level = 0
             };
-            var lib = new Node(ID)
+            var lib = new Node()
             {
                 ONode = Inv.LibraryRootNode,
                 Level = 0
             };
             Mapper.Add(inv);
-            PrepareNodes(Mapper.Count - 1, inv.IsExpanded);
+            PrepareNodes(Mapper.Count - 1, inv.IsExpanded(ID));
             Mapper.Add(lib);
-            PrepareNodes(Mapper.Count - 1, lib.IsExpanded);
+            PrepareNodes(Mapper.Count - 1, lib.IsExpanded(ID));
             VirtualListSize = Mapper.Count;
             EndUpdate();
         }
@@ -207,14 +207,14 @@ namespace Radegast
 
             foreach (var m in children)
             {
-                Node newNode = new Node(ID)
+                Node newNode = new Node()
                 {
                     ONode = m,
                     Level = mbr.Level + 1,
                 };
 
                 Mapper.Insert(pos++, newNode);
-                if (newNode.IsExpanded)
+                if (newNode.IsExpanded(ID))
                 {
                     PopulateDescendantMembers(ref pos, newNode);
                 }
@@ -254,9 +254,9 @@ namespace Radegast
                     Node n = (Node)item.Tag;
                     if (e.X >= xfrom && e.X < xto)
                     {
-                        n.IsExpanded = !n.IsExpanded;
+                        n.SetExpanded(ID, !n.IsExpanded(ID));
                         item.Checked = !item.Checked;
-                        PrepareNodes(item.Index, n.IsExpanded);
+                        PrepareNodes(item.Index, n.IsExpanded(ID));
                         return;
                     }
                 }
@@ -340,7 +340,7 @@ namespace Radegast
                 if (node.IsDir && node.ONode.Nodes.Count > 0)
                 {
                     Image exp;
-                    if (node.IsExpanded)
+                    if (node.IsExpanded(ID))
                     {
                         exp = IcnMinus;
                     }
