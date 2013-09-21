@@ -478,6 +478,14 @@ namespace Radegast
         {
             if (returnRaw || (invBase is InventoryFolder))
                 return invBase.Name;
+            else
+                return invBase.Name + ItemDecoration(invBase);
+        }
+
+        public string ItemDecoration(InventoryBase invBase)
+        {
+            if (invBase is InventoryFolder)
+                return invBase.Name;
 
             InventoryItem item = (InventoryItem)invBase;
 

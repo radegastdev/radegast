@@ -49,7 +49,8 @@ namespace Radegast
         bool InitialUpdateDone = false;
         public Dictionary<UUID, InventoryItem> Content = new Dictionary<UUID, InventoryItem>();
         public InventoryFolder COF;
-
+        Thread AppearanceTaskThread;
+        BlockingQueue<Action> AppearanceQueue = new BlockingQueue<Action>();
         #endregion Fields
 
         #region Construction and disposal
@@ -59,10 +60,25 @@ namespace Radegast
             this.Client = instance.Client;
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterClientEvents(Client);
+            AppearanceTaskThread = new Thread(new ThreadStart(AppearanceTaskThreadRunner));
+            AppearanceTaskThread.IsBackground = true;
+            AppearanceTaskThread.Name = "AppearanceTaskThread";
+            AppearanceTaskThread.Start();
         }
 
         public void Dispose()
         {
+            if (AppearanceTaskThread != null)
+            {
+                AppearanceQueue.Close();
+                AppearanceTaskThread.Join(500);
+                if (AppearanceTaskThread.IsAlive)
+                {
+                    AppearanceTaskThread.Abort();
+                }
+                AppearanceTaskThread = null;
+            }
+
             UnregisterClientEvents(Client);
             Instance.ClientChanged -= new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
         }
@@ -213,6 +229,24 @@ namespace Radegast
         #endregion Event handling
 
         #region Private methods
+        void AppearanceTaskThreadRunner()
+        {
+            AppearanceQueue.Open();
+            while (true)
+            {
+                Action task = null;
+                if (!AppearanceQueue.Dequeue(Timeout.Infinite, ref task)) break;
+                try
+                {
+                    task.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(string.Format("Error executing an appearance task: {0}\n{1}", ex.Message, ex.StackTrace), Helpers.LogLevel.Warning, Client);
+                }
+            }
+        }
+
         void RequestDescendants(UUID folderID)
         {
             Client.Inventory.RequestFolderContents(folderID, Client.Self.AgentID, true, true, InventorySortOrder.ByDate);
@@ -365,8 +399,11 @@ namespace Radegast
         /// <param name="replace">Replace existing attachment at that point first?</param>
         public void Attach(InventoryItem item, AttachmentPoint point, bool replace)
         {
-            Client.Appearance.Attach(item, point, replace);
-            AddLink(item);
+            AppearanceQueue.Enqueue(() =>
+            {
+                Client.Appearance.Attach(item, point, replace);
+                AddLink(item);
+            });
         }
 
         /// <summary>
@@ -447,8 +484,11 @@ namespace Radegast
         /// <param name="item">>Inventory item to be detached</param>
         public void Detach(InventoryItem item)
         {
-            Client.Appearance.Detach(item);
-            RemoveLink(item.UUID);
+            AppearanceQueue.Enqueue(() =>
+            {
+                Client.Appearance.Detach(item);
+                RemoveLink(item.UUID);
+            });
         }
 
         public List<InventoryItem> GetWornAt(WearableType type)
@@ -492,58 +532,58 @@ namespace Radegast
         /// <param name="outfit">List of new wearables and attachments that comprise the new outfit</param>
         public void ReplaceOutfit(List<InventoryItem> newOutfit)
         {
-            // Resolve inventory links
-            List<InventoryItem> outfit = new List<InventoryItem>();
-            foreach (var item in newOutfit)
+            AppearanceQueue.Enqueue(() =>
             {
-                outfit.Add(RealInventoryItem(item));
-            }
-
-            // Remove links to all exiting items
-            List<UUID> toRemove = new List<UUID>();
-            ContentLinks().ForEach(item =>
-            {
-                if (IsBodyPart(item))
+                // Resolve inventory links
+                List<InventoryItem> outfit = new List<InventoryItem>();
+                foreach (var item in newOutfit)
                 {
-                    WearableType linkType = ((InventoryWearable)RealInventoryItem(item)).WearableType;
-                    bool hasBodyPart = false;
+                    outfit.Add(RealInventoryItem(item));
+                }
 
-                    foreach (var newItemTmp in newOutfit)
+                // Remove links to all exiting items
+                List<UUID> toRemove = new List<UUID>();
+                ContentLinks().ForEach(item =>
+                {
+                    if (IsBodyPart(item))
                     {
-                        var newItem = RealInventoryItem(newItemTmp);
-                        if (IsBodyPart(newItem))
+                        WearableType linkType = ((InventoryWearable)RealInventoryItem(item)).WearableType;
+                        bool hasBodyPart = false;
+
+                        foreach (var newItemTmp in newOutfit)
                         {
-                            if (((InventoryWearable)newItem).WearableType == linkType)
+                            var newItem = RealInventoryItem(newItemTmp);
+                            if (IsBodyPart(newItem))
                             {
-                                hasBodyPart = true;
-                                break;
+                                if (((InventoryWearable)newItem).WearableType == linkType)
+                                {
+                                    hasBodyPart = true;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    if (hasBodyPart)
+                        if (hasBodyPart)
+                        {
+                            toRemove.Add(item.UUID);
+                        }
+                    }
+                    else
                     {
                         toRemove.Add(item.UUID);
                     }
-                }
-                else
+                });
+
+                Client.Inventory.Remove(toRemove, null);
+
+                // Add links to new items
+                List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
+                foreach (var item in newItems)
                 {
-                    toRemove.Add(item.UUID);
+                    AddLink(item);
                 }
-            });
 
-            Client.Inventory.Remove(toRemove, null);
-
-            // Add links to new items
-            List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
-            foreach (var item in newItems)
-            {
-                AddLink(item);
-            }
-
-            Client.Appearance.ReplaceOutfit(outfit);
-            WorkPool.QueueUserWorkItem(sync =>
-            {
+                Client.Appearance.ReplaceOutfit(outfit);
                 Thread.Sleep(2000);
                 Client.Appearance.RequestSetAppearance(true);
             });
@@ -566,49 +606,49 @@ namespace Radegast
         /// <param name="replace">Should existing wearable of the same type be removed</param>
         public void AddToOutfit(List<InventoryItem> items, bool replace)
         {
-            List<InventoryItem> current = ContentLinks();
-            List<UUID> toRemove = new List<UUID>();
-
-            // Resolve inventory links and remove wearables of the same type from COF
-            List<InventoryItem> outfit = new List<InventoryItem>();
-
-            foreach (var item in items)
+            AppearanceQueue.Enqueue(() =>
             {
-                InventoryItem realItem = RealInventoryItem(item);
-                if (realItem is InventoryWearable)
+                List<InventoryItem> current = ContentLinks();
+                List<UUID> toRemove = new List<UUID>();
+
+                // Resolve inventory links and remove wearables of the same type from COF
+                List<InventoryItem> outfit = new List<InventoryItem>();
+
+                foreach (var item in items)
                 {
-                    foreach (var link in current)
+                    InventoryItem realItem = RealInventoryItem(item);
+                    if (realItem is InventoryWearable)
                     {
-                        var currentItem = RealInventoryItem(link);
-                        if (link.AssetUUID == item.UUID)
+                        foreach (var link in current)
                         {
-                            toRemove.Add(link.UUID);
-                        }
-                        else if (currentItem is InventoryWearable)
-                        {
-                            var w = (InventoryWearable)currentItem;
-                            if (w.WearableType == ((InventoryWearable)realItem).WearableType)
+                            var currentItem = RealInventoryItem(link);
+                            if (link.AssetUUID == item.UUID)
                             {
                                 toRemove.Add(link.UUID);
                             }
+                            else if (currentItem is InventoryWearable)
+                            {
+                                var w = (InventoryWearable)currentItem;
+                                if (w.WearableType == ((InventoryWearable)realItem).WearableType)
+                                {
+                                    toRemove.Add(link.UUID);
+                                }
+                            }
                         }
                     }
+
+                    outfit.Add(realItem);
+                }
+                Client.Inventory.Remove(toRemove, null);
+
+                // Add links to new items
+                List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
+                foreach (var item in newItems)
+                {
+                    AddLink(item);
                 }
 
-                outfit.Add(realItem);
-            }
-            Client.Inventory.Remove(toRemove, null);
-
-            // Add links to new items
-            List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
-            foreach (var item in newItems)
-            {
-                AddLink(item);
-            }
-
-            Client.Appearance.AddToOutfit(outfit, replace);
-            WorkPool.QueueUserWorkItem(sync =>
-            {
+                Client.Appearance.AddToOutfit(outfit, replace);
                 Thread.Sleep(2000);
                 Client.Appearance.RequestSetAppearance(true);
             });
@@ -629,26 +669,29 @@ namespace Radegast
         /// <param name="items">List of items to remove</param>
         public void RemoveFromOutfit(List<InventoryItem> items)
         {
-            // Resolve inventory links
-            List<InventoryItem> outfit = new List<InventoryItem>();
-            foreach (var item in items)
+            AppearanceQueue.Enqueue(() =>
             {
-                var realItem = RealInventoryItem(item);
-                if (Instance.RLV.AllowDetach(realItem))
+                // Resolve inventory links
+                List<InventoryItem> outfit = new List<InventoryItem>();
+                foreach (var item in items)
                 {
-                    outfit.Add(realItem);
+                    var realItem = RealInventoryItem(item);
+                    if (Instance.RLV.AllowDetach(realItem))
+                    {
+                        outfit.Add(realItem);
+                    }
                 }
-            }
 
-            // Remove links to all items that were removed
-            List<UUID> toRemove = new List<UUID>();
-            foreach (InventoryItem item in outfit.FindAll(item => CanBeWorn(item) && !IsBodyPart(item)))
-            {
-                toRemove.Add(item.UUID);
-            }
-            RemoveLink(toRemove);
+                // Remove links to all items that were removed
+                List<UUID> toRemove = new List<UUID>();
+                foreach (InventoryItem item in outfit.FindAll(item => CanBeWorn(item) && !IsBodyPart(item)))
+                {
+                    toRemove.Add(item.UUID);
+                }
+                RemoveLink(toRemove);
 
-            Client.Appearance.RemoveFromOutfit(outfit);
+                Client.Appearance.RemoveFromOutfit(outfit);
+            });
         }
 
         public bool IsBodyPart(InventoryItem item)

@@ -97,7 +97,7 @@ namespace Radegast
             Instance = instance;
             Console = console;
 
-            FullRowSelect = false;
+            FullRowSelect = true;
             CheckBoxes = false;
             View = System.Windows.Forms.View.Details;
             LabelEdit = true;
@@ -285,7 +285,7 @@ namespace Radegast
                 e.Item = new ListViewItem();
                 return;
             }
-            ListViewItem item = new ListViewItem(n.ONode.Data.Name);
+            ListViewItem item = new ListViewItem(Console.ItemLabel(n.ONode.Data, false));
             var ix = InventoryConsole.GetIconIndex(n.ONode.Data);
             //item.StateImageIndex = ix;
             item.IndentCount = n.Level + 1;
@@ -363,7 +363,7 @@ namespace Radegast
 
             using (StringFormat sf = new StringFormat(StringFormatFlags.NoWrap | StringFormatFlags.LineLimit))
             {
-                string label = node.ONode.Data.Name; // ItemLabel(res.Inv, false);
+                string label = Console.ItemLabel(node.ONode.Data, false);
                 SizeF len = e.Graphics.MeasureString(label, Font, rec.Width, sf);
 
                 e.Graphics.DrawString(
@@ -410,7 +410,7 @@ namespace Radegast
                 }
                 else
                 {
-                    AddItemContext(((InvTreeView.Node)selection[0].Tag).ONode.Data as InventoryItem);
+                    AddItemContext(Instance.COF.RealInventoryItem(((InvTreeView.Node)selection[0].Tag).ONode.Data as InventoryItem));
                 }
             }
 
@@ -724,15 +724,6 @@ namespace Radegast
         {
             ToolStripMenuItem ctxItem;
 
-            if ((int)folder.PreferredType >= (int)AssetType.EnsembleStart &&
-                (int)folder.PreferredType <= (int)AssetType.EnsembleEnd)
-            {
-                ctxItem = new ToolStripMenuItem("Fix type", null, OnInvFolderContextClick);
-                ctxItem.Name = "fix_type";
-                ctxInv.Items.Add(ctxItem);
-                ctxInv.Items.Add(new ToolStripSeparator());
-            }
-
             ctxItem = new ToolStripMenuItem("New Folder", null, OnInvFolderContextClick);
             ctxItem.Name = "new_folder";
             ctxInv.Items.Add(ctxItem);
@@ -762,6 +753,12 @@ namespace Radegast
             ctxItem = new ToolStripMenuItem("Collapse", null, OnInvFolderContextClick);
             ctxItem.Name = "collapse";
             ctxInv.Items.Add(ctxItem);
+
+            ctxItem = new ToolStripMenuItem("Collapse All", null, OnInvFolderContextClick);
+            ctxItem.Name = "collapse_all";
+            ctxInv.Items.Add(ctxItem);
+
+            ctxInv.Items.Add(new ToolStripSeparator());
 
             if (folder.PreferredType == AssetType.TrashFolder)
             {
@@ -837,10 +834,36 @@ namespace Radegast
             Instance.ContextActionManager.AddContributions(ctxInv, folder);
         }
 
+        void SetExpandedRecursive(Node n, bool expanded)
+        {
+            n.SetExpanded(ID, expanded);
+            foreach (var child in n.ONode.Nodes.Values)
+            {
+                if (child.Data is InventoryFolder)
+                {
+                    Node newNode;
+                    if (child.Tag is Node)
+                    {
+                        newNode = (Node)child.Tag;
+                    }
+                    else
+                    {
+                        newNode = new Node()
+                        {
+                            ONode = child,
+                            Level = n.Level + 1
+                        };
+                        child.Tag = newNode;
+                    }
+                    SetExpandedRecursive(newNode, expanded);
+                }
+            }
+        }
+
         void OnInvFolderContextClick(object sender, EventArgs e)
         {
             string cmd = ((ToolStripMenuItem)sender).Name;
-            InventoryFolder f = ((InvTreeView.Node)selection[0].Tag).ONode.Data as InventoryFolder;
+            InventoryFolder f = ((Node)Items[SelectedIndices[0]].Tag).ONode.Data as InventoryFolder;
 
             switch (cmd)
             {
@@ -849,15 +872,23 @@ namespace Radegast
                     break;
 
                 case "expand":
-                    // TODO
+                    ((Node)Items[SelectedIndices[0]].Tag).SetExpanded(ID, true);
+                    UpdateMapper();
                     break;
 
                 case "expand_all":
-                    // TODO
+                    SetExpandedRecursive((Node)Items[SelectedIndices[0]].Tag, true);
+                    UpdateMapper();
                     break;
 
                 case "collapse":
-                    // TODO
+                    ((Node)Items[SelectedIndices[0]].Tag).SetExpanded(ID, false);
+                    UpdateMapper();
+                    break;
+
+                case "collapse_all":
+                    SetExpandedRecursive((Node)Items[SelectedIndices[0]].Tag, false);
+                    UpdateMapper();
                     break;
 
                 case "new_folder":
