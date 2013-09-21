@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast
@@ -31,21 +32,21 @@ namespace Radegast
 
             Trees = new List<InvTreeView>(3);
 
-            Trees.Add(new InvTreeView(instance)
+            Trees.Add(new InvTreeView(instance, console)
             {
                 InvType = InvTreeView.TreeType.All,
                 Dock = DockStyle.Fill
             });
             tabAll.Controls.Add(Trees[Trees.Count - 1]);
 
-            Trees.Add(new InvTreeView(instance)
+            Trees.Add(new InvTreeView(instance, console)
             {
                 InvType = InvTreeView.TreeType.Recent,
                 Dock = DockStyle.Fill
             });
             tabRecent.Controls.Add(Trees[Trees.Count - 1]);
 
-            Trees.Add(new InvTreeView(instance)
+            Trees.Add(new InvTreeView(instance, console)
             {
                 InvType = InvTreeView.TreeType.Worn,
                 Dock = DockStyle.Fill
@@ -57,7 +58,17 @@ namespace Radegast
                 Trees[0].Select();
             };
 
+            foreach (var t in Trees)
+            {
+                t.MouseClick += new MouseEventHandler(t_MouseClick);
+            }
+
             UpdateMapper();
+        }
+
+        void t_MouseClick(object sender, MouseEventArgs e)
+        {
+            InvTreeView t = (InvTreeView)sender;
         }
 
         public void UpdateMapper()
@@ -66,11 +77,6 @@ namespace Radegast
             {
                 t.UpdateMapper();
             }
-        }
-
-        private void tabWorn_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

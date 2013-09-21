@@ -95,7 +95,6 @@
             this.tabWorn.TabIndex = 2;
             this.tabWorn.Text = "Worn";
             this.tabWorn.UseVisualStyleBackColor = true;
-            this.tabWorn.Click += new System.EventHandler(this.tabWorn_Click);
             // 
             // InventoryPanel
             // 
@@ -114,11 +113,12 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.TextBox txtSearch;
-        private System.Windows.Forms.TabControl panes;
-        private System.Windows.Forms.TabPage tabAll;
-        private System.Windows.Forms.TabPage tabRecent;
-        private System.Windows.Forms.TabPage tabWorn;
+        public System.Windows.Forms.Panel panel1;
+        public System.Windows.Forms.TextBox txtSearch;
+        public System.Windows.Forms.TabControl panes;
+        public System.Windows.Forms.TabPage tabAll;
+        public System.Windows.Forms.TabPage tabRecent;
+        public System.Windows.Forms.TabPage tabWorn;
+
     }
 }

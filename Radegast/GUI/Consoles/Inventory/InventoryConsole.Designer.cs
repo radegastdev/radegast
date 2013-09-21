@@ -182,7 +182,6 @@ namespace Radegast
             this.ctxInv.ShowImageMargin = false;
             this.ctxInv.Size = new System.Drawing.Size(36, 4);
             this.ctxInv.Text = "Inventory Folder";
-            this.ctxInv.Opening += new System.ComponentModel.CancelEventHandler(this.ctxInv_Opening);
             // 
             // tstripInventory
             // 
