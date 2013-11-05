@@ -234,7 +234,9 @@ namespace Radegast.Rendering
             }
             else if ((PrimAnimInfo.Flags & Primitive.TextureAnimMode.SCALE) != 0)
             {
+                GL.Translate(0.5f, 0.5f, 0f);
                 GL.Scale(frameCounter, frameCounter, 0);
+                GL.Translate(-0.5f, -0.5f, 0f);
             }
             else // Translate
             {
