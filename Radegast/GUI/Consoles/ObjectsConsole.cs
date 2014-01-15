@@ -467,7 +467,7 @@ namespace Radegast
                 ctxContents.Items.Add(new ToolStripSeparator());
             }
 
-            if (canModify && instance.InventoryClipboard != null)
+            if ((canModify || (prim.Flags & PrimFlags.AllowInventoryDrop) == PrimFlags.AllowInventoryDrop) && instance.InventoryClipboard != null)
             {
                 if (instance.InventoryClipboard.Item is InventoryItem)
                 {
