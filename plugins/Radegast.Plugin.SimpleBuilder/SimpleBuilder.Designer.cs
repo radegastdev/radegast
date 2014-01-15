@@ -154,7 +154,7 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.btnBuildBox);
             this.Name = "SimpleBuilder";
-            this.Size = new System.Drawing.Size(458, 290);
+            this.Size = new System.Drawing.Size(454, 286);
             this.ResumeLayout(false);
             this.PerformLayout();
 
