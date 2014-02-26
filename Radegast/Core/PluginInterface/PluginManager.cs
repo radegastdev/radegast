@@ -224,7 +224,7 @@ namespace Radegast
             {
                 try
                 {
-                    Assembly assembly = Assembly.LoadFile(loadFileName);
+                    Assembly assembly = Assembly.Load(File.ReadAllBytes(loadFileName));
                     LoadAssembly(loadFileName, assembly, stratPlugins);
                 }
                 catch (BadImageFormatException)

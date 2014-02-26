@@ -30,6 +30,7 @@
 //
 using System;
 using System.Reflection;
+using System.IO;
 using OpenMetaverse;
 
 namespace Radegast.Commands
@@ -67,7 +68,7 @@ namespace Radegast.Commands
             string loadfilename = String.Join(" ", cmdArgs);
             try
             {
-                Assembly assembly = Assembly.LoadFile(loadfilename);
+                Assembly assembly = Assembly.Load(File.ReadAllBytes(loadfilename));
                 instance.PluginManager.LoadAssembly(loadfilename, assembly, true);
             }
             catch (Exception ex)
