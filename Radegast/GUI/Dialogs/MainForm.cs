@@ -1264,6 +1264,11 @@ namespace Radegast
             ProcessLink("http://jira.openmetaverse.org/browse/RAD");
         }
 
+        private void accessibilityGuideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessLink("http://radegast.org/wiki/Accessibility_Guide");
+        }
+
         private void aboutRadegastToolStripMenuItem_Click(object sender, EventArgs e)
         {
             (new frmAbout(instance)).ShowDialog();
@@ -1715,5 +1720,6 @@ namespace Radegast
             TabConsole.InitializeMainTab();
             TabConsole.Tabs["login"].Select();
         }
+
     }
 }
