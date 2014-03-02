@@ -720,7 +720,7 @@ namespace Radegast
                 Logger.Log(string.Format("Successfully created and locked marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
                 return false || MonoRuntime;
             }
-            catch (Exception ex)
+            catch
             {
                 MarkerLock = null;
                 Logger.Log(string.Format("Another instance detected, marker fils {0} locked", CrashMarkerFileName), Helpers.LogLevel.Debug);

@@ -166,7 +166,7 @@ namespace Radegast
                     if (domain != null && PluginsLoaded.Find(dinfo => { return dinfo.Domain == domain; }) == null)
                     {
                         try { AppDomain.Unload(domain); }
-                        catch (Exception ex) { Logger.Log("ERROR unloading application domain for : " + plug.FileName, Helpers.LogLevel.Debug); }
+                        catch (Exception ex) { Logger.Log("ERROR unloading application domain for : " + plug.FileName + "\n" + ex.Message, Helpers.LogLevel.Debug); }
                     }
                 }
             }
