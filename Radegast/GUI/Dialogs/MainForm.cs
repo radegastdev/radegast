@@ -830,7 +830,7 @@ namespace Radegast
         public bool ProcessSecondlifeURI(string link)
         {
             // First try if we have a region name, assume it's a teleport link if we have
-            Regex r = new Regex(@"^(secondlife://)(?<region>[^/$]+)(/(?<x>\d+))?((/?<y>\d+))?(/(?<z>\d+))?",
+            Regex r = new Regex(@"^(secondlife://)(?<region>[^/$]+)(/(?<x>\d+))?(/(?<y>\d+))?(/(?<z>\d+))?",
                 RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
             Match m = r.Match(link);
 
