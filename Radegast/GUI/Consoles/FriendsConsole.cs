@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -198,7 +198,7 @@ namespace Radegast
         {
             if (!instance.GlobalSettings["show_friends_online_notifications"]) return;
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 string name = instance.Names.Get(e.Friend.UUID, true);
                 MethodInvoker display = () =>
@@ -222,7 +222,7 @@ namespace Radegast
         {
             if (!instance.GlobalSettings["show_friends_online_notifications"]) return;
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 string name = instance.Names.Get(e.Friend.UUID, true);
                 MethodInvoker display = () =>
@@ -244,7 +244,7 @@ namespace Radegast
 
         void Friends_FriendshipTerminated(object sender, FriendshipTerminatedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 string name = instance.Names.Get(e.AgentID, true);
                 MethodInvoker display = () =>
@@ -310,7 +310,7 @@ namespace Radegast
                 instance.TabConsole.DisplayNotificationInChat(lblFriendName.Text, ChatBufferTextStyle.Invisible);
                 btnIM.Enabled = false;
 
-                ThreadPool.QueueUserWorkItem(sync =>
+                WorkPool.QueueUserWorkItem(sync =>
                     {
                         using (ManualResetEvent started = new ManualResetEvent(false))
                         {

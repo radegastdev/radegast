@@ -112,6 +112,8 @@ namespace RadegastSpeech.Environment
         /// <returns></returns>
         internal string Location(Vector3 theirpos)
         {
+            if (theirpos == Vector3.Zero)
+                return string.Empty;
             AgentManager my = control.instance.Client.Self;
 
             // Get the vector to the object, and distance.

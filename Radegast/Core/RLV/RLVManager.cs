@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -853,7 +853,7 @@ namespace Radegast
             {
                 if (n.Data.Name.StartsWith(".")) continue;
 
-                var res = FindFolderInternal(n, currentPath + n.Data.Name.ToLower(), desiredPath);
+                var res = FindFolderInternal(n, (currentPath == "/" ? currentPath : currentPath + "/") + n.Data.Name.ToLower(), desiredPath);
                 if (res != null)
                 {
                     return res;

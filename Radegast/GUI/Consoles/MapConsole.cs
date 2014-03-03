@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -126,7 +126,6 @@ namespace Radegast
             if (newval >= zoomTracker.Minimum && newval <= zoomTracker.Maximum)
                 zoomTracker.Value = newval;
         }
-
 
         void frmMap_Disposed(object sender, EventArgs e)
         {
@@ -353,7 +352,7 @@ namespace Radegast
             lblStatus.Text = "Teleporting to " + txtRegion.Text;
             prgTeleport.Style = ProgressBarStyle.Marquee;
 
-            ThreadPool.QueueUserWorkItem((object state) =>
+            WorkPool.QueueUserWorkItem((object state) =>
                 {
                     if (!client.Self.Teleport(txtRegion.Text, new Vector3((int)nudX.Value, (int)nudY.Value, (int)nudZ.Value)))
                     {
@@ -380,7 +379,7 @@ namespace Radegast
             {
                 if (!regionHandles.ContainsKey(regionName))
                 {
-                    ThreadPool.QueueUserWorkItem(sync =>
+                    WorkPool.QueueUserWorkItem(sync =>
                         {
                             ManualResetEvent done = new ManualResetEvent(false);
                             EventHandler<GridRegionEventArgs> handler = (object sender, GridRegionEventArgs e) =>

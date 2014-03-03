@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -157,6 +157,8 @@ namespace Radegast.Rendering
         float drawDistance;
         float drawDistanceSquared;
 
+        RenderTerrain terrain;
+
         GridClient Client;
         RadegastInstance Instance;
 
@@ -190,6 +192,7 @@ namespace Radegast.Rendering
 
             chatOverlay = new ChatOverlay(instance, this);
             textRendering = new TextRendering(instance);
+            terrain = new RenderTerrain(instance);
 
             cbChatType.SelectedIndex = 1;
 
@@ -365,7 +368,7 @@ namespace Radegast.Rendering
         {
             if (e.Simulator.Handle == Client.Network.CurrentSim.Handle)
             {
-                terrainModified = true;
+                terrain.Modified = true;
             }
         }
 
@@ -387,7 +390,7 @@ namespace Radegast.Rendering
                 return;
             }
 
-            ResetTerrain();
+            terrain.ResetTerrain();
             lock (sculptCache)
             {
                 foreach (var img in sculptCache.Values)
@@ -1149,7 +1152,7 @@ namespace Radegast.Rendering
         {
             if (!Client.Network.Connected) return;
 
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 if (RenderSettings.PrimitiveRenderingEnabled)
                 {
@@ -1188,7 +1191,7 @@ namespace Radegast.Rendering
 
         private void ControlLoaded(object sender, EventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 InitAvatarData();
                 AvatarDataInitialzied();
@@ -2064,264 +2067,6 @@ namespace Radegast.Rendering
         }
         #endregion Keyboard
 
-        #region Terrain
-        bool terrainModified = true;
-        float[,] heightTable = new float[256, 256];
-        Face terrainFace;
-        ushort[] terrainIndices;
-        ColorVertex[] terrainVertices;
-        int terrainTexture = -1;
-        bool fetchingTerrainTexture = false;
-        Bitmap terrainImage = null;
-        int terrainVBO = -1;
-        int terrainIndexVBO = -1;
-        bool terrainVBOFailed = false;
-        bool terrainInProgress = false;
-        bool terrainTextureNeedsUpdate = false;
-        float terrainTimeSinceUpdate = RenderSettings.MinimumTimeBetweenTerrainUpdated + 1f; // Update terrain om first run
-
-        private void ResetTerrain()
-        {
-            ResetTerrain(true);
-        }
-
-        private void ResetTerrain(bool removeImage)
-        {
-            if (terrainImage != null)
-            {
-                terrainImage.Dispose();
-                terrainImage = null;
-            }
-
-            if (terrainVBO != -1)
-            {
-                Compat.DeleteBuffer(terrainVBO);
-                terrainVBO = -1;
-            }
-
-            if (terrainIndexVBO != -1)
-            {
-                Compat.DeleteBuffer(terrainIndexVBO);
-                terrainIndexVBO = -1;
-            }
-
-            if (removeImage)
-            {
-                if (terrainTexture != -1)
-                {
-                    GL.DeleteTexture(terrainTexture);
-                    terrainTexture = -1;
-                }
-            }
-
-            fetchingTerrainTexture = false;
-            terrainModified = true;
-        }
-
-        private void UpdateTerrain()
-        {
-            if (Client.Network.CurrentSim == null || Client.Network.CurrentSim.Terrain == null) return;
-
-            ThreadPool.QueueUserWorkItem(sync =>
-            {
-                int step = 1;
-
-                for (int x = 0; x < 256; x += step)
-                {
-                    for (int y = 0; y < 256; y += step)
-                    {
-                        float z = 0;
-                        int patchNr = ((int)x / 16) * 16 + (int)y / 16;
-                        if (Client.Network.CurrentSim.Terrain[patchNr] != null
-                            && Client.Network.CurrentSim.Terrain[patchNr].Data != null)
-                        {
-                            float[] data = Client.Network.CurrentSim.Terrain[patchNr].Data;
-                            z = data[(int)x % 16 * 16 + (int)y % 16];
-                        }
-                        heightTable[x, y] = z;
-                    }
-                }
-
-                terrainFace = renderer.TerrainMesh(heightTable, 0f, 255f, 0f, 255f);
-                terrainVertices = new ColorVertex[terrainFace.Vertices.Count];
-                for (int i = 0; i < terrainFace.Vertices.Count; i++)
-                {
-                    byte[] part = Utils.IntToBytes(i);
-                    terrainVertices[i] = new ColorVertex()
-                    {
-                        Vertex = terrainFace.Vertices[i],
-                        Color = new Color4b()
-                        {
-                            R = part[0],
-                            G = part[1],
-                            B = part[2],
-                            A = 253 // terrain picking
-                        }
-                    };
-                }
-                terrainIndices = terrainFace.Indices.ToArray();
-                terrainInProgress = false;
-                terrainModified = false;
-                terrainTextureNeedsUpdate = true;
-                terrainTimeSinceUpdate = 0f;
-            });
-        }
-
-        void UpdateTerrainTexture()
-        {
-            if (!fetchingTerrainTexture)
-            {
-                fetchingTerrainTexture = true;
-                ThreadPool.QueueUserWorkItem(sync =>
-                {
-                    Simulator sim = Client.Network.CurrentSim;
-                    terrainImage = TerrainSplat.Splat(instance, heightTable,
-                        new UUID[] { sim.TerrainDetail0, sim.TerrainDetail1, sim.TerrainDetail2, sim.TerrainDetail3 },
-                        new float[] { sim.TerrainStartHeight00, sim.TerrainStartHeight01, sim.TerrainStartHeight10, sim.TerrainStartHeight11 },
-                        new float[] { sim.TerrainHeightRange00, sim.TerrainHeightRange01, sim.TerrainHeightRange10, sim.TerrainHeightRange11 });
-
-                    fetchingTerrainTexture = false;
-                    terrainTextureNeedsUpdate = false;
-                });
-            }
-        }
-
-        private void RenderTerrain(RenderPass pass)
-        {
-            terrainTimeSinceUpdate += lastFrameTime;
-
-            if (terrainModified && terrainTimeSinceUpdate > RenderSettings.MinimumTimeBetweenTerrainUpdated)
-            {
-                if (!terrainInProgress)
-                {
-                    terrainInProgress = true;
-                    ResetTerrain(false);
-                    UpdateTerrain();
-                }
-            }
-
-            if (terrainTextureNeedsUpdate)
-            {
-                UpdateTerrainTexture();
-            }
-
-            if (terrainIndices == null || terrainVertices == null) return;
-
-            GL.Color3(1f, 1f, 1f);
-            GL.EnableClientState(ArrayCap.VertexArray);
-            GL.EnableClientState(ArrayCap.TextureCoordArray);
-            GL.EnableClientState(ArrayCap.NormalArray);
-            if (pass == RenderPass.Picking)
-            {
-                GL.EnableClientState(ArrayCap.ColorArray);
-                GL.ShadeModel(ShadingModel.Flat);
-            }
-
-            if (terrainImage != null)
-            {
-                if (terrainTexture != -1)
-                {
-                    GL.DeleteTexture(terrainTexture);
-                }
-
-                terrainTexture = RHelp.GLLoadImage(terrainImage, false);
-                terrainImage.Dispose();
-                terrainImage = null;
-            }
-
-            if (pass != RenderPass.Picking && terrainTexture != -1)
-            {
-                GL.Enable(EnableCap.Texture2D);
-                GL.BindTexture(TextureTarget.Texture2D, terrainTexture);
-            }
-
-            if (!RenderSettings.UseVBO || terrainVBOFailed)
-            {
-                unsafe
-                {
-                    fixed (float* normalPtr = &terrainVertices[0].Vertex.Normal.X)
-                    fixed (float* texPtr = &terrainVertices[0].Vertex.TexCoord.X)
-                    fixed (byte* colorPtr = &terrainVertices[0].Color.R)
-                    {
-                        GL.NormalPointer(NormalPointerType.Float, ColorVertex.Size, (IntPtr)normalPtr);
-                        GL.TexCoordPointer(2, TexCoordPointerType.Float, ColorVertex.Size, (IntPtr)texPtr);
-                        GL.VertexPointer(3, VertexPointerType.Float, ColorVertex.Size, terrainVertices);
-                        if (pass == RenderPass.Picking)
-                        {
-                            GL.ColorPointer(4, ColorPointerType.UnsignedByte, ColorVertex.Size, (IntPtr)colorPtr);
-                        }
-                        GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, terrainIndices);
-                    }
-                }
-            }
-            else
-            {
-                if (terrainVBO == -1)
-                {
-                    Compat.GenBuffers(out terrainVBO);
-                    Compat.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
-                    Compat.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(terrainVertices.Length * ColorVertex.Size), terrainVertices, BufferUsageHint.StaticDraw);
-                    if (Compat.BufferSize(BufferTarget.ArrayBuffer) != terrainVertices.Length * ColorVertex.Size)
-                    {
-                        terrainVBOFailed = true;
-                        Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                        terrainVBO = -1;
-                    }
-                }
-                else
-                {
-                    Compat.BindBuffer(BufferTarget.ArrayBuffer, terrainVBO);
-                }
-
-                if (terrainIndexVBO == -1)
-                {
-                    Compat.GenBuffers(out terrainIndexVBO);
-                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
-                    Compat.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(terrainIndices.Length * sizeof(ushort)), terrainIndices, BufferUsageHint.StaticDraw);
-                    if (Compat.BufferSize(BufferTarget.ElementArrayBuffer) != terrainIndices.Length * sizeof(ushort))
-                    {
-                        terrainVBOFailed = true;
-                        Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-                        terrainIndexVBO = -1;
-                    }
-                }
-                else
-                {
-                    Compat.BindBuffer(BufferTarget.ElementArrayBuffer, terrainIndexVBO);
-                }
-
-                if (!terrainVBOFailed)
-                {
-                    GL.NormalPointer(NormalPointerType.Float, ColorVertex.Size, (IntPtr)12);
-                    GL.TexCoordPointer(2, TexCoordPointerType.Float, ColorVertex.Size, (IntPtr)(24));
-                    if (pass == RenderPass.Picking)
-                    {
-                        GL.ColorPointer(4, ColorPointerType.UnsignedByte, ColorVertex.Size, (IntPtr)32);
-                    }
-                    GL.VertexPointer(3, VertexPointerType.Float, ColorVertex.Size, (IntPtr)(0));
-
-                    GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                }
-
-                Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-            }
-
-            if (pass == RenderPass.Picking)
-            {
-                GL.DisableClientState(ArrayCap.ColorArray);
-                GL.ShadeModel(ShadingModel.Smooth);
-            }
-            else
-            {
-                GL.BindTexture(TextureTarget.Texture2D, 0);
-            }
-            GL.DisableClientState(ArrayCap.VertexArray);
-            GL.DisableClientState(ArrayCap.TextureCoordArray);
-            GL.DisableClientState(ArrayCap.NormalArray);
-        }
-        #endregion Terrain
-
         float LODFactor(float distance, float radius)
         {
             return radius * radius / distance;
@@ -2793,7 +2538,7 @@ namespace Radegast.Rendering
             if (picking)
             {
                 GL.Disable(EnableCap.Lighting);
-                RenderTerrain(RenderPass.Picking);
+                terrain.Render(RenderPass.Picking, 0, this, lastFrameTime);
                 RenderObjects(RenderPass.Picking);
                 RenderAvatars(RenderPass.Picking);
                 GLHUDBegin();
@@ -2809,7 +2554,7 @@ namespace Radegast.Rendering
 
                 CheckKeyboard(lastFrameTime);
 
-                RenderTerrain(RenderPass.Simple);
+                terrain.Render(RenderPass.Simple, 0, this, lastFrameTime);
 
                 // Alpha mask elements, no blending, alpha test for A > 0.5
                 GL.Enable(EnableCap.AlphaTest);
@@ -2888,9 +2633,10 @@ namespace Radegast.Rendering
             if (color[3] == 253) // Terrain
             {
                 int vertexIndex = Utils.BytesToInt(new byte[] { color[0], color[1], color[2], 0 });
-                if (vertexIndex < terrainVertices.Length)
+                ColorVertex cv;
+                if (terrain.TryGetVertex(vertexIndex, out cv))
                 {
-                    picked = terrainVertices[vertexIndex].Vertex.Position;
+                    picked = cv.Vertex.Position;
                     return true;
                 }
             }

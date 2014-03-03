@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ namespace Radegast
                 client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(OnDownloadStringCompleted);
             }
 
-            ThreadPool.QueueUserWorkItem((object state) =>
+            WorkPool.QueueUserWorkItem((object state) =>
                 {
                     client.DownloadStringAsync(new Uri(Properties.Resources.UpdateCheckUri));
                 }

@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -162,7 +162,7 @@ namespace Radegast
             this.cbKeep.TabIndex = 6;
             this.cbKeep.Text = "Keep current stream";
             this.toolTip1.SetToolTip(this.cbKeep, "When checked the audio player will keep the current audio stream and not change w" +
-                    "hen parcel audio changes");
+        "hen parcel audio changes");
             this.cbKeep.UseVisualStyleBackColor = true;
             // 
             // cbPlayAudioStream
@@ -260,7 +260,7 @@ namespace Radegast
             // 
             // UIVolume
             // 
-            this.UIVolume.AccessibleName = "Object sounds volume";
+            this.UIVolume.AccessibleName = "UI sounds volume";
             this.UIVolume.LargeChange = 10;
             this.UIVolume.Location = new System.Drawing.Point(4, 12);
             this.UIVolume.Maximum = 50;

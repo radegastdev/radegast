@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@
 //
 using System;
 using System.Reflection;
+using System.IO;
 using OpenMetaverse;
 
 namespace Radegast.Commands
@@ -67,8 +68,7 @@ namespace Radegast.Commands
             string loadfilename = String.Join(" ", cmdArgs);
             try
             {
-                Assembly assembly = Assembly.LoadFile(loadfilename);
-                instance.PluginManager.LoadAssembly(loadfilename, assembly, true);
+                instance.PluginManager.LoadAssembly(loadfilename, true);
             }
             catch (Exception ex)
             {

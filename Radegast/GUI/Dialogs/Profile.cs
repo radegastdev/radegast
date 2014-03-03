@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -101,6 +101,7 @@ namespace Radegast
                 txtWebURL.ReadOnly = false;
                 pickTitle.ReadOnly = false;
                 pickDetail.ReadOnly = false;
+                btnRequestTeleport.Visible = false;
                 btnDeletePick.Visible = true;
                 btnNewPick.Visible = true;
             }
@@ -666,7 +667,7 @@ namespace Radegast
 
         private void btnNewPick_Click(object sender, EventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
                 {
                     UUID parcelID = client.Parcels.RequestRemoteParcelID(client.Self.SimPosition, client.Network.CurrentSim.Handle, client.Network.CurrentSim.ID);
                     newPickID = UUID.Random();

@@ -3,7 +3,7 @@
   <Solution name="Radegast" activeConfig="Debug" version="$Rev$">
     <Configuration name="Debug">
       <Options>
-        <CompilerDefines>TRACE;DEBUG</CompilerDefines>
+        <CompilerDefines>TRACE;DEBUG;SMARTHREADPOOL_REF</CompilerDefines>
         <OptimizeCode>false</OptimizeCode>
         <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
         <AllowUnsafe>true</AllowUnsafe>
@@ -19,7 +19,7 @@
     </Configuration>
     <Configuration name="Release">
       <Options>
-        <CompilerDefines>TRACE</CompilerDefines>
+        <CompilerDefines>TRACE;SMARTHREADPOOL_REF</CompilerDefines>
         <OptimizeCode>true</OptimizeCode>
         <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
         <AllowUnsafe>true</AllowUnsafe>
@@ -50,7 +50,7 @@
         </Options>
       </Configuration>
 
-      <ReferencePath>../../radegast/bin/</ReferencePath>
+      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
@@ -105,6 +105,7 @@
       <Reference name="log4net" localCopy="true"/>
       <Reference name="OpenMetaverseTypes"/>
       <Reference name="OpenMetaverse.StructuredData"/>
+      <Reference name="SmartThreadPool" localCopy="true"/>
       <Reference name="XMLRPC" localCopy="true"/>
       <Reference name="zlib.net" localCopy="true"/>
       <Files>
@@ -271,7 +272,41 @@
       <Reference name="OpenMetaverseTypes" localCopy="false"/>
       <Reference name="OpenMetaverse.StructuredData"/>
       <Reference name="System.Windows.Forms" localCopy="false"/>
-      <Reference name="Radegast.exe" localCopy="false" />
+      <Reference name="Radegast" localCopy="false" />
+      <Files>
+        <Match path="." pattern="*.cs" recurse="true" subType="Code">
+          <Exclude name="AssemblyInfo.cs"/>
+        </Match>
+        <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
+      </Files>
+    </Project>
+
+    <Project name="Radegast.Plugin.SimpleBuilder" path="plugins/Radegast.Plugin.SimpleBuilder" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_simplebuild">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
+          <OutputPath>../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Core"/>
+      <Reference name="System.Xml"/>
+      <Reference name="System.Data"/>
+      <Reference name="System.Drawing"/>
+      <Reference name="OpenMetaverse" localCopy="false"/>
+      <Reference name="OpenMetaverseTypes" localCopy="false"/>
+      <Reference name="OpenMetaverse.StructuredData"/>
+      <Reference name="System.Windows.Forms" localCopy="false"/>
+      <Reference name="Radegast" localCopy="false" />
       <Files>
         <Match path="." pattern="*.cs" recurse="true" subType="Code">
           <Exclude name="AssemblyInfo.cs"/>

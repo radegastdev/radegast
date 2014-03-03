@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -544,7 +544,7 @@ namespace Radegast
             }
 
             Client.Appearance.ReplaceOutfit(outfit);
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(2000);
                 Client.Appearance.RequestSetAppearance(true);
@@ -609,7 +609,7 @@ namespace Radegast
             }
 
             Client.Appearance.AddToOutfit(outfit, replace);
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(2000);
                 Client.Appearance.RequestSetAppearance(true);
@@ -669,6 +669,14 @@ namespace Radegast
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Force rebaking textures
+        /// </summary>
+        public void RebakeTextures()
+        {
+            Client.Appearance.RequestSetAppearance(true);
         }
 
         #endregion Public methods

@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ namespace Radegast
 
         private void StartDisplayNameChage(string name)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
                 {
                     Client.Avatars.GetDisplayNames(new List<OpenMetaverse.UUID>() { Client.Self.AgentID },
                         (bool success, AgentDisplayName[] names, UUID[] badIDs) =>

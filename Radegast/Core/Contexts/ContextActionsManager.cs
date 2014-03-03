@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -320,7 +320,12 @@ namespace Radegast
             }
 
         }
-        public void LoadType(Type type)
+        /// <summary>
+        /// Loads context actions
+        /// </summary>
+        /// <param name="type">Type to try to load</param>
+        /// <returns>True if useful types were found and loaded</returns>
+        public bool LoadType(Type type)
         {
             if (typeof(IContextAction).IsAssignableFrom(type) && type != typeof(ContextAction))
             {
@@ -331,14 +336,14 @@ namespace Radegast
                     {
                         IContextAction plug = (IContextAction)c.Invoke(new object[] { instance });
                         RegisterContextAction(plug);
-                        return;
+                        return true;
                     }
                     c = type.GetConstructor(Type.EmptyTypes);
                     if (c != null)
                     {
                         IContextAction plug = (IContextAction)c.Invoke(new object[0]);
                         RegisterContextAction(plug);
-                        return;
+                        return true;
                     }
                 }
                 catch (Exception ex)
@@ -347,8 +352,8 @@ namespace Radegast
                                Helpers.LogLevel.Debug);
                     throw ex;
                 }
-                return;
             }
+            return false;
         }
     }
 }

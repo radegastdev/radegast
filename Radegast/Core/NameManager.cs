@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -395,7 +395,7 @@ namespace Radegast
 
         void SaveCache(object sync)
         {
-            ThreadPool.QueueUserWorkItem(syncx =>
+            WorkPool.QueueUserWorkItem(syncx =>
             {
                 OSDArray namesOSD = new OSDArray(names.Count);
                 lock (names)
@@ -424,7 +424,7 @@ namespace Radegast
 
         void LoadCachedNames()
         {
-            ThreadPool.QueueUserWorkItem(syncx =>
+            WorkPool.QueueUserWorkItem(syncx =>
             {
                 try
                 {

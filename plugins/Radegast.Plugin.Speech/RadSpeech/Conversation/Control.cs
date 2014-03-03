@@ -681,7 +681,7 @@ namespace RadegastSpeech.Conversation
         /// <param name="simulator"></param>
         void OnInstantMessage(object sender, InstantMessageEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
                 {
                     Thread.Sleep(100); // Give tab a chance to show up
                     Conversation.IMSession sess = null;

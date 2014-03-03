@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ using Thread = ThreadPoolUtil.Thread;
 using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
-using System.Threading;
+using OpenMetaverse;
 
 using System.Windows.Forms;
 
@@ -88,7 +88,7 @@ namespace Radegast
             try
             {
                 e.Type = this.Type;
-                ThreadPool.QueueUserWorkItem((object o) => Notificaton_Displayed(this, e));
+                WorkPool.QueueUserWorkItem((object o) => Notificaton_Displayed(this, e));
             }
             catch (Exception ex)
             {

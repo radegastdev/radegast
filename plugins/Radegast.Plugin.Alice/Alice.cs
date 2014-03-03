@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using Radegast;
 using OpenMetaverse;
@@ -62,6 +61,7 @@ namespace Radegast.Plugin.Alice
         private bool DisableOnStart = false;
         private ToolStripMenuItem btn_DisableOnStart;
         private bool EnableRandomDelay = false;
+        private bool AimlLoaded = false;
 
         public void StartPlugin(RadegastInstance inst)
         {
@@ -98,7 +98,8 @@ namespace Radegast.Plugin.Alice
 
             EnabledButton = new ToolStripMenuItem("Enabled", null, (object sender, EventArgs e) =>
             {
-                Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
+                Enabled = SetEnabled(!Enabled);
+                EnabledButton.Checked = MenuButton.Checked = Enabled;
                 Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
             });
 
@@ -230,7 +231,8 @@ namespace Radegast.Plugin.Alice
 
             MenuButton = new ToolStripMenuItem("ALICE chatbot", null, (object sender, EventArgs e) =>
             {
-                Enabled = EnabledButton.Checked = MenuButton.Checked = !Enabled;
+                Enabled = SetEnabled(!Enabled);
+                EnabledButton.Checked = MenuButton.Checked = Enabled;
                 Instance.GlobalSettings["plugin.alice.enabled"] = OSD.FromBoolean(Enabled);
             });
 
@@ -283,17 +285,27 @@ namespace Radegast.Plugin.Alice
                 LoadALICE();
             });
 
-            LoadALICE();
-            if (Alice != null)
-            {
-                talkToAvatar = new TalkToAvatar(Instance, Alice);
-                Instance.ContextActionManager.RegisterContextAction(talkToAvatar);
-            }
+            SetEnabled(Enabled);
+
             // Events
             RegisterClientEvents(Client);
         }
 
-        private void LoadALICE()
+        private bool SetEnabled(bool e)
+        {
+            if (!e || AimlLoaded) return e;
+            if (!LoadALICE()) return false;
+            if (Client.Network.Connected)
+            {
+                Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
+            }
+            AimlLoaded = true;
+            talkToAvatar = new TalkToAvatar(Instance, Alice);
+            Instance.ContextActionManager.RegisterContextAction(talkToAvatar);
+            return true;
+        }
+
+        private bool LoadALICE()
         {
             try
             {
@@ -304,10 +316,12 @@ namespace Radegast.Plugin.Alice
                 Alice.isAcceptingUserInput = false;
                 loader.loadAIML(Alice.PathToAIML);
                 Alice.isAcceptingUserInput = true;
+                return true;
             }
             catch (Exception ex)
             {
                 System.Console.WriteLine("Failed loading ALICE: " + ex.Message);
+                return false;
             }
         }
 
@@ -350,12 +364,15 @@ namespace Radegast.Plugin.Alice
 
         void Netcom_ClientConnected(object sender, EventArgs e)
         {
-            Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
+            if (AimlLoaded)
+            {
+                Alice.GlobalSettings.updateSetting("name", FirstName(Client.Self.Name));
+            }
         }
 
         void Avatars_AvatarPropertiesReply(object sender, AvatarPropertiesReplyEventArgs e)
         {
-            if (e.AvatarID == Client.Self.AgentID)
+            if (e.AvatarID == Client.Self.AgentID && AimlLoaded)
             {
                 MyProfile = e.Properties;
                 Alice.GlobalSettings.updateSetting("birthday", MyProfile.BornOn);
@@ -381,9 +398,9 @@ namespace Radegast.Plugin.Alice
         void Self_ChatFromSimulator(object sender, ChatEventArgs e)
         {
             // We ignore everything except normal chat from other avatars
-            if (e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0) return;
+            if (!Enabled || e.SourceType != ChatSourceType.Agent || e.FromName == Client.Self.Name || e.Message.Trim().Length == 0) return;
 
-            bool parseForResponse = Alice.isAcceptingUserInput && Enabled;
+            bool parseForResponse = Alice != null && Alice.isAcceptingUserInput && Enabled;
             if (parseForResponse && respondRange >= 0)
             {
                 parseForResponse = Vector3.Distance(Client.Self.SimPosition, e.Position) <= respondRange;
@@ -396,7 +413,7 @@ namespace Radegast.Plugin.Alice
 
             if (parseForResponse)
             {
-                ThreadPool.QueueUserWorkItem(sync =>
+                WorkPool.QueueUserWorkItem(sync =>
                 {
                     lock (syncChat)
                     {
@@ -456,6 +473,7 @@ namespace Radegast.Plugin.Alice
 
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
+            if (!Enabled) return;
             // Every event coming from a different thread (almost all of them, most certanly those
             // from libomv) needs to be executed on the GUI thread. This code can be basically
             // copy-pasted on the begining of each libomv event handler that results in update 
@@ -480,10 +498,9 @@ namespace Radegast.Plugin.Alice
                 && e.IM.BinaryBucket.Length < 2                    // Session is not ad-hoc friends conference
                 && e.IM.FromAgentName != "Second Life"             // Not a system message
                 && Alice.isAcceptingUserInput                    // Alice bot loaded successfully
-                && Enabled                                       // Alice bot is enabled
                 )
             {
-                ThreadPool.QueueUserWorkItem(sync =>
+                WorkPool.QueueUserWorkItem(sync =>
                 {
                     lock (syncChat)
                     {

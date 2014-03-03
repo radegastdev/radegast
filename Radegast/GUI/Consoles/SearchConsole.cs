@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
 using System.Diagnostics;
@@ -57,10 +58,17 @@ namespace Radegast
 
             this.instance = instance;
 
+            comboEventType.SelectedIndex = 0;
+            lvwEvents.Parent.SizeChanged += lvwEvents_SizeChanged;
+            lvwEvents.ListViewItemSorter = new EventSorter();
+
             // Callbacks
             client.Directory.DirPeopleReply += new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
             client.Directory.DirPlacesReply += new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
             client.Directory.DirGroupsReply += new EventHandler<DirGroupsReplyEventArgs>(Directory_DirGroupsReply);
+            client.Directory.DirEventsReply += Directory_DirEventsReply;
+            client.Directory.EventInfoReply += Directory_EventInfoReply;
+            instance.Names.NameUpdated += Names_NameUpdated;
             console = new FindPeopleConsole(instance, UUID.Random());
             console.Dock = DockStyle.Fill;
             console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
@@ -74,6 +82,9 @@ namespace Radegast
             client.Directory.DirPeopleReply -= new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
             client.Directory.DirPlacesReply -= new EventHandler<DirPlacesReplyEventArgs>(Directory_DirPlacesReply);
             client.Directory.DirGroupsReply -= new EventHandler<DirGroupsReplyEventArgs>(Directory_DirGroupsReply);
+            client.Directory.DirEventsReply -= Directory_DirEventsReply;
+            client.Directory.EventInfoReply -= Directory_EventInfoReply;
+            instance.Names.NameUpdated -= Names_NameUpdated;
         }
 
         #endregion Construction and disposal
@@ -566,5 +577,222 @@ namespace Radegast
             }
         }
         #endregion Groups search
+
+        #region Events Search
+
+        uint eventsPerPage = 200;
+        int eventMatches;
+        uint eventStart;
+        UUID eventSearch;
+
+        DirectoryManager.EventCategories eventType;
+        DirectoryManager.DirFindFlags eventFlags;
+        string eventTime = "u";
+
+        static Dictionary<int, DirectoryManager.EventCategories> eventTypeMap = new Dictionary<int, DirectoryManager.EventCategories>(12);
+
+        void Directory_DirEventsReply(object sender, DirEventsReplyEventArgs e)
+        {
+            if (e.QueryID != eventSearch) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Directory_DirEventsReply(sender, e)));
+                return;
+            }
+
+            lvwEvents.BeginUpdate();
+
+            foreach (var evt in e.MatchedEvents)
+            {
+                if (evt.ID == 0) continue;
+
+                ListViewItem item = new ListViewItem();
+                item.Name = "evt" + evt.ID.ToString();
+                item.Text = evt.Name;
+                item.Tag = evt;
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, evt.Date));
+
+                lvwEvents.Items.Add(item);
+            }
+
+            lvwEvents.Sort();
+            lvwEvents.EndUpdate();
+
+            eventMatches += e.MatchedEvents.Count;
+            btnNextEvent.Enabled = eventMatches > eventsPerPage;
+            btnPrevEvent.Enabled = eventStart != 0;
+
+            if (e.MatchedEvents.Count > 0 && e.MatchedEvents[e.MatchedEvents.Count - 1].ID == 0)
+                eventMatches -= 1;
+
+            lblNrEvents.Visible = true;
+            lblNrEvents.Text = string.Format("{0} events found", eventMatches > eventsPerPage ? "More than " + (eventStart + eventsPerPage).ToString() : (eventStart + eventMatches).ToString());
+        }
+
+
+        private void btnSearchEvents_Click(object sender, EventArgs e)
+        {
+            if (eventTypeMap.Count == 0)
+            {
+                eventTypeMap[1] = DirectoryManager.EventCategories.Discussion;
+                eventTypeMap[2] = DirectoryManager.EventCategories.Sports;
+                eventTypeMap[3] = DirectoryManager.EventCategories.LiveMusic;
+                eventTypeMap[4] = DirectoryManager.EventCategories.Commercial;
+                eventTypeMap[5] = DirectoryManager.EventCategories.Nightlife;
+                eventTypeMap[6] = DirectoryManager.EventCategories.Games;
+                eventTypeMap[7] = DirectoryManager.EventCategories.Pageants;
+                eventTypeMap[8] = DirectoryManager.EventCategories.Education;
+                eventTypeMap[9] = DirectoryManager.EventCategories.Arts;
+                eventTypeMap[10] = DirectoryManager.EventCategories.Charity;
+                eventTypeMap[11] = DirectoryManager.EventCategories.Miscellaneous;
+            }
+
+            eventType = DirectoryManager.EventCategories.All;
+
+            if (eventTypeMap.ContainsKey(comboEventType.SelectedIndex))
+            {
+                eventType = eventTypeMap[comboEventType.SelectedIndex];
+            }
+
+
+            eventFlags = DirectoryManager.DirFindFlags.DateEvents |
+                DirectoryManager.DirFindFlags.IncludePG |
+                DirectoryManager.DirFindFlags.IncludeMature |
+                DirectoryManager.DirFindFlags.IncludeAdult;
+
+            eventMatches = 0;
+            eventStart = 0;
+            PerformEventSearch();
+        }
+
+        void PerformEventSearch()
+        {
+            lvwEvents_SizeChanged(this, EventArgs.Empty);
+            lvwEvents.Items.Clear();
+            eventSearch = client.Directory.StartEventsSearch(txtSearchEvents.Text.Trim(), eventFlags, eventTime, eventStart, eventType);
+        }
+
+        private void btnSearchEvents_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = e.Handled = true;
+                btnSearchEvents.PerformClick();
+            }
+        }
+
+        private void btnPrevEvent_Click(object sender, EventArgs e)
+        {
+            eventMatches = 0;
+            eventStart -= eventsPerPage;
+            PerformEventSearch();
+        }
+
+        private void btnNextEvent_Click(object sender, EventArgs e)
+        {
+            eventMatches = 0;
+            eventStart += eventsPerPage;
+            PerformEventSearch();
+        }
+
+        void lvwEvents_SizeChanged(object sender, EventArgs e)
+        {
+            lvwEvents.Columns[0].Width = lvwEvents.Width - 130;
+        }
+
+        class EventSorter : System.Collections.IComparer
+        {
+            public int Compare(object a, object b)
+            {
+                try
+                {
+                    DirectoryManager.EventsSearchData e1 = (DirectoryManager.EventsSearchData)((ListViewItem)a).Tag;
+                    DirectoryManager.EventsSearchData e2 = (DirectoryManager.EventsSearchData)((ListViewItem)b).Tag;
+
+                    if (e1.Time < e2.Time) return -1;
+                    else if (e1.Time > e2.Time) return 1;
+                    else return string.Compare(e1.Name, e2.Name);
+                }
+                catch { }
+                return 0;
+            }
+        }
+
+        private void lvwEvents_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            pnlEventDetail.Visible = false;
+
+            if (lvwEvents.SelectedItems.Count == 1 && (lvwEvents.SelectedItems[0].Tag is DirectoryManager.EventsSearchData))
+            {
+                var evt = (DirectoryManager.EventsSearchData)lvwEvents.SelectedItems[0].Tag;
+                client.Directory.EventInfoRequest(evt.ID);
+            }
+        }
+
+        void Directory_EventInfoReply(object sender, EventInfoReplyEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Directory_EventInfoReply(sender, e)));
+                return;
+            }
+
+            var evt = e.MatchedEvent;
+            pnlEventDetail.Visible = true;
+            pnlEventDetail.Tag = evt;
+            btnTeleport.Enabled = btnShowOnMap.Enabled = true;
+
+            txtEventName.Text = evt.Name;
+            txtEventType.Text = evt.Category.ToString();
+            txtEventMaturity.Text = evt.Flags.ToString();
+            txtEventDate.Text = OpenMetaverse.Utils.UnixTimeToDateTime(evt.DateUTC).ToString("r");
+            txtEventDuration.Text = string.Format("{0}:{1:00}", evt.Duration / 60u, evt.Duration % 60u);
+            txtEventOrganizer.Text = instance.Names.Get(evt.Creator, string.Empty);
+            txtEventOrganizer.Tag = evt.Creator;
+            txtEventLocation.Text = string.Format("{0} ({1}, {2}, {3})", evt.SimName, Math.Round(evt.GlobalPos.X % 256), Math.Round(evt.GlobalPos.Y % 256), Math.Round(evt.GlobalPos.Z));
+            txtEventDescription.Text = evt.Desc.Replace("\n", Environment.NewLine);
+        }
+
+        void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => Names_NameUpdated(sender, e)));
+                return;
+            }
+
+            if (!(txtEventOrganizer.Tag is UUID))
+            {
+                return;
+            }
+
+            UUID organizer = (UUID)txtEventOrganizer.Tag;
+
+            foreach (var name in e.Names)
+            {
+                if (name.Key == organizer)
+                {
+                    txtEventOrganizer.Text = name.Value;
+                    break;
+                }
+            }
+        }
+
+        private void btnTeleport_Click(object sender, EventArgs e)
+        {
+            var evt = (DirectoryManager.EventInfo)pnlEventDetail.Tag;
+            float localX, localY;
+            ulong handle = OpenMetaverse.Helpers.GlobalPosToRegionHandle((float)evt.GlobalPos.X, (float)evt.GlobalPos.Y, out localX, out localY);
+            client.Self.Teleport(handle, new Vector3(localX, localY, (float)evt.GlobalPos.Z));
+        }
+
+        private void btnShowOnMap_Click(object sender, EventArgs e)
+        {
+            var evt = (DirectoryManager.EventInfo)pnlEventDetail.Tag;
+            instance.MainForm.ProcessSecondlifeURI(evt.ToSLurl());
+        }
+
+        #endregion Events Search
     }
 }

@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -79,6 +79,7 @@ namespace Radegast
             this.tmnuImport = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.loginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuPrefs = new System.Windows.Forms.ToolStripMenuItem();
@@ -150,7 +151,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.loginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.accessibilityGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -243,6 +244,14 @@ namespace Radegast
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
             this.toolStripMenuItem3.Size = new System.Drawing.Size(154, 6);
+            // 
+            // loginToolStripMenuItem
+            // 
+            this.loginToolStripMenuItem.Enabled = false;
+            this.loginToolStripMenuItem.Name = "loginToolStripMenuItem";
+            this.loginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.loginToolStripMenuItem.Text = "Login";
+            this.loginToolStripMenuItem.Click += new System.EventHandler(this.loginToolStripMenuItem_Click);
             // 
             // disconnectToolStripMenuItem
             // 
@@ -625,6 +634,7 @@ namespace Radegast
             this.tbtnHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.keyboardShortcutsToolStripMenuItem,
             this.reportBugsToolStripMenuItem,
+            this.accessibilityGuideToolStripMenuItem,
             this.checkForUpdatesToolStripMenuItem,
             this.debugConsoleToolStripMenuItem,
             this.toolStripMenuItem6,
@@ -888,13 +898,12 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
-            // loginToolStripMenuItem
+            // accessibilityGuideToolStripMenuItem
             // 
-            this.loginToolStripMenuItem.Enabled = false;
-            this.loginToolStripMenuItem.Name = "loginToolStripMenuItem";
-            this.loginToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.loginToolStripMenuItem.Text = "Login";
-            this.loginToolStripMenuItem.Click += new System.EventHandler(this.loginToolStripMenuItem_Click);
+            this.accessibilityGuideToolStripMenuItem.Name = "accessibilityGuideToolStripMenuItem";
+            this.accessibilityGuideToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.accessibilityGuideToolStripMenuItem.Text = "Accessibility Guide";
+            this.accessibilityGuideToolStripMenuItem.Click += new System.EventHandler(this.accessibilityGuideToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -1010,6 +1019,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem myAttachmentsToolStripMenuItem;
         public System.Windows.Forms.ToolStripButton tsb3D;
         public System.Windows.Forms.ToolStripMenuItem loginToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem accessibilityGuideToolStripMenuItem;
     }
 }
 

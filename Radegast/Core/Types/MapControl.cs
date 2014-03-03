@@ -193,7 +193,7 @@ namespace Radegast
         {
             targetRegion = nullRegion;
             targetX = targetY = -5000000000d;
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
                 {
                     Thread.Sleep(500);
                     needRepaint = true;
@@ -725,7 +725,7 @@ namespace Radegast
 
         void GetTargetParcel()
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 UUID parcelID = Client.Parcels.RequestRemoteParcelID(
                     new Vector3((float)(targetX % regionSize), (float)(targetY % regionSize), 20f),

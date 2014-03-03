@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -492,7 +492,7 @@ namespace Radegast
 
         void Network_SimChanged(object sender, SimChangedEventArgs e)
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(15 * 1000);
                 autosit.TrySit();
@@ -610,8 +610,10 @@ namespace Radegast
                 }
                 else
                 {
+                    Vector3 pos = client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation;
+                    Logger.Log("Setting camera position to " + pos.ToString(), Helpers.LogLevel.Debug);
                     client.Self.Movement.Camera.LookAt(
-                        client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation,
+                        pos,
                         client.Self.SimPosition
                     );
                 }

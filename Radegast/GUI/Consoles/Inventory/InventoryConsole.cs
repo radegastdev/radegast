@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ namespace Radegast
 
         public void Init1()
         {
-            ThreadPool.QueueUserWorkItem(sync =>
+            WorkPool.QueueUserWorkItem(sync =>
             {
                 Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
                 Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
@@ -845,7 +845,7 @@ namespace Radegast
             }
 
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
-            ThreadPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
+            WorkPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
 
             if (!instance.MonoRuntime || IsHandleCreated)
                 Invoke(new MethodInvoker(() =>
@@ -1968,7 +1968,7 @@ namespace Radegast
                 }
                 else if (instance.InventoryClipboard.Item is InventoryFolder)
                 {
-                    ThreadPool.QueueUserWorkItem((object state) =>
+                    WorkPool.QueueUserWorkItem((object state) =>
                         {
                             UUID newFolderID = client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, AssetType.Unknown);
                             Thread.Sleep(500);
@@ -2644,6 +2644,12 @@ namespace Radegast
         private void txtInvID_Enter(object sender, EventArgs e)
         {
             txtInvID.SelectAll();
+        }
+
+        private void copyInitialOutfitsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var c = new FolderCopy(instance);
+            c.GetFolders("Initial Outfits");
         }
 
 

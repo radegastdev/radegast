@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -318,6 +318,7 @@ namespace Radegast
             mediaManager = new MediaManager(this);
             commandsManager = new CommandsManager(this);
             ContextActionManager = new ContextActionsManager(this);
+            RegisterContextActions();
             movement = new RadegastMovement(this);
 
             InitializeLoggingAndConfig();
@@ -355,6 +356,7 @@ namespace Radegast
             client.Settings.USE_ASSET_CACHE = true;
             client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir, "cache");
             client.Assets.Cache.AutoPruneEnabled = false;
+            client.Assets.Cache.ComputeAssetCacheFilename = ComputeCacheName;
 
             client.Throttle.Total = 5000000f;
             client.Settings.THROTTLE_OUTGOING_PACKETS = false;
@@ -367,6 +369,26 @@ namespace Radegast
 
             RegisterClientEvents(client);
             SetClientTag();
+        }
+
+        public string ComputeCacheName(string cacheDir, UUID assetID)
+        {
+            string fileName = assetID.ToString();
+            string dir = cacheDir
+                + Path.DirectorySeparatorChar + fileName.Substring(0, 1)
+                + Path.DirectorySeparatorChar + fileName.Substring(1, 1);
+            try
+            {
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+            }
+            catch
+            {
+                return Path.Combine(cacheDir, fileName);
+            }
+            return Path.Combine(dir, fileName);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -698,7 +720,7 @@ namespace Radegast
                 Logger.Log(string.Format("Successfully created and locked marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
                 return false || MonoRuntime;
             }
-            catch (Exception ex)
+            catch
             {
                 MarkerLock = null;
                 Logger.Log(string.Format("Another instance detected, marker fils {0} locked", CrashMarkerFileName), Helpers.LogLevel.Debug);
@@ -749,6 +771,40 @@ namespace Radegast
         }
 
         #endregion Crash reporting
+
+        #region Context Actions
+        void RegisterContextActions()
+        {
+            ContextActionManager.RegisterContextAction(typeof(Primitive), "Save as DAE...", ExportDAEHander);
+            ContextActionManager.RegisterContextAction(typeof(Primitive),"Copy UUID to clipboard", CopyObjectUUIDHandler);
+        }
+
+        void DeregisterContextActions()
+        {
+            ContextActionManager.DeregisterContextAction(typeof(Primitive), "Save as DAE...");
+            ContextActionManager.DeregisterContextAction(typeof(Primitive), "Copy UUID to clipboard");
+        }
+
+        void ExportDAEHander(object sender, EventArgs e)
+        {
+            MainForm.DisplayColladaConsole((Primitive)sender);
+        }
+
+        void CopyObjectUUIDHandler(object sender, EventArgs e)
+        {
+            if (mainForm.InvokeRequired)
+            {
+                if (mainForm.IsHandleCreated || !MonoRuntime)
+                {
+                    mainForm.Invoke(new MethodInvoker(() => CopyObjectUUIDHandler(sender, e)));
+                }
+                return;
+            }
+
+            Clipboard.SetText(((Primitive)sender).ID.ToString());
+        }
+
+        #endregion Context Actions
 
     }
 
