@@ -125,6 +125,7 @@ namespace Radegast
             this.tbtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.keyboardShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reportBugsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.accessibilityGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugConsoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripSeparator();
@@ -151,7 +152,10 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.accessibilityGuideToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setAccessLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.matureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.adultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -313,6 +317,7 @@ namespace Radegast
             this.tmnuSetHome,
             this.tmnuTeleportHome,
             this.regionParcelToolStripMenuItem,
+            this.setAccessLevelToolStripMenuItem,
             this.toolStripMenuItem5,
             this.tmnuStatusAway,
             this.tmnuStatusBusy});
@@ -658,6 +663,13 @@ namespace Radegast
             this.reportBugsToolStripMenuItem.Text = "Bugs/Feature Requests...";
             this.reportBugsToolStripMenuItem.Click += new System.EventHandler(this.reportBugsToolStripMenuItem_Click);
             // 
+            // accessibilityGuideToolStripMenuItem
+            // 
+            this.accessibilityGuideToolStripMenuItem.Name = "accessibilityGuideToolStripMenuItem";
+            this.accessibilityGuideToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.accessibilityGuideToolStripMenuItem.Text = "Accessibility Guide";
+            this.accessibilityGuideToolStripMenuItem.Click += new System.EventHandler(this.accessibilityGuideToolStripMenuItem_Click);
+            // 
             // checkForUpdatesToolStripMenuItem
             // 
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
@@ -897,12 +909,37 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
-            // accessibilityGuideToolStripMenuItem
+            // setAccessLevelToolStripMenuItem
             // 
-            this.accessibilityGuideToolStripMenuItem.Name = "accessibilityGuideToolStripMenuItem";
-            this.accessibilityGuideToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.accessibilityGuideToolStripMenuItem.Text = "Accessibility Guide";
-            this.accessibilityGuideToolStripMenuItem.Click += new System.EventHandler(this.accessibilityGuideToolStripMenuItem_Click);
+            this.setAccessLevelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pGToolStripMenuItem,
+            this.matureToolStripMenuItem,
+            this.adultToolStripMenuItem});
+            this.setAccessLevelToolStripMenuItem.Name = "setAccessLevelToolStripMenuItem";
+            this.setAccessLevelToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.setAccessLevelToolStripMenuItem.Text = "Set Access Level";
+            this.setAccessLevelToolStripMenuItem.ToolTipText = "To which maturity level sims will you be able to teleport";
+            // 
+            // pGToolStripMenuItem
+            // 
+            this.pGToolStripMenuItem.Name = "pGToolStripMenuItem";
+            this.pGToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.pGToolStripMenuItem.Text = "PG";
+            this.pGToolStripMenuItem.Click += new System.EventHandler(this.pGToolStripMenuItem_Click);
+            // 
+            // matureToolStripMenuItem
+            // 
+            this.matureToolStripMenuItem.Name = "matureToolStripMenuItem";
+            this.matureToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.matureToolStripMenuItem.Text = "Mature";
+            this.matureToolStripMenuItem.Click += new System.EventHandler(this.matureToolStripMenuItem_Click);
+            // 
+            // adultToolStripMenuItem
+            // 
+            this.adultToolStripMenuItem.Name = "adultToolStripMenuItem";
+            this.adultToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.adultToolStripMenuItem.Text = "Adult";
+            this.adultToolStripMenuItem.Click += new System.EventHandler(this.adultToolStripMenuItem_Click);
             // 
             // frmMain
             // 
@@ -1019,6 +1056,10 @@ namespace Radegast
         public System.Windows.Forms.ToolStripButton tsb3D;
         public System.Windows.Forms.ToolStripMenuItem loginToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem accessibilityGuideToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setAccessLevelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pGToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem matureToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem adultToolStripMenuItem;
     }
 }
 
