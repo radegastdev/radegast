@@ -68,7 +68,7 @@ namespace RadegastSpeech
 
             // Get configuration settings, and initialize if not found.
             config = instance.GlobalSettings["plugin.speech"] as OSDMap;
-            
+
             if (config == null)
             {
                 config = new OSDMap();
@@ -77,23 +77,109 @@ namespace RadegastSpeech
                 config["properties"] = new OSDMap();
                 config["substitutions"] = new OSDMap();
                 instance.GlobalSettings["plugin.speech"] = config;
-                instance.GlobalSettings.Save();
             }
 
-            // Add our enable/disable item to the Plugin Menu.
-            ToolsMenu = instance.MainForm.PluginsMenu;
+            OSDMap props = (OSDMap)config["properties"];
+            if (props["voice_speed"] == "")
+            {
+                props["voice_speed"] = "medium";
+            }
 
-            SpeechButton = new ToolStripMenuItem("Speech", null, OnSpeechMenuButtonClicked);
-            ToolsMenu.DropDownItems.Add(SpeechButton);
+            #region Buttons on the plugin menu
+            // SpeechButton = new ToolStripMenuItem("Speech", null, OnSpeechMenuButtonClicked);
+            SpeechButton = new ToolStripMenuItem("Speech");
+            instance.MainForm.PluginsMenu.DropDownItems.Add(SpeechButton);
 
             SpeechButton.Checked = config["enabled"].AsBoolean();
 
-            ToolsMenu.Visible = true;
+            // Enabled sub menu
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Enabled", null, (sender, e) =>
+                {
+                    OnSpeechMenuButtonClicked(SpeechButton, EventArgs.Empty);
+                    ((ToolStripMenuItem)sender).Checked = SpeechButton.Checked;
+                });
+
+                button.Checked = SpeechButton.Checked;
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+
+            SpeechButton.DropDownItems.Add(new ToolStripSeparator());
+
+            // Voice rate
+            {
+                ToolStripMenuItem slowButton = new ToolStripMenuItem("Slow");
+                if (props["voice_speed"] == "slow") slowButton.Checked = true;
+                ToolStripMenuItem mediumButton = new ToolStripMenuItem("Medium");
+                if (props["voice_speed"] == "medium") mediumButton.Checked = true;
+                ToolStripMenuItem fastButton = new ToolStripMenuItem("Fast");
+                if (props["voice_speed"] == "fast") fastButton.Checked = true;
+
+                slowButton.Click += (sender, e) =>
+                {
+                    slowButton.Checked = !slowButton.Checked;
+                    if (slowButton.Checked)
+                    {
+                        props["voice_speed"] = "slow";
+                        mediumButton.Checked = false;
+                        fastButton.Checked = false;
+                    }
+                };
+
+                mediumButton.Click += (sender, e) =>
+                {
+                    mediumButton.Checked = !mediumButton.Checked;
+                    if (mediumButton.Checked)
+                    {
+                        props["voice_speed"] = "medium";
+                        slowButton.Checked = false;
+                        fastButton.Checked = false;
+                    }
+                };
+
+                fastButton.Click += (sender, e) =>
+                {
+                    fastButton.Checked = !fastButton.Checked;
+                    if (fastButton.Checked)
+                    {
+                        props["voice_speed"] = "fast";
+                        slowButton.Checked = false;
+                        mediumButton.Checked = false;
+                    }
+                };
+
+                SpeechButton.DropDownItems.Add(slowButton);
+                SpeechButton.DropDownItems.Add(mediumButton);
+                SpeechButton.DropDownItems.Add(fastButton);
+            }
+
+            SpeechButton.DropDownItems.Add(new ToolStripSeparator());
+
+            // 3D Sound sub menu
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("3D Sound", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["3d_sound"] = me.Checked;
+                    instance.GlobalSettings.Save();
+                    Radegast.Media.Speech.Surround = me.Checked;
+                });
+
+                button.Checked = config["3d_sound"].AsBoolean();
+                Radegast.Media.Speech.Surround = button.Checked;
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+            #endregion Buttons on the plugin menu
 
             if (SpeechButton.Checked)
             {
                 Initialize();
             }
+
+            instance.GlobalSettings.Save();
         }
 
         /// <summary>

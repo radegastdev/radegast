@@ -25,8 +25,27 @@ namespace RadegastSpeech
         private PromptVolume promptVol = PromptVolume.Loud;
         private string[] BeepNames;
         private OSDMap voiceProperties;
+        PromptRate voiceRate
+        {
+            get
+            {
+                if (voiceProperties != null)
+                {
+                    string voiceSpeed = voiceProperties["voice_speed"];
+                    if (!string.IsNullOrEmpty(voiceSpeed))
+                    {
+                        switch (voiceSpeed)
+                        {
+                            case "fast": return PromptRate.Fast;
+                            case "slow": return PromptRate.Slow;
+                        }
+                    }
+                }
+                return PromptRate.Medium;
+            }
+        }
 
-        internal WinSynth( PluginControl pc, string[] beeps)
+        internal WinSynth(PluginControl pc, string[] beeps)
         {
             BeepNames = beeps;
             voiceProperties = pc.config["properties"] as OSDMap;
@@ -49,13 +68,13 @@ namespace RadegastSpeech
         internal void Halt()
         {
         }
-        
+
         internal void Speak(QueuedSpeech utterance, string outputfile)
         {
             if (syn == null) return;
 
             // Got something to say.  Initialize temp file.
-            StartSpeech(utterance.voice, outputfile );
+            StartSpeech(utterance.voice, outputfile);
 
             // Play the beep, if there is one.
             if (utterance.beep != BeepType.None)
@@ -85,7 +104,7 @@ namespace RadegastSpeech
 
             // Close the temporary WAV file.
             FinishSpeech();
-       }
+        }
 
         private void StartSpeech(AssignedVoice vb, string outputfile)
         {
@@ -125,19 +144,24 @@ namespace RadegastSpeech
         private void SaySegment(QueuedSpeech utterance)
         {
             PromptStyle body = new PromptStyle();
+            /* User preference now
             switch (utterance.voice.rateModification)
             {
-                case 00: body.Rate = PromptRate.Medium; break;
+                case 00: body.Rate = PromptRate.Fast; break;
                 case +1: body.Rate = PromptRate.Fast; break;
-                case -1: body.Rate = PromptRate.Slow; break;
+                case -1: body.Rate = PromptRate.Medium; break;
             }
+            */
+
+            body.Rate = voiceRate;
+
             switch (utterance.voice.pitchModification)
             {
                 case 00: body.Emphasis = PromptEmphasis.Moderate; break;
                 case +1: body.Emphasis = PromptEmphasis.Strong; break;
                 case -1: body.Emphasis = PromptEmphasis.Reduced; break;
             }
- 
+
             pb.StartStyle(body);
             pb.StartSentence();
             pb.AppendText(utterance.message);
@@ -152,9 +176,9 @@ namespace RadegastSpeech
         private void SayPrompt(string text)
         {
             PromptStyle intro = new PromptStyle();
-            intro.Rate = PromptRate.Fast;
-            intro.Volume = promptVol - 1;
-            intro.Emphasis = PromptEmphasis.Reduced;
+            intro.Rate = voiceRate;
+            //intro.Volume = promptVol - 1;
+            intro.Emphasis = PromptEmphasis.Moderate;
             pb.StartStyle(intro);
             pb.StartSentence();
             pb.AppendText(text + ":");
@@ -213,7 +237,7 @@ namespace RadegastSpeech
                     // Check for additional information about this voice
                     if (voiceProperties != null)
                     {
-                        string propString = voiceProperties[ v.VoiceInfo.Name ].AsString();
+                        string propString = voiceProperties[v.VoiceInfo.Name].AsString();
                         if (propString != null)
                         {
                             // Properties are a series of blank-separated keywords
