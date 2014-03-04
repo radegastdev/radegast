@@ -48,7 +48,7 @@ namespace RadegastSpeech.Conversation
         {
             // Initialize the index to conversations and the list of pending interruptions.
             interruptions = new LinkedList<Mode>();
-            conversations = new Dictionary<string,Mode>();
+            conversations = new Dictionary<string, Mode>();
         }
 
         internal override void Start()
@@ -70,8 +70,8 @@ namespace RadegastSpeech.Conversation
             // Automatically handle notifications (blue dialogs)
             Notification.OnNotificationDisplayed +=
                 new Notification.NotificationCallback(OnNotificationDisplayed);
-//            Notification.OnNotificationClosed +=
-//                new Notification.NotificationCallback(OnNotificationClosed);
+            //            Notification.OnNotificationClosed +=
+            //                new Notification.NotificationCallback(OnNotificationClosed);
 
             // Announce connect and disconnect.
             control.instance.Netcom.ClientConnected +=
@@ -162,7 +162,7 @@ namespace RadegastSpeech.Conversation
                     Talker.SayMore("Connecting to region");
                     return;
 
-               case LoginStatus.Success:
+                case LoginStatus.Success:
                     LoginName = control.instance.Netcom.LoginOptions.FullName;
                     //Talker.SayMore("Logged in as " + LoginName);
                     //if (friends != null)
@@ -193,8 +193,10 @@ namespace RadegastSpeech.Conversation
         {
             System.Windows.Forms.Control sTabControl = Tab.Control;
 
-            if (sTabControl is InventoryConsole)
+            if (sTabControl is InventoryConsole && control.config["enabled_for_inventory"])
+            {
                 SelectConversation(inventory);
+            }
             else if (sTabControl is ChatConsole)
             {
                 if (chat == null)
@@ -205,10 +207,14 @@ namespace RadegastSpeech.Conversation
                 }
                 SelectConversation(chat);
             }
-            else if (sTabControl is FriendsConsole)
+            else if (sTabControl is FriendsConsole && control.config["enabled_for_friends"])
+            {
                 SelectConversation(friends);
+            }
             else if (sTabControl is VoiceConsole)
+            {
                 SelectConversation(voice);
+            }
             else if (sTabControl is GroupIMTabWindow)
             {
                 GroupIMTabWindow tab = (GroupIMTabWindow)sTabControl;
@@ -225,7 +231,7 @@ namespace RadegastSpeech.Conversation
                 IMTabWindow tab = (IMTabWindow)sTabControl;
                 SelectConversation(tab.TargetName);
             }
-            else if (sTabControl is ObjectsConsole)
+            else if (sTabControl is ObjectsConsole && control.config["enabled_for_objects"])
             {
                 SelectConversation(surroundings);
             }
@@ -249,17 +255,23 @@ namespace RadegastSpeech.Conversation
             Mode newConv = null;
 
             // Create a conversation on first appearance of its tab.
-            if (sTabControl is InventoryConsole)
+            if (sTabControl is InventoryConsole && control.config["enabled_for_inventory"])
+            {
                 newConv = inventory = new Closet(control);
+            }
             else if (sTabControl is ChatConsole)
             {
                 if (chat != null) return;
                 newConv = chat = new Chat(control);
             }
-            else if (sTabControl is FriendsConsole)
+            else if (sTabControl is FriendsConsole && control.config["enabled_for_friends"])
+            {
                 newConv = friends = new Friends(control);
+            }
             else if (sTabControl is VoiceConsole)
+            {
                 newConv = voice = new Voice(control);
+            }
             else if (sTabControl is GroupIMTabWindow)
             {
                 GroupIMTabWindow tab = (GroupIMTabWindow)sTabControl;
@@ -278,7 +290,7 @@ namespace RadegastSpeech.Conversation
                 AddConversation(new SingleIMSession(control, tab.TargetName, tab.TargetId, tab.SessionId));
                 return;
             }
-            else if (sTabControl is ObjectsConsole)
+            else if (sTabControl is ObjectsConsole && control.config["enabled_for_objects"])
             {
                 surroundings = new Surroundings(control);
                 AddConversation(surroundings);
@@ -405,7 +417,7 @@ namespace RadegastSpeech.Conversation
         /// <summary>
         /// Finish an interruption and resume normal conversation
         /// </summary>
-        internal void FinishInterruption( Mode m )
+        internal void FinishInterruption(Mode m)
         {
             lock (interruptions)
             {
@@ -427,7 +439,7 @@ namespace RadegastSpeech.Conversation
                 }
             }
         }
- 
+
         private void Network_ClientConnected(object sender, EventArgs e)
         {
             Talker.Say("You are connected.", Talk.BeepType.Good);
@@ -528,7 +540,7 @@ namespace RadegastSpeech.Conversation
             }
             return true;
         }
-        
+
         /// <summary>
         /// Dispatch recognized text to appropriate conversation.
         /// </summary>
@@ -547,7 +559,7 @@ namespace RadegastSpeech.Conversation
         {
             if (c == null)
             {
-                Talker.Say("Trying to start non-existant conversation", Talk.BeepType.Bad );
+                Logger.Log("Trying to start non-existant conversation", Helpers.LogLevel.Warning);
                 return;
             }
             // Avoid multiple starts.
@@ -645,11 +657,11 @@ namespace RadegastSpeech.Conversation
         internal void ChangeFocus(Mode toThis)
         {
             currentMode = toThis;
-             if (currentMode != null)
+            if (currentMode != null)
                 currentMode.Start();
         }
 
- 
+
         /// <summary>
         /// Event handler for new blue dialog boxes.
         /// </summary>
@@ -657,7 +669,7 @@ namespace RadegastSpeech.Conversation
         /// <param name="e"></param>
         void OnNotificationDisplayed(object sender, NotificationEventArgs e)
         {
-            AddInterruption(new Conversation.BlueMenu(control,e));
+            AddInterruption(new Conversation.BlueMenu(control, e));
         }
 
         /// <summary>

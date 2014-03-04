@@ -79,6 +79,21 @@ namespace RadegastSpeech
                 instance.GlobalSettings["plugin.speech"] = config;
             }
 
+            if (!config.ContainsKey("enabled_for_inventory"))
+            {
+                config["enabled_for_inventory"] = true;
+            }
+
+            if (!config.ContainsKey("enabled_for_objects"))
+            {
+                config["enabled_for_objects"] = true;
+            }
+
+            if (!config.ContainsKey("enabled_for_friends"))
+            {
+                config["enabled_for_friends"] = true;
+            }
+
             OSDMap props = (OSDMap)config["properties"];
             if (props["voice_speed"] == "")
             {
@@ -112,7 +127,7 @@ namespace RadegastSpeech
                 ToolStripMenuItem slowButton = new ToolStripMenuItem("Slow");
                 slowButton.Name = "slow";
                 if (props["voice_speed"] == "slow") slowButton.Checked = true;
-                
+
                 ToolStripMenuItem mediumButton = new ToolStripMenuItem("Medium");
                 if (props["voice_speed"] == "medium") mediumButton.Checked = true;
                 mediumButton.Name = "medium";
@@ -157,6 +172,53 @@ namespace RadegastSpeech
                 SpeechButton.DropDownItems.Add(slowButton);
                 SpeechButton.DropDownItems.Add(mediumButton);
                 SpeechButton.DropDownItems.Add(fastButton);
+            }
+
+            SpeechButton.DropDownItems.Add(new ToolStripSeparator());
+
+            // Enable / disable for inventory tab
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Inventory", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["enabled_for_inventory"] = me.Checked;
+                });
+                button.Name = "speech_for_inventory";
+                button.AccessibleName = "Speech for inventory";
+                button.Checked = config["enabled_for_inventory"].AsBoolean();
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+
+            // Enable / disable for objects tab
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Objects", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["enabled_for_objects"] = me.Checked;
+                });
+                button.Name = "speech_for_objects";
+                button.AccessibleName = "Speech for objects";
+                button.Checked = config["enabled_for_objects"].AsBoolean();
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+
+            // Enable / disable for friends tab
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Friends", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["enabled_for_friends"] = me.Checked;
+                });
+                button.Name = "speech_for_friends";
+                button.AccessibleName = "Speech for friends";
+                button.Checked = config["enabled_for_friends"].AsBoolean();
+
+                SpeechButton.DropDownItems.Add(button);
             }
 
             SpeechButton.DropDownItems.Add(new ToolStripSeparator());
