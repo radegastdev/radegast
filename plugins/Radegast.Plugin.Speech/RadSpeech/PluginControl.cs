@@ -110,11 +110,16 @@ namespace RadegastSpeech
             // Voice rate
             {
                 ToolStripMenuItem slowButton = new ToolStripMenuItem("Slow");
+                slowButton.Name = "slow";
                 if (props["voice_speed"] == "slow") slowButton.Checked = true;
+                
                 ToolStripMenuItem mediumButton = new ToolStripMenuItem("Medium");
                 if (props["voice_speed"] == "medium") mediumButton.Checked = true;
+                mediumButton.Name = "medium";
+
                 ToolStripMenuItem fastButton = new ToolStripMenuItem("Fast");
                 if (props["voice_speed"] == "fast") fastButton.Checked = true;
+                fastButton.Name = "fast";
 
                 slowButton.Click += (sender, e) =>
                 {
@@ -180,6 +185,55 @@ namespace RadegastSpeech
             }
 
             instance.GlobalSettings.Save();
+
+            instance.MainForm.KeyDown += MainForm_KeyDown;
+        }
+
+        /// <summary>
+        /// Plugin shut-down entry
+        /// </summary>
+        /// <param name="inst"></param>
+        /// <remarks>Called by Radegast at shut-down, or when Speech is switched off.
+        /// We use this to release system resources.</remarks>
+        public void StopPlugin(RadegastInstance inst)
+        {
+            instance.MainForm.KeyDown -= MainForm_KeyDown;
+            SpeechButton.Dispose();
+            Shutdown();
+        }
+
+        void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ctrl-Shift-R toggle speech rate
+            if (e.Modifiers == (Keys.Control | Keys.Shift) && e.KeyCode == Keys.R)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                OSDMap props = (OSDMap)config["properties"];
+                if (props["voice_speed"] == "slow")
+                {
+                    props["voice_speed"] = "medium";
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("slow", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("medium", false)[0]).Checked = true;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("fast", false)[0]).Checked = false;
+                }
+                else if (props["voice_speed"] == "medium")
+                {
+                    props["voice_speed"] = "fast";
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("slow", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("medium", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("fast", false)[0]).Checked = true;
+                }
+                else
+                {
+                    props["voice_speed"] = "slow";
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("slow", false)[0]).Checked = true;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("medium", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("fast", false)[0]).Checked = false;
+                }
+
+                instance.TabConsole.DisplayNotificationInChat("Voice rate set to " + props["voice_speed"]);
+                return;
+            }
         }
 
         /// <summary>
@@ -291,18 +345,6 @@ namespace RadegastSpeech
         {
             SpeechButton.Checked = false;
             osLayer = null;
-        }
-
-        /// <summary>
-        /// Plugin shut-down entry
-        /// </summary>
-        /// <param name="inst"></param>
-        /// <remarks>Called by Radegast at shut-down, or when Speech is switched off.
-        /// We use this to release system resources.</remarks>
-        public void StopPlugin(RadegastInstance inst)
-        {
-            SpeechButton.Dispose();
-            Shutdown();
         }
 
         /// <summary>
