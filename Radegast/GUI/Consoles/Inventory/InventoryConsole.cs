@@ -1706,8 +1706,8 @@ namespace Radegast
                                 trashCreated.WaitOne(20 * 1000, false);
                                 Thread.Sleep(200);
                                 client.Inventory.MoveFolder(f.UUID, trash, f.Name);
-                                return;
                             });
+                            return;
                         }
 
                         client.Inventory.MoveFolder(f.UUID, trash, f.Name);
@@ -1816,8 +1816,8 @@ namespace Radegast
                                 trashCreated.WaitOne(20 * 1000, false);
                                 Thread.Sleep(200);
                                 client.Inventory.MoveItem(item.UUID, trash, item.Name);
-                                return;
                             });
+                            return;
                         }
 
                         client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
@@ -2181,15 +2181,22 @@ namespace Radegast
             }
             else if (e.KeyCode == Keys.Delete && invTree.SelectedNode != null)
             {
+                var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                if (trash == Inventory.RootFolder.UUID)
+                {
+                    trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                    Thread.Sleep(2000);
+                }
+
                 if (invTree.SelectedNode.Tag is InventoryItem)
                 {
                     InventoryItem item = invTree.SelectedNode.Tag as InventoryItem;
-                    client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
+                    client.Inventory.MoveItem(item.UUID, trash, item.Name);
                 }
                 else if (invTree.SelectedNode.Tag is InventoryFolder)
                 {
                     InventoryFolder f = invTree.SelectedNode.Tag as InventoryFolder;
-                    client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
+                    client.Inventory.MoveFolder(f.UUID, trash, f.Name);
                 }
             }
             else if (e.KeyCode == Keys.Apps && invTree.SelectedNode != null)
