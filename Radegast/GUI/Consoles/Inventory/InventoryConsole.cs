@@ -75,6 +75,7 @@ namespace Radegast
         private InvNodeSorter sorter;
         private List<UUID> QueuedFolders = new List<UUID>();
         private Dictionary<UUID, int> FolderFetchRetries = new Dictionary<UUID, int>();
+        AutoResetEvent trashCreated = new AutoResetEvent(false);
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -299,6 +300,11 @@ namespace Radegast
 
         void Inventory_InventoryObjectAdded(object sender, InventoryObjectAddedEventArgs e)
         {
+            if (e.Obj is InventoryFolder && ((InventoryFolder)e.Obj).PreferredType == AssetType.TrashFolder)
+            {
+                trashCreated.Set();
+            }
+
             if (TreeUpdateInProgress)
             {
                 lock (ItemsToAdd)
@@ -1690,7 +1696,21 @@ namespace Radegast
 
 
                     case "delete_folder":
-                        client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
+                        var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                        if (trash == Inventory.RootFolder.UUID)
+                        {
+                            WorkPool.QueueUserWorkItem(sync =>
+                            {
+                                trashCreated.Reset();
+                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                                trashCreated.WaitOne(20 * 1000, false);
+                                Thread.Sleep(200);
+                                client.Inventory.MoveFolder(f.UUID, trash, f.Name);
+                                return;
+                            });
+                        }
+
+                        client.Inventory.MoveFolder(f.UUID, trash, f.Name);
                         break;
 
                     case "empty_trash":
@@ -1786,6 +1806,20 @@ namespace Radegast
                         break;
 
                     case "delete_item":
+                        var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                        if (trash == Inventory.RootFolder.UUID)
+                        {
+                            WorkPool.QueueUserWorkItem(sync =>
+                            {
+                                trashCreated.Reset();
+                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                                trashCreated.WaitOne(20 * 1000, false);
+                                Thread.Sleep(200);
+                                client.Inventory.MoveItem(item.UUID, trash, item.Name);
+                                return;
+                            });
+                        }
+
                         client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
                         break;
 
