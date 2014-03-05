@@ -798,8 +798,8 @@ namespace Radegast
 
         private void btnEjectMember_Click(object sender, EventArgs e)
         {
-            if (lvwMemberDetails.SelectedItems.Count != 1) return;
-            EnhancedGroupMember m = (EnhancedGroupMember)lvwMemberDetails.SelectedItems[0].Tag;
+            if (lvwMemberDetails.SelectedIndices.Count != 1 || roles == null || roleMembers == null) return;
+            EnhancedGroupMember m = GroupMembers[lvwMemberDetails.SelectedIndices[0]];
             client.Groups.EjectUser(group.ID, m.Base.ID);
         }
 
