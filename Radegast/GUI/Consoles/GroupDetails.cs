@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -798,8 +798,8 @@ namespace Radegast
 
         private void btnEjectMember_Click(object sender, EventArgs e)
         {
-            if (lvwMemberDetails.SelectedItems.Count != 1) return;
-            EnhancedGroupMember m = (EnhancedGroupMember)lvwMemberDetails.SelectedItems[0].Tag;
+            if (lvwMemberDetails.SelectedIndices.Count != 1 || roles == null || roleMembers == null) return;
+            EnhancedGroupMember m = GroupMembers[lvwMemberDetails.SelectedIndices[0]];
             client.Groups.EjectUser(group.ID, m.Base.ID);
         }
 

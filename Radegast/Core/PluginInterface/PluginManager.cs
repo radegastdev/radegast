@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,8 @@ namespace Radegast
                 return PluginManager.GetAttributes(Plugin);
             }
         }
+
+        public AppDomain Domain;
     }
 
     /// <summary>
@@ -93,6 +95,9 @@ namespace Radegast
                 "openjpeg-dotnet.dll",
                 "OpenCyc.dll",
                 "IKVM.",
+                "OpenTK",
+                "zlib.net.dll",
+                "SmartThreadPool",
             });
 
         /// <summary>List of file extensions that could potentially hold plugins</summary>
@@ -149,15 +154,21 @@ namespace Radegast
         {
             lock (PluginsLoaded)
             {
-                PluginsLoaded.ForEach((PluginInfo info) =>
+                var pluginInfos = PluginsLoaded.FindAll(info => { return info.Plugin == plug.Plugin; });
+
+                foreach (var info in pluginInfos)
+                {
+                    AppDomain domain = info.Domain;
+                    try { info.Plugin.StopPlugin(instance); }
+                    catch (Exception ex) { Logger.Log("ERROR in unloading plugin: " + info.Plugin.GetType().Name + " because " + ex, Helpers.LogLevel.Debug, ex); }
+                    PluginsLoaded.Remove(info);
+
+                    if (domain != null && PluginsLoaded.Find(dinfo => { return dinfo.Domain == domain; }) == null)
                     {
-                        if (info.FileName == plug.FileName || info.Plugin == plug.Plugin)
-                        {
-                            try { info.Plugin.StopPlugin(instance); }
-                            catch (Exception ex) { Logger.Log("ERROR in unloading plugin: " + info.Plugin.GetType().Name + " because " + ex, Helpers.LogLevel.Debug, ex); }
-                        }
-                    });
-                PluginsLoaded.RemoveAll((PluginInfo info) => { return plug.FileName == info.FileName || info.Plugin == plug.Plugin; });
+                        try { AppDomain.Unload(domain); }
+                        catch (Exception ex) { Logger.Log("ERROR unloading application domain for : " + plug.FileName + "\n" + ex.Message, Helpers.LogLevel.Debug); }
+                    }
+                }
             }
         }
 
@@ -224,8 +235,7 @@ namespace Radegast
             {
                 try
                 {
-                    Assembly assembly = Assembly.LoadFile(loadFileName);
-                    LoadAssembly(loadFileName, assembly, stratPlugins);
+                    LoadAssembly(loadFileName, stratPlugins);
                 }
                 catch (BadImageFormatException)
                 {
@@ -361,6 +371,17 @@ namespace Radegast
         /// <param name="loadfilename">File name from which assembly was loaded</param>
         /// <param name="assembly">Assembly to scan for supported types</param>
         /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
+        public void LoadAssembly(string loadfilename, bool startPlugins)
+        {
+            LoadAssembly(loadfilename, null, startPlugins);
+        }
+
+
+        /// <summary>
+        /// Scans assembly for supported types and loads it into it's own domain
+        /// </summary>
+        /// <param name="loadfilename">File name from which assembly was loaded</param>
+        /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
         public void LoadAssembly(string loadfilename, Assembly assembly, bool startPlugins)
         {
             if (null != PluginsLoaded.Find((PluginInfo info) => { return info.FileName == loadfilename; }))
@@ -373,6 +394,29 @@ namespace Radegast
                 return;
             }
 
+            AppDomain domain = null;
+
+            if (assembly == null)
+            {
+                // Don't load ourselves into a domain
+                if (Path.GetFileName(Assembly.GetEntryAssembly().Location) == Path.GetFileName(loadfilename))
+                {
+                    assembly = Assembly.GetEntryAssembly();
+                }
+                else
+                {
+                    assembly = Assembly.LoadFile(loadfilename);
+
+                    /* Disable creation of domains for now
+                    domain = AppDomain.CreateDomain("Domain for: " + loadfilename);
+                    var loader = (RemoteLoader)domain.CreateInstanceAndUnwrap("Radegast", "Radegast.RemoteLoader");
+                    assembly = loader.Load(loadfilename);
+                    */
+                }
+            }
+
+            bool loadedTypesFromAssembly = false;
+
             foreach (Type type in assembly.GetTypes())
             {
                 if (typeof(IRadegastPlugin).IsAssignableFrom(type))
@@ -383,23 +427,31 @@ namespace Radegast
                         IRadegastPlugin plug = null;
                         ConstructorInfo constructorInfo = type.GetConstructor(new Type[] { typeof(RadegastInstance) });
                         if (constructorInfo != null)
+                        {
                             plug = (IRadegastPlugin)constructorInfo.Invoke(new[] { instance });
+                        }
                         else
                         {
                             constructorInfo = type.GetConstructor(new Type[] { });
                             if (constructorInfo != null)
+                            {
                                 plug = (IRadegastPlugin)constructorInfo.Invoke(new object[0]);
+                            }
                             else
                             {
                                 Logger.Log("ERROR Constructing Radegast Plugin: " + loadfilename + " because " + type + " has no usable constructor.", Helpers.LogLevel.Debug);
                                 continue;
                             }
                         }
+
+                        loadedTypesFromAssembly = true;
+
                         PluginInfo info = new PluginInfo()
                         {
                             FileName = loadfilename,
                             Plugin = plug,
-                            Started = false
+                            Started = false,
+                            Domain = domain
                         };
 
                         lock (PluginsLoaded) PluginsLoaded.Add(info);
@@ -419,8 +471,8 @@ namespace Radegast
                 {
                     try
                     {
-                        instance.CommandsManager.LoadType(type);
-                        instance.ContextActionManager.LoadType(type);
+                        loadedTypesFromAssembly |= instance.CommandsManager.LoadType(type);
+                        loadedTypesFromAssembly |= instance.ContextActionManager.LoadType(type);
                     }
                     catch (Exception ex)
                     {
@@ -429,6 +481,22 @@ namespace Radegast
                     }
                 }
             }
+
+            if (domain != null && !loadedTypesFromAssembly)
+            {
+                AppDomain.Unload(domain);
+            }
+
+
         }
     }
+
+    public class RemoteLoader : MarshalByRefObject
+    {
+        public Assembly Load(string loadfilename)
+        {
+            return AppDomain.CurrentDomain.Load(File.ReadAllBytes(loadfilename));
+        }
+    }
+
 }

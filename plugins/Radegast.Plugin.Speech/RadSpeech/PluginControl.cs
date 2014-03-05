@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client Speech Interface
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ namespace RadegastSpeech
 
             // Get configuration settings, and initialize if not found.
             config = instance.GlobalSettings["plugin.speech"] as OSDMap;
-            
+
             if (config == null)
             {
                 config = new OSDMap();
@@ -77,22 +77,224 @@ namespace RadegastSpeech
                 config["properties"] = new OSDMap();
                 config["substitutions"] = new OSDMap();
                 instance.GlobalSettings["plugin.speech"] = config;
-                instance.GlobalSettings.Save();
             }
 
-            // Add our enable/disable item to the Plugin Menu.
-            ToolsMenu = instance.MainForm.PluginsMenu;
+            if (!config.ContainsKey("enabled_for_inventory"))
+            {
+                config["enabled_for_inventory"] = true;
+            }
 
-            SpeechButton = new ToolStripMenuItem("Speech", null, OnSpeechMenuButtonClicked);
-            ToolsMenu.DropDownItems.Add(SpeechButton);
+            if (!config.ContainsKey("enabled_for_objects"))
+            {
+                config["enabled_for_objects"] = true;
+            }
+
+            if (!config.ContainsKey("enabled_for_friends"))
+            {
+                config["enabled_for_friends"] = true;
+            }
+
+            OSDMap props = (OSDMap)config["properties"];
+            if (props["voice_speed"] == "")
+            {
+                props["voice_speed"] = "medium";
+            }
+
+            #region Buttons on the plugin menu
+            // SpeechButton = new ToolStripMenuItem("Speech", null, OnSpeechMenuButtonClicked);
+            SpeechButton = new ToolStripMenuItem("Speech");
+            instance.MainForm.PluginsMenu.DropDownItems.Add(SpeechButton);
 
             SpeechButton.Checked = config["enabled"].AsBoolean();
 
-            ToolsMenu.Visible = true;
+            // Enabled sub menu
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Enabled", null, (sender, e) =>
+                {
+                    OnSpeechMenuButtonClicked(SpeechButton, EventArgs.Empty);
+                    ((ToolStripMenuItem)sender).Checked = SpeechButton.Checked;
+                });
+
+                button.Checked = SpeechButton.Checked;
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+
+            SpeechButton.DropDownItems.Add(new ToolStripSeparator());
+
+            // Voice rate
+            {
+                ToolStripMenuItem slowButton = new ToolStripMenuItem("Slow");
+                slowButton.Name = "slow";
+                if (props["voice_speed"] == "slow") slowButton.Checked = true;
+
+                ToolStripMenuItem mediumButton = new ToolStripMenuItem("Medium");
+                if (props["voice_speed"] == "medium") mediumButton.Checked = true;
+                mediumButton.Name = "medium";
+
+                ToolStripMenuItem fastButton = new ToolStripMenuItem("Fast");
+                if (props["voice_speed"] == "fast") fastButton.Checked = true;
+                fastButton.Name = "fast";
+
+                slowButton.Click += (sender, e) =>
+                {
+                    slowButton.Checked = !slowButton.Checked;
+                    if (slowButton.Checked)
+                    {
+                        props["voice_speed"] = "slow";
+                        mediumButton.Checked = false;
+                        fastButton.Checked = false;
+                    }
+                };
+
+                mediumButton.Click += (sender, e) =>
+                {
+                    mediumButton.Checked = !mediumButton.Checked;
+                    if (mediumButton.Checked)
+                    {
+                        props["voice_speed"] = "medium";
+                        slowButton.Checked = false;
+                        fastButton.Checked = false;
+                    }
+                };
+
+                fastButton.Click += (sender, e) =>
+                {
+                    fastButton.Checked = !fastButton.Checked;
+                    if (fastButton.Checked)
+                    {
+                        props["voice_speed"] = "fast";
+                        slowButton.Checked = false;
+                        mediumButton.Checked = false;
+                    }
+                };
+
+                SpeechButton.DropDownItems.Add(slowButton);
+                SpeechButton.DropDownItems.Add(mediumButton);
+                SpeechButton.DropDownItems.Add(fastButton);
+            }
+
+            SpeechButton.DropDownItems.Add(new ToolStripSeparator());
+
+            // Enable / disable for inventory tab
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Inventory", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["enabled_for_inventory"] = me.Checked;
+                });
+                button.Name = "speech_for_inventory";
+                button.AccessibleName = "Speech for inventory";
+                button.Checked = config["enabled_for_inventory"].AsBoolean();
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+
+            // Enable / disable for objects tab
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Objects", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["enabled_for_objects"] = me.Checked;
+                });
+                button.Name = "speech_for_objects";
+                button.AccessibleName = "Speech for objects";
+                button.Checked = config["enabled_for_objects"].AsBoolean();
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+
+            // Enable / disable for friends tab
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("Friends", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["enabled_for_friends"] = me.Checked;
+                });
+                button.Name = "speech_for_friends";
+                button.AccessibleName = "Speech for friends";
+                button.Checked = config["enabled_for_friends"].AsBoolean();
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+
+            SpeechButton.DropDownItems.Add(new ToolStripSeparator());
+
+            // 3D Sound sub menu
+            {
+                ToolStripMenuItem button = new ToolStripMenuItem("3D Sound", null, (sender, e) =>
+                {
+                    var me = (ToolStripMenuItem)sender;
+                    me.Checked = !me.Checked;
+                    config["3d_sound"] = me.Checked;
+                    instance.GlobalSettings.Save();
+                    Radegast.Media.Speech.Surround = me.Checked;
+                });
+
+                button.Checked = config["3d_sound"].AsBoolean();
+                Radegast.Media.Speech.Surround = button.Checked;
+
+                SpeechButton.DropDownItems.Add(button);
+            }
+            #endregion Buttons on the plugin menu
 
             if (SpeechButton.Checked)
             {
                 Initialize();
+            }
+
+            instance.GlobalSettings.Save();
+
+            instance.MainForm.KeyDown += MainForm_KeyDown;
+        }
+
+        /// <summary>
+        /// Plugin shut-down entry
+        /// </summary>
+        /// <param name="inst"></param>
+        /// <remarks>Called by Radegast at shut-down, or when Speech is switched off.
+        /// We use this to release system resources.</remarks>
+        public void StopPlugin(RadegastInstance inst)
+        {
+            instance.MainForm.KeyDown -= MainForm_KeyDown;
+            SpeechButton.Dispose();
+            Shutdown();
+        }
+
+        void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ctrl-Shift-R toggle speech rate
+            if (e.Modifiers == (Keys.Control | Keys.Shift) && e.KeyCode == Keys.R)
+            {
+                e.Handled = e.SuppressKeyPress = true;
+                OSDMap props = (OSDMap)config["properties"];
+                if (props["voice_speed"] == "slow")
+                {
+                    props["voice_speed"] = "medium";
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("slow", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("medium", false)[0]).Checked = true;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("fast", false)[0]).Checked = false;
+                }
+                else if (props["voice_speed"] == "medium")
+                {
+                    props["voice_speed"] = "fast";
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("slow", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("medium", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("fast", false)[0]).Checked = true;
+                }
+                else
+                {
+                    props["voice_speed"] = "slow";
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("slow", false)[0]).Checked = true;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("medium", false)[0]).Checked = false;
+                    ((ToolStripMenuItem)SpeechButton.DropDownItems.Find("fast", false)[0]).Checked = false;
+                }
+
+                instance.TabConsole.DisplayNotificationInChat("Voice rate set to " + props["voice_speed"]);
+                return;
             }
         }
 
@@ -205,18 +407,6 @@ namespace RadegastSpeech
         {
             SpeechButton.Checked = false;
             osLayer = null;
-        }
-
-        /// <summary>
-        /// Plugin shut-down entry
-        /// </summary>
-        /// <param name="inst"></param>
-        /// <remarks>Called by Radegast at shut-down, or when Speech is switched off.
-        /// We use this to release system resources.</remarks>
-        public void StopPlugin(RadegastInstance inst)
-        {
-            SpeechButton.Dispose();
-            Shutdown();
         }
 
         /// <summary>

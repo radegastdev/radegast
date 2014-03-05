@@ -118,7 +118,10 @@ namespace SimpleBuilderNamespace
         public void StopPlugin(RadegastInstance inst)
         {
             ActivateTabButton.Dispose();
-            instance.TabConsole.Tabs[tabID].Close();
+            if (instance.TabConsole.Tabs.ContainsKey(tabID))
+            {
+                instance.TabConsole.Tabs[tabID].Close();
+            }
         }
 
         /// <summary>

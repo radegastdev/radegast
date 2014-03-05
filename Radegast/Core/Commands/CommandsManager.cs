@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -170,8 +170,15 @@ namespace Radegast.Commands
                 WriteLine("Listed {0} command{1}.", found, found == 1 ? "" : "s");
         }
 
-        public void LoadType(Type type)
+        /// <summary>
+        /// Loads commands
+        /// </summary>
+        /// <param name="type">Type to try to load</param>
+        /// <returns>True if useful types were found and loaded</returns>
+        public bool LoadType(Type type)
         {
+            bool loadedType = false;
+            
             if (typeof(IRadegastCommand).IsAssignableFrom(type) && type != typeof(RadegastCommand))
             {
                 try
@@ -181,14 +188,14 @@ namespace Radegast.Commands
                     {
                         IRadegastCommand plug = (IRadegastCommand)c.Invoke(new object[] { instance });
                         LoadCommand(plug);
-                        return;
+                        return true;
                     }
                     c = type.GetConstructor(Type.EmptyTypes);
                     if (c != null)
                     {
                         IRadegastCommand plug = (IRadegastCommand)c.Invoke(new object[0]);
                         LoadCommand(plug);
-                        return;
+                        return true;
                     }
                 }
                 catch (Exception ex)
@@ -197,12 +204,12 @@ namespace Radegast.Commands
                                Helpers.LogLevel.Debug);
                     throw ex;
                 }
-                return;
+                return false;
             }
 
             if (typeof(ICommandInterpreter).IsAssignableFrom(type))
             {
-                if (GetType() == type) return;
+                if (GetType() == type) return false;
                 foreach (var ci in type.GetConstructors())
                 {
                     if (ci.GetParameters().Length > 0) continue;
@@ -210,6 +217,7 @@ namespace Radegast.Commands
                     {
                         ICommandInterpreter plug = (ICommandInterpreter)ci.Invoke(new object[0]);
                         LoadInterpreter(plug);
+                        loadedType = true;
                         break;
                     }
                     catch (Exception ex)
@@ -218,9 +226,9 @@ namespace Radegast.Commands
                         throw ex;
                     }
                 }
-                return;
             }
 
+            return loadedType;
         }
 
         public void LoadInterpreter(ICommandInterpreter interpreter)

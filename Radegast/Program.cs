@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ namespace Radegast
         {
             HelpText header = new HelpText(Properties.Resources.RadegastTitle);
             header.AdditionalNewLineAfterOption = true;
-            header.Copyright = new CopyrightInfo("Radegast Development Team", 2009, 2013);
+            header.Copyright = new CopyrightInfo("Radegast Development Team", 2009, 2014);
             header.AddPreOptionsLine("http://radegast.org/");
             return header;
         }

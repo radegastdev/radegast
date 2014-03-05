@@ -87,6 +87,7 @@ namespace Radegast
                 PluginInfo info = (PluginInfo)item.Tag;
                 instance.PluginManager.UnloadPlugin((PluginInfo)item.Tag);
                 instance.PluginManager.LoadPluginFile(info.FileName, true);
+                ListPlugins();
             }
         }
     }

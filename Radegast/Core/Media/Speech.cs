@@ -1,6 +1,6 @@
 ﻿// 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,16 @@ namespace Radegast.Media
         }
 
         /// <summary>
+        /// If truee use FMODEx 3D sound
+        /// </summary>
+        private static bool surround = false;
+        public static bool Surround
+        {
+            set { surround = value; }
+            get { return surround; }
+        }
+
+        /// <summary>
         /// Creates a new sound object
         /// </summary>
         /// <param name="system">Sound system</param>
@@ -98,13 +108,19 @@ namespace Radegast.Media
             filename = speakfile;
 
             // Set flags to determine how it will be played.
-            FMOD.MODE mode = FMOD.MODE.SOFTWARE | FMOD.MODE._3D;
+            FMOD.MODE mode = FMOD.MODE.SOFTWARE;
 
-            // Set coordinate space interpretation.
-            if (global)
-                mode |= FMOD.MODE._3D_WORLDRELATIVE;
-            else
-                mode |= FMOD.MODE._3D_HEADRELATIVE;
+            if (Surround)
+            {
+                mode |= FMOD.MODE._3D;
+
+                // Set coordinate space interpretation.
+                if (global)
+                    mode |= FMOD.MODE._3D_WORLDRELATIVE;
+                else
+                    mode |= FMOD.MODE._3D_HEADRELATIVE;
+            }
+
 
             System.Threading.AutoResetEvent done = new System.Threading.AutoResetEvent(false);
 
@@ -133,30 +149,33 @@ namespace Radegast.Media
                         volume = 1.0f;
                         FMODExec(channel.setVolume(volume));
 
-                        // Set attenuation limits so distant people get a little softer,
-                        // but not TOO soft
-                        if (compress)
-                            FMODExec(sound.set3DMinMaxDistance(
-                                    2f,       // Any closer than this gets no louder
-                                    3.5f));     // Further than this gets no softer.
-                        else
-                            FMODExec(sound.set3DMinMaxDistance(
-                                    2f,       // Any closer than this gets no louder
-                                    10f));     // Further than this gets no softer.
+                        if (Surround)
+                        {
+                            // Set attenuation limits so distant people get a little softer,
+                            // but not TOO soft
+                            if (compress)
+                                FMODExec(sound.set3DMinMaxDistance(
+                                        2f,       // Any closer than this gets no louder
+                                        3.5f));     // Further than this gets no softer.
+                            else
+                                FMODExec(sound.set3DMinMaxDistance(
+                                        2f,       // Any closer than this gets no louder
+                                        10f));     // Further than this gets no softer.
 
-                        // Set speaker position.
-                        position = FromOMVSpace(speakerPos);
-                        FMODExec(channel.set3DAttributes(
-                           ref position,
-                           ref ZeroVector));
+                            // Set speaker position.
+                            position = FromOMVSpace(speakerPos);
+                            FMODExec(channel.set3DAttributes(
+                               ref position,
+                               ref ZeroVector));
 
-                        Logger.Log(
-                            String.Format(
-                                "Speech at <{0:0.0},{1:0.0},{2:0.0}>",
-                                position.x,
-                                position.y,
-                                position.z),
-                            Helpers.LogLevel.Debug);
+                            Logger.Log(
+                                String.Format(
+                                    "Speech at <{0:0.0},{1:0.0},{2:0.0}>",
+                                    position.x,
+                                    position.y,
+                                    position.z),
+                                Helpers.LogLevel.Debug);
+                        }
 
                         // SET a handler for when it finishes.
                         FMODExec(channel.setCallback(endCallback));

@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -86,25 +86,65 @@ namespace Radegast
             this.btnNextGroup = new System.Windows.Forms.Button();
             this.btnPrevGroup = new System.Windows.Forms.Button();
             this.lblNrGroups = new System.Windows.Forms.Label();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.tpbEvents = new System.Windows.Forms.TabPage();
+            this.scEvents = new System.Windows.Forms.SplitContainer();
+            this.pnlEventPaging = new System.Windows.Forms.Panel();
+            this.btnNextEvent = new System.Windows.Forms.Button();
+            this.btnPrevEvent = new System.Windows.Forms.Button();
+            this.lblNrEvents = new System.Windows.Forms.Label();
+            this.pnlEventDetail = new System.Windows.Forms.Panel();
+            this.btnShowOnMap = new System.Windows.Forms.Button();
+            this.btnTeleport = new System.Windows.Forms.Button();
+            this.txtEventDescription = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.txtEventLocation = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtEventOrganizer = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtEventDuration = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtEventDate = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.txtEventMaturity = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.txtEventType = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtEventName = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.pnlSearchBar = new System.Windows.Forms.Panel();
+            this.comboEventType = new System.Windows.Forms.ComboBox();
+            this.btnSearchEvents = new System.Windows.Forms.Button();
+            this.txtSearchEvents = new System.Windows.Forms.TextBox();
+            this.lblFind = new System.Windows.Forms.Label();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvwPlaces = new Radegast.ListViewNoFlicker();
-            this.Place = new System.Windows.Forms.ColumnHeader();
-            this.Traffic = new System.Windows.Forms.ColumnHeader();
+            this.Place = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Traffic = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvwGroups = new Radegast.ListViewNoFlicker();
-            this.columnHeader3 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader4 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lvwEvents = new Radegast.ListViewNoFlicker();
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabControl1.SuspendLayout();
             this.tpgPeople.SuspendLayout();
             this.tpgPlaces.SuspendLayout();
             this.tpgGroups.SuspendLayout();
+            this.tpbEvents.SuspendLayout();
+            this.scEvents.Panel1.SuspendLayout();
+            this.scEvents.Panel2.SuspendLayout();
+            this.scEvents.SuspendLayout();
+            this.pnlEventPaging.SuspendLayout();
+            this.pnlEventDetail.SuspendLayout();
+            this.pnlSearchBar.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlFindPeople
             // 
-            this.pnlFindPeople.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlFindPeople.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlFindPeople.Location = new System.Drawing.Point(93, 62);
             this.pnlFindPeople.Name = "pnlFindPeople";
             this.pnlFindPeople.Size = new System.Drawing.Size(441, 252);
@@ -121,8 +161,8 @@ namespace Radegast
             // 
             // txtPersonName
             // 
-            this.txtPersonName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPersonName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPersonName.Location = new System.Drawing.Point(93, 6);
             this.txtPersonName.Name = "txtPersonName";
             this.txtPersonName.Size = new System.Drawing.Size(360, 21);
@@ -204,6 +244,7 @@ namespace Radegast
             this.tabControl1.Controls.Add(this.tpgPeople);
             this.tabControl1.Controls.Add(this.tpgPlaces);
             this.tabControl1.Controls.Add(this.tpgGroups);
+            this.tabControl1.Controls.Add(this.tpbEvents);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -260,9 +301,9 @@ namespace Radegast
             // 
             // pnlPlaceDetail
             // 
-            this.pnlPlaceDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlPlaceDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlPlaceDetail.Location = new System.Drawing.Point(315, 10);
             this.pnlPlaceDetail.Name = "pnlPlaceDetail";
             this.pnlPlaceDetail.Size = new System.Drawing.Size(353, 338);
@@ -352,9 +393,9 @@ namespace Radegast
             // 
             // pnlGroupDetail
             // 
-            this.pnlGroupDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlGroupDetail.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlGroupDetail.AutoScroll = true;
             this.pnlGroupDetail.Location = new System.Drawing.Point(312, 9);
             this.pnlGroupDetail.Name = "pnlGroupDetail";
@@ -425,6 +466,370 @@ namespace Radegast
             this.lblNrGroups.Text = "0 groups found";
             this.lblNrGroups.Visible = false;
             // 
+            // tpbEvents
+            // 
+            this.tpbEvents.Controls.Add(this.scEvents);
+            this.tpbEvents.Controls.Add(this.pnlSearchBar);
+            this.tpbEvents.Location = new System.Drawing.Point(4, 22);
+            this.tpbEvents.Name = "tpbEvents";
+            this.tpbEvents.Size = new System.Drawing.Size(672, 374);
+            this.tpbEvents.TabIndex = 3;
+            this.tpbEvents.Text = "Events";
+            this.tpbEvents.UseVisualStyleBackColor = true;
+            // 
+            // scEvents
+            // 
+            this.scEvents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.scEvents.Location = new System.Drawing.Point(0, 31);
+            this.scEvents.Name = "scEvents";
+            // 
+            // scEvents.Panel1
+            // 
+            this.scEvents.Panel1.Controls.Add(this.lvwEvents);
+            this.scEvents.Panel1.Controls.Add(this.pnlEventPaging);
+            // 
+            // scEvents.Panel2
+            // 
+            this.scEvents.Panel2.Controls.Add(this.pnlEventDetail);
+            this.scEvents.Size = new System.Drawing.Size(672, 343);
+            this.scEvents.SplitterDistance = 320;
+            this.scEvents.TabIndex = 1;
+            // 
+            // pnlEventPaging
+            // 
+            this.pnlEventPaging.Controls.Add(this.btnNextEvent);
+            this.pnlEventPaging.Controls.Add(this.btnPrevEvent);
+            this.pnlEventPaging.Controls.Add(this.lblNrEvents);
+            this.pnlEventPaging.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlEventPaging.Location = new System.Drawing.Point(0, 313);
+            this.pnlEventPaging.Name = "pnlEventPaging";
+            this.pnlEventPaging.Size = new System.Drawing.Size(320, 30);
+            this.pnlEventPaging.TabIndex = 1;
+            // 
+            // btnNextEvent
+            // 
+            this.btnNextEvent.AccessibleName = "Go to next 100 events";
+            this.btnNextEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNextEvent.Enabled = false;
+            this.btnNextEvent.Location = new System.Drawing.Point(242, 3);
+            this.btnNextEvent.Name = "btnNextEvent";
+            this.btnNextEvent.Size = new System.Drawing.Size(75, 23);
+            this.btnNextEvent.TabIndex = 21;
+            this.btnNextEvent.Text = "Next >";
+            this.btnNextEvent.UseVisualStyleBackColor = true;
+            this.btnNextEvent.Click += new System.EventHandler(this.btnNextEvent_Click);
+            // 
+            // btnPrevEvent
+            // 
+            this.btnPrevEvent.AccessibleName = "Go to previous 100 events";
+            this.btnPrevEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrevEvent.Enabled = false;
+            this.btnPrevEvent.Location = new System.Drawing.Point(161, 3);
+            this.btnPrevEvent.Name = "btnPrevEvent";
+            this.btnPrevEvent.Size = new System.Drawing.Size(75, 23);
+            this.btnPrevEvent.TabIndex = 20;
+            this.btnPrevEvent.Text = "< Previous";
+            this.btnPrevEvent.UseVisualStyleBackColor = true;
+            this.btnPrevEvent.Click += new System.EventHandler(this.btnPrevEvent_Click);
+            // 
+            // lblNrEvents
+            // 
+            this.lblNrEvents.AccessibleName = "Number of events found";
+            this.lblNrEvents.AutoSize = true;
+            this.lblNrEvents.Location = new System.Drawing.Point(9, 8);
+            this.lblNrEvents.Name = "lblNrEvents";
+            this.lblNrEvents.Size = new System.Drawing.Size(80, 13);
+            this.lblNrEvents.TabIndex = 19;
+            this.lblNrEvents.Text = "0 events found";
+            this.lblNrEvents.Visible = false;
+            // 
+            // pnlEventDetail
+            // 
+            this.pnlEventDetail.Controls.Add(this.btnShowOnMap);
+            this.pnlEventDetail.Controls.Add(this.btnTeleport);
+            this.pnlEventDetail.Controls.Add(this.txtEventDescription);
+            this.pnlEventDetail.Controls.Add(this.label11);
+            this.pnlEventDetail.Controls.Add(this.txtEventLocation);
+            this.pnlEventDetail.Controls.Add(this.label10);
+            this.pnlEventDetail.Controls.Add(this.txtEventOrganizer);
+            this.pnlEventDetail.Controls.Add(this.label9);
+            this.pnlEventDetail.Controls.Add(this.txtEventDuration);
+            this.pnlEventDetail.Controls.Add(this.label8);
+            this.pnlEventDetail.Controls.Add(this.txtEventDate);
+            this.pnlEventDetail.Controls.Add(this.label7);
+            this.pnlEventDetail.Controls.Add(this.txtEventMaturity);
+            this.pnlEventDetail.Controls.Add(this.label6);
+            this.pnlEventDetail.Controls.Add(this.txtEventType);
+            this.pnlEventDetail.Controls.Add(this.label5);
+            this.pnlEventDetail.Controls.Add(this.txtEventName);
+            this.pnlEventDetail.Controls.Add(this.label4);
+            this.pnlEventDetail.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlEventDetail.Location = new System.Drawing.Point(0, 0);
+            this.pnlEventDetail.Name = "pnlEventDetail";
+            this.pnlEventDetail.Size = new System.Drawing.Size(348, 343);
+            this.pnlEventDetail.TabIndex = 0;
+            this.pnlEventDetail.Visible = false;
+            // 
+            // btnShowOnMap
+            // 
+            this.btnShowOnMap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnShowOnMap.Enabled = false;
+            this.btnShowOnMap.Location = new System.Drawing.Point(113, 316);
+            this.btnShowOnMap.Name = "btnShowOnMap";
+            this.btnShowOnMap.Size = new System.Drawing.Size(100, 23);
+            this.btnShowOnMap.TabIndex = 17;
+            this.btnShowOnMap.Text = "Show on Map";
+            this.btnShowOnMap.UseVisualStyleBackColor = true;
+            this.btnShowOnMap.Click += new System.EventHandler(this.btnShowOnMap_Click);
+            // 
+            // btnTeleport
+            // 
+            this.btnTeleport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnTeleport.Enabled = false;
+            this.btnTeleport.Location = new System.Drawing.Point(7, 316);
+            this.btnTeleport.Name = "btnTeleport";
+            this.btnTeleport.Size = new System.Drawing.Size(100, 23);
+            this.btnTeleport.TabIndex = 16;
+            this.btnTeleport.Text = "Teleport";
+            this.btnTeleport.UseVisualStyleBackColor = true;
+            this.btnTeleport.Click += new System.EventHandler(this.btnTeleport_Click);
+            // 
+            // txtEventDescription
+            // 
+            this.txtEventDescription.AccessibleName = "Event name";
+            this.txtEventDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventDescription.Location = new System.Drawing.Point(7, 163);
+            this.txtEventDescription.Multiline = true;
+            this.txtEventDescription.Name = "txtEventDescription";
+            this.txtEventDescription.ReadOnly = true;
+            this.txtEventDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtEventDescription.Size = new System.Drawing.Size(338, 147);
+            this.txtEventDescription.TabIndex = 15;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(4, 147);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(64, 13);
+            this.label11.TabIndex = 14;
+            this.label11.Text = "Description:";
+            // 
+            // txtEventLocation
+            // 
+            this.txtEventLocation.AccessibleName = "Event name";
+            this.txtEventLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventLocation.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventLocation.Location = new System.Drawing.Point(115, 127);
+            this.txtEventLocation.Name = "txtEventLocation";
+            this.txtEventLocation.ReadOnly = true;
+            this.txtEventLocation.Size = new System.Drawing.Size(230, 14);
+            this.txtEventLocation.TabIndex = 13;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(4, 127);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(47, 13);
+            this.label10.TabIndex = 12;
+            this.label10.Text = "Location";
+            // 
+            // txtEventOrganizer
+            // 
+            this.txtEventOrganizer.AccessibleName = "Event name";
+            this.txtEventOrganizer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventOrganizer.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventOrganizer.Location = new System.Drawing.Point(115, 107);
+            this.txtEventOrganizer.Name = "txtEventOrganizer";
+            this.txtEventOrganizer.ReadOnly = true;
+            this.txtEventOrganizer.Size = new System.Drawing.Size(230, 14);
+            this.txtEventOrganizer.TabIndex = 11;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(4, 107);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(58, 13);
+            this.label9.TabIndex = 10;
+            this.label9.Text = "Organizer:";
+            // 
+            // txtEventDuration
+            // 
+            this.txtEventDuration.AccessibleName = "Event name";
+            this.txtEventDuration.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventDuration.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventDuration.Location = new System.Drawing.Point(115, 87);
+            this.txtEventDuration.Name = "txtEventDuration";
+            this.txtEventDuration.ReadOnly = true;
+            this.txtEventDuration.Size = new System.Drawing.Size(230, 14);
+            this.txtEventDuration.TabIndex = 9;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(4, 87);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(52, 13);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "Duration:";
+            // 
+            // txtEventDate
+            // 
+            this.txtEventDate.AccessibleName = "Event name";
+            this.txtEventDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventDate.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventDate.Location = new System.Drawing.Point(115, 67);
+            this.txtEventDate.Name = "txtEventDate";
+            this.txtEventDate.ReadOnly = true;
+            this.txtEventDate.Size = new System.Drawing.Size(230, 14);
+            this.txtEventDate.TabIndex = 7;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(4, 67);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(34, 13);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Date:";
+            // 
+            // txtEventMaturity
+            // 
+            this.txtEventMaturity.AccessibleName = "Event name";
+            this.txtEventMaturity.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventMaturity.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventMaturity.Location = new System.Drawing.Point(115, 47);
+            this.txtEventMaturity.Name = "txtEventMaturity";
+            this.txtEventMaturity.ReadOnly = true;
+            this.txtEventMaturity.Size = new System.Drawing.Size(230, 14);
+            this.txtEventMaturity.TabIndex = 5;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(4, 47);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(51, 13);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "Maturity:";
+            // 
+            // txtEventType
+            // 
+            this.txtEventType.AccessibleName = "Event name";
+            this.txtEventType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventType.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventType.Location = new System.Drawing.Point(115, 27);
+            this.txtEventType.Name = "txtEventType";
+            this.txtEventType.ReadOnly = true;
+            this.txtEventType.Size = new System.Drawing.Size(230, 14);
+            this.txtEventType.TabIndex = 3;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(4, 27);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(35, 13);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Type:";
+            // 
+            // txtEventName
+            // 
+            this.txtEventName.AccessibleName = "Event name";
+            this.txtEventName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtEventName.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtEventName.Location = new System.Drawing.Point(115, 7);
+            this.txtEventName.Name = "txtEventName";
+            this.txtEventName.ReadOnly = true;
+            this.txtEventName.Size = new System.Drawing.Size(230, 14);
+            this.txtEventName.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(4, 7);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(38, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Name:";
+            // 
+            // pnlSearchBar
+            // 
+            this.pnlSearchBar.Controls.Add(this.comboEventType);
+            this.pnlSearchBar.Controls.Add(this.btnSearchEvents);
+            this.pnlSearchBar.Controls.Add(this.txtSearchEvents);
+            this.pnlSearchBar.Controls.Add(this.lblFind);
+            this.pnlSearchBar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlSearchBar.Location = new System.Drawing.Point(0, 0);
+            this.pnlSearchBar.Name = "pnlSearchBar";
+            this.pnlSearchBar.Size = new System.Drawing.Size(672, 31);
+            this.pnlSearchBar.TabIndex = 0;
+            // 
+            // comboEventType
+            // 
+            this.comboEventType.AccessibleName = "Select event type";
+            this.comboEventType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboEventType.FormattingEnabled = true;
+            this.comboEventType.ImeMode = System.Windows.Forms.ImeMode.On;
+            this.comboEventType.Items.AddRange(new object[] {
+            "Any Category",
+            "Discussion",
+            "Sports",
+            "Live Music",
+            "Commercial",
+            "Nightlife/Entertainment",
+            "Games/Contents",
+            "Pageants",
+            "Education",
+            "Arts and Culture",
+            "Charity/Support Groups",
+            "Miscellaneous"});
+            this.comboEventType.Location = new System.Drawing.Point(301, 4);
+            this.comboEventType.Name = "comboEventType";
+            this.comboEventType.Size = new System.Drawing.Size(121, 21);
+            this.comboEventType.TabIndex = 3;
+            // 
+            // btnSearchEvents
+            // 
+            this.btnSearchEvents.AccessibleName = "Perform Events Search";
+            this.btnSearchEvents.Location = new System.Drawing.Point(220, 3);
+            this.btnSearchEvents.Name = "btnSearchEvents";
+            this.btnSearchEvents.Size = new System.Drawing.Size(75, 23);
+            this.btnSearchEvents.TabIndex = 2;
+            this.btnSearchEvents.Text = "Search";
+            this.btnSearchEvents.UseVisualStyleBackColor = true;
+            this.btnSearchEvents.Click += new System.EventHandler(this.btnSearchEvents_Click);
+            this.btnSearchEvents.KeyDown += new System.Windows.Forms.KeyEventHandler(this.btnSearchEvents_KeyDown);
+            // 
+            // txtSearchEvents
+            // 
+            this.txtSearchEvents.AccessibleName = "Search event text containing";
+            this.txtSearchEvents.Location = new System.Drawing.Point(36, 5);
+            this.txtSearchEvents.Name = "txtSearchEvents";
+            this.txtSearchEvents.Size = new System.Drawing.Size(178, 21);
+            this.txtSearchEvents.TabIndex = 1;
+            // 
+            // lblFind
+            // 
+            this.lblFind.AutoSize = true;
+            this.lblFind.Location = new System.Drawing.Point(3, 8);
+            this.lblFind.Name = "lblFind";
+            this.lblFind.Size = new System.Drawing.Size(27, 13);
+            this.lblFind.TabIndex = 1;
+            this.lblFind.Text = "Find";
+            // 
             // columnHeader1
             // 
             this.columnHeader1.Text = "Place";
@@ -439,8 +844,8 @@ namespace Radegast
             // lvwPlaces
             // 
             this.lvwPlaces.AllowColumnReorder = true;
-            this.lvwPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lvwPlaces.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.lvwPlaces.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Place,
             this.Traffic});
@@ -457,8 +862,8 @@ namespace Radegast
             this.lvwPlaces.TabIndex = 14;
             this.lvwPlaces.UseCompatibleStateImageBehavior = false;
             this.lvwPlaces.View = System.Windows.Forms.View.Details;
-            this.lvwPlaces.SelectedIndexChanged += new System.EventHandler(this.lvwPlaces_SelectedIndexChanged);
             this.lvwPlaces.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwPlaces_ColumnClick);
+            this.lvwPlaces.SelectedIndexChanged += new System.EventHandler(this.lvwPlaces_SelectedIndexChanged);
             // 
             // Place
             // 
@@ -474,8 +879,8 @@ namespace Radegast
             // lvwGroups
             // 
             this.lvwGroups.AllowColumnReorder = true;
-            this.lvwGroups.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)));
+            this.lvwGroups.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.lvwGroups.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader3,
             this.columnHeader4});
@@ -492,8 +897,8 @@ namespace Radegast
             this.lvwGroups.TabIndex = 22;
             this.lvwGroups.UseCompatibleStateImageBehavior = false;
             this.lvwGroups.View = System.Windows.Forms.View.Details;
-            this.lvwGroups.SelectedIndexChanged += new System.EventHandler(this.lvwGroups_SelectedIndexChanged);
             this.lvwGroups.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lvwGroups_ColumnClick);
+            this.lvwGroups.SelectedIndexChanged += new System.EventHandler(this.lvwGroups_SelectedIndexChanged);
             // 
             // columnHeader3
             // 
@@ -505,6 +910,38 @@ namespace Radegast
             this.columnHeader4.Text = "Members";
             this.columnHeader4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeader4.Width = 50;
+            // 
+            // lvwEvents
+            // 
+            this.lvwEvents.AccessibleName = "Event list";
+            this.lvwEvents.AllowColumnReorder = true;
+            this.lvwEvents.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader5,
+            this.columnHeader6});
+            this.lvwEvents.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvwEvents.FullRowSelect = true;
+            this.lvwEvents.GridLines = true;
+            this.lvwEvents.HideSelection = false;
+            this.lvwEvents.Location = new System.Drawing.Point(0, 0);
+            this.lvwEvents.MultiSelect = false;
+            this.lvwEvents.Name = "lvwEvents";
+            this.lvwEvents.ShowGroups = false;
+            this.lvwEvents.ShowItemToolTips = true;
+            this.lvwEvents.Size = new System.Drawing.Size(320, 313);
+            this.lvwEvents.TabIndex = 0;
+            this.lvwEvents.UseCompatibleStateImageBehavior = false;
+            this.lvwEvents.View = System.Windows.Forms.View.Details;
+            this.lvwEvents.SelectedIndexChanged += new System.EventHandler(this.lvwEvents_SelectedIndexChanged);
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "Name";
+            this.columnHeader5.Width = 220;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Time (PT)";
+            this.columnHeader6.Width = 100;
             // 
             // SearchConsole
             // 
@@ -522,6 +959,16 @@ namespace Radegast
             this.tpgPlaces.PerformLayout();
             this.tpgGroups.ResumeLayout(false);
             this.tpgGroups.PerformLayout();
+            this.tpbEvents.ResumeLayout(false);
+            this.scEvents.Panel1.ResumeLayout(false);
+            this.scEvents.Panel2.ResumeLayout(false);
+            this.scEvents.ResumeLayout(false);
+            this.pnlEventPaging.ResumeLayout(false);
+            this.pnlEventPaging.PerformLayout();
+            this.pnlEventDetail.ResumeLayout(false);
+            this.pnlEventDetail.PerformLayout();
+            this.pnlSearchBar.ResumeLayout(false);
+            this.pnlSearchBar.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -564,6 +1011,39 @@ namespace Radegast
         public System.Windows.Forms.Label lblNrGroups;
         public System.Windows.Forms.ColumnHeader columnHeader1;
         public System.Windows.Forms.ColumnHeader columnHeader2;
+        public ListViewNoFlicker lvwEvents;
+        public System.Windows.Forms.ColumnHeader columnHeader5;
+        public System.Windows.Forms.ColumnHeader columnHeader6;
+        public System.Windows.Forms.Button btnNextEvent;
+        public System.Windows.Forms.Button btnPrevEvent;
+        public System.Windows.Forms.Label lblNrEvents;
+        public System.Windows.Forms.Button btnSearchEvents;
+        public System.Windows.Forms.TextBox txtSearchEvents;
+        public System.Windows.Forms.Label lblFind;
+        public System.Windows.Forms.Panel pnlEventDetail;
+        public System.Windows.Forms.Button btnShowOnMap;
+        public System.Windows.Forms.Button btnTeleport;
+        public System.Windows.Forms.TextBox txtEventDescription;
+        public System.Windows.Forms.Label label11;
+        public System.Windows.Forms.TextBox txtEventLocation;
+        public System.Windows.Forms.Label label10;
+        public System.Windows.Forms.TextBox txtEventOrganizer;
+        public System.Windows.Forms.Label label9;
+        public System.Windows.Forms.TextBox txtEventDuration;
+        public System.Windows.Forms.Label label8;
+        public System.Windows.Forms.TextBox txtEventDate;
+        public System.Windows.Forms.Label label7;
+        public System.Windows.Forms.TextBox txtEventMaturity;
+        public System.Windows.Forms.Label label6;
+        public System.Windows.Forms.TextBox txtEventType;
+        public System.Windows.Forms.Label label5;
+        public System.Windows.Forms.TextBox txtEventName;
+        public System.Windows.Forms.Label label4;
+        public System.Windows.Forms.TabPage tpbEvents;
+        public System.Windows.Forms.Panel pnlSearchBar;
+        public System.Windows.Forms.SplitContainer scEvents;
+        public System.Windows.Forms.Panel pnlEventPaging;
+        public System.Windows.Forms.ComboBox comboEventType;
 
     }
 }

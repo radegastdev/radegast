@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -830,7 +830,7 @@ namespace Radegast
         public bool ProcessSecondlifeURI(string link)
         {
             // First try if we have a region name, assume it's a teleport link if we have
-            Regex r = new Regex(@"^(secondlife://)(?<region>[^/$]+)(/(?<x>\d+))?((/?<y>\d+))?(/(?<z>\d+))?",
+            Regex r = new Regex(@"^(secondlife://)(?<region>[^/$]+)(/(?<x>\d+))?(/(?<y>\d+))?(/(?<z>\d+))?",
                 RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
             Match m = r.Match(link);
 
@@ -1262,6 +1262,11 @@ namespace Radegast
         private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ProcessLink("http://jira.openmetaverse.org/browse/RAD");
+        }
+
+        private void accessibilityGuideToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessLink("http://radegast.org/wiki/Accessibility_Guide");
         }
 
         private void aboutRadegastToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1716,5 +1721,36 @@ namespace Radegast
             TabConsole.InitializeMainTab();
             TabConsole.Tabs["login"].Select();
         }
+
+        private void setMaturityLevel(string level)
+        {
+            client.Self.SetAgentAccess(level, res =>
+            {
+                if (res.Success)
+                {
+                    tabsConsole.DisplayNotificationInChat("Successfully changed maturity access level to " + res.NewLevel);
+                }
+                else
+                {
+                    tabsConsole.DisplayNotificationInChat("Failed to change maturity access level.", ChatBufferTextStyle.Error);
+                }
+            });
+        }
+
+        private void pGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setMaturityLevel("PG");
+        }
+
+        private void matureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setMaturityLevel("M");
+        }
+
+        private void adultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setMaturityLevel("A");
+        }
+
     }
 }

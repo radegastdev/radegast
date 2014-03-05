@@ -1,6 +1,6 @@
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2013, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -611,7 +611,7 @@ namespace Radegast
                 else
                 {
                     Vector3 pos = client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation;
-                    Logger.Log("Setting camera position to " + pos.ToString(), Helpers.LogLevel.Debug);
+                    //Logger.Log("Setting camera position to " + pos.ToString(), Helpers.LogLevel.Debug);
                     client.Self.Movement.Camera.LookAt(
                         pos,
                         client.Self.SimPosition
