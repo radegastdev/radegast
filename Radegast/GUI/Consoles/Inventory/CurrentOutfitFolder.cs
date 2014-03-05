@@ -543,7 +543,7 @@ namespace Radegast
                 AddLink(item);
             }
 
-            Client.Appearance.ReplaceOutfit(outfit);
+            Client.Appearance.ReplaceOutfit(outfit, false);
             WorkPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(2000);

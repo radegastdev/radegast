@@ -825,6 +825,13 @@ namespace Radegast
             UpdateStatus("OK");
             instance.TabConsole.DisplayNotificationInChat("Inventory update completed.");
 
+            if ((client.Network.LoginResponseData.FirstLogin) && !string.IsNullOrEmpty(client.Network.LoginResponseData.InitialOutfit))
+            {
+                client.Self.SetAgentAccess("A");
+                var initOufit = new InitialOutfit(instance);
+                initOufit.SetInitialOutfit(client.Network.LoginResponseData.InitialOutfit);
+            }
+
             // Updated labels on clothes that we are wearing
             UpdateWornLabels();
 
