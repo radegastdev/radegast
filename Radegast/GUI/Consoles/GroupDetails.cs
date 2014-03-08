@@ -143,7 +143,7 @@ namespace Radegast
 
             if (e.Success)
             {
-                BeginInvoke(new MethodInvoker(() => { RefreshMembersRoles(); }));
+                BeginInvoke(new MethodInvoker(() => { RefreshGroupInfo(); }));
                 instance.TabConsole.DisplayNotificationInChat("Group member ejected.");
             }
             else
