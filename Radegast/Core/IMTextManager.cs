@@ -41,16 +41,18 @@ namespace Radegast
 {
     public class IMTextManager
     {
-        private RadegastInstance instance;
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
-        private ITextPrinter textPrinter;
-        private IMTextManagerType Type;
-        private UUID sessionID;
-        private string sessionName;
-        private bool AutoResponseSent = false;
-        private ArrayList textBuffer;
+        public bool DingOnAllIncoming = false;
 
-        private bool showTimestamps;
+        RadegastInstance instance;
+        RadegastNetcom netcom { get { return instance.Netcom; } }
+        ITextPrinter textPrinter;
+        IMTextManagerType Type;
+        UUID sessionID;
+        string sessionName;
+        bool AutoResponseSent = false;
+        ArrayList textBuffer;
+
+        bool showTimestamps;
 
         public IMTextManager(RadegastInstance instance, ITextPrinter textPrinter, IMTextManagerType type, UUID sessionID, string sessionName)
         {
@@ -154,6 +156,10 @@ namespace Radegast
                 }
             }
 
+            if (DingOnAllIncoming)
+            {
+                instance.MediaManager.PlayUISound(UISounds.IM);
+            }
             PrintIM(DateTime.Now, instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), e.IM.FromAgentID, msg);
 
             if (!AutoResponseSent && Type == IMTextManagerType.Agent && e.IM.FromAgentID != UUID.Zero && e.IM.FromAgentName != "Second Life")
