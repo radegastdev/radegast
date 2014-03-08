@@ -1700,5 +1700,35 @@ namespace Radegast
             TabConsole.Tabs["login"].Select();
         }
 
+        private void setMaturityLevel(string level)
+        {
+            client.Self.SetAgentAccess(level, res =>
+            {
+                if (res.Success)
+                {
+                    tabsConsole.DisplayNotificationInChat("Successfully changed maturity access level to " + res.NewLevel);
+                }
+                else
+                {
+                    tabsConsole.DisplayNotificationInChat("Failed to change maturity access level.", ChatBufferTextStyle.Error);
+                }
+            });
+        }
+
+        private void pGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setMaturityLevel("PG");
+        }
+
+        private void matureToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setMaturityLevel("M");
+        }
+
+        private void adultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            setMaturityLevel("A");
+        }
+
     }
 }

@@ -75,6 +75,7 @@ namespace Radegast
         private InvNodeSorter sorter;
         private List<UUID> QueuedFolders = new List<UUID>();
         private Dictionary<UUID, int> FolderFetchRetries = new Dictionary<UUID, int>();
+        AutoResetEvent trashCreated = new AutoResetEvent(false);
 
         #region Construction and disposal
         public InventoryConsole(RadegastInstance instance)
@@ -299,6 +300,11 @@ namespace Radegast
 
         void Inventory_InventoryObjectAdded(object sender, InventoryObjectAddedEventArgs e)
         {
+            if (e.Obj is InventoryFolder && ((InventoryFolder)e.Obj).PreferredType == AssetType.TrashFolder)
+            {
+                trashCreated.Set();
+            }
+
             if (TreeUpdateInProgress)
             {
                 lock (ItemsToAdd)
@@ -818,6 +824,13 @@ namespace Radegast
             TreeUpdateInProgress = false;
             UpdateStatus("OK");
             instance.TabConsole.DisplayNotificationInChat("Inventory update completed.");
+
+            if ((client.Network.LoginResponseData.FirstLogin) && !string.IsNullOrEmpty(client.Network.LoginResponseData.InitialOutfit))
+            {
+                client.Self.SetAgentAccess("A");
+                var initOufit = new InitialOutfit(instance);
+                initOufit.SetInitialOutfit(client.Network.LoginResponseData.InitialOutfit);
+            }
 
             // Updated labels on clothes that we are wearing
             UpdateWornLabels();
@@ -1691,7 +1704,21 @@ namespace Radegast
 
 
                     case "delete_folder":
-                        client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
+                        var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                        if (trash == Inventory.RootFolder.UUID)
+                        {
+                            WorkPool.QueueUserWorkItem(sync =>
+                            {
+                                trashCreated.Reset();
+                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                                trashCreated.WaitOne(20 * 1000, false);
+                                Thread.Sleep(200);
+                                client.Inventory.MoveFolder(f.UUID, trash, f.Name);
+                            });
+                            return;
+                        }
+
+                        client.Inventory.MoveFolder(f.UUID, trash, f.Name);
                         break;
 
                     case "empty_trash":
@@ -1787,6 +1814,20 @@ namespace Radegast
                         break;
 
                     case "delete_item":
+                        var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                        if (trash == Inventory.RootFolder.UUID)
+                        {
+                            WorkPool.QueueUserWorkItem(sync =>
+                            {
+                                trashCreated.Reset();
+                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                                trashCreated.WaitOne(20 * 1000, false);
+                                Thread.Sleep(200);
+                                client.Inventory.MoveItem(item.UUID, trash, item.Name);
+                            });
+                            return;
+                        }
+
                         client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
                         break;
 
@@ -2148,15 +2189,22 @@ namespace Radegast
             }
             else if (e.KeyCode == Keys.Delete && invTree.SelectedNode != null)
             {
+                var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                if (trash == Inventory.RootFolder.UUID)
+                {
+                    trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                    Thread.Sleep(2000);
+                }
+
                 if (invTree.SelectedNode.Tag is InventoryItem)
                 {
                     InventoryItem item = invTree.SelectedNode.Tag as InventoryItem;
-                    client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
+                    client.Inventory.MoveItem(item.UUID, trash, item.Name);
                 }
                 else if (invTree.SelectedNode.Tag is InventoryFolder)
                 {
                     InventoryFolder f = invTree.SelectedNode.Tag as InventoryFolder;
-                    client.Inventory.MoveFolder(f.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), f.Name);
+                    client.Inventory.MoveFolder(f.UUID, trash, f.Name);
                 }
             }
             else if (e.KeyCode == Keys.Apps && invTree.SelectedNode != null)

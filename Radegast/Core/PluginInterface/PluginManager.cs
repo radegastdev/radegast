@@ -405,7 +405,8 @@ namespace Radegast
                 }
                 else
                 {
-                    assembly = Assembly.Load(File.ReadAllBytes(loadfilename));
+                    assembly = Assembly.LoadFile(loadfilename);
+
                     /* Disable creation of domains for now
                     domain = AppDomain.CreateDomain("Domain for: " + loadfilename);
                     var loader = (RemoteLoader)domain.CreateInstanceAndUnwrap("Radegast", "Radegast.RemoteLoader");
