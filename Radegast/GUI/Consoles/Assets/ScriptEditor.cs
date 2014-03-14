@@ -87,6 +87,8 @@ namespace Radegast
                 if (prim != null)
                 {
                     client.Assets.RequestInventoryAsset(script.AssetUUID, script.UUID, prim.ID, prim.OwnerID, script.AssetType, true, Assets_OnAssetReceived);
+                    client.Inventory.RequestGetScriptRunning(prim.ID, script.UUID);
+                    client.Inventory.ScriptRunningReply += OnScriptRunningReplyReceived;
                 }
                 else
                 {
@@ -103,6 +105,20 @@ namespace Radegast
 
         void SscriptEditor_Disposed(object sender, EventArgs e)
         {
+            client.Inventory.ScriptRunningReply -= OnScriptRunningReplyReceived;
+        }
+
+        void OnScriptRunningReplyReceived(object sender, ScriptRunningReplyEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                if (!instance.MonoRuntime || IsHandleCreated)
+                    BeginInvoke(new MethodInvoker(() => OnScriptRunningReplyReceived(sender, e)));
+                return;
+            }
+
+            cbRunning.Checked = e.IsRunning;
+            cbMono.Checked = e.IsMono;
         }
 
         void Assets_OnAssetReceived(AssetDownload transfer, Asset asset)
@@ -682,63 +698,63 @@ namespace Radegast
         private void tbtbSave_Click(object sender, EventArgs e)
         {
             InventoryManager.ScriptUpdatedCallback handler = (bool uploadSuccess, string uploadStatus, bool compileSuccess, List<string> compileMessages, UUID itemID, UUID assetID) =>
+            {
+                if (!IsHandleCreated && instance.MonoRuntime) return;
+
+                BeginInvoke(new MethodInvoker(() =>
                 {
-                    if (!IsHandleCreated && instance.MonoRuntime) return;
-
-                    BeginInvoke(new MethodInvoker(() =>
+                    if (uploadSuccess && compileSuccess)
+                    {
+                        lblScripStatus.Text = "Saved OK";
+                    }
+                    else
+                    {
+                        if (!compileSuccess)
                         {
-                            if (uploadSuccess && compileSuccess)
+                            lblScripStatus.Text = "Compilation failed";
+                            if (compileMessages != null)
                             {
-                                lblScripStatus.Text = "Saved OK";
-                            }
-                            else
-                            {
-                                if (!compileSuccess)
+                                txtStatus.Show();
+                                txtStatus.Text = string.Empty;
+                                for (int i = 0; i < compileMessages.Count; i++)
                                 {
-                                    lblScripStatus.Text = "Compilation failed";
-                                    if (compileMessages != null)
-                                    {
-                                        txtStatus.Show();
-                                        txtStatus.Text = string.Empty;
-                                        for (int i = 0; i < compileMessages.Count; i++)
-                                        {
-                                            Match m = Regex.Match(compileMessages[i], @"\((?<line>\d+),\s*(?<column>\d+)\s*\)\s*:\s*(?<kind>\w+)\s*:\s*(?<msg>.*)", RegexOptions.IgnoreCase);
+                                    Match m = Regex.Match(compileMessages[i], @"\((?<line>\d+),\s*(?<column>\d+)\s*\)\s*:\s*(?<kind>\w+)\s*:\s*(?<msg>.*)", RegexOptions.IgnoreCase);
 
-                                            if (m.Success)
-                                            {
-                                                int line = 1 + int.Parse(m.Groups["line"].Value, Utils.EnUsCulture);
-                                                int column = 1 + int.Parse(m.Groups["column"].Value, Utils.EnUsCulture);
-                                                string kind = m.Groups["kind"].Value;
-                                                string msg = m.Groups["msg"].Value;
-                                                instance.TabConsole.DisplayNotificationInChat(
-                                                    string.Format("{0} on line {1}, column {2}: {3}", kind, line, column, msg),
-                                                    ChatBufferTextStyle.Invisible);
-                                                txtStatus.Text += string.Format("{0} (Ln {1}, Col {2}): {3}", kind, line, column, msg);
-                                                
-                                                if (i == 0)
-                                                {
-                                                    rtb.CursorPosition = new RRichTextBox.CursorLocation(line - 1, column - 1);
-                                                    ReadCursorPosition();
-                                                    rtb.Focus();
-                                                }
-                                            }
-                                            else
-                                            {
-                                                txtStatus.Text += compileMessages[i] + Environment.NewLine;
-                                                instance.TabConsole.DisplayNotificationInChat(compileMessages[i]);
-                                            }
+                                    if (m.Success)
+                                    {
+                                        int line = 1 + int.Parse(m.Groups["line"].Value, Utils.EnUsCulture);
+                                        int column = 1 + int.Parse(m.Groups["column"].Value, Utils.EnUsCulture);
+                                        string kind = m.Groups["kind"].Value;
+                                        string msg = m.Groups["msg"].Value;
+                                        instance.TabConsole.DisplayNotificationInChat(
+                                            string.Format("{0} on line {1}, column {2}: {3}", kind, line, column, msg),
+                                            ChatBufferTextStyle.Invisible);
+                                        txtStatus.Text += string.Format("{0} (Ln {1}, Col {2}): {3}", kind, line, column, msg);
+
+                                        if (i == 0)
+                                        {
+                                            rtb.CursorPosition = new RRichTextBox.CursorLocation(line - 1, column - 1);
+                                            ReadCursorPosition();
+                                            rtb.Focus();
                                         }
                                     }
+                                    else
+                                    {
+                                        txtStatus.Text += compileMessages[i] + Environment.NewLine;
+                                        instance.TabConsole.DisplayNotificationInChat(compileMessages[i]);
+                                    }
                                 }
-                                else
-                                {
-                                    lblScripStatus.Text = rtb.Text = "Failed to download.";
-                                }
-
                             }
                         }
-                    ));
-                };
+                        else
+                        {
+                            lblScripStatus.Text = rtb.Text = "Failed to download.";
+                        }
+
+                    }
+                }
+                ));
+            };
 
 
             lblScripStatus.Text = "Saving...";
