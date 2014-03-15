@@ -156,10 +156,21 @@ namespace Radegast
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblSentBy = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.tpBanned = new System.Windows.Forms.TabPage();
+            this.lwBannedMembers = new Radegast.ListViewNoFlicker();
+            this.chBannedName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chBannedOn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.pnlBannedBottom = new System.Windows.Forms.Panel();
+            this.btnRefreshBanned = new System.Windows.Forms.Button();
+            this.btnUnban = new System.Windows.Forms.Button();
+            this.btnBan = new System.Windows.Forms.Button();
+            this.pnlBannedTop = new System.Windows.Forms.Panel();
+            this.label9 = new System.Windows.Forms.Label();
             this.pnlBottomControls = new System.Windows.Forms.Panel();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnBanMember = new System.Windows.Forms.Button();
             this.tcGroupDetails.SuspendLayout();
             this.tpGeneral.SuspendLayout();
             this.memberListContextMenu.SuspendLayout();
@@ -178,6 +189,9 @@ namespace Radegast
             ((System.ComponentModel.ISupportInitialize)(this.icnNewNoticeAtt)).BeginInit();
             this.pnlArchivedNotice.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).BeginInit();
+            this.tpBanned.SuspendLayout();
+            this.pnlBannedBottom.SuspendLayout();
+            this.pnlBannedTop.SuspendLayout();
             this.pnlBottomControls.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -186,6 +200,7 @@ namespace Radegast
             this.tcGroupDetails.Controls.Add(this.tpGeneral);
             this.tcGroupDetails.Controls.Add(this.tpMembersRoles);
             this.tcGroupDetails.Controls.Add(this.tpNotices);
+            this.tcGroupDetails.Controls.Add(this.tpBanned);
             this.tcGroupDetails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcGroupDetails.Location = new System.Drawing.Point(0, 0);
             this.tcGroupDetails.Name = "tcGroupDetails";
@@ -522,6 +537,7 @@ namespace Radegast
             this.panel1.Controls.Add(this.lvwAllowedAbilities);
             this.panel1.Controls.Add(this.lvwAssignedRoles);
             this.panel1.Controls.Add(this.btnInviteNewMember);
+            this.panel1.Controls.Add(this.btnBanMember);
             this.panel1.Controls.Add(this.btnEjectMember);
             this.panel1.Controls.Add(this.label3);
             this.panel1.Controls.Add(this.lblAssignedRoles);
@@ -577,24 +593,26 @@ namespace Radegast
             // 
             // btnInviteNewMember
             // 
+            this.btnInviteNewMember.AccessibleName = "Invite new member";
             this.btnInviteNewMember.Enabled = false;
             this.btnInviteNewMember.Location = new System.Drawing.Point(6, 3);
             this.btnInviteNewMember.Name = "btnInviteNewMember";
-            this.btnInviteNewMember.Size = new System.Drawing.Size(153, 23);
+            this.btnInviteNewMember.Size = new System.Drawing.Size(80, 23);
             this.btnInviteNewMember.TabIndex = 11;
-            this.btnInviteNewMember.Text = "Invite New Member...";
+            this.btnInviteNewMember.Text = "Invite";
             this.btnInviteNewMember.UseVisualStyleBackColor = true;
             this.btnInviteNewMember.Click += new System.EventHandler(this.btnInviteNewMember_Click);
             // 
             // btnEjectMember
             // 
+            this.btnEjectMember.AccessibleName = "Eject from group";
             this.btnEjectMember.Enabled = false;
-            this.btnEjectMember.Location = new System.Drawing.Point(221, 3);
+            this.btnEjectMember.Location = new System.Drawing.Point(92, 3);
             this.btnEjectMember.Name = "btnEjectMember";
-            this.btnEjectMember.Size = new System.Drawing.Size(153, 23);
+            this.btnEjectMember.Size = new System.Drawing.Size(80, 23);
             this.btnEjectMember.TabIndex = 11;
-            this.btnEjectMember.Text = "Eject From Group";
-            this.btnEjectMember.UseVisualStyleBackColor = true;
+            this.btnEjectMember.Text = "Eject";
+            this.btnEjectMember.UseVisualStyleBackColor = false;
             this.btnEjectMember.Click += new System.EventHandler(this.btnEjectMember_Click);
             // 
             // label3
@@ -1222,6 +1240,108 @@ namespace Radegast
             this.label1.Text = "Group Notice";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // tpBanned
+            // 
+            this.tpBanned.Controls.Add(this.lwBannedMembers);
+            this.tpBanned.Controls.Add(this.pnlBannedBottom);
+            this.tpBanned.Controls.Add(this.pnlBannedTop);
+            this.tpBanned.Location = new System.Drawing.Point(4, 22);
+            this.tpBanned.Name = "tpBanned";
+            this.tpBanned.Size = new System.Drawing.Size(400, 439);
+            this.tpBanned.TabIndex = 4;
+            this.tpBanned.Text = "Banned Residents";
+            this.tpBanned.UseVisualStyleBackColor = true;
+            // 
+            // lwBannedMembers
+            // 
+            this.lwBannedMembers.AllowColumnReorder = true;
+            this.lwBannedMembers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chBannedName,
+            this.chBannedOn});
+            this.lwBannedMembers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lwBannedMembers.FullRowSelect = true;
+            this.lwBannedMembers.GridLines = true;
+            this.lwBannedMembers.HideSelection = false;
+            this.lwBannedMembers.Location = new System.Drawing.Point(0, 28);
+            this.lwBannedMembers.Name = "lwBannedMembers";
+            this.lwBannedMembers.ShowGroups = false;
+            this.lwBannedMembers.Size = new System.Drawing.Size(400, 372);
+            this.lwBannedMembers.TabIndex = 10;
+            this.lwBannedMembers.UseCompatibleStateImageBehavior = false;
+            this.lwBannedMembers.View = System.Windows.Forms.View.Details;
+            this.lwBannedMembers.SelectedIndexChanged += new System.EventHandler(this.lwBannedMembers_SelectedIndexChanged);
+            // 
+            // chBannedName
+            // 
+            this.chBannedName.Text = "Resident name";
+            this.chBannedName.Width = 268;
+            // 
+            // chBannedOn
+            // 
+            this.chBannedOn.Text = "Banned on";
+            this.chBannedOn.Width = 90;
+            // 
+            // pnlBannedBottom
+            // 
+            this.pnlBannedBottom.Controls.Add(this.btnRefreshBanned);
+            this.pnlBannedBottom.Controls.Add(this.btnUnban);
+            this.pnlBannedBottom.Controls.Add(this.btnBan);
+            this.pnlBannedBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBannedBottom.Location = new System.Drawing.Point(0, 400);
+            this.pnlBannedBottom.Name = "pnlBannedBottom";
+            this.pnlBannedBottom.Size = new System.Drawing.Size(400, 39);
+            this.pnlBannedBottom.TabIndex = 4;
+            // 
+            // btnRefreshBanned
+            // 
+            this.btnRefreshBanned.Location = new System.Drawing.Point(165, 3);
+            this.btnRefreshBanned.Name = "btnRefreshBanned";
+            this.btnRefreshBanned.Size = new System.Drawing.Size(75, 23);
+            this.btnRefreshBanned.TabIndex = 2;
+            this.btnRefreshBanned.Text = "Refresh";
+            this.btnRefreshBanned.UseVisualStyleBackColor = true;
+            this.btnRefreshBanned.Click += new System.EventHandler(this.btnRefreshBanned_Click);
+            // 
+            // btnUnban
+            // 
+            this.btnUnban.Enabled = false;
+            this.btnUnban.Location = new System.Drawing.Point(84, 3);
+            this.btnUnban.Name = "btnUnban";
+            this.btnUnban.Size = new System.Drawing.Size(75, 23);
+            this.btnUnban.TabIndex = 1;
+            this.btnUnban.Text = "Unban";
+            this.btnUnban.UseVisualStyleBackColor = true;
+            this.btnUnban.Click += new System.EventHandler(this.btnUnban_Click);
+            // 
+            // btnBan
+            // 
+            this.btnBan.Location = new System.Drawing.Point(3, 3);
+            this.btnBan.Name = "btnBan";
+            this.btnBan.Size = new System.Drawing.Size(75, 23);
+            this.btnBan.TabIndex = 0;
+            this.btnBan.Text = "Ban...";
+            this.btnBan.UseVisualStyleBackColor = true;
+            this.btnBan.Click += new System.EventHandler(this.btnBan_Click);
+            // 
+            // pnlBannedTop
+            // 
+            this.pnlBannedTop.Controls.Add(this.label9);
+            this.pnlBannedTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlBannedTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlBannedTop.Name = "pnlBannedTop";
+            this.pnlBannedTop.Size = new System.Drawing.Size(400, 28);
+            this.pnlBannedTop.TabIndex = 3;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(3, 3);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(222, 17);
+            this.label9.TabIndex = 2;
+            this.label9.Text = "Residents banned from this group";
+            // 
             // pnlBottomControls
             // 
             this.pnlBottomControls.Controls.Add(this.btnClose);
@@ -1266,6 +1386,18 @@ namespace Radegast
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // btnBanMember
+            // 
+            this.btnBanMember.AccessibleName = "Eject from group";
+            this.btnBanMember.Enabled = false;
+            this.btnBanMember.Location = new System.Drawing.Point(178, 3);
+            this.btnBanMember.Name = "btnBanMember";
+            this.btnBanMember.Size = new System.Drawing.Size(80, 23);
+            this.btnBanMember.TabIndex = 11;
+            this.btnBanMember.Text = "Ban";
+            this.btnBanMember.UseVisualStyleBackColor = false;
+            this.btnBanMember.Click += new System.EventHandler(this.btnBanMember_Click);
+            // 
             // GroupDetails
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
@@ -1301,6 +1433,10 @@ namespace Radegast
             this.pnlArchivedNotice.ResumeLayout(false);
             this.pnlArchivedNotice.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.icnItem)).EndInit();
+            this.tpBanned.ResumeLayout(false);
+            this.pnlBannedBottom.ResumeLayout(false);
+            this.pnlBannedTop.ResumeLayout(false);
+            this.pnlBannedTop.PerformLayout();
             this.pnlBottomControls.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -1408,6 +1544,17 @@ namespace Radegast
         private System.Windows.Forms.ColumnHeader cbRoleID;
         private System.Windows.Forms.ContextMenuStrip rolesContextMenu;
         private System.Windows.Forms.ToolStripMenuItem copyRoleIDToolStripMenuItem;
+        private System.Windows.Forms.TabPage tpBanned;
+        public ListViewNoFlicker lwBannedMembers;
+        public System.Windows.Forms.ColumnHeader chBannedName;
+        public System.Windows.Forms.ColumnHeader chBannedOn;
+        private System.Windows.Forms.Panel pnlBannedBottom;
+        private System.Windows.Forms.Button btnRefreshBanned;
+        private System.Windows.Forms.Button btnUnban;
+        private System.Windows.Forms.Button btnBan;
+        private System.Windows.Forms.Panel pnlBannedTop;
+        public System.Windows.Forms.Label label9;
+        public System.Windows.Forms.Button btnBanMember;
 
     }
 }
