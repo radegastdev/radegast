@@ -165,7 +165,7 @@ namespace Radegast
             this.btnUnban = new System.Windows.Forms.Button();
             this.btnBan = new System.Windows.Forms.Button();
             this.pnlBannedTop = new System.Windows.Forms.Panel();
-            this.label9 = new System.Windows.Forms.Label();
+            this.lblGroupBansTitle = new System.Windows.Forms.Label();
             this.pnlBottomControls = new System.Windows.Forms.Panel();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
@@ -1325,22 +1325,22 @@ namespace Radegast
             // 
             // pnlBannedTop
             // 
-            this.pnlBannedTop.Controls.Add(this.label9);
+            this.pnlBannedTop.Controls.Add(this.lblGroupBansTitle);
             this.pnlBannedTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlBannedTop.Location = new System.Drawing.Point(0, 0);
             this.pnlBannedTop.Name = "pnlBannedTop";
             this.pnlBannedTop.Size = new System.Drawing.Size(400, 28);
             this.pnlBannedTop.TabIndex = 3;
             // 
-            // label9
+            // lblGroupBansTitle
             // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(3, 3);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(222, 17);
-            this.label9.TabIndex = 2;
-            this.label9.Text = "Residents banned from this group";
+            this.lblGroupBansTitle.AutoSize = true;
+            this.lblGroupBansTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGroupBansTitle.Location = new System.Drawing.Point(3, 3);
+            this.lblGroupBansTitle.Name = "lblGroupBansTitle";
+            this.lblGroupBansTitle.Size = new System.Drawing.Size(222, 17);
+            this.lblGroupBansTitle.TabIndex = 2;
+            this.lblGroupBansTitle.Text = "Residents banned from this group";
             // 
             // pnlBottomControls
             // 
@@ -1540,7 +1540,7 @@ namespace Radegast
         private System.Windows.Forms.Button btnUnban;
         private System.Windows.Forms.Button btnBan;
         private System.Windows.Forms.Panel pnlBannedTop;
-        public System.Windows.Forms.Label label9;
+        public System.Windows.Forms.Label lblGroupBansTitle;
         public System.Windows.Forms.Button btnBanMember;
 
     }

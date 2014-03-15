@@ -82,6 +82,13 @@ namespace Radegast
 
             lblGroupName.Text = group.Name;
 
+            bool hasGroupBans = null != client.Groups.GetGroupAPIUri(group.ID);
+            if (!hasGroupBans)
+            {
+                lblGroupBansTitle.Text = "Region does not support group bans";
+                pnlBannedBottom.Enabled = pnlBannedTop.Enabled = lwBannedMembers.Enabled = false;
+            }
+
             isMember = instance.Groups.ContainsKey(group.ID);
 
             if (!isMember)
