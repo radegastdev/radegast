@@ -654,6 +654,10 @@ namespace Radegast
                 case "tpMembersRoles":
                     RefreshMembersRoles();
                     break;
+
+                case "tpBanned":
+                    RefreshBans();
+                    break;
             }
         }
         #endregion
@@ -1294,11 +1298,6 @@ namespace Radegast
                     RefreshBans();
                 });
             }
-        }
-
-        private void btnRefreshBanned_Click(object sender, EventArgs e)
-        {
-            RefreshBans();
         }
 
         private void lwBannedMembers_SelectedIndexChanged(object sender, EventArgs e)
