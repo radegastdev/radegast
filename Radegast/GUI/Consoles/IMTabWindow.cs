@@ -289,5 +289,10 @@ namespace Radegast
         {
             pnlChatInput.Height = cbxInput.Height + 9;
         }
+
+        private void cbAlwaysDing_CheckedChanged(object sender, EventArgs e)
+        {
+            textManager.DingOnAllIncoming = ((CheckBox)sender).Checked;
+        }
     }
 }

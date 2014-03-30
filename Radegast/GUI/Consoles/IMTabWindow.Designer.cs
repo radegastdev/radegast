@@ -66,6 +66,7 @@ namespace Radegast
             this.btnPay = new System.Windows.Forms.Button();
             this.btnOfferTeleport = new System.Windows.Forms.Button();
             this.btnProfile = new System.Windows.Forms.Button();
+            this.cbAlwaysDing = new System.Windows.Forms.CheckBox();
             this.pnlChatInput.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -156,10 +157,22 @@ namespace Radegast
             this.btnProfile.UseVisualStyleBackColor = true;
             this.btnProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 
+            // cbAlwaysDing
+            // 
+            this.cbAlwaysDing.AutoSize = true;
+            this.cbAlwaysDing.Location = new System.Drawing.Point(280, 4);
+            this.cbAlwaysDing.Name = "cbAlwaysDing";
+            this.cbAlwaysDing.Size = new System.Drawing.Size(108, 17);
+            this.cbAlwaysDing.TabIndex = 9;
+            this.cbAlwaysDing.Text = "Ding on every IM";
+            this.cbAlwaysDing.UseVisualStyleBackColor = true;
+            this.cbAlwaysDing.CheckedChanged += new System.EventHandler(this.cbAlwaysDing_CheckedChanged);
+            // 
             // IMTabWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.cbAlwaysDing);
             this.Controls.Add(this.btnPay);
             this.Controls.Add(this.btnOfferTeleport);
             this.Controls.Add(this.btnProfile);
@@ -183,10 +196,11 @@ namespace Radegast
         public ChatInputBox cbxInput;
         public System.Windows.Forms.Button btnSend;
         public System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.Panel pnlChatInput;
         public System.Windows.Forms.Button btnPay;
         public System.Windows.Forms.Button btnOfferTeleport;
         public System.Windows.Forms.Button btnProfile;
+        public System.Windows.Forms.CheckBox cbAlwaysDing;
+        public System.Windows.Forms.Panel pnlChatInput;
 
     }
 }
