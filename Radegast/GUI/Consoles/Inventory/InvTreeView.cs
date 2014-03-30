@@ -43,6 +43,18 @@ namespace Radegast
             public int Level;
             public bool IsDir { get { return ONode.Data is InventoryFolder; } }
 
+            /// <summary>
+            /// Is inventory metadata been added to libopenmetaverse node for this instance id
+            /// </summary>
+            /// <param name="id">ID</param>
+            /// <returns>True if data is set for this instance</returns>
+            public bool IsMetaSet(int id)
+            {
+                if (!(ONode.Tag is NodeMeta)) return false;
+                var meta = (NodeMeta)ONode.Tag;
+                return meta.Data.ContainsKey(id);
+            }
+
             public bool IsExpanded(int id)
             {
                 return (ONode.Tag is NodeMeta) && ((NodeMeta)ONode.Tag).IsExpanded(id);
@@ -146,6 +158,11 @@ namespace Radegast
                 ONode = Inv.RootNode,
                 Level = 0
             };
+            if (!inv.IsMetaSet(ID))
+            {
+                inv.SetExpanded(ID, true);
+            }
+
             Mapper.Add(inv);
             PrepareNodes(Mapper.Count - 1, inv.IsExpanded(ID));
             if (InvType == TreeType.All)
@@ -185,24 +202,33 @@ namespace Radegast
         /// </summary>
         /// <param name="pos">The pos.</param>
         /// <param name="mbr">The data node.</param>
-        private void PopulateDescendantMembers(ref int pos, Node mbr)
+        protected virtual void PopulateDescendantMembers(ref int pos, Node mbr)
         {
-            List<InventoryNode> children = new List<InventoryNode>(mbr.ONode.Nodes.Values);
-            children.Sort(Sorter);
-
-            foreach (var m in children)
+            if (InvType == TreeType.All)
             {
-                Node newNode = new Node()
-                {
-                    ONode = m,
-                    Level = mbr.Level + 1,
-                };
+                List<InventoryNode> children = new List<InventoryNode>(mbr.ONode.Nodes.Values);
+                children.Sort(Sorter);
 
-                Mapper.Insert(pos++, newNode);
-                if (newNode.IsExpanded(ID))
+                foreach (var m in children)
                 {
-                    PopulateDescendantMembers(ref pos, newNode);
+                    Node newNode = new Node()
+                    {
+                        ONode = m,
+                        Level = mbr.Level + 1,
+                    };
+
+                    Mapper.Insert(pos++, newNode);
+                    if (newNode.IsExpanded(ID))
+                    {
+                        PopulateDescendantMembers(ref pos, newNode);
+                    }
                 }
+            }
+            else if (InvType == TreeType.Recent)
+            {
+            }
+            else if (InvType == TreeType.Worn)
+            {
             }
         }
 
