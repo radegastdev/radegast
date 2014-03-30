@@ -112,31 +112,6 @@ namespace Radegast
             VirtualMode = true;
         }
 
-        public void UpdateMapper()
-        {
-            BeginUpdate();
-            Mapper.Clear();
-            var inv = new Node()
-            {
-                ONode = Inv.RootNode,
-                Level = 0
-            };
-            Mapper.Add(inv);
-            PrepareNodes(Mapper.Count - 1, inv.IsExpanded(ID));
-            if (InvType == TreeType.All)
-            {
-                var lib = new Node()
-                {
-                    ONode = Inv.LibraryRootNode,
-                    Level = 0
-                };
-                Mapper.Add(lib);
-                PrepareNodes(Mapper.Count - 1, lib.IsExpanded(ID));
-            }
-            VirtualListSize = Mapper.Count;
-            EndUpdate();
-        }
-
         void InitSorter()
         {
             if (Sorter == null)
@@ -160,6 +135,31 @@ namespace Radegast
                 IcnMinus = frmMain.ResourceImages.Images[frmMain.ImageNames.IndexOf("arrow_down")];
                 IcnLinkOverlay = frmMain.ResourceImages.Images[frmMain.ImageNames.IndexOf("inv_link_overlay")];
             }
+        }
+
+        public void UpdateMapper()
+        {
+            BeginUpdate();
+            Mapper.Clear();
+            var inv = new Node()
+            {
+                ONode = Inv.RootNode,
+                Level = 0
+            };
+            Mapper.Add(inv);
+            PrepareNodes(Mapper.Count - 1, inv.IsExpanded(ID));
+            if (InvType == TreeType.All)
+            {
+                var lib = new Node()
+                {
+                    ONode = Inv.LibraryRootNode,
+                    Level = 0
+                };
+                Mapper.Add(lib);
+                PrepareNodes(Mapper.Count - 1, lib.IsExpanded(ID));
+            }
+            VirtualListSize = Mapper.Count;
+            EndUpdate();
         }
 
         void PrepareNodes(int pos, bool add)
@@ -302,6 +302,7 @@ namespace Radegast
         protected override void OnDrawItem(DrawListViewItemEventArgs e)
         {
             Graphics g = e.Graphics;
+
             e.DrawBackground();
 
             if (!(e.Item.Tag is Node))
