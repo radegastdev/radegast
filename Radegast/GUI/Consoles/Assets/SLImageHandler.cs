@@ -471,12 +471,14 @@ namespace Radegast
             
             InventoryItem item = (InventoryItem)tbtbInvShow.Tag;
 
+            /* TODO: 
             if (instance.TabConsole.TabExists("inventory"))
             {
                 instance.TabConsole.SelectTab("inventory");
                 InventoryConsole inv = (InventoryConsole)instance.TabConsole.Tabs["inventory"].Control;
                 inv.SelectInventoryNode(item.UUID);
             }
+            */
         }
     }
 
