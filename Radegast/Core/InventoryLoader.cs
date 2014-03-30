@@ -41,6 +41,7 @@ namespace Radegast
         public ReloadableBase(RadegastInstance instance)
         {
             this.Instance = instance;
+            RegisterClientEvents(instance.Client);
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
         }
 
@@ -78,7 +79,6 @@ namespace Radegast
         public InventoryLoader(RadegastInstance instance)
             : base(instance)
         {
-            RegisterClientEvents(Client);
         }
 
         protected override void RegisterClientEvents(GridClient client)

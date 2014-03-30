@@ -32,23 +32,20 @@ namespace Radegast
 
             Trees = new List<InvTreeView>(3);
 
-            Trees.Add(new InvTreeView(instance, console)
+            Trees.Add(new InvTreeViewAll(instance, console)
             {
-                InvType = InvTreeView.TreeType.All,
                 Dock = DockStyle.Fill
             });
             tabAll.Controls.Add(Trees[Trees.Count - 1]);
 
-            Trees.Add(new InvTreeView(instance, console)
+            Trees.Add(new InvTreeViewRecent(instance, console)
             {
-                InvType = InvTreeView.TreeType.Recent,
                 Dock = DockStyle.Fill
             });
             tabRecent.Controls.Add(Trees[Trees.Count - 1]);
 
-            Trees.Add(new InvTreeView(instance, console)
+            Trees.Add(new InvTreeViewWorn(instance, console)
             {
-                InvType = InvTreeView.TreeType.Worn,
                 Dock = DockStyle.Fill
             });
             tabWorn.Controls.Add(Trees[Trees.Count - 1]);

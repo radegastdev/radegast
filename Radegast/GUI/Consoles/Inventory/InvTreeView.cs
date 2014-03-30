@@ -7,7 +7,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public class InvTreeView : ListViewNoFlicker
+    public abstract class InvTreeView : ListViewNoFlicker
     {
         public class NodeMeta
         {
@@ -17,7 +17,7 @@ namespace Radegast
             }
 
             public Dictionary<int, NodeData> Data = new Dictionary<int, NodeData>(4);
-            
+
             public bool IsExpanded(int id)
             {
                 return Data.ContainsKey(id) && Data[id].IsExpanded;
@@ -86,20 +86,20 @@ namespace Radegast
             Worn
         }
 
-        public TreeType InvType;
+        // public TreeType InvType;
 
-        RadegastInstance Instance;
-        GridClient Client { get { return Instance.Client; } }
-        InventoryConsole Console;
-        Inventory Inv { get { return Client.Inventory.Store; } }
-        List<Node> Mapper = new List<Node>(64);
-        static int IconWidth = 16;
-        static Image IcnPlus, IcnMinus, IcnLinkOverlay;
-        string newItemName = string.Empty;
-        static int Serial;
-        ContextMenuStrip ctxInv = new ContextMenuStrip();
+        protected RadegastInstance Instance;
+        protected GridClient Client { get { return Instance.Client; } }
+        protected InventoryConsole Console;
+        protected Inventory Inv { get { return Client.Inventory.Store; } }
+        protected List<Node> Mapper = new List<Node>(64);
+        protected static int IconWidth = 16;
+        protected static Image IcnPlus, IcnMinus, IcnLinkOverlay;
+        protected string newItemName = string.Empty;
+        protected static int Serial;
+        protected ContextMenuStrip ctxInv = new ContextMenuStrip();
 
-        int ID;
+        protected int ID;
 
         public InvTreeView() : base() { }
         public InvTreeView(RadegastInstance instance, InventoryConsole console)
@@ -149,7 +149,7 @@ namespace Radegast
             }
         }
 
-        public void UpdateMapper()
+        public virtual void UpdateMapper()
         {
             BeginUpdate();
             Mapper.Clear();
@@ -158,28 +158,14 @@ namespace Radegast
                 ONode = Inv.RootNode,
                 Level = 0
             };
-            if (!inv.IsMetaSet(ID))
-            {
-                inv.SetExpanded(ID, true);
-            }
 
             Mapper.Add(inv);
             PrepareNodes(Mapper.Count - 1, inv.IsExpanded(ID));
-            if (InvType == TreeType.All)
-            {
-                var lib = new Node()
-                {
-                    ONode = Inv.LibraryRootNode,
-                    Level = 0
-                };
-                Mapper.Add(lib);
-                PrepareNodes(Mapper.Count - 1, lib.IsExpanded(ID));
-            }
             VirtualListSize = Mapper.Count;
             EndUpdate();
         }
 
-        void PrepareNodes(int pos, bool add)
+        protected virtual void PrepareNodes(int pos, bool add)
         {
             Node mbr = Mapper[pos];
             pos++;
@@ -204,31 +190,22 @@ namespace Radegast
         /// <param name="mbr">The data node.</param>
         protected virtual void PopulateDescendantMembers(ref int pos, Node mbr)
         {
-            if (InvType == TreeType.All)
-            {
-                List<InventoryNode> children = new List<InventoryNode>(mbr.ONode.Nodes.Values);
-                children.Sort(Sorter);
+            List<InventoryNode> children = new List<InventoryNode>(mbr.ONode.Nodes.Values);
+            children.Sort(Sorter);
 
-                foreach (var m in children)
+            foreach (var m in children)
+            {
+                Node newNode = new Node()
                 {
-                    Node newNode = new Node()
-                    {
-                        ONode = m,
-                        Level = mbr.Level + 1,
-                    };
+                    ONode = m,
+                    Level = mbr.Level + 1,
+                };
 
-                    Mapper.Insert(pos++, newNode);
-                    if (newNode.IsExpanded(ID))
-                    {
-                        PopulateDescendantMembers(ref pos, newNode);
-                    }
+                Mapper.Insert(pos++, newNode);
+                if (newNode.IsExpanded(ID))
+                {
+                    PopulateDescendantMembers(ref pos, newNode);
                 }
-            }
-            else if (InvType == TreeType.Recent)
-            {
-            }
-            else if (InvType == TreeType.Worn)
-            {
             }
         }
 
@@ -237,7 +214,7 @@ namespace Radegast
         /// </summary>
         /// <param name="pos">The pos.</param>
         /// <returns></returns>
-        private int ObtainExpandedChildrenCount(int pos)
+        protected virtual int ObtainExpandedChildrenCount(int pos)
         {
             int kids = 0;
             Node mi = Mapper[pos];
@@ -376,7 +353,7 @@ namespace Radegast
                     {
                         exp = IcnPlus;
                     }
-                    g.DrawImageUnscaled(exp, e.Bounds.X + offset,  e.Bounds.Y);
+                    g.DrawImageUnscaled(exp, e.Bounds.X + offset, e.Bounds.Y);
                 }
 
                 icon = frmMain.ResourceImages.Images[iconIx];
@@ -1240,5 +1217,44 @@ namespace Radegast
             }
         }
         #endregion
+    }
+
+    public class InvTreeViewAll : InvTreeView
+    {
+        public InvTreeViewAll(RadegastInstance instance, InventoryConsole console)
+            : base(instance, console)
+        {
+        }
+
+        public override void UpdateMapper()
+        {
+            base.UpdateMapper();
+            BeginUpdate();
+            var lib = new Node()
+            {
+                ONode = Inv.LibraryRootNode,
+                Level = 0
+            };
+            Mapper.Add(lib);
+            PrepareNodes(Mapper.Count - 1, lib.IsExpanded(ID));
+            VirtualListSize = Mapper.Count;
+            EndUpdate();
+        }
+    }
+
+    public class InvTreeViewRecent : InvTreeView
+    {
+        public InvTreeViewRecent(RadegastInstance instance, InventoryConsole console)
+            : base(instance, console)
+        {
+        }
+    }
+
+    public class InvTreeViewWorn : InvTreeView
+    {
+        public InvTreeViewWorn(RadegastInstance instance, InventoryConsole console)
+            : base(instance, console)
+        {
+        }
     }
 }
