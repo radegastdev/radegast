@@ -43,6 +43,7 @@ namespace Radegast
         private RadegastInstance instance { get { return RadegastInstance.GlobalInstance; } }
 
         [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public UUID AgentID
         {
             get { return agentID; }
