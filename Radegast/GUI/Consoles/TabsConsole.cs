@@ -261,7 +261,18 @@ namespace Radegast
                 || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
                 )) return;
 
-            instance.MainForm.AddNotification(new ntfPermissions(instance, e.Simulator, e.TaskID, e.ItemID, e.ObjectName, e.ObjectOwnerName, e.Questions));
+            if (instance.GlobalSettings["on_script_question"] == "Auto Accept")
+            {
+                instance.Client.Self.ScriptQuestionReply(e.Simulator, e.ItemID, e.TaskID, e.Questions);
+            }
+            else if (instance.GlobalSettings["on_script_question"] == "Auto Decline")
+            {
+                instance.Client.Self.ScriptQuestionReply(e.Simulator, e.ItemID, e.TaskID, 0);
+            }
+            else
+            {
+                instance.MainForm.AddNotification(new ntfPermissions(instance, e.Simulator, e.TaskID, e.ItemID, e.ObjectName, e.ObjectOwnerName, e.Questions));
+            }
         }
 
         private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)
