@@ -163,12 +163,12 @@ namespace Radegast.Rendering
 
     public class BoundingVolume
     {
-        Vector3 Min = new Vector3(99999, 99999, 99999);
-        Vector3 Max = new Vector3(-99999, -99999, -99999);
+        Vector3 Min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        Vector3 Max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         float R = 0f;
 
-        public Vector3 ScaledMin = new Vector3(99999, 99999, 99999);
-        public Vector3 ScaledMax = new Vector3(-99999, -99999, -99999);
+        public Vector3 ScaledMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+        public Vector3 ScaledMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
         public float ScaledR = 0f;
 
         public void CalcScaled(Vector3 scale)
