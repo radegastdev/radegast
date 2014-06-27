@@ -76,6 +76,7 @@ namespace Radegast
             this.tbtnSLeek = new System.Windows.Forms.ToolStripDropDownButton();
             this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uploadmeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuImport = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
@@ -99,6 +100,10 @@ namespace Radegast
             this.tmnuSetHome = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuTeleportHome = new System.Windows.Forms.ToolStripMenuItem();
             this.regionParcelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setAccessLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.matureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.adultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
             this.tmnuStatusAway = new System.Windows.Forms.ToolStripMenuItem();
             this.tmnuStatusBusy = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,10 +157,6 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
-            this.setAccessLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.matureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.adultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -199,6 +200,7 @@ namespace Radegast
             this.tbtnSLeek.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newWindowToolStripMenuItem,
             this.uploadImageToolStripMenuItem,
+            this.uploadmeshToolStripMenuItem,
             this.tmnuImport,
             this.scriptEditorToolStripMenuItem,
             this.toolStripMenuItem3,
@@ -228,6 +230,13 @@ namespace Radegast
             this.uploadImageToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.uploadImageToolStripMenuItem.Text = "Upload image...";
             this.uploadImageToolStripMenuItem.Click += new System.EventHandler(this.uploadImageToolStripMenuItem_Click);
+            // 
+            // uploadmeshToolStripMenuItem
+            // 
+            this.uploadmeshToolStripMenuItem.Name = "uploadmeshToolStripMenuItem";
+            this.uploadmeshToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.uploadmeshToolStripMenuItem.Text = "Upload &mesh...";
+            this.uploadmeshToolStripMenuItem.Click += new System.EventHandler(this.uploadmeshToolStripMenuItem_Click);
             // 
             // tmnuImport
             // 
@@ -413,6 +422,38 @@ namespace Radegast
             this.regionParcelToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.regionParcelToolStripMenuItem.Text = "Region/Parcel";
             this.regionParcelToolStripMenuItem.Click += new System.EventHandler(this.regionParcelToolStripMenuItem_Click);
+            // 
+            // setAccessLevelToolStripMenuItem
+            // 
+            this.setAccessLevelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.pGToolStripMenuItem,
+            this.matureToolStripMenuItem,
+            this.adultToolStripMenuItem});
+            this.setAccessLevelToolStripMenuItem.Name = "setAccessLevelToolStripMenuItem";
+            this.setAccessLevelToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
+            this.setAccessLevelToolStripMenuItem.Text = "Set Access Level";
+            this.setAccessLevelToolStripMenuItem.ToolTipText = "To which maturity level sims will you be able to teleport";
+            // 
+            // pGToolStripMenuItem
+            // 
+            this.pGToolStripMenuItem.Name = "pGToolStripMenuItem";
+            this.pGToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.pGToolStripMenuItem.Text = "PG";
+            this.pGToolStripMenuItem.Click += new System.EventHandler(this.pGToolStripMenuItem_Click);
+            // 
+            // matureToolStripMenuItem
+            // 
+            this.matureToolStripMenuItem.Name = "matureToolStripMenuItem";
+            this.matureToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.matureToolStripMenuItem.Text = "Mature";
+            this.matureToolStripMenuItem.Click += new System.EventHandler(this.matureToolStripMenuItem_Click);
+            // 
+            // adultToolStripMenuItem
+            // 
+            this.adultToolStripMenuItem.Name = "adultToolStripMenuItem";
+            this.adultToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.adultToolStripMenuItem.Text = "Adult";
+            this.adultToolStripMenuItem.Click += new System.EventHandler(this.adultToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
@@ -909,38 +950,6 @@ namespace Radegast
             this.ctxTreyExit.ToolTipText = "Loggs of and closes application";
             this.ctxTreyExit.Click += new System.EventHandler(this.ctxTreyExit_Click);
             // 
-            // setAccessLevelToolStripMenuItem
-            // 
-            this.setAccessLevelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.pGToolStripMenuItem,
-            this.matureToolStripMenuItem,
-            this.adultToolStripMenuItem});
-            this.setAccessLevelToolStripMenuItem.Name = "setAccessLevelToolStripMenuItem";
-            this.setAccessLevelToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
-            this.setAccessLevelToolStripMenuItem.Text = "Set Access Level";
-            this.setAccessLevelToolStripMenuItem.ToolTipText = "To which maturity level sims will you be able to teleport";
-            // 
-            // pGToolStripMenuItem
-            // 
-            this.pGToolStripMenuItem.Name = "pGToolStripMenuItem";
-            this.pGToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.pGToolStripMenuItem.Text = "PG";
-            this.pGToolStripMenuItem.Click += new System.EventHandler(this.pGToolStripMenuItem_Click);
-            // 
-            // matureToolStripMenuItem
-            // 
-            this.matureToolStripMenuItem.Name = "matureToolStripMenuItem";
-            this.matureToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.matureToolStripMenuItem.Text = "Mature";
-            this.matureToolStripMenuItem.Click += new System.EventHandler(this.matureToolStripMenuItem_Click);
-            // 
-            // adultToolStripMenuItem
-            // 
-            this.adultToolStripMenuItem.Name = "adultToolStripMenuItem";
-            this.adultToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.adultToolStripMenuItem.Text = "Adult";
-            this.adultToolStripMenuItem.Click += new System.EventHandler(this.adultToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AutoSavePosition = true;
@@ -1060,6 +1069,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem pGToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem matureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adultToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uploadmeshToolStripMenuItem;
     }
 }
 

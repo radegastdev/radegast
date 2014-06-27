@@ -1751,5 +1751,14 @@ namespace Radegast
             setMaturityLevel("A");
         }
 
+        private void uploadmeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!tabsConsole.TabExists("mesh upload console"))
+            {
+                tabsConsole.AddTab("mesh upload console", "Upload mesh", new MeshUploadConsole(instance));
+            }
+            tabsConsole.Tabs["mesh upload console"].Select();
+        }
+
     }
 }
