@@ -54,6 +54,8 @@ namespace SimpleBuilderNamespace
     [Radegast.Plugin(Name = "SimpleBuilder Plugin", Description = "Allows you to build some basic prims, like boxes, cylinder, tubes, ... (requires permission!)", Version = "1.0")]
     public partial class SimpleBuilder : RadegastTabControl, IRadegastPlugin
     {
+        System.Threading.AutoResetEvent primDone = new System.Threading.AutoResetEvent(false);
+
         private string pluginName = "SimpleBuilder";
         // Methods needed for proper registration of a GUI tab
         #region Template for GUI radegast tab
@@ -76,14 +78,22 @@ namespace SimpleBuilderNamespace
             }
             set
             {
-                if(value == null)
+                if(value == null){
                     btnSave.Enabled = false;
+                    groupTransform.Text = "Transform";
+                }
                 else
+                {
                     btnSave.Enabled = true;
+                    groupTransform.Text = "Transform: " + value.Properties.Name;
+                }
+                    
 
                 m_selectedPrim = value;
             }
         }
+
+        public string ObjectName { get; set; }
 
         /// <summary>Default constructor. Never used. Needed for VS designer</summary>
         public SimpleBuilder()
@@ -357,26 +367,43 @@ namespace SimpleBuilderNamespace
         private void BuildAndRez(PrimType primType)
         {
             float size, distance;
-            if (!float.TryParse(tbox_Size.Text,  System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out size))
-            {
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Invalid size", ChatBufferTextStyle.Error);
-                return;
-            }
 
-            if (!float.TryParse(tbox_Distance.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out distance))
-            {
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Invalid distance", ChatBufferTextStyle.Error);
-                return;
-            }
+            size = (float)tbox_Size.Value;
+            distance = (float)tbox_Distance.Value;
 
             Primitive.ConstructionData primData = ObjectManager.BuildBasicShape(primType);
 
             Vector3 rezpos = new Vector3(distance, 0, 0);
             rezpos = client.Self.SimPosition + rezpos * client.Self.Movement.BodyRotation;
 
+            ObjectName = txt_ObjectName.Text;
+            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_OnNewPrim);
             client.Objects.AddPrim(client.Network.CurrentSim, primData, UUID.Zero, rezpos, new Vector3(size), Quaternion.Identity);
+            if (!primDone.WaitOne(10000, false))
+                throw new Exception("Rez failed, timed out while creating the prim.");
 
-            instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Object built and rezzed", ChatBufferTextStyle.Normal);
+            txt_ObjectName.Text = ObjectName;
+        }
+
+        void Objects_OnNewPrim(object sender, PrimEventArgs e)
+        {
+            Primitive prim = e.Prim;
+
+            if ((prim.Flags & PrimFlags.CreateSelected) == 0)
+                return; // We received an update for an object we didn't create
+
+            if (String.IsNullOrEmpty(ObjectName))
+                ObjectName = "SimpleBuilder " + DateTime.Now.ToString("hmmss");
+
+            client.Objects.SetName(client.Network.CurrentSim, prim.LocalID, ObjectName);
+
+            client.Objects.ObjectUpdate -= Objects_OnNewPrim;
+
+            primDone.Set();
+
+            instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Object '"+ txt_ObjectName.Text +"' has been successfully built and rezzed", ChatBufferTextStyle.Normal);
+
+            MessageBox.Show("Object '" + txt_ObjectName.Text + "' has been built and rezzed", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         #endregion Implementation of the custom tab functionality
@@ -388,6 +415,7 @@ namespace SimpleBuilderNamespace
                 selectedPrim = Prims[lstPrims.SelectedIndices[0]];
                 getScaleFromSelection();
                 getRotFromSelection();
+                getPosFromSelection();
             }
             else
             {
@@ -414,6 +442,16 @@ namespace SimpleBuilderNamespace
             rotZ.Value = (Decimal)selectedPrim.Rotation.Z;
         }
 
+        private void getPosFromSelection()
+        {
+            if (selectedPrim == null) return;
+            if (selectedPrim.Position == null) return;
+
+            posX.Value = (Decimal)selectedPrim.Position.X;
+            posY.Value = (Decimal)selectedPrim.Position.Y;
+            posZ.Value = (Decimal)selectedPrim.Position.Z;
+        }
+
         private void setRotToSelection()
         {
             if (selectedPrim != null && selectedPrim.Rotation != null)
@@ -421,6 +459,8 @@ namespace SimpleBuilderNamespace
                 selectedPrim.Rotation.X = (float)rotX.Value;
                 selectedPrim.Rotation.Y = (float)rotY.Value;
                 selectedPrim.Rotation.Z = (float)rotZ.Value;
+
+                client.Objects.SetRotation(client.Network.CurrentSim, selectedPrim.LocalID, selectedPrim.Rotation);
             }
         }
 
@@ -431,6 +471,20 @@ namespace SimpleBuilderNamespace
                 selectedPrim.Scale.X = (float)scaleX.Value;
                 selectedPrim.Scale.Y = (float)scaleY.Value;
                 selectedPrim.Scale.Z = (float)scaleZ.Value;
+
+                client.Objects.SetScale(client.Network.CurrentSim, selectedPrim.LocalID, selectedPrim.Scale, true, false);
+            }
+        }
+
+        private void setPositionToSelection()
+        {
+            if (selectedPrim != null && selectedPrim.Position != null)
+            {
+                selectedPrim.Position.X = (float)posX.Value;
+                selectedPrim.Position.Y = (float)posY.Value;
+                selectedPrim.Position.Z = (float)posZ.Value;
+
+                client.Objects.SetPosition(client.Network.CurrentSim, selectedPrim.LocalID, selectedPrim.Position);
             }
         }
 
@@ -464,8 +518,26 @@ namespace SimpleBuilderNamespace
 
         private void btn_Save_Click(object sender, EventArgs e)
         {
-            setScaleToSelection();
-            setRotToSelection();
+            if (selectedPrim == null) return;
+
+            try
+            {
+                setScaleToSelection();
+                setRotToSelection();
+                setPositionToSelection();
+
+                MessageBox.Show("Object saved!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if(selectedPrim.Properties != null)
+                    instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to save object '" + selectedPrim.Properties.Name + "'", ChatBufferTextStyle.Error);
+                else
+                    instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to save object", ChatBufferTextStyle.Error);
+
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ":" + ex.ToString(), ChatBufferTextStyle.Error);
+            }
+            
         }
     }
 }
