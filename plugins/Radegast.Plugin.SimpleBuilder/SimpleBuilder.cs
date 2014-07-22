@@ -58,12 +58,32 @@ namespace SimpleBuilderNamespace
         // Methods needed for proper registration of a GUI tab
         #region Template for GUI radegast tab
         /// <summary>String for internal identification of the tab (change this!)</summary>
-        static string tabID = "demo_tab";
+        static string tabID = "simplebuilder_tab";
         /// <summary>Text displayed in the plugins menu and the tab label (change this!)</summary>
         static string tabLabel = "Build Prims";
 
         /// <summary>Menu item that gets added to the Plugins menu</summary>
         ToolStripMenuItem ActivateTabButton;
+
+        public List<Primitive> Prims = new List<Primitive>();
+        PropertiesQueue propRequester;
+
+        private Primitive m_selectedPrim;
+        public Primitive selectedPrim {
+            get
+            {
+                return m_selectedPrim;
+            }
+            set
+            {
+                if(value == null)
+                    btnSave.Enabled = false;
+                else
+                    btnSave.Enabled = true;
+
+                m_selectedPrim = value;
+            }
+        }
 
         /// <summary>Default constructor. Never used. Needed for VS designer</summary>
         public SimpleBuilder()
@@ -83,6 +103,11 @@ namespace SimpleBuilderNamespace
             Disposed += new EventHandler(DemoTab_Disposed);
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterClientEvents(client);
+
+            propRequester = new PropertiesQueue(instance);
+            propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
+
+            selectedPrim = null;
         }
 
         /// <summary>
@@ -106,8 +131,10 @@ namespace SimpleBuilderNamespace
         public void StartPlugin(RadegastInstance inst)
         {
             this.instance = inst;
+
             ActivateTabButton = new ToolStripMenuItem(tabLabel, null, MenuButtonClicked);
             instance.MainForm.PluginsMenu.DropDownItems.Add(ActivateTabButton);
+
         }
 
         /// <summary>
@@ -122,6 +149,131 @@ namespace SimpleBuilderNamespace
             {
                 instance.TabConsole.Tabs[tabID].Close();
             }
+
+            propRequester.OnTick -= propRequester_OnTick;
+        }
+
+        void propRequester_OnTick(int remaining)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(delegate()
+                {
+                    propRequester_OnTick(remaining);
+                }
+                ));
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendFormat("Tracking {0} objects", Prims.Count);
+
+            if (remaining > 10)
+            {
+                sb.AppendFormat(", fetching {0} object names.", remaining);
+            }
+            else
+            {
+                sb.Append(".");
+            }
+
+            lock (Prims)
+            {
+                if(lstPrims != null)
+                    lstPrims.VirtualListSize = Prims.Count;
+            }
+            if(lstPrims != null)
+                lstPrims.Invalidate();
+        }
+
+        private bool IncludePrim(Primitive prim)
+        {
+            if (prim.ParentID == 0 && (prim.Flags & PrimFlags.ObjectYouOwner) == PrimFlags.ObjectYouOwner)
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        private string GetObjectName(Primitive prim, int distance)
+        {
+            string name = "Loading...";
+            string ownerName = "Loading...";
+
+            if (prim.Properties != null)
+            {
+                name = prim.Properties.Name;
+                // prim.Properties.GroupID is the actual group when group owned, not prim.GroupID
+                if (UUID.Zero == prim.Properties.OwnerID &&
+                    PrimFlags.ObjectGroupOwned == (prim.Flags & PrimFlags.ObjectGroupOwned) &&
+                    UUID.Zero != prim.Properties.GroupID)
+                {
+                    System.Threading.AutoResetEvent nameReceivedSignal = new System.Threading.AutoResetEvent(false);
+                    EventHandler<GroupNamesEventArgs> cbGroupName = new EventHandler<GroupNamesEventArgs>(
+                        delegate(object sender, GroupNamesEventArgs e)
+                        {
+                            if (e.GroupNames.ContainsKey(prim.Properties.GroupID))
+                            {
+                                e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
+                                if (string.IsNullOrEmpty(ownerName))
+                                    ownerName = "Loading...";
+                                if (null != nameReceivedSignal)
+                                    nameReceivedSignal.Set();
+                            }
+                        });
+                    client.Groups.GroupNamesReply += cbGroupName;
+                    client.Groups.RequestGroupName(prim.Properties.GroupID);
+                    nameReceivedSignal.WaitOne(5000, false);
+                    nameReceivedSignal.Close();
+                    client.Groups.GroupNamesReply -= cbGroupName;
+                }
+                else
+                    ownerName = instance.Names.Get(prim.Properties.OwnerID);
+            }
+
+            if (prim.ParentID == client.Self.LocalID)
+            {
+                return string.Format("{0} attached to {1}", name, prim.PrimData.AttachmentPoint.ToString());
+            }
+            else if (ownerName != "Loading...")
+            {
+                return String.Format("{0} ({1}m) owned by {2}", name, distance, ownerName);
+            }
+            else
+            {
+                return String.Format("{0} ({1}m)", name, distance);
+            }
+
+        }
+
+        private string GetObjectName(Primitive prim)
+        {
+            int distance = (int)Vector3.Distance(client.Self.SimPosition, prim.Position);
+            if (prim.ParentID == client.Self.LocalID) distance = 0;
+            return GetObjectName(prim, distance);
+        }
+
+        private void lstPrims_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+        {
+            Primitive prim = null;
+            try
+            {
+                lock (Prims)
+                {
+                    prim = Prims[e.ItemIndex];
+                }
+            }
+            catch
+            {
+                e.Item = new ListViewItem();
+                return;
+            }
+
+            string name = GetObjectName(prim);
+            var item = new ListViewItem(name);
+            item.Tag = prim;
+            item.Name = prim.ID.ToString();
+            e.Item = item;
         }
 
         /// <summary>
@@ -229,6 +381,91 @@ namespace SimpleBuilderNamespace
 
         #endregion Implementation of the custom tab functionality
 
-        
+        private void lstPrims_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lstPrims.SelectedIndices.Count > 0)
+            {
+                selectedPrim = Prims[lstPrims.SelectedIndices[0]];
+                getScaleFromSelection();
+                getRotFromSelection();
+            }
+            else
+            {
+                selectedPrim = null;
+            }
+        }
+
+        private void getScaleFromSelection(){
+            if (selectedPrim == null) return;
+            if (selectedPrim.Scale == null) return;
+
+            scaleX.Value = (Decimal)selectedPrim.Scale.X;
+            scaleY.Value = (Decimal)selectedPrim.Scale.Y;
+            scaleZ.Value = (Decimal)selectedPrim.Scale.Z;
+        }
+
+        private void getRotFromSelection()
+        {
+            if (selectedPrim == null) return;
+            if (selectedPrim.Rotation == null) return;
+
+            rotX.Value = (Decimal)selectedPrim.Rotation.X;
+            rotY.Value = (Decimal)selectedPrim.Rotation.Y;
+            rotZ.Value = (Decimal)selectedPrim.Rotation.Z;
+        }
+
+        private void setRotToSelection()
+        {
+            if (selectedPrim != null && selectedPrim.Rotation != null)
+            {
+                selectedPrim.Rotation.X = (float)rotX.Value;
+                selectedPrim.Rotation.Y = (float)rotY.Value;
+                selectedPrim.Rotation.Z = (float)rotZ.Value;
+            }
+        }
+
+        private void setScaleToSelection()
+        {
+            if (selectedPrim != null && selectedPrim.Scale != null)
+            {
+                selectedPrim.Scale.X = (float)scaleX.Value;
+                selectedPrim.Scale.Y = (float)scaleY.Value;
+                selectedPrim.Scale.Z = (float)scaleZ.Value;
+            }
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            Prims.Clear();
+            Vector3 location = client.Self.SimPosition;
+
+            lock (Prims)
+            {
+                client.Network.CurrentSim.ObjectsPrimitives.ForEach(prim =>
+                {
+                    int distance = (int)Vector3.Distance(prim.Position, location);
+                    if (prim.ParentID == client.Self.LocalID)
+                    {
+                        distance = 0;
+                    }
+                    if (IncludePrim(prim) && (prim.Position != Vector3.Zero) && (distance < (int)this.numRadius.Value))
+                    {
+                        Prims.Add(prim);
+                        if (prim.Properties == null)
+                        {
+                            propRequester.RequestProps(prim);
+                        }
+                    }
+                });
+            }
+            lstPrims.VirtualListSize = Prims.Count;
+            lstPrims.Invalidate();
+        }
+
+        private void btn_Save_Click(object sender, EventArgs e)
+        {
+            setScaleToSelection();
+            setRotToSelection();
+        }
     }
 }
