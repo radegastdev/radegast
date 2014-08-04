@@ -29,6 +29,7 @@
 // $Id$
 //
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Forms;
@@ -39,8 +40,9 @@ namespace Radegast
     {
         private RRichTextBox rtb;
         private bool mono;
-        private static readonly string urlRegexString = @"\b(?<url>(https?|secondlife)://[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])";
+        private static readonly string urlRegexString = @"(https?://[^ \r\n]+)|(\[secondlife://[^ \]\r\n]* ?(?:[^\]\r\n]*)])|(secondlife://[^ \r\n]*)";
         Regex urlRegex;
+        private SlUriParser uriParser;
 
         public RichTextBoxPrinter(RRichTextBox textBox)
         {
@@ -55,7 +57,8 @@ namespace Radegast
                 rtb.DetectUrls = true;
             }
 
-            urlRegex = new Regex(urlRegexString, RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
+            uriParser = new SlUriParser();
+            urlRegex = new Regex(urlRegexString, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         }
 
@@ -71,26 +74,35 @@ namespace Radegast
 
         private void FindURLs(string text)
         {
-            Match m = urlRegex.Match(text);
-            
-            if (!m.Success)
-            {
-                rtb.AppendText(text);
-                return;
-            }
+            StringBuilder sb = new StringBuilder();
+            string[] lineParts = urlRegex.Split(text);
+            int linePartIndex;
 
-            int pos = 0;
-            do
+            // 'text' will be split into 1 + NumLinks*2 parts...
+            // If 'text' has no links in it:
+            //    lineParts[0] = text
+            // If 'text' has one link in it:
+            //    lineParts[0] = <Text before first link>
+            //    lineParts[1] = <first link>
+            //    lineParts[2] = <text after first link>
+            // If 'text' has two links in it:
+            //    lineParts[0] = <Text before first link>
+            //    lineParts[1] = <first link>
+            //    lineParts[2] = <text after first link>
+            //    lineParts[3] = <second link>
+            //    lineParts[4] = <text after second link>
+            // ...
+            for (linePartIndex = 0; linePartIndex < lineParts.Length - 1; linePartIndex += 2)
             {
-                rtb.AppendText(text.Substring(pos, m.Index - pos));
-                pos = m.Index + m.Length;
+                rtb.AppendText(lineParts[linePartIndex]);
                 Color c = ForeColor;
-                rtb.InsertLink(m.Groups[1].Value);
+                rtb.InsertLink(uriParser.GetLinkName(lineParts[linePartIndex + 1]), lineParts[linePartIndex+1]);
                 ForeColor = c;
             }
-            while ((m = m.NextMatch()).Success);
-
-            rtb.AppendText(text.Substring(pos));
+            if (linePartIndex != lineParts.Length)
+            {
+                rtb.AppendText(lineParts[linePartIndex]);
+            }
         }
 
         #region ITextPrinter Members
