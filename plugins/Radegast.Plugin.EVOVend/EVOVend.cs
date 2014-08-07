@@ -41,8 +41,8 @@ namespace Radegast.Plugin.Demo
 
             // setup timer
             timer = new System.Threading.Timer(new TimerCallback(productCallback));
-            timer.Change((30 * 1000), (60 * 1000));
-            Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ":  Waiting 30 seconds for Inventory...");
+            timer.Change((5 * 1000), (60 * 1000));
+            Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ":  Waiting 5 seconds for Inventory...");
         }
 
         public void StopPlugin(RadegastInstance instance)
@@ -105,9 +105,9 @@ namespace Radegast.Plugin.Demo
         class DeliveryQueue {
             public string ClassName { get; set; }
             public string id {get;set;}
-            public string userUUID {get;set;}
-            public string objectUUID {get;set;}
-            public string price {get;set;}
+			public string userUUID { get; set; }
+            public string objectUUID { get; set; }
+            public int price { get; set; }
             public string created { get; set; }
             public string delivered { get; set; }
         }
@@ -152,56 +152,70 @@ namespace Radegast.Plugin.Demo
 
             if (String.IsNullOrEmpty(content)) return queue;
 
-            System.Reflection.PropertyInfo[] propertyInfos = typeof(DeliveryQueue).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+			try{
+	            System.Reflection.PropertyInfo[] propertyInfos = typeof(DeliveryQueue).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
-            string field_separator = "|";
+	            string field_separator = "|";
 
-            var lines = content.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            foreach (string l in lines)
-            {
-                int lastPos = 0;
+	            var lines = content.Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+	            foreach (string l in lines)
+	            {
+	                int lastPos = 0;
 
-                var deliveryQ = new DeliveryQueue();
-                foreach (System.Reflection.PropertyInfo pInfo in propertyInfos)
-                {
-                    var nextPos = l.IndexOf(field_separator, lastPos);
-                    if(nextPos > -1){
-                        pInfo.SetValue(deliveryQ, l.Substring(lastPos, nextPos - lastPos), null);
-                    }
-                    lastPos = nextPos + 1;
-                }
+	                var deliveryQ = new DeliveryQueue();
+	                foreach (System.Reflection.PropertyInfo pInfo in propertyInfos)
+	                {
+	                    var nextPos = l.IndexOf(field_separator, lastPos);
+	                    if(nextPos > -1){
+							object o = Convert.ChangeType(l.Substring(lastPos, nextPos - lastPos), pInfo.PropertyType);
+	                        pInfo.SetValue(deliveryQ, o, null);
+	                    }
+	                    lastPos = nextPos + 1;
+	                }
 
-                queue.Add(deliveryQ);
-            }
+	                queue.Add(deliveryQ);
+	            }
+			} catch(Exception ex){
+				Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to read DeliveryQ -  " + ex.Message, ChatBufferTextStyle.Error);
+			}
             return queue;
         }
 
-        private void SendObject(DeliveryQueue p)
+        private bool SendObject(DeliveryQueue p)
         {
             searchRes.Clear();
             searchString = p.objectUUID;
             if (searchRes.Count <= 0)
             {
                 Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product not found '" + searchString + "' for user '"+p.userUUID+"'", ChatBufferTextStyle.Error);
-                return;
+                return false;
             }
             if (searchRes.Count > 1) {
                 Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": More then one product found for '" + searchString + "'", ChatBufferTextStyle.Error);
-                return;
+                return false;
             }
             
             var inv = searchRes[0] as InventoryItem;
             if(inv == null) {
                 Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product found, but not an inventory item", ChatBufferTextStyle.Error);
-                return;
+                return false;
             }
+
+
+			Dictionary<string,string> param = new Dictionary<string,string>();
+			param.Add("id", p.id);
+			var str = this.RequestVendor("SETDELIVERED", param);
+			if (str != "1") {
+				Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product found, but user " + p.userUUID + " might not have enough funds", ChatBufferTextStyle.Normal);
+				// a message to the user would be helpful later
+				return false;
+			}
+			Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": SETDELIVERED: " + str, ChatBufferTextStyle.StatusBlue);
 
             Manager.GiveItem(inv.UUID, inv.Name, inv.AssetType, OpenMetaverse.UUID.Parse(p.userUUID), false);
             Instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": PRODUCT '" + searchRes[0].Name + "' SENT TO " + p.userUUID, ChatBufferTextStyle.StatusBlue);
-
-            Dictionary<string,string> param = new Dictionary<string,string>();
-            param.Add("id", p.id);
-            this.RequestVendor("SETDELIVERED", param);
+            
+			return true;
         }
 
         private bool isSending = false;
@@ -227,7 +241,7 @@ namespace Radegast.Plugin.Demo
             if (queue.Count <= 0) return;
 
             foreach (DeliveryQueue p in queue)
-                this.SendObject(p);
+				this.SendObject (p);
 
             /*var grouped = queue.GroupBy(p => p.objectUUID).Select(t=> new { count = t.Count(), UUID = t.Key });
             foreach (var g in grouped)
