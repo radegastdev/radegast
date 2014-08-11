@@ -107,7 +107,7 @@ namespace Radegast.Plugin.EVOVend
             
             Dictionary<string, string> param = new Dictionary<string, string>();
             param.Add("invUUID", e.Item.UUID.ToString());
-            param.Add("userUUID", e.Item.LastOwnerID.ToString());
+            param.Add("userUUID", offeredAgent.ToString());
             param.Add("name", e.Item.Name);
 
             if(e.Item.SaleType != SaleType.Not)
@@ -120,9 +120,9 @@ namespace Radegast.Plugin.EVOVend
             int result = Int32.Parse(str);
 
             if(result > 0)
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " from Agent " + e.Item.LastOwnerID +" accepted and inserted", ChatBufferTextStyle.StatusBlue);
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " from Agent " + offeredAgent.ToString() + " accepted and inserted", ChatBufferTextStyle.StatusBlue);
             else
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert " + e.Item.Name + " from Agent " + e.Item.LastOwnerID, ChatBufferTextStyle.Error);
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert " + e.Item.Name + " from Agent " + offeredAgent.ToString(), ChatBufferTextStyle.Error);
 
             offeredAgent = UUID.Zero;
         }
