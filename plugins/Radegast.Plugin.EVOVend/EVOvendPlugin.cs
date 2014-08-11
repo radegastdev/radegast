@@ -43,7 +43,7 @@ namespace Radegast.Plugin.EVOVend
 
         public OSDMap config;
 
-        private System.Threading.Timer timer;
+        public static System.Threading.Timer timer;
         private InventoryManager Manager;
         private OpenMetaverse.Inventory Inventory;
 
