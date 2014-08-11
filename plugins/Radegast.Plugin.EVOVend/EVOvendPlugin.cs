@@ -80,16 +80,30 @@ namespace Radegast.Plugin.EVOVend
             //client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
         }
 
+        void UnregisterClientEvents(GridClient client)
+        {
+            //if (client == null) return;
+            client.Inventory.ItemReceived -= Inventory_ItemReceived;
+            client.Inventory.InventoryObjectOffered -= Inventory_InventoryObjectOffered;
+        }
+
         private UUID offeredObject;
+        private UUID offeredAgent;
 
         void Inventory_InventoryObjectOffered(object sender, InventoryObjectOfferedEventArgs e)
         {
             offeredObject = e.ObjectID;
+            offeredAgent = e.Offer.FromAgentID;
         }
 
         void Inventory_ItemReceived(object sender, ItemReceivedEventArgs e)
         {
             if (offeredObject != e.Item.UUID) return;
+            if (offeredAgent == UUID.Zero)
+            {
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert. Agent UUID not found", ChatBufferTextStyle.Error);
+                return;
+            }
             
             Dictionary<string, string> param = new Dictionary<string, string>();
             param.Add("invUUID", e.Item.UUID.ToString());
@@ -106,16 +120,13 @@ namespace Radegast.Plugin.EVOVend
             int result = Int32.Parse(str);
 
             if(result > 0)
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " accepted and successfully inserted", ChatBufferTextStyle.StatusBlue);
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " from Agent " + e.Item.LastOwnerID +" accepted and inserted", ChatBufferTextStyle.StatusBlue);
             else
                 instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert " + e.Item.Name + " from Agent " + e.Item.LastOwnerID, ChatBufferTextStyle.Error);
 
+            offeredAgent = UUID.Zero;
         }
-        void UnregisterClientEvents(GridClient client)
-        {
-            //if (client == null) return;
-            //client.Self.ChatFromSimulator -= new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
-        }
+        
 
         void EVOvendTab_Disposed(object sender, EventArgs e)
         {
