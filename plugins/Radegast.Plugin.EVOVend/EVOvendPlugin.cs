@@ -74,8 +74,6 @@ namespace Radegast.Plugin.EVOVend
 
         void RegisterClientEvents(GridClient client)
         {
-            client.Inventory.ItemReceived += Inventory_ItemReceived;
-            client.Inventory.InventoryObjectOffered +=Inventory_InventoryObjectOffered;
             //instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             //client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
         }
@@ -83,8 +81,6 @@ namespace Radegast.Plugin.EVOVend
         void UnregisterClientEvents(GridClient client)
         {
             //if (client == null) return;
-            client.Inventory.ItemReceived -= Inventory_ItemReceived;
-            client.Inventory.InventoryObjectOffered -= Inventory_InventoryObjectOffered;
         }
 
         private UUID offeredObject;
@@ -148,6 +144,9 @@ namespace Radegast.Plugin.EVOVend
             // setup timer
             timer = new System.Threading.Timer(new TimerCallback(productCallback));
             this.SetupTimer();
+            // invenotry receiving
+            client.Inventory.ItemReceived += Inventory_ItemReceived;
+            client.Inventory.InventoryObjectOffered +=Inventory_InventoryObjectOffered;
         }
 
         public void SetupTimer(){
@@ -219,6 +218,9 @@ namespace Radegast.Plugin.EVOVend
             // kill timer
             timer.Dispose();
             EVOButton.Dispose();
+            // unregister inventory receiver events
+            client.Inventory.ItemReceived -= Inventory_ItemReceived;
+            client.Inventory.InventoryObjectOffered -= Inventory_InventoryObjectOffered;
         }
 
         private string m_searchString;
