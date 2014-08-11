@@ -358,7 +358,11 @@ namespace Radegast.Plugin.EVOVend
         {
             Manager = Client.Inventory;
             Inventory = Manager.Store;
-            Inventory.RootFolder.OwnerID = Client.Self.AgentID;
+            if (Inventory == null)
+            {
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Waiting for Inventory...");
+                return;
+            }
 
             if (isSending == true)
             {
@@ -366,6 +370,8 @@ namespace Radegast.Plugin.EVOVend
                 return;
             }
             isSending = true;
+            
+            Inventory.RootFolder.OwnerID = Client.Self.AgentID;
 
             instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Queue List");
 
