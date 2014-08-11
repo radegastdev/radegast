@@ -50,7 +50,7 @@ namespace Radegast.Plugin.EVOVend
         private string vendURL = @"http://evosl.org/TREK/SL/index.php";
         List<InventoryBase> searchRes = new List<InventoryBase>();
 
-        private GridClient Client { get { return instance.Client; } }
+        /*private GridClient Client { get { return instance.Client; } }*/
 
         static string tabID = "evovend_tab";
         static string tabLabel = "EVOvend";
@@ -74,8 +74,42 @@ namespace Radegast.Plugin.EVOVend
 
         void RegisterClientEvents(GridClient client)
         {
+            client.Inventory.ItemReceived += Inventory_ItemReceived;
+            client.Inventory.InventoryObjectOffered +=Inventory_InventoryObjectOffered;
             //instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             //client.Self.ChatFromSimulator += new EventHandler<ChatEventArgs>(Self_ChatFromSimulator);
+        }
+
+        private UUID offeredObject;
+
+        void Inventory_InventoryObjectOffered(object sender, InventoryObjectOfferedEventArgs e)
+        {
+            offeredObject = e.ObjectID;
+        }
+
+        void Inventory_ItemReceived(object sender, ItemReceivedEventArgs e)
+        {
+            if (offeredObject != e.Item.UUID) return;
+            
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("invUUID", e.Item.UUID.ToString());
+            param.Add("userUUID", e.Item.LastOwnerID.ToString());
+            param.Add("name", e.Item.Name);
+
+            if(e.Item.SaleType != SaleType.Not)
+                param.Add("price", e.Item.SalePrice.ToString());
+            else
+                param.Add("price", "0");
+            param.Add("texture", "");
+
+            string str = this.RequestVendor("ADDPRODUCT", param);
+            int result = Int32.Parse(str);
+
+            if(result > 0)
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " accepted and successfully inserted", ChatBufferTextStyle.StatusBlue);
+            else
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert " + e.Item.Name + " from Agent " + e.Item.LastOwnerID, ChatBufferTextStyle.Error);
+
         }
         void UnregisterClientEvents(GridClient client)
         {
@@ -114,7 +148,7 @@ namespace Radegast.Plugin.EVOVend
         private void Init()
         {
             this.InitializeComponent();
-
+            this.RegisterClientEvents(client);
             if (instance != null)
             {
                 this.readConfig();
@@ -356,7 +390,7 @@ namespace Radegast.Plugin.EVOVend
         private bool isSending = false;
         private void productCallback(object obj)
         {
-            Manager = Client.Inventory;
+            Manager = client.Inventory;
             Inventory = Manager.Store;
             if (Inventory == null)
             {
@@ -371,7 +405,7 @@ namespace Radegast.Plugin.EVOVend
             }
             isSending = true;
             
-            Inventory.RootFolder.OwnerID = Client.Self.AgentID;
+            Inventory.RootFolder.OwnerID = client.Self.AgentID;
 
             var strContent = this.RequestVendor("GETOUTSTANDING");
             List<DeliveryQueue> queue = this.parseResponse(strContent);
