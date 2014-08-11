@@ -39,6 +39,11 @@
             // numDeliveryInterval
             // 
             this.numDeliveryInterval.Location = new System.Drawing.Point(396, 19);
+            this.numDeliveryInterval.Maximum = new decimal(new int[] {
+            3600,
+            0,
+            0,
+            0});
             this.numDeliveryInterval.Name = "numDeliveryInterval";
             this.numDeliveryInterval.Size = new System.Drawing.Size(120, 20);
             this.numDeliveryInterval.TabIndex = 7;
