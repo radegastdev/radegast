@@ -373,16 +373,16 @@ namespace Radegast.Plugin.EVOVend
             
             Inventory.RootFolder.OwnerID = Client.Self.AgentID;
 
-            instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Queue List");
-
             var strContent = this.RequestVendor("GETOUTSTANDING");
             List<DeliveryQueue> queue = this.parseResponse(strContent);
+            instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": " + queue.Count + " Items in Queue List");
 
-            // check if i have something to do
-            if (queue.Count <= 0) return;
-
-            foreach (DeliveryQueue p in queue)
-                this.SendObject(p);
+            // check if something neddc to be done
+            if (queue.Count > 0)
+            {
+                foreach (DeliveryQueue p in queue)
+                    this.SendObject(p);
+            }
 
             isSending = false;
         }
