@@ -282,8 +282,10 @@ namespace Radegast.Plugin.EVOVend
             public string userUUID { get; set; }
             public string objectUUID { get; set; }
             public int price { get; set; }
+            public int nextperm { get; set; }
             public string created { get; set; }
             public string delivered { get; set; }
+            
         }
 
         private string RequestVendor(string action, Dictionary<string, string> param = null)
@@ -394,6 +396,7 @@ namespace Radegast.Plugin.EVOVend
             }
             instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": SETDELIVERED: " + str, ChatBufferTextStyle.StatusBlue);
 
+            inv.Permissions.NextOwnerMask = (PermissionMask)p.nextperm;
             Manager.GiveItem(inv.UUID, inv.Name, inv.AssetType, OpenMetaverse.UUID.Parse(p.userUUID), false);
             instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": PRODUCT '" + searchRes[0].Name + "' SENT TO " + p.userUUID, ChatBufferTextStyle.StatusBlue);
 
