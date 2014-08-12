@@ -47,7 +47,8 @@ namespace Radegast.Plugin.EVOVend
         private InventoryManager Manager;
         private OpenMetaverse.Inventory Inventory;
 
-        private string vendURL = @"http://evosl.org/TREK/SL/index.php";
+        private string vendURL = @"http://evosl.org/TREK/SL/SLvendor.php";
+	private string loginURL = @"http://evosl.org/TREK/SL/vendor.php";
         List<InventoryBase> searchRes = new List<InventoryBase>();
 
         /*private GridClient Client { get { return instance.Client; } }*/
@@ -97,7 +98,6 @@ namespace Radegast.Plugin.EVOVend
             if (offeredObject != e.Item.UUID) return;
             if (offeredAgent == UUID.Zero)
             {
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert. Agent UUID not found", ChatBufferTextStyle.Error);
                 return;
             }
             
@@ -115,9 +115,10 @@ namespace Radegast.Plugin.EVOVend
             string str = this.RequestVendor("ADDPRODUCT", param);
             int result = Int32.Parse(str);
 
-            if(result > 0)
+            if(result > 0){
                 instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " from Agent " + offeredAgent.ToString() + " accepted and inserted", ChatBufferTextStyle.StatusBlue);
-            else
+		 client.Self.InstantMessage(offeredAgent, "Your Object has been transfered successfully. Please visit " + this.loginURL + " for further steps"); 
+            } else
                 instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert " + e.Item.Name + " from Agent " + offeredAgent.ToString(), ChatBufferTextStyle.Error);
 
             offeredAgent = UUID.Zero;
