@@ -397,6 +397,9 @@ namespace Radegast.Plugin.EVOVend
             instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": SETDELIVERED: " + str, ChatBufferTextStyle.StatusBlue);
 
             inv.Permissions.NextOwnerMask = (PermissionMask)p.nextperm;
+            client.Inventory.RequestUpdateItem(inv);
+            client.Inventory.RequestFetchInventory(inv.UUID, inv.OwnerID);
+
             Manager.GiveItem(inv.UUID, inv.Name, inv.AssetType, OpenMetaverse.UUID.Parse(p.userUUID), false);
             instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": PRODUCT '" + searchRes[0].Name + "' SENT TO " + p.userUUID, ChatBufferTextStyle.StatusBlue);
 
