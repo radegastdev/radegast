@@ -111,7 +111,7 @@ namespace Radegast.Plugin.EVOVend
             else
                 param.Add("price", "0");
             param.Add("texture", "");
-
+            param.Add("botUUID", client.Self.AgentID.ToString());
             string str = this.RequestVendor("ADDPRODUCT", param);
             int result = Int32.Parse(str);
 
@@ -426,8 +426,10 @@ namespace Radegast.Plugin.EVOVend
             isSending = true;
             
             Inventory.RootFolder.OwnerID = client.Self.AgentID;
-
-            var strContent = this.RequestVendor("GETOUTSTANDING");
+            
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            param.Add("botUUID", client.Self.AgentID.ToString());
+            var strContent = this.RequestVendor("GETOUTSTANDING", param);
             List<DeliveryQueue> queue = this.parseResponse(strContent);
             instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": " + queue.Count + " Items in Queue List");
 
