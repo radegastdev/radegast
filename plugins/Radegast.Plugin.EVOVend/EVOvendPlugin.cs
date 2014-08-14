@@ -113,13 +113,15 @@ namespace Radegast.Plugin.EVOVend
             param.Add("texture", "");
             param.Add("botUUID", client.Self.AgentID.ToString());
             string str = this.RequestVendor("ADDPRODUCT", param);
-            int result = Int32.Parse(str);
+            int result;
+
+            Int32.TryParse(str, out result);
 
             if(result > 0){
                 instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " from Agent " + offeredAgent.ToString() + " accepted and inserted", ChatBufferTextStyle.StatusBlue);
-		 client.Self.InstantMessage(offeredAgent, "Your Object has been transfered successfully. Please visit " + this.loginURL + " for further steps"); 
+                client.Self.InstantMessage(offeredAgent, "Your Object has been transfered successfully. Please visit " + this.loginURL + " for further steps"); 
             } else
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to insert " + e.Item.Name + " from Agent " + offeredAgent.ToString(), ChatBufferTextStyle.Error);
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": ADDPRODUCT FAILED: "+str+" [ITEM: " + e.Item.Name + " AGENT: " + offeredAgent.ToString() + "]", ChatBufferTextStyle.Error);
 
             offeredAgent = UUID.Zero;
         }
