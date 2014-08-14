@@ -396,7 +396,7 @@ namespace Radegast.Plugin.EVOVend
             Dictionary<string, string> param = new Dictionary<string, string>();
             param.Add("id", p.id);
             var str = this.RequestVendor("SETDELIVERED", param);
-            if (str != "1")
+            if (str != "Delivered|1")
             {
                 instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product found, but user " + p.userUUID + " might not have enough funds", ChatBufferTextStyle.Normal);
                 // a message to the user would be helpful later
