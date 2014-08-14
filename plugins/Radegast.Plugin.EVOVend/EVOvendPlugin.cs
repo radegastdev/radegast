@@ -119,9 +119,14 @@ namespace Radegast.Plugin.EVOVend
 
             if(result > 0){
                 instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Product " + e.Item.Name + " from Agent " + offeredAgent.ToString() + " accepted and inserted", ChatBufferTextStyle.StatusBlue);
-                client.Self.InstantMessage(offeredAgent, "Your Object has been transfered successfully. Please visit " + this.loginURL + " for further steps"); 
-            } else
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": ADDPRODUCT FAILED: "+str+" [ITEM: " + e.Item.Name + " AGENT: " + offeredAgent.ToString() + "]", ChatBufferTextStyle.Error);
+                client.Self.InstantMessage(offeredAgent, "Your Object has been transfered successfully. Please visit " + this.loginURL + " for further steps");
+            }
+            else
+            {
+                // if there is ANY error, delete the object
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": ADDPRODUCT FAILED\n" + str + "\n\n[ITEM: " + e.Item.Name + " AGENT: " + offeredAgent.ToString() + "]", ChatBufferTextStyle.Error);
+                client.Inventory.RemoveItem(e.Item.UUID);
+            }
 
             offeredAgent = UUID.Zero;
         }
