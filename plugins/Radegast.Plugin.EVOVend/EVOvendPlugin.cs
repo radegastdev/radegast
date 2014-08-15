@@ -296,7 +296,12 @@ namespace Radegast.Plugin.EVOVend
             
         }
 
-        private string RequestVendor(string action, Dictionary<string, string> param = null)
+        private string RequestVendor(string action)
+		{
+			return RequestVendor(action, null);
+		}
+		
+        private string RequestVendor(string action, Dictionary<string, string> param)
         {
             try
             {

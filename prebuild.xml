@@ -315,7 +315,7 @@
       </Files>
     </Project>
 
-	<Project name="Radegast.Plugin.EVOVend" path="plugins/Radegast.Plugin.EVOVend" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_simplebuild">
+	<!--Project name="Radegast.Plugin.EVOVend" path="plugins/Radegast.Plugin.EVOVend" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_simplebuild">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../bin/</OutputPath>
@@ -347,7 +347,7 @@
         </Match>
         <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
       </Files>
-    </Project>
+    </Project-->
 
     <Project name="Radegast.Plugin.Speech" path="plugins/Radegast.Plugin.Speech/RadSpeech" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_speech|plug_speech_core">
       <Configuration name="Debug">
