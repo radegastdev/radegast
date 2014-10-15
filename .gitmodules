@@ -1,0 +1,6 @@
+[submodule "opensim"]
+	path = opensim
+	url = git://opensimulator.org/git/opensim
+[submodule "libopenmetaverse"]
+	path = libopenmetaverse
+	url = git://github.com/Heather/libopenmetaverse.git
