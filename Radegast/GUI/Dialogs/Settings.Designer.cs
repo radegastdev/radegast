@@ -80,6 +80,7 @@ namespace Radegast
             this.cbAutoReconnect = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
             this.cbRLV = new System.Windows.Forms.CheckBox();
+            this.cbRLVDebug = new System.Windows.Forms.CheckBox();
             this.cbMinToTrey = new System.Windows.Forms.CheckBox();
             this.cbRadegastClientTag = new System.Windows.Forms.CheckBox();
             this.cbSyntaxHighlight = new System.Windows.Forms.CheckBox();
@@ -255,12 +256,13 @@ namespace Radegast
             this.cbMisc.Controls.Add(this.cbAutoReconnect);
             this.cbMisc.Controls.Add(this.label2);
             this.cbMisc.Controls.Add(this.cbRLV);
+            this.cbMisc.Controls.Add(this.cbRLVDebug);
             this.cbMisc.Controls.Add(this.cbMinToTrey);
             this.cbMisc.Controls.Add(this.cbRadegastClientTag);
             this.cbMisc.Controls.Add(this.cbSyntaxHighlight);
             this.cbMisc.Location = new System.Drawing.Point(270, 6);
             this.cbMisc.Name = "cbMisc";
-            this.cbMisc.Size = new System.Drawing.Size(236, 310);
+            this.cbMisc.Size = new System.Drawing.Size(236, 330);
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
             // 
@@ -389,6 +391,17 @@ namespace Radegast
             this.cbRLV.UseVisualStyleBackColor = true;
             this.cbRLV.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
+            // cbRLVDebug
+            //
+            this.cbRLVDebug.AutoSize = true;
+            this.cbRLVDebug.Location = new System.Drawing.Point(6, 300);
+            this.cbRLVDebug.Name = "cbRLVDebug";
+            this.cbRLVDebug.Size = new System.Drawing.Size(130, 17);
+            this.cbRLVDebug.TabIndex = 12;
+            this.cbRLVDebug.Text = "Output RLV commands";
+            this.cbRLVDebug.UseVisualStyleBackColor = true;
+            this.cbRLVDebug.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
+            //
             // cbMinToTrey
             // 
             this.cbMinToTrey.AutoSize = true;
@@ -1025,6 +1038,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbAutoReconnect;
         public System.Windows.Forms.CheckBox cbHideLoginGraphics;
         public System.Windows.Forms.CheckBox cbRLV;
+        public System.Windows.Forms.CheckBox cbRLVDebug;
         public System.Windows.Forms.CheckBox cbMUEmotes;
         public System.Windows.Forms.CheckBox cbFriendsHighlight;
         public System.Windows.Forms.CheckBox cbMinToTrey;

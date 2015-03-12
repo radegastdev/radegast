@@ -256,7 +256,9 @@ namespace Radegast
             {
                 instance.RLV.TryProcessCMD(e);
 #if !DEBUG
-                return;
+                if (!instance.RLV.EnabledDebugCommands) {
+                    return;
+                }
 #endif
             }
 

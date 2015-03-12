@@ -182,7 +182,6 @@ namespace Radegast
 
         public bool Enabled
         {
-
             get
             {
                 if (instance.GlobalSettings["rlv_enabled"].Type == OSDType.Unknown)
@@ -205,6 +204,27 @@ namespace Radegast
                     StartTimer();
                 else
                     StopTimer();
+            }
+        }
+
+        public bool EnabledDebugCommands
+        {
+            get
+            {
+                if (instance.GlobalSettings["rlv_debugcommands"].Type == OSDType.Unknown)
+                {
+                    instance.GlobalSettings["rlv_debugcommands"] = new OSDBoolean(false);
+                }
+
+                return instance.GlobalSettings["rlv_debugcommands"].AsBoolean();
+            }
+
+            set
+            {
+                if (EnabledDebugCommands != instance.GlobalSettings["rlv_debugcommands"].AsBoolean())
+                {
+                    instance.GlobalSettings["rlv_debugcommands"] = new OSDBoolean(value);
+                }
             }
         }
 
@@ -715,11 +735,32 @@ namespace Radegast
                         }
                         break;
 
+                    case "findfolder":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            string[] keywordsArray = rule.Option.Split(new string[] {"&&"}, StringSplitOptions.None);
+                            if (keywordsArray.Any())
+                            {
+                                InventoryNode target = FindFolderKeyword(keywordsArray);
+                                if  (target != null)
+                                {
+                                    string path = FindFullInventoryPath(target, "");
+
+                                    // remove #RLV/ from the path
+                                    if (path.Substring(0, 5).ToLower() == @"#rlv/")
+                                    {
+                                        path = path.Substring(5);
+                                        Respond(chan, path);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+
                     #endregion #RLV folder and outfit manipulation
 
                 }
             }
-
 
             return true;
         }
@@ -835,6 +876,16 @@ namespace Radegast
             return null;
         }
 
+        public string FindFullInventoryPath(InventoryNode input, string pathConstruct)
+        {
+            if (input.Parent == null) {
+                return pathConstruct.TrimEnd('/');
+            } else {
+                pathConstruct = input.Data.Name + "/" + pathConstruct;
+                return FindFullInventoryPath (input.Parent, pathConstruct);
+            }
+        }
+
         public InventoryNode FindFolder(string path)
         {
             var root = RLVRootFolder();
@@ -845,7 +896,7 @@ namespace Radegast
 
         protected InventoryNode FindFolderInternal(InventoryNode currentNode, string currentPath, string desiredPath)
         {
-            if (desiredPath == currentPath)
+            if (desiredPath.ToLower() == currentPath.ToLower())
             {
                 return currentNode;
             }
@@ -854,6 +905,47 @@ namespace Radegast
                 if (n.Data.Name.StartsWith(".")) continue;
 
                 var res = FindFolderInternal(n, (currentPath == "/" ? currentPath : currentPath + "/") + n.Data.Name.ToLower(), desiredPath);
+                if (res != null)
+                {
+                    return res;
+                }
+            }
+            return null;
+        }
+
+        public InventoryNode FindFolderKeyword(string[] keywords)
+        {
+            var root = RLVRootFolder();
+            if (root == null) return null;
+
+            return FindFolderKeywordsInternal (root, keywords);
+        }
+
+        protected InventoryNode FindFolderKeywordsInternal(InventoryNode currentNode, string[] keywords)
+        {
+            bool mustSkip = false;
+            foreach(string kw in keywords)
+            {
+                if (!mustSkip)
+                {
+                    if (!currentNode.Data.Name.ToLower().Contains(kw.ToLower()))
+                    {
+                        mustSkip = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!mustSkip)
+            {
+                return currentNode;
+            }
+
+            foreach (var n in currentNode.Nodes.Values)
+            {
+                if (n.Data.Name.StartsWith(".")) continue;
+
+                var res = FindFolderKeywordsInternal(n, keywords);
                 if (res != null)
                 {
                     return res;
