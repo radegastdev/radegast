@@ -261,13 +261,15 @@ namespace Radegast
                 || (m.Type == MuteType.ByName && m.Name == e.ObjectName) // object muted by name
                 )) return;
 
-            if (instance.GlobalSettings["on_script_question"] == "Auto Accept")
-            {
-                instance.Client.Self.ScriptQuestionReply(e.Simulator, e.ItemID, e.TaskID, e.Questions);
-            }
-            else if (instance.GlobalSettings["on_script_question"] == "Auto Decline")
+            if (instance.GlobalSettings["on_script_question"] == "Auto Decline"
+                || instance.RLV.RestictionActive("denypermission"))
             {
                 instance.Client.Self.ScriptQuestionReply(e.Simulator, e.ItemID, e.TaskID, 0);
+            }
+            else if (instance.GlobalSettings["on_script_question"] == "Auto Accept"
+                || instance.RLV.RestictionActive("acceptpermission"))
+            {
+                instance.Client.Self.ScriptQuestionReply(e.Simulator, e.ItemID, e.TaskID, e.Questions);
             }
             else
             {
