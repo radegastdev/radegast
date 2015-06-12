@@ -160,6 +160,35 @@
       <string>0</string>
     </map>
 
+    <!-- SirinHGpole -->
+
+    <map>
+      <key>gridnick</key>
+      <string>sirinhgpole</string>
+      <key>gridname</key>
+      <string>SirinHGpole</string>
+      <key>platform</key>
+      <string>OpenSim</string>
+      <key>loginuri</key>
+      <string>http://hg.sirinhgpole.com:8002/</string>
+
+      <key>loginpage</key>
+      <string></string>
+      <key>helperuri</key>
+      <string></string>
+      <key>website</key>
+      <string></string>
+      <key>register</key>
+      <string></string>
+
+      <key>password</key>
+      <string></string>
+      <key>support</key>
+      <string></string>
+      <key>version</key>
+      <string>0</string>
+    </map>
+
     <!-- InWorldz -->
 
     <map>
