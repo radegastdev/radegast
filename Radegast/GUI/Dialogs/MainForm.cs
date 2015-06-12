@@ -1485,7 +1485,8 @@ namespace Radegast
                 }
                 ShowInTaskbar = false;
                 trayIcon.Visible = true;
-                FormBorderStyle = FormBorderStyle.SizableToolWindow;
+                trayIcon.BalloonTipText = "Radegast is runnig in the background";
+                trayIcon.ShowBalloonTip(2000);
             }
         }
 
@@ -1494,7 +1495,6 @@ namespace Radegast
             WindowState = FormWindowState.Normal;
             ShowInTaskbar = true;
             trayIcon.Visible = false;
-            FormBorderStyle = FormBorderStyle.Sizable;
         }
 
         private void ctxTreyRestore_Click(object sender, EventArgs e)
