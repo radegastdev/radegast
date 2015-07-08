@@ -1,0 +1,3 @@
+[submodule "libopenmetaverse"]
+	path = libopenmetaverse
+	url = git@github.com:openmetaversefoundation/libopenmetaverse.git
