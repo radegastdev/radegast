@@ -36,21 +36,21 @@
 
     <!-- Libraries -->
 
-    <Project name="OpenMetaverseTypes" path="../libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core" >
+    <Project name="OpenMetaverseTypes" path="libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core" >
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
@@ -59,21 +59,21 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse.StructuredData" path="../libopenmetaverse/OpenMetaverse.StructuredData" type="Library" rootNamespace="OpenMetaverse.StructuredData" frameworkVersion="v3_5" filterGroups="libomv|core">
+    <Project name="OpenMetaverse.StructuredData" path="libopenmetaverse/OpenMetaverse.StructuredData" type="Library" rootNamespace="OpenMetaverse.StructuredData" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../radegast/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes"/>
@@ -82,21 +82,21 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse" path="../libopenmetaverse/OpenMetaverse" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core">
+    <Project name="OpenMetaverse" path="libopenmetaverse/OpenMetaverse" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
@@ -113,21 +113,21 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse.Rendering.Meshmerizer" path="../libopenmetaverse/OpenMetaverse.Rendering.Meshmerizer" type="Library" rootNamespace="OpenMetaverse.Rendering" frameworkVersion="v3_5" filterGroups="libomv|core">
+    <Project name="OpenMetaverse.Rendering.Meshmerizer" path="libopenmetaverse/OpenMetaverse.Rendering.Meshmerizer" type="Library" rootNamespace="OpenMetaverse.Rendering" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
       <Reference name="System.Data"/>
