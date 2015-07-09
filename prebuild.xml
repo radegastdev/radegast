@@ -36,21 +36,21 @@
 
     <!-- Libraries -->
 
-    <Project name="OpenMetaverseTypes" path="../libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core" >
+    <Project name="OpenMetaverseTypes" path="libopenmetaverse/OpenMetaverseTypes" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core" >
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
@@ -59,21 +59,21 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse.StructuredData" path="../libopenmetaverse/OpenMetaverse.StructuredData" type="Library" rootNamespace="OpenMetaverse.StructuredData" frameworkVersion="v3_5" filterGroups="libomv|core">
+    <Project name="OpenMetaverse.StructuredData" path="libopenmetaverse/OpenMetaverse.StructuredData" type="Library" rootNamespace="OpenMetaverse.StructuredData" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../radegast/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes"/>
@@ -82,21 +82,21 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse" path="../libopenmetaverse/OpenMetaverse" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core">
+    <Project name="OpenMetaverse" path="libopenmetaverse/OpenMetaverse" type="Library" rootNamespace="OpenMetaverse" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
@@ -113,21 +113,21 @@
       </Files>
     </Project>
 
-    <Project name="OpenMetaverse.Rendering.Meshmerizer" path="../libopenmetaverse/OpenMetaverse.Rendering.Meshmerizer" type="Library" rootNamespace="OpenMetaverse.Rendering" frameworkVersion="v3_5" filterGroups="libomv|core">
+    <Project name="OpenMetaverse.Rendering.Meshmerizer" path="libopenmetaverse/OpenMetaverse.Rendering.Meshmerizer" type="Library" rootNamespace="OpenMetaverse.Rendering" frameworkVersion="v3_5" filterGroups="libomv|core">
       <Configuration name="Debug">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
       <Configuration name="Release">
         <Options>
-          <OutputPath>../../radegast/bin/</OutputPath>
+          <OutputPath>../bin/</OutputPath>
           <PlatformTarget>x86</PlatformTarget>
         </Options>
       </Configuration>
 
-      <ReferencePath>../../libopenmetaverse/bin/</ReferencePath>
+      <ReferencePath>../bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
       <Reference name="System.Data"/>
@@ -314,6 +314,40 @@
         <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
       </Files>
     </Project>
+
+	<!--Project name="Radegast.Plugin.EVOVend" path="plugins/Radegast.Plugin.EVOVend" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_simplebuild">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <SuppressWarnings>1591,1574,0419,0618,0414,0169</SuppressWarnings>
+          <OutputPath>../../bin/</OutputPath>
+          <PlatformTarget>x86</PlatformTarget>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Core"/>
+      <Reference name="System.Xml"/>
+      <Reference name="System.Data"/>
+      <Reference name="System.Drawing"/>
+      <Reference name="OpenMetaverse" localCopy="false"/>
+      <Reference name="OpenMetaverseTypes" localCopy="false"/>
+      <Reference name="OpenMetaverse.StructuredData" localCopy="false"/>
+      <Reference name="System.Windows.Forms" localCopy="false"/>
+      <Reference name="Radegast" localCopy="false" />
+      <Files>
+        <Match path="." pattern="*.cs" recurse="true" subType="Code">
+          <Exclude name="AssemblyInfo.cs"/>
+        </Match>
+        <Match path="Properties" pattern="*.cs"  recurse="true"  subType="Form"/>
+      </Files>
+    </Project-->
 
     <Project name="Radegast.Plugin.Speech" path="plugins/Radegast.Plugin.Speech/RadSpeech" type="Library" frameworkVersion="v3_5" filterGroups="plugins|plug_speech|plug_speech_core">
       <Configuration name="Debug">

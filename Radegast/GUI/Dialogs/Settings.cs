@@ -135,6 +135,12 @@ namespace Radegast
             {
                 s["disable_http_inventory"] = mono;
             }
+
+            if (!s.ContainsKey("on_script_question"))
+            {
+                s["on_script_question"] = "Ask";
+            }
+            
         }
 
         public frmSettings(RadegastInstance instance)
@@ -318,6 +324,8 @@ namespace Radegast
             autoSitPrefsUpdate();
             pseudoHomePrefsUpdated();
             LSLHelperPrefsUpdate();
+
+            cbAutoScriptPermission.Text = s["on_script_question"];
 
             UpdateEnabled();
         }
@@ -677,6 +685,11 @@ namespace Radegast
             LSLHelperPrefsSave();
         }
         #endregion LSL Helper
+
+        private void cbAutoScriptPermission_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            s["on_script_question"] = cbAutoScriptPermission.Text;
+        }
 
     }
 }

@@ -133,6 +133,7 @@ namespace Radegast
         private bool AutoPilotActive = false;
         private TransparentButton btnDialogNextControl;
         private MediaConsole mediaConsole;
+        private SlUriParser uriParser;
         #endregion
 
         #region Constructor and disposal
@@ -286,6 +287,7 @@ namespace Radegast
         public void InitializeControls()
         {
             InitializeTabsConsole();
+            uriParser = new SlUriParser();
 
             if (instance.MediaManager.SoundSystemAvailable)
             {
@@ -829,55 +831,8 @@ namespace Radegast
 
         public bool ProcessSecondlifeURI(string link)
         {
-            // First try if we have a region name, assume it's a teleport link if we have
-            Regex r = new Regex(@"^(secondlife://)(?<region>[^/$]+)(/(?<x>\d+))?(/(?<y>\d+))?(/(?<z>\d+))?",
-                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
-            Match m = r.Match(link);
-
-            if (m.Success)
-            {
-                string region = HttpUtility.UrlDecode(m.Groups["region"].Value);
-                int x = string.IsNullOrEmpty(m.Groups["x"].Value) ? 128 : int.Parse(m.Groups["x"].Value);
-                int y = string.IsNullOrEmpty(m.Groups["y"].Value) ? 128 : int.Parse(m.Groups["y"].Value);
-                int z = string.IsNullOrEmpty(m.Groups["z"].Value) ? 0 : int.Parse(m.Groups["z"].Value);
-                MapTab.Select();
-                WorldMap.DisplayLocation(region, x, y, z);
-                return true;
-            }
-
-            // Is it group profile link
-            r = new Regex(@"^secondlife:///app/group/(?<id>[^/]+)/about",
-                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
-            m = r.Match(link);
-
-            if (m.Success)
-            {
-                UUID id;
-                if (UUID.TryParse(m.Groups["id"].Value, out id))
-                {
-                    ShowGroupProfile(id);
-                    return true;
-                }
-                return false;
-            }
-
-            // Is it user profile link
-            r = new Regex(@"^secondlife:///app/agent/(?<id>[^/]+)/about",
-                RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase);
-            m = r.Match(link);
-
-            if (m.Success)
-            {
-                UUID id;
-                if (UUID.TryParse(m.Groups["id"].Value, out id))
-                {
-                    ShowAgentProfile(instance.Names.Get(id), id);
-                    return true;
-                }
-                return false;
-            }
-
-            return false;
+            uriParser.ExecuteLink(link);
+            return true;
         }
 
         public void ProcessLink(string link)
@@ -893,7 +848,7 @@ namespace Radegast
                 link = link.Substring(pos + 1);
             }
 
-            if (link.StartsWith("secondlife://"))
+            if (link.StartsWith("secondlife://") || link.StartsWith("[secondlife://"))
             {
                 return ProcessSecondlifeURI(link);
             }
@@ -1530,7 +1485,8 @@ namespace Radegast
                 }
                 ShowInTaskbar = false;
                 trayIcon.Visible = true;
-                FormBorderStyle = FormBorderStyle.SizableToolWindow;
+                trayIcon.BalloonTipText = "Radegast is runnig in the background";
+                trayIcon.ShowBalloonTip(2000);
             }
         }
 
@@ -1539,7 +1495,6 @@ namespace Radegast
             WindowState = FormWindowState.Normal;
             ShowInTaskbar = true;
             trayIcon.Visible = false;
-            FormBorderStyle = FormBorderStyle.Sizable;
         }
 
         private void ctxTreyRestore_Click(object sender, EventArgs e)
@@ -1728,6 +1683,15 @@ namespace Radegast
         private void adultToolStripMenuItem_Click(object sender, EventArgs e)
         {
             setMaturityLevel("A");
+        }
+
+        private void uploadmeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!tabsConsole.TabExists("mesh upload console"))
+            {
+                tabsConsole.AddTab("mesh upload console", "Upload mesh", new MeshUploadConsole(instance));
+            }
+            tabsConsole.Tabs["mesh upload console"].Select();
         }
 
     }

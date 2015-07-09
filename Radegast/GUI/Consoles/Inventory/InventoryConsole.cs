@@ -1093,6 +1093,8 @@ namespace Radegast
             if (invTree.SelectedNode.Tag is InventoryItem)
             {
                 InventoryItem item = invTree.SelectedNode.Tag as InventoryItem;
+                item = instance.COF.RealInventoryItem(item);
+
                 switch (item.AssetType)
                 {
 
@@ -1115,6 +1117,32 @@ namespace Radegast
                         ScriptEditor script = new ScriptEditor(instance, (InventoryLSL)item);
                         script.Dock = DockStyle.Fill;
                         script.ShowDetached();
+                        break;
+
+                    case AssetType.Object:
+                        if (IsAttached(item))
+                        {
+                            instance.COF.Detach(item);
+                        }
+                        else
+                        {
+                            instance.COF.Attach(item, AttachmentPoint.Default, true);
+                        }
+                        break;
+
+                    case AssetType.Bodypart:
+                    case AssetType.Clothing:
+                        if (IsWorn(item))
+                        {
+                            if (item.AssetType == AssetType.Clothing)
+                            {
+                                instance.COF.RemoveFromOutfit(item);
+                            }
+                        }
+                        else
+                        {
+                            instance.COF.AddToOutfit(item, true);
+                        }
                         break;
                 }
             }

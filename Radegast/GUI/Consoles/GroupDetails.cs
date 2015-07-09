@@ -82,12 +82,24 @@ namespace Radegast
 
             lblGroupName.Text = group.Name;
 
+            bool hasGroupBans = null != client.Groups.GetGroupAPIUri(group.ID);
+            if (!hasGroupBans)
+            {
+                lblGroupBansTitle.Text = "Region does not support group bans";
+                pnlBannedBottom.Enabled = pnlBannedTop.Enabled = lwBannedMembers.Enabled = false;
+            }
+
             isMember = instance.Groups.ContainsKey(group.ID);
 
             if (!isMember)
             {
                 tcGroupDetails.TabPages.Remove(tpMembersRoles);
                 tcGroupDetails.TabPages.Remove(tpNotices);
+                tcGroupDetails.TabPages.Remove(tpBanned);
+            }
+            else
+            {
+                RefreshBans();
             }
 
             lvwNoticeArchive.SmallImageList = frmMain.ResourceImages;
@@ -109,7 +121,6 @@ namespace Radegast
             RefreshControlsAvailability();
             RefreshGroupInfo();
         }
-
 
         void GroupDetails_Disposed(object sender, EventArgs e)
         {
@@ -650,6 +661,10 @@ namespace Radegast
                 case "tpMembersRoles":
                     RefreshMembersRoles();
                     break;
+
+                case "tpBanned":
+                    RefreshBans();
+                    break;
             }
         }
         #endregion
@@ -729,6 +744,10 @@ namespace Radegast
                 case "tpMembersRoles":
                     RefreshMembersRoles();
                     break;
+
+                case "tpBanned":
+                    RefreshBans();
+                    break;
             }
         }
 
@@ -805,6 +824,8 @@ namespace Radegast
 
         private void lvwMemberDetails_SelectedIndexChanged(object sender, EventArgs e)
         {
+            btnBanMember.Enabled = lvwMemberDetails.SelectedIndices.Count > 0;
+
             if (lvwMemberDetails.SelectedIndices.Count != 1 || roles == null || roleMembers == null) return;
             EnhancedGroupMember m = GroupMembers[lvwMemberDetails.SelectedIndices[0]];
 
@@ -1229,6 +1250,92 @@ namespace Radegast
             }
         }
 
+        #region Group Bans
+        public void RefreshBans()
+        {
+            client.Groups.RequestBannedAgents(group.ID, (xs, xe) =>
+            {
+                UpdateBannedAgents(xe);
+            });
+        }
+
+        void UpdateBannedAgents(BannedAgentsEventArgs e)
+        {
+            if (!e.Success || e.GroupID != group.ID) return;
+            if (InvokeRequired)
+            {
+                BeginInvoke(new MethodInvoker(() => UpdateBannedAgents(e)));
+                return;
+            }
+
+            lwBannedMembers.BeginUpdate();
+            lwBannedMembers.Items.Clear();
+
+            foreach (var member in e.BannedAgents)
+            {
+                var item = new ListViewItem(instance.Names.Get(member.Key));
+                item.Name = member.Key.ToString();
+                item.SubItems.Add(member.Value.ToShortDateString());
+                lwBannedMembers.Items.Add(item);
+            }
+            lwBannedMembers.EndUpdate();
+        }
+
+        private void btnBan_Click(object sender, EventArgs e)
+        {
+            (new BanGroupMember(instance, group, this)).Show();
+        }
+
+        private void btnUnban_Click(object sender, EventArgs e)
+        {
+            List<UUID> toUnban = new List<UUID>();
+            for (int i=0; i<lwBannedMembers.SelectedItems.Count; i++)
+            {
+                UUID id;
+                if (UUID.TryParse(lwBannedMembers.SelectedItems[i].Name, out id))
+                {
+                    toUnban.Add(id);
+                }
+            }
+
+            if (toUnban.Count > 0)
+            {
+                client.Groups.RequestBanAction(group.ID, GroupBanAction.Unban, toUnban.ToArray(), (xs, se) =>
+                {
+                    RefreshBans();
+                });
+            }
+        }
+
+        private void lwBannedMembers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnUnban.Enabled = lwBannedMembers.SelectedItems.Count > 0;
+        }
+
+        private void btnBanMember_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                List<UUID> toBan = new List<UUID>();
+                for (int i = 0; i < lvwMemberDetails.SelectedIndices.Count; i++)
+                {
+                    EnhancedGroupMember m = GroupMembers[lvwMemberDetails.SelectedIndices[i]];
+                    toBan.Add(m.Base.ID);
+                    client.Groups.EjectUser(group.ID, m.Base.ID);
+                }
+
+                if (toBan.Count > 0)
+                {
+                    client.Groups.RequestBanAction(group.ID, GroupBanAction.Ban, toBan.ToArray(), (xs, xe) =>
+                    {
+                        RefreshBans();
+                    });
+                }
+            }
+            catch { }
+
+        }
+        #endregion Group Bans
     }
 
     public class EnhancedGroupMember

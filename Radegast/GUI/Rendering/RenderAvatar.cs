@@ -158,13 +158,13 @@ namespace Radegast.Rendering
 
             teFaceID = source.teFaceID;
 
-            _rotationAngles = new Vector3(source.RotationAngles);
-            _scale = new Vector3(source.Scale);
-            _position = new Vector3(source.Position);
+            RotationAngles = new Vector3(source.RotationAngles);
+            Scale = new Vector3(source.Scale);
+            Position = new Vector3(source.Position);
 
             // We should not need to instance these the reference from the top should be constant
             _evp = source._evp;
-            _morphs = source._morphs;
+            Morphs = source.Morphs;
 
             OrigRenderData.Indices = new ushort[source.RenderData.Indices.Length];
             OrigRenderData.TexCoords = new float[source.RenderData.TexCoords.Length];
@@ -189,7 +189,7 @@ namespace Radegast.Rendering
 
         public void setMeshPos(Vector3 pos)
         {
-            _position = pos;
+            Position = pos;
 
             // Force offset all vertices by this offset
             // this is required to force some meshes into the default T bind pose
@@ -206,7 +206,7 @@ namespace Radegast.Rendering
 
         public void setMeshRot(Vector3 rot)
         {
-            _rotationAngles = rot;
+            RotationAngles = rot;
         }
 
         public override void LoadMesh(string filename)
@@ -219,70 +219,70 @@ namespace Radegast.Rendering
             maxX = maxY = maxZ = Single.MinValue;
 
             // Generate the vertex array
-            RenderData.Vertices = new float[_numVertices * 3];
-            RenderData.Normals = new float[_numVertices * 3];
+            RenderData.Vertices = new float[NumVertices * 3];
+            RenderData.Normals = new float[NumVertices * 3];
 
             Quaternion quat = Quaternion.CreateFromEulers(0, 0, (float)(Math.PI / 4.0));
 
             int current = 0;
-            for (int i = 0; i < _numVertices; i++)
+            for (int i = 0; i < NumVertices; i++)
             {
 
-                RenderData.Normals[current] = _vertices[i].Normal.X;
-                RenderData.Vertices[current++] = _vertices[i].Coord.X;
-                RenderData.Normals[current] = _vertices[i].Normal.Y;
-                RenderData.Vertices[current++] = _vertices[i].Coord.Y;
-                RenderData.Normals[current] = _vertices[i].Normal.Z;
-                RenderData.Vertices[current++] = _vertices[i].Coord.Z;
+                RenderData.Normals[current] = Vertices[i].Normal.X;
+                RenderData.Vertices[current++] = Vertices[i].Coord.X;
+                RenderData.Normals[current] = Vertices[i].Normal.Y;
+                RenderData.Vertices[current++] = Vertices[i].Coord.Y;
+                RenderData.Normals[current] = Vertices[i].Normal.Z;
+                RenderData.Vertices[current++] = Vertices[i].Coord.Z;
 
-                if (_vertices[i].Coord.X < minX)
-                    minX = _vertices[i].Coord.X;
-                else if (_vertices[i].Coord.X > maxX)
-                    maxX = _vertices[i].Coord.X;
+                if (Vertices[i].Coord.X < minX)
+                    minX = Vertices[i].Coord.X;
+                else if (Vertices[i].Coord.X > maxX)
+                    maxX = Vertices[i].Coord.X;
 
-                if (_vertices[i].Coord.Y < minY)
-                    minY = _vertices[i].Coord.Y;
-                else if (_vertices[i].Coord.Y > maxY)
-                    maxY = _vertices[i].Coord.Y;
+                if (Vertices[i].Coord.Y < minY)
+                    minY = Vertices[i].Coord.Y;
+                else if (Vertices[i].Coord.Y > maxY)
+                    maxY = Vertices[i].Coord.Y;
 
-                if (_vertices[i].Coord.Z < minZ)
-                    minZ = _vertices[i].Coord.Z;
-                else if (_vertices[i].Coord.Z > maxZ)
-                    maxZ = _vertices[i].Coord.Z;
+                if (Vertices[i].Coord.Z < minZ)
+                    minZ = Vertices[i].Coord.Z;
+                else if (Vertices[i].Coord.Z > maxZ)
+                    maxZ = Vertices[i].Coord.Z;
             }
 
             // Calculate the center-point from the bounding box edges
             RenderData.Center = new Vector3((minX + maxX) / 2, (minY + maxY) / 2, (minZ + maxZ) / 2);
 
             // Generate the index array
-            RenderData.Indices = new ushort[_numFaces * 3];
+            RenderData.Indices = new ushort[NumFaces * 3];
             current = 0;
-            for (int i = 0; i < _numFaces; i++)
+            for (int i = 0; i < NumFaces; i++)
             {
-                RenderData.Indices[current++] = (ushort)_faces[i].Indices[0];
-                RenderData.Indices[current++] = (ushort)_faces[i].Indices[1];
-                RenderData.Indices[current++] = (ushort)_faces[i].Indices[2];
+                RenderData.Indices[current++] = (ushort)Faces[i].Indices[0];
+                RenderData.Indices[current++] = (ushort)Faces[i].Indices[1];
+                RenderData.Indices[current++] = (ushort)Faces[i].Indices[2];
             }
 
             // Generate the texcoord array
-            RenderData.TexCoords = new float[_numVertices * 2];
+            RenderData.TexCoords = new float[NumVertices * 2];
             current = 0;
-            for (int i = 0; i < _numVertices; i++)
+            for (int i = 0; i < NumVertices; i++)
             {
-                RenderData.TexCoords[current++] = _vertices[i].TexCoord.X;
-                RenderData.TexCoords[current++] = _vertices[i].TexCoord.Y;
+                RenderData.TexCoords[current++] = Vertices[i].TexCoord.X;
+                RenderData.TexCoords[current++] = Vertices[i].TexCoord.Y;
             }
 
-            RenderData.weights = new float[_numVertices];
-            for (int i = 0; i < _numVertices; i++)
+            RenderData.weights = new float[NumVertices];
+            for (int i = 0; i < NumVertices; i++)
             {
-                RenderData.weights[i] = _vertices[i].Weight;
+                RenderData.weights[i] = Vertices[i].Weight;
             }
 
-            RenderData.skinJoints = new string[_skinJoints.Length + 3];
-            for (int i = 1; i < _skinJoints.Length; i++)
+            RenderData.skinJoints = new string[SkinJoints.Length + 3];
+            for (int i = 1; i < SkinJoints.Length; i++)
             {
-                RenderData.skinJoints[i] = _skinJoints[i];
+                RenderData.skinJoints[i] = SkinJoints[i];
             }
 
 
@@ -292,7 +292,7 @@ namespace Radegast.Rendering
         {
             LODMesh lod = new LODMesh();
             lod.LoadMesh(filename);
-            _lodMeshes[level] = lod;
+            LodMeshes[level] = lod;
         }
 
         public void applyjointweights()
