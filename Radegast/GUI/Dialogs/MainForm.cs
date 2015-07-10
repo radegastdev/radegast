@@ -1216,7 +1216,7 @@ namespace Radegast
 
         private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessLink("http://jira.openmetaverse.org/browse/RAD");
+            ProcessLink("https://metaverse.atlassian.net/browse/RAD");
         }
 
         private void accessibilityGuideToolStripMenuItem_Click(object sender, EventArgs e)
