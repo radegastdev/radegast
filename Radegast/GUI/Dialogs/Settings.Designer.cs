@@ -98,6 +98,8 @@ namespace Radegast
             this.rbDNSmart = new System.Windows.Forms.RadioButton();
             this.rbDNOff = new System.Windows.Forms.RadioButton();
             this.tbpAutoResponse = new System.Windows.Forms.TabPage();
+            this.gnAutoScriptPermission = new System.Windows.Forms.GroupBox();
+            this.cbAutoScriptPermission = new System.Windows.Forms.ComboBox();
             this.gnAutoInventory = new System.Windows.Forms.GroupBox();
             this.cbOnInvOffer = new System.Windows.Forms.ComboBox();
             this.txtAutoResponse = new System.Windows.Forms.TextBox();
@@ -129,8 +131,7 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
-            this.gnAutoScriptPermission = new System.Windows.Forms.GroupBox();
-            this.cbAutoScriptPermission = new System.Windows.Forms.ComboBox();
+            this.cbConfirmExit = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -138,6 +139,7 @@ namespace Radegast
             this.Chat.SuspendLayout();
             this.gbDisplayNames.SuspendLayout();
             this.tbpAutoResponse.SuspendLayout();
+            this.gnAutoScriptPermission.SuspendLayout();
             this.gnAutoInventory.SuspendLayout();
             this.gbAutoResponse.SuspendLayout();
             this.tbpBot.SuspendLayout();
@@ -145,7 +147,6 @@ namespace Radegast
             this.pseudoHome.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).BeginInit();
             this.autoSit.SuspendLayout();
-            this.gnAutoScriptPermission.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcGraphics
@@ -243,6 +244,7 @@ namespace Radegast
             // 
             // cbMisc
             // 
+            this.cbMisc.Controls.Add(this.cbConfirmExit);
             this.cbMisc.Controls.Add(this.cbShowScriptErrors);
             this.cbMisc.Controls.Add(this.cbDisableHTTPInventory);
             this.cbMisc.Controls.Add(this.cbHideLoginGraphics);
@@ -260,7 +262,7 @@ namespace Radegast
             this.cbMisc.Controls.Add(this.cbSyntaxHighlight);
             this.cbMisc.Location = new System.Drawing.Point(270, 6);
             this.cbMisc.Name = "cbMisc";
-            this.cbMisc.Size = new System.Drawing.Size(236, 310);
+            this.cbMisc.Size = new System.Drawing.Size(236, 328);
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
             // 
@@ -603,6 +605,30 @@ namespace Radegast
             this.tbpAutoResponse.TabIndex = 2;
             this.tbpAutoResponse.Text = "Auto Response";
             this.tbpAutoResponse.UseVisualStyleBackColor = true;
+            // 
+            // gnAutoScriptPermission
+            // 
+            this.gnAutoScriptPermission.Controls.Add(this.cbAutoScriptPermission);
+            this.gnAutoScriptPermission.Location = new System.Drawing.Point(9, 216);
+            this.gnAutoScriptPermission.Name = "gnAutoScriptPermission";
+            this.gnAutoScriptPermission.Size = new System.Drawing.Size(281, 54);
+            this.gnAutoScriptPermission.TabIndex = 3;
+            this.gnAutoScriptPermission.TabStop = false;
+            this.gnAutoScriptPermission.Text = "On script permission questions";
+            // 
+            // cbAutoScriptPermission
+            // 
+            this.cbAutoScriptPermission.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbAutoScriptPermission.FormattingEnabled = true;
+            this.cbAutoScriptPermission.Items.AddRange(new object[] {
+            "Ask",
+            "Auto Accept",
+            "Auto Decline"});
+            this.cbAutoScriptPermission.Location = new System.Drawing.Point(6, 19);
+            this.cbAutoScriptPermission.Name = "cbAutoScriptPermission";
+            this.cbAutoScriptPermission.Size = new System.Drawing.Size(121, 21);
+            this.cbAutoScriptPermission.TabIndex = 0;
+            this.cbAutoScriptPermission.SelectedIndexChanged += new System.EventHandler(this.cbAutoScriptPermission_SelectedIndexChanged);
             // 
             // gnAutoInventory
             // 
@@ -950,29 +976,16 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
-            // gnAutoScriptPermission
+            // cbConfirmExit
             // 
-            this.gnAutoScriptPermission.Controls.Add(this.cbAutoScriptPermission);
-            this.gnAutoScriptPermission.Location = new System.Drawing.Point(9, 216);
-            this.gnAutoScriptPermission.Name = "gnAutoScriptPermission";
-            this.gnAutoScriptPermission.Size = new System.Drawing.Size(281, 54);
-            this.gnAutoScriptPermission.TabIndex = 3;
-            this.gnAutoScriptPermission.TabStop = false;
-            this.gnAutoScriptPermission.Text = "On script permission questions";
-            // 
-            // cbAutoScriptPermission
-            // 
-            this.cbAutoScriptPermission.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbAutoScriptPermission.FormattingEnabled = true;
-            this.cbAutoScriptPermission.Items.AddRange(new object[] {
-            "Ask",
-            "Auto Accept",
-            "Auto Decline"});
-            this.cbAutoScriptPermission.Location = new System.Drawing.Point(6, 19);
-            this.cbAutoScriptPermission.Name = "cbAutoScriptPermission";
-            this.cbAutoScriptPermission.Size = new System.Drawing.Size(121, 21);
-            this.cbAutoScriptPermission.TabIndex = 0;
-            this.cbAutoScriptPermission.SelectedIndexChanged += new System.EventHandler(this.cbAutoScriptPermission_SelectedIndexChanged);
+            this.cbConfirmExit.AutoSize = true;
+            this.cbConfirmExit.Location = new System.Drawing.Point(6, 304);
+            this.cbConfirmExit.Name = "cbConfirmExit";
+            this.cbConfirmExit.Size = new System.Drawing.Size(81, 17);
+            this.cbConfirmExit.TabIndex = 18;
+            this.cbConfirmExit.Text = "Confirm Exit";
+            this.cbConfirmExit.UseVisualStyleBackColor = true;
+            this.cbConfirmExit.CheckedChanged += new System.EventHandler(this.cbConfirmExit_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -995,6 +1008,7 @@ namespace Radegast
             this.gbDisplayNames.PerformLayout();
             this.tbpAutoResponse.ResumeLayout(false);
             this.tbpAutoResponse.PerformLayout();
+            this.gnAutoScriptPermission.ResumeLayout(false);
             this.gnAutoInventory.ResumeLayout(false);
             this.gbAutoResponse.ResumeLayout(false);
             this.gbAutoResponse.PerformLayout();
@@ -1006,7 +1020,6 @@ namespace Radegast
             ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).EndInit();
             this.autoSit.ResumeLayout(false);
             this.autoSit.PerformLayout();
-            this.gnAutoScriptPermission.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1085,6 +1098,7 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbShowScriptErrors;
         public System.Windows.Forms.GroupBox gnAutoScriptPermission;
         public System.Windows.Forms.ComboBox cbAutoScriptPermission;
+        private System.Windows.Forms.CheckBox cbConfirmExit;
 
 
     }

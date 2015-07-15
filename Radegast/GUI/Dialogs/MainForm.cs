@@ -390,6 +390,15 @@ namespace Radegast
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (instance.GlobalSettings["confirm_exit"].AsBoolean())
+            {
+                if (MessageBox.Show("Are you sure you want to exit Radegast?", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+
             if (statusTimer != null)
             {
                 statusTimer.Stop();

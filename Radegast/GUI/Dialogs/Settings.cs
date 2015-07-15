@@ -123,6 +123,8 @@ namespace Radegast
 
             if (!s.ContainsKey("disable_look_at")) s["disable_look_at"] = false;
 
+            if (!s.ContainsKey("confirm_exit")) s["confirm_exit"] = false;
+
             if (!s.ContainsKey("highlight_on_chat")) s["highlight_on_chat"] = true;
 
             if (!s.ContainsKey("highlight_on_im")) s["highlight_on_im"] = true;
@@ -262,6 +264,12 @@ namespace Radegast
             cbDisableLookAt.CheckedChanged += (sender, e) =>
             {
                 s["disable_look_at"] = cbDisableLookAt.Checked;
+            };
+
+            cbConfirmExit.Checked = s["confirm_exit"];
+            cbConfirmExit.CheckedChanged += (sender, e) =>
+            {
+                s["confirm_exit"] = cbConfirmExit.Checked;
             };
 
             cbTaskBarHighLight.Checked = s["taskbar_highlight"];
@@ -481,6 +489,11 @@ namespace Radegast
         private void cbRadegastLogToFile_CheckedChanged(object sender, EventArgs e)
         {
             s["log_to_file"] = OSD.FromBoolean(cbRadegastLogToFile.Checked);
+        }
+
+        private void cbConfirmExit_CheckedChanged(object sender, EventArgs e)
+        {
+            s["confirm_exit"] = OSD.FromBoolean(cbConfirmExit.Checked);
         }
 
         #region Auto-Sit
