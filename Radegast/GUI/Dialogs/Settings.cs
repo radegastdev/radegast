@@ -69,6 +69,11 @@ namespace Radegast
                 s["rlv_enabled"] = new OSDBoolean(false);
             }
 
+            if (s["rlv_debugcommands"].Type == OSDType.Unknown)
+            {
+                s["rlv_debugcommands"] = new OSDBoolean(false);
+            }
+
             if (s["mu_emotes"].Type == OSDType.Unknown)
             {
                 s["mu_emotes"] = new OSDBoolean(false);
@@ -179,6 +184,12 @@ namespace Radegast
             cbRLV.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["rlv_enabled"] = new OSDBoolean(cbRLV.Checked);
+            };
+
+            cbRLVDebug.Checked = s["rlv_debugcommands"].AsBoolean();
+            cbRLVDebug.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["rlv_debugcommands"] = new OSDBoolean(cbRLVDebug.Checked);
             };
 
             cbMUEmotes.Checked = s["mu_emotes"].AsBoolean();
