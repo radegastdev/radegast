@@ -69,9 +69,9 @@ namespace Radegast
             this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbMisc = new System.Windows.Forms.GroupBox();
             this.txtResolveURITime = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.cbResolveURIs = new System.Windows.Forms.CheckBox();
             this.cbShowScriptErrors = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.cbDisableHTTPInventory = new System.Windows.Forms.CheckBox();
             this.cbHideLoginGraphics = new System.Windows.Forms.CheckBox();
             this.cbDisableLookAt = new System.Windows.Forms.CheckBox();
@@ -135,6 +135,7 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
+            this.cbConfirmExit = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -247,6 +248,7 @@ namespace Radegast
             // 
             // cbMisc
             // 
+            this.cbMisc.Controls.Add(this.cbConfirmExit);
             this.cbMisc.Controls.Add(this.txtResolveURITime);
             this.cbMisc.Controls.Add(this.cbResolveURIs);
             this.cbMisc.Controls.Add(this.cbShowScriptErrors);
@@ -268,7 +270,7 @@ namespace Radegast
             this.cbMisc.Controls.Add(this.cbSyntaxHighlight);
             this.cbMisc.Location = new System.Drawing.Point(270, 6);
             this.cbMisc.Name = "cbMisc";
-            this.cbMisc.Size = new System.Drawing.Size(236, 371);
+            this.cbMisc.Size = new System.Drawing.Size(236, 385);
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
             // 
@@ -280,15 +282,6 @@ namespace Radegast
             this.txtResolveURITime.TabIndex = 20;
             this.txtResolveURITime.Text = "100";
             this.txtResolveURITime.TextChanged += new System.EventHandler(this.txtResolveURITime_TextChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 341);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(109, 13);
-            this.label4.TabIndex = 19;
-            this.label4.Text = "Resolve Timeout (ms)";
             // 
             // cbResolveURIs
             // 
@@ -310,6 +303,15 @@ namespace Radegast
             this.cbShowScriptErrors.TabIndex = 17;
             this.cbShowScriptErrors.Text = "Show Script Erros";
             this.cbShowScriptErrors.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 341);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(109, 13);
+            this.label4.TabIndex = 19;
+            this.label4.Text = "Resolve Timeout (ms)";
             // 
             // cbDisableHTTPInventory
             // 
@@ -1022,6 +1024,16 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
+            // cbConfirmExit
+            // 
+            this.cbConfirmExit.AutoSize = true;
+            this.cbConfirmExit.Location = new System.Drawing.Point(6, 357);
+            this.cbConfirmExit.Name = "cbConfirmExit";
+            this.cbConfirmExit.Size = new System.Drawing.Size(81, 17);
+            this.cbConfirmExit.TabIndex = 21;
+            this.cbConfirmExit.Text = "Confirm Exit";
+            this.cbConfirmExit.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1137,7 +1149,6 @@ namespace Radegast
         public System.Windows.Forms.TextBox txtResolveURITime;
         public System.Windows.Forms.Label label4;
         public System.Windows.Forms.CheckBox cbResolveURIs;
-
-
+        private System.Windows.Forms.CheckBox cbConfirmExit;
     }
 }
