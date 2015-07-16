@@ -68,6 +68,7 @@ namespace Radegast
             this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
             this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbMisc = new System.Windows.Forms.GroupBox();
+            this.cbConfirmExit = new System.Windows.Forms.CheckBox();
             this.txtResolveURITime = new System.Windows.Forms.TextBox();
             this.cbResolveURIs = new System.Windows.Forms.CheckBox();
             this.cbShowScriptErrors = new System.Windows.Forms.CheckBox();
@@ -135,7 +136,6 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
-            this.cbConfirmExit = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -274,9 +274,19 @@ namespace Radegast
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
             // 
+            // cbConfirmExit
+            // 
+            this.cbConfirmExit.AutoSize = true;
+            this.cbConfirmExit.Location = new System.Drawing.Point(6, 357);
+            this.cbConfirmExit.Name = "cbConfirmExit";
+            this.cbConfirmExit.Size = new System.Drawing.Size(81, 17);
+            this.cbConfirmExit.TabIndex = 21;
+            this.cbConfirmExit.Text = "Confirm Exit";
+            this.cbConfirmExit.UseVisualStyleBackColor = true;
+            // 
             // txtResolveURITime
             // 
-            this.txtResolveURITime.Location = new System.Drawing.Point(118, 338);
+            this.txtResolveURITime.Location = new System.Drawing.Point(157, 338);
             this.txtResolveURITime.Name = "txtResolveURITime";
             this.txtResolveURITime.Size = new System.Drawing.Size(53, 20);
             this.txtResolveURITime.TabIndex = 20;
@@ -307,7 +317,7 @@ namespace Radegast
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 341);
+            this.label4.Location = new System.Drawing.Point(23, 341);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(109, 13);
             this.label4.TabIndex = 19;
@@ -1023,16 +1033,6 @@ namespace Radegast
             this.autoSitNameLabel.TabIndex = 1;
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
-            // 
-            // cbConfirmExit
-            // 
-            this.cbConfirmExit.AutoSize = true;
-            this.cbConfirmExit.Location = new System.Drawing.Point(6, 357);
-            this.cbConfirmExit.Name = "cbConfirmExit";
-            this.cbConfirmExit.Size = new System.Drawing.Size(81, 17);
-            this.cbConfirmExit.TabIndex = 21;
-            this.cbConfirmExit.Text = "Confirm Exit";
-            this.cbConfirmExit.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
