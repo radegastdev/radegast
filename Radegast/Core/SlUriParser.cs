@@ -11,9 +11,9 @@ namespace Radegast
         private enum ResolveType
         {
             /// <summary>
-            /// Display (first.last)
+            /// Client specified name format
             /// </summary>
-            AgentCompleteName,
+            AgentDefaultName,
             /// <summary>
             /// Display
             /// </summary>
@@ -79,6 +79,11 @@ namespace Radegast
         /// <returns>Display text for URI</returns>
         public string GetLinkName(string uri)
         {
+            if (!RadegastInstance.GlobalInstance.GlobalSettings["resolve_uris"])
+            {
+                return uri;
+            }
+
             Match match = patternUri.Match(uri);
             if (!match.Success)
             {
@@ -230,11 +235,6 @@ namespace Radegast
         #region Name Resolution
 
         /// <summary>
-        /// Amount of time in milliseconds to wait before giving up on name resolution
-        /// </summary>
-        private const int NameResolveTimeoutInMs = 150;
-
-        /// <summary>
         /// Gets the name of an agent by UUID. Will block for a short period of time to allow for name resolution.
         /// </summary>
         /// <param name="agentID">Agent UUID</param>
@@ -262,9 +262,9 @@ namespace Radegast
 
                 instance.Names.NameUpdated += handler;
 
-                if (nameType == ResolveType.AgentCompleteName)
+                if (nameType == ResolveType.AgentDefaultName)
                 {
-                    name = instance.Names.GetLegacyName(agentID);
+                    name = instance.Names.Get(agentID);
                 }
                 else if (nameType == ResolveType.AgentUsername)
                 {
@@ -276,12 +276,13 @@ namespace Radegast
                 }
                 else
                 {
+                    instance.Names.NameUpdated -= handler;
                     return agentID.ToString();
                 }
 
                 if (name == RadegastInstance.INCOMPLETE_NAME)
                 {
-                    gotName.WaitOne(NameResolveTimeoutInMs, false);
+                    gotName.WaitOne(instance.GlobalSettings["resolve_uri_time"], false);
                 }
 
                 instance.Names.NameUpdated -= handler;
@@ -319,7 +320,7 @@ namespace Radegast
                 instance.Client.Groups.RequestGroupName(groupID);
                 if (name == RadegastInstance.INCOMPLETE_NAME)
                 {
-                    gotName.WaitOne(NameResolveTimeoutInMs, false);
+                    gotName.WaitOne(instance.GlobalSettings["resolve_uri_time"], false);
                 }
 
                 instance.Client.Groups.GroupNamesReply -= handler;
@@ -357,7 +358,7 @@ namespace Radegast
                 instance.Client.Parcels.RequestParcelInfo(parcelID);
                 if (name == RadegastInstance.INCOMPLETE_NAME)
                 {
-                    gotName.WaitOne(NameResolveTimeoutInMs, false);
+                    gotName.WaitOne(instance.GlobalSettings["resolve_uri_time"], false);
                 }
 
                 instance.Client.Parcels.ParcelInfoReply -= handler;
@@ -377,7 +378,7 @@ namespace Radegast
         {
             switch (type)
             {
-                case ResolveType.AgentCompleteName:
+                case ResolveType.AgentDefaultName:
                 case ResolveType.AgentDisplayName:
                 case ResolveType.AgentUsername:
                     return GetAgentName(id, type);
@@ -427,23 +428,23 @@ namespace Radegast
                 case "about":
                 case "inspect":
                 case "completename":
-                    return Resolve(agentID, ResolveType.AgentCompleteName);
+                    return Resolve(agentID, ResolveType.AgentDefaultName);
                 case "displayname":
                     return Resolve(agentID, ResolveType.AgentDisplayName);
                 case "username":
                     return Resolve(agentID, ResolveType.AgentUsername);
                 case "im":
-                    return "IM " + Resolve(agentID, ResolveType.AgentCompleteName);
+                    return "IM " + Resolve(agentID, ResolveType.AgentDefaultName);
                 case "offerteleport":
-                    return "Offer Teleport to " + Resolve(agentID, ResolveType.AgentCompleteName);
+                    return "Offer Teleport to " + Resolve(agentID, ResolveType.AgentDefaultName);
                 case "pay":
-                    return "Pay " + Resolve(agentID, ResolveType.AgentCompleteName);
+                    return "Pay " + Resolve(agentID, ResolveType.AgentDefaultName);
                 case "requestfriend":
-                    return "Friend Request " + Resolve(agentID, ResolveType.AgentCompleteName);
+                    return "Friend Request " + Resolve(agentID, ResolveType.AgentDefaultName);
                 case "mute":
-                    return "Mute " + Resolve(agentID, ResolveType.AgentCompleteName);
+                    return "Mute " + Resolve(agentID, ResolveType.AgentDefaultName);
                 case "unmute":
-                    return "Unmute " + Resolve(agentID, ResolveType.AgentCompleteName);
+                    return "Unmute " + Resolve(agentID, ResolveType.AgentDefaultName);
                 default:
                     return match.ToString();
             }
