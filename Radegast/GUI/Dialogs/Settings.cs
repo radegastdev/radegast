@@ -106,6 +106,10 @@ namespace Radegast
 
             if (!s.ContainsKey("reconnect_time")) s["reconnect_time"] = 120;
 
+            if (!s.ContainsKey("resolve_uri_time")) s["resolve_uri_time"] = 100;
+
+            if (!s.ContainsKey("resolve_uris")) s["resolve_uris"] = true;
+
             if (!s.ContainsKey("transaction_notification_chat")) s["transaction_notification_chat"] = true;
 
             if (!s.ContainsKey("transaction_notification_dialog")) s["transaction_notification_dialog"] = true;
@@ -177,6 +181,9 @@ namespace Radegast
             cbAutoReconnect.Checked = s["auto_reconnect"].AsBoolean();
             cbAutoReconnect.CheckedChanged += new EventHandler(cbAutoReconnect_CheckedChanged);
 
+            cbResolveURIs.Checked = s["resolve_uris"].AsBoolean();
+            cbResolveURIs.CheckedChanged += new EventHandler(cbResolveURIs_CheckedChanged); ;
+
             cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
             cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
 
@@ -247,6 +254,8 @@ namespace Radegast
             }
 
             txtReconnectTime.Text = s["reconnect_time"].AsInteger().ToString();
+
+            txtResolveURITime.Text = s["resolve_uri_time"].AsInteger().ToString();
 
             cbRadegastClientTag.Checked = s["send_rad_client_tag"];
             cbRadegastClientTag.CheckedChanged += (sender, e) =>
@@ -361,6 +370,11 @@ namespace Radegast
         void cbAutoReconnect_CheckedChanged(object sender, EventArgs e)
         {
             s["auto_reconnect"] = OSD.FromBoolean(cbAutoReconnect.Checked);
+        }
+
+        private void cbResolveURIs_CheckedChanged(object sender, EventArgs e)
+        {
+            s["resolve_uris"] = OSD.FromBoolean(cbResolveURIs.Checked);
         }
 
         void cbFriendsNotifications_CheckedChanged(object sender, EventArgs e)
@@ -487,6 +501,21 @@ namespace Radegast
             }
 
             s["reconnect_time"] = t;
+        }
+
+        private void txtResolveURITime_TextChanged(object sender, EventArgs e)
+        {
+            string input = System.Text.RegularExpressions.Regex.Replace(txtResolveURITime.Text, @"[^\d]", "");
+            int t = 100;
+            int.TryParse(input, out t);
+
+            if (txtResolveURITime.Text != t.ToString())
+            {
+                txtResolveURITime.Text = t.ToString();
+                txtResolveURITime.Select(txtResolveURITime.Text.Length, 0);
+            }
+
+            s["resolve_uri_time"] = t;
         }
 
         private void cbRadegastLogToFile_CheckedChanged(object sender, EventArgs e)
