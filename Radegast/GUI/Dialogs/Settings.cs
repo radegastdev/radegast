@@ -69,6 +69,11 @@ namespace Radegast
                 s["rlv_enabled"] = new OSDBoolean(false);
             }
 
+            if (s["rlv_debugcommands"].Type == OSDType.Unknown)
+            {
+                s["rlv_debugcommands"] = new OSDBoolean(false);
+            }
+
             if (s["mu_emotes"].Type == OSDType.Unknown)
             {
                 s["mu_emotes"] = new OSDBoolean(false);
@@ -101,6 +106,10 @@ namespace Radegast
 
             if (!s.ContainsKey("reconnect_time")) s["reconnect_time"] = 120;
 
+            if (!s.ContainsKey("resolve_uri_time")) s["resolve_uri_time"] = 100;
+
+            if (!s.ContainsKey("resolve_uris")) s["resolve_uris"] = true;
+
             if (!s.ContainsKey("transaction_notification_chat")) s["transaction_notification_chat"] = true;
 
             if (!s.ContainsKey("transaction_notification_dialog")) s["transaction_notification_dialog"] = true;
@@ -122,6 +131,8 @@ namespace Radegast
             if (!s.ContainsKey("disable_chat_im_log")) s["disable_chat_im_log"] = false;
 
             if (!s.ContainsKey("disable_look_at")) s["disable_look_at"] = false;
+
+            if (!s.ContainsKey("confirm_exit")) s["confirm_exit"] = false;
 
             if (!s.ContainsKey("highlight_on_chat")) s["highlight_on_chat"] = true;
 
@@ -172,6 +183,9 @@ namespace Radegast
             cbAutoReconnect.Checked = s["auto_reconnect"].AsBoolean();
             cbAutoReconnect.CheckedChanged += new EventHandler(cbAutoReconnect_CheckedChanged);
 
+            cbResolveURIs.Checked = s["resolve_uris"].AsBoolean();
+            cbResolveURIs.CheckedChanged += new EventHandler(cbResolveURIs_CheckedChanged); ;
+
             cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
             cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
 
@@ -179,6 +193,12 @@ namespace Radegast
             cbRLV.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["rlv_enabled"] = new OSDBoolean(cbRLV.Checked);
+            };
+
+            cbRLVDebug.Checked = s["rlv_debugcommands"].AsBoolean();
+            cbRLVDebug.CheckedChanged += (object sender, EventArgs e) =>
+            {
+                s["rlv_debugcommands"] = new OSDBoolean(cbRLVDebug.Checked);
             };
 
             cbMUEmotes.Checked = s["mu_emotes"].AsBoolean();
@@ -237,6 +257,8 @@ namespace Radegast
 
             txtReconnectTime.Text = s["reconnect_time"].AsInteger().ToString();
 
+            txtResolveURITime.Text = s["resolve_uri_time"].AsInteger().ToString();
+
             cbRadegastClientTag.Checked = s["send_rad_client_tag"];
             cbRadegastClientTag.CheckedChanged += (sender, e) =>
             {
@@ -262,6 +284,12 @@ namespace Radegast
             cbDisableLookAt.CheckedChanged += (sender, e) =>
             {
                 s["disable_look_at"] = cbDisableLookAt.Checked;
+            };
+
+            cbConfirmExit.Checked = s["confirm_exit"];
+            cbConfirmExit.CheckedChanged += (sender, e) =>
+            {
+                s["confirm_exit"] = cbConfirmExit.Checked;
             };
 
             cbTaskBarHighLight.Checked = s["taskbar_highlight"];
@@ -350,6 +378,11 @@ namespace Radegast
         void cbAutoReconnect_CheckedChanged(object sender, EventArgs e)
         {
             s["auto_reconnect"] = OSD.FromBoolean(cbAutoReconnect.Checked);
+        }
+
+        private void cbResolveURIs_CheckedChanged(object sender, EventArgs e)
+        {
+            s["resolve_uris"] = OSD.FromBoolean(cbResolveURIs.Checked);
         }
 
         void cbFriendsNotifications_CheckedChanged(object sender, EventArgs e)
@@ -478,9 +511,29 @@ namespace Radegast
             s["reconnect_time"] = t;
         }
 
+        private void txtResolveURITime_TextChanged(object sender, EventArgs e)
+        {
+            string input = System.Text.RegularExpressions.Regex.Replace(txtResolveURITime.Text, @"[^\d]", "");
+            int t = 100;
+            int.TryParse(input, out t);
+
+            if (txtResolveURITime.Text != t.ToString())
+            {
+                txtResolveURITime.Text = t.ToString();
+                txtResolveURITime.Select(txtResolveURITime.Text.Length, 0);
+            }
+
+            s["resolve_uri_time"] = t;
+        }
+
         private void cbRadegastLogToFile_CheckedChanged(object sender, EventArgs e)
         {
             s["log_to_file"] = OSD.FromBoolean(cbRadegastLogToFile.Checked);
+        }
+
+        private void cbConfirmExit_CheckedChanged(object sender, EventArgs e)
+        {
+            s["confirm_exit"] = OSD.FromBoolean(cbConfirmExit.Checked);
         }
 
         #region Auto-Sit

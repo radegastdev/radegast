@@ -114,9 +114,6 @@ namespace SimpleBuilderNamespace
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterClientEvents(client);
 
-            propRequester = new PropertiesQueue(instance);
-            propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
-
             selectedPrim = null;
         }
 
@@ -141,6 +138,9 @@ namespace SimpleBuilderNamespace
         public void StartPlugin(RadegastInstance inst)
         {
             this.instance = inst;
+
+            propRequester = new PropertiesQueue(instance);
+            propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
 
             ActivateTabButton = new ToolStripMenuItem(tabLabel, null, MenuButtonClicked);
             instance.MainForm.PluginsMenu.DropDownItems.Add(ActivateTabButton);
