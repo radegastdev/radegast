@@ -58,16 +58,27 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.rtbIMText = new Radegast.RRichTextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.chatSplit = new System.Windows.Forms.SplitContainer();
             this.Participants = new Radegast.ListViewNoFlicker();
+            this.avatarContext = new Radegast.RadegastContextMenuStrip(this.components);
+            this.ctxProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxPay = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxStartIM = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxOfferTP = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxReqestLure = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxEject = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxBan = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxMute = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShow = new System.Windows.Forms.Button();
             this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbxInput = new Radegast.ChatInputBox();
             this.chatSplit.Panel1.SuspendLayout();
             this.chatSplit.Panel2.SuspendLayout();
             this.chatSplit.SuspendLayout();
+            this.avatarContext.SuspendLayout();
             this.pnlChatInput.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -117,6 +128,7 @@ namespace Radegast
             // Participants
             // 
             this.Participants.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.Participants.ContextMenuStrip = this.avatarContext;
             this.Participants.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Participants.HideSelection = false;
             this.Participants.Location = new System.Drawing.Point(0, 0);
@@ -129,6 +141,87 @@ namespace Radegast
             this.Participants.UseCompatibleStateImageBehavior = false;
             this.Participants.View = System.Windows.Forms.View.List;
             this.Participants.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Participants_MouseDoubleClick);
+            // 
+            // avatarContext
+            // 
+            this.avatarContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ctxProfile,
+            this.ctxPay,
+            this.ctxStartIM,
+            this.ctxOfferTP,
+            this.ctxReqestLure,
+            this.ctxEject,
+            this.ctxBan,
+            this.ctxMute});
+            this.avatarContext.Name = "avatarContext";
+            this.avatarContext.Size = new System.Drawing.Size(158, 202);
+            this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
+            // 
+            // ctxProfile
+            // 
+            this.ctxProfile.Name = "ctxProfile";
+            this.ctxProfile.Size = new System.Drawing.Size(157, 22);
+            this.ctxProfile.Text = "Profile";
+            this.ctxProfile.ToolTipText = " Profile ";
+            this.ctxProfile.Click += new System.EventHandler(this.ctxProfile_Click);
+            // 
+            // ctxPay
+            // 
+            this.ctxPay.Enabled = false;
+            this.ctxPay.Name = "ctxPay";
+            this.ctxPay.Size = new System.Drawing.Size(157, 22);
+            this.ctxPay.Text = "Pay";
+            this.ctxPay.ToolTipText = " Pay ";
+            this.ctxPay.Click += new System.EventHandler(this.ctxPay_Click);
+            // 
+            // ctxStartIM
+            // 
+            this.ctxStartIM.Name = "ctxStartIM";
+            this.ctxStartIM.Size = new System.Drawing.Size(157, 22);
+            this.ctxStartIM.Text = "Start IM";
+            this.ctxStartIM.ToolTipText = " Start IM ";
+            this.ctxStartIM.Click += new System.EventHandler(this.ctxStartIM_Click);
+            // 
+            // ctxOfferTP
+            // 
+            this.ctxOfferTP.Name = "ctxOfferTP";
+            this.ctxOfferTP.Size = new System.Drawing.Size(157, 22);
+            this.ctxOfferTP.Text = "Offer Teleport";
+            this.ctxOfferTP.ToolTipText = " Offer Teleport ";
+            this.ctxOfferTP.Click += new System.EventHandler(this.ctxOfferTP_Click);
+            // 
+            // ctxReqestLure
+            // 
+            this.ctxReqestLure.Name = "ctxReqestLure";
+            this.ctxReqestLure.Size = new System.Drawing.Size(157, 22);
+            this.ctxReqestLure.Text = "Request Teleport";
+            this.ctxReqestLure.ToolTipText = " Request Teleport ";
+            this.ctxReqestLure.Click += new System.EventHandler(this.ctxReqestLure_Click);
+            // 
+            // ctxEject
+            // 
+            this.ctxEject.Name = "ctxEject";
+            this.ctxEject.Size = new System.Drawing.Size(157, 22);
+            this.ctxEject.Text = "Eject";
+            this.ctxEject.ToolTipText = " Eject ";
+            this.ctxEject.Click += new System.EventHandler(this.ctxEject_Click);
+            // 
+            // ctxBan
+            // 
+            this.ctxBan.Name = "ctxBan";
+            this.ctxBan.Size = new System.Drawing.Size(157, 22);
+            this.ctxBan.Text = "Ban";
+            this.ctxBan.ToolTipText = " Ban ";
+            this.ctxBan.Visible = false;
+            this.ctxBan.Click += new System.EventHandler(this.ctxBan_Click);
+            // 
+            // ctxMute
+            // 
+            this.ctxMute.Name = "ctxMute";
+            this.ctxMute.Size = new System.Drawing.Size(157, 22);
+            this.ctxMute.Text = "Mute";
+            this.ctxMute.ToolTipText = " Mute ";
+            this.ctxMute.Click += new System.EventHandler(this.ctxMute_Click);
             // 
             // btnShow
             // 
@@ -177,6 +270,7 @@ namespace Radegast
             this.chatSplit.Panel1.ResumeLayout(false);
             this.chatSplit.Panel2.ResumeLayout(false);
             this.chatSplit.ResumeLayout(false);
+            this.avatarContext.ResumeLayout(false);
             this.pnlChatInput.ResumeLayout(false);
             this.pnlChatInput.PerformLayout();
             this.ResumeLayout(false);
@@ -192,6 +286,15 @@ namespace Radegast
         public ListViewNoFlicker Participants;
         public System.Windows.Forms.Button btnShow;
         private System.Windows.Forms.Panel pnlChatInput;
+        public RadegastContextMenuStrip avatarContext;
+        public System.Windows.Forms.ToolStripMenuItem ctxProfile;
+        public System.Windows.Forms.ToolStripMenuItem ctxPay;
+        public System.Windows.Forms.ToolStripMenuItem ctxStartIM;
+        private System.Windows.Forms.ToolStripMenuItem ctxOfferTP;
+        private System.Windows.Forms.ToolStripMenuItem ctxReqestLure;
+        private System.Windows.Forms.ToolStripMenuItem ctxEject;
+        private System.Windows.Forms.ToolStripMenuItem ctxBan;
+        private System.Windows.Forms.ToolStripMenuItem ctxMute;
 
     }
 }
