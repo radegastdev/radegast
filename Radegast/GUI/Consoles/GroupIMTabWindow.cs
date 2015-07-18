@@ -457,23 +457,6 @@ namespace Radegast
             pnlChatInput.Height = cbxInput.Height + 7;
         }
 
-        private void ctxMute_Click(object sender, EventArgs e)
-        {
-            if (Participants.SelectedItems.Count != 1) return;
-
-            var agentID = (UUID)Participants.SelectedItems[0].Tag;
-            if (agentID == client.Self.AgentID) return;
-
-            if (ctxMute.Text == "Mute")
-            {
-                client.Self.UpdateMuteListEntry(MuteType.Resident, agentID, instance.Names.GetLegacyName(agentID));
-            }
-            else
-            {
-                client.Self.RemoveMuteListEntry(agentID, instance.Names.GetLegacyName(agentID));
-            }
-        }
-
         private void avatarContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (Participants.SelectedItems.Count != 1)
@@ -549,6 +532,22 @@ namespace Radegast
         {
             if (Participants.SelectedItems.Count != 1) return;
             UUID av = (UUID)Participants.SelectedItems[0].Tag;
+        }
+
+        private void ctxMute_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            if (av == client.Self.AgentID) return;
+
+            if (ctxMute.Text == "Mute")
+            {
+                client.Self.UpdateMuteListEntry(MuteType.Resident, av, instance.Names.GetLegacyName(av));
+            }
+            else
+            {
+                client.Self.RemoveMuteListEntry(av, instance.Names.GetLegacyName(av));
+            }
         }
     }
 }
