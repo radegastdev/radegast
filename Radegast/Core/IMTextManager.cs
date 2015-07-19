@@ -117,6 +117,11 @@ namespace Radegast
                 e.IM.Dialog == InstantMessageDialog.StopTyping)
                 return;
 
+            if (instance.Client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == e.IM.FromAgentID) != null)
+            {
+                return;
+            }
+
             textBuffer.Add(e);
             ProcessIM(e);
         }
