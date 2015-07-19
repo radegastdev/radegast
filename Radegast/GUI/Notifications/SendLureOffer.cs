@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
@@ -26,31 +26,55 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// $Id: 
+// $Id$
 //
 using System;
+using System.Windows.Forms;
 using OpenMetaverse;
 
 namespace Radegast
 {
-    public class OfferTeleportAction : ContextAction
+    public partial class ntfSendLureOffer : Notification
     {
-        public OfferTeleportAction(RadegastInstance inst)
-            : base(inst)
+        private RadegastInstance instance;
+        private UUID agentID;
+        private string agentName;
+
+        public ntfSendLureOffer(RadegastInstance instance, UUID agentID)
+            : base(NotificationType.SendLureOffer)
         {
-            Label = "Offer Teleport";
-            ContextType = typeof(Avatar);
-        }
-        public override bool IsEnabled(object target)
-        {
-            return true;
+            InitializeComponent();
+            this.instance = instance;
+            this.agentID = agentID;
+
+            txtHead.BackColor = instance.MainForm.NotificationBackground;
+
+            agentName = instance.Names.Get(agentID, true);
+            txtHead.Text = String.Format("Offer a teleport to {0} with the following message: ", agentName);
+            txtMessage.Text = String.Format("Join me in {0}!", instance.Client.Network.CurrentSim.Name);
+            txtMessage.BackColor = instance.MainForm.NotificationBackground;
+            btnOffer.Focus();
+
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = txtHead.Text + Environment.NewLine + txtMessage.Text;
+            args.Buttons.Add(btnOffer);
+            args.Buttons.Add(btnCancel);
+            FireNotificationCallback(args);
         }
 
-        public override void OnInvoke(object sender, EventArgs e, object target)
+        private void btnOffer_Click(object sender, EventArgs e)
         {
-            UUID id = ToUUID(target);
-            instance.MainForm.AddNotification(new ntfSendLureOffer(instance, id));
-            instance.TabConsole.DisplayNotificationInChat(string.Format("Sent Lure to {0}", id));
+            if (!instance.Client.Network.Connected) return;
+
+            instance.Client.Self.SendTeleportLure(agentID, txtMessage.Text);
+
+            instance.MainForm.RemoveNotification(this);
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            instance.MainForm.RemoveNotification(this);
         }
     }
 }

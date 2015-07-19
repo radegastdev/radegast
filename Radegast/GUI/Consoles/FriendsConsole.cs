@@ -382,7 +382,7 @@ namespace Radegast
             foreach (var item in listFriends.SelectedItems)
             {
                 FriendInfo friend = (FriendInfo)item;
-                client.Self.SendTeleportLure(friend.UUID, "Join me in " + client.Network.CurrentSim.Name + "!");
+                instance.MainForm.AddNotification(new ntfSendLureOffer(instance, friend.UUID));
             }
         }
 

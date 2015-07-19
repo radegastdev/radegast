@@ -248,7 +248,7 @@ namespace Radegast
 
         private void btnOfferTeleport_Click(object sender, EventArgs e)
         {
-            instance.Client.Self.SendTeleportLure(target, "Join me in " + instance.Client.Network.CurrentSim.Name + "!");
+            instance.MainForm.AddNotification(new ntfSendLureOffer(instance, target));
         }
 
         private void btnPay_Click(object sender, EventArgs e)

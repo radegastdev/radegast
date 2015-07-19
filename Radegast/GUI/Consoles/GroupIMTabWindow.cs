@@ -511,7 +511,7 @@ namespace Radegast
         {
             if (Participants.SelectedItems.Count != 1) return;
             UUID av = (UUID)Participants.SelectedItems[0].Tag;
-            client.Self.SendTeleportLure(av, "Join me in " + client.Network.CurrentSim.Name + "!");
+            instance.MainForm.AddNotification(new ntfSendLureOffer(instance, av));
         }
 
         private void ctxReqestLure_Click(object sender, EventArgs e)

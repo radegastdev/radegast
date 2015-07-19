@@ -126,7 +126,8 @@ namespace Radegast
         Teleport,
         InventoryOffer,
         RequestLure,
-        SendLureRequest
+        SendLureRequest,
+        SendLureOffer
     }
 
     /// <summary>

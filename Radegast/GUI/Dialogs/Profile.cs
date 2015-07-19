@@ -511,7 +511,7 @@ namespace Radegast
 
         private void btnOfferTeleport_Click(object sender, EventArgs e)
         {
-            client.Self.SendTeleportLure(agentID, "Join me in " + client.Network.CurrentSim.Name + "!");
+            instance.MainForm.AddNotification(new ntfSendLureOffer(instance, agentID));
         }
 
         private void btnPay_Click(object sender, EventArgs e)

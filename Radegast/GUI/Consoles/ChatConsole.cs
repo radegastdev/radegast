@@ -912,7 +912,7 @@ namespace Radegast
         {
             if (lvwObjects.SelectedItems.Count != 1) return;
             UUID av = (UUID)lvwObjects.SelectedItems[0].Tag;
-            client.Self.SendTeleportLure(av, "Join me in " + client.Network.CurrentSim.Name + "!");
+            instance.MainForm.AddNotification(new ntfSendLureOffer(instance, av));
         }
 
         private void ctxTeleportTo_Click(object sender, EventArgs e)
