@@ -26,17 +26,17 @@ Radegast\prebuild.exe /target vs2012
 
 :: build compile.bat file based on command line parameters
 echo @echo off > compile.bat
-if(.%1)==(.) echo %SystemRoot%\Microsoft.NET\Framework\v3.5\msbuild Radegast.sln >> compile.bat
+if(.%1)==(.) echo %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\msbuild Radegast.sln >> compile.bat
 
 if(.%1)==(.msbuild) echo echo ==== COMPILE BEGIN ==== >> compile.bat
-if(.%1)==(.msbuild) echo %SystemRoot%\Microsoft.NET\Framework\v3.5\MSBuild.exe /p:Configuration=Release Radegast.sln >> compile.bat
+if(.%1)==(.msbuild) echo %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /p:Configuration=Release Radegast.sln >> compile.bat
 if(.%1)==(.msbuild) echo IF ERRORLEVEL 1 GOTO FAIL >> compile.bat
 
 if(.%1)==(.nant) echo nant >> compile.bat
 if(.%1)==(.nant) echo IF ERRORLEVEL 1 GOTO FAIL >> compile.bat
 
 if(.%3)==(.docs) echo echo ==== GENERATE DOCUMENTATION BEGIN ==== >> compile.bat
-if(.%2)==(.docs) echo %SystemRoot%\Microsoft.NET\Framework\v3.5\MSBuild.exe /p:Configuration=Release docs\Radegast.shfbproj >> compile.bat
+if(.%2)==(.docs) echo %SystemRoot%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe /p:Configuration=Release docs\Radegast.shfbproj >> compile.bat
 if(.%2)==(.docs) echo IF ERRORLEVEL 1 GOTO FAIL >> compile.bat
 if(.%2)==(.docs) echo 7z.exe a -tzip docs\documentation.zip docs\trunk >> compile.bat
 if(.%2)==(.docs) echo IF ERRORLEVEL 1 GOTO FAIL >> compile.bat
