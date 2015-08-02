@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RelayConsole));
             this.pnlChatLine = new System.Windows.Forms.Panel();
             this.btnSend = new System.Windows.Forms.Button();
             this.cbxInput = new Radegast.ChatInputBox();
@@ -42,21 +41,16 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnDisconnect = new System.Windows.Forms.Button();
             this.scChat = new System.Windows.Forms.SplitContainer();
-            this.rtbChatText = new System.Windows.Forms.RichTextBox();
+            this.rtbChatText = new Radegast.RRichTextBox();
             this.Participants = new Radegast.ListViewNoFlicker();
-            this.tsChatMenu = new System.Windows.Forms.ToolStrip();
-            this.lblConnected = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnConnectPannel = new System.Windows.Forms.ToolStripButton();
-            this.btnDisconnect = new System.Windows.Forms.ToolStripButton();
-            this.ddGroup = new System.Windows.Forms.ToolStripDropDownButton();
             this.pnlChatLine.SuspendLayout();
             this.pnlConnectionSettings.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.scChat)).BeginInit();
             this.scChat.Panel1.SuspendLayout();
             this.scChat.Panel2.SuspendLayout();
             this.scChat.SuspendLayout();
-            this.tsChatMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlChatLine
@@ -83,8 +77,8 @@
             // 
             // cbxInput
             // 
-            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cbxInput.Location = new System.Drawing.Point(3, 3);
             this.cbxInput.Name = "cbxInput";
             this.cbxInput.Size = new System.Drawing.Size(638, 20);
@@ -102,12 +96,12 @@
             this.pnlConnectionSettings.Controls.Add(this.label3);
             this.pnlConnectionSettings.Controls.Add(this.label2);
             this.pnlConnectionSettings.Controls.Add(this.label1);
+            this.pnlConnectionSettings.Controls.Add(this.btnDisconnect);
             this.pnlConnectionSettings.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlConnectionSettings.Location = new System.Drawing.Point(0, 25);
+            this.pnlConnectionSettings.Location = new System.Drawing.Point(0, 0);
             this.pnlConnectionSettings.Name = "pnlConnectionSettings";
             this.pnlConnectionSettings.Size = new System.Drawing.Size(705, 30);
             this.pnlConnectionSettings.TabIndex = 1;
-            this.pnlConnectionSettings.Visible = false;
             // 
             // btnConnect
             // 
@@ -125,6 +119,7 @@
             this.txtChan.Name = "txtChan";
             this.txtChan.Size = new System.Drawing.Size(80, 20);
             this.txtChan.TabIndex = 4;
+            this.txtChan.Validated += new System.EventHandler(this.txtChan_Validated);
             // 
             // txtNick
             // 
@@ -132,6 +127,7 @@
             this.txtNick.Name = "txtNick";
             this.txtNick.Size = new System.Drawing.Size(61, 20);
             this.txtNick.TabIndex = 3;
+            this.txtNick.Validated += new System.EventHandler(this.txtNick_Validated);
             // 
             // txtPort
             // 
@@ -140,6 +136,8 @@
             this.txtPort.Size = new System.Drawing.Size(61, 20);
             this.txtPort.TabIndex = 2;
             this.txtPort.Text = "6667";
+            this.txtPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtPort_KeyPress);
+            this.txtPort.Validated += new System.EventHandler(this.txtPort_Validated);
             // 
             // txtServer
             // 
@@ -148,6 +146,7 @@
             this.txtServer.Size = new System.Drawing.Size(140, 20);
             this.txtServer.TabIndex = 1;
             this.txtServer.Text = "irc.freenode.net";
+            this.txtServer.Validated += new System.EventHandler(this.txtServer_Validated);
             // 
             // label4
             // 
@@ -185,10 +184,22 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "IRC Server";
             // 
+            // btnDisconnect
+            // 
+            this.btnDisconnect.Enabled = false;
+            this.btnDisconnect.Location = new System.Drawing.Point(9, 4);
+            this.btnDisconnect.Name = "btnDisconnect";
+            this.btnDisconnect.Size = new System.Drawing.Size(75, 23);
+            this.btnDisconnect.TabIndex = 11;
+            this.btnDisconnect.Text = "Disconnect";
+            this.btnDisconnect.UseVisualStyleBackColor = true;
+            this.btnDisconnect.Visible = false;
+            this.btnDisconnect.Click += new System.EventHandler(this.btnDisconnect_Click);
+            // 
             // scChat
             // 
             this.scChat.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.scChat.Location = new System.Drawing.Point(0, 55);
+            this.scChat.Location = new System.Drawing.Point(0, 30);
             this.scChat.Name = "scChat";
             // 
             // scChat.Panel1
@@ -199,7 +210,7 @@
             // 
             this.scChat.Panel2.Controls.Add(this.Participants);
             this.scChat.Panel2.Enabled = false;
-            this.scChat.Size = new System.Drawing.Size(705, 325);
+            this.scChat.Size = new System.Drawing.Size(705, 350);
             this.scChat.SplitterDistance = 533;
             this.scChat.TabIndex = 2;
             // 
@@ -211,7 +222,7 @@
             this.rtbChatText.Location = new System.Drawing.Point(0, 0);
             this.rtbChatText.Name = "rtbChatText";
             this.rtbChatText.ReadOnly = true;
-            this.rtbChatText.Size = new System.Drawing.Size(533, 325);
+            this.rtbChatText.Size = new System.Drawing.Size(533, 350);
             this.rtbChatText.TabIndex = 4;
             this.rtbChatText.Text = "";
             // 
@@ -224,68 +235,11 @@
             this.Participants.MultiSelect = false;
             this.Participants.Name = "Participants";
             this.Participants.ShowGroups = false;
-            this.Participants.Size = new System.Drawing.Size(168, 325);
+            this.Participants.Size = new System.Drawing.Size(168, 350);
             this.Participants.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.Participants.TabIndex = 5;
             this.Participants.UseCompatibleStateImageBehavior = false;
             this.Participants.View = System.Windows.Forms.View.List;
-            // 
-            // tsChatMenu
-            // 
-            this.tsChatMenu.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.tsChatMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblConnected,
-            this.toolStripSeparator2,
-            this.btnConnectPannel,
-            this.btnDisconnect,
-            this.ddGroup});
-            this.tsChatMenu.Location = new System.Drawing.Point(0, 0);
-            this.tsChatMenu.Name = "tsChatMenu";
-            this.tsChatMenu.Size = new System.Drawing.Size(705, 25);
-            this.tsChatMenu.TabIndex = 3;
-            this.tsChatMenu.Text = "toolStrip1";
-            // 
-            // lblConnected
-            // 
-            this.lblConnected.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.lblConnected.Name = "lblConnected";
-            this.lblConnected.Size = new System.Drawing.Size(84, 22);
-            this.lblConnected.Text = "not connected";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
-            // 
-            // btnConnectPannel
-            // 
-            this.btnConnectPannel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnConnectPannel.Image = ((System.Drawing.Image)(resources.GetObject("btnConnectPannel.Image")));
-            this.btnConnectPannel.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnConnectPannel.Name = "btnConnectPannel";
-            this.btnConnectPannel.Size = new System.Drawing.Size(56, 22);
-            this.btnConnectPannel.Text = "Connect";
-            this.btnConnectPannel.Click += new System.EventHandler(this.btnConnectPannel_Click);
-            // 
-            // btnDisconnect
-            // 
-            this.btnDisconnect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnDisconnect.Image = ((System.Drawing.Image)(resources.GetObject("btnDisconnect.Image")));
-            this.btnDisconnect.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDisconnect.Name = "btnDisconnect";
-            this.btnDisconnect.Size = new System.Drawing.Size(70, 22);
-            this.btnDisconnect.Text = "Disconnect";
-            this.btnDisconnect.Click += new System.EventHandler(this.btnDisconnect_Click);
-            // 
-            // ddGroup
-            // 
-            this.ddGroup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.ddGroup.Image = ((System.Drawing.Image)(resources.GetObject("ddGroup.Image")));
-            this.ddGroup.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ddGroup.Name = "ddGroup";
-            this.ddGroup.Size = new System.Drawing.Size(91, 22);
-            this.ddGroup.Text = "Group (none)";
             // 
             // RelayConsole
             // 
@@ -294,7 +248,6 @@
             this.Controls.Add(this.scChat);
             this.Controls.Add(this.pnlConnectionSettings);
             this.Controls.Add(this.pnlChatLine);
-            this.Controls.Add(this.tsChatMenu);
             this.Name = "RelayConsole";
             this.Size = new System.Drawing.Size(705, 407);
             this.pnlChatLine.ResumeLayout(false);
@@ -303,11 +256,9 @@
             this.pnlConnectionSettings.PerformLayout();
             this.scChat.Panel1.ResumeLayout(false);
             this.scChat.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.scChat)).EndInit();
             this.scChat.ResumeLayout(false);
-            this.tsChatMenu.ResumeLayout(false);
-            this.tsChatMenu.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -316,14 +267,10 @@
         private System.Windows.Forms.Panel pnlChatLine;
         private System.Windows.Forms.Panel pnlConnectionSettings;
         private System.Windows.Forms.SplitContainer scChat;
-        private System.Windows.Forms.ToolStrip tsChatMenu;
-        private System.Windows.Forms.ToolStripLabel lblConnected;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        public System.Windows.Forms.RichTextBox rtbChatText;
+        public RRichTextBox rtbChatText;
         public ListViewNoFlicker Participants;
         public ChatInputBox cbxInput;
         public System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.ToolStripButton btnConnectPannel;
         private System.Windows.Forms.TextBox txtNick;
         private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.TextBox txtServer;
@@ -333,7 +280,6 @@
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.TextBox txtChan;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ToolStripButton btnDisconnect;
-        private System.Windows.Forms.ToolStripDropDownButton ddGroup;
+        private System.Windows.Forms.Button btnDisconnect;
     }
 }

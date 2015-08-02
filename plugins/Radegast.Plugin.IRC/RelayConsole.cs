@@ -28,19 +28,17 @@
 //
 // $Id$
 //
+
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.Threading;
-using Radegast;
-using OpenMetaverse;
+using System.Windows.Forms;
 using Meebey.SmartIrc4net;
+using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast.Plugin.IRC
 {
@@ -52,20 +50,72 @@ namespace Radegast.Plugin.IRC
         RichTextBoxPrinter textPrinter;
         private List<string> chatHistory = new List<string>();
         private int chatPointer;
-        bool connecting = false;
+        volatile bool connecting = false;
         UUID relayGroup;
+        public OSDMap config;
 
         public RelayConsole(RadegastInstance instance)
             : base(instance)
         {
             InitializeComponent();
             Disposed += new EventHandler(RelayConsole_Disposed);
+            
             textPrinter = new RichTextBoxPrinter(rtbChatText);
 
+            // Get configuration settings, and initialize if not found.
+            config = instance.GlobalSettings["plugin.irc"] as OSDMap;
+
+            if (config == null)
+            {
+                config = new OSDMap();
+                config["server"] = new OSDString("irc.freenode.net");
+                config["port"] = new OSDInteger(6667);
+                config["nick"] = new OSDString(string.Empty);
+                config["channel"] = new OSDString("#");
+                config["send_delay"] = new OSDInteger(200);
+                config["auto_reconnect"] = new OSDBoolean(true);
+                config["ctcp_version"] = new OSDString("Radegast IRC");
+                instance.GlobalSettings["plugin.irc"] = config;
+            }
+
+            if (!config.ContainsKey("server"))
+            {
+                config["server"] = new OSDString("irc.freenode.net");
+            }
+            if (!config.ContainsKey("port"))
+            {
+                config["port"] = new OSDInteger(6667);
+            }
+            if (!config.ContainsKey("nick"))
+            {
+                config["nick"] = new OSDString(instance.Client.Self.Name);
+            }
+            if (!config.ContainsKey("channel"))
+            {
+                config["channel"] = new OSDString("#");
+            }
+            if (!config.ContainsKey("send_delay"))
+            {
+                config["send_delay"] = new OSDInteger(200);
+            }
+            if (!config.ContainsKey("auto_reconnect"))
+            {
+                config["auto_reconnect"] = new OSDBoolean(true);
+            }
+            if (!config.ContainsKey("ctcp_version"))
+            {
+                config["ctcp_version"] = new OSDString("Radegast IRC");
+            }
+
+            txtChan.Text = config["channel"].AsString();
+            txtNick.Text = config["nick"].AsString();
+            txtPort.Text = config["port"].AsString();
+            txtServer.Text = config["server"].AsString();
+
             irc = new IrcClient();
-            irc.SendDelay = 200;
-            irc.AutoReconnect = true;
-            irc.CtcpVersion = Properties.Resources.RadegastTitle;
+            irc.SendDelay = config["send_delay"].AsInteger();
+            irc.AutoReconnect = config["auto_reconnect"].AsBoolean();
+            irc.CtcpVersion = config["ctcp_version"].AsString();
             irc.Encoding = Encoding.UTF8;
 
             TC.OnTabAdded += new TabsConsole.TabCallback(TC_OnTabAdded);
@@ -77,6 +127,8 @@ namespace Radegast.Plugin.IRC
             irc.OnDisconnected += new EventHandler(irc_OnDisconnected);
 
             client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
+
+            UpdateGui();
 
             RefreshGroups();
         }
@@ -93,6 +145,8 @@ namespace Radegast.Plugin.IRC
             irc.OnChannelMessage -= new IrcEventHandler(irc_OnChannelMessage);
             irc.OnConnected -= new EventHandler(irc_OnConnected);
             irc.OnDisconnected -= new EventHandler(irc_OnDisconnected);
+
+            instance.GlobalSettings.Save();
 
             if (irc.IsConnected)
             {
@@ -121,6 +175,7 @@ namespace Radegast.Plugin.IRC
                 return;
             }
 
+            /*
             ddGroup.DropDownItems.Clear();
 
             bool foundActive = false;
@@ -142,17 +197,18 @@ namespace Radegast.Plugin.IRC
                 relayGroup = UUID.Zero;
                 ddGroup.Text = "Groups (none)";
             }
-
+            */
         }
 
         void groupSelect(object sender, EventArgs e)
         {
+            /*
             if (sender is ToolStripButton)
             {
                 UUID session = new UUID(((ToolStripButton)sender).Name);
                 relayGroup = session;
                 ddGroup.Text = string.Format("Groups ({0})", instance.Groups[session].Name);
-            }
+            }*/
         }
 
         private void PrintMsg(string fromName, string message)
@@ -160,7 +216,10 @@ namespace Radegast.Plugin.IRC
             if (InvokeRequired)
             {
                 if (IsHandleCreated)
+                {
                     BeginInvoke(new MethodInvoker(() => PrintMsg(fromName, message)));
+                }
+
                 return;
             }
 
@@ -191,14 +250,31 @@ namespace Radegast.Plugin.IRC
                 sb.Append(message);
             }
 
-            //instance.LogClientMessage(sessionName + ".txt", sb.ToString());
             textPrinter.PrintTextLine(sb.ToString());
-            sb = null;
         }
 
-        private void btnConnectPannel_Click(object sender, EventArgs e)
+        private void UpdateGui()
         {
-            pnlConnectionSettings.Visible = true;
+            if (InvokeRequired)
+            {
+                if (IsHandleCreated)
+                    Invoke(new MethodInvoker(UpdateGui));
+                return;
+            }
+
+            bool isConnectedOrConnecting = connecting || irc.IsConnected;
+
+            btnSend.Enabled = isConnectedOrConnecting;
+            btnDisconnect.Enabled = isConnectedOrConnecting;
+            btnDisconnect.Visible = isConnectedOrConnecting;
+            btnConnect.Enabled = !isConnectedOrConnecting;
+            btnConnect.Visible = !isConnectedOrConnecting;
+
+            txtChan.ReadOnly = isConnectedOrConnecting;
+            txtNick.ReadOnly = isConnectedOrConnecting;
+            txtPort.ReadOnly = isConnectedOrConnecting;
+            txtServer.ReadOnly = isConnectedOrConnecting;
+            rtbChatText.BackColor = isConnectedOrConnecting ? SystemColors.Window : SystemColors.Control;
         }
 
         private void IrcThread(object param)
@@ -208,33 +284,40 @@ namespace Radegast.Plugin.IRC
             int port = (int)args[1];
             string nick = (string)args[2];
             string chan = (string)args[3];
-
-            connecting = true;
-            PrintMsg("System", "Connecting...");
-
             try
             {
                 irc.Connect(server, port);
                 PrintMsg("System", "Logging in...");
                 irc.Login(nick, "Radegast SL Relay", 0, nick);
-                irc.RfcJoin(chan);
-                connecting = false;
-            }
-            catch (Exception ex)
-            {
-                PrintMsg("System", "An error has occured: " + ex.Message);
-            }
 
-            try
-            {
+                connecting = false;
+                UpdateGui();
+
+                PrintMsg("System", "Joining channel...");
+                irc.RfcJoin(chan);
+
+                PrintMsg("System", "Ready!");
                 irc.Listen();
+
                 if (irc.IsConnected)
                 {
+                    // todo: why disable autoreconnect here?
+                    PrintMsg("System", irc.IsConnected.ToString());
                     irc.AutoReconnect = false;
                     irc.Disconnect();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                connecting = false;
+                PrintMsg("System", "An error has occured: " + ex.Message);
+            }
+
+            if (irc.IsConnected)
+            {
+                irc.Disconnect();
+            }
+            UpdateGui();
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -251,13 +334,39 @@ namespace Radegast.Plugin.IRC
                 return;
             }
 
+            PrintMsg("System", "Connecting...");
+            connecting = true;
+            UpdateGui();
 
-            Thread IRCConnection = new Thread(new ParameterizedThreadStart(IrcThread));
-            IRCConnection.Name = "IRC Thread";
-            IRCConnection.IsBackground = true;
-            int port = 6667;
-            int.TryParse(txtPort.Text, out port);
-            IRCConnection.Start(new object[] { txtServer.Text, port, txtNick.Text, txtChan.Text });
+            try
+            {
+                Thread IRCConnection = new Thread(new ParameterizedThreadStart(IrcThread));
+                IRCConnection.Name = "IRC Thread";
+                IRCConnection.IsBackground = true;
+                int port = 6667;
+                int.TryParse(txtPort.Text, out port);
+                IRCConnection.Start(new object[] { txtServer.Text, port, txtNick.Text, txtChan.Text });
+            }
+            catch (Exception ex)
+            {
+                if (irc.IsConnected)
+                {
+                    irc.Disconnect();
+                }
+                PrintMsg("System", "Failed: " + ex.Message);
+
+                connecting = false;
+                UpdateGui();
+            }
+        }
+
+        private void btnDisconnect_Click(object sender, EventArgs e)
+        {
+            if (irc.IsConnected)
+            {
+                irc.AutoReconnect = false;
+                irc.Disconnect();
+            }
         }
 
         void irc_OnRawMessage(object sender, IrcEventArgs e)
@@ -280,8 +389,7 @@ namespace Radegast.Plugin.IRC
                 return;
             }
 
-            lblConnected.Text = "not connected";
-            btnSend.Enabled = false;
+            UpdateGui();
         }
 
         void irc_OnConnected(object sender, EventArgs e)
@@ -292,9 +400,8 @@ namespace Radegast.Plugin.IRC
                     Invoke(new MethodInvoker(() => irc_OnConnected(sender, e)));
                 return;
             }
-            lblConnected.Text = "connected";
-            pnlConnectionSettings.Visible = false;
-            btnSend.Enabled = true;
+
+            UpdateGui();
         }
 
         void irc_OnChannelMessage(object sender, IrcEventArgs e)
@@ -335,15 +442,6 @@ namespace Radegast.Plugin.IRC
                     PrintMsg(irc.Nickname, string.Format("{0}: {1}", e.IM.FromAgentName, outstr.Remove(outstr.Length - 1)));
                     irc.SendMessage(SendType.Message, txtChan.Text, string.Format("{0}: {1}", e.IM.FromAgentName, outstr.Remove(outstr.Length - 1)));
                 }
-            }
-        }
-
-        private void btnDisconnect_Click(object sender, EventArgs e)
-        {
-            if (irc.IsConnected)
-            {
-                irc.AutoReconnect = false;
-                irc.Disconnect();
             }
         }
 
@@ -415,6 +513,34 @@ namespace Radegast.Plugin.IRC
         private void btnSend_Click(object sender, EventArgs e)
         {
             SendMsg();
+        }
+
+        private void txtServer_Validated(object sender, EventArgs e)
+        {
+            config["server"] = new OSDString(txtServer.Text);
+        }
+
+        private void txtPort_Validated(object sender, EventArgs e)
+        {
+            int port = 6667;
+            int.TryParse(txtPort.Text, out port);
+
+            config["port"] = new OSDInteger(port);
+        }
+
+        private void txtChan_Validated(object sender, EventArgs e)
+        {
+            config["channel"] = new OSDString(txtChan.Text);
+        }
+
+        private void txtNick_Validated(object sender, EventArgs e)
+        {
+            config["nick"] = new OSDString(txtNick.Text);
+        }
+
+        private void txtPort_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = !char.IsNumber(e.KeyChar);
         }
     }
 }
