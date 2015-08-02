@@ -38,27 +38,73 @@ using System.Threading;
 using System.Windows.Forms;
 using Meebey.SmartIrc4net;
 using OpenMetaverse;
+using OpenMetaverse.Packets;
 using OpenMetaverse.StructuredData;
 
 namespace Radegast.Plugin.IRC
 {
     public partial class RelayConsole : RadegastTabControl
     {
+        enum RelaySourceType
+        {
+            Unknown,
+            Group,
+            Conference,
+            Chat,
+            IM
+        }
+
+        class RelaySource
+        {
+            public RelaySource(string name, RelaySourceType sourcetype, UUID sessionId)
+            {
+                Name = name;
+                SourceType = sourcetype;
+                SessionId = sessionId;
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+
+            public static bool operator ==(RelaySource left, RelaySource right)
+            {
+                if (ReferenceEquals(left, right))
+                    return true;
+
+                if (ReferenceEquals(left, null) || ReferenceEquals(right, null))
+                    return false;
+
+                return left.Name == right.Name && left.SessionId == right.SessionId && left.SourceType == right.SourceType;
+            }
+
+            public static bool operator !=(RelaySource left, RelaySource right)
+            {
+                return !(left == right);
+            }
+
+            public string Name;
+            public RelaySourceType SourceType;
+            public UUID SessionId;
+        }
+
         public IrcClient irc;
 
         TabsConsole TC { get { return instance.TabConsole; } }
         RichTextBoxPrinter textPrinter;
         private List<string> chatHistory = new List<string>();
         private int chatPointer;
-        volatile bool connecting = false;
-        UUID relayGroup;
+        volatile bool connecting;
         public OSDMap config;
+
+        RelaySource currentSource;
 
         public RelayConsole(RadegastInstance instance)
             : base(instance)
         {
             InitializeComponent();
-            Disposed += new EventHandler(RelayConsole_Disposed);
+            Disposed += RelayConsole_Disposed;
             
             textPrinter = new RichTextBoxPrinter(rtbChatText);
 
@@ -79,33 +125,19 @@ namespace Radegast.Plugin.IRC
             }
 
             if (!config.ContainsKey("server"))
-            {
                 config["server"] = new OSDString("irc.freenode.net");
-            }
             if (!config.ContainsKey("port"))
-            {
                 config["port"] = new OSDInteger(6667);
-            }
             if (!config.ContainsKey("nick"))
-            {
                 config["nick"] = new OSDString(instance.Client.Self.Name);
-            }
             if (!config.ContainsKey("channel"))
-            {
                 config["channel"] = new OSDString("#");
-            }
             if (!config.ContainsKey("send_delay"))
-            {
                 config["send_delay"] = new OSDInteger(200);
-            }
             if (!config.ContainsKey("auto_reconnect"))
-            {
                 config["auto_reconnect"] = new OSDBoolean(true);
-            }
             if (!config.ContainsKey("ctcp_version"))
-            {
                 config["ctcp_version"] = new OSDString("Radegast IRC");
-            }
 
             txtChan.Text = config["channel"].AsString();
             txtNick.Text = config["nick"].AsString();
@@ -118,15 +150,16 @@ namespace Radegast.Plugin.IRC
             irc.CtcpVersion = config["ctcp_version"].AsString();
             irc.Encoding = Encoding.UTF8;
 
-            TC.OnTabAdded += new TabsConsole.TabCallback(TC_OnTabAdded);
-            TC.OnTabRemoved += new TabsConsole.TabCallback(TC_OnTabRemoved);
-            irc.OnError += new ErrorEventHandler(irc_OnError);
-            irc.OnRawMessage += new IrcEventHandler(irc_OnRawMessage);
-            irc.OnChannelMessage += new IrcEventHandler(irc_OnChannelMessage);
-            irc.OnConnected += new EventHandler(irc_OnConnected);
-            irc.OnDisconnected += new EventHandler(irc_OnDisconnected);
+            TC.OnTabAdded += TC_OnTabAdded;
+            TC.OnTabRemoved += TC_OnTabRemoved;
+            irc.OnError += irc_OnError;
+            irc.OnRawMessage += irc_OnRawMessage;
+            irc.OnChannelMessage += irc_OnChannelMessage;
+            irc.OnConnected += irc_OnConnected;
+            irc.OnDisconnected += irc_OnDisconnected;
 
-            client.Self.IM += new EventHandler<InstantMessageEventArgs>(Self_IM);
+            client.Self.IM += Self_IM;
+            client.Self.ChatFromSimulator += Self_ChatFromSimulator;
 
             UpdateGui();
 
@@ -135,16 +168,17 @@ namespace Radegast.Plugin.IRC
 
         void RelayConsole_Disposed(object sender, EventArgs e)
         {
-            client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
+            client.Self.ChatFromSimulator -= Self_ChatFromSimulator;
+            client.Self.IM -= Self_IM;
 
-            TC.OnTabAdded -= new TabsConsole.TabCallback(TC_OnTabAdded);
-            TC.OnTabRemoved -= new TabsConsole.TabCallback(TC_OnTabRemoved);
+            TC.OnTabAdded -= TC_OnTabAdded;
+            TC.OnTabRemoved -= TC_OnTabRemoved;
 
-            irc.OnError -= new ErrorEventHandler(irc_OnError);
-            irc.OnRawMessage -= new IrcEventHandler(irc_OnRawMessage);
-            irc.OnChannelMessage -= new IrcEventHandler(irc_OnChannelMessage);
-            irc.OnConnected -= new EventHandler(irc_OnConnected);
-            irc.OnDisconnected -= new EventHandler(irc_OnDisconnected);
+            irc.OnError -= irc_OnError;
+            irc.OnRawMessage -= irc_OnRawMessage;
+            irc.OnChannelMessage -= irc_OnChannelMessage;
+            irc.OnConnected -= irc_OnConnected;
+            irc.OnDisconnected -= irc_OnDisconnected;
 
             instance.GlobalSettings.Save();
 
@@ -162,8 +196,13 @@ namespace Radegast.Plugin.IRC
 
         void TC_OnTabAdded(object sender, TabEventArgs e)
         {
-            if (e.Tab.Control is GroupIMTabWindow)
+            if (e.Tab.Control is GroupIMTabWindow ||
+                e.Tab.Control is ConferenceIMTabWindow ||
+                e.Tab.Control is IMTabWindow ||
+                e.Tab.Control is ChatConsole)
+            {
                 RefreshGroups();
+            }
         }
 
         void RefreshGroups()
@@ -175,40 +214,48 @@ namespace Radegast.Plugin.IRC
                 return;
             }
 
-            /*
-            ddGroup.DropDownItems.Clear();
+            cbSource.Items.Clear();
 
             bool foundActive = false;
 
             foreach (var tab in TC.Tabs)
             {
-                if (!(tab.Value.Control is GroupIMTabWindow)) continue;
+                RelaySourceType sourcetype = RelaySourceType.Unknown;
+                RelaySource newSource;
 
-                UUID session = new UUID(tab.Key);
-                if (session == relayGroup)
+                if (tab.Value.Control is GroupIMTabWindow)
+                    sourcetype = RelaySourceType.Group;
+                else if (tab.Value.Control is ConferenceIMTabWindow)
+                    sourcetype = RelaySourceType.Conference;
+                else if (tab.Value.Control is IMTabWindow)
+                    sourcetype = RelaySourceType.IM;
+                else if (tab.Value.Control is ChatConsole)
+                    sourcetype = RelaySourceType.Chat;
+                else
+                    continue;
+
+                UUID sessionId = UUID.Zero;
+                UUID.TryParse(tab.Key, out sessionId);
+
+                if (sessionId == UUID.Zero && sourcetype != RelaySourceType.Chat)
+                    continue;
+
+                newSource = new RelaySource(sourcetype + ": " + tab.Value.Label, sourcetype, sessionId);
+
+                if (sourcetype == RelaySourceType.IM)
+                    newSource.SessionId = (tab.Value.Control as IMTabWindow).TargetId;
+
+                if (newSource == currentSource)
                     foundActive = true;
 
-                ToolStripButton item = new ToolStripButton(instance.Groups[session].Name, null, groupSelect, session.ToString());
-                ddGroup.DropDownItems.Add(item);
+                cbSource.Items.Add(newSource);
             }
 
             if (!foundActive)
             {
-                relayGroup = UUID.Zero;
-                ddGroup.Text = "Groups (none)";
+                currentSource = null;
+                cbSource.Text = "None";
             }
-            */
-        }
-
-        void groupSelect(object sender, EventArgs e)
-        {
-            /*
-            if (sender is ToolStripButton)
-            {
-                UUID session = new UUID(((ToolStripButton)sender).Name);
-                relayGroup = session;
-                ddGroup.Text = string.Format("Groups ({0})", instance.Groups[session].Name);
-            }*/
         }
 
         private void PrintMsg(string fromName, string message)
@@ -216,9 +263,7 @@ namespace Radegast.Plugin.IRC
             if (InvokeRequired)
             {
                 if (IsHandleCreated)
-                {
                     BeginInvoke(new MethodInvoker(() => PrintMsg(fromName, message)));
-                }
 
                 return;
             }
@@ -261,6 +306,9 @@ namespace Radegast.Plugin.IRC
                     Invoke(new MethodInvoker(UpdateGui));
                 return;
             }
+
+            if (IsDisposed)
+                return;
 
             bool isConnectedOrConnecting = connecting || irc.IsConnected;
 
@@ -314,9 +362,8 @@ namespace Radegast.Plugin.IRC
             }
 
             if (irc.IsConnected)
-            {
                 irc.Disconnect();
-            }
+
             UpdateGui();
         }
 
@@ -340,7 +387,7 @@ namespace Radegast.Plugin.IRC
 
             try
             {
-                Thread IRCConnection = new Thread(new ParameterizedThreadStart(IrcThread));
+                Thread IRCConnection = new Thread(IrcThread);
                 IRCConnection.Name = "IRC Thread";
                 IRCConnection.IsBackground = true;
                 int port = 6667;
@@ -350,9 +397,8 @@ namespace Radegast.Plugin.IRC
             catch (Exception ex)
             {
                 if (irc.IsConnected)
-                {
                     irc.Disconnect();
-                }
+
                 PrintMsg("System", "Failed: " + ex.Message);
 
                 connecting = false;
@@ -371,7 +417,9 @@ namespace Radegast.Plugin.IRC
 
         void irc_OnRawMessage(object sender, IrcEventArgs e)
         {
-            if (e.Data.Type == ReceiveType.Unknown || e.Data.Type == ReceiveType.ChannelMessage) return;
+            if (e.Data.Type == ReceiveType.Unknown || e.Data.Type == ReceiveType.ChannelMessage) 
+                return;
+
             PrintMsg(e.Data.Nick, e.Data.Type + ": " + e.Data.Message);
         }
 
@@ -409,46 +457,101 @@ namespace Radegast.Plugin.IRC
             ThreadPool.QueueUserWorkItem(sync =>
                 {
                     PrintMsg(e.Data.Nick, e.Data.Message);
-                    if (relayGroup != UUID.Zero)
+                    if (currentSource != null)
                     {
-                        client.Self.InstantMessageGroup(relayGroup, string.Format("(irc:{2}) {0}: {1}", e.Data.Nick, e.Data.Message, e.Data.Channel));
+                        string message = string.Format("(irc:{2}) {0}: {1}", e.Data.Nick, e.Data.Message, e.Data.Channel);
+
+                        switch (currentSource.SourceType)
+                        {
+                            case RelaySourceType.Group:
+                            case RelaySourceType.Conference:
+                                client.Self.InstantMessageGroup(currentSource.SessionId, message);
+                                break;
+                            case RelaySourceType.Chat:
+                                client.Self.Chat(message, 0, ChatType.Normal);
+                                break;
+                            case RelaySourceType.IM:
+                                client.Self.InstantMessage(currentSource.SessionId, message);
+                                break;
+                        }
                     }
                 }
             );
         }
 
+        private void ProcessMessage(string message, string from)
+        {
+            string[] lines = Regex.Split(message, "\n+");
+
+            for (int l = 0; l < lines.Length; l++)
+            {
+                string[] words = lines[l].Split(' ');
+                string outstr = string.Empty;
+
+                for (int i = 0; i < words.Length; i++)
+                {
+                    outstr += words[i] + " ";
+                    if (outstr.Length > 380)
+                    {
+                        PrintMsg(irc.Nickname, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
+                        irc.SendMessage(SendType.Message, txtChan.Text, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
+                        outstr = string.Empty;
+                    }
+                }
+                PrintMsg(irc.Nickname, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
+                irc.SendMessage(SendType.Message, txtChan.Text, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
+            }
+        }
+
+        void Self_ChatFromSimulator(object sender, ChatEventArgs e)
+        {
+            if (currentSource == null || currentSource.SourceType != RelaySourceType.Chat)
+                return;
+
+            if (e.SourceID == client.Self.AgentID)
+            {
+                if (e.Message.StartsWith("(irc:"))
+                    return;
+            }
+
+            if (e.Type == ChatType.Normal || e.Type == ChatType.Shout || e.Type == ChatType.Whisper)
+                ProcessMessage(e.Message, e.FromName);
+        }
+
         void Self_IM(object sender, InstantMessageEventArgs e)
         {
-            if (e.IM.IMSessionID == relayGroup && irc.IsConnected && e.IM.FromAgentID != client.Self.AgentID)
+            if (currentSource == null)
+                return;
+
+            if (!irc.IsConnected)
+                return;
+
+            if (e.IM.FromAgentID == client.Self.AgentID)
+                return;
+
+            if (e.IM.Dialog == InstantMessageDialog.MessageFromAgent || e.IM.Dialog == InstantMessageDialog.MessageFromObject)
             {
-                string[] lines = Regex.Split(e.IM.Message, "\n+");
-
-                for (int l = 0; l < lines.Length; l++)
-                {
-
-                    string[] words = lines[l].Split(' ');
-                    string outstr = string.Empty;
-
-                    for (int i = 0; i < words.Length; i++)
-                    {
-                        outstr += words[i] + " ";
-                        if (outstr.Length > 380)
-                        {
-                            PrintMsg(irc.Nickname, string.Format("{0}: {1}", e.IM.FromAgentName, outstr.Remove(outstr.Length - 1)));
-                            irc.SendMessage(SendType.Message, txtChan.Text, string.Format("{0}: {1}", e.IM.FromAgentName, outstr.Remove(outstr.Length - 1)));
-                            outstr = string.Empty;
-                        }
-                    }
-                    PrintMsg(irc.Nickname, string.Format("{0}: {1}", e.IM.FromAgentName, outstr.Remove(outstr.Length - 1)));
-                    irc.SendMessage(SendType.Message, txtChan.Text, string.Format("{0}: {1}", e.IM.FromAgentName, outstr.Remove(outstr.Length - 1)));
-                }
+                if (e.IM.FromAgentID != currentSource.SessionId)
+                    return;
             }
+            else if (e.IM.Dialog == InstantMessageDialog.SessionSend)
+            {
+                if (e.IM.IMSessionID != currentSource.SessionId)
+                    return;
+            }
+            else
+            {
+                return;
+            }
+
+            ProcessMessage(e.IM.Message, e.IM.FromAgentName);
         }
 
         void SendMsg()
         {
             string msg = cbxInput.Text;
-            if (msg == string.Empty) return;
+            if (msg == string.Empty)
+                return;
 
             chatHistory.Add(cbxInput.Text);
             chatPointer = chatHistory.Count;
@@ -463,7 +566,9 @@ namespace Radegast.Plugin.IRC
 
         void ChatHistoryPrev()
         {
-            if (chatPointer == 0) return;
+            if (chatPointer == 0)
+                return;
+
             chatPointer--;
             if (chatHistory.Count > chatPointer)
             {
@@ -475,7 +580,9 @@ namespace Radegast.Plugin.IRC
 
         void ChatHistoryNext()
         {
-            if (chatPointer == chatHistory.Count) return;
+            if (chatPointer == chatHistory.Count) 
+                return;
+
             chatPointer++;
             if (chatPointer == chatHistory.Count)
             {
@@ -541,6 +648,11 @@ namespace Radegast.Plugin.IRC
         private void txtPort_KeyPress(object sender, KeyPressEventArgs e)
         {
             e.Handled = !char.IsNumber(e.KeyChar);
+        }
+
+        private void cbSource_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            currentSource = cbSource.SelectedItem as RelaySource;
         }
     }
 }
