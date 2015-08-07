@@ -35,31 +35,32 @@ using System.Threading;
 using System.Windows.Forms;
 using Radegast;
 using OpenMetaverse;
+using OpenMetaverse.StructuredData;
 
 namespace Radegast.Plugin.IRC
 {
     [Radegast.Plugin(Name = "IRC Relay", Description = "Relays SL group chat to a IRC network", Version = "0.1")]
     public class IRCPlugin : IRadegastPlugin
     {
-        RadegastInstance Instance;
-        GridClient Client { get { return Instance.Client; } }
+        RadegastInstance instance;
+        GridClient Client { get { return instance.Client; } }
 
         ToolStripMenuItem IRCButton;
         int relayNr = 0;
 
         public void StartPlugin(RadegastInstance inst)
         {
-            Instance = inst;
+            instance = inst;
 
             IRCButton = new ToolStripMenuItem("New IRC Relay...");
             IRCButton.Click += new EventHandler(IRCButton_Click);
-            Instance.MainForm.PluginsMenu.DropDownItems.Add(IRCButton);
+            instance.MainForm.PluginsMenu.DropDownItems.Add(IRCButton);
         }
 
         public void StopPlugin(RadegastInstance instance)
         {
             List<RadegastTab> toRemove = new List<RadegastTab>();
-            foreach (RadegastTab tab in Instance.TabConsole.Tabs.Values)
+            foreach (RadegastTab tab in this.instance.TabConsole.Tabs.Values)
             {
                 if (tab.Control is RelayConsole)
                     toRemove.Add(tab);
@@ -79,8 +80,9 @@ namespace Radegast.Plugin.IRC
         {
             relayNr++;
             string tabName = "irc_relay_" + relayNr.ToString();
-            Instance.TabConsole.AddTab(tabName, "IRC Relay " + relayNr.ToString(), new RelayConsole(Instance));
-            Instance.TabConsole.SelectTab(tabName);
+
+            instance.TabConsole.AddTab(tabName, "IRC Relay " + relayNr.ToString(), new RelayConsole(instance));
+            instance.TabConsole.SelectTab(tabName);
         }
     }
 }
