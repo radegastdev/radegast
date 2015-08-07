@@ -375,7 +375,7 @@ namespace Radegast
 
         private void btnDiscard_Click(object sender, EventArgs e)
         {
-            client.Inventory.MoveItem(notecard.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), notecard.Name);
+            client.Inventory.MoveItem(notecard.UUID, client.Inventory.FindFolderForType(FolderType.Trash), notecard.Name);
             Retach();
         }
     }

@@ -67,7 +67,7 @@ namespace Radegast
             return null;
         }
 
-        public UUID CreateFolder(UUID parent, string name, AssetType type)
+        public UUID CreateFolder(UUID parent, string name, FolderType type)
         {
             UUID ret = UUID.Zero;
             AutoResetEvent folderCreated = new AutoResetEvent(false);
@@ -122,17 +122,17 @@ namespace Radegast
         public void CheckFolders()
         {
             // Check if we have clothing folder
-            var clothingID = Client.Inventory.FindFolderForType(AssetType.Clothing);
+            var clothingID = Client.Inventory.FindFolderForType(FolderType.Clothing);
             if (clothingID == Store.RootFolder.UUID)
             {
-                clothingID = CreateFolder(Store.RootFolder.UUID, "Clothing", AssetType.Clothing);
+                clothingID = CreateFolder(Store.RootFolder.UUID, "Clothing", FolderType.Clothing);
             }
 
             // Check if we have trash folder
-            var trashID = Client.Inventory.FindFolderForType(AssetType.TrashFolder);
+            var trashID = Client.Inventory.FindFolderForType(FolderType.Trash);
             if (trashID == Store.RootFolder.UUID)
             {
-                trashID = CreateFolder(Store.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                trashID = CreateFolder(Store.RootFolder.UUID, "Trash", FolderType.Trash);
             }
         }
 

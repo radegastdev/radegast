@@ -150,7 +150,7 @@ namespace Radegast
                 {
                     client.Inventory.Move(
                         client.Inventory.Store.Items[objectID].Data,
-                        (InventoryFolder)client.Inventory.Store.Items[client.Inventory.FindFolderForType(AssetType.TrashFolder)].Data);
+                        (InventoryFolder)client.Inventory.Store.Items[client.Inventory.FindFolderForType(FolderType.Trash)].Data);
                 }
                 catch (Exception) { }
             }

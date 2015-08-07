@@ -1213,7 +1213,7 @@ namespace Radegast
             else
             {
                 instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-                client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.AgentInventoryTake, client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
+                client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.AgentInventoryTake, client.Inventory.FindFolderForType(FolderType.Trash), UUID.Random());
             }
         }
 

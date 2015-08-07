@@ -288,7 +288,7 @@ namespace Radegast.Rendering
 
         }
 
-        public override void LoadLODMesh(int level, string filename)
+        public new void LoadLODMesh(int level, string filename)
         {
             LODMesh lod = new LODMesh();
             lod.LoadMesh(filename);

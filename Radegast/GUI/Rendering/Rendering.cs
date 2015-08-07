@@ -3115,7 +3115,7 @@ namespace Radegast.Rendering
                     item = new ToolStripMenuItem("Delete", null, (sender, e) =>
                     {
                         instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-                        Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
+                        Client.Inventory.RequestDeRezToInventory(prim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(FolderType.Trash), UUID.Random());
                     });
                     ctxMenu.Items.Add(item);
 

@@ -65,7 +65,7 @@ namespace Radegast
             DebugLog("Found prim: " + thePrim);
             Client.Inventory.RequestDeRezToInventory(
                 thePrim.LocalID, DeRezDestination.AgentInventoryTake,
-                Client.Inventory.FindFolderForType(AssetType.TrashFolder),
+                Client.Inventory.FindFolderForType(FolderType.Trash),
                 UUID.Random());
         }
     }

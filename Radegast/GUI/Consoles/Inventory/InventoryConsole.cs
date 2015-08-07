@@ -144,7 +144,7 @@ namespace Radegast
                 InventoryFolder f = new InventoryFolder(UUID.Random());
                 f.Name = "";
                 f.ParentUUID = UUID.Zero;
-                f.PreferredType = AssetType.Unknown;
+                f.PreferredType = FolderType.None;
                 TreeNode dirNode = new TreeNode();
                 dirNode.Name = f.UUID.ToString();
                 dirNode.Text = f.Name;
@@ -300,7 +300,7 @@ namespace Radegast
 
         void Inventory_InventoryObjectAdded(object sender, InventoryObjectAddedEventArgs e)
         {
-            if (e.Obj is InventoryFolder && ((InventoryFolder)e.Obj).PreferredType == AssetType.TrashFolder)
+            if (e.Obj is InventoryFolder && ((InventoryFolder)e.Obj).PreferredType == FolderType.Trash)
             {
                 trashCreated.Set();
             }
@@ -1337,8 +1337,8 @@ namespace Radegast
 
                     ToolStripMenuItem ctxItem;
 
-                    if ((int)folder.PreferredType >= (int)AssetType.EnsembleStart &&
-                        (int)folder.PreferredType <= (int)AssetType.EnsembleEnd)
+                    if (folder.PreferredType >= FolderType.EnsembleStart &&
+                        folder.PreferredType <= FolderType.EnsembleEnd)
                     {
                         ctxItem = new ToolStripMenuItem("Fix type", null, OnInvContextClick);
                         ctxItem.Name = "fix_type";
@@ -1380,22 +1380,22 @@ namespace Radegast
                     ctxItem.Name = "collapse";
                     ctxInv.Items.Add(ctxItem);
 
-                    if (folder.PreferredType == AssetType.TrashFolder)
+                    if (folder.PreferredType == FolderType.Trash)
                     {
                         ctxItem = new ToolStripMenuItem("Empty Trash", null, OnInvContextClick);
                         ctxItem.Name = "empty_trash";
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    if (folder.PreferredType == AssetType.LostAndFoundFolder)
+                    if (folder.PreferredType == FolderType.LostAndFound)
                     {
                         ctxItem = new ToolStripMenuItem("Empty Lost and Found", null, OnInvContextClick);
                         ctxItem.Name = "empty_lost_found";
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    if (folder.PreferredType == AssetType.Unknown ||
-                        folder.PreferredType == AssetType.OutfitFolder)
+                    if (folder.PreferredType == FolderType.None ||
+                        folder.PreferredType == FolderType.Outfit)
                     {
                         ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
                         ctxItem.Name = "rename_folder";
@@ -1426,8 +1426,8 @@ namespace Radegast
                         }
                     }
 
-                    if (folder.PreferredType == AssetType.Unknown ||
-                        folder.PreferredType == AssetType.OutfitFolder)
+                    if (folder.PreferredType == FolderType.None ||
+                        folder.PreferredType == FolderType.Outfit)
                     {
                         ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
                         ctxItem.Name = "delete_folder";
@@ -1436,7 +1436,7 @@ namespace Radegast
                         ctxInv.Items.Add(new ToolStripSeparator());
                     }
 
-                    if (folder.PreferredType == AssetType.Unknown || folder.PreferredType == AssetType.OutfitFolder)
+                    if (folder.PreferredType == FolderType.None || folder.PreferredType == FolderType.Outfit)
                     {
                         ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
                         ctxItem.Name = "outfit_take_off";
@@ -1699,7 +1699,7 @@ namespace Radegast
                         break;
 
                     case "fix_type":
-                        client.Inventory.UpdateFolderProperties(f.UUID, f.ParentUUID, f.Name, AssetType.Unknown);
+                        client.Inventory.UpdateFolderProperties(f.UUID, f.ParentUUID, f.Name, FolderType.None);
                         invTree.Sort();
                         break;
 
@@ -1731,13 +1731,13 @@ namespace Radegast
 
 
                     case "delete_folder":
-                        var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                        var trash = client.Inventory.FindFolderForType(FolderType.Trash);
                         if (trash == Inventory.RootFolder.UUID)
                         {
                             WorkPool.QueueUserWorkItem(sync =>
                             {
                                 trashCreated.Reset();
-                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
                                 trashCreated.WaitOne(20 * 1000, false);
                                 Thread.Sleep(200);
                                 client.Inventory.MoveFolder(f.UUID, trash, f.Name);
@@ -1841,13 +1841,13 @@ namespace Radegast
                         break;
 
                     case "delete_item":
-                        var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                        var trash = client.Inventory.FindFolderForType(FolderType.Trash);
                         if (trash == Inventory.RootFolder.UUID)
                         {
                             WorkPool.QueueUserWorkItem(sync =>
                             {
                                 trashCreated.Reset();
-                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
                                 trashCreated.WaitOne(20 * 1000, false);
                                 Thread.Sleep(200);
                                 client.Inventory.MoveItem(item.UUID, trash, item.Name);
@@ -1855,7 +1855,7 @@ namespace Radegast
                             return;
                         }
 
-                        client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(AssetType.TrashFolder), item.Name);
+                        client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(FolderType.Trash), item.Name);
                         break;
 
                     case "rename_item":
@@ -2038,7 +2038,7 @@ namespace Radegast
                 {
                     WorkPool.QueueUserWorkItem((object state) =>
                         {
-                            UUID newFolderID = client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, AssetType.Unknown);
+                            UUID newFolderID = client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, FolderType.None);
                             Thread.Sleep(500);
 
                             // FIXME: for some reason copying a bunch of items in one operation does not work
@@ -2151,8 +2151,8 @@ namespace Radegast
             if (e.Node == null ||
                 !(e.Node.Tag is InventoryBase) ||
                 (e.Node.Tag is InventoryFolder &&
-                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.Unknown &&
-                ((InventoryFolder)e.Node.Tag).PreferredType != AssetType.OutfitFolder)
+                ((InventoryFolder)e.Node.Tag).PreferredType != FolderType.None &&
+                ((InventoryFolder)e.Node.Tag).PreferredType != FolderType.Outfit)
                 )
             {
                 e.CancelEdit = true;
@@ -2216,10 +2216,10 @@ namespace Radegast
             }
             else if (e.KeyCode == Keys.Delete && invTree.SelectedNode != null)
             {
-                var trash = client.Inventory.FindFolderForType(AssetType.TrashFolder);
+                var trash = client.Inventory.FindFolderForType(FolderType.Trash);
                 if (trash == Inventory.RootFolder.UUID)
                 {
-                    trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", AssetType.TrashFolder);
+                    trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
                     Thread.Sleep(2000);
                 }
 
@@ -2244,7 +2244,7 @@ namespace Radegast
         private void invTree_ItemDrag(object sender, ItemDragEventArgs e)
         {
             invTree.SelectedNode = e.Item as TreeNode;
-            if (invTree.SelectedNode.Tag is InventoryFolder && ((InventoryFolder)invTree.SelectedNode.Tag).PreferredType != AssetType.Unknown)
+            if (invTree.SelectedNode.Tag is InventoryFolder && ((InventoryFolder)invTree.SelectedNode.Tag).PreferredType != FolderType.None)
             {
                 return;
             }
@@ -2741,11 +2741,11 @@ namespace Radegast
         {
             if (_sysfirst)
             {
-                if (x.PreferredType != AssetType.Unknown && y.PreferredType == AssetType.Unknown)
+                if (x.PreferredType != FolderType.None && y.PreferredType == FolderType.None)
                 {
                     return -1;
                 }
-                else if (x.PreferredType == AssetType.Unknown && y.PreferredType != AssetType.Unknown)
+                else if (x.PreferredType == FolderType.None && y.PreferredType != FolderType.None)
                 {
                     return 1;
                 }
