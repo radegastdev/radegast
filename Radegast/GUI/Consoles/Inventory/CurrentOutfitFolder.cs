@@ -242,7 +242,7 @@ namespace Radegast
 
         void CreateCOF()
         {
-            UUID cofID = Client.Inventory.CreateFolder(Client.Inventory.Store.RootFolder.UUID, "Current Look", FolderType.CurrentOutfit);
+            UUID cofID = Client.Inventory.CreateFolder(Client.Inventory.Store.RootFolder.UUID, "Current Outfit", FolderType.CurrentOutfit);
             if (Client.Inventory.Store.Items.ContainsKey(cofID) && Client.Inventory.Store.Items[cofID].Data is InventoryFolder)
             {
                 COF = (InventoryFolder)Client.Inventory.Store.Items[cofID].Data;
