@@ -29,60 +29,52 @@
 // $Id$
 //
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Windows.Forms;
-using Radegast;
 using OpenMetaverse;
-using OpenMetaverse.StructuredData;
 
-namespace Radegast.Plugin.IRC
+namespace Radegast
 {
-    [Radegast.Plugin(Name = "IRC Relay", Description = "Relays SL group chat to a IRC network", Version = "0.1")]
-    public class IRCPlugin : IRadegastPlugin
+    public partial class ntfSendLureOffer : Notification
     {
-        RadegastInstance instance;
-        GridClient Client { get { return instance.Client; } }
+        private RadegastInstance instance;
+        private UUID agentID;
+        private string agentName;
 
-        ToolStripMenuItem IRCButton;
-        int relayNr = 0;
-
-        public void StartPlugin(RadegastInstance inst)
+        public ntfSendLureOffer(RadegastInstance instance, UUID agentID)
+            : base(NotificationType.SendLureOffer)
         {
-            instance = inst;
+            InitializeComponent();
+            this.instance = instance;
+            this.agentID = agentID;
 
-            IRCButton = new ToolStripMenuItem("New IRC Relay...");
-            IRCButton.Click += new EventHandler(IRCButton_Click);
-            instance.MainForm.PluginsMenu.DropDownItems.Add(IRCButton);
+            txtHead.BackColor = instance.MainForm.NotificationBackground;
+
+            agentName = instance.Names.Get(agentID, true);
+            txtHead.Text = String.Format("Offer a teleport to {0} with the following message: ", agentName);
+            txtMessage.Text = String.Format("Join me in {0}!", instance.Client.Network.CurrentSim.Name);
+            txtMessage.BackColor = instance.MainForm.NotificationBackground;
+            btnOffer.Focus();
+
+            // Fire off event
+            NotificationEventArgs args = new NotificationEventArgs(instance);
+            args.Text = txtHead.Text + Environment.NewLine + txtMessage.Text;
+            args.Buttons.Add(btnOffer);
+            args.Buttons.Add(btnCancel);
+            FireNotificationCallback(args);
         }
 
-        public void StopPlugin(RadegastInstance instance)
+        private void btnOffer_Click(object sender, EventArgs e)
         {
-            List<RadegastTab> toRemove = new List<RadegastTab>();
-            foreach (RadegastTab tab in this.instance.TabConsole.Tabs.Values)
-            {
-                if (tab.Control is RelayConsole)
-                    toRemove.Add(tab);
-            }
-            
-            for (int i = 0; i < toRemove.Count; i++)
-                toRemove[i].Close();
+            if (!instance.Client.Network.Connected) return;
 
-            if (IRCButton != null)
-            {
-                IRCButton.Dispose();
-                IRCButton = null;
-            }
+            instance.Client.Self.SendTeleportLure(agentID, txtMessage.Text);
+
+            instance.MainForm.RemoveNotification(this);
         }
 
-        void IRCButton_Click(object sender, EventArgs e)
+        private void btnCancel_Click(object sender, EventArgs e)
         {
-            relayNr++;
-            string tabName = "irc_relay_" + relayNr.ToString();
-
-            instance.TabConsole.AddTab(tabName, "IRC Relay " + relayNr.ToString(), new RelayConsole(instance));
-            instance.TabConsole.SelectTab(tabName);
+            instance.MainForm.RemoveNotification(this);
         }
     }
 }

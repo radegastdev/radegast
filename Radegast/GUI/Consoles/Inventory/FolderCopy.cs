@@ -47,7 +47,7 @@ namespace Radegast
 
         public void CopyFolder(InventoryFolder dest, InventoryFolder folder)
         {
-            UUID newFolderID = Client.Inventory.CreateFolder(dest.UUID, folder.Name, AssetType.Unknown);
+            UUID newFolderID = Client.Inventory.CreateFolder(dest.UUID, folder.Name, FolderType.None);
             Thread.Sleep(500);
             var items = Client.Inventory.FolderContents(folder.UUID, folder.OwnerID, true, true, InventorySortOrder.ByDate, 45 * 1000);
             AutoResetEvent copied = new AutoResetEvent(false);

@@ -210,7 +210,9 @@ namespace Radegast
                             ChatSessionMember participant = members[i];
                             ListViewItem item = new ListViewItem();
                             item.Name = participant.AvatarKey.ToString();
-                            item.Text = instance.Names.Get(participant.AvatarKey); 
+                            item.Text = instance.Names.Get(participant.AvatarKey);
+                            item.Tag = participant.AvatarKey;
+
                             if (participant.IsModerator)
                                 item.Font = new Font(item.Font, FontStyle.Bold);
                             Participants.Items.Add(item);
@@ -453,6 +455,99 @@ namespace Radegast
         private void cbxInput_SizeChanged(object sender, EventArgs e)
         {
             pnlChatInput.Height = cbxInput.Height + 7;
+        }
+
+        private void avatarContext_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+
+            if (av == client.Self.AgentID)
+            {
+                ctxMute.Enabled = ctxPay.Enabled = ctxStartIM.Enabled = false;
+            }
+            else
+            {
+                ctxMute.Enabled = ctxPay.Enabled = ctxStartIM.Enabled = true;
+
+                bool isMuted = client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == av) != null;
+                ctxMute.Text = isMuted ? "Unmute" : "Mute";
+            }
+        }
+
+        private void ctxProfile_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            string name = instance.Names.Get(av);
+
+            instance.MainForm.ShowAgentProfile(name, av);
+        }
+
+        private void ctxPay_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            string name = instance.Names.Get(av);
+
+            new frmPay(instance, av, name, false).ShowDialog();
+        }
+
+        private void ctxStartIM_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            string name = instance.Names.Get(av);
+
+            instance.TabConsole.ShowIMTab(av, name, true);
+        }
+
+        private void ctxOfferTP_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            instance.MainForm.AddNotification(new ntfSendLureOffer(instance, av));
+        }
+
+        private void ctxReqestLure_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            instance.MainForm.AddNotification(new ntfSendLureRequest(instance, av));
+        }
+
+        private void ctxEject_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            instance.Client.Groups.EjectUser(session, av);
+        }
+
+        private void ctxBan_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+        }
+
+        private void ctxMute_Click(object sender, EventArgs e)
+        {
+            if (Participants.SelectedItems.Count != 1) return;
+            UUID av = (UUID)Participants.SelectedItems[0].Tag;
+            if (av == client.Self.AgentID) return;
+
+            if (ctxMute.Text == "Mute")
+            {
+                client.Self.UpdateMuteListEntry(MuteType.Resident, av, instance.Names.GetLegacyName(av));
+            }
+            else
+            {
+                client.Self.RemoveMuteListEntry(av, instance.Names.GetLegacyName(av));
+            }
         }
     }
 }

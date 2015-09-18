@@ -223,7 +223,7 @@ namespace Radegast
             List<InventoryBase> rootContent = Client.Inventory.Store.GetContents(Client.Inventory.Store.RootFolder.UUID);
             foreach (InventoryBase baseItem in rootContent)
             {
-                if (baseItem is InventoryFolder && ((InventoryFolder)baseItem).PreferredType == AssetType.CurrentOutfitFolder)
+                if (baseItem is InventoryFolder && ((InventoryFolder)baseItem).PreferredType == FolderType.CurrentOutfit)
                 {
                     COF = (InventoryFolder)baseItem;
                     break;
@@ -242,7 +242,7 @@ namespace Radegast
 
         void CreateCOF()
         {
-            UUID cofID = Client.Inventory.CreateFolder(Client.Inventory.Store.RootFolder.UUID, "Current Look", AssetType.CurrentOutfitFolder);
+            UUID cofID = Client.Inventory.CreateFolder(Client.Inventory.Store.RootFolder.UUID, "Current Outfit", FolderType.CurrentOutfit);
             if (Client.Inventory.Store.Items.ContainsKey(cofID) && Client.Inventory.Store.Items[cofID].Data is InventoryFolder)
             {
                 COF = (InventoryFolder)Client.Inventory.Store.Items[cofID].Data;

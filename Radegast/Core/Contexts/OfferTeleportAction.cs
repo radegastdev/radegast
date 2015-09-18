@@ -49,7 +49,7 @@ namespace Radegast
         public override void OnInvoke(object sender, EventArgs e, object target)
         {
             UUID id = ToUUID(target);
-            Client.Self.SendTeleportLure(id, "Join me in " + Client.Network.CurrentSim.Name + "!");
+            instance.MainForm.AddNotification(new ntfSendLureOffer(instance, id));
             instance.TabConsole.DisplayNotificationInChat(string.Format("Sent Lure to {0}", id));
         }
     }

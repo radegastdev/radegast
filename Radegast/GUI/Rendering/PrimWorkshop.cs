@@ -1221,7 +1221,7 @@ namespace Radegast.Rendering
             else
             {
                 instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-                Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(AssetType.TrashFolder), UUID.Random());
+                Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID, DeRezDestination.AgentInventoryTake, Client.Inventory.FindFolderForType(FolderType.Trash), UUID.Random());
             }
             Close();
         }
