@@ -305,77 +305,83 @@ solution "Radegast"
       "System.Xml",
     }
 
-  project "RadSpeechLin"
-    kind("SharedLib")
-    location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechLin"))
-    files {
-      path.join("%{prj.location}", "**.cs"),
-    }
-    excludes {
-      path.join("%{prj.location}", "obj", "**")
-    }
-    links {
-      "OpenMetaverse",
-      "OpenMetaverseTypes",
-      "OpenMetaverse.StructuredData",
-      "Radegast.exe",
-      "Radegast.Plugin.Speech",
-      "System",
-      "System.Core",
-      "System.Xml.Linq",
-      "System.Data.DataSetExtensions",
-      "System.Data",
-      "System.Xml",
-    }
+  if _OS == "linux" then
+    project "RadSpeechLin"
+      kind("SharedLib")
+      location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechLin"))
+      files {
+        path.join("%{prj.location}", "**.cs"),
+      }
+      excludes {
+        path.join("%{prj.location}", "obj", "**")
+      }
+      links {
+        "OpenMetaverse",
+        "OpenMetaverseTypes",
+        "OpenMetaverse.StructuredData",
+        "Radegast.exe",
+        "Radegast.Plugin.Speech",
+        "System",
+        "System.Core",
+        "System.Xml.Linq",
+        "System.Data.DataSetExtensions",
+        "System.Data",
+        "System.Xml",
+      }
+  end
 
-  project "RadSpeechWin"
-    kind("SharedLib")
-    location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechWin"))
-    files {
-      path.join("%{prj.location}", "**.cs"),
-    }
-    excludes {
-      path.join("%{prj.location}", "obj", "**")
-    }
-    links {
-      "OpenMetaverse",
-      "OpenMetaverseTypes",
-      "OpenMetaverse.StructuredData",
-      "Radegast.exe",
-      "Radegast.Plugin.Speech",
-      "Radegast.exe",
-      "System",
-      "System.Core",
-      "System.Speech",
-      "System.Xml.Linq",
-      "System.Data.DataSetExtensions",
-      "System.Data",
-      "System.Xml",
-    }
+  if _OS == "windows" then
+    project "RadSpeechWin"
+      kind("SharedLib")
+      location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechWin"))
+      files {
+        path.join("%{prj.location}", "**.cs"),
+      }
+      excludes {
+        path.join("%{prj.location}", "obj", "**")
+      }
+      links {
+        "OpenMetaverse",
+        "OpenMetaverseTypes",
+        "OpenMetaverse.StructuredData",
+        "Radegast.exe",
+        "Radegast.Plugin.Speech",
+        "Radegast.exe",
+        "System",
+        "System.Core",
+        "System.Speech",
+        "System.Xml.Linq",
+        "System.Data.DataSetExtensions",
+        "System.Data",
+        "System.Xml",
+      }
+  end
 
-  project "RadSpeechMac"
-    kind("SharedLib")
-    location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechMac"))
-    files {
-      path.join("%{prj.location}", "**.cs"),
-    }
-    excludes {
-      path.join("%{prj.location}", "obj", "**")
-    }
-    links {
-      "OpenMetaverse",
-      "OpenMetaverseTypes",
-      "OpenMetaverse.StructuredData",
-      "Radegast.exe",
-      "Radegast.Plugin.Speech",
-      "Monobjc",
-      "Monobjc.Cocoa",
-      "Radegast.exe",
-      "System",
-      "System.Core",
-      "System.Speech",
-      "System.Xml.Linq",
-      "System.Data.DataSetExtensions",
-      "System.Data",
-      "System.Xml",
-    }
+  if _OS == "macosx" then
+    project "RadSpeechMac"
+      kind("SharedLib")
+      location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechMac"))
+      files {
+        path.join("%{prj.location}", "**.cs"),
+      }
+      excludes {
+        path.join("%{prj.location}", "obj", "**")
+      }
+      links {
+        "OpenMetaverse",
+        "OpenMetaverseTypes",
+        "OpenMetaverse.StructuredData",
+        "Radegast.exe",
+        "Radegast.Plugin.Speech",
+        "Monobjc",
+        "Monobjc.Cocoa",
+        "Radegast.exe",
+        "System",
+        "System.Core",
+        "System.Speech",
+        "System.Xml.Linq",
+        "System.Data.DataSetExtensions",
+        "System.Data",
+        "System.Xml",
+      }
+  end
