@@ -42,6 +42,9 @@ solution "Radegast"
     files {
       path.join("%{prj.location}", "**.cs")
     }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
+    }
     links {
       "System",
       "System.Core",
@@ -55,6 +58,9 @@ solution "Radegast"
     files {
       path.join("%{prj.location}", "**.cs")
     }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
+    }
     links {
       "System",
       "System.Xml",
@@ -67,6 +73,9 @@ solution "Radegast"
     namespace("OpenMetaverse")
     files {
       path.join("%{prj.location}", "**.cs")
+    }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "System",
@@ -88,6 +97,9 @@ solution "Radegast"
     namespace("OpenMetaverse.Rendering")
     files {
       path.join("%{prj.location}", "**.cs")
+    }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "System",
@@ -171,6 +183,7 @@ solution "Radegast"
     }
     excludes {
       path.join("%{prj.location}", "AssemblyInfo.cs"),
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "System",
@@ -200,6 +213,7 @@ solution "Radegast"
     }
     excludes {
       path.join("%{prj.location}", "AssemblyInfo.cs"),
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "System",
@@ -224,6 +238,7 @@ solution "Radegast"
     }
     excludes {
       path.join("%{prj.location}", "AssemblyInfo.cs"),
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "System",
@@ -247,6 +262,7 @@ solution "Radegast"
     }
     excludes {
       path.join("%{prj.location}", "AssemblyInfo.cs"),
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "System",
@@ -270,6 +286,9 @@ solution "Radegast"
       path.join("%{prj.location}", "**.wav"),
       path.join("%{prj.location}", "**.resx"),
     }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
+    }
     links {
       "OpenMetaverse",
       "OpenMetaverseTypes",
@@ -292,6 +311,9 @@ solution "Radegast"
     files {
       path.join("%{prj.location}", "**.cs"),
     }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
+    }
     links {
       "OpenMetaverse",
       "OpenMetaverseTypes",
@@ -311,6 +333,9 @@ solution "Radegast"
     location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechWin"))
     files {
       path.join("%{prj.location}", "**.cs"),
+    }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "OpenMetaverse",
@@ -333,6 +358,9 @@ solution "Radegast"
     location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechMac"))
     files {
       path.join("%{prj.location}", "**.cs"),
+    }
+    excludes {
+      path.join("%{prj.location}", "obj", "**")
     }
     links {
       "OpenMetaverse",
