@@ -7,11 +7,7 @@ solution "Radegast"
   disablewarnings {"1591", "1574", "0419", "0618", "0414", "0169"}
   buildoptions { "/checked-", "/nostdlib-"}
   targetdir "bin"
-  links {
-    "System",
-    "System.Core",
-    "System.Xml"
-  }
+  implibdir "bin"
 
   configuration "Debug"
     defines { "TRACE", "DEBUG", "SMARTHREADPOOL_REF" }
@@ -43,35 +39,39 @@ solution "Radegast"
     kind("SharedLib")
     location(path.join("libopenmetaverse", "OpenMetaverseTypes"))
     namespace("OpenMetaverse")
-    implibdir(path.join("..", "bin"))
-    targetdir(path.join("..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs")
+    }
+    links {
+      "System",
+      "System.Core",
+      "System.Xml",
     }
 
   project "OpenMetaverse.StructuredData"
     kind("SharedLib")
     location(path.join("libopenmetaverse", "OpenMetaverse.StructuredData"))
     namespace("OpenMetaverse.StructuredData")
-    implibdir(path.join("..", "bin"))
-    targetdir(path.join("..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs")
     }
     links {
-      "OpenMetaverseTypes"
+      "System",
+      "System.Xml",
+      "OpenMetaverseTypes",
     }
 
   project "OpenMetaverse"
     kind("SharedLib")
     location(path.join("libopenmetaverse", "OpenMetaverse"))
     namespace("OpenMetaverse")
-    implibdir(path.join("..", "bin"))
-    targetdir(path.join("..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs")
     }
     links {
+      "System",
+      "System.Core",
+      "System.Xml",
       "System.Data",
       "System.Drawing",
       "log4net",
@@ -79,30 +79,30 @@ solution "Radegast"
       "OpenMetaverse.StructuredData",
       "SmartThreadPool",
       "XMLRPC",
-      "zlib.net"
+      "zlib.net",
     }
 
   project "OpenMetaverse.Rendering.Meshmerizer"
     kind("SharedLib")
     location(path.join("libopenmetaverse", "OpenMetaverse.Rendering.Meshmerizer"))
     namespace("OpenMetaverse.Rendering")
-    implibdir(path.join("..", "bin"))
-    targetdir(path.join("..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs")
     }
     links {
+      "System",
+      "System.Xml",
       "System.Data",
       "System.Drawing",
       "OpenMetaverse",
       "OpenMetaverseTypes",
-      "PrimMesher"
+      "PrimMesher",
     }
 
   project "Radegast"
     kind("WindowedApp")
     location("Radegast")
-    targetdir(path.join("..", "bin"))
+    icon(path.join("%{prj.location}", "radegast.ico"))
     files {
       path.join("%{prj.location}", "Properties", "**.cs"),
       path.join("%{prj.location}", "**.cs"),
@@ -126,21 +126,24 @@ solution "Radegast"
       path.join("%{prj.location}", "obj", "**")
     }
     links {
+      "System",
+      "System.Core",
       "System.Data",
       "System.Drawing",
       "System.Web",
       "System.Windows.Forms",
+      "System.Xml",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "OpenMetaverse.Rendering.Meshmerizer",
-      "fmodex-dotnet",
-      "OpenTK",
-      "OpenTK.GLControl",
-      "Tools",
-      "log4net",
-      "CommandLine",
-      "XMLRPC",
+      path.join("%{prj.location}", "assemblies", "fmodex-dotnet"),
+      path.join("%{prj.location}", "assemblies", "OpenTK"),
+      path.join("%{prj.location}", "assemblies", "OpenTK.GLControl"),
+      path.join("%{prj.location}", "assemblies", "Tools"),
+      path.join("%{prj.location}", "assemblies", "log4net"),
+      path.join("%{prj.location}", "assemblies", "CommandLine"),
+      path.join("%{prj.location}", "assemblies", "XMLRPC"),
     }
     configuration "**/**.dylib"
       buildaction "Copy"
@@ -160,27 +163,28 @@ solution "Radegast"
   project "Radegast.Plugin.Alice"
     kind("SharedLib")
     location(path.join("plugins", "Radegast.Plugin.Alice"))
-    implibdir(path.join("..", "..", "bin"))
-    targetdir(path.join("..", "..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs"),
-      path.join("%{prj.location}", "Properties", "**.cs") ,
-      path.join("%{prj.location}", "aiml", "**") ,
+      path.join("%{prj.location}", "Properties", "**.cs"),
+      path.join("%{prj.location}", "aiml", "**"),
       path.join("%{prj.location}", "aiml_config", "**")
     }
     excludes {
       path.join("%{prj.location}", "AssemblyInfo.cs"),
     }
     links {
-      "System.Xml.Linq",
+      "System",
+      "System.Core",
+      "System.Xml",
       "System.Data",
       "System.Drawing",
-      "System.Windows.Forms",
+      "System.Xml.Linq",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      "AIMLbot",
-      "Radegast.exe"
+      "System.Windows.Forms",
+      path.join("%{prj.location}", "assemblies", "AIMLbot"),
+      "Radegast.exe",
     }
     configuration "**/aiml/**"
       buildaction "Copy"
@@ -190,8 +194,6 @@ solution "Radegast"
   project "Radegast.Plugin.Demo"
     kind("SharedLib")
     location(path.join("plugins", "Radegast.Plugin.Demo"))
-    implibdir(path.join("..", "..", "bin"))
-    targetdir(path.join("..", "..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs"),
       path.join("%{prj.location}", "Properties", "**.cs")
@@ -200,96 +202,152 @@ solution "Radegast"
       path.join("%{prj.location}", "AssemblyInfo.cs"),
     }
     links {
-      "System.Xml.Linq",
+      "System",
+      "System.Core",
+      "System.Xml",
       "System.Data",
       "System.Drawing",
-      "System.Windows.Forms",
+      "System.Xml.Linq",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      "Radegast.exe"
+      "System.Windows.Forms",
+      "Radegast",
     }
+
+  project "Radegast.Plugin.SimpleBuilder"
+    kind("SharedLib")
+    location(path.join("plugins", "Radegast.Plugin.SimpleBuilder"))
+    files {
+      path.join("%{prj.location}", "**.cs"),
+      path.join("%{prj.location}", "Properties", "**.cs")
+    }
+    excludes {
+      path.join("%{prj.location}", "AssemblyInfo.cs"),
+    }
+    links {
+      "System",
+      "System.Core",
+      "System.Xml",
+      "System.Data",
+      "System.Drawing",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+      "System.Windows.Forms",
+      "Radegast",
+    }
+--[[
+  project "Radegast.Plugin.EVOVend"
+    kind("SharedLib")
+    location(path.join("plugins", "Radegast.Plugin.EVOVend"))
+    files {
+      path.join("%{prj.location}", "**.cs"),
+      path.join("%{prj.location}", "Properties", "**.cs")
+    }
+    excludes {
+      path.join("%{prj.location}", "AssemblyInfo.cs"),
+    }
+    links {
+      "System",
+      "System.Core",
+      "System.Xml",
+      "System.Data",
+      "System.Drawing",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+      "System.Windows.Forms",
+      "Radegast",
+    }
+--]]
 
   project "Radegast.Plugin.Speech"
     kind("SharedLib")
     location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeech"))
-    implibdir(path.join("..", "..", "..", "bin"))
-    targetdir(path.join("..", "..", "..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs"),
       path.join("%{prj.location}", "**.wav"),
       path.join("%{prj.location}", "**.resx"),
     }
     links {
-      "System.Xml.Linq",
-      "System.Data",
-      "System.Data.DataSetExtensions",
-      "System.Drawing",
-      "System.Windows.Forms",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "Radegast.exe",
       "fmodex-dotnet.dll",
+      "System",
+      "System.Core",
+      "System.Drawing",
+      "System.Windows.Forms",
+      "System.Xml.Linq",
+      "System.Data.DataSetExtensions",
+      "System.Data",
+      "System.Xml",
     }
 
   project "RadSpeechLin"
     kind("SharedLib")
     location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechLin"))
-    implibdir(path.join("..", "..", "..", "bin"))
-    targetdir(path.join("..", "..", "..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs"),
     }
     links {
-      "System.Xml.Linq",
-      "System.Data",
-      "System.Data.DataSetExtensions",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "Radegast.exe",
       "Radegast.Plugin.Speech",
+      "System",
+      "System.Core",
+      "System.Xml.Linq",
+      "System.Data.DataSetExtensions",
+      "System.Data",
+      "System.Xml",
     }
 
   project "RadSpeechWin"
     kind("SharedLib")
     location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechWin"))
-    implibdir(path.join("..", "..", "..", "bin"))
-    targetdir(path.join("..", "..", "..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs"),
     }
     links {
-      "System.Xml.Linq",
-      "System.Data",
-      "System.Data.DataSetExtensions",
-      "System.Speech",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "Radegast.exe",
       "Radegast.Plugin.Speech",
+      "Radegast.exe",
+      "System",
+      "System.Core",
+      "System.Speech",
+      "System.Xml.Linq",
+      "System.Data.DataSetExtensions",
+      "System.Data",
+      "System.Xml",
     }
 
   project "RadSpeechMac"
     kind("SharedLib")
     location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechMac"))
-    implibdir(path.join("..", "..", "..", "bin"))
-    targetdir(path.join("..", "..", "..", "bin"))
     files {
       path.join("%{prj.location}", "**.cs"),
     }
     links {
-      "System.Xml.Linq",
-      "System.Data",
-      "System.Data.DataSetExtensions",
-      "System.Speech",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "Radegast.exe",
       "Radegast.Plugin.Speech",
       "Monobjc",
-      "Monobjc.Cocoa"
+      "Monobjc.Cocoa",
+      "Radegast.exe",
+      "System",
+      "System.Core",
+      "System.Speech",
+      "System.Xml.Linq",
+      "System.Data.DataSetExtensions",
+      "System.Data",
+      "System.Xml",
     }
