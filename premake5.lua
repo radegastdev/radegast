@@ -305,7 +305,7 @@ solution "Radegast"
       "System.Xml",
     }
 
-  if _OS == "linux" then
+  if os.is("linux") then
     project "RadSpeechLin"
       kind("SharedLib")
       location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechLin"))
@@ -330,7 +330,7 @@ solution "Radegast"
       }
   end
 
-  if _OS == "windows" then
+  if os.is("windows") then
     project "RadSpeechWin"
       kind("SharedLib")
       location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechWin"))
@@ -357,7 +357,7 @@ solution "Radegast"
       }
   end
 
-  if _OS == "macosx" then
+  if os.is("macosx") then
     project "RadSpeechMac"
       kind("SharedLib")
       location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechMac"))
