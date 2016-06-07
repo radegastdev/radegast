@@ -4,9 +4,9 @@ cd `dirname "$0"`
 mkdir bin 2>/dev/null
 
 if [ "$(uname -s)" == "Darwin" ]; then
-  ./Build/Mac/premake5 --os=macosx vs2010
+  ./build/macosx/premake5 --os=macosx vs2010
 else
-  ./Build/Linux/premake5 --os=linux vs2010
+  ./build/linux/premake5 --os=linux vs2010
 fi
 
 if [ x$1 == xbuild ]; then
