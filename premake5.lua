@@ -20,8 +20,6 @@ solution "Radegast"
     optimize "Full"
     clr "Unsafe"
 
-  configuration "**.png"
-    buildaction "Copy"
   configuration "**.config"
     buildaction "Copy"
   configuration "**.so"
@@ -61,6 +59,9 @@ solution "Radegast"
     excludes {
       path.join("%{prj.location}", "obj", "**")
     }
+    dependson {
+      "OpenMetaverseTypes",
+    }
     links {
       "System",
       "System.Xml",
@@ -77,18 +78,22 @@ solution "Radegast"
     excludes {
       path.join("%{prj.location}", "obj", "**")
     }
+    dependson {
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+    }
     links {
       "System",
       "System.Core",
       "System.Xml",
       "System.Data",
       "System.Drawing",
-      "log4net",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      "SmartThreadPool",
-      "XMLRPC",
-      "zlib.net",
+      path.join("libopenmetaverse", "bin", "log4net"),
+      path.join("libopenmetaverse", "bin", "SmartThreadPool"),
+      path.join("libopenmetaverse", "bin", "XMLRPC"),
+      path.join("libopenmetaverse", "bin", "zlib.net"),
     }
 
   project "OpenMetaverse.Rendering.Meshmerizer"
@@ -101,6 +106,10 @@ solution "Radegast"
     excludes {
       path.join("%{prj.location}", "obj", "**")
     }
+    dependson {
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+    }
     links {
       "System",
       "System.Xml",
@@ -108,7 +117,7 @@ solution "Radegast"
       "System.Drawing",
       "OpenMetaverse",
       "OpenMetaverseTypes",
-      "PrimMesher",
+      path.join("libopenmetaverse", "bin", "PrimMesher"),
     }
 
   project "Radegast"
@@ -136,6 +145,12 @@ solution "Radegast"
       path.join("%{prj.location}", "AssemblyInfo.cs"),
       path.join("%{prj.location}", "openmetaverse_data", ".svn", "**"),
       path.join("%{prj.location}", "obj", "**")
+    }
+    dependson {
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+      "OpenMetaverse.Rendering.Meshmerizer"
     }
     links {
       "System",
@@ -185,6 +200,13 @@ solution "Radegast"
       path.join("%{prj.location}", "AssemblyInfo.cs"),
       path.join("%{prj.location}", "obj", "**")
     }
+    dependson {
+      "Radegast",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+      "Radegast.Plugin.Speech"
+    }
     links {
       "System",
       "System.Core",
@@ -192,12 +214,12 @@ solution "Radegast"
       "System.Data",
       "System.Drawing",
       "System.Xml.Linq",
+      "System.Windows.Forms",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      "System.Windows.Forms",
-      path.join("%{prj.location}", "assemblies", "AIMLbot"),
       "Radegast.exe",
+      path.join("%{prj.location}", "assemblies", "AIMLbot"),
     }
     configuration "**/aiml/**"
       buildaction "Copy"
@@ -215,6 +237,13 @@ solution "Radegast"
       path.join("%{prj.location}", "AssemblyInfo.cs"),
       path.join("%{prj.location}", "obj", "**")
     }
+    dependson {
+      "Radegast",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+      "Radegast.Plugin.Speech"
+    }
     links {
       "System",
       "System.Core",
@@ -222,10 +251,10 @@ solution "Radegast"
       "System.Data",
       "System.Drawing",
       "System.Xml.Linq",
+      "System.Windows.Forms",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      "System.Windows.Forms",
       "Radegast",
     }
 
@@ -240,16 +269,22 @@ solution "Radegast"
       path.join("%{prj.location}", "AssemblyInfo.cs"),
       path.join("%{prj.location}", "obj", "**")
     }
+    dependson{
+      "Radegast",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData"
+    }
     links {
       "System",
       "System.Core",
       "System.Xml",
       "System.Data",
       "System.Drawing",
+      "System.Windows.Forms",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      "System.Windows.Forms",
       "Radegast",
     }
 --[[
@@ -264,16 +299,22 @@ solution "Radegast"
       path.join("%{prj.location}", "AssemblyInfo.cs"),
       path.join("%{prj.location}", "obj", "**")
     }
+    dependson{
+      "Radegast",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData"
+    }
     links {
       "System",
       "System.Core",
       "System.Xml",
       "System.Data",
       "System.Drawing",
+      "System.Windows.Forms",
       "OpenMetaverse",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      "System.Windows.Forms",
       "Radegast",
     }
 --]]
@@ -289,12 +330,13 @@ solution "Radegast"
     excludes {
       path.join("%{prj.location}", "obj", "**")
     }
-    links {
+    dependson{
+      "Radegast",
       "OpenMetaverse",
       "OpenMetaverseTypes",
-      "OpenMetaverse.StructuredData",
-      "Radegast.exe",
-      "fmodex-dotnet.dll",
+      "OpenMetaverse.StructuredData"
+    }
+    links {
       "System",
       "System.Core",
       "System.Drawing",
@@ -303,6 +345,11 @@ solution "Radegast"
       "System.Data.DataSetExtensions",
       "System.Data",
       "System.Xml",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+      "Radegast.exe",
+      "fmodex-dotnet.dll",
     }
 
   if os.is("linux") then
@@ -315,18 +362,25 @@ solution "Radegast"
       excludes {
         path.join("%{prj.location}", "obj", "**")
       }
-      links {
+      dependson {
+        "Radegast",
         "OpenMetaverse",
         "OpenMetaverseTypes",
         "OpenMetaverse.StructuredData",
-        "Radegast.exe",
-        "Radegast.Plugin.Speech",
+        "Radegast.Plugin.Speech"
+      }
+      links {
         "System",
         "System.Core",
         "System.Xml.Linq",
         "System.Data.DataSetExtensions",
         "System.Data",
         "System.Xml",
+        "OpenMetaverse",
+        "OpenMetaverseTypes",
+        "OpenMetaverse.StructuredData",
+        "Radegast.exe",
+        "Radegast.Plugin.Speech",
       }
   end
 
@@ -340,13 +394,14 @@ solution "Radegast"
       excludes {
         path.join("%{prj.location}", "obj", "**")
       }
-      links {
+      dependson {
+        "Radegast",
         "OpenMetaverse",
         "OpenMetaverseTypes",
         "OpenMetaverse.StructuredData",
-        "Radegast.exe",
-        "Radegast.Plugin.Speech",
-        "Radegast.exe",
+        "Radegast.Plugin.Speech"
+      }
+      links {
         "System",
         "System.Core",
         "System.Speech",
@@ -354,6 +409,11 @@ solution "Radegast"
         "System.Data.DataSetExtensions",
         "System.Data",
         "System.Xml",
+        "OpenMetaverse",
+        "OpenMetaverseTypes",
+        "OpenMetaverse.StructuredData",
+        "Radegast.exe",
+        "Radegast.Plugin.Speech",
       }
   end
 
@@ -367,15 +427,14 @@ solution "Radegast"
       excludes {
         path.join("%{prj.location}", "obj", "**")
       }
-      links {
+      dependson {
+        "Radegast",
         "OpenMetaverse",
         "OpenMetaverseTypes",
         "OpenMetaverse.StructuredData",
-        "Radegast.exe",
-        "Radegast.Plugin.Speech",
-        "Monobjc",
-        "Monobjc.Cocoa",
-        "Radegast.exe",
+        "Radegast.Plugin.Speech"
+      }
+      links {
         "System",
         "System.Core",
         "System.Speech",
@@ -383,5 +442,12 @@ solution "Radegast"
         "System.Data.DataSetExtensions",
         "System.Data",
         "System.Xml",
+        "Monobjc",
+        "Monobjc.Cocoa",
+        "OpenMetaverse",
+        "OpenMetaverseTypes",
+        "OpenMetaverse.StructuredData",
+        "Radegast.exe",
+        "Radegast.Plugin.Speech",
       }
   end
