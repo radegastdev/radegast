@@ -14,7 +14,7 @@ Developers:
 # License
 
 **Radegast Metaverse Client**<br>
-*Copyright © 2009-2011, Radegast Development Team*<br>
+*Copyright © 2009-2016, Radegast Development Team*<br>
 *All rights reserved.*
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,3 +73,7 @@ http://commandline.codeplex.com/<br>
 Uses code snippets from CSAT Library (MIT License)<br>
 Copyright © 2011 mjt<br>
 http://code.google.com/p/csat/<br>
+
+Uses SmartIrc4net (LGPL)<br>
+Copyright © 2003-2005 Mirco Bauer<br>
+http://www.meebey.net/projects/smartirc4net/<br>
