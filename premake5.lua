@@ -1,7 +1,7 @@
 solution "Radegast"
   configurations { "Debug", "Release" }
   platforms { "x86" }
-  framework "4.0"
+  dotnetframework "4.5"
   language "C#"
   warnings "Extra"
   disablewarnings {"1591", "1574", "0419", "0618", "0414", "0169"}
@@ -286,6 +286,39 @@ solution "Radegast"
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "Radegast",
+    }
+
+  project "Radegast.Plugin.IRC"
+    kind("SharedLib")
+    location(path.join("plugins", "Radegast.Plugin.IRC"))
+    files {
+      path.join("%{prj.location}", "**.cs"),
+      path.join("%{prj.location}", "Properties", "**.cs")
+    }
+    excludes {
+      path.join("%{prj.location}", "AssemblyInfo.cs"),
+      path.join("%{prj.location}", "obj", "**")
+    }
+    dependson{
+      "Radegast",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData"
+    }
+    links {
+      "System",
+      "System.Core",
+      "System.Xml",
+      "System.Data",
+      "System.Drawing",
+      "System.Windows.Forms",
+      "System.Xml.Linq",
+      "System.Data.DataSetExtensions",
+      "OpenMetaverse",
+      "OpenMetaverseTypes",
+      "OpenMetaverse.StructuredData",
+      "Radegast",
+      path.join("%{prj.location}", "assemblies", "Meebey.SmartIrc4net")
     }
 --[[
   project "Radegast.Plugin.EVOVend"
