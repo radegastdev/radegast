@@ -59,6 +59,11 @@ namespace Radegast
             this.session = session;
             this.toName = toName;
 
+            if (instance.GlobalSettings["theme_compatibility_mode"])
+            {
+                toolStrip1.RenderMode = ToolStripRenderMode.System;
+            }
+
             textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Agent, this.session, toName);
 
             AddNetcomEvents();

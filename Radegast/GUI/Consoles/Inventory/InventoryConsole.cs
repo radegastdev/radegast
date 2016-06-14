@@ -83,6 +83,11 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(InventoryConsole_Disposed);
 
+            if (instance.GlobalSettings["theme_compatibility_mode"])
+            {
+                tstripInventory.RenderMode = ToolStripRenderMode.System;
+            }
+
             TreeUpdateTimer = new System.Timers.Timer()
             {
                 Interval = updateInterval,

@@ -58,6 +58,11 @@ namespace Radegast
             this.notecard = notecard;
             this.prim = prim;
 
+            if (instance.GlobalSettings["theme_compatibility_mode"])
+            {
+                toolStrip1.RenderMode = ToolStripRenderMode.System;
+            }
+
             Text = notecard.Name;
 
             rtbContent.DetectUrls = false;

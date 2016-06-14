@@ -62,7 +62,14 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new System.EventHandler(InventoryBackup_Disposed);
+
             this.instance = instance;
+
+            if (instance.GlobalSettings["theme_compatibility_mode"])
+            {
+                toolStrip1.RenderMode = ToolStripRenderMode.System;
+            }
+
             inv = client.Inventory.Store;
             rootNode = inv.RootNode;
             if (inv.Items.ContainsKey(rootFolder) && inv.Items[rootFolder].Data is InventoryFolder)

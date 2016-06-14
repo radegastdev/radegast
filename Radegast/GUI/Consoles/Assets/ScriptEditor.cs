@@ -68,6 +68,14 @@ namespace Radegast
             this.instance = instance;
             this.script = script;
             this.prim = prim;
+
+            if (instance.GlobalSettings["theme_compatibility_mode"])
+            {
+                tsMenu.RenderMode = ToolStripRenderMode.System;
+                tsStatus.RenderMode = ToolStripRenderMode.System;
+                tsFindReplace.RenderMode = ToolStripRenderMode.System;
+            }
+
             rtb.SyntaxHighlightEnabled = instance.GlobalSettings["script_syntax_highlight"].AsBoolean();
             lblScripStatus.Text = string.Empty;
             lblScripStatus.TextChanged += (object sender, EventArgs e) =>

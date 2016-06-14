@@ -138,6 +138,11 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
+            if (instance.GlobalSettings["theme_compatibility_mode"])
+            {
+                tstTabs.RenderMode = ToolStripRenderMode.System;
+            }
+
             AddNetcomEvents();
 
             InitializeMainTab();

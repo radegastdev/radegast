@@ -136,6 +136,7 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
+            this.cbThemeCompatibilityMode = new System.Windows.Forms.CheckBox();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -248,6 +249,7 @@ namespace Radegast
             // 
             // cbMisc
             // 
+            this.cbMisc.Controls.Add(this.cbThemeCompatibilityMode);
             this.cbMisc.Controls.Add(this.cbConfirmExit);
             this.cbMisc.Controls.Add(this.txtResolveURITime);
             this.cbMisc.Controls.Add(this.cbResolveURIs);
@@ -270,7 +272,7 @@ namespace Radegast
             this.cbMisc.Controls.Add(this.cbSyntaxHighlight);
             this.cbMisc.Location = new System.Drawing.Point(270, 6);
             this.cbMisc.Name = "cbMisc";
-            this.cbMisc.Size = new System.Drawing.Size(236, 385);
+            this.cbMisc.Size = new System.Drawing.Size(236, 413);
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
             // 
@@ -1034,6 +1036,16 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
+            // cbThemeCompatibilityMode
+            // 
+            this.cbThemeCompatibilityMode.AutoSize = true;
+            this.cbThemeCompatibilityMode.Location = new System.Drawing.Point(6, 380);
+            this.cbThemeCompatibilityMode.Name = "cbThemeCompatibilityMode";
+            this.cbThemeCompatibilityMode.Size = new System.Drawing.Size(150, 17);
+            this.cbThemeCompatibilityMode.TabIndex = 22;
+            this.cbThemeCompatibilityMode.Text = "Theme Compatibility Mode";
+            this.cbThemeCompatibilityMode.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1150,5 +1162,6 @@ namespace Radegast
         public System.Windows.Forms.Label label4;
         public System.Windows.Forms.CheckBox cbResolveURIs;
         private System.Windows.Forms.CheckBox cbConfirmExit;
+        private System.Windows.Forms.CheckBox cbThemeCompatibilityMode;
     }
 }

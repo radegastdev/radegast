@@ -47,6 +47,11 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(Guesture_Disposed);
 
+            if (instance.GlobalSettings["theme_compatibility_mode"])
+            {
+                toolStrip1.RenderMode = ToolStripRenderMode.System;
+            }
+
             if (!instance.advancedDebugging)
             {
                 tbtnReupload.Visible = false;
