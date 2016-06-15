@@ -47,11 +47,6 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(Guesture_Disposed);
 
-            if (instance.GlobalSettings["theme_compatibility_mode"])
-            {
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            }
-
             if (!instance.advancedDebugging)
             {
                 tbtnReupload.Visible = false;
@@ -63,6 +58,8 @@ namespace Radegast
             // Start download
             tlblStatus.Text = "Downloading...";
             client.Assets.RequestAsset(gesture.AssetUUID, AssetType.Gesture, true, Assets_OnAssetReceived);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Guesture_Disposed(object sender, EventArgs e)

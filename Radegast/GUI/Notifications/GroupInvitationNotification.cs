@@ -27,6 +27,8 @@ namespace Radegast
             args.Text = txtMessage.Text;
             args.Buttons.Add(btnYes);
             FireNotificationCallback(args);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void btnYes_Click(object sender, EventArgs e)

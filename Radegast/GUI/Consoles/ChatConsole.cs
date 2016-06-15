@@ -92,6 +92,8 @@ namespace Radegast
             cbChatType.SelectedIndex = 1;
 
             UpdateFontSize();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)

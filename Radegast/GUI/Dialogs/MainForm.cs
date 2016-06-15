@@ -146,11 +146,6 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
-            if (instance.GlobalSettings["theme_compatibility_mode"])
-            {
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            }
-
             netcom.NetcomSync = this;
             ShowAgentProfile = ShowAgentProfileInternal;
 
@@ -188,6 +183,8 @@ namespace Radegast
 
             InitializeStatusTimer();
             RefreshWindowTitle();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)

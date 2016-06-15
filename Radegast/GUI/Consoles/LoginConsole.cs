@@ -66,6 +66,7 @@ namespace Radegast
 
             Load += new EventHandler(LoginConsole_Load);
 
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void MainConsole_Disposed(object sender, EventArgs e)

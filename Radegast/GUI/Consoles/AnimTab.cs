@@ -55,6 +55,8 @@ namespace Radegast
 
             // Callbacks
             client.Avatars.AvatarAnimation += new EventHandler<AvatarAnimationEventArgs>(Avatars_AvatarAnimation);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void AnimTab_Disposed(object sender, EventArgs e)

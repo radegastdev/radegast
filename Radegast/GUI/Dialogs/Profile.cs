@@ -116,6 +116,8 @@ namespace Radegast
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.InventoryClipboardUpdated += new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
             InitializeProfile();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmProfile_Disposed(object sender, EventArgs e)

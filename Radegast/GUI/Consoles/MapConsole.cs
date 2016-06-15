@@ -69,6 +69,8 @@ namespace Radegast
 
             // Register callbacks
             RegisterClientEvents(client);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)

@@ -56,6 +56,8 @@ namespace Radegast
             this.instance = instance;
             ReconnectTime = time;
             lblAutoReconnect.Text = string.Format("Auto reconnect in {0} seconds.", reconnectTime);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmReconnect_Disposed(object sender, EventArgs e)

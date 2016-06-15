@@ -93,6 +93,7 @@ namespace Radegast
 
             rtfHeader = this.Rtf.Substring(0, this.Rtf.IndexOf('{', 2)) + " ";
 
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void InitializeComponent()

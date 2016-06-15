@@ -71,6 +71,8 @@ namespace Radegast
             // Callbacks
             client.Grid.RegionHandleReply += new EventHandler<RegionHandleReplyEventArgs>(Grid_RegionHandleReply);
             client.Parcels.ParcelInfoReply += new EventHandler<ParcelInfoReplyEventArgs>(Parcels_ParcelInfoReply);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Landmark_Disposed(object sender, EventArgs e)

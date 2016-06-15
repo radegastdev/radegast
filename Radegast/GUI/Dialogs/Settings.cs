@@ -362,6 +362,8 @@ namespace Radegast
             cbAutoScriptPermission.Text = s["on_script_question"];
 
             UpdateEnabled();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void UpdateEnabled()

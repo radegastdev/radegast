@@ -69,6 +69,8 @@ namespace Radegast
 			Client = client;
 			GatherInfo();
 			Exporter = new PrimExporter(client);
+
+			Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
 		}
 		#endregion
 		

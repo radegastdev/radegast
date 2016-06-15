@@ -83,11 +83,6 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(InventoryConsole_Disposed);
 
-            if (instance.GlobalSettings["theme_compatibility_mode"])
-            {
-                tstripInventory.RenderMode = ToolStripRenderMode.System;
-            }
-
             TreeUpdateTimer = new System.Timers.Timer()
             {
                 Interval = updateInterval,
@@ -104,6 +99,8 @@ namespace Radegast
             invRootNode = AddDir(null, Inventory.RootFolder);
             UpdateStatus("Reading cache");
             Init1();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public void Init1()

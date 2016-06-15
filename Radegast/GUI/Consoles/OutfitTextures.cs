@@ -46,6 +46,8 @@ namespace Radegast
 
             this.instance = instance;
             this.avatar = avatar;
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public void GetTextures()

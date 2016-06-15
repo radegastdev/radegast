@@ -58,11 +58,6 @@ namespace Radegast
             this.notecard = notecard;
             this.prim = prim;
 
-            if (instance.GlobalSettings["theme_compatibility_mode"])
-            {
-                toolStrip1.RenderMode = ToolStripRenderMode.System;
-            }
-
             Text = notecard.Name;
 
             rtbContent.DetectUrls = false;
@@ -86,6 +81,8 @@ namespace Radegast
                     client.Assets.RequestInventoryAsset(notecard.AssetUUID, notecard.UUID, prim.ID, prim.OwnerID, notecard.AssetType, true, Assets_OnAssetReceived);
                 }
             }
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Notecard_Disposed(object sender, EventArgs e)
