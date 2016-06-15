@@ -29,6 +29,24 @@ namespace Radegast.GUI
                     ApplyThemeCompatibilityModeRecursive(item);
                 }
             }
+            else if (root is ListBox)
+            {
+                var item = root as ListBox;
+                item.BackColor = System.Drawing.SystemColors.Window;
+                item.ForeColor = System.Drawing.SystemColors.WindowText;
+            }
+            else if (root is TextBox)
+            {
+                var item = root as TextBox;
+                item.BackColor = System.Drawing.SystemColors.Control;
+                item.ForeColor = System.Drawing.SystemColors.ControlText;
+            }
+            else if (root is Label)
+            {
+                var item = root as Label;
+                item.BackColor = System.Drawing.SystemColors.Control;
+                item.ForeColor = System.Drawing.SystemColors.ControlText;
+            }
             else if (root is Control)
             {
                 var control = root as Control;
