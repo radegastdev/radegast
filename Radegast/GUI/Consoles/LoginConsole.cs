@@ -77,8 +77,10 @@ namespace Radegast
 
         void LoginConsole_Load(object sender, EventArgs e)
         {
-            if (instance.PlainColors)
+            if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
+            {
                 panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
+            }
 
             cbxLocation.SelectedIndex = 0;
             cbxUsername.SelectedIndexChanged += cbxUsername_SelectedIndexChanged;

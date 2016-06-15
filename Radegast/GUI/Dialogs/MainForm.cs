@@ -739,7 +739,7 @@ namespace Radegast
                 }
                 StartUpdateCheck(false);
 
-                if (instance.PlainColors)
+                if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
                 {
                     pnlDialog.BackColor = System.Drawing.Color.FromArgb(120, 220, 255);
                 }
