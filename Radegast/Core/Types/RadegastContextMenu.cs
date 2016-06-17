@@ -315,6 +315,11 @@ namespace Radegast
         private void Rad_Menu_Opening(object sender, CancelEventArgs e)
         {
             WriteDebug("Menu_Opening: {0} {1}", sender, e.Cancel);
+
+            if (RadegastInstance.GlobalInstance.GlobalSettings["theme_compatibility_mode"])
+            {
+                RenderMode = ToolStripRenderMode.System;
+            }
             e.Cancel = false;
             if (OnContentMenuOpening != null)
             {
@@ -494,6 +499,11 @@ namespace Radegast
 
         private void Rad_Item_Opening(object sender, EventArgs e)
         {
+            if (RadegastInstance.GlobalInstance.GlobalSettings["theme_compatibility_mode"])
+            {
+                RenderMode = ToolStripRenderMode.System;
+            }
+
             ToolStripDropDownItem stripDropDownItem = sender as ToolStripDropDownItem;
             if (stripDropDownItem == null) return;
             SetMenuItemSelected(stripDropDownItem);

@@ -23,33 +23,35 @@ namespace Radegast.GUI
             {
                 var toolstrip = root as ToolStrip;
                 toolstrip.RenderMode = ToolStripRenderMode.System;
+                toolstrip.BackColor = System.Drawing.SystemColors.Control;
+                toolstrip.ForeColor = System.Drawing.SystemColors.ControlText;
+                toolstrip.BackColor = System.Drawing.Color.Transparent;
 
                 foreach (var item in toolstrip.Items)
                 {
                     ApplyThemeCompatibilityModeRecursive(item);
                 }
             }
-            else if (root is ListBox)
+            else if (root is ToolStripDropDownItem)
             {
-                var item = root as ListBox;
-                item.BackColor = System.Drawing.SystemColors.Window;
-                item.ForeColor = System.Drawing.SystemColors.WindowText;
+                var dropDownItem = root as ToolStripDropDownItem;
+                dropDownItem.BackColor = System.Drawing.SystemColors.Control;
+                dropDownItem.ForeColor = System.Drawing.SystemColors.ControlText;
+                dropDownItem.DropDown.RenderMode = ToolStripRenderMode.System;
+                dropDownItem.DropDown.BackColor = System.Drawing.SystemColors.Control;
+                dropDownItem.DropDown.ForeColor = System.Drawing.SystemColors.ControlText;
+
+                foreach (var item in dropDownItem.DropDownItems)
+                {
+                    ApplyThemeCompatibilityModeRecursive(item);
+                }
             }
-            else if (root is TextBox)
-            {
-                var item = root as TextBox;
-                item.BackColor = System.Drawing.SystemColors.Control;
-                item.ForeColor = System.Drawing.SystemColors.ControlText;
-            }
-            else if (root is Label)
-            {
-                var item = root as Label;
-                item.BackColor = System.Drawing.SystemColors.Control;
-                item.ForeColor = System.Drawing.SystemColors.ControlText;
-            }
-            else if (root is Control)
+            else if (root is Control && !(root is RichTextBox || root is ProgressBar))
             {
                 var control = root as Control;
+                control.BackColor = System.Drawing.SystemColors.Control;
+                control.ForeColor = System.Drawing.SystemColors.ControlText;
+
                 foreach (var item in control.Controls)
                 {
                     ApplyThemeCompatibilityModeRecursive(item);
