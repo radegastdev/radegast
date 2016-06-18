@@ -154,6 +154,38 @@ namespace Radegast
             
         }
 
+        private void InitColorSettings()
+        {
+            for (int i = 4; i <= 32; i++)
+            {
+                cbxFontSize.Items.Add((float)i);
+                cbxFontSize.Items.Add((float)i + 0.5f);
+            }
+
+            foreach (var font in System.Drawing.FontFamily.Families)
+            {
+                cbxFont.Items.Add(font.Name);
+            }
+
+            //var colorTypes = typeof(System.Drawing.Color);
+            //var props = colorTypes.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
+            var knownColors = typeof(System.Drawing.KnownColor).GetEnumValues();
+
+            foreach (var item in knownColors)
+            {
+                var color = System.Drawing.Color.FromKnownColor((System.Drawing.KnownColor)item);
+                cbxForeground.Items.Add(color);
+                cbxBackground.Items.Add(color);
+            }
+
+            cbxFont.SelectedItem = SystemFonts.DefaultFont.Name;
+            cbxFontSize.SelectedItem = SystemFonts.DefaultFont.Size;
+            cbxBold.Checked = SystemFonts.DefaultFont.Bold;
+            cbxItalic.Checked = SystemFonts.DefaultFont.Italic;
+            cbxForeground.SelectedItem = SystemColors.ControlText;
+            cbxBackground.SelectedItem = SystemColors.Control;
+        }
+
         public frmSettings(RadegastInstance instance)
             : base(instance)
         {
@@ -164,6 +196,7 @@ namespace Radegast
 
             InitializeComponent();
             AutoSavePosition = true;
+            InitColorSettings();
 
             s = instance.GlobalSettings;
             tbpGraphics.Controls.Add(new Radegast.Rendering.GraphicsPreferences(instance));
@@ -212,7 +245,7 @@ namespace Radegast
                 s["chat_font_size"] = OSD.FromReal(((ChatConsole)instance.TabConsole.Tabs["chat"].Control).cbxInput.Font.Size);
             }
 
-            cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
+            cbFontSizeDeleteme.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
             cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
@@ -423,9 +456,9 @@ namespace Radegast
             double f = 8.25;
             double existing = s["chat_font_size"].AsReal();
 
-            if (!double.TryParse(cbFontSize.Text, out f))
+            if (!double.TryParse(cbFontSizeDeleteme.Text, out f))
             {
-                cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
+                cbFontSizeDeleteme.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
                 return;
             }
 
@@ -757,5 +790,129 @@ namespace Radegast
             s["on_script_question"] = cbAutoScriptPermission.Text;
         }
 
+        private void cbxForeground_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            const int kPreviewPadding = 2;
+            const int kTextOffset = 15;
+
+            var graphics = e.Graphics;
+            var bounds = e.Bounds;
+
+            if (e.Index >= 0 && sender is ComboBox)
+            {
+                var sourceControl = sender as ComboBox;
+                var selectedColor = (Color)sourceControl.Items[e.Index];
+                if(sourceControl.Items[e.Index] is Color)
+                {
+                    var brushPreview = new SolidBrush(selectedColor);
+
+                    e.DrawBackground();
+
+                    if(e.State == DrawItemState.Selected)
+                    {
+                        graphics.DrawRectangle(SystemPens.Highlight, bounds);
+                    }
+
+                    graphics.DrawString(brushPreview.Color.Name,
+                        SystemFonts.DefaultFont,
+                        SystemBrushes.ControlText,
+                        bounds.X + kTextOffset,
+                        bounds.Top + kPreviewPadding);
+
+                    graphics.FillRectangle(brushPreview,
+                        bounds.X + kPreviewPadding,
+                        bounds.Y + kPreviewPadding,
+                        bounds.Height - kPreviewPadding,
+                        bounds.Height - kPreviewPadding);
+                }
+            }
+        }
+
+        private void cbxFont_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            const int kPreviewFontSize = 8;
+
+            var graphics = e.Graphics;
+            var bounds = e.Bounds;
+
+            if (e.Index >= 0 && sender is ComboBox)
+            {
+                var sourceControl = sender as ComboBox;
+                var fontName = sourceControl.Items[e.Index].ToString();
+                var fontPreview = new Font(fontName, kPreviewFontSize);
+
+                e.DrawBackground();
+
+                if(e.State == DrawItemState.Selected)
+                {
+                    graphics.DrawRectangle(SystemPens.Highlight, bounds);
+                }
+                else
+                {
+                    graphics.DrawRectangle(SystemPens.Window, bounds);
+                }
+
+                graphics.DrawString(fontName,
+                    fontPreview,
+                    SystemBrushes.ControlText,
+                    bounds.X,
+                    bounds.Top);
+
+            }
+        }
+
+        private void UpdatePreview()
+        {
+            float fontSize = SystemFonts.DefaultFont.Size;
+            string fontName = SystemFonts.DefaultFont.Name;
+            Color backColor = SystemColors.Window;
+            Color foreColor = SystemColors.ControlText;
+            FontStyle style = FontStyle.Regular;
+
+            if(cbxFontSize.SelectedItem is float)
+            {
+                fontSize = (float)cbxFontSize.SelectedItem;
+            }
+            if(cbxFont.SelectedItem is string)
+            {
+                fontName = (string)cbxFont.SelectedItem;
+            }
+            if(cbxForeground.SelectedItem is Color)
+            {
+                foreColor = (Color)cbxForeground.SelectedItem;
+            }
+            if(cbxBackground.SelectedItem is Color)
+            {
+                backColor = (Color)cbxBackground.SelectedItem;
+            }
+
+            if(cbxBold.Checked)
+            {
+                style |= FontStyle.Bold;
+            }
+            if(cbxItalic.Checked)
+            {
+                style |= FontStyle.Italic;
+            }
+
+            lblPreview.Font = new Font(fontName, fontSize, style);
+            lblPreview.ForeColor = foreColor;
+            lblPreview.BackColor = backColor;
+        }
+
+        private void SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdatePreview();
+        }
+
+        private void cbxItalic_CheckStateChanged(object sender, EventArgs e)
+        {
+            UpdatePreview();
+        }
+
+        private void cbxBold_CheckStateChanged(object sender, EventArgs e)
+        {
+            UpdatePreview();
+        }
     }
 }

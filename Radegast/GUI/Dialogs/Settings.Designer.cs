@@ -68,6 +68,7 @@ namespace Radegast
             this.cbFriendsHighlight = new System.Windows.Forms.CheckBox();
             this.cbTaskBarHighLight = new System.Windows.Forms.CheckBox();
             this.cbMisc = new System.Windows.Forms.GroupBox();
+            this.cbThemeCompatibilityMode = new System.Windows.Forms.CheckBox();
             this.cbConfirmExit = new System.Windows.Forms.CheckBox();
             this.txtResolveURITime = new System.Windows.Forms.TextBox();
             this.cbResolveURIs = new System.Windows.Forms.CheckBox();
@@ -95,7 +96,7 @@ namespace Radegast
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.cbNoTyping = new System.Windows.Forms.CheckBox();
-            this.cbFontSize = new System.Windows.Forms.ComboBox();
+            this.cbFontSizeDeleteme = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.gbDisplayNames = new System.Windows.Forms.GroupBox();
             this.rbDNOnlyDN = new System.Windows.Forms.RadioButton();
@@ -136,7 +137,22 @@ namespace Radegast
             this.autoSitUUID = new System.Windows.Forms.TextBox();
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
-            this.cbThemeCompatibilityMode = new System.Windows.Forms.CheckBox();
+            this.tbpChat = new System.Windows.Forms.TabPage();
+            this.lblPreview = new System.Windows.Forms.Label();
+            this.cbxItalic = new System.Windows.Forms.CheckBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.cbxBold = new System.Windows.Forms.CheckBox();
+            this.lbxColorItems = new System.Windows.Forms.ListBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cbxBackground = new System.Windows.Forms.ComboBox();
+            this.cbxForeground = new System.Windows.Forms.ComboBox();
+            this.cbxFontSize = new System.Windows.Forms.ComboBox();
+            this.cbxFont = new System.Windows.Forms.ComboBox();
+            this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.tcGraphics.SuspendLayout();
             this.tbpGeneral.SuspendLayout();
             this.cbHighLight.SuspendLayout();
@@ -152,6 +168,7 @@ namespace Radegast
             this.pseudoHome.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).BeginInit();
             this.autoSit.SuspendLayout();
+            this.tbpChat.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcGraphics
@@ -160,6 +177,7 @@ namespace Radegast
             this.tcGraphics.Controls.Add(this.tbpAutoResponse);
             this.tcGraphics.Controls.Add(this.tbpGraphics);
             this.tcGraphics.Controls.Add(this.tbpBot);
+            this.tcGraphics.Controls.Add(this.tbpChat);
             this.tcGraphics.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcGraphics.Location = new System.Drawing.Point(0, 0);
             this.tcGraphics.Multiline = true;
@@ -275,6 +293,16 @@ namespace Radegast
             this.cbMisc.Size = new System.Drawing.Size(236, 413);
             this.cbMisc.TabIndex = 2;
             this.cbMisc.TabStop = false;
+            // 
+            // cbThemeCompatibilityMode
+            // 
+            this.cbThemeCompatibilityMode.AutoSize = true;
+            this.cbThemeCompatibilityMode.Location = new System.Drawing.Point(6, 380);
+            this.cbThemeCompatibilityMode.Name = "cbThemeCompatibilityMode";
+            this.cbThemeCompatibilityMode.Size = new System.Drawing.Size(150, 17);
+            this.cbThemeCompatibilityMode.TabIndex = 22;
+            this.cbThemeCompatibilityMode.Text = "Theme Compatibility Mode";
+            this.cbThemeCompatibilityMode.UseVisualStyleBackColor = true;
             // 
             // cbConfirmExit
             // 
@@ -490,7 +518,7 @@ namespace Radegast
             this.Chat.Controls.Add(this.cbIMTimeStamps);
             this.Chat.Controls.Add(this.cbMUEmotes);
             this.Chat.Controls.Add(this.cbNoTyping);
-            this.Chat.Controls.Add(this.cbFontSize);
+            this.Chat.Controls.Add(this.cbFontSizeDeleteme);
             this.Chat.Controls.Add(this.label1);
             this.Chat.Location = new System.Drawing.Point(8, 5);
             this.Chat.Name = "Chat";
@@ -561,11 +589,11 @@ namespace Radegast
             this.cbNoTyping.UseVisualStyleBackColor = true;
             this.cbNoTyping.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
             // 
-            // cbFontSize
+            // cbFontSizeDeleteme
             // 
-            this.cbFontSize.FormatString = "N2";
-            this.cbFontSize.FormattingEnabled = true;
-            this.cbFontSize.Items.AddRange(new object[] {
+            this.cbFontSizeDeleteme.FormatString = "N2";
+            this.cbFontSizeDeleteme.FormattingEnabled = true;
+            this.cbFontSizeDeleteme.Items.AddRange(new object[] {
             "8.25",
             "9",
             "10",
@@ -573,14 +601,14 @@ namespace Radegast
             "14",
             "16",
             "20"});
-            this.cbFontSize.Location = new System.Drawing.Point(104, 53);
-            this.cbFontSize.Name = "cbFontSize";
-            this.cbFontSize.Size = new System.Drawing.Size(54, 21);
-            this.cbFontSize.TabIndex = 3;
-            this.cbFontSize.Text = "8.25";
-            this.cbFontSize.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
-            this.cbFontSize.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
-            this.cbFontSize.Leave += new System.EventHandler(this.cbFontSize_Leave);
+            this.cbFontSizeDeleteme.Location = new System.Drawing.Point(104, 53);
+            this.cbFontSizeDeleteme.Name = "cbFontSizeDeleteme";
+            this.cbFontSizeDeleteme.Size = new System.Drawing.Size(54, 21);
+            this.cbFontSizeDeleteme.TabIndex = 3;
+            this.cbFontSizeDeleteme.Text = "8.25";
+            this.cbFontSizeDeleteme.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
+            this.cbFontSizeDeleteme.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
+            this.cbFontSizeDeleteme.Leave += new System.EventHandler(this.cbFontSize_Leave);
             // 
             // label1
             // 
@@ -1036,15 +1064,173 @@ namespace Radegast
             this.autoSitNameLabel.Text = "Name";
             this.autoSitNameLabel.Click += new System.EventHandler(this.autoSitNameLabel_Click);
             // 
-            // cbThemeCompatibilityMode
+            // tbpChat
             // 
-            this.cbThemeCompatibilityMode.AutoSize = true;
-            this.cbThemeCompatibilityMode.Location = new System.Drawing.Point(6, 380);
-            this.cbThemeCompatibilityMode.Name = "cbThemeCompatibilityMode";
-            this.cbThemeCompatibilityMode.Size = new System.Drawing.Size(150, 17);
-            this.cbThemeCompatibilityMode.TabIndex = 22;
-            this.cbThemeCompatibilityMode.Text = "Theme Compatibility Mode";
-            this.cbThemeCompatibilityMode.UseVisualStyleBackColor = true;
+            this.tbpChat.Controls.Add(this.lblPreview);
+            this.tbpChat.Controls.Add(this.cbxItalic);
+            this.tbpChat.Controls.Add(this.label10);
+            this.tbpChat.Controls.Add(this.label9);
+            this.tbpChat.Controls.Add(this.cbxBold);
+            this.tbpChat.Controls.Add(this.lbxColorItems);
+            this.tbpChat.Controls.Add(this.label8);
+            this.tbpChat.Controls.Add(this.label7);
+            this.tbpChat.Controls.Add(this.label6);
+            this.tbpChat.Controls.Add(this.label5);
+            this.tbpChat.Controls.Add(this.cbxBackground);
+            this.tbpChat.Controls.Add(this.cbxForeground);
+            this.tbpChat.Controls.Add(this.cbxFontSize);
+            this.tbpChat.Controls.Add(this.cbxFont);
+            this.tbpChat.Location = new System.Drawing.Point(4, 22);
+            this.tbpChat.Name = "tbpChat";
+            this.tbpChat.Padding = new System.Windows.Forms.Padding(3);
+            this.tbpChat.Size = new System.Drawing.Size(522, 427);
+            this.tbpChat.TabIndex = 5;
+            this.tbpChat.Text = "Chat";
+            this.tbpChat.UseVisualStyleBackColor = true;
+            // 
+            // lblPreview
+            // 
+            this.lblPreview.BackColor = System.Drawing.Color.Transparent;
+            this.lblPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblPreview.Location = new System.Drawing.Point(252, 221);
+            this.lblPreview.Name = "lblPreview";
+            this.lblPreview.Size = new System.Drawing.Size(262, 63);
+            this.lblPreview.TabIndex = 16;
+            this.lblPreview.Text = "lblPreview";
+            this.lblPreview.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // cbxItalic
+            // 
+            this.cbxItalic.AutoSize = true;
+            this.cbxItalic.Location = new System.Drawing.Point(305, 173);
+            this.cbxItalic.Name = "cbxItalic";
+            this.cbxItalic.Size = new System.Drawing.Size(48, 17);
+            this.cbxItalic.TabIndex = 15;
+            this.cbxItalic.Text = "Italic";
+            this.cbxItalic.UseVisualStyleBackColor = true;
+            this.cbxItalic.CheckStateChanged += new System.EventHandler(this.cbxItalic_CheckStateChanged);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(8, 69);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(35, 13);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "Items:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(249, 204);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(48, 13);
+            this.label9.TabIndex = 11;
+            this.label9.Text = "Preview:";
+            // 
+            // cbxBold
+            // 
+            this.cbxBold.AutoSize = true;
+            this.cbxBold.Location = new System.Drawing.Point(252, 173);
+            this.cbxBold.Name = "cbxBold";
+            this.cbxBold.Size = new System.Drawing.Size(47, 17);
+            this.cbxBold.TabIndex = 9;
+            this.cbxBold.Text = "Bold";
+            this.cbxBold.UseVisualStyleBackColor = true;
+            this.cbxBold.CheckStateChanged += new System.EventHandler(this.cbxBold_CheckStateChanged);
+            // 
+            // lbxColorItems
+            // 
+            this.lbxColorItems.FormattingEnabled = true;
+            this.lbxColorItems.Location = new System.Drawing.Point(11, 85);
+            this.lbxColorItems.Name = "lbxColorItems";
+            this.lbxColorItems.Size = new System.Drawing.Size(232, 199);
+            this.lbxColorItems.TabIndex = 8;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(390, 15);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(30, 13);
+            this.label8.TabIndex = 7;
+            this.label8.Text = "Size:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(8, 15);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(31, 13);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "Font:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(249, 69);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(64, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "Foreground:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(249, 120);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(68, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Background:";
+            // 
+            // cbxBackground
+            // 
+            this.cbxBackground.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbxBackground.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxBackground.FormattingEnabled = true;
+            this.cbxBackground.Location = new System.Drawing.Point(252, 136);
+            this.cbxBackground.Name = "cbxBackground";
+            this.cbxBackground.Size = new System.Drawing.Size(135, 21);
+            this.cbxBackground.TabIndex = 3;
+            this.cbxBackground.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cbxForeground_DrawItem);
+            this.cbxBackground.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
+            // 
+            // cbxForeground
+            // 
+            this.cbxForeground.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbxForeground.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxForeground.FormattingEnabled = true;
+            this.cbxForeground.Location = new System.Drawing.Point(252, 85);
+            this.cbxForeground.Name = "cbxForeground";
+            this.cbxForeground.Size = new System.Drawing.Size(135, 21);
+            this.cbxForeground.TabIndex = 2;
+            this.cbxForeground.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cbxForeground_DrawItem);
+            this.cbxForeground.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
+            // 
+            // cbxFontSize
+            // 
+            this.cbxFontSize.FormattingEnabled = true;
+            this.cbxFontSize.Location = new System.Drawing.Point(393, 31);
+            this.cbxFontSize.Name = "cbxFontSize";
+            this.cbxFontSize.Size = new System.Drawing.Size(121, 21);
+            this.cbxFontSize.TabIndex = 1;
+            this.cbxFontSize.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
+            // 
+            // cbxFont
+            // 
+            this.cbxFont.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cbxFont.FormattingEnabled = true;
+            this.cbxFont.ItemHeight = 15;
+            this.cbxFont.Location = new System.Drawing.Point(11, 31);
+            this.cbxFont.Name = "cbxFont";
+            this.cbxFont.Size = new System.Drawing.Size(376, 21);
+            this.cbxFont.TabIndex = 0;
+            this.cbxFont.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cbxFont_DrawItem);
+            this.cbxFont.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
+            // 
+            // fontDialog1
+            // 
+            this.fontDialog1.ShowColor = true;
             // 
             // frmSettings
             // 
@@ -1079,6 +1265,8 @@ namespace Radegast
             ((System.ComponentModel.ISupportInitialize)(this.pseudoHomeTolerance)).EndInit();
             this.autoSit.ResumeLayout(false);
             this.autoSit.PerformLayout();
+            this.tbpChat.ResumeLayout(false);
+            this.tbpChat.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1086,7 +1274,7 @@ namespace Radegast
         #endregion
 
         public System.Windows.Forms.Label label1;
-        public System.Windows.Forms.ComboBox cbFontSize;
+        public System.Windows.Forms.ComboBox cbFontSizeDeleteme;
         public System.Windows.Forms.TabControl tcGraphics;
         public System.Windows.Forms.TabPage tbpGeneral;
         public System.Windows.Forms.CheckBox cbIMTimeStamps;
@@ -1163,5 +1351,21 @@ namespace Radegast
         public System.Windows.Forms.CheckBox cbResolveURIs;
         private System.Windows.Forms.CheckBox cbConfirmExit;
         private System.Windows.Forms.CheckBox cbThemeCompatibilityMode;
+        private System.Windows.Forms.TabPage tbpChat;
+        private System.Windows.Forms.FontDialog fontDialog1;
+        private System.Windows.Forms.CheckBox cbxItalic;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.CheckBox cbxBold;
+        private System.Windows.Forms.ListBox lbxColorItems;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cbxBackground;
+        private System.Windows.Forms.ComboBox cbxForeground;
+        private System.Windows.Forms.ComboBox cbxFontSize;
+        private System.Windows.Forms.ComboBox cbxFont;
+        private System.Windows.Forms.Label lblPreview;
     }
 }
