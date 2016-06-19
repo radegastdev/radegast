@@ -1120,7 +1120,7 @@ namespace Radegast
             this.lblPreview.Name = "lblPreview";
             this.lblPreview.Size = new System.Drawing.Size(135, 63);
             this.lblPreview.TabIndex = 16;
-            this.lblPreview.Text = "lblPreview";
+            this.lblPreview.Text = "Preview";
             this.lblPreview.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // cbxItalic
