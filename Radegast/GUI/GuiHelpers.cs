@@ -46,7 +46,7 @@ namespace Radegast.GUI
                     ApplyThemeCompatibilityModeRecursive(item);
                 }
             }
-            else if (root is Control && !(root is RichTextBox || root is ProgressBar))
+            else if (root is Control && !(root is ProgressBar))
             {
                 var control = root as Control;
                 control.BackColor = System.Drawing.SystemColors.Control;
