@@ -164,6 +164,7 @@
       <Reference name="System.Data" localCopy="false"/>
       <Reference name="System.Drawing" localCopy="false"/>
       <Reference name="System.Web" localCopy="false" />
+      <Reference name="System.Web.Extensions" localCopy="false" />
       <Reference name="System.Windows.Forms" localCopy="false" />
       <Reference name="System.Xml" localCopy="false" />
 
