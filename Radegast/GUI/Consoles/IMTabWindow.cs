@@ -63,8 +63,6 @@ namespace Radegast
 
             AddNetcomEvents();
 
-            UpdateFontSize();
-
             Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
@@ -87,18 +85,8 @@ namespace Radegast
             instance.GlobalSettings.OnSettingChanged -= new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
         }
 
-        void UpdateFontSize()
-        {
-            float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
-            cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
-            rtbIMText.Font = ChatConsole.ChangeFontSize(rtbIMText.Font, size);
-            textManager.ReprintAllText();
-        }
-
         void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
         {
-            if (e.Key == "chat_font_size")
-                UpdateFontSize();
         }
 
         private void netcom_ClientLoginStatus(object sender, LoginProgressEventArgs e)

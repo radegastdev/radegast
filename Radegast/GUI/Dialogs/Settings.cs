@@ -42,6 +42,7 @@ using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
 using Radegast.Automation;
+using System.Web.Script.Serialization;
 
 namespace Radegast
 {
@@ -56,6 +57,8 @@ namespace Radegast
     {
         private Settings s;
         private static bool settingInitialized = false;
+        private Settings.FontSetting currentlySelectedFontSetting = null;
+        Dictionary<string, Settings.FontSetting> chatFontSettings;
 
         public static void InitSettigs(Settings s, bool mono)
         {
@@ -151,7 +154,70 @@ namespace Radegast
             {
                 s["on_script_question"] = "Ask";
             }
-            
+        }
+
+        private void InitColorSettings()
+        {
+            for (int i = 1; i <= 48; i++)
+            {
+                cbxFontSize.Items.Add((float)i);
+                cbxFontSize.Items.Add((float)i + 0.5f);
+            }
+
+            foreach (var font in System.Drawing.FontFamily.Families)
+            {
+                cbxFont.Items.Add(font.Name);
+            }
+
+            //var colorTypes = typeof(System.Drawing.Color);
+            //var props = colorTypes.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
+            var knownColors = typeof(System.Drawing.KnownColor).GetEnumValues();
+
+            foreach (var item in knownColors)
+            {
+                var color = System.Drawing.Color.FromKnownColor((System.Drawing.KnownColor)item);
+                cbxForeground.Items.Add(color);
+                cbxBackground.Items.Add(color);
+            }
+
+            cbxFont.SelectedItem = SystemFonts.DefaultFont.Name;
+            cbxFontSize.SelectedItem = SystemFonts.DefaultFont.Size;
+            cbxBold.Checked = SystemFonts.DefaultFont.Bold;
+            cbxItalic.Checked = SystemFonts.DefaultFont.Italic;
+            cbxForeground.SelectedItem = SystemColors.ControlText;
+            cbxBackground.SelectedItem = SystemColors.Control;
+
+            ReloadFontSettings();
+        }
+
+        private void ReloadFontSettings()
+        {
+            lbxColorItems.Items.Clear();
+
+            var chatFontsJson = Instance.GlobalSettings["chat_fonts"];
+            if (chatFontsJson.Type != OSDType.Unknown)
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                Dictionary<string, Settings.FontSetting> unpacked = new Dictionary<string, Settings.FontSetting>();
+                chatFontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(chatFontsJson);
+            }
+            else
+            {
+                chatFontSettings = Settings.DefaultFontSettings;
+            }
+
+            foreach (var item in chatFontSettings)
+            {
+                if(item.Value.Name != item.Key)
+                {
+                    item.Value.Name = item.Key;
+                }
+                lbxColorItems.Items.Add(item.Value);
+            }
+            if(chatFontSettings.Count > 0)
+            {
+                lbxColorItems.SetSelected(0, true);
+            }
         }
 
         public frmSettings(RadegastInstance instance)
@@ -164,6 +230,7 @@ namespace Radegast
 
             InitializeComponent();
             AutoSavePosition = true;
+            InitColorSettings();
 
             s = instance.GlobalSettings;
             tbpGraphics.Controls.Add(new Radegast.Rendering.GraphicsPreferences(instance));
@@ -206,13 +273,6 @@ namespace Radegast
             {
                 s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
             };
-
-            if (s["chat_font_size"].Type != OSDType.Real)
-            {
-                s["chat_font_size"] = OSD.FromReal(((ChatConsole)instance.TabConsole.Tabs["chat"].Control).cbxInput.Font.Size);
-            }
-
-            cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
 
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
             cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
@@ -416,41 +476,6 @@ namespace Radegast
         private void cbTrasactChat_CheckedChanged(object sender, EventArgs e)
         {
             s["transaction_notification_chat"] = OSD.FromBoolean(cbTrasactChat.Checked);
-        }
-
-        private void UpdateFontSize()
-        {
-            double f = 8.25;
-            double existing = s["chat_font_size"].AsReal();
-
-            if (!double.TryParse(cbFontSize.Text, out f))
-            {
-                cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
-                return;
-            }
-
-            if (Math.Abs(existing - f) > 0.0001f)
-                s["chat_font_size"] = OSD.FromReal(f);
-
-        }
-
-        private void cbFontSize_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateFontSize();
-        }
-
-        private void cbFontSize_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                UpdateFontSize();
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void cbFontSize_Leave(object sender, EventArgs e)
-        {
-            UpdateFontSize();
         }
 
         private void rbAutobusy_CheckedChanged(object sender, EventArgs e)
@@ -757,5 +782,251 @@ namespace Radegast
             s["on_script_question"] = cbAutoScriptPermission.Text;
         }
 
+        private void cbxForeground_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            const int kPreviewPadding = 2;
+            const int kTextOffset = 15;
+
+            var graphics = e.Graphics;
+            var bounds = e.Bounds;
+
+            if (e.Index >= 0 && sender is ComboBox)
+            {
+                var sourceControl = sender as ComboBox;
+                var selectedColor = (Color)sourceControl.Items[e.Index];
+                if(sourceControl.Items[e.Index] is Color)
+                {
+                    var brushPreview = new SolidBrush(selectedColor);
+
+                    e.DrawBackground();
+
+                    if(e.State == DrawItemState.Selected)
+                    {
+                        graphics.DrawRectangle(SystemPens.Highlight, bounds);
+                    }
+
+                    graphics.DrawString(brushPreview.Color.Name,
+                        SystemFonts.DefaultFont,
+                        SystemBrushes.ControlText,
+                        bounds.X + kTextOffset,
+                        bounds.Top + kPreviewPadding);
+
+                    graphics.FillRectangle(brushPreview,
+                        bounds.X + kPreviewPadding,
+                        bounds.Y + kPreviewPadding,
+                        bounds.Height - kPreviewPadding,
+                        bounds.Height - kPreviewPadding);
+                }
+            }
+        }
+
+        private void cbxFont_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            const int kPreviewFontSize = 8;
+
+            var graphics = e.Graphics;
+            var bounds = e.Bounds;
+
+            if (e.Index >= 0 && sender is ComboBox)
+            {
+                var sourceControl = sender as ComboBox;
+                var fontName = sourceControl.Items[e.Index].ToString();
+                var fontPreview = new Font(fontName, kPreviewFontSize);
+
+                e.DrawBackground();
+
+                if(e.State == DrawItemState.Selected)
+                {
+                    graphics.DrawRectangle(SystemPens.Highlight, bounds);
+                }
+                else
+                {
+                    graphics.DrawRectangle(SystemPens.Window, bounds);
+                }
+
+                graphics.DrawString(fontName,
+                    fontPreview,
+                    SystemBrushes.ControlText,
+                    bounds.X,
+                    bounds.Top);
+
+            }
+        }
+
+        private Settings.FontSetting GetPreviewFontSettings()
+        {
+            float fontSize = SystemFonts.DefaultFont.Size;
+            string fontName = SystemFonts.DefaultFont.Name;
+            Color backColor = SystemColors.Window;
+            Color foreColor = SystemColors.ControlText;
+            FontStyle style = FontStyle.Regular;
+
+            if(cbxFontSize.SelectedItem is float)
+            {
+                fontSize = (float)cbxFontSize.SelectedItem;
+            }
+            if(cbxFont.SelectedItem is string)
+            {
+                fontName = (string)cbxFont.SelectedItem;
+            }
+            if(cbxForeground.SelectedItem is Color)
+            {
+                foreColor = (Color)cbxForeground.SelectedItem;
+            }
+            if(cbxBackground.SelectedItem is Color)
+            {
+                backColor = (Color)cbxBackground.SelectedItem;
+            }
+
+            if(cbxBold.Checked)
+            {
+                style |= FontStyle.Bold;
+            }
+            if(cbxItalic.Checked)
+            {
+                style |= FontStyle.Italic;
+            }
+
+            var previewFontSettings = new Settings.FontSetting(){
+                Name = string.Empty,
+                Font = new Font(fontName, fontSize, style),
+                ForeColor = foreColor,
+                BackColor = backColor
+            };
+
+            return previewFontSettings;
+        }
+
+        private void UpdatePreview()
+        {
+            var previewFontSettings = GetPreviewFontSettings();
+
+            lblPreview.Font = previewFontSettings.Font;
+            lblPreview.ForeColor = previewFontSettings.ForeColor;
+            lblPreview.BackColor = previewFontSettings.BackColor;
+        }
+
+        private void UpdateSelection(Settings.FontSetting selected)
+        {
+            currentlySelectedFontSetting = selected;
+            cbxFontSize.SelectedItem = selected.Font.Size;
+            cbxFont.SelectedItem = selected.Font.Name;
+            cbxForeground.SelectedItem = selected.ForeColor;
+            cbxBackground.SelectedItem = selected.BackColor;
+            cbxBold.Checked = selected.Font.Bold;
+            cbxItalic.Checked = selected.Font.Italic;
+        }
+
+        private void SaveCurrentFontSetting()
+        {
+            if(currentlySelectedFontSetting != null)
+            {
+                try
+                {
+                    var previewFontSettings = GetPreviewFontSettings();
+                    previewFontSettings.Name = currentlySelectedFontSetting.Name;
+
+                    chatFontSettings[currentlySelectedFontSetting.Name] = previewFontSettings;
+
+                    JavaScriptSerializer serializer = new JavaScriptSerializer();
+                    var json = serializer.Serialize(chatFontSettings);
+                    Instance.GlobalSettings["chat_fonts"] = json;
+                    Instance.GlobalSettings.Save();
+
+                    var previousIndex = lbxColorItems.SelectedIndex;
+                    ReloadFontSettings();
+                    lbxColorItems.SelectedIndex = previousIndex;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to save font setting: " + ex.Message);
+                }
+            }
+        }
+
+        private void ResetFontSettings()
+        {
+            try
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                var json = serializer.Serialize(Settings.DefaultFontSettings);
+                Instance.GlobalSettings["chat_fonts"] = json;
+                Instance.GlobalSettings.Save();
+                ReloadFontSettings();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to reset font settings: " + ex.Message);
+            }
+        }
+
+        private void SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdatePreview();
+        }
+
+        private void cbxItalic_CheckStateChanged(object sender, EventArgs e)
+        {
+            UpdatePreview();
+        }
+
+        private void cbxBold_CheckStateChanged(object sender, EventArgs e)
+        {
+            UpdatePreview();
+        }
+
+        private void lbxColorItems_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(sender is ListBox)
+            {
+                var sourceListbox = sender as ListBox;
+                if(sourceListbox.SelectedItem is Settings.FontSetting)
+                {
+                    var fontSettings = sourceListbox.SelectedItem as Settings.FontSetting;
+                    UpdateSelection(fontSettings);
+                }
+            }
+        }
+
+        private void lbxColorItems_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(e.Button != MouseButtons.None)
+            {
+                ListBox sourceListbox = sender as ListBox;
+                if(sourceListbox != null)
+                {
+                    int itemIndex = sourceListbox.IndexFromPoint(new Point(e.X, e.Y));
+                    if(itemIndex != -1)
+                    {
+                        var selectedItem = sourceListbox.Items[itemIndex] as Settings.FontSetting;
+                        if(selectedItem != null && selectedItem != currentlySelectedFontSetting)
+                        {
+                            UpdateSelection(selectedItem);
+                            sourceListbox.SelectedIndex = itemIndex;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void lbxColorItems_MouseDown(object sender, MouseEventArgs e)
+        {
+            lbxColorItems_MouseMove(sender, e);
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            SaveCurrentFontSetting();
+        }
+
+        private void btnResetFontSettings_Click(object sender, EventArgs e)
+        {
+            if(MessageBox.Show("Reset all color settings to the default values?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+            {
+                ResetFontSettings();
+            }
+        }
     }
+
+
 }

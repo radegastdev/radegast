@@ -104,6 +104,8 @@ namespace Radegast
         Error,
         Alert,
         OwnerSay,
-        Invisible
+        Invisible,
+        Emote,
+        Self
     }
 }
