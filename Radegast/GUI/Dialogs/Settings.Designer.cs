@@ -139,7 +139,7 @@ namespace Radegast
             this.autoSitNameLabel = new System.Windows.Forms.Label();
             this.tbpChat = new System.Windows.Forms.TabPage();
             this.btnSave = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnResetFontSettings = new System.Windows.Forms.Button();
             this.lblPreview = new System.Windows.Forms.Label();
             this.cbxItalic = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -1069,7 +1069,7 @@ namespace Radegast
             // tbpChat
             // 
             this.tbpChat.Controls.Add(this.btnSave);
-            this.tbpChat.Controls.Add(this.button1);
+            this.tbpChat.Controls.Add(this.btnResetFontSettings);
             this.tbpChat.Controls.Add(this.lblPreview);
             this.tbpChat.Controls.Add(this.cbxItalic);
             this.tbpChat.Controls.Add(this.label10);
@@ -1102,14 +1102,15 @@ namespace Radegast
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
-            // button1
+            // btnResetFontSettings
             // 
-            this.button1.Location = new System.Drawing.Point(11, 290);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(106, 23);
-            this.button1.TabIndex = 17;
-            this.button1.Text = "Reset All Colors";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnResetFontSettings.Location = new System.Drawing.Point(11, 290);
+            this.btnResetFontSettings.Name = "btnResetFontSettings";
+            this.btnResetFontSettings.Size = new System.Drawing.Size(106, 23);
+            this.btnResetFontSettings.TabIndex = 17;
+            this.btnResetFontSettings.Text = "Reset All Colors";
+            this.btnResetFontSettings.UseVisualStyleBackColor = true;
+            this.btnResetFontSettings.Click += new System.EventHandler(this.btnResetFontSettings_Click);
             // 
             // lblPreview
             // 
@@ -1394,6 +1395,6 @@ namespace Radegast
         private System.Windows.Forms.ComboBox cbxFont;
         private System.Windows.Forms.Label lblPreview;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnResetFontSettings;
     }
 }

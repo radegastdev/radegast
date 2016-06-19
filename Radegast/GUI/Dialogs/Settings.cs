@@ -57,8 +57,8 @@ namespace Radegast
     {
         private Settings s;
         private static bool settingInitialized = false;
-        private Settings.FontSettings currentlySelectedFontSetting = null;
-        Dictionary<string, Settings.FontSettings> chatFontSettings;
+        private Settings.FontSetting currentlySelectedFontSetting = null;
+        Dictionary<string, Settings.FontSetting> chatFontSettings;
 
         public static void InitSettigs(Settings s, bool mono)
         {
@@ -187,16 +187,23 @@ namespace Radegast
             cbxForeground.SelectedItem = SystemColors.ControlText;
             cbxBackground.SelectedItem = SystemColors.Control;
 
+            ReloadFontSettings();
+        }
+
+        private void ReloadFontSettings()
+        {
+            lbxColorItems.Items.Clear();
+
             var chatFontsJson = Instance.GlobalSettings["chat_fonts"];
             if (chatFontsJson.Type != OSDType.Unknown)
             {
                 JavaScriptSerializer serializer = new JavaScriptSerializer();
-                Dictionary<string, Settings.FontSettings> unpacked = new Dictionary<string, Settings.FontSettings>();
-                chatFontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSettings>>(chatFontsJson);
+                Dictionary<string, Settings.FontSetting> unpacked = new Dictionary<string, Settings.FontSetting>();
+                chatFontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(chatFontsJson);
             }
             else
             {
-                chatFontSettings = ChatTextManager.FontSettings;
+                chatFontSettings = Settings.DefaultFontSettings;
             }
 
             foreach (var item in chatFontSettings)
@@ -206,6 +213,10 @@ namespace Radegast
                     item.Value.Name = item.Key;
                 }
                 lbxColorItems.Items.Add(item.Value);
+            }
+            if(chatFontSettings.Count > 0)
+            {
+                lbxColorItems.SetSelected(0, true);
             }
         }
 
@@ -884,7 +895,7 @@ namespace Radegast
             }
         }
 
-        private Settings.FontSettings GetPreviewFontSettings()
+        private Settings.FontSetting GetPreviewFontSettings()
         {
             float fontSize = SystemFonts.DefaultFont.Size;
             string fontName = SystemFonts.DefaultFont.Name;
@@ -918,7 +929,7 @@ namespace Radegast
                 style |= FontStyle.Italic;
             }
 
-            var previewFontSettings = new Settings.FontSettings(){
+            var previewFontSettings = new Settings.FontSetting(){
                 Name = string.Empty,
                 Font = new Font(fontName, fontSize, style),
                 ForeColor = foreColor,
@@ -937,7 +948,7 @@ namespace Radegast
             lblPreview.BackColor = previewFontSettings.BackColor;
         }
 
-        private void UpdateSelection(Settings.FontSettings selected)
+        private void UpdateSelection(Settings.FontSetting selected)
         {
             currentlySelectedFontSetting = selected;
             cbxFontSize.SelectedItem = selected.Font.Size;
@@ -946,6 +957,45 @@ namespace Radegast
             cbxBackground.SelectedItem = selected.BackColor;
             cbxBold.Checked = selected.Font.Bold;
             cbxItalic.Checked = selected.Font.Italic;
+        }
+
+        private void SaveCurrentFontSetting()
+        {
+            if(currentlySelectedFontSetting != null)
+            {
+                try
+                {
+                    var previewFontSettings = GetPreviewFontSettings();
+                    previewFontSettings.Name = currentlySelectedFontSetting.Name;
+
+                    chatFontSettings[currentlySelectedFontSetting.Name] = previewFontSettings;
+
+                    JavaScriptSerializer serializer = new JavaScriptSerializer();
+                    var json = serializer.Serialize(chatFontSettings);
+                    Instance.GlobalSettings["chat_fonts"] = json;
+                    Instance.GlobalSettings.Save();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to save font setting: " + ex.Message);
+                }
+            }
+        }
+
+        private void ResetFontSettings()
+        {
+            try
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                var json = serializer.Serialize(Settings.DefaultFontSettings);
+                Instance.GlobalSettings["chat_fonts"] = json;
+                Instance.GlobalSettings.Save();
+                ReloadFontSettings();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to reset font settings: " + ex.Message);
+            }
         }
 
         private void SelectedIndexChanged(object sender, EventArgs e)
@@ -968,9 +1018,9 @@ namespace Radegast
             if(sender is ListBox)
             {
                 var sourceListbox = sender as ListBox;
-                if(sourceListbox.SelectedItem is Settings.FontSettings)
+                if(sourceListbox.SelectedItem is Settings.FontSetting)
                 {
-                    var fontSettings = sourceListbox.SelectedItem as Settings.FontSettings;
+                    var fontSettings = sourceListbox.SelectedItem as Settings.FontSetting;
                     UpdateSelection(fontSettings);
                 }
             }
@@ -986,7 +1036,7 @@ namespace Radegast
                     int itemIndex = sourceListbox.IndexFromPoint(new Point(e.X, e.Y));
                     if(itemIndex != -1)
                     {
-                        var selectedItem = sourceListbox.Items[itemIndex] as Settings.FontSettings;
+                        var selectedItem = sourceListbox.Items[itemIndex] as Settings.FontSetting;
                         if(selectedItem != null && selectedItem != currentlySelectedFontSetting)
                         {
                             UpdateSelection(selectedItem);
@@ -1004,17 +1054,14 @@ namespace Radegast
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if(currentlySelectedFontSetting != null)
+            SaveCurrentFontSetting();
+        }
+
+        private void btnResetFontSettings_Click(object sender, EventArgs e)
+        {
+            if(MessageBox.Show("Reset all color settings to the default values?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
             {
-                var previewFontSettings = GetPreviewFontSettings();
-                previewFontSettings.Name = currentlySelectedFontSetting.Name;
-
-                chatFontSettings[currentlySelectedFontSetting.Name] = previewFontSettings;
-
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                var json = serializer.Serialize(chatFontSettings);
-                Instance.GlobalSettings["chat_fonts"] = json;
-                Instance.GlobalSettings.Save();
+                ResetFontSettings();
             }
         }
     }

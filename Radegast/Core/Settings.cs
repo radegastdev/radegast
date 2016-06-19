@@ -49,7 +49,65 @@ namespace Radegast
         public delegate void SettingChangedCallback(object sender, SettingsEventArgs e);
         public event SettingChangedCallback OnSettingChanged;
 
-        public class FontSettings
+        public static readonly Dictionary<string, FontSetting> DefaultFontSettings = new Dictionary<string, FontSetting>()
+        {
+            {"Normal", new FontSetting {
+                Name = "Normal",
+                ForeColor = SystemColors.WindowText,
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"StatusBlue", new FontSetting {
+                Name = "StatusBlue",
+                ForeColor = Color.Blue,
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"StatusDarkBlue", new FontSetting {
+                Name = "StatusDarkBlue",
+                ForeColor = Color.DarkBlue,
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"LindenChat", new FontSetting {
+                Name = "LindenChat",
+                ForeColor = Color.DarkGreen,
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"ObjectChat", new FontSetting {
+                Name = "ObjectChat",
+                ForeColor = Color.DarkCyan,
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"StartupTitle", new FontSetting {
+                Name = "StartupTitle",
+                ForeColor = SystemColors.WindowText,
+                BackColor = Color.Transparent,
+                Font = new Font(FontSetting.DefaultFont, FontStyle.Bold),
+            }},
+            {"Alert", new FontSetting {
+                Name = "Alert",
+                ForeColor = Color.DarkRed,
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"Error", new FontSetting {
+                Name = "Error",
+                ForeColor = Color.Red,
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"OwnerSay", new FontSetting {
+                Name = "OwnerSay",
+                ForeColor = Color.FromArgb(255, 180, 150, 0),
+                BackColor = Color.Transparent,
+                Font = FontSetting.DefaultFont,
+            }},
+        };
+
+        public class FontSetting
         {
             [ScriptIgnoreAttribute]
             public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 8.0f);

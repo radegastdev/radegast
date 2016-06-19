@@ -54,63 +54,7 @@ namespace Radegast
 
         private bool showTimestamps;
 
-        public static Dictionary<string, Settings.FontSettings> FontSettings = new Dictionary<string, Settings.FontSettings>()
-        {
-            {"Normal", new Settings.FontSettings {
-                Name = "Normal",
-                ForeColor = SystemColors.WindowText,
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-            {"StatusBlue", new Settings.FontSettings {
-                Name = "StatusBlue",
-                ForeColor = Color.Blue,
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-            {"StatusDarkBlue", new Settings.FontSettings {
-                Name = "StatusDarkBlue",
-                ForeColor = Color.DarkBlue,
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-            {"LindenChat", new Settings.FontSettings {
-                Name = "LindenChat",
-                ForeColor = Color.DarkGreen,
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-            {"ObjectChat", new Settings.FontSettings {
-                Name = "ObjectChat",
-                ForeColor = Color.DarkCyan,
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-            {"StartupTitle", new Settings.FontSettings {
-                Name = "StartupTitle",
-                ForeColor = SystemColors.WindowText,
-                BackColor = Color.Transparent,
-                Font = new Font(Settings.FontSettings.DefaultFont, FontStyle.Bold),
-            }},
-            {"Alert", new Settings.FontSettings {
-                Name = "Alert",
-                ForeColor = Color.DarkRed,
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-            {"Error", new Settings.FontSettings {
-                Name = "Error",
-                ForeColor = Color.Red,
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-            {"OwnerSay", new Settings.FontSettings {
-                Name = "OwnerSay",
-                ForeColor = Color.FromArgb(255, 180, 150, 0),
-                BackColor = Color.Transparent,
-                Font = Settings.FontSettings.DefaultFont,
-            }},
-        };
+        public static Dictionary<string, Settings.FontSetting> fontSettings = new Dictionary<string, Settings.FontSetting>();
 
         public ChatTextManager(RadegastInstance instance, ITextPrinter textPrinter)
         {
@@ -146,7 +90,7 @@ namespace Radegast
             {
                 try
                 {
-                    s["chat_fonts"] = serializer.Serialize(FontSettings);
+                    s["chat_fonts"] = serializer.Serialize(Settings.DefaultFontSettings);
                 }
                 catch (Exception ex)
                 {
@@ -156,7 +100,7 @@ namespace Radegast
 
             try
             {
-                FontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSettings>>(s["chat_fonts"]);
+                fontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(s["chat_fonts"]);
             }
             catch (Exception ex)
             {
@@ -180,7 +124,7 @@ namespace Radegast
                 try
                 {
                     var serializer = new JavaScriptSerializer();
-                    FontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSettings>>(e.Value);
+                    fontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(e.Value);
                 }
                 catch (Exception ex)
                 {
@@ -244,9 +188,9 @@ namespace Radegast
                     textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
                 }
 
-                if(FontSettings.ContainsKey(item.Style.ToString()))
+                if(fontSettings.ContainsKey(item.Style.ToString()))
                 {
-                    var fontSetting = FontSettings[item.Style.ToString()];
+                    var fontSetting = fontSettings[item.Style.ToString()];
                     textPrinter.ForeColor = fontSetting.ForeColor;
                     textPrinter.BackColor = fontSetting.BackColor;
                     textPrinter.Font = fontSetting.Font;
@@ -255,7 +199,7 @@ namespace Radegast
                 {
                     textPrinter.ForeColor = SystemColors.WindowText;
                     textPrinter.BackColor = Color.Transparent;
-                    textPrinter.Font = Settings.FontSettings.DefaultFont;
+                    textPrinter.Font = Settings.FontSetting.DefaultFont;
                 }
 
                 if (item.Style == ChatBufferTextStyle.Normal && item.ID != UUID.Zero && instance.GlobalSettings["av_name_link"])
