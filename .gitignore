@@ -10,3 +10,4 @@ compile.bat
 *.resources
 *~
 *.userprefs
+.vs
