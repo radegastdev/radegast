@@ -528,7 +528,7 @@ namespace Radegast
             // cbNameLinks
             // 
             this.cbNameLinks.AutoSize = true;
-            this.cbNameLinks.Location = new System.Drawing.Point(8, 144);
+            this.cbNameLinks.Location = new System.Drawing.Point(8, 127);
             this.cbNameLinks.Name = "cbNameLinks";
             this.cbNameLinks.Size = new System.Drawing.Size(110, 17);
             this.cbNameLinks.TabIndex = 9;
@@ -538,7 +538,7 @@ namespace Radegast
             // cbDisableChatIMLog
             // 
             this.cbDisableChatIMLog.AutoSize = true;
-            this.cbDisableChatIMLog.Location = new System.Drawing.Point(8, 121);
+            this.cbDisableChatIMLog.Location = new System.Drawing.Point(8, 104);
             this.cbDisableChatIMLog.Name = "cbDisableChatIMLog";
             this.cbDisableChatIMLog.Size = new System.Drawing.Size(138, 17);
             this.cbDisableChatIMLog.TabIndex = 8;
@@ -568,7 +568,7 @@ namespace Radegast
             // cbMUEmotes
             // 
             this.cbMUEmotes.AutoSize = true;
-            this.cbMUEmotes.Location = new System.Drawing.Point(8, 78);
+            this.cbMUEmotes.Location = new System.Drawing.Point(8, 58);
             this.cbMUEmotes.Name = "cbMUEmotes";
             this.cbMUEmotes.Size = new System.Drawing.Size(108, 17);
             this.cbMUEmotes.TabIndex = 5;
@@ -579,7 +579,7 @@ namespace Radegast
             // cbNoTyping
             // 
             this.cbNoTyping.AutoSize = true;
-            this.cbNoTyping.Location = new System.Drawing.Point(8, 98);
+            this.cbNoTyping.Location = new System.Drawing.Point(8, 81);
             this.cbNoTyping.Name = "cbNoTyping";
             this.cbNoTyping.Size = new System.Drawing.Size(150, 17);
             this.cbNoTyping.TabIndex = 6;
