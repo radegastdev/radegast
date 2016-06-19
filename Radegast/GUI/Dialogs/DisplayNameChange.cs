@@ -49,6 +49,8 @@ namespace Radegast
         public DisplayNameChange()
         {
             InitializeComponent();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public DisplayNameChange(RadegastInstance inst)
@@ -59,6 +61,8 @@ namespace Radegast
             AutoSavePosition = true;
 
             Client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void DisplayNameChange_Disposed(object sender, EventArgs e)

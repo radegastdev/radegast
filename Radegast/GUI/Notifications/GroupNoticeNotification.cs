@@ -97,6 +97,7 @@ namespace Radegast
                 client.Groups.RequestGroupProfile(groupID);
             }
 
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void ShowNotice()

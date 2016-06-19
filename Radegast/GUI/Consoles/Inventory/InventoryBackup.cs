@@ -62,13 +62,17 @@ namespace Radegast
         {
             InitializeComponent();
             Disposed += new System.EventHandler(InventoryBackup_Disposed);
+
             this.instance = instance;
+
             inv = client.Inventory.Store;
             rootNode = inv.RootNode;
             if (inv.Items.ContainsKey(rootFolder) && inv.Items[rootFolder].Data is InventoryFolder)
             {
                 rootNode = inv.GetNodeFor(rootFolder);
             }
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void InventoryBackup_Disposed(object sender, System.EventArgs e)

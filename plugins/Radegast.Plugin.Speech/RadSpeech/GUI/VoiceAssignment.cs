@@ -65,6 +65,8 @@ namespace RadegastSpeech.GUI
             }
 
             doDemo = true;
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         /// <summary>

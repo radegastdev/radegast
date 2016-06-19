@@ -74,6 +74,8 @@ namespace Radegast
             foreach (KeyValuePair<UUID, GroupRole> role in roles)
                 if (role.Key != UUID.Zero)
                     cmbRoles.Items.Add(role.Value);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void picker_SelectionChaged(object sender, EventArgs e)

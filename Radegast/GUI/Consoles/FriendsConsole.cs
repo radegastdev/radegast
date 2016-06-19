@@ -77,6 +77,8 @@ namespace Radegast
             client.Friends.FriendNames += new EventHandler<FriendNamesEventArgs>(Friends_FriendNames);
             Load += new EventHandler(FriendsConsole_Load);
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)

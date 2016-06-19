@@ -73,6 +73,8 @@ namespace Radegast
 			objectName.Text = "";
 			primCount.Text = "";
 			textureCount.Text = "";
+
+			Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
 		}
 		#endregion
 		

@@ -58,6 +58,8 @@ namespace Radegast
             args.Buttons.Add(btnTeleport);
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void btnTeleport_Click(object sender, EventArgs e)

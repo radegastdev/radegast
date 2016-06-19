@@ -81,6 +81,8 @@ namespace Radegast
                     client.Assets.RequestInventoryAsset(notecard.AssetUUID, notecard.UUID, prim.ID, prim.OwnerID, notecard.AssetType, true, Assets_OnAssetReceived);
                 }
             }
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Notecard_Disposed(object sender, EventArgs e)

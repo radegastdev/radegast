@@ -72,6 +72,8 @@ namespace Radegast
             }
             UpdateFontSize();
             Load += new EventHandler(GroupIMTabWindow_Load);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)

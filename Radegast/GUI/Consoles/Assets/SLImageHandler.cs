@@ -83,6 +83,8 @@ namespace Radegast
         public SLImageHandler()
         {
             InitializeComponent();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public SLImageHandler(RadegastInstance instance, UUID image, string label)
@@ -95,6 +97,8 @@ namespace Radegast
             this.allowSave = allowSave;
             InitializeComponent();
             Init(instance, image, label);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public void Init(RadegastInstance instance, UUID image, string label)

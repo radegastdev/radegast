@@ -53,6 +53,8 @@ namespace Radegast
         public MeshUploadConsole()
         {
             InitializeComponent();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public MeshUploadConsole(RadegastInstance instance)
@@ -64,6 +66,8 @@ namespace Radegast
             instance.Netcom.ClientConnected += new EventHandler<EventArgs>(Netcom_ClientConnected);
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             UpdateButtons();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void MeshUploadConsole_Disposed(object sender, EventArgs e)

@@ -128,6 +128,8 @@ namespace Radegast.Rendering
             Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)

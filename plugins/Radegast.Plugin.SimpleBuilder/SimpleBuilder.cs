@@ -115,6 +115,8 @@ namespace SimpleBuilderNamespace
             RegisterClientEvents(client);
 
             selectedPrim = null;
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         /// <summary>

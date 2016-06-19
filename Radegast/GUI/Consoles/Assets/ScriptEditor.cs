@@ -68,6 +68,7 @@ namespace Radegast
             this.instance = instance;
             this.script = script;
             this.prim = prim;
+
             rtb.SyntaxHighlightEnabled = instance.GlobalSettings["script_syntax_highlight"].AsBoolean();
             lblScripStatus.Text = string.Empty;
             lblScripStatus.TextChanged += (object sender, EventArgs e) =>
@@ -101,6 +102,8 @@ namespace Radegast
                 rtb.Text = " "; //bugs in control grrrr
                 rtb.SelectionStart = 0;
             }
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void SscriptEditor_Disposed(object sender, EventArgs e)

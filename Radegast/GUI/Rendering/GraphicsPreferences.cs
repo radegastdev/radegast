@@ -60,6 +60,8 @@ namespace Radegast.Rendering
         public GraphicsPreferences()
         {
             InitializeComponent();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public GraphicsPreferences(RadegastInstance instance)
@@ -81,6 +83,8 @@ namespace Radegast.Rendering
             cbOcclusionCulling.Checked = Instance.GlobalSettings["rendering_occlusion_culling_enabled2"];
             cbShiny.Checked = Instance.GlobalSettings["scene_viewer_shiny"];
             cbVBO.Checked = Instance.GlobalSettings["rendering_use_vbo"];
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void GraphicsPreferences_Disposed(object sender, EventArgs e)

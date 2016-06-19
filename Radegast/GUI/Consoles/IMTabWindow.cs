@@ -64,6 +64,8 @@ namespace Radegast
             AddNetcomEvents();
 
             UpdateFontSize();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)

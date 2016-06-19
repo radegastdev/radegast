@@ -292,6 +292,12 @@ namespace Radegast
                 s["confirm_exit"] = cbConfirmExit.Checked;
             };
 
+            cbThemeCompatibilityMode.Checked = s["theme_compatibility_mode"];
+            cbThemeCompatibilityMode.CheckedChanged += (sender, e) =>
+            {
+                s["theme_compatibility_mode"] = cbThemeCompatibilityMode.Checked;
+            };
+
             cbTaskBarHighLight.Checked = s["taskbar_highlight"];
             cbTaskBarHighLight.CheckedChanged += (sender, e) =>
             {
@@ -356,6 +362,8 @@ namespace Radegast
             cbAutoScriptPermission.Text = s["on_script_question"];
 
             UpdateEnabled();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void UpdateEnabled()
@@ -534,6 +542,11 @@ namespace Radegast
         private void cbConfirmExit_CheckedChanged(object sender, EventArgs e)
         {
             s["confirm_exit"] = OSD.FromBoolean(cbConfirmExit.Checked);
+        }
+
+        private void cbThemeCompatibilityMode_CheckedChanged(object sender, EventArgs e)
+        {
+            s["theme_compatibility_mode"] = OSD.FromBoolean(cbThemeCompatibilityMode.Checked);
         }
 
         #region Auto-Sit

@@ -55,6 +55,8 @@ namespace Radegast
         public ImageUploadConsole()
         {
             InitializeComponent();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public ImageUploadConsole(RadegastInstance instance)
@@ -68,6 +70,8 @@ namespace Radegast
             client.Assets.AssetUploaded += new EventHandler<AssetUploadEventArgs>(Assets_AssetUploaded);
             UpdateButtons();
             OriginalCapsTimeout = client.Settings.CAPS_TIMEOUT;
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void ImageUploadConsole_Disposed(object sender, EventArgs e)

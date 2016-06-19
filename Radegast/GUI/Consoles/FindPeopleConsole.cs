@@ -61,6 +61,8 @@ namespace Radegast
 
             // Callbacks
             client.Directory.DirPeopleReply += new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void FindPeopleConsole_Disposed(object sender, EventArgs e)

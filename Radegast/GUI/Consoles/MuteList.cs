@@ -45,6 +45,8 @@ namespace Radegast
         public MuteList()
         {
             InitializeComponent();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public MuteList(RadegastInstance instance)
@@ -55,6 +57,8 @@ namespace Radegast
             RegisterClientEvents(client);
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RefreshMuteList();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void instance_ClientChanged(object sender, ClientChangedEventArgs e)

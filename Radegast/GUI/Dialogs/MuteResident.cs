@@ -62,6 +62,8 @@ namespace Radegast
             picker.BringToFront();
             
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void picker_SelectionChaged(object sender, EventArgs e)

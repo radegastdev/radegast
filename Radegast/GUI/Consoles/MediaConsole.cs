@@ -105,6 +105,8 @@ namespace Radegast
 
             // Network callbacks
             client.Parcels.ParcelProperties += new EventHandler<ParcelPropertiesEventArgs>(Parcels_ParcelProperties);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void MediaConsole_Disposed(object sender, EventArgs e)

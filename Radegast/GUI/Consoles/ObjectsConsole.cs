@@ -114,6 +114,8 @@ namespace Radegast
             client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmObjects_Disposed(object sender, EventArgs e)
