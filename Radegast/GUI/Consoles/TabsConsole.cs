@@ -664,7 +664,7 @@ namespace Radegast
 
             if (isNew)
             {
-                ((IMTabWindow)tab.Control).TextManager.ProcessIM(e);
+                ((IMTabWindow)tab.Control).TextManager.ProcessIM(e, true);
             }
         }
 
@@ -683,7 +683,7 @@ namespace Radegast
 
             ConferenceIMTabWindow imTab = AddConferenceIMTab(e.IM.IMSessionID, Utils.BytesToString(e.IM.BinaryBucket));
             tabs[e.IM.IMSessionID.ToString()].Highlight();
-            imTab.TextManager.ProcessIM(e);
+            imTab.TextManager.ProcessIM(e, true);
 
             if (active != null)
             {
@@ -708,7 +708,7 @@ namespace Radegast
             Control active = FindFocusedControl(instance.MainForm);
 
             GroupIMTabWindow imTab = AddGroupIMTab(e.IM.IMSessionID, Utils.BytesToString(e.IM.BinaryBucket));
-            imTab.TextManager.ProcessIM(e);
+            imTab.TextManager.ProcessIM(e, true);
             tabs[e.IM.IMSessionID.ToString()].Highlight();
 
             if (active != null)

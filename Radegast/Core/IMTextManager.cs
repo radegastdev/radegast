@@ -147,7 +147,7 @@ namespace Radegast
             if (e.SessionID != sessionID) return;
 
             textBuffer.Add(e);
-            ProcessIM(e);
+            ProcessIM(e, true);
         }
 
         private void netcom_InstantMessageReceived(object sender, InstantMessageEventArgs e)
@@ -163,23 +163,23 @@ namespace Radegast
             }
 
             textBuffer.Add(e);
-            ProcessIM(e);
+            ProcessIM(e, true);
         }
 
-        public void ProcessIM(object e)
+        public void ProcessIM(object e, bool isNewMessage)
         {
             if (e is InstantMessageEventArgs)
-                this.ProcessIncomingIM((InstantMessageEventArgs)e);
+                this.ProcessIncomingIM((InstantMessageEventArgs)e, isNewMessage);
             else if (e is InstantMessageSentEventArgs)
-                this.ProcessOutgoingIM((InstantMessageSentEventArgs)e);
+                this.ProcessOutgoingIM((InstantMessageSentEventArgs)e, isNewMessage);
         }
 
-        private void ProcessOutgoingIM(InstantMessageSentEventArgs e)
+        private void ProcessOutgoingIM(InstantMessageSentEventArgs e, bool isNewMessage)
         {
-            PrintIM(e.Timestamp, netcom.LoginOptions.FullName, instance.Client.Self.AgentID, e.Message);
+            PrintIM(e.Timestamp, netcom.LoginOptions.FullName, instance.Client.Self.AgentID, e.Message, isNewMessage);
         }
 
-        private void ProcessIncomingIM(InstantMessageEventArgs e)
+        private void ProcessIncomingIM(InstantMessageEventArgs e, bool isNewMessage)
         {
             string msg = e.IM.Message;
 
@@ -205,7 +205,7 @@ namespace Radegast
             {
                 instance.MediaManager.PlayUISound(UISounds.IM);
             }
-            PrintIM(DateTime.Now, instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), e.IM.FromAgentID, msg);
+            PrintIM(DateTime.Now, instance.Names.Get(e.IM.FromAgentID, e.IM.FromAgentName), e.IM.FromAgentID, msg, isNewMessage);
 
             if (!AutoResponseSent && Type == IMTextManagerType.Agent && e.IM.FromAgentID != UUID.Zero && e.IM.FromAgentName != "Second Life")
             {
@@ -232,7 +232,7 @@ namespace Radegast
                         instance.Client.Network.CurrentSim.ID,
                         null);
 
-                    PrintIM(DateTime.Now, instance.Client.Self.Name, instance.Client.Self.AgentID, instance.GlobalSettings["auto_response_text"].AsString());
+                    PrintIM(DateTime.Now, instance.Client.Self.Name, instance.Client.Self.AgentID, instance.GlobalSettings["auto_response_text"].AsString(), isNewMessage);
                 }
             }
         }
@@ -282,7 +282,7 @@ namespace Radegast
             textPrinter.PrintTextLine(message);
         }
 
-        private void PrintIM(DateTime timestamp, string fromName, UUID fromID, string message)
+        private void PrintIM(DateTime timestamp, string fromName, UUID fromID, string message, bool isNewMessage)
         {
             if (showTimestamps)
             {
@@ -385,7 +385,11 @@ namespace Radegast
                 sb.Append(message);
             }
 
-            instance.LogClientMessage(sessionName + ".txt", fromName + sb.ToString());
+            if(isNewMessage)
+            {
+                instance.LogClientMessage(sessionName + ".txt", fromName + sb.ToString());
+            }
+
             textPrinter.PrintTextLine(sb.ToString());
         }
 
@@ -484,7 +488,7 @@ namespace Radegast
             textPrinter.ClearText();
             PrintLastLog();
             foreach (object obj in textBuffer)
-                ProcessIM(obj);
+                ProcessIM(obj, false);
         }
 
         public void ClearInternalBuffer()
