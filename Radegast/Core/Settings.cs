@@ -101,7 +101,7 @@ namespace Radegast
             }},
             {"OwnerSay", new FontSetting {
                 Name = "OwnerSay",
-                ForeColor = Color.Crimson, //FromArgb(255, 180, 150, 0),
+                ForeColor = Color.DarkGoldenrod,
                 BackColor = Color.Transparent,
                 Font = FontSetting.DefaultFont,
             }},
