@@ -35,6 +35,9 @@ using System.IO;
 using System.Xml;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using System.Drawing;
+using System.Web.Script.Serialization;
+using System.ComponentModel;
 
 namespace Radegast
 {
@@ -45,6 +48,96 @@ namespace Radegast
 
         public delegate void SettingChangedCallback(object sender, SettingsEventArgs e);
         public event SettingChangedCallback OnSettingChanged;
+
+        public class FontSettings
+        {
+            [ScriptIgnoreAttribute]
+            public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 8.0f);
+
+            [ScriptIgnoreAttribute]
+            public Font Font;
+
+            [ScriptIgnoreAttribute]
+            public Color ForeColor;
+
+            [ScriptIgnoreAttribute]
+            public Color BackColor;
+
+
+            public String Name;
+
+            public string ForeColorString
+            {
+                get
+                {
+                    if (ForeColor != null)
+                    {
+                        return ColorTranslator.ToHtml(ForeColor);
+                    }
+                    else
+                    {
+                        return ColorTranslator.ToHtml(SystemColors.ControlText);
+                    }
+                }
+                set
+                {
+                    ForeColor = ColorTranslator.FromHtml(value);
+                }
+            }
+
+            public string BackColorString
+            {
+                get
+                {
+                    if (BackColor != null)
+                    {
+                        return ColorTranslator.ToHtml(BackColor);
+                    }
+                    else
+                    {
+                        return ColorTranslator.ToHtml(SystemColors.ControlText);
+                    }
+                }
+                set
+                {
+                    BackColor = ColorTranslator.FromHtml(value);
+                }
+            }
+
+            public string FontString
+            {
+                get
+                {
+                    if (this.Font != null)
+                    {
+                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(Font));
+                        return converter.ConvertToString(this.Font);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                set
+                {
+                    try
+                    {
+                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(Font));
+                        this.Font = converter.ConvertFromString(value) as Font;
+                    }
+                    catch (Exception)
+                    {
+                        this.Font = DefaultFont;
+                    }
+
+                }
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
 
         public Settings(string fileName)
         {

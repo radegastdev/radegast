@@ -42,6 +42,7 @@ using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
 using Radegast.Automation;
+using System.Web.Script.Serialization;
 
 namespace Radegast
 {
@@ -56,6 +57,7 @@ namespace Radegast
     {
         private Settings s;
         private static bool settingInitialized = false;
+        private Settings.FontSettings currentlySelectedFontSetting = null;
 
         public static void InitSettigs(Settings s, bool mono)
         {
@@ -151,7 +153,6 @@ namespace Radegast
             {
                 s["on_script_question"] = "Ask";
             }
-            
         }
 
         private void InitColorSettings()
@@ -184,6 +185,25 @@ namespace Radegast
             cbxItalic.Checked = SystemFonts.DefaultFont.Italic;
             cbxForeground.SelectedItem = SystemColors.ControlText;
             cbxBackground.SelectedItem = SystemColors.Control;
+
+            Dictionary<string, Settings.FontSettings> chatFontSettings;
+
+            var chatFontsJson = Instance.GlobalSettings["chat_fonts"];
+            if (chatFontsJson.Type != OSDType.Unknown)
+            {
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                Dictionary<string, Settings.FontSettings> unpacked = new Dictionary<string, Settings.FontSettings>();
+                chatFontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSettings>>(chatFontsJson);
+            }
+            else
+            {
+                chatFontSettings = ChatTextManager.FontSettings;
+            }
+
+            foreach (var item in chatFontSettings)
+            {
+                lbxColorItems.Items.Add(item.Value);
+            }
         }
 
         public frmSettings(RadegastInstance instance)
@@ -900,6 +920,17 @@ namespace Radegast
             lblPreview.BackColor = backColor;
         }
 
+        private void UpdateSelection(Settings.FontSettings selected)
+        {
+            currentlySelectedFontSetting = selected;
+            cbxFontSize.SelectedItem = selected.Font.Size;
+            cbxFont.SelectedItem = selected.Font.Name;
+            cbxForeground.SelectedItem = selected.ForeColor;
+            cbxBackground.SelectedItem = selected.BackColor;
+            cbxBold.Checked = selected.Font.Bold;
+            cbxItalic.Checked = selected.Font.Italic;
+        }
+
         private void SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdatePreview();
@@ -914,5 +945,46 @@ namespace Radegast
         {
             UpdatePreview();
         }
+
+        private void lbxColorItems_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(sender is ListBox)
+            {
+                var sourceListbox = sender as ListBox;
+                if(sourceListbox.SelectedItem is Settings.FontSettings)
+                {
+                    var fontSettings = sourceListbox.SelectedItem as Settings.FontSettings;
+                    UpdateSelection(fontSettings);
+                }
+            }
+        }
+
+        private void lbxColorItems_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(e.Button != MouseButtons.None)
+            {
+                ListBox sourceListbox = sender as ListBox;
+                if(sourceListbox != null)
+                {
+                    int itemIndex = sourceListbox.IndexFromPoint(new Point(e.X, e.Y));
+                    if(itemIndex != -1)
+                    {
+                        var selectedItem = sourceListbox.Items[itemIndex] as Settings.FontSettings;
+                        if(selectedItem != null && selectedItem != currentlySelectedFontSetting)
+                        {
+                            UpdateSelection(selectedItem);
+                            sourceListbox.SelectedIndex = itemIndex;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void lbxColorItems_MouseDown(object sender, MouseEventArgs e)
+        {
+            lbxColorItems_MouseMove(sender, e);
+        }
     }
+
+
 }

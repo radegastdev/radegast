@@ -35,11 +35,14 @@ using System.Text;
 using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using System.Web.Script.Serialization;
+using System.ComponentModel;
 
 namespace Radegast
 {
     public class ChatTextManager : IDisposable
     {
+
         public event EventHandler<ChatLineAddedArgs> ChatLineAdded;
 
         private RadegastInstance instance;
@@ -50,6 +53,64 @@ namespace Radegast
         private List<ChatBufferItem> textBuffer;
 
         private bool showTimestamps;
+
+        public static Dictionary<string, Settings.FontSettings> FontSettings = new Dictionary<string, Settings.FontSettings>()
+        {
+            {"Normal", new Settings.FontSettings {
+                Name = "Normal",
+                ForeColor = SystemColors.WindowText,
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+            {"StatusBlue", new Settings.FontSettings {
+                Name = "StatusBlue",
+                ForeColor = Color.Blue,
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+            {"StatusDarkBlue", new Settings.FontSettings {
+                Name = "StatusDarkBlue",
+                ForeColor = Color.DarkBlue,
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+            {"LindenChat", new Settings.FontSettings {
+                Name = "LindenChat",
+                ForeColor = Color.DarkGreen,
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+            {"ObjectChat", new Settings.FontSettings {
+                Name = "ObjectChat",
+                ForeColor = Color.DarkCyan,
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+            {"StartupTitle", new Settings.FontSettings {
+                Name = "StartupTitle",
+                ForeColor = SystemColors.WindowText,
+                BackColor = Color.Transparent,
+                Font = new Font(Settings.FontSettings.DefaultFont, FontStyle.Bold),
+            }},
+            {"Alert", new Settings.FontSettings {
+                Name = "Alert",
+                ForeColor = Color.DarkRed,
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+            {"Error", new Settings.FontSettings {
+                Name = "Error",
+                ForeColor = Color.Red,
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+            {"OwnerSay", new Settings.FontSettings {
+                Name = "OwnerSay",
+                ForeColor = Color.FromArgb(255, 180, 150, 0),
+                BackColor = Color.Transparent,
+                Font = Settings.FontSettings.DefaultFont,
+            }},
+        };
 
         public ChatTextManager(RadegastInstance instance, ITextPrinter textPrinter)
         {
@@ -75,9 +136,32 @@ namespace Radegast
         private void InitializeConfig()
         {
             Settings s = instance.GlobalSettings;
+            var serializer = new JavaScriptSerializer();
 
             if (s["chat_timestamps"].Type == OSDType.Unknown)
+            {
                 s["chat_timestamps"] = OSD.FromBoolean(true);
+            }
+            if (s["chat_fonts"].Type == OSDType.Unknown)
+            {
+                try
+                {
+                    s["chat_fonts"] = serializer.Serialize(FontSettings);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Failed to save default font settings: " + ex.Message);
+                }
+            }
+
+            try
+            {
+                FontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSettings>>(s["chat_fonts"]);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Failed to read chat font settings: " + ex.Message);
+            }
 
             showTimestamps = s["chat_timestamps"].AsBoolean();
 
@@ -89,6 +173,19 @@ namespace Radegast
             if (e.Key == "chat_timestamps" && e.Value != null)
             {
                 showTimestamps = e.Value.AsBoolean();
+                ReprintAllText();
+            }
+            else if(e.Key == "chat_fonts")
+            {
+                try
+                {
+                    var serializer = new JavaScriptSerializer();
+                    FontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSettings>>(e.Value);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Failed to read new font settings: " + ex.Message);
+                }
                 ReprintAllText();
             }
         }

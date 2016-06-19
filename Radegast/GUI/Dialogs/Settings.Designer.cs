@@ -138,6 +138,8 @@ namespace Radegast
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
             this.tbpChat = new System.Windows.Forms.TabPage();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.lblPreview = new System.Windows.Forms.Label();
             this.cbxItalic = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -1066,6 +1068,8 @@ namespace Radegast
             // 
             // tbpChat
             // 
+            this.tbpChat.Controls.Add(this.button2);
+            this.tbpChat.Controls.Add(this.button1);
             this.tbpChat.Controls.Add(this.lblPreview);
             this.tbpChat.Controls.Add(this.cbxItalic);
             this.tbpChat.Controls.Add(this.label10);
@@ -1088,13 +1092,31 @@ namespace Radegast
             this.tbpChat.Text = "Chat";
             this.tbpChat.UseVisualStyleBackColor = true;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(338, 290);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(49, 23);
+            this.button2.TabIndex = 18;
+            this.button2.Text = "Save";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(11, 290);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(106, 23);
+            this.button1.TabIndex = 17;
+            this.button1.Text = "Reset All Colors";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // lblPreview
             // 
             this.lblPreview.BackColor = System.Drawing.Color.Transparent;
             this.lblPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblPreview.Location = new System.Drawing.Point(252, 221);
             this.lblPreview.Name = "lblPreview";
-            this.lblPreview.Size = new System.Drawing.Size(262, 63);
+            this.lblPreview.Size = new System.Drawing.Size(135, 63);
             this.lblPreview.TabIndex = 16;
             this.lblPreview.Text = "lblPreview";
             this.lblPreview.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -1146,11 +1168,14 @@ namespace Radegast
             this.lbxColorItems.Name = "lbxColorItems";
             this.lbxColorItems.Size = new System.Drawing.Size(232, 199);
             this.lbxColorItems.TabIndex = 8;
+            this.lbxColorItems.SelectedIndexChanged += new System.EventHandler(this.lbxColorItems_SelectedIndexChanged);
+            this.lbxColorItems.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbxColorItems_MouseDown);
+            this.lbxColorItems.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lbxColorItems_MouseMove);
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(390, 15);
+            this.label8.Location = new System.Drawing.Point(249, 15);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(30, 13);
             this.label8.TabIndex = 7;
@@ -1210,9 +1235,9 @@ namespace Radegast
             // cbxFontSize
             // 
             this.cbxFontSize.FormattingEnabled = true;
-            this.cbxFontSize.Location = new System.Drawing.Point(393, 31);
+            this.cbxFontSize.Location = new System.Drawing.Point(252, 31);
             this.cbxFontSize.Name = "cbxFontSize";
-            this.cbxFontSize.Size = new System.Drawing.Size(121, 21);
+            this.cbxFontSize.Size = new System.Drawing.Size(135, 21);
             this.cbxFontSize.TabIndex = 1;
             this.cbxFontSize.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
             // 
@@ -1223,7 +1248,7 @@ namespace Radegast
             this.cbxFont.ItemHeight = 15;
             this.cbxFont.Location = new System.Drawing.Point(11, 31);
             this.cbxFont.Name = "cbxFont";
-            this.cbxFont.Size = new System.Drawing.Size(376, 21);
+            this.cbxFont.Size = new System.Drawing.Size(232, 21);
             this.cbxFont.TabIndex = 0;
             this.cbxFont.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.cbxFont_DrawItem);
             this.cbxFont.SelectedIndexChanged += new System.EventHandler(this.SelectedIndexChanged);
@@ -1367,5 +1392,7 @@ namespace Radegast
         private System.Windows.Forms.ComboBox cbxFontSize;
         private System.Windows.Forms.ComboBox cbxFont;
         private System.Windows.Forms.Label lblPreview;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
     }
 }
