@@ -274,13 +274,6 @@ namespace Radegast
                 s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
             };
 
-            if (s["chat_font_size"].Type != OSDType.Real)
-            {
-                s["chat_font_size"] = OSD.FromReal(((ChatConsole)instance.TabConsole.Tabs["chat"].Control).cbxInput.Font.Size);
-            }
-
-            cbFontSizeDeleteme.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
-
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
             cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
             cbMinToTrey.CheckedChanged += (object sender, EventArgs e) =>
@@ -483,41 +476,6 @@ namespace Radegast
         private void cbTrasactChat_CheckedChanged(object sender, EventArgs e)
         {
             s["transaction_notification_chat"] = OSD.FromBoolean(cbTrasactChat.Checked);
-        }
-
-        private void UpdateFontSize()
-        {
-            double f = 8.25;
-            double existing = s["chat_font_size"].AsReal();
-
-            if (!double.TryParse(cbFontSizeDeleteme.Text, out f))
-            {
-                cbFontSizeDeleteme.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
-                return;
-            }
-
-            if (Math.Abs(existing - f) > 0.0001f)
-                s["chat_font_size"] = OSD.FromReal(f);
-
-        }
-
-        private void cbFontSize_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateFontSize();
-        }
-
-        private void cbFontSize_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                UpdateFontSize();
-                e.Handled = e.SuppressKeyPress = true;
-            }
-        }
-
-        private void cbFontSize_Leave(object sender, EventArgs e)
-        {
-            UpdateFontSize();
         }
 
         private void rbAutobusy_CheckedChanged(object sender, EventArgs e)
@@ -974,6 +932,10 @@ namespace Radegast
                     var json = serializer.Serialize(chatFontSettings);
                     Instance.GlobalSettings["chat_fonts"] = json;
                     Instance.GlobalSettings.Save();
+
+                    var previousIndex = lbxColorItems.SelectedIndex;
+                    ReloadFontSettings();
+                    lbxColorItems.SelectedIndex = previousIndex;
                 }
                 catch (Exception ex)
                 {

@@ -96,8 +96,6 @@ namespace Radegast
             this.cbIMTimeStamps = new System.Windows.Forms.CheckBox();
             this.cbMUEmotes = new System.Windows.Forms.CheckBox();
             this.cbNoTyping = new System.Windows.Forms.CheckBox();
-            this.cbFontSizeDeleteme = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.gbDisplayNames = new System.Windows.Forms.GroupBox();
             this.rbDNOnlyDN = new System.Windows.Forms.RadioButton();
             this.rbDNDandUsernme = new System.Windows.Forms.RadioButton();
@@ -520,8 +518,6 @@ namespace Radegast
             this.Chat.Controls.Add(this.cbIMTimeStamps);
             this.Chat.Controls.Add(this.cbMUEmotes);
             this.Chat.Controls.Add(this.cbNoTyping);
-            this.Chat.Controls.Add(this.cbFontSizeDeleteme);
-            this.Chat.Controls.Add(this.label1);
             this.Chat.Location = new System.Drawing.Point(8, 5);
             this.Chat.Name = "Chat";
             this.Chat.Size = new System.Drawing.Size(256, 169);
@@ -590,36 +586,6 @@ namespace Radegast
             this.cbNoTyping.Text = "Don\'t use typing animation";
             this.cbNoTyping.UseVisualStyleBackColor = true;
             this.cbNoTyping.CheckedChanged += new System.EventHandler(this.cbTrasactChat_CheckedChanged);
-            // 
-            // cbFontSizeDeleteme
-            // 
-            this.cbFontSizeDeleteme.FormatString = "N2";
-            this.cbFontSizeDeleteme.FormattingEnabled = true;
-            this.cbFontSizeDeleteme.Items.AddRange(new object[] {
-            "8.25",
-            "9",
-            "10",
-            "12",
-            "14",
-            "16",
-            "20"});
-            this.cbFontSizeDeleteme.Location = new System.Drawing.Point(104, 53);
-            this.cbFontSizeDeleteme.Name = "cbFontSizeDeleteme";
-            this.cbFontSizeDeleteme.Size = new System.Drawing.Size(54, 21);
-            this.cbFontSizeDeleteme.TabIndex = 3;
-            this.cbFontSizeDeleteme.Text = "8.25";
-            this.cbFontSizeDeleteme.SelectedIndexChanged += new System.EventHandler(this.cbFontSize_SelectedIndexChanged);
-            this.cbFontSizeDeleteme.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbFontSize_KeyDown);
-            this.cbFontSizeDeleteme.Leave += new System.EventHandler(this.cbFontSize_Leave);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(26, 56);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(73, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Chat text size:";
             // 
             // gbDisplayNames
             // 
@@ -1299,9 +1265,6 @@ namespace Radegast
         }
 
         #endregion
-
-        public System.Windows.Forms.Label label1;
-        public System.Windows.Forms.ComboBox cbFontSizeDeleteme;
         public System.Windows.Forms.TabControl tcGraphics;
         public System.Windows.Forms.TabPage tbpGeneral;
         public System.Windows.Forms.CheckBox cbIMTimeStamps;
