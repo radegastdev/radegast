@@ -58,6 +58,7 @@ namespace Radegast
         private Settings s;
         private static bool settingInitialized = false;
         private Settings.FontSettings currentlySelectedFontSetting = null;
+        Dictionary<string, Settings.FontSettings> chatFontSettings;
 
         public static void InitSettigs(Settings s, bool mono)
         {
@@ -157,7 +158,7 @@ namespace Radegast
 
         private void InitColorSettings()
         {
-            for (int i = 4; i <= 32; i++)
+            for (int i = 1; i <= 48; i++)
             {
                 cbxFontSize.Items.Add((float)i);
                 cbxFontSize.Items.Add((float)i + 0.5f);
@@ -186,8 +187,6 @@ namespace Radegast
             cbxForeground.SelectedItem = SystemColors.ControlText;
             cbxBackground.SelectedItem = SystemColors.Control;
 
-            Dictionary<string, Settings.FontSettings> chatFontSettings;
-
             var chatFontsJson = Instance.GlobalSettings["chat_fonts"];
             if (chatFontsJson.Type != OSDType.Unknown)
             {
@@ -202,6 +201,10 @@ namespace Radegast
 
             foreach (var item in chatFontSettings)
             {
+                if(item.Value.Name != item.Key)
+                {
+                    item.Value.Name = item.Key;
+                }
                 lbxColorItems.Items.Add(item.Value);
             }
         }
@@ -881,7 +884,7 @@ namespace Radegast
             }
         }
 
-        private void UpdatePreview()
+        private Settings.FontSettings GetPreviewFontSettings()
         {
             float fontSize = SystemFonts.DefaultFont.Size;
             string fontName = SystemFonts.DefaultFont.Name;
@@ -915,9 +918,23 @@ namespace Radegast
                 style |= FontStyle.Italic;
             }
 
-            lblPreview.Font = new Font(fontName, fontSize, style);
-            lblPreview.ForeColor = foreColor;
-            lblPreview.BackColor = backColor;
+            var previewFontSettings = new Settings.FontSettings(){
+                Name = string.Empty,
+                Font = new Font(fontName, fontSize, style),
+                ForeColor = foreColor,
+                BackColor = backColor
+            };
+
+            return previewFontSettings;
+        }
+
+        private void UpdatePreview()
+        {
+            var previewFontSettings = GetPreviewFontSettings();
+
+            lblPreview.Font = previewFontSettings.Font;
+            lblPreview.ForeColor = previewFontSettings.ForeColor;
+            lblPreview.BackColor = previewFontSettings.BackColor;
         }
 
         private void UpdateSelection(Settings.FontSettings selected)
@@ -983,6 +1000,22 @@ namespace Radegast
         private void lbxColorItems_MouseDown(object sender, MouseEventArgs e)
         {
             lbxColorItems_MouseMove(sender, e);
+        }
+
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            if(currentlySelectedFontSetting != null)
+            {
+                var previewFontSettings = GetPreviewFontSettings();
+                previewFontSettings.Name = currentlySelectedFontSetting.Name;
+
+                chatFontSettings[currentlySelectedFontSetting.Name] = previewFontSettings;
+
+                JavaScriptSerializer serializer = new JavaScriptSerializer();
+                var json = serializer.Serialize(chatFontSettings);
+                Instance.GlobalSettings["chat_fonts"] = json;
+                Instance.GlobalSettings.Save();
+            }
         }
     }
 

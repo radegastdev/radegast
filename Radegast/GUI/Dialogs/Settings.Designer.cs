@@ -138,7 +138,7 @@ namespace Radegast
             this.autoSitName = new System.Windows.Forms.TextBox();
             this.autoSitNameLabel = new System.Windows.Forms.Label();
             this.tbpChat = new System.Windows.Forms.TabPage();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.lblPreview = new System.Windows.Forms.Label();
             this.cbxItalic = new System.Windows.Forms.CheckBox();
@@ -1068,7 +1068,7 @@ namespace Radegast
             // 
             // tbpChat
             // 
-            this.tbpChat.Controls.Add(this.button2);
+            this.tbpChat.Controls.Add(this.btnSave);
             this.tbpChat.Controls.Add(this.button1);
             this.tbpChat.Controls.Add(this.lblPreview);
             this.tbpChat.Controls.Add(this.cbxItalic);
@@ -1092,14 +1092,15 @@ namespace Radegast
             this.tbpChat.Text = "Chat";
             this.tbpChat.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // btnSave
             // 
-            this.button2.Location = new System.Drawing.Point(338, 290);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(49, 23);
-            this.button2.TabIndex = 18;
-            this.button2.Text = "Save";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnSave.Location = new System.Drawing.Point(338, 290);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(49, 23);
+            this.btnSave.TabIndex = 18;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // button1
             // 
@@ -1392,7 +1393,7 @@ namespace Radegast
         private System.Windows.Forms.ComboBox cbxFontSize;
         private System.Windows.Forms.ComboBox cbxFont;
         private System.Windows.Forms.Label lblPreview;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button button1;
     }
 }

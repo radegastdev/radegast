@@ -244,44 +244,18 @@ namespace Radegast
                     textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
                 }
 
-                switch (item.Style)
+                if(FontSettings.ContainsKey(item.Style.ToString()))
                 {
-                    case ChatBufferTextStyle.Normal:
-                        textPrinter.ForeColor = SystemColors.WindowText;
-                        break;
-
-                    case ChatBufferTextStyle.StatusBlue:
-                        textPrinter.ForeColor = Color.Blue;
-                        break;
-
-                    case ChatBufferTextStyle.StatusDarkBlue:
-                        textPrinter.ForeColor = Color.DarkBlue;
-                        break;
-
-                    case ChatBufferTextStyle.LindenChat:
-                        textPrinter.ForeColor = Color.DarkGreen;
-                        break;
-
-                    case ChatBufferTextStyle.ObjectChat:
-                        textPrinter.ForeColor = Color.DarkCyan;
-                        break;
-
-                    case ChatBufferTextStyle.StartupTitle:
-                        textPrinter.ForeColor = SystemColors.WindowText;
-                        textPrinter.Font = new Font(textPrinter.Font, FontStyle.Bold);
-                        break;
-
-                    case ChatBufferTextStyle.Alert:
-                        textPrinter.ForeColor = Color.DarkRed;
-                        break;
-
-                    case ChatBufferTextStyle.Error:
-                        textPrinter.ForeColor = Color.Red;
-                        break;
-
-                    case ChatBufferTextStyle.OwnerSay:
-                        textPrinter.ForeColor = Color.FromArgb(255, 180, 150, 0);
-                        break;
+                    var fontSetting = FontSettings[item.Style.ToString()];
+                    textPrinter.ForeColor = fontSetting.ForeColor;
+                    textPrinter.BackColor = fontSetting.BackColor;
+                    textPrinter.Font = fontSetting.Font;
+                }
+                else
+                {
+                    textPrinter.ForeColor = SystemColors.WindowText;
+                    textPrinter.BackColor = Color.Transparent;
+                    textPrinter.Font = Settings.FontSettings.DefaultFont;
                 }
 
                 if (item.Style == ChatBufferTextStyle.Normal && item.ID != UUID.Zero && instance.GlobalSettings["av_name_link"])
