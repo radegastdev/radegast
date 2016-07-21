@@ -449,8 +449,12 @@ namespace Radegast
         /// <param name="item">>Inventory item to be detached</param>
         public void Detach(InventoryItem item)
         {
-            Client.Appearance.Detach(item);
-            RemoveLink(item.UUID);
+            var realItem = RealInventoryItem(item);
+            if (Instance.RLV.AllowDetach(realItem))
+            {
+                Client.Appearance.Detach(item);
+                RemoveLink(item.UUID);
+            }
         }
 
         public List<InventoryItem> GetWornAt(WearableType type)
