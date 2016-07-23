@@ -740,24 +740,56 @@ namespace Radegast
                         break;
 
                     case "findfolder":
+                    case "findfolders":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
+                            StringBuilder response = new StringBuilder();
+
                             string[] keywordsArray = rule.Option.Split(new string[] {"&&"}, StringSplitOptions.None);
                             if (keywordsArray.Any())
                             {
-                                InventoryNode target = FindFolderKeyword(keywordsArray);
-                                if  (target != null)
+                                List<InventoryNode> matching_nodes = FindFoldersKeyword(keywordsArray);
+                                if(matching_nodes.Any())
                                 {
-                                    string path = FindFullInventoryPath(target, "");
-
-                                    // remove #RLV/ from the path
-                                    if (path.Substring(0, 5).ToLower() == @"#rlv/")
+                                    if(rule.Behaviour == "findfolder")
                                     {
-                                        path = path.Substring(5);
-                                        Respond(chan, path);
+                                        InventoryNode bestCandidate = null;
+                                        int bestCandidateSlashCount = -1;
+                                        foreach (var match in matching_nodes)
+                                        {
+                                            string fullPath = FindFullInventoryPath(match, "");
+                                            int numSlashes = fullPath.Count(ch => ch == '/');
+                                            if(bestCandidate == null || numSlashes > bestCandidateSlashCount)
+                                            {
+                                                bestCandidateSlashCount = numSlashes;
+                                                bestCandidate = match;
+                                            }
+                                        }
+
+                                        string bestCandidatePath = bestCandidate.Data.Name;
+                                        if (bestCandidatePath.Substring(0, 5).ToLower() == @"#rlv/")
+                                        {
+                                            bestCandidatePath = bestCandidatePath.Substring(5);
+                                        }
+                                        response.Append(bestCandidatePath);
+                                    }
+                                    else
+                                    {
+                                        StringBuilder sb = new StringBuilder();
+                                        foreach (var node in matching_nodes)
+                                        {
+                                            string fullPath = FindFullInventoryPath(node, "");
+                                            if (fullPath.Length > 4 && fullPath.Substring(0, 5).ToLower() == @"#rlv/")
+                                            {
+                                                fullPath = fullPath.Substring(5);
+                                            }
+                                            response.Append(fullPath + ",");
+                                        }
                                     }
                                 }
                             }
+
+                            Respond(chan, response.ToString().TrimEnd(','));
                         }
                         break;
 
@@ -933,45 +965,40 @@ namespace Radegast
             return null;
         }
 
-        public InventoryNode FindFolderKeyword(string[] keywords)
+        public List<InventoryNode> FindFoldersKeyword(string[] keywords)
         {
-            var root = RLVRootFolder();
-            if (root == null) return null;
+            List<InventoryNode> matchingNodes = new List<InventoryNode>();
 
-            return FindFolderKeywordsInternal (root, keywords);
+            var root = RLVRootFolder();
+            if (root != null)
+            {
+                FindFoldersKeywordsInternal(root, keywords, new List<string>(), ref matchingNodes);
+            }
+
+            return matchingNodes;
         }
 
-        protected InventoryNode FindFolderKeywordsInternal(InventoryNode currentNode, string[] keywords)
+        protected void FindFoldersKeywordsInternal(InventoryNode currentNode, string[] keywords, List<string> currentPathParts, ref List<InventoryNode> matchingNodes)
         {
-            bool mustSkip = false;
-            foreach(string kw in keywords)
+            if (currentNode.Data is InventoryFolder &&
+                !currentNode.Data.Name.StartsWith(".") &&
+                !currentNode.Data.Name.StartsWith("~") &&
+                keywords.All(keyword => currentPathParts.Contains(keyword)))
             {
-                if (!mustSkip)
+                matchingNodes.Add(currentNode);
+            }
+
+            foreach (var node in currentNode.Nodes.Values)
+            {
+                if (node.Data is InventoryFolder)
                 {
-                    if (!currentNode.Data.Name.ToLower().Contains(kw.ToLower()))
-                    {
-                        mustSkip = true;
-                        break;
-                    }
+                    currentPathParts.Add(node.Data.Name.ToLower());
+                    FindFoldersKeywordsInternal(node, keywords, currentPathParts, ref matchingNodes);
+                    currentPathParts.RemoveAt(currentPathParts.Count - 1);
                 }
             }
 
-            if (!mustSkip)
-            {
-                return currentNode;
-            }
-
-            foreach (var n in currentNode.Nodes.Values)
-            {
-                if (n.Data.Name.StartsWith(".")) continue;
-
-                var res = FindFolderKeywordsInternal(n, keywords);
-                if (res != null)
-                {
-                    return res;
-                }
-            }
-            return null;
+            return;
         }
 
         public void Clear(UUID id)
