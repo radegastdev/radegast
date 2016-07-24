@@ -3,14 +3,13 @@ solution: Radegast.sln
 
 os:
   - linux
-  - osx
 
 branches:
   except:
     - /^build-([0-9]+)-/
 
 install:
-  "./runprebuild.sh"
+  - "./runprebuild.sh"
 
 before_deploy:
   - "export GIT_TAG=build-$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME-$TRAVIS_BRANCH-$(date -u '+%Y-%m-%d')"
