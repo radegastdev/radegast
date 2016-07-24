@@ -158,6 +158,7 @@ solution "Radegast"
       "System.Data",
       "System.Drawing",
       "System.Web",
+      "System.Web.Extensions",
       "System.Windows.Forms",
       "System.Xml",
       "OpenMetaverse",
