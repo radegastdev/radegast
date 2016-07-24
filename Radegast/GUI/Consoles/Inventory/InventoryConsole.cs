@@ -99,6 +99,8 @@ namespace Radegast
             invRootNode = AddDir(null, Inventory.RootFolder);
             UpdateStatus("Reading cache");
             Init1();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public void Init1()

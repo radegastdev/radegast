@@ -58,6 +58,8 @@ namespace Radegast
             Controls.Add(GroupDetails);
             Text = group.Name + " - Group information";
             instance.Netcom.ClientDisconnected += new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmGroupInfo_Disposed(object sender, System.EventArgs e)

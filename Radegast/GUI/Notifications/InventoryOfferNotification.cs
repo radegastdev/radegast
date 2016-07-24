@@ -93,6 +93,8 @@ namespace Radegast
             {
                 Logger.Log("Wrong format of the item offered", Helpers.LogLevel.Warning, client);
             }
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void ntfInventoryOffer_Disposed(object sender, EventArgs e)

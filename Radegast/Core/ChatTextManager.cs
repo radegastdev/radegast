@@ -35,11 +35,14 @@ using System.Text;
 using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using System.Web.Script.Serialization;
+using System.ComponentModel;
 
 namespace Radegast
 {
     public class ChatTextManager : IDisposable
     {
+
         public event EventHandler<ChatLineAddedArgs> ChatLineAdded;
 
         private RadegastInstance instance;
@@ -50,6 +53,8 @@ namespace Radegast
         private List<ChatBufferItem> textBuffer;
 
         private bool showTimestamps;
+
+        public static Dictionary<string, Settings.FontSetting> fontSettings = new Dictionary<string, Settings.FontSetting>();
 
         public ChatTextManager(RadegastInstance instance, ITextPrinter textPrinter)
         {
@@ -75,9 +80,32 @@ namespace Radegast
         private void InitializeConfig()
         {
             Settings s = instance.GlobalSettings;
+            var serializer = new JavaScriptSerializer();
 
             if (s["chat_timestamps"].Type == OSDType.Unknown)
+            {
                 s["chat_timestamps"] = OSD.FromBoolean(true);
+            }
+            if (s["chat_fonts"].Type == OSDType.Unknown)
+            {
+                try
+                {
+                    s["chat_fonts"] = serializer.Serialize(Settings.DefaultFontSettings);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Failed to save default font settings: " + ex.Message);
+                }
+            }
+
+            try
+            {
+                fontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(s["chat_fonts"]);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show("Failed to read chat font settings: " + ex.Message);
+            }
 
             showTimestamps = s["chat_timestamps"].AsBoolean();
 
@@ -89,6 +117,19 @@ namespace Radegast
             if (e.Key == "chat_timestamps" && e.Value != null)
             {
                 showTimestamps = e.Value.AsBoolean();
+                ReprintAllText();
+            }
+            else if(e.Key == "chat_fonts")
+            {
+                try
+                {
+                    var serializer = new JavaScriptSerializer();
+                    fontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(e.Value);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Failed to read new font settings: " + ex.Message);
+                }
                 ReprintAllText();
             }
         }
@@ -143,59 +184,60 @@ namespace Radegast
 
                 if (showTimestamps)
                 {
-                    textPrinter.ForeColor = SystemColors.GrayText;
-                    textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
+                    if(fontSettings.ContainsKey("Timestamp"))
+                    {
+                        var fontSetting = fontSettings["Timestamp"];
+                        textPrinter.ForeColor = fontSetting.ForeColor;
+                        textPrinter.BackColor = fontSetting.BackColor;
+                        textPrinter.Font = fontSetting.Font;
+                        textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
+                    }
+                    else
+                    {
+                        textPrinter.ForeColor = SystemColors.GrayText;
+                        textPrinter.BackColor = Color.Transparent;
+                        textPrinter.Font = Settings.FontSetting.DefaultFont;
+                        textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
+                    }
                 }
 
-                switch (item.Style)
+                if(fontSettings.ContainsKey("Name"))
                 {
-                    case ChatBufferTextStyle.Normal:
-                        textPrinter.ForeColor = SystemColors.WindowText;
-                        break;
-
-                    case ChatBufferTextStyle.StatusBlue:
-                        textPrinter.ForeColor = Color.Blue;
-                        break;
-
-                    case ChatBufferTextStyle.StatusDarkBlue:
-                        textPrinter.ForeColor = Color.DarkBlue;
-                        break;
-
-                    case ChatBufferTextStyle.LindenChat:
-                        textPrinter.ForeColor = Color.DarkGreen;
-                        break;
-
-                    case ChatBufferTextStyle.ObjectChat:
-                        textPrinter.ForeColor = Color.DarkCyan;
-                        break;
-
-                    case ChatBufferTextStyle.StartupTitle:
-                        textPrinter.ForeColor = SystemColors.WindowText;
-                        textPrinter.Font = new Font(textPrinter.Font, FontStyle.Bold);
-                        break;
-
-                    case ChatBufferTextStyle.Alert:
-                        textPrinter.ForeColor = Color.DarkRed;
-                        break;
-
-                    case ChatBufferTextStyle.Error:
-                        textPrinter.ForeColor = Color.Red;
-                        break;
-
-                    case ChatBufferTextStyle.OwnerSay:
-                        textPrinter.ForeColor = Color.FromArgb(255, 180, 150, 0);
-                        break;
+                    var fontSetting = fontSettings["Name"];
+                    textPrinter.ForeColor = fontSetting.ForeColor;
+                    textPrinter.BackColor = fontSetting.BackColor;
+                    textPrinter.Font = fontSetting.Font;
+                }
+                else
+                {
+                    textPrinter.ForeColor = SystemColors.WindowText;
+                    textPrinter.BackColor = Color.Transparent;
+                    textPrinter.Font = Settings.FontSetting.DefaultFont;
                 }
 
                 if (item.Style == ChatBufferTextStyle.Normal && item.ID != UUID.Zero && instance.GlobalSettings["av_name_link"])
                 {
                     textPrinter.InsertLink(item.From, string.Format("secondlife:///app/agent/{0}/about", item.ID));
-                    textPrinter.PrintTextLine(item.Text);
                 }
                 else
                 {
-                    textPrinter.PrintTextLine(item.From + item.Text);
+                    textPrinter.PrintText(item.From);
                 }
+
+                if(fontSettings.ContainsKey(item.Style.ToString()))
+                {
+                    var fontSetting = fontSettings[item.Style.ToString()];
+                    textPrinter.ForeColor = fontSetting.ForeColor;
+                    textPrinter.BackColor = fontSetting.BackColor;
+                    textPrinter.Font = fontSetting.Font;
+                }
+                else
+                {
+                    textPrinter.ForeColor = SystemColors.WindowText;
+                    textPrinter.BackColor = Color.Transparent;
+                    textPrinter.Font = Settings.FontSetting.DefaultFont;
+                }
+                textPrinter.PrintTextLine(item.Text);
             }
         }
 
@@ -315,15 +357,34 @@ namespace Radegast
             switch (e.SourceType)
             {
                 case ChatSourceType.Agent:
-                    item.Style =
-                        (e.FromName.EndsWith("Linden") ?
-                        ChatBufferTextStyle.LindenChat : ChatBufferTextStyle.Normal);
+                    if(e.FromName.EndsWith("Linden"))
+                    {
+                        item.Style = ChatBufferTextStyle.LindenChat;
+                    }
+                    else if(isEmote)
+                    {
+                        item.Style = ChatBufferTextStyle.Emote;
+                    }
+                    else if(e.SourceID == client.Self.AgentID)
+                    {
+                        item.Style = ChatBufferTextStyle.Self;
+                    }
+                    else
+                    {
+                        item.Style = ChatBufferTextStyle.Normal;
+                    }
                     break;
-
                 case ChatSourceType.Object:
                     if (e.Type == ChatType.OwnerSay)
                     {
-                        item.Style = ChatBufferTextStyle.OwnerSay;
+                        if(isEmote)
+                        {
+                            item.Style = ChatBufferTextStyle.Emote;
+                        }
+                        else
+                        {
+                            item.Style = ChatBufferTextStyle.OwnerSay;
+                        }
                     }
                     else if (e.Type == ChatType.Debug)
                     {

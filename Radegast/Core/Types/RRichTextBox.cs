@@ -93,6 +93,7 @@ namespace Radegast
 
             rtfHeader = this.Rtf.Substring(0, this.Rtf.IndexOf('{', 2)) + " ";
 
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void InitializeComponent()
@@ -180,7 +181,7 @@ namespace Radegast
         #region Syntax highligting
         private string rtfEscaped(string s)
         {
-            return s.Replace(@"\", @"\\").Replace("{", @"\{").Replace("}", @"\}").Replace("\n", "\\par\n");
+            return RtfUnicode(s.Replace(@"\", @"\\").Replace("{", @"\{").Replace("}", @"\}").Replace("\n", "\\par\n"));
         }
 
         public Color CommentColor = Color.FromArgb(204, 76, 38);

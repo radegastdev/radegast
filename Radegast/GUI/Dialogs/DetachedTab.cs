@@ -71,6 +71,7 @@ namespace Radegast
                 Owner = instance.MainForm;
             }
 
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Control_TextChanged(object sender, EventArgs e)

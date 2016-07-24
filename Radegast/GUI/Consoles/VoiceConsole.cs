@@ -85,6 +85,8 @@ namespace Radegast
             chkVoiceEnable.Checked = config["enabled"].AsBoolean();
             if (chkVoiceEnable.Checked)
                 Start();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void Start()

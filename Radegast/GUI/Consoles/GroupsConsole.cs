@@ -54,6 +54,8 @@ namespace Radegast
             client.Self.MuteListUpdated += new EventHandler<EventArgs>(Self_MuteListUpdated);
             client.Groups.RequestCurrentGroups();
             UpdateDisplay();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void GroupsDialog_Disposed(object sender, EventArgs e)

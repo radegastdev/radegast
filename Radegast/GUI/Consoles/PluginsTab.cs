@@ -19,6 +19,8 @@ namespace Radegast
             InitializeComponent();
             ListPlugins();
             PluginsTab_SizeChanged(this, EventArgs.Empty);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void ListPlugins()

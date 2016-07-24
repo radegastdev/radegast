@@ -40,6 +40,8 @@ namespace Radegast
             refresh.Enabled = true;
             UpdateDisplay();
             client.Parcels.RequestDwell(client.Network.CurrentSim, instance.State.Parcel.LocalID);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void RegionInfo_Disposed(object sender, EventArgs e)

@@ -68,6 +68,8 @@ namespace Radegast
             args.Buttons.Add(btnNo);
             args.Buttons.Add(btnMute);
             FireNotificationCallback(args);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void btnYes_Click(object sender, EventArgs e)

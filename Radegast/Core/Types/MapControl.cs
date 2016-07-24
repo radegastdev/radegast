@@ -72,6 +72,8 @@ namespace Radegast
 
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
             RegisterClientEvents();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void MapControl_Disposed(object sender, EventArgs e)

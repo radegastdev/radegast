@@ -211,6 +211,8 @@ namespace Radegast.Rendering
             Client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
             Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void DisposeInternal()

@@ -70,8 +70,9 @@ namespace Radegast
             {
                 client.Self.RequestJoinGroupChat(session);
             }
-            UpdateFontSize();
             Load += new EventHandler(GroupIMTabWindow_Load);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -120,19 +121,9 @@ namespace Radegast
             CleanUp();
         }
 
-        void UpdateFontSize()
-        {
-            float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
-            cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
-            rtbIMText.Font = ChatConsole.ChangeFontSize(rtbIMText.Font, size);
-            textManager.ReprintAllText();
-        }
-
         void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
         {
-            if (e.Key == "chat_font_size")
-                UpdateFontSize();
-            else if (e.Key == "display_name_mode")
+            if (e.Key == "display_name_mode")
                 UpdateParticipantList();
         }
 

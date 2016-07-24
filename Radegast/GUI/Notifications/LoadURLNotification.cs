@@ -61,6 +61,8 @@ namespace Radegast
             args.Buttons.Add(btnGoTo);
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void ntfLoadURL_Disposed(object sender, EventArgs e)

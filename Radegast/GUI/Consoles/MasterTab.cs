@@ -72,6 +72,8 @@ namespace Radegast
             // Callbacks
             client.Avatars.ViewerEffectPointAt += new EventHandler<ViewerEffectPointAtEventArgs>(Avatars_ViewerEffectPointAt);
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void MasterTab_Disposed(object sender, EventArgs e)

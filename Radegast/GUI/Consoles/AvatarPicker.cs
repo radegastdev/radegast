@@ -84,6 +84,8 @@ namespace Radegast
                 string name = instance.Names.Get(nearAvatars[i].ID, nearAvatars[i].Name);
                 lvwNear.Items.Add(new ListViewItem() { Text = nearAvatars[i].Name, Tag = nearAvatars[i].ID });
             }
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void AvatarPicker_Disposed(object sender, EventArgs e)

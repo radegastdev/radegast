@@ -666,6 +666,8 @@ namespace Radegast
                     case "attach":
                     case "attachoverorreplace":
                     case "attachover":
+                    case "attachall":
+                    case "attachallover":
                         if (rule.Param == "force")
                         {
                             if (!string.IsNullOrEmpty(rule.Option))
@@ -674,14 +676,16 @@ namespace Radegast
                                 if (folder != null)
                                 {
                                     List<InventoryItem> outfit = new List<InventoryItem>();
-                                    foreach (var item in folder.Nodes.Values)
+                                    if(rule.Behaviour == "attachall" || rule.Behaviour == "attachallover")
                                     {
-                                        if (CurrentOutfitFolder.CanBeWorn(item.Data))
-                                        {
-                                            outfit.Add((InventoryItem)item.Data); 
-                                        }
+                                        GetAllItems(folder, true, ref outfit);
                                     }
-                                    if (rule.Behaviour == "attachover")
+                                    else
+                                    {
+                                        GetAllItems(folder, false, ref outfit);
+                                    }
+
+                                    if (rule.Behaviour == "attachover" || rule.Behaviour == "attachallover")
                                     {
                                         instance.COF.AddToOutfit(outfit, false);
                                     }
@@ -763,6 +767,24 @@ namespace Radegast
             }
 
             return true;
+        }
+
+        private void GetAllItems(InventoryNode root, bool recursive, ref List<InventoryItem> items)
+        {
+            foreach (var item in root.Nodes.Values)
+            {
+                if (CurrentOutfitFolder.CanBeWorn(item.Data))
+                {
+                    items.Add((InventoryItem)item.Data);
+                }
+                if(recursive)
+                {
+                    foreach (var child in item.Nodes.Values)
+                    {
+                        GetAllItems(child, true, ref items);
+                    }
+                }
+            }
         }
 
         private void Respond(int chan, string msg)
@@ -896,14 +918,12 @@ namespace Radegast
 
         protected InventoryNode FindFolderInternal(InventoryNode currentNode, string currentPath, string desiredPath)
         {
-            if (desiredPath.ToLower() == currentPath.ToLower())
+            if (desiredPath == currentPath || desiredPath == (currentPath + "/"))
             {
                 return currentNode;
             }
             foreach (var n in currentNode.Nodes.Values)
             {
-                if (n.Data.Name.StartsWith(".")) continue;
-
                 var res = FindFolderInternal(n, (currentPath == "/" ? currentPath : currentPath + "/") + n.Data.Name.ToLower(), desiredPath);
                 if (res != null)
                 {

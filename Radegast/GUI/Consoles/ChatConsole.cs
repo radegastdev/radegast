@@ -71,11 +71,6 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
-            if (instance.GlobalSettings["chat_font_size"].Type != OSDType.Real)
-            {
-                instance.GlobalSettings["chat_font_size"] = OSD.FromReal(cbxInput.Font.Size);
-            }
-
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
 
             // Callbacks
@@ -91,7 +86,7 @@ namespace Radegast
             lvwObjects.ListViewItemSorter = new SorterClass(instance);
             cbChatType.SelectedIndex = 1;
 
-            UpdateFontSize();
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -139,19 +134,8 @@ namespace Radegast
             return font;
         }
 
-        void UpdateFontSize()
-        {
-            float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
-            if (size < 2f || size > 100f) size = 9f;
-            cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
-            rtbChat.Font = ChatConsole.ChangeFontSize(rtbChat.Font, size);
-            chatManager.ReprintAllText();
-        }
-
         void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
         {
-            if (e.Key == "chat_font_size")
-                UpdateFontSize();
         }
 
         public List<UUID> GetAvatarList()

@@ -65,6 +65,8 @@ namespace Radegast
             Exporter.Progress += new EventHandler<DAEStatutsEventArgs>(Exporter_Progress);
             UpdateInfo();
             cbImageType.Text = "TGA";
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
 		}
 		#endregion
 		

@@ -49,7 +49,9 @@ namespace Radegast
             InitializeComponent();
             AutoScrollPosition = new Point(0, 0);
 
-            InitializeComponent();
+            InitializeComponent(); // TODO: Was this second initialization intentional...?
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void AttachmentTab_Load(object sender, EventArgs e)

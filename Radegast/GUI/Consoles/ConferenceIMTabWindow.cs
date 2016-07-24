@@ -75,7 +75,7 @@ namespace Radegast
                 client.Self.ChatterBoxAcceptInvite(session);
             }
 
-            UpdateFontSize();
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
@@ -93,18 +93,8 @@ namespace Radegast
             RefreshControls();
         }
 
-        void UpdateFontSize()
-        {
-            float size = (float)instance.GlobalSettings["chat_font_size"].AsReal();
-            cbxInput.Font = ChatConsole.ChangeFontSize(cbxInput.Font, size);
-            rtbIMText.Font = ChatConsole.ChangeFontSize(rtbIMText.Font, size);
-            textManager.ReprintAllText();
-        }
-
         void GlobalSettings_OnSettingChanged(object sender, SettingsEventArgs e)
         {
-            if (e.Key == "chat_font_size")
-                UpdateFontSize();
         }
 
         private void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)

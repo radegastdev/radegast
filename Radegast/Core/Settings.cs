@@ -35,6 +35,9 @@ using System.IO;
 using System.Xml;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using System.Drawing;
+using System.Web.Script.Serialization;
+using System.ComponentModel;
 
 namespace Radegast
 {
@@ -45,6 +48,196 @@ namespace Radegast
 
         public delegate void SettingChangedCallback(object sender, SettingsEventArgs e);
         public event SettingChangedCallback OnSettingChanged;
+
+        public static readonly Dictionary<string, FontSetting> DefaultFontSettings = new Dictionary<string, FontSetting>()
+        {
+            {"Normal", new FontSetting {
+                Name = "Normal",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"StatusBlue", new FontSetting {
+                Name = "StatusBlue",
+                ForeColor = Color.Blue,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"StatusDarkBlue", new FontSetting {
+                Name = "StatusDarkBlue",
+                ForeColor = Color.DarkBlue,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"LindenChat", new FontSetting {
+                Name = "LindenChat",
+                ForeColor = Color.DarkGreen,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"ObjectChat", new FontSetting {
+                Name = "ObjectChat",
+                ForeColor = Color.DarkCyan,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"StartupTitle", new FontSetting {
+                Name = "StartupTitle",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = new Font(FontSetting.DefaultFont, FontStyle.Bold),
+            }},
+            {"Alert", new FontSetting {
+                Name = "Alert",
+                ForeColor = Color.DarkRed,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"Error", new FontSetting {
+                Name = "Error",
+                ForeColor = Color.Red,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"OwnerSay", new FontSetting {
+                Name = "OwnerSay",
+                ForeColor = Color.DarkGoldenrod,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"Timestamp", new FontSetting {
+                Name = "Timestamp",
+                ForeColor = SystemColors.GrayText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"Name", new FontSetting {
+                Name = "Name",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"Notification", new FontSetting {
+                Name = "Notification",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"IncomingIM", new FontSetting {
+                Name = "IncomingIM",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"OutgoingIM", new FontSetting {
+                Name = "OutgoingIM",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"Emote", new FontSetting {
+                Name = "Emote",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+            {"Self", new FontSetting {
+                Name = "Self",
+                ForeColor = SystemColors.ControlText,
+                BackColor = SystemColors.Control,
+                Font = FontSetting.DefaultFont,
+            }},
+        };
+
+        public class FontSetting
+        {
+            [ScriptIgnoreAttribute]
+            public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 8.0f);
+
+            [ScriptIgnoreAttribute]
+            public Font Font;
+
+            [ScriptIgnoreAttribute]
+            public Color ForeColor;
+
+            [ScriptIgnoreAttribute]
+            public Color BackColor;
+
+
+            public String Name;
+
+            public string ForeColorString
+            {
+                get
+                {
+                    if (ForeColor != null)
+                    {
+                        return ColorTranslator.ToHtml(ForeColor);
+                    }
+                    else
+                    {
+                        return ColorTranslator.ToHtml(SystemColors.ControlText);
+                    }
+                }
+                set
+                {
+                    ForeColor = ColorTranslator.FromHtml(value);
+                }
+            }
+
+            public string BackColorString
+            {
+                get
+                {
+                    if (BackColor != null)
+                    {
+                        return ColorTranslator.ToHtml(BackColor);
+                    }
+                    else
+                    {
+                        return ColorTranslator.ToHtml(SystemColors.ControlText);
+                    }
+                }
+                set
+                {
+                    BackColor = ColorTranslator.FromHtml(value);
+                }
+            }
+
+            public string FontString
+            {
+                get
+                {
+                    if (this.Font != null)
+                    {
+                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(Font));
+                        return converter.ConvertToString(this.Font);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                set
+                {
+                    try
+                    {
+                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(Font));
+                        this.Font = converter.ConvertFromString(value) as Font;
+                    }
+                    catch (Exception)
+                    {
+                        this.Font = DefaultFont;
+                    }
+
+                }
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
 
         public Settings(string fileName)
         {

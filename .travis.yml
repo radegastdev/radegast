@@ -1,0 +1,30 @@
+language: csharp
+
+branches:
+  except:
+    - /^build-([0-9]+)-/
+
+solution:
+  Radegast.sln
+
+install:
+  "./runprebuild.sh"
+
+before_deploy:
+  - "export GIT_TAG=build-$TRAVIS_BUILD_NUMBER-$TRAVIS_BRANCH-$(date -u '+%Y-%m-%d')"
+  - "export GIT_ARTIFACT=Radegast-$GIT_TAG.zip"
+  - "./before_deploy.sh"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: wDIvmLG2B0wA4Ngp+avp1qQOU3lpUIC79C/iEo/BDNA4TQJLeAvYrQ7mXVjXrSP41LCB9aWmjjlTJk8nRbEcTWwiYTRDPRqvxo32/BPsW6zaBrqHGP1dF3R8L/KtVRf97iNJJRXWHZssNYsuakBKTHp6dPt68qU6k3cig7aiVH/qTwawYpI9/qtUUdfuN3h9/PciujyAr/XBpTzS7xLHsHShchMpgEVhGqtjd+yR2z0qojNs645Iit7lZOMrtjuqNLjxXS3WLbWVHT22upX+00ovlJXT6fUtkHKWuAW3hSEN525/I8bl7NExLpy9yOUa/D1JALBgrd2qxhsECJ+sJ9ms59iQxYJOOpfuk6KIjmtD+i4f6h2rSOjOtbc1dUvA9+SH27o00DPjFQKPA0lLqEPGBxdlFE0ocOHI2UW1wvTRSAUhJe6QLLatVLJl5TfcDOsM7JC29XeuHXL1wHFRqEq8agpdR8UqueaDkfAWVPXQRywVD/aUFrMMJEfxTncVhRXepLL3z2uHwjpRaw5JJ7hsU5eaEEvIRMzR73IOCHlfmqCtjE7bMVmO9Zn0BjGJURHCk77I395QLWnCOuMShWm1OnH5Klxjehlgqtpdhaj83OgsnE7/sXsMPaqxwtzusTRsRYmJz/4D5B7/TPVNDzK2Xewr0NKEBmY3n/MnAqc=
+  skip_cleanup: true
+  file: Radegast-$GIT_TAG.zip
+  on:
+    repo: nooperation/radegast
+    all_branches: true
+
+env:
+  global:
+    secure: u7t+c2187aIGA/Kn/DV1/4kjJ/BmQ6/x5AKAbqdFy7R8xdY2ohOpbITclZ7aox+6PdErmrQBUNZoTfQmehYTw/DOIhA6DE3N4wJ0tGVMnOWAwsX/KWddeQkycfF/SIhcOUrl+3Muv9CJiskYHul7mnfNZzv78ZHFfoaP3zt0Jy6JEOJmAiE36OLh9NBGRyRjVWLg4AVTXdNo0vFmOZgzOoJHPAtkB/18OjZp1RHe5l9io5ww4BY/ZcxodG52WaqTwKh2fCt1juF64a1rncQiUgkBWl7jocErS3DOQ9c5/60kAhimEVAKyaSJJlpBXbYwY7IIAatDwa6ep/0xZ5pIh6QW0ffSXuxBrf15NmlKZqmuUVJ32avVRJ53rvg2MZLrsJwBC+8bsrk6RyXoph/lCweiepHm5v0c68i89xviXXV8X9xN8fxyCGQOMKR6xP7/uMbpEbIWiSmuz5ayw19HFKkTeefqWq+Q4McaTOXf56lJ7gQIDN1QLOlmGJd7A57ftJYlfr5He7hS5ciXrEshDh+Yu4PdIUz2pB73LsHmT22XPWs575g0nxwcsE3dv86h/CuVWuOyZT6u5DIokj4k+rF2rXqqXCrJ3/Wp9T26S3UO/Q5gVVXTEymIsBqjPzbnbuRcYwK97r8vEXJ1dGKZMrhNX33GnqBVVIfrs7ZJHas=

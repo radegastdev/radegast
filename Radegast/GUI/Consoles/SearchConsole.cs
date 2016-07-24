@@ -75,6 +75,8 @@ namespace Radegast
             pnlFindPeople.Controls.Add(console);
             lvwPlaces.ListViewItemSorter = new PlaceSorter();
             lvwGroups.ListViewItemSorter = new GroupSorter();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void SearchConsole_Disposed(object sender, EventArgs e)

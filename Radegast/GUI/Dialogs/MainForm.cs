@@ -145,6 +145,7 @@ namespace Radegast
 
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
+
             netcom.NetcomSync = this;
             ShowAgentProfile = ShowAgentProfileInternal;
 
@@ -182,6 +183,8 @@ namespace Radegast
 
             InitializeStatusTimer();
             RefreshWindowTitle();
+
+            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -736,7 +739,7 @@ namespace Radegast
                 }
                 StartUpdateCheck(false);
 
-                if (instance.PlainColors)
+                if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
                 {
                     pnlDialog.BackColor = System.Drawing.Color.FromArgb(120, 220, 255);
                 }
