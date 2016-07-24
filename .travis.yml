@@ -1,19 +1,19 @@
 language: csharp
 solution: Radegast.sln
-sudo: required
+
+os:
+  - linux
+  - osx
+
 branches:
   except:
     - /^build-([0-9]+)-/
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install libc6
 
 install:
   "./runprebuild.sh"
 
 before_deploy:
-  - "export GIT_TAG=build-$TRAVIS_BUILD_NUMBER-$TRAVIS_BRANCH-$(date -u '+%Y-%m-%d')"
+  - "export GIT_TAG=build-$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME-$TRAVIS_BRANCH-$(date -u '+%Y-%m-%d')"
   - "export GIT_ARTIFACT=Radegast-$GIT_TAG.zip"
   - "./before_deploy.sh"
 
@@ -22,7 +22,7 @@ deploy:
   api_key:
     secure: wDIvmLG2B0wA4Ngp+avp1qQOU3lpUIC79C/iEo/BDNA4TQJLeAvYrQ7mXVjXrSP41LCB9aWmjjlTJk8nRbEcTWwiYTRDPRqvxo32/BPsW6zaBrqHGP1dF3R8L/KtVRf97iNJJRXWHZssNYsuakBKTHp6dPt68qU6k3cig7aiVH/qTwawYpI9/qtUUdfuN3h9/PciujyAr/XBpTzS7xLHsHShchMpgEVhGqtjd+yR2z0qojNs645Iit7lZOMrtjuqNLjxXS3WLbWVHT22upX+00ovlJXT6fUtkHKWuAW3hSEN525/I8bl7NExLpy9yOUa/D1JALBgrd2qxhsECJ+sJ9ms59iQxYJOOpfuk6KIjmtD+i4f6h2rSOjOtbc1dUvA9+SH27o00DPjFQKPA0lLqEPGBxdlFE0ocOHI2UW1wvTRSAUhJe6QLLatVLJl5TfcDOsM7JC29XeuHXL1wHFRqEq8agpdR8UqueaDkfAWVPXQRywVD/aUFrMMJEfxTncVhRXepLL3z2uHwjpRaw5JJ7hsU5eaEEvIRMzR73IOCHlfmqCtjE7bMVmO9Zn0BjGJURHCk77I395QLWnCOuMShWm1OnH5Klxjehlgqtpdhaj83OgsnE7/sXsMPaqxwtzusTRsRYmJz/4D5B7/TPVNDzK2Xewr0NKEBmY3n/MnAqc=
   skip_cleanup: true
-  file: Radegast-$GIT_TAG.zip
+  file: $GIT_ARTIFACT
   on:
     repo: nooperation/radegast
     all_branches: true
