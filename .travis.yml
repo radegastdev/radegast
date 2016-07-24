@@ -1,14 +1,11 @@
 language: csharp
+solution: Radegast.sln
 sudo: required
-
 branches:
   except:
     - /^build-([0-9]+)-/
 
-solution:
-  Radegast.sln
-
-before_script:
+before_install:
   - sudo apt-get update
   - sudo apt-get install libc6:i386 libstdc++6:i386
 
