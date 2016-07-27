@@ -10,11 +10,19 @@ namespace Radegast.GUI
     {
         public static void ApplyGuiFixes(Object root)
         {
-            var instance = Radegast.RadegastInstance.GlobalInstance;
-            if (instance.GlobalSettings["theme_compatibility_mode"])
+            try
             {
-                ApplyThemeCompatibilityModeRecursive(root);
+                var instance = Radegast.RadegastInstance.GlobalInstance;
+                if (instance.GlobalSettings["theme_compatibility_mode"])
+                {
+                    ApplyThemeCompatibilityModeRecursive(root);
+                }
             }
+            catch (Exception)
+            {
+                // Suppress exceptions that will be raised above in designer mode.
+            }
+
         }
 
         private static void ApplyThemeCompatibilityModeRecursive(Object root)
