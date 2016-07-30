@@ -147,7 +147,7 @@ namespace Radegast
 
             if (!s.ContainsKey("disable_http_inventory"))
             {
-                s["disable_http_inventory"] = mono;
+                s["disable_http_inventory"] = false;
             }
 
             if (!s.ContainsKey("on_script_question"))

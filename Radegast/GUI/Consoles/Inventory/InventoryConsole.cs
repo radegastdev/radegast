@@ -793,7 +793,7 @@ namespace Radegast
                 if (QueuedFolders.Count == 0) break;
                 Logger.DebugLog(string.Format("Queued {0} folders for update", QueuedFolders.Count));
 
-                Parallel.ForEach<UUID>(Math.Min(QueuedFolders.Count, 6), QueuedFolders, folderID =>
+                System.Threading.Tasks.Parallel.ForEach<UUID>(QueuedFolders, folderID =>
                 {
                     bool success = false;
 
