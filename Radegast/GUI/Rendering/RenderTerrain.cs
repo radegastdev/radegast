@@ -251,7 +251,7 @@ namespace Radegast.Rendering
                         {
                             GL.ColorPointer(4, ColorPointerType.UnsignedByte, ColorVertex.Size, (IntPtr)colorPtr);
                         }
-                        GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedInt, terrainIndices);
+                        GL.DrawElements(PrimitiveType.Triangles, terrainIndices.Length, DrawElementsType.UnsignedInt, terrainIndices);
                     }
                 }
             }
@@ -301,7 +301,7 @@ namespace Radegast.Rendering
                     }
                     GL.VertexPointer(3, VertexPointerType.Float, ColorVertex.Size, (IntPtr)(0));
 
-                    GL.DrawElements(BeginMode.Triangles, terrainIndices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+                    GL.DrawElements(PrimitiveType.Triangles, terrainIndices.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
                 }
 
                 Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);

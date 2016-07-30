@@ -89,7 +89,6 @@ namespace Radegast
 		uint rootLocalID;
 		ImporterState state = ImporterState.Idle;
 		GridClient Client;
-		WindowWrapper MainWindow;
 		
 		string ImportDirectory;
 		

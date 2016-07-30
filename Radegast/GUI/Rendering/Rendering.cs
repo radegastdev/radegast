@@ -1725,7 +1725,7 @@ namespace Radegast.Rendering
 
                     GL.MultMatrix(Math3D.CreateSRTMatrix(Vector3.One, av.RenderRotation, av.RenderPosition - avataroffset * av.RenderRotation));
 
-                    GL.Begin(BeginMode.Lines);
+                    GL.Begin(PrimitiveType.Lines);
 
                     GL.Color3(1.0, 0.0, 0.0);
 
@@ -1891,7 +1891,7 @@ namespace Radegast.Rendering
                             GL.VertexPointer(3, VertexPointerType.Float, 0, mesh.RenderData.Vertices);
                             GL.NormalPointer(NormalPointerType.Float, 0, mesh.MorphRenderData.Normals);
 
-                            GL.DrawElements(BeginMode.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
+                            GL.DrawElements(PrimitiveType.Triangles, mesh.RenderData.Indices.Length, DrawElementsType.UnsignedShort, mesh.RenderData.Indices);
 
                             GL.BindTexture(TextureTarget.Texture2D, 0);
 
@@ -2114,7 +2114,7 @@ namespace Radegast.Rendering
             // If the sphere is too small, just render a OpenGL point instead.
             if (p < 4 || r <= 0)
             {
-                GL.Begin(BeginMode.Points);
+                GL.Begin(PrimitiveType.Points);
                 GL.Vertex3(cx, cy, cz);
                 GL.End();
                 return;
@@ -2125,7 +2125,7 @@ namespace Radegast.Rendering
                 theta1 = i * TWOPI / p - PIDIV2;
                 theta2 = (i + 1) * TWOPI / p - PIDIV2;
 
-                GL.Begin(BeginMode.TriangleStrip);
+                GL.Begin(PrimitiveType.TriangleStrip);
                 {
                     for (int j = 0; j <= p; ++j)
                     {
@@ -2292,12 +2292,12 @@ namespace Radegast.Rendering
 
             if (RenderSettings.UseVBO && !occludedVBOFailed)
             {
-                GL.DrawElements(BeginMode.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                GL.DrawElements(PrimitiveType.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, IntPtr.Zero);
             }
             else
             {
                 GL.VertexPointer(3, VertexPointerType.Float, 0, RHelp.CubeVertices);
-                GL.DrawElements(BeginMode.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, RHelp.CubeIndices);
+                GL.DrawElements(PrimitiveType.Quads, RHelp.CubeIndices.Length, DrawElementsType.UnsignedShort, RHelp.CubeIndices);
             }
             GL.PopMatrix();
         }

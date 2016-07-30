@@ -604,7 +604,7 @@ namespace Radegast.Rendering
                             GL.NormalPointer(NormalPointerType.Float, FaceData.VertexSize, (IntPtr)normalPtr);
                             GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)texPtr);
                             GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, verts);
-                            GL.DrawElements(BeginMode.Triangles, indices.Length, DrawElementsType.UnsignedShort, indices);
+                            GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedShort, indices);
                         }
                     }
                 }
@@ -618,7 +618,7 @@ namespace Radegast.Rendering
                         GL.TexCoordPointer(2, TexCoordPointerType.Float, FaceData.VertexSize, (IntPtr)(24));
                         GL.VertexPointer(3, VertexPointerType.Float, FaceData.VertexSize, (IntPtr)(0));
 
-                        GL.DrawElements(BeginMode.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(PrimitiveType.Triangles, face.Indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
                     }
                     Compat.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     Compat.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
