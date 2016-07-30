@@ -658,7 +658,7 @@ namespace Radegast.Rendering
         {
             uint id = Prim == null ? 0 : Prim.LocalID;
             float distance = (float)Math.Sqrt(DistanceSquared);
-            return string.Format("LocalID: {0}, distance {0.00}", id, distance);
+            return string.Format("LocalID: {0}, distance {1:0.00}", id, distance);
         }
     }
 }
