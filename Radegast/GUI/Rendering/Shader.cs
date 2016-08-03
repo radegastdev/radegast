@@ -119,7 +119,7 @@ namespace Radegast.Rendering
             }
             GL.LinkProgram(ID);
             int res;
-            GL.GetProgram(ID, ProgramParameter.LinkStatus, out res);
+            GL.GetProgram(ID, GetProgramParameterName.LinkStatus, out res);
             if (res != 1)
             {
                 Logger.DebugLog("Linking shader program failed!");

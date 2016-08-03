@@ -47,7 +47,6 @@ namespace RadegastSpeech.Sound
     {
         Radegast.Media.Speech speechPlayer;
         private AutoResetEvent playing;
-        private bool busy = true;
 
         internal FmodSound(PluginControl pc)
             : base(pc)
@@ -61,8 +60,6 @@ namespace RadegastSpeech.Sound
         {
             if (speechPlayer == null) return;
             speechPlayer.Stop();
-
-            busy = false;
         }
 
         /// <summary>

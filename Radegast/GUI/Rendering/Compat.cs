@@ -85,7 +85,7 @@ namespace Radegast.Rendering
             }
             else
             {
-                GL.Arb.GetBufferParameter((ArbVertexBufferObject)(int)target, BufferParameterNameArb.BufferSize, out ret);
+                GL.Arb.GetBufferParameter((BufferTargetArb)(int)target, BufferParameterNameArb.BufferSize, out ret);
             }
             return ret;
         }

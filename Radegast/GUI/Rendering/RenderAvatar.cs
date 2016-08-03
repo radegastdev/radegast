@@ -86,7 +86,7 @@ namespace Radegast.Rendering
         public int teFaceID;
         public Dictionary<int, VisualParamEx> _evp = new Dictionary<int, VisualParamEx>();
 
-        new public class LODMesh : LindenMesh.LODMesh
+        new public class LODMesh : LindenMesh.ReferenceMesh
         {
             public ushort[] Indices;
 
@@ -95,13 +95,13 @@ namespace Radegast.Rendering
                 base.LoadMesh(filename);
 
                 // Generate the index array
-                Indices = new ushort[_numFaces * 3];
+                Indices = new ushort[NumFaces * 3];
                 int current = 0;
-                for (int i = 0; i < _numFaces; i++)
+                for (int i = 0; i < NumFaces; i++)
                 {
-                    Indices[current++] = (ushort)_faces[i].Indices[0];
-                    Indices[current++] = (ushort)_faces[i].Indices[1];
-                    Indices[current++] = (ushort)_faces[i].Indices[2];
+                    Indices[current++] = (ushort)Faces[i].Indices[0];
+                    Indices[current++] = (ushort)Faces[i].Indices[1];
+                    Indices[current++] = (ushort)Faces[i].Indices[2];
                 }
             }
         }
@@ -515,7 +515,6 @@ namespace Radegast.Rendering
         public VisualParamEx.EparamSex msex;
 
         public byte[] VisualAppearanceParameters = new byte[1024];
-        bool vpsent = false;
         static bool lindenMeshesLoaded = false;
 
         public GLAvatar()
@@ -881,7 +880,6 @@ namespace Radegast.Rendering
                         x++;
                     }
 
-                    vpsent = true;
                     this.skel.mNeedsMeshRebuild = true;
                     // Don't update actual meshes here anymore, we do it every frame because of animation anyway
 
@@ -1642,7 +1640,6 @@ namespace Radegast.Rendering
         private Quaternion mTotalRot;
 
         private Vector3 mDeltaPos;
-        private Quaternion mDeltaRot;
 
         public string mParentBone = null;
 

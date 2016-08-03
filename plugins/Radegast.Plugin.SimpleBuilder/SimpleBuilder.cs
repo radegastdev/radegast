@@ -427,7 +427,6 @@ namespace SimpleBuilderNamespace
 
         private void getScaleFromSelection(){
             if (selectedPrim == null) return;
-            if (selectedPrim.Scale == null) return;
 
             scaleX.Value = (Decimal)selectedPrim.Scale.X;
             scaleY.Value = (Decimal)selectedPrim.Scale.Y;
@@ -437,7 +436,6 @@ namespace SimpleBuilderNamespace
         private void getRotFromSelection()
         {
             if (selectedPrim == null) return;
-            if (selectedPrim.Rotation == null) return;
 
             rotX.Value = (Decimal)selectedPrim.Rotation.X;
             rotY.Value = (Decimal)selectedPrim.Rotation.Y;
@@ -447,7 +445,6 @@ namespace SimpleBuilderNamespace
         private void getPosFromSelection()
         {
             if (selectedPrim == null) return;
-            if (selectedPrim.Position == null) return;
 
             posX.Value = (Decimal)selectedPrim.Position.X;
             posY.Value = (Decimal)selectedPrim.Position.Y;
@@ -456,7 +453,7 @@ namespace SimpleBuilderNamespace
 
         private void setRotToSelection()
         {
-            if (selectedPrim != null && selectedPrim.Rotation != null)
+            if (selectedPrim != null)
             {
                 selectedPrim.Rotation.X = (float)rotX.Value;
                 selectedPrim.Rotation.Y = (float)rotY.Value;
@@ -468,7 +465,7 @@ namespace SimpleBuilderNamespace
 
         private void setScaleToSelection()
         {
-            if (selectedPrim != null && selectedPrim.Scale != null)
+            if (selectedPrim != null)
             {
                 selectedPrim.Scale.X = (float)scaleX.Value;
                 selectedPrim.Scale.Y = (float)scaleY.Value;
@@ -480,7 +477,7 @@ namespace SimpleBuilderNamespace
 
         private void setPositionToSelection()
         {
-            if (selectedPrim != null && selectedPrim.Position != null)
+            if (selectedPrim != null)
             {
                 selectedPrim.Position.X = (float)posX.Value;
                 selectedPrim.Position.Y = (float)posY.Value;
