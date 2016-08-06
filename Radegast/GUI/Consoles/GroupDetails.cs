@@ -510,6 +510,10 @@ namespace Radegast
             {
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
             }
+            else
+            {
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "N/A"));
+            }
 
             e.Item = item;
         }

@@ -101,6 +101,8 @@ namespace Radegast
 
         static void RunRadegast(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             // Increase the number of IOCP threads available. Mono defaults to a tragically low number
             int workerThreads, iocpThreads;
             ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
@@ -147,6 +149,13 @@ namespace Radegast
             // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
             Application.Run(instance.MainForm);
+            OpenMetaverse.WorkPool.Shutdown();
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var instance = RadegastInstance.GlobalInstance;
+            instance.Client.Network.Logout();
             OpenMetaverse.WorkPool.Shutdown();
         }
 
