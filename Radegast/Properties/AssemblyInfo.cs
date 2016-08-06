@@ -59,5 +59,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("2.19.1466.*")]
-[assembly: AssemblyFileVersion("2.19.1466.0")]
+[assembly: AssemblyVersion(Radegast.RadegastBuild.VersionString + ".*")]
+[assembly: AssemblyFileVersion(Radegast.RadegastBuild.VersionString + ".0")]
