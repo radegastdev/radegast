@@ -62,7 +62,7 @@ namespace Radegast
 
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
 
-            lblVersion.Text = Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev;
+            lblVersion.Text = Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString;
 
             Load += new EventHandler(LoginConsole_Load);
 

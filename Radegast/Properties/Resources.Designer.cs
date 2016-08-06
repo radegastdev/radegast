@@ -932,7 +932,7 @@ namespace Radegast.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Radegast 2.19.
+        ///   Looks up a localized string similar to Radegast.
         /// </summary>
         internal static string RadegastTitle {
             get {

@@ -159,7 +159,7 @@ namespace Radegast
         public void PrintStartupMessage()
         {
             ChatBufferItem title = new ChatBufferItem(
-                DateTime.Now, "", UUID.Zero, Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev, ChatBufferTextStyle.StartupTitle);
+                DateTime.Now, "", UUID.Zero, Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString, ChatBufferTextStyle.StartupTitle);
 
             ChatBufferItem ready = new ChatBufferItem(
                 DateTime.Now, "", UUID.Zero, "Ready.", ChatBufferTextStyle.StatusBlue);

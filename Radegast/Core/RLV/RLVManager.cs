@@ -369,7 +369,7 @@ namespace Radegast
                         int chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            Respond(chan, "RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")");
+                            Respond(chan, "RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString + ")");
                         }
                         break;
 
@@ -377,7 +377,7 @@ namespace Radegast
                         chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            Respond(chan, "RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + "." + RadegastBuild.CurrentRev + ")");
+                            Respond(chan, "RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString + ")");
                         }
                         break;
 
