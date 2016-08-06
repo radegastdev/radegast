@@ -51,7 +51,6 @@ namespace RadegastSpeech
         internal Conversation.Control converse;
         internal Environment.Control env;
         internal Sound.Control sound;
-        internal ToolStripDropDownButton ToolsMenu;
         private ToolStripMenuItem SpeechButton;
         internal IRadSpeech osLayer;
         public OSDMap config;

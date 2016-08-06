@@ -43,7 +43,6 @@ namespace RadegastSpeech.Conversation
         private Radegast.ObjectsConsole obTab;
         public bool Announce { get; set; }
         private Primitive currentPrim = new Primitive();
-        private ListViewItem currentItem ;
         
         #region statechange
         internal Surroundings(PluginControl pc)

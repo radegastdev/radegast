@@ -61,7 +61,6 @@ namespace Radegast
 		GridClient Client;
 		string ExportDirectory;
 		private uint uLocalID;
-		WindowWrapper MainWindow;
 		public delegate void LogMessageDelegate(string format, params object[] args);
 		public LogMessageDelegate LogMessage;
 		

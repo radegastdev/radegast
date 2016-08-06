@@ -167,12 +167,22 @@ namespace Radegast
 
         private void leaveBtn_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem == null) return;
-            Group g = (Group)listBox1.SelectedItem;
-            if (g.ID == UUID.Zero) return;
+            if (listBox1.SelectedItem == null)
+            {
+                return;
+            }
 
-            client.Groups.LeaveGroup(g.ID);
-            listBox1.Items.Remove(g);
+            Group g = (Group)listBox1.SelectedItem;
+            if (g.ID == UUID.Zero)
+            {
+                return;
+            }
+
+            if(MessageBox.Show(string.Format("Leave {0}?", g.Name), "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+            {
+                client.Groups.LeaveGroup(g.ID);
+                listBox1.Items.Remove(g);
+            }
         }
 
         private void imBtn_Click(object sender, EventArgs e)

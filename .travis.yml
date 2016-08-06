@@ -6,15 +6,17 @@ os:
 
 branches:
   except:
-    - /^build-([0-9]+)-/
+    - /^build-/
 
 install:
-  - "./runprebuild.sh"
+  - "export BUILD_MAJOR=2"
+  - "export BUILD_MINOR=20"
+  - "export GIT_TAG=build-$BUILD_MAJOR.$BUILD_MINOR.$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME-$TRAVIS_BRANCH-$(date -u '+%Y-%m-%d')"
+  - "export GIT_ARTIFACT=Radegast-$GIT_TAG.zip"
+  - "./ci/install.sh"
 
 before_deploy:
-  - "export GIT_TAG=build-$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME-$TRAVIS_BRANCH-$(date -u '+%Y-%m-%d')"
-  - "export GIT_ARTIFACT=Radegast-$GIT_TAG.zip"
-  - "./before_deploy.sh"
+  - "./ci/before_deploy.sh"
 
 deploy:
   provider: releases

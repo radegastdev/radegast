@@ -627,7 +627,7 @@ namespace Radegast.Rendering
 
         public static void Draw2DBox(float x, float y, float width, float height, float depth)
         {
-            GL.Begin(BeginMode.Quads);
+            GL.Begin(PrimitiveType.Quads);
             {
                 GL.TexCoord2(0, 1);
                 GL.Vertex3(x, y, depth);
