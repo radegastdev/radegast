@@ -227,38 +227,6 @@ solution "Radegast"
     configuration "**/aiml_config/**"
       buildaction "Copy"
 
-  project "Radegast.Plugin.Demo"
-    kind("SharedLib")
-    location(path.join("plugins", "Radegast.Plugin.Demo"))
-    files {
-      path.join("%{prj.location}", "**.cs"),
-      path.join("%{prj.location}", "Properties", "**.cs")
-    }
-    excludes {
-      path.join("%{prj.location}", "AssemblyInfo.cs"),
-      path.join("%{prj.location}", "obj", "**")
-    }
-    dependson {
-      "Radegast",
-      "OpenMetaverse",
-      "OpenMetaverseTypes",
-      "OpenMetaverse.StructuredData",
-      "Radegast.Plugin.Speech"
-    }
-    links {
-      "System",
-      "System.Core",
-      "System.Xml",
-      "System.Data",
-      "System.Drawing",
-      "System.Xml.Linq",
-      "System.Windows.Forms",
-      "OpenMetaverse",
-      "OpenMetaverseTypes",
-      "OpenMetaverse.StructuredData",
-      "Radegast",
-    }
-
   project "Radegast.Plugin.SimpleBuilder"
     kind("SharedLib")
     location(path.join("plugins", "Radegast.Plugin.SimpleBuilder"))
@@ -321,6 +289,7 @@ solution "Radegast"
       "Radegast",
       path.join("%{prj.location}", "assemblies", "Meebey.SmartIrc4net")
     }
+
 --[[
   project "Radegast.Plugin.EVOVend"
     kind("SharedLib")
