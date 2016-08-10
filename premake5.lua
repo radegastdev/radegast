@@ -385,6 +385,7 @@ solution "Radegast"
         "Radegast.Plugin.Speech",
       }
 
+  if os.is("windows") then
     project "RadSpeechWin"
       kind("SharedLib")
       location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechWin"))
@@ -415,6 +416,7 @@ solution "Radegast"
         "Radegast.exe",
         "Radegast.Plugin.Speech",
       }
+  end
 
     project "RadSpeechMac"
       kind("SharedLib")
@@ -435,7 +437,6 @@ solution "Radegast"
       links {
         "System",
         "System.Core",
-        "System.Speech",
         "System.Xml.Linq",
         "System.Data.DataSetExtensions",
         "System.Data",
