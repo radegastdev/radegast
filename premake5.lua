@@ -355,7 +355,6 @@ solution "Radegast"
       "fmodex-dotnet.dll",
     }
 
-  if os.is("linux") then
     project "RadSpeechLin"
       kind("SharedLib")
       location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechLin"))
@@ -385,9 +384,7 @@ solution "Radegast"
         "Radegast.exe",
         "Radegast.Plugin.Speech",
       }
-  end
 
-  if os.is("windows") then
     project "RadSpeechWin"
       kind("SharedLib")
       location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechWin"))
@@ -418,9 +415,7 @@ solution "Radegast"
         "Radegast.exe",
         "Radegast.Plugin.Speech",
       }
-  end
 
-  if os.is("macosx") then
     project "RadSpeechMac"
       kind("SharedLib")
       location(path.join("plugins", "Radegast.Plugin.Speech", "RadSpeechMac"))
@@ -445,12 +440,11 @@ solution "Radegast"
         "System.Data.DataSetExtensions",
         "System.Data",
         "System.Xml",
-        "Monobjc",
-        "Monobjc.Cocoa",
         "OpenMetaverse",
         "OpenMetaverseTypes",
         "OpenMetaverse.StructuredData",
         "Radegast.exe",
         "Radegast.Plugin.Speech",
+        path.join("%{prj.location}", "assemblies", "Monobjc.Cocoa"),
+        path.join("%{prj.location}", "assemblies", "Monobjc"),
       }
-  end
