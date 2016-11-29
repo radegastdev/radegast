@@ -35,7 +35,7 @@ solution "Radegast"
 
   project "OpenMetaverseTypes"
     kind("SharedLib")
-    location(path.join("libopenmetaverse", "OpenMetaverseTypes"))
+    location(path.join("libremetaverse", "OpenMetaverseTypes"))
     namespace("OpenMetaverse")
     files {
       path.join("%{prj.location}", "**.cs")
@@ -51,7 +51,7 @@ solution "Radegast"
 
   project "OpenMetaverse.StructuredData"
     kind("SharedLib")
-    location(path.join("libopenmetaverse", "OpenMetaverse.StructuredData"))
+    location(path.join("libremetaverse", "OpenMetaverse.StructuredData"))
     namespace("OpenMetaverse.StructuredData")
     files {
       path.join("%{prj.location}", "**.cs")
@@ -70,7 +70,7 @@ solution "Radegast"
 
   project "OpenMetaverse"
     kind("SharedLib")
-    location(path.join("libopenmetaverse", "OpenMetaverse"))
+    location(path.join("libremetaverse", "OpenMetaverse"))
     namespace("OpenMetaverse")
     files {
       path.join("%{prj.location}", "**.cs")
@@ -90,15 +90,15 @@ solution "Radegast"
       "System.Drawing",
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
-      path.join("libopenmetaverse", "bin", "log4net"),
-      path.join("libopenmetaverse", "bin", "SmartThreadPool"),
-      path.join("libopenmetaverse", "bin", "XMLRPC"),
-      path.join("libopenmetaverse", "bin", "zlib.net"),
+      path.join("libremetaverse", "bin", "log4net"),
+      path.join("libremetaverse", "bin", "SmartThreadPool"),
+      path.join("libremetaverse", "bin", "XMLRPC"),
+      path.join("libremetaverse", "bin", "zlib.net"),
     }
 
   project "OpenMetaverse.Rendering.Meshmerizer"
     kind("SharedLib")
-    location(path.join("libopenmetaverse", "OpenMetaverse.Rendering.Meshmerizer"))
+    location(path.join("libremetaverse", "OpenMetaverse.Rendering.Meshmerizer"))
     namespace("OpenMetaverse.Rendering")
     files {
       path.join("%{prj.location}", "**.cs")
@@ -117,7 +117,7 @@ solution "Radegast"
       "System.Drawing",
       "OpenMetaverse",
       "OpenMetaverseTypes",
-      path.join("libopenmetaverse", "bin", "PrimMesher"),
+      path.join("libremetaverse", "bin", "PrimMesher"),
     }
 
   project "Radegast"

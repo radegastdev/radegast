@@ -77,15 +77,15 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\libopenmetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
+    <ProjectReference Include="..\..\..\libremetaverse\OpenMetaverse.StructuredData\OpenMetaverse.StructuredData.csproj">
       <Project>{E63618CF-B21B-44CD-BBDE-BCE26CF6AF0D}</Project>
       <Name>OpenMetaverse.StructuredData</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\libopenmetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
+    <ProjectReference Include="..\..\..\libremetaverse\OpenMetaverseTypes\OpenMetaverseTypes.csproj">
       <Project>{1A303634-82F1-4C91-9E1C-C96B8B03D10A}</Project>
       <Name>OpenMetaverseTypes</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\libopenmetaverse\OpenMetaverse\OpenMetaverse.csproj">
+    <ProjectReference Include="..\..\..\libremetaverse\OpenMetaverse\OpenMetaverse.csproj">
       <Project>{30D9F2AE-42FE-4ACD-9E52-A819CB36EE05}</Project>
       <Name>OpenMetaverse</Name>
     </ProjectReference>

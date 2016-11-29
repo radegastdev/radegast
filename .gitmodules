@@ -1,3 +1,3 @@
-[submodule "libopenmetaverse"]
-	path = libopenmetaverse
-	url = https://github.com/openmetaversefoundation/libopenmetaverse.git
+[submodule "libremetaverse"]
+	path = libremetaverse
+	url = https://cinderblocks@bitbucket.org/cinderblocks/libremetaverse.git
