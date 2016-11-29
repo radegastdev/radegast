@@ -47,6 +47,7 @@ solution "Radegast"
       "System",
       "System.Core",
       "System.Xml",
+      path.join("libremetaverse", "bin", "protobuf-net"),
     }
 
   project "OpenMetaverse.StructuredData"
