@@ -45,7 +45,7 @@ namespace Radegast.Plugin.IRC
 {
     public partial class RelayConsole : RadegastTabControl
     {
-        enum RelaySourceType
+        private enum RelaySourceType
         {
             Unknown,
             Group,
@@ -54,7 +54,7 @@ namespace Radegast.Plugin.IRC
             IM
         }
 
-        class RelaySource
+        private class RelaySource
         {
             public RelaySource(string name, RelaySourceType sourcetype, UUID sessionId)
             {
@@ -82,6 +82,30 @@ namespace Radegast.Plugin.IRC
             public static bool operator !=(RelaySource left, RelaySource right)
             {
                 return !(left == right);
+            }
+
+            protected bool Equals(RelaySource other)
+            {
+                return string.Equals(Name, other.Name) && SourceType == other.SourceType && SessionId.Equals(other.SessionId);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((RelaySource)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = Name?.GetHashCode() ?? 0;
+                    hashCode = (hashCode * 397) ^ (int)SourceType;
+                    hashCode = (hashCode * 397) ^ SessionId.GetHashCode();
+                    return hashCode;
+                }
             }
 
             public string Name;
