@@ -127,13 +127,14 @@ solution "Radegast"
     icon(path.join("%{prj.location}", "radegast.ico"))
     files {
       path.join("%{prj.location}", "Properties", "**.cs"),
+	  path.join("%{prj.location}", "FMOD", "*.cs"),
       path.join("%{prj.location}", "**.cs"),
       path.join("%{prj.location}", "**.resx"),
       path.join("%{prj.location}", "openjpeg-dotnet*"),
       path.join("%{prj.location}", "*.config"),
       path.join("%{prj.location}", "*.so"),
       path.join("%{prj.location}", "*.dylib"),
-      path.join("%{prj.location}", "fmodex.*"),
+      path.join("%{prj.location}", "fmod*.*"),
       path.join("%{prj.location}", "*.xml"),
       path.join("%{prj.location}", "*.txt"),
       path.join("%{prj.location}", "*.png"),
@@ -166,7 +167,6 @@ solution "Radegast"
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "OpenMetaverse.Rendering.Meshmerizer",
-      path.join("%{prj.location}", "assemblies", "fmodex-dotnet"),
       path.join("%{prj.location}", "assemblies", "OpenTK"),
       path.join("%{prj.location}", "assemblies", "OpenTK.GLControl"),
       path.join("%{prj.location}", "assemblies", "Tools"),
@@ -176,7 +176,7 @@ solution "Radegast"
     }
     configuration "**/**.dylib"
       buildaction "Copy"
-    configuration "**/fmodex.*"
+    configuration "**/fmod*.*"
       buildaction "Copy"
     configuration "**/openjpeg-dotnet*"
       buildaction "Copy"
@@ -353,7 +353,6 @@ solution "Radegast"
       "OpenMetaverseTypes",
       "OpenMetaverse.StructuredData",
       "Radegast.exe",
-      "fmodex-dotnet.dll",
     }
 
     project "RadSpeechLin"

@@ -69,7 +69,6 @@ namespace Radegast.Media
         /// </summary>
         /// <param name="system">Sound system</param>
         public Stream()
-            : base()
         {
         }
 
@@ -90,25 +89,23 @@ namespace Radegast.Media
                 updateTimer = null;
             }
 
-            if (channel != null)
-            {
-                ManualResetEvent stopped = new ManualResetEvent(false);
-                invoke(new SoundDelegate(
-                    delegate
+            if (channel == null) return;
+            ManualResetEvent stopped = new ManualResetEvent(false);
+            invoke(new SoundDelegate(
+                delegate
+                {
+                    try
                     {
-                        try
-                        {
-                            FMODExec(channel.stop());
-                            channel = null;
-                            UnRegisterSound();
-                            FMODExec(sound.release());
-                            sound = null;
-                        }
-                        catch { }
-                        stopped.Set();
-                    }));
-                stopped.WaitOne();
-            }
+                        FMODExec(channel.stop());
+                        channel = null;
+                        UnRegisterSound();
+                        FMODExec(sound.release());
+                        sound = null;
+                    }
+                    catch { }
+                    stopped.Set();
+                }));
+            stopped.WaitOne();
         }
 
         /// <summary>
@@ -132,18 +129,18 @@ namespace Radegast.Media
 
                         FMODExec(
                             system.createSound(url,
-                            (MODE.HARDWARE | MODE._2D | MODE.CREATESTREAM),
+                            (MODE._2D | MODE.CREATESTREAM),
                             ref extraInfo,
-                            ref sound), "Stream load");
+                            out sound), "Stream load");
                         // Register for callbacks.
                         RegisterSound(sound);
 
                         // Allocate a channel and set initial volume.
                         FMODExec(system.playSound(
-                            CHANNELINDEX.FREE,
                             sound,
+                            null,
                             false,
-                            ref channel), "Stream channel");
+                            out channel), "Stream channel");
                         FMODExec(channel.setVolume(volume), "Stream volume");
 
                         if (updateTimer == null)
@@ -171,34 +168,31 @@ namespace Radegast.Media
                     FMODExec(system.update());
 
                     TAG tag = new TAG();
-                    int numTags = 0;
-                    int numTagsUpdated = 0;
+                    var numTags = 0;
+                    var numTagsUpdated = 0;
 
-                    var res = sound.getNumTags(ref numTags, ref numTagsUpdated);
+                    var res = sound.getNumTags(out numTags, out numTagsUpdated);
 
-                    if (res == RESULT.OK && numTagsUpdated > 0)
+                    if (res != RESULT.OK || numTagsUpdated <= 0) return;
+                    for (var i=0; i < numTags; i++)
                     {
-                        for (int i=0; i < numTags; i++)
+                        if (sound.getTag(null, i, out tag) != RESULT.OK)
                         {
-                            if (sound.getTag(null, i, ref tag) != RESULT.OK)
-                            {
-                                continue;
-                            }
-
-                            if (tag.type == TAGTYPE.FMOD && tag.name == "Sample Rate Change")
-                            {
-                                float newfreq = (float)Marshal.PtrToStructure(tag.data, typeof(float));
-                                Logger.DebugLog("New stream frequency: " + newfreq.ToString("F" + 0));
-                                channel.setFrequency(newfreq);
-                            }
-
-                            if (tag.datatype != TAGDATATYPE.STRING) continue;
-
-                            // Tell listeners about the Stream tag.  This can be
-                            // displayed to the user.
-                            if (OnStreamInfo != null)
-                                OnStreamInfo(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
+                            continue;
                         }
+
+                        if (tag.type == TAGTYPE.FMOD && tag.name == "Sample Rate Change")
+                        {
+                            float newfreq = (float)Marshal.PtrToStructure(tag.data, typeof(float));
+                            Logger.DebugLog("New stream frequency: " + newfreq.ToString("F" + 0));
+                            channel.setFrequency(newfreq);
+                        }
+
+                        if (tag.datatype != TAGDATATYPE.STRING) continue;
+
+                        // Tell listeners about the Stream tag.  This can be
+                        // displayed to the user.
+                        OnStreamInfo?.Invoke(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
                     }
                 }
                 catch (Exception ex)

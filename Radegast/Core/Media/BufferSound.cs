@@ -47,7 +47,7 @@ namespace Radegast.Media
         private UUID ContainerId;
         private Boolean prefetchOnly = false;
         private FMOD.MODE mode;
-        public Sound Sound { get { return sound; } }
+        public Sound Sound => sound;
         private Boolean loopSound = false;
         /// <summary>
         /// The individual volume setting for THIS object
@@ -84,17 +84,11 @@ namespace Radegast.Media
             volumeSetting = vol;
             loopSound = loop;
 
-            Logger.Log(
-                String.Format(
-                    "Playing sound at <{0:0.0},{1:0.0},{2:0.0}> ID {3}",
-                    position.x,
-                    position.y,
-                    position.z,
-                    Id.ToString()),
+            Logger.Log($"Playing sound at <{position.x:0.0},{position.y:0.0},{position.z:0.0}> ID {Id}",
                 Helpers.LogLevel.Debug);
 
             // Set flags to determine how it will be played.
-            mode = FMOD.MODE.SOFTWARE | // Need software processing for all the features
+            mode = FMOD.MODE.DEFAULT |
                 FMOD.MODE._3D |         // Need 3D effects for placement
                 FMOD.MODE.OPENMEMORY;   // Use sound data in memory
 
@@ -131,15 +125,15 @@ namespace Radegast.Media
         {
             // Make a list from the dictionary so we do not get a deadlock
             // on it when removing entries.
-            List<BufferSound> list = new List<BufferSound>(allBuffers.Values);
+            var list = new List<BufferSound>(allBuffers.Values);
 
-            foreach (BufferSound s in list)
+            foreach (var s in list)
             {
                 s.StopSound();
             }
 
-            List<MediaObject> objs = new List<MediaObject>(allChannels.Values);
-            foreach (MediaObject obj in objs)
+            var objs = new List<MediaObject>(allChannels.Values);
+            foreach (var obj in objs)
             {
                 if (obj is BufferSound)
                     ((BufferSound)obj).StopSound();
@@ -152,9 +146,9 @@ namespace Radegast.Media
         public static void AdjustVolumes()
         {
             // Make a list from the dictionary so we do not get a deadlock
-            List<BufferSound> list = new List<BufferSound>(allBuffers.Values);
+            var list = new List<BufferSound>(allBuffers.Values);
 
-            foreach (BufferSound s in list)
+            foreach (var s in list)
             {
                 s.AdjustVolume();
             }
@@ -170,7 +164,6 @@ namespace Radegast.Media
 
         // A simpler constructor used by PreFetchSound.
         public BufferSound(UUID soundId)
-            : base()
         {
             prefetchOnly = true;
             ContainerId = UUID.Zero;
@@ -181,14 +174,6 @@ namespace Radegast.Media
                 AssetType.Sound,
                 false,
                 new AssetManager.AssetReceivedCallback(Assets_OnSoundReceived));
-        }
-
-        /// <summary>
-        /// Releases resources of this sound object
-        /// </summary>
-        public override void Dispose()
-        {
-            base.Dispose();
         }
 
         /**
@@ -209,7 +194,7 @@ namespace Radegast.Media
                 // Decode the Ogg Vorbis buffer.
                 AssetSound s = asset as AssetSound;
                 s.Decode();
-                byte[] data = s.AssetData;
+                var data = s.AssetData;
 
                 // Describe the data to FMOD
                 extraInfo.length = (uint)data.Length;
@@ -224,7 +209,7 @@ namespace Radegast.Media
                             data,
                             mode,
                             ref extraInfo,
-                            ref sound));
+                            out sound));
 
                         // Register for callbacks.
                         RegisterSound(sound);
@@ -234,13 +219,13 @@ namespace Radegast.Media
                         if (loopSound)
                         {
                             uint soundlen = 0;
-                            FMODExec(sound.getLength(ref soundlen, TIMEUNIT.PCM));
+                            FMODExec(sound.getLength(out soundlen, TIMEUNIT.PCM));
                             FMODExec(sound.setLoopPoints(0, TIMEUNIT.PCM, soundlen - 1, TIMEUNIT.PCM));
                             FMODExec(sound.setLoopCount(-1));
                         }
 
                         // Allocate a channel and set initial volume.  Initially paused.
-                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                        FMODExec(system.playSound(sound, null, true, out channel));
 #if TRACE_SOUND
                     Logger.Log(
                         String.Format("Channel {0} for {1} assigned to {2}",
@@ -262,7 +247,7 @@ namespace Radegast.Media
                                     100.0f));     // Further than this gets no softer.
 
                         // Set the sound point of origin.  This is in SIM coordinates.
-                        FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
+                        FMODExec(channel.set3DAttributes(ref position, ref ZeroVector, ref ZeroVector));
 
                         // Turn off pause mode.  The sound will start playing now.
                         FMODExec(channel.setPaused(false));

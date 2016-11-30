@@ -30,7 +30,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Runtime.InteropServices;
 using FMOD;
@@ -38,14 +37,15 @@ using OpenMetaverse;
 
 namespace Radegast.Media
 {
-    public abstract class MediaObject : Object, IDisposable
+    public abstract class MediaObject : object, IDisposable
     {
         /// <summary>
         /// Indicates if this object's resources have already been disposed
         /// </summary>
-        public bool Disposed { get { return disposed; } }
+        public bool Disposed => disposed;
+
         private bool disposed = false;
-        protected Boolean finished = false;
+        protected bool finished = false;
 
         /// All commands are made through queued delegate calls, so they
         /// are guaranteed to take place in the same thread.  FMOD requires this.
@@ -59,11 +59,11 @@ namespace Radegast.Media
 
 
         // A SOUND represents the data (buffer or stream)
-        public FMOD.Sound FMODSound { get { return sound; } }
+        public FMOD.Sound FMODSound => sound;
         protected FMOD.Sound sound = null;
 
         // A CHANNEL represents a playback instance of a sound.
-        public Channel FMODChannel { get { return channel; } }
+        public Channel FMODChannel => channel;
         protected Channel channel = null;
 
         // Additional info for callbacks goes here.
@@ -78,10 +78,11 @@ namespace Radegast.Media
         /// Base FMOD system object, of which there is only one.
         /// </summary>
         protected static FMOD.System system = null;
-        public FMOD.System FMODSystem { get { return system; } }
+        public FMOD.System FMODSystem => system;
 
         protected static float AllObjectVolume = 0.8f;
-        public MediaObject()
+
+        protected MediaObject()
         {
             // Zero out the extra info structure.
             extraInfo = new FMOD.CREATESOUNDEXINFO();
@@ -100,7 +101,7 @@ namespace Radegast.Media
             disposed = true;
         }
 
-        public bool Active { get { return (sound != null); } }
+        public bool Active => (sound != null);
 
         /// <summary>
         /// Put a delegate call on the command queue.  These will be executed on
@@ -145,10 +146,7 @@ namespace Radegast.Media
                     catch (Exception ex)
                     {
                         Logger.Log(
-                            String.Format("Error on volume change on channel {0} sound {1} finished {2}",
-                               channel.getRaw().ToString("X"),
-                               sound.getRaw().ToString("X"),
-                               finished),
+                            $"Error on volume change on channel {channel.getRaw().ToString("X")} sound {sound.getRaw().ToString("X")} finished {finished}",
                              Helpers.LogLevel.Error,
                              ex);
                     }
@@ -173,17 +171,14 @@ namespace Radegast.Media
                         {
                             FMODExec(channel.set3DAttributes(
                                 ref position,
+                                ref ZeroVector,
                                 ref ZeroVector));
                         }
                         catch (Exception ex)
                         {
                             Logger.Log(
-                                String.Format("Error on position change on channel {0} sound {1} finished {2}",
-                                   channel.getRaw().ToString("X"),
-                                   sound.getRaw().ToString("X"),
-                                   finished),
-                                 Helpers.LogLevel.Error,
-                                 ex);
+                                $"Error on position change on channel {channel.getRaw().ToString("X")} sound {sound.getRaw().ToString("X")} finished {finished}",
+                                Helpers.LogLevel.Error, ex);
                         }
                     }));
 
@@ -210,10 +205,12 @@ namespace Radegast.Media
         {
             // OMV  X is forward/East, Y is left/North, Z is up.
             // FMOD Z is forward/East, X is right/South, Y is up.
-            FMOD.VECTOR v = new FMOD.VECTOR();
-            v.x = -omvV.Y;
-            v.y = omvV.Z;
-            v.z = omvV.X;
+            FMOD.VECTOR v = new FMOD.VECTOR
+            {
+                x = -omvV.Y,
+                y = omvV.Z,
+                z = omvV.X
+            };
             return v;
         }
 
@@ -270,20 +267,19 @@ namespace Radegast.Media
         /// <returns></returns>
         protected RESULT DispatchEndCallback(
             IntPtr channelraw,
-            CHANNEL_CALLBACKTYPE type,
+            CHANNELCONTROL_TYPE controltype,
+            CHANNELCONTROL_CALLBACK_TYPE type,
             IntPtr commanddata1,
             IntPtr commanddata2)
         {
             // There are several callback types
-            switch (type)
+            if (type == CHANNELCONTROL_CALLBACK_TYPE.END)
             {
-                case CHANNEL_CALLBACKTYPE.END:
-                    if (allChannels.ContainsKey(channelraw))
-                    {
-                        MediaObject sndobj = allChannels[channelraw];
-                        return sndobj.EndCallbackHandler();
-                    }
-                    break;
+                if (allChannels.ContainsKey(channelraw))
+                {
+                    MediaObject sndobj = allChannels[channelraw];
+                    return sndobj.EndCallbackHandler();
+                }
             }
 
             return RESULT.OK;
@@ -299,7 +295,7 @@ namespace Radegast.Media
 
         protected static void FMODExec(FMOD.RESULT result, string trace)
         {
-            Logger.Log("FMOD call " + trace + " returned " + result.ToString(), Helpers.LogLevel.Info);
+            Logger.Log("FMOD call " + trace + " returned " + result, Helpers.LogLevel.Info);
             if (result != FMOD.RESULT.OK)
             {
                 throw new MediaException("FMOD error! " + result + " - " + FMOD.Error.String(result));

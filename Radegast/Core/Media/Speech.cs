@@ -108,7 +108,7 @@ namespace Radegast.Media
             filename = speakfile;
 
             // Set flags to determine how it will be played.
-            FMOD.MODE mode = FMOD.MODE.SOFTWARE;
+            FMOD.MODE mode = FMOD.MODE.DEFAULT;
 
             if (Surround)
             {
@@ -133,16 +133,16 @@ namespace Radegast.Media
                         system.createSound(filename,
                         mode,
                         ref extraInfo,
-                        ref sound));
+                        out sound));
 
                         // Register for callbacks.
                         RegisterSound(sound);
 
                         // Find out how long the sound should play
-                        FMODExec(sound.getLength(ref len, TIMEUNIT.MS));
+                        FMODExec(sound.getLength(out len, TIMEUNIT.MS));
 
                         // Allocate a channel, initially paused.
-                        FMODExec(system.playSound(CHANNELINDEX.FREE, sound, true, ref channel));
+                        FMODExec(system.playSound(sound, null, true, out channel));
 
                         // Set general Speech volume.
                         //TODO Set this in the GUI
@@ -166,15 +166,10 @@ namespace Radegast.Media
                             position = FromOMVSpace(speakerPos);
                             FMODExec(channel.set3DAttributes(
                                ref position,
+                               ref ZeroVector,
                                ref ZeroVector));
 
-                            Logger.Log(
-                                String.Format(
-                                    "Speech at <{0:0.0},{1:0.0},{2:0.0}>",
-                                    position.x,
-                                    position.y,
-                                    position.z),
-                                Helpers.LogLevel.Debug);
+                            Logger.Log($"Speech at <{position.x:0.0},{position.y:0.0},{position.z:0.0}>", Helpers.LogLevel.Debug);
                         }
 
                         // SET a handler for when it finishes.
