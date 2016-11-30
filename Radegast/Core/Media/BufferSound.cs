@@ -48,7 +48,7 @@ namespace Radegast.Media
         private Boolean prefetchOnly = false;
         private FMOD.MODE mode;
         public Sound Sound => sound;
-        private Boolean loopSound = false;
+        private bool loopSound = false;
         /// <summary>
         /// The individual volume setting for THIS object
         /// </summary>

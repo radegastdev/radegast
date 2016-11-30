@@ -47,35 +47,17 @@ namespace Radegast.Media
         /// Fired when a stream meta data is received
         /// </summary>
         public event SpeechDoneCallback OnSpeechDone;
-        private String filename;
+        private string filename;
         private Vector3 speakerPos;
 
-        /// <summary>
-        /// If true, decrease distance falloff effect in volume.
-        /// </summary>
-        private static Boolean compress = true;
-        public static Boolean Compress
-        {
-            set { compress = value; }
-            get { return compress; }
-        }
+        public static bool Compress { set; get; } = true;
 
-        /// <summary>
-        /// If truee use FMODEx 3D sound
-        /// </summary>
-        private static bool surround = false;
-        public static bool Surround
-        {
-            set { surround = value; }
-            get { return surround; }
-        }
+        public static bool Surround { set; get; } = false;
 
         /// <summary>
         /// Creates a new sound object
         /// </summary>
-        /// <param name="system">Sound system</param>
         public Speech()
-            : base()
         {
             extraInfo.format = SOUND_FORMAT.PCM16;
         }
@@ -97,8 +79,9 @@ namespace Radegast.Media
         /// <summary>
         /// Plays audio from a file, as created by an external speech synthesizer.
         /// </summary>
-        /// <param name="filename">Name of a WAV file</param>
+        /// <param name="speakfile">Name of a WAV file</param>
         /// <param name="global"></param>
+        /// <param name="pos"></param>
         /// <returns>Length of the sound in ms</returns>
         public uint Play(string speakfile, bool global, Vector3 pos)
         {
@@ -153,7 +136,7 @@ namespace Radegast.Media
                         {
                             // Set attenuation limits so distant people get a little softer,
                             // but not TOO soft
-                            if (compress)
+                            if (Compress)
                                 FMODExec(sound.set3DMinMaxDistance(
                                         2f,       // Any closer than this gets no louder
                                         3.5f));     // Further than this gets no softer.

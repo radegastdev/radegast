@@ -42,9 +42,8 @@ namespace Radegast.Media
         /// <summary>
         /// Indicates if this object's resources have already been disposed
         /// </summary>
-        public bool Disposed => disposed;
+        public bool Disposed { get; private set; } = false;
 
-        private bool disposed = false;
         protected bool finished = false;
 
         /// All commands are made through queued delegate calls, so they
@@ -98,7 +97,7 @@ namespace Radegast.Media
                 sound = null;
             }
 
-            disposed = true;
+            Disposed = true;
         }
 
         public bool Active => (sound != null);
@@ -261,6 +260,7 @@ namespace Radegast.Media
         /// Main handler for playback-end callback.
         /// </summary>
         /// <param name="channelraw"></param>
+        /// <param name="controltype"></param>
         /// <param name="type"></param>
         /// <param name="commanddata1"></param>
         /// <param name="commanddata2"></param>
@@ -289,16 +289,16 @@ namespace Radegast.Media
         {
             if (result != FMOD.RESULT.OK)
             {
-                throw new MediaException("FMOD error! " + result + " - " + FMOD.Error.String(result));
+                throw new MediaException($"FMOD error! {result} - {FMOD.Error.String(result)}");
             }
         }
 
         protected static void FMODExec(FMOD.RESULT result, string trace)
         {
-            Logger.Log("FMOD call " + trace + " returned " + result, Helpers.LogLevel.Info);
+            Logger.Log($"FMOD call {trace} returned {result}", Helpers.LogLevel.Info);
             if (result != FMOD.RESULT.OK)
             {
-                throw new MediaException("FMOD error! " + result + " - " + FMOD.Error.String(result));
+                throw new MediaException($"FMOD error! {result} - {FMOD.Error.String(result)}");
             }
         }
 
