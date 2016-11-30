@@ -21,10 +21,10 @@ LangString LanguageCode ${LANG_ENGLISH}  "en"
 !define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
 
 !define APPNAME "Radegast"
-!define VERSION "2.19"
+!define VERSION "2.20"
 !define MAINEXEC "${APPNAME}.exe"
 !define DOTNET_VERSION "3.5"
-!define VOICEPACK "RadegastVoicepack-1.0.exe"
+!define VOICEPACK "RadegastVoicepack-2.0.exe"
 !define UNINST_REG "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
 ; The name of the installer
@@ -203,9 +203,10 @@ SectionEnd
 Section /o "${APPNAME} Voice Pack (extra download)"
   AddSize 6662
   IfFileExists "$INSTDIR\SLVoice.exe" voice_download_exists
-  NSISdl::download /TIMEOUT=30000  "http://radegast.googlecode.com/files/${VOICEPACK}" "$INSTDIR\${VOICEPACK}"
+  inetc::get /BANNER "Downloading Voice Files" \
+    "https://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $R0
-  StrCmp $R0 "success" voice_download_success voice_download_failed
+  StrCmp $R0 "OK" voice_download_success voice_download_failed
   
   voice_download_success:
 	ExecWait '"$INSTDIR\${VOICEPACK}" /D=$INSTDIR' $0
