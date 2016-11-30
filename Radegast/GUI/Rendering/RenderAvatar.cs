@@ -86,7 +86,7 @@ namespace Radegast.Rendering
         public int teFaceID;
         public Dictionary<int, VisualParamEx> _evp = new Dictionary<int, VisualParamEx>();
 
-        new public class LODMesh : LindenMesh.ReferenceMesh
+        public new class LODMesh : LindenMesh.ReferenceMesh
         {
             public ushort[] Indices;
 
@@ -213,10 +213,10 @@ namespace Radegast.Rendering
         {
             base.LoadMesh(filename);
 
-            float minX, minY, minZ;
-            minX = minY = minZ = Single.MaxValue;
-            float maxX, maxY, maxZ;
-            maxX = maxY = maxZ = Single.MinValue;
+            float minY, minZ;
+            var minX = minY = minZ = float.MaxValue;
+            float maxY, maxZ;
+            var maxX = maxY = maxZ = float.MinValue;
 
             // Generate the vertex array
             RenderData.Vertices = new float[NumVertices * 3];

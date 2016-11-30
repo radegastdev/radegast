@@ -186,7 +186,7 @@ Section "${APPNAME} core (required)"
   WriteRegStr HKLM ${UNINST_REG} "DisplayName" "${APPNAME} ${VERSION}"
   WriteRegStr HKLM ${UNINST_REG} "UninstallString" '"$INSTDIR\uninstall.exe"'
   WriteRegStr HKLM ${UNINST_REG} "QuietUninstallString" '"$INSTDIR\uninstall.exe" /S'
-  WriteRegStr HKLM ${UNINST_REG} "Publisher" "Radegast Development Team"
+  WriteRegStr HKLM ${UNINST_REG} "Publisher" "Cinder Roxley"
   WriteRegStr HKLM ${UNINST_REG} "DisplayVersion" "${VERSION}"
   WriteRegStr HKLM ${UNINST_REG} "DisplayIcon" "$INSTDIR\${MAINEXEC}"
   ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2

@@ -29,18 +29,17 @@
 // $Id$
 //
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Radegast")]
-[assembly: AssemblyDescription("Radegast - http://radegast.org/")]
+[assembly: AssemblyTitle("Radegast-ng")]
+[assembly: AssemblyDescription("Radegast-ng - http://radegast.org/")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Radegast Development Team")]
 [assembly: AssemblyProduct("Radegast Metaverse Client")]
-[assembly: AssemblyCopyright("Copyright (c) 2009-2015, Radegast Development Team")]
+[assembly: AssemblyCopyright("Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016, Cinder Roxley.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

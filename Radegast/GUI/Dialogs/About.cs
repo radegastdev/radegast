@@ -28,7 +28,6 @@
 //
 // $Id: MainForm.cs 223 2009-09-12 04:33:49Z latifer@gmail.com $
 //
-using System.Windows.Forms;
 
 namespace Radegast
 {
@@ -47,6 +46,5 @@ namespace Radegast
         {
             Instance.MainForm.ProcessLink("http://www.radegast.org/");
         }
-
     }
 }

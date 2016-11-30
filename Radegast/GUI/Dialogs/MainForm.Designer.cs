@@ -904,7 +904,7 @@ namespace Radegast
             // 
             this.trayIcon.ContextMenuStrip = this.ctxTrayIcon;
             this.trayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("trayIcon.Icon")));
-            this.trayIcon.Text = "Radegast";
+            this.trayIcon.Text = "Radegast-ng";
             this.trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treyIcon_MouseDoubleClick);
             // 
             // ctxTrayIcon
@@ -922,7 +922,7 @@ namespace Radegast
             // 
             this.ctxTrayMenuLabel.Name = "ctxTrayMenuLabel";
             this.ctxTrayMenuLabel.Size = new System.Drawing.Size(122, 22);
-            this.ctxTrayMenuLabel.Text = "Radegast";
+            this.ctxTrayMenuLabel.Text = "Radegast-ng";
             // 
             // toolStripMenuItem1
             // 
@@ -964,7 +964,7 @@ namespace Radegast
             this.KeyPreview = true;
             this.MinimumSize = new System.Drawing.Size(754, 541);
             this.Name = "frmMain";
-            this.Text = "Radegast";
+            this.Text = "Radegast-ng";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.Load += new System.EventHandler(this.frmMain_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
