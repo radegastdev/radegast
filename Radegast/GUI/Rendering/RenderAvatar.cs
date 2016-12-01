@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using System.Xml;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
@@ -44,6 +45,7 @@ using System.Threading;
 
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
+using Path = System.IO.Path;
 
 namespace Radegast.Rendering
 {
@@ -51,6 +53,7 @@ namespace Radegast.Rendering
     {
         public string name;
         public string joint;
+        public string location;
         public Vector3 position;
         public Quaternion rotation;
         public int id;
@@ -63,6 +66,7 @@ namespace Radegast.Rendering
         {
             name = node.Attributes.GetNamedItem("name").Value;
             joint = node.Attributes.GetNamedItem("joint").Value;
+            location = node.Attributes.GetNamedItem("location").Value;
             position = VisualParamEx.XmlParseVector(node.Attributes.GetNamedItem("position").Value);
             rotation = VisualParamEx.XmlParseRotation(node.Attributes.GetNamedItem("rotation").Value);
             id = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
@@ -182,9 +186,6 @@ namespace Radegast.Rendering
 
             Array.Copy(source.RenderData.TexCoords, OrigRenderData.TexCoords, source.RenderData.TexCoords.Length);
             Array.Copy(source.RenderData.Indices, OrigRenderData.Indices, source.RenderData.Indices.Length);
-
-
-
         }
 
         public void setMeshPos(Vector3 pos)
@@ -511,7 +512,7 @@ namespace Radegast.Rendering
 
         public GLAvatar()
         {
-            lock (_defaultmeshes) foreach (KeyValuePair<string, GLMesh> kvp in _defaultmeshes)
+            lock (_defaultmeshes) foreach (var kvp in _defaultmeshes)
                 {
                     GLMesh mesh = new GLMesh(kvp.Value, this); // Instance our meshes
                     _meshes.Add(kvp.Key, mesh);
@@ -522,9 +523,9 @@ namespace Radegast.Rendering
         public static void dumptweaks()
         {
 
-            for (int x = 0; x < VisualParamEx.tweakable_params.Count; x++)
+            for (int x = 0; x < VisualParamEx.TweakableParams.Count; x++)
             {
-                VisualParamEx vpe = (VisualParamEx)VisualParamEx.tweakable_params.GetByIndex(x);
+                VisualParamEx vpe = (VisualParamEx)VisualParamEx.TweakableParams.GetByIndex(x);
                 Console.WriteLine($"{x} is {vpe.Name}");
             }
 
@@ -538,10 +539,10 @@ namespace Radegast.Rendering
             attachment_points.Clear();
 
 
-            string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
+            string basedir = Path.Combine(Directory.GetCurrentDirectory(), "character");
 
             XmlDocument lad = new XmlDocument();
-            lad.Load(basedir + LODfilename);
+            lad.Load(Path.Combine(basedir, LODfilename));
 
             // First, read the skeleton section this contains attachment point info and the bone deform info for visual params
             // And load the skeleton file in to the bones class
@@ -627,9 +628,9 @@ namespace Radegast.Rendering
                 }
 
                 if (lod == 0)
-                    mesh.LoadMesh(basedir + fileName);
+                    mesh.LoadMesh(Path.Combine(basedir, fileName));
                 else
-                    mesh.LoadLODMesh(lod, basedir + fileName);
+                    mesh.LoadLODMesh(lod, Path.Combine(basedir, fileName));
 
                 if (lod == 0)
                 {
@@ -650,9 +651,6 @@ namespace Radegast.Rendering
                         case "hairMesh":
                             //mesh.setMeshPos(Bone.mBones["mHead"].getTotalOffset());
                             break;
-
-                        default:
-                            break;
                     }
                 }
 
@@ -667,13 +665,13 @@ namespace Radegast.Rendering
         {
             VisualParamEx vpx;
 
-            if (VisualParamEx.allParams.TryGetValue(param, out vpx))
+            if (VisualParamEx.AllParams.TryGetValue(param, out vpx))
             {
                 applyMorph(vpx, av, weight);
 
                 // a morph ID may apply to more than one mesh (duplicate VP IDs)
                 // in this case also apply to all other identical IDs
-                foreach (VisualParamEx cvpx in vpx.identicalIds)
+                foreach (VisualParamEx cvpx in vpx.IdenticalIds)
                 {
                     applyMorph(cvpx, av, weight);
                 }
@@ -695,7 +693,7 @@ namespace Radegast.Rendering
             {
                 // Its a morph
                 GLMesh mesh;
-                if (_meshes.TryGetValue(vpx.morphmesh, out mesh))
+                if (_meshes.TryGetValue(vpx.MorphMesh, out mesh))
                 {
                     foreach (LindenMesh.Morph morph in mesh.Morphs) //optimise me to a dictionary
                     {
@@ -713,13 +711,11 @@ namespace Radegast.Rendering
                 }
             }
 
-
             // Driver type
             // A driver drives multiple slave visual paramaters
             if (vpx.pType == VisualParamEx.ParamType.TYPE_DRIVER)
             {
-
-                foreach (VisualParamEx.driven child in vpx.childparams)
+                foreach (VisualParamEx.driven child in vpx.ChildParams)
                 {
 
                     /***** BEGIN UNGRACEFULL CODE STEALING ******/
@@ -741,8 +737,8 @@ namespace Radegast.Rendering
                     }
 
                     float driven_weight = vpx.DefaultValue;
-                    float driven_max = VisualParamEx.allParams[child.id].MaxValue;
-                    float driven_min = VisualParamEx.allParams[child.id].MinValue;
+                    float driven_max = VisualParamEx.AllParams[child.id].MaxValue;
+                    float driven_min = VisualParamEx.AllParams[child.id].MinValue;
                     float input_weight = weight;
 
                     float min_weight = vpx.MinValue;
@@ -761,33 +757,26 @@ namespace Radegast.Rendering
                         }
                     }
                     else
+                    {
                         if (input_weight <= child.max1)
                         {
-                            float t = (input_weight - child.min1) / (child.max1 - child.min1);
-                            driven_weight = driven_min + t * (driven_max - driven_min);
+                            float t = (input_weight - child.min1)/(child.max1 - child.min1);
+                            driven_weight = driven_min + t*(driven_max - driven_min);
+                        }
+                        else if (input_weight <= child.max2)
+                        {
+                            driven_weight = driven_max;
+                        }
+                        else if (input_weight <= child.min2)
+                        {
+                            float t = (input_weight - child.max2)/(child.min2 - child.max2);
+                            driven_weight = driven_max + t*(driven_min - driven_max);
                         }
                         else
-                            if (input_weight <= child.max2)
-                            {
-                                driven_weight = driven_max;
-                            }
-                            else
-                                if (input_weight <= child.min2)
-                                {
-                                    float t = (input_weight - child.max2) / (child.min2 - child.max2);
-                                    driven_weight = driven_max + t * (driven_min - driven_max);
-                                }
-                                else
-                                {
-                                    if (child.max2 >= max_weight)
-                                    {
-                                        driven_weight = driven_max;
-                                    }
-                                    else
-                                    {
-                                        driven_weight = driven_min;
-                                    }
-                                }
+                        {
+                            driven_weight = child.max2 >= max_weight ? driven_max : driven_min;
+                        }
+                    }
 
 
                     /***** END UNGRACEFULL CODE STEALING ******/
@@ -806,7 +795,7 @@ namespace Radegast.Rendering
                 //   value_min="-1"
                 // value_max="1"
 
-                foreach (KeyValuePair<string, BoneDeform> kvp in vpx.BoneDeforms)
+                foreach (var kvp in vpx.BoneDeforms)
                 {
                     skel.scalebone(kvp.Key, Vector3.One + (kvp.Value.scale * value));
                     skel.offsetbone(kvp.Key, kvp.Value.offset * value);
@@ -831,14 +820,7 @@ namespace Radegast.Rendering
                 {
                     if (av.VisualParameters.Length > 123)
                     {
-                        if (av.VisualParameters[31] > 127)
-                        {
-                            msex = VisualParamEx.EparamSex.SEX_MALE;
-                        }
-                        else
-                        {
-                            msex = VisualParamEx.EparamSex.SEX_FEMALE;
-                        }
+                        msex = av.VisualParameters[31] > 127 ? VisualParamEx.EparamSex.SEX_MALE : VisualParamEx.EparamSex.SEX_FEMALE;
                     }
 
                     foreach (GLMesh mesh in _meshes.Values)
@@ -850,13 +832,13 @@ namespace Radegast.Rendering
 
                     foreach (byte vpvalue in av.VisualParameters)
                     {
-                        if (x >= VisualParamEx.tweakable_params.Count)
+                        if (x >= VisualParamEx.TweakableParams.Count)
                         {
                             //Logger.Log("Two many visual paramaters in Avatar appearance", Helpers.LogLevel.Warning);
                             break;
                         }
 
-                        VisualParamEx vpe = (VisualParamEx)VisualParamEx.tweakable_params.GetByIndex(x);
+                        VisualParamEx vpe = (VisualParamEx)VisualParamEx.TweakableParams.GetByIndex(x);
 
                         if (vpe.sex != VisualParamEx.EparamSex.SEX_BOTH && vpe.sex != msex)
                         {
@@ -1046,7 +1028,7 @@ namespace Radegast.Rendering
 
         public void resetbonescales()
         {
-            foreach (KeyValuePair<string, Bone> src in mBones)
+            foreach (var src in mBones)
             {
                 src.Value.scale = Vector3.One;
                 src.Value.offset_pos = Vector3.Zero;
@@ -1087,27 +1069,13 @@ namespace Radegast.Rendering
         public Vector3 getOffset(string bonename)
         {
             Bone b;
-            if (mBones.TryGetValue(bonename, out b))
-            {
-                return (b.getTotalOffset());
-            }
-            else
-            {
-                return Vector3.Zero;
-            }
+            return mBones.TryGetValue(bonename, out b) ? (b.getTotalOffset()) : Vector3.Zero;
         }
 
         public Quaternion getRotation(string bonename)
         {
             Bone b;
-            if (mBones.TryGetValue(bonename, out b))
-            {
-                return (b.getTotalRotation());
-            }
-            else
-            {
-                return Quaternion.Identity;
-            }
+            return mBones.TryGetValue(bonename, out b) ? (b.getTotalRotation()) : Quaternion.Identity;
         }
 
 
@@ -1140,7 +1108,7 @@ namespace Radegast.Rendering
             {
                 foreach (animationwrapper ar in mAnimationsWrapper.Values)
                 {
-                    if (ar.mPotentialyDead == true)
+                    if (ar.mPotentialyDead)
                     {
                         // Logger.Log(string.Format("Animation {0} is being marked for easeout (dead)",ar.mAnimation.ToString()),Helpers.LogLevel.Info);
                         // Should we just stop dead? i think not it may get jerky
@@ -1167,12 +1135,12 @@ namespace Radegast.Rendering
             {
                 b = new BinBVHAnimationReader(asset.AssetData);
                 mAnimationCache[asset.AssetID] = b;
-                Logger.Log("Adding new decoded animaton known animations " + asset.AssetID.ToString(), Helpers.LogLevel.Info);
+                Logger.Log("Adding new decoded animaton known animations " + asset.AssetID, Helpers.LogLevel.Info);
             }
 
             if (!av.glavatar.skel.mAnimationsWrapper.ContainsKey(animKey))
             {
-                Logger.Log(String.Format("Animation {0} is not in mAnimationsWrapper! ", animKey), Helpers.LogLevel.Warning);
+                Logger.Log($"Animation {animKey} is not in mAnimationsWrapper! ", Helpers.LogLevel.Warning);
                 return;
             }
 
@@ -1257,7 +1225,7 @@ namespace Radegast.Rendering
                 //pre calculate all joint priorities here
                 av.glavatar.skel.mPriority.Clear();
 
-                foreach (KeyValuePair<UUID, animationwrapper> kvp in av.glavatar.skel.mAnimationsWrapper)
+                foreach (var kvp in av.glavatar.skel.mAnimationsWrapper)
                 {
                     int jpos = 0;
                     animationwrapper ar = kvp.Value;
@@ -1559,23 +1527,20 @@ namespace Radegast.Rendering
 
                             if (ar.playstate != animationwrapper.animstate.STATE_EASEOUT)
                             {
-                                if (easeoutset == true)
-                                {
-                                    jointstate.rotation = Quaternion.Slerp(jointstate.rotation, state.easeoutrot, state.easeoutfactor);
-                                }
-                                else
-                                {
-                                    jointstate.rotation = rotlerp;
-                                }
+                                jointstate.rotation = easeoutset 
+                                    ? Quaternion.Slerp(jointstate.rotation, state.easeoutrot, state.easeoutfactor) 
+                                    : rotlerp;
                             }
 
                             //jointstate.rotation= Quaternion.Slerp(jointstate.rotation, rotlerp, 0.5f);
                         }
                         else
                         {
-                            jointstate = new joint();
-                            jointstate.rotation = rotlerp;
-                            jointstate.offset = poslerp;
+                            jointstate = new joint
+                            {
+                                rotation = rotlerp,
+                                offset = poslerp
+                            };
                             jointdeforms.Add(ar.anim.joints[jpos].Name, jointstate);
                         }
 
@@ -1587,7 +1552,7 @@ namespace Radegast.Rendering
                 }
             }
 
-            foreach (KeyValuePair<string, joint> kvp in jointdeforms)
+            foreach (var kvp in jointdeforms)
             {
                 deformbone(kvp.Key, kvp.Value.offset, kvp.Value.rotation);
             }
@@ -1661,9 +1626,9 @@ namespace Radegast.Rendering
         public static void loadbones(string skeletonfilename)
         {
             lock (Bone.mBones) mBones.Clear();
-            string basedir = Directory.GetCurrentDirectory() + System.IO.Path.DirectorySeparatorChar + "character" + System.IO.Path.DirectorySeparatorChar;
+            string basedir = Path.Combine(Directory.GetCurrentDirectory(), "character");
             XmlDocument skeleton = new XmlDocument();
-            skeleton.Load(basedir + skeletonfilename);
+            skeleton.Load(Path.Combine(basedir, skeletonfilename));
             XmlNode boneslist = skeleton.GetElementsByTagName("linden_skeleton")[0];
             addbone(boneslist.ChildNodes[0], null);
         }
@@ -1805,14 +1770,7 @@ namespace Radegast.Rendering
         // Try to save some cycles by not recalculating positions and rotations every time
         public Vector3 getTotalOffset()
         {
-            if (posdirty == false)
-            {
-                return mTotalPos;
-            }
-            else
-            {
-                return getOffset();
-            }
+            return posdirty == false ? mTotalPos : getOffset();
         }
 
         public Vector3 getDeltaOffset()
@@ -1821,11 +1779,8 @@ namespace Radegast.Rendering
             {
                 return mDeltaPos;
             }
-            else
-            {
-                getOffset();
-                return mDeltaPos;
-            }
+            getOffset();
+            return mDeltaPos;
         }
 
         private Vector3 getOrigOffset()
@@ -1845,14 +1800,7 @@ namespace Radegast.Rendering
             Bone b;
             lock (Bone.mBones)
             {
-                if (mBones.TryGetValue(bonename, out b))
-                {
-                    return (b.getRotation());
-                }
-                else
-                {
-                    return Quaternion.Identity;
-                }
+                return mBones.TryGetValue(bonename, out b) ? (b.getRotation()) : Quaternion.Identity;
             }
         }
 
@@ -1887,14 +1835,7 @@ namespace Radegast.Rendering
 
         public Quaternion getTotalRotation()
         {
-            if (rotdirty == false)
-            {
-                return mTotalRot;
-            }
-            else
-            {
-                return getRotation();
-            }
+            return rotdirty == false ? mTotalRot : getRotation();
         }
     }
 
@@ -1913,27 +1854,28 @@ namespace Radegast.Rendering
     public class VisualParamEx
     {
         //All visual params indexed by ID
-        static public Dictionary<int, VisualParamEx> allParams = new Dictionary<int, VisualParamEx>();
+        public static Dictionary<int, VisualParamEx> AllParams = new Dictionary<int, VisualParamEx>();
 
         // The sorted list of tweakable params, this matches the AvatarAppearance packet visual
         // parameters ordering
-        static public SortedList tweakable_params = new SortedList();
+        public static SortedList TweakableParams = new SortedList();
 
         public Dictionary<string, BoneDeform> BoneDeforms = null;
 
         public Dictionary<string, VolumeDeform> VolumeDeforms = null;
 
-        public List<driven> childparams = null;
+        public List<driven> ChildParams = null;
 
-        public List<VisualParamEx> identicalIds = new List<VisualParamEx>();
+        public List<VisualParamEx> IdenticalIds = new List<VisualParamEx>();
 
-        public string morphmesh = null;
+        public string MorphMesh = null;
 
         enum GroupType
         {
             VISUAL_PARAM_GROUP_TWEAKABLE = 0,
             VISUAL_PARAM_GROUP_ANIMATABLE,
             VISUAL_PARAM_GROUP_TWEAKABLE_NO_TRANSMIT,
+            VISUAL_PARAM_GROUP_TRANSMIT_NOT_TWEAKABLE
         }
 
         public struct VolumeDeform
@@ -1945,9 +1887,9 @@ namespace Radegast.Rendering
 
         public enum EparamSex
         {
-            SEX_BOTH = 0,
-            SEX_FEMALE = 1,
-            SEX_MALE = 2
+            SEX_MALE = 0x1,
+            SEX_FEMALE = 0x2,
+            SEX_BOTH = 0x3
         }
 
         public enum ParamType
@@ -2024,7 +1966,8 @@ namespace Radegast.Rendering
         /// <param name="drivers">Array of param IDs that are drivers for this parameter</param>
         /// <param name="alpha">Alpha blending/bump info</param>
         /// <param name="colorParams">Color information</param>
-        public VisualParamEx(int paramID, string name, int group, string wearable, string label, string labelMin, string labelMax, float def, float min, float max, bool isBumpAttribute, int[] drivers, VisualAlphaParam? alpha, VisualColorParam? colorParams)
+        public VisualParamEx(int paramID, string name, int group, string wearable, string label, string labelMin, string labelMax,
+            float def, float min, float max, bool isBumpAttribute, int[] drivers, VisualAlphaParam? alpha, VisualColorParam? colorParams)
         {
             ParamID = paramID;
             Name = name;
@@ -2045,13 +1988,7 @@ namespace Radegast.Rendering
 
         public bool matchchildnode(string test, XmlNode node)
         {
-            foreach (XmlNode n in node.ChildNodes)
-            {
-                if (n.Name == test)
-                    return true;
-            }
-
-            return false;
+            return node.ChildNodes.Cast<XmlNode>().Any(n => n.Name == test);
         }
 
         public VisualParamEx(XmlNode node)
@@ -2083,45 +2020,48 @@ namespace Radegast.Rendering
 
             if (sexnode != null)
             {
-                if (sexnode.Value == "male")
+                switch (sexnode.Value)
                 {
-                    sex = EparamSex.SEX_MALE;
-                }
-                else
-                {
-                    sex = EparamSex.SEX_FEMALE;
+                    case "male":
+                        sex = EparamSex.SEX_MALE;
+                        break;
+                    case "female":
+                        sex = EparamSex.SEX_FEMALE;
+                        break;
+                    case "both:":
+                    default:
+                        sex = EparamSex.SEX_BOTH;
+                        break;
                 }
             }
 
             if (node.ParentNode.Name == "mesh")
             {
-                this.morphmesh = node.ParentNode.Attributes.GetNamedItem("type").Value;
+                this.MorphMesh = node.ParentNode.Attributes.GetNamedItem("type").Value;
             }
-
-            Group = int.Parse(node.Attributes.GetNamedItem("group").Value);
 
             if (Group == (int)GroupType.VISUAL_PARAM_GROUP_TWEAKABLE)
             {
-                if (!tweakable_params.ContainsKey(ParamID)) //stupid duplicate shared params
+                if (!TweakableParams.ContainsKey(ParamID)) //stupid duplicate shared params
                 {
-                    tweakable_params.Add(this.ParamID, this);
+                    TweakableParams.Add(this.ParamID, this);
                 }
                 else
                 {
-                    Logger.Log(String.Format("Warning duplicate tweakable paramater ID {0} {1}", count, this.Name), Helpers.LogLevel.Warning);
+                    Logger.Log($"Warning duplicate tweakable paramater ID {count} {this.Name}", Helpers.LogLevel.Warning);
                 }
                 count++;
             }
 
-            if (allParams.ContainsKey(ParamID))
+            if (AllParams.ContainsKey(ParamID))
             {
                 //Logger.Log("Shared VisualParam id " + ParamID.ToString() + " "+Name, Helpers.LogLevel.Info);
-                allParams[ParamID].identicalIds.Add(this);
+                AllParams[ParamID].IdenticalIds.Add(this);
             }
             else
             {
                 //Logger.Log("VisualParam id " + ParamID.ToString() + " " + Name, Helpers.LogLevel.Info);
-                allParams.Add(ParamID, this);
+                AllParams.Add(ParamID, this);
             }
 
             if (matchchildnode("param_skeleton", node))
@@ -2149,7 +2089,7 @@ namespace Radegast.Rendering
             if (matchchildnode("param_driver", node))
             {
                 pType = ParamType.TYPE_DRIVER;
-                childparams = new List<driven>();
+                ChildParams = new List<driven>();
                 if (node.HasChildNodes && node.ChildNodes[0].HasChildNodes) //LAZY
                 {
                     ParseDrivers(node.ChildNodes[0].ChildNodes);
@@ -2202,27 +2142,18 @@ namespace Radegast.Rendering
             {
                 if (node.Name == "volume_morph")
                 {
-                    VolumeDeform vd = new VolumeDeform();
-                    vd.name = node.Attributes.GetNamedItem("name").Value;
-                    vd.name = vd.name.ToLower();
-
-                    if (node.Attributes.GetNamedItem("scale") != null)
+                    VolumeDeform vd = new VolumeDeform
                     {
-                        vd.scale = XmlParseVector(node.Attributes.GetNamedItem("scale").Value);
-                    }
-                    else
-                    {
-                        vd.scale = new Vector3(0, 0, 0);
-                    }
-
-                    if (node.Attributes.GetNamedItem("pos") != null)
-                    {
-                        vd.pos = XmlParseVector(node.Attributes.GetNamedItem("pos").Value);
-                    }
-                    else
-                    {
-                        vd.pos = new Vector3(0f, 0f, 0f);
-                    }
+                        name = node.Attributes.GetNamedItem("name").Value.ToLower(),
+                        scale =
+                            node.Attributes.GetNamedItem("scale") != null
+                                ? XmlParseVector(node.Attributes.GetNamedItem("scale").Value)
+                                : new Vector3(0, 0, 0),
+                        pos =
+                            node.Attributes.GetNamedItem("pos") != null
+                                ? XmlParseVector(node.Attributes.GetNamedItem("pos").Value)
+                                : new Vector3(0f, 0f, 0f)
+                    };
 
                     VolumeDeforms.Add(vd.name, vd);
                 }
@@ -2235,9 +2166,8 @@ namespace Radegast.Rendering
             {
                 if (node.Name == "driven")
                 {
-                    driven d = new driven();
+                    driven d = new driven {id = Int32.Parse(node.Attributes.GetNamedItem("id").Value)};
 
-                    d.id = Int32.Parse(node.Attributes.GetNamedItem("id").Value);
                     XmlNode param = node.Attributes.GetNamedItem("max1");
                     if (param != null)
                     {
@@ -2252,7 +2182,7 @@ namespace Radegast.Rendering
                         d.hasMinMax = false;
                     }
 
-                    childparams.Add(d);
+                    ChildParams.Add(d);
 
                 }
             }

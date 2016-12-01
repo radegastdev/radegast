@@ -1070,17 +1070,17 @@ namespace Radegast.Rendering
                         isMask = true;
 
                         // Do we really have alpha, is it all full alpha, or is it a mask
-                        for (int i = 0; i < mi.Alpha.Length; i++)
+                        foreach (byte b in mi.Alpha)
                         {
-                            if (mi.Alpha[i] < 255)
+                            if (b < 255)
                             {
                                 hasAlpha = true;
                             }
-                            if (mi.Alpha[i] != 0)
+                            if (b != 0)
                             {
                                 fullAlpha = false;
                             }
-                            if (mi.Alpha[i] != 0 && mi.Alpha[i] != 255)
+                            if (b != 0 && b != 255)
                             {
                                 isMask = false;
                             }
@@ -1289,11 +1289,7 @@ namespace Radegast.Rendering
             {
                 return parent;
             }
-            else if (Avatars.TryGetValue(localID, out avi))
-            {
-                return avi;
-            }
-            return null;
+            return Avatars.TryGetValue(localID, out avi) ? avi : null;
         }
 
         /// <summary>
@@ -1387,7 +1383,6 @@ namespace Radegast.Rendering
                     rot *= obj.BasePrim.Rotation;
 
                 }
-                return;
             }
         }
 
@@ -1435,10 +1430,8 @@ namespace Radegast.Rendering
             // This is a FIR filter known as a MMA or Modified Mean Average, using a 20 point sampling width
             advTimerTick = ((19 * advTimerTick) + lastFrameTime) / 20;
             // Stats in window title for now
-            Text = String.Format("Scene Viewer: FPS {0:000.00} Texture decode queue: {1}, Sculpt queue: {2}",
-                1d / advTimerTick,
-                PendingTextures.Count,
-                PendingTasks.Count);
+            Text =
+                $"Scene Viewer: FPS {1d/advTimerTick:000.00} Texture decode queue: {PendingTextures.Count}, Sculpt queue: {PendingTasks.Count}";
 
 #if TURNS_OUT_PRINTER_IS_EXPENISVE
             int posX = glControl.Width - 100;
