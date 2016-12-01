@@ -367,16 +367,8 @@ namespace Radegast.Rendering
                     }
 
                     ba = av.skel.mBones[jointname];
-
-
-                    if (jointname2 == "")
-                    {
-                        bb = null;
-                    }
-                    else
-                    {
-                        bb = av.skel.mBones[jointname2];
-                    }
+                    
+                    bb = jointname2 == "" ? null : av.skel.mBones[jointname2];
                 }
 
                 //Special cases 0 is not used
@@ -533,7 +525,7 @@ namespace Radegast.Rendering
             for (int x = 0; x < VisualParamEx.tweakable_params.Count; x++)
             {
                 VisualParamEx vpe = (VisualParamEx)VisualParamEx.tweakable_params.GetByIndex(x);
-                Console.WriteLine(string.Format("{0} is {1}", x, vpe.Name));
+                Console.WriteLine($"{x} is {vpe.Name}");
             }
 
         }
@@ -551,7 +543,7 @@ namespace Radegast.Rendering
             XmlDocument lad = new XmlDocument();
             lad.Load(basedir + LODfilename);
 
-            //Firstly read the skeleton section this contains attachment point info and the bone deform info for visual params
+            // First, read the skeleton section this contains attachment point info and the bone deform info for visual params
             // And load the skeleton file in to the bones class
 
             XmlNodeList skeleton = lad.GetElementsByTagName("skeleton");
@@ -573,7 +565,7 @@ namespace Radegast.Rendering
             }
 
             // Parse all visual paramaters in one go
-            // we can dedue type on the fly
+            // we can deduce type on the fly
             XmlNodeList paramss = lad.GetElementsByTagName("param");
             foreach (XmlNode paramNode in paramss)
             {
@@ -593,7 +585,7 @@ namespace Radegast.Rendering
                 lock (_defaultmeshes)
                     mesh = (_defaultmeshes.ContainsKey(type) ? _defaultmeshes[type] : new GLMesh(type));
 
-                // Set up the texture elemenets for each mesh
+                // Set up the texture elements for each mesh
                 // And hack the eyeball position
                 switch (mesh.Name)
                 {
@@ -2268,7 +2260,7 @@ namespace Radegast.Rendering
 
         public static Vector3 XmlParseVector(string data)
         {
-            string[] posparts = data.Split(' ');
+            string[] posparts = data.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
             return new Vector3(float.Parse(posparts[0], Utils.EnUsCulture), float.Parse(posparts[1], Utils.EnUsCulture), float.Parse(posparts[2], Utils.EnUsCulture));
         }
 
