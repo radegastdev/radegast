@@ -31,7 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Radegast.Commands;
@@ -50,36 +50,18 @@ namespace Radegast
         /// </summary>
         public virtual void OnRadegastFormCreated(RadegastForm radForm)
         {
-            if (RadegastFormCreated != null) RadegastFormCreated(radForm);
+            RadegastFormCreated?.Invoke(radForm);
         }
         #endregion
 
-        private GridClient client;
-        private RadegastNetcom netcom;
-
-        private StateManager state;
-
-        private frmMain mainForm;
-
         // Singleton, there can be only one instance
         private static RadegastInstance globalInstance = null;
-        public static RadegastInstance GlobalInstance
-        {
-            get
-            {
-                if (globalInstance == null)
-                {
-                    globalInstance = new RadegastInstance(new GridClient());
-                }
-                return globalInstance;
-            }
-        }
+        public static RadegastInstance GlobalInstance => globalInstance ?? (globalInstance = new RadegastInstance(new GridClient()));
 
         /// <summary>
         /// Manages retrieving avatar names
         /// </summary>
-        public NameManager Names { get { return names; } }
-        private NameManager names;
+        public NameManager Names { get; private set; }
 
         /// <summary>
         /// When was Radegast started (UTC)
@@ -91,84 +73,61 @@ namespace Radegast
         /// </summary>
         public TimeZoneInfo WordTimeZone;
 
-        private string userDir;
         /// <summary>
         /// System (not grid!) user's dir
         /// </summary>
-        public string UserDir { get { return userDir; } }
+        public string UserDir { get; private set; }
 
         /// <summary>
         /// Grid client's user dir for settings and logs
         /// </summary>
-        public string ClientDir
-        {
-            get
-            {
-                if (client != null && client.Self != null && !string.IsNullOrEmpty(client.Self.Name))
-                {
-                    return Path.Combine(userDir, client.Self.Name);
-                }
-                else
-                {
-                    return Environment.CurrentDirectory;
-                }
-            }
-        }
+        public string ClientDir => !string.IsNullOrEmpty(Client?.Self?.Name) ? Path.Combine(UserDir, Client.Self.Name) : Environment.CurrentDirectory;
 
-        public string InventoryCacheFileName { get { return Path.Combine(ClientDir, "inventory.cache"); } }
+        public string InventoryCacheFileName => Path.Combine(ClientDir, "inventory.cache");
 
-        private string globalLogFile;
-        public string GlobalLogFile { get { return globalLogFile; } }
+        public string GlobalLogFile { get; private set; }
 
-        private bool monoRuntime;
-        public bool MonoRuntime { get { return monoRuntime; } }
+        public bool MonoRuntime { get; }
 
-        private Dictionary<UUID, Group> groups = new Dictionary<UUID, Group>();
-        public Dictionary<UUID, Group> Groups { get { return groups; } }
+        public Dictionary<UUID, Group> Groups { get; private set; } = new Dictionary<UUID, Group>();
 
-        private Settings globalSettings;
         /// <summary>
         /// Global settings for the entire application
         /// </summary>
-        public Settings GlobalSettings { get { return globalSettings; } }
+        public Settings GlobalSettings { get; private set; }
 
-        private Settings clientSettings;
         /// <summary>
         /// Per client settings
         /// </summary>
-        public Settings ClientSettings { get { return clientSettings; } }
+        public Settings ClientSettings { get; private set; }
 
         public const string INCOMPLETE_NAME = "Loading...";
 
         public readonly bool advancedDebugging = false;
 
-        private PluginManager pluginManager;
         /// <summary> Handles loading plugins and scripts</summary>
-        public PluginManager PluginManager { get { return pluginManager; } }
+        public PluginManager PluginManager { get; private set; }
 
-        private MediaManager mediaManager;
         /// <summary>
         /// Radegast media manager for playing streams and in world sounds
         /// </summary>
-        public MediaManager MediaManager { get { return mediaManager; } }
+        public MediaManager MediaManager { get; private set; }
 
 
-        private CommandsManager commandsManager;
         /// <summary>
         /// Radegast command manager for executing textual console commands
         /// </summary>
-        public CommandsManager CommandsManager { get { return commandsManager; } }
+        public CommandsManager CommandsManager { get; private set; }
 
         /// <summary>
         /// Radegast ContextAction manager for context sensitive actions
         /// </summary>
         public ContextActionsManager ContextActionManager { get; private set; }
 
-        private RadegastMovement movement;
         /// <summary>
         /// Allows key emulation for moving avatar around
         /// </summary>
-        public RadegastMovement Movement { get { return movement; } }
+        public RadegastMovement Movement { get; private set; }
 
         private InventoryClipboard inventoryClipboard;
         /// <summary>
@@ -186,16 +145,13 @@ namespace Radegast
             }
         }
 
-        private RLVManager rlv;
-
         /// <summary>
         /// Manager for RLV functionality
         /// </summary>
-        public RLVManager RLV { get { return rlv; } }
+        public RLVManager RLV { get; private set; }
 
-        private GridManager gridManager;
         /// <summary>Manages default params for different grids</summary>
-        public GridManager GridManger { get { return gridManager; } }
+        public GridManager GridManger { get; private set; }
 
         /// <summary>
         /// Is system using plain color theme, with white background and dark text
@@ -206,9 +162,7 @@ namespace Radegast
             {
                 // If windows background is whiteish, declare as standard color scheme
                 var c = System.Drawing.SystemColors.Window;
-                if (c.R > 240 && c.G > 240 && c.B > 240)
-                    return true;
-                return false;
+                return c.R > 240 && c.G > 240 && c.B > 240;
             }
         }
 
@@ -227,13 +181,7 @@ namespace Radegast
         /// </summary>
         public bool ReportedCrash = false;
 
-        private string CrashMarkerFileName
-        {
-            get
-            {
-                return Path.Combine(UserDir, "crash_marker");
-            }
-        }
+        private string CrashMarkerFileName => Path.Combine(UserDir, "crash_marker");
 
         #region Events
 
@@ -247,8 +195,7 @@ namespace Radegast
         protected virtual void OnClientChanged(ClientChangedEventArgs e)
         {
             EventHandler<ClientChangedEventArgs> handler = m_ClientChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>Thread sync lock object</summary>
@@ -272,8 +219,7 @@ namespace Radegast
         protected virtual void OnInventoryClipboardUpdated(EventArgs e)
         {
             EventHandler<EventArgs> handler = m_InventoryClipboardUpdated;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>Thread sync lock object</summary>
@@ -301,42 +247,42 @@ namespace Radegast
                 Application.ThreadException += HandleThreadException;
             }
 
-            client = client0;
+            Client = client0;
 
             // Initialize current time zone, and mark when we started
             GetWorldTimeZone();
             StartupTimeUTC = DateTime.UtcNow;
 
             // Are we running mono?
-            monoRuntime = Type.GetType("Mono.Runtime") != null;
+            MonoRuntime = Type.GetType("Mono.Runtime") != null;
 
             Keyboard = new Keyboard();
             Application.AddMessageFilter(Keyboard);
 
-            netcom = new RadegastNetcom(this);
-            state = new StateManager(this);
-            mediaManager = new MediaManager(this);
-            commandsManager = new CommandsManager(this);
+            Netcom = new RadegastNetcom(this);
+            State = new StateManager(this);
+            MediaManager = new MediaManager(this);
+            CommandsManager = new CommandsManager(this);
             ContextActionManager = new ContextActionsManager(this);
             RegisterContextActions();
-            movement = new RadegastMovement(this);
+            Movement = new RadegastMovement(this);
 
             InitializeLoggingAndConfig();
-            InitializeClient(client);
+            InitializeClient(Client);
 
-            rlv = new RLVManager(this);
-            gridManager = new GridManager();
-            gridManager.LoadGrids();
+            RLV = new RLVManager(this);
+            GridManger = new GridManager();
+            GridManger.LoadGrids();
 
-            names = new NameManager(this);
+            Names = new NameManager(this);
             COF = new CurrentOutfitFolder(this);
 
-            mainForm = new frmMain(this);
-            mainForm.InitializeControls();
+            MainForm = new frmMain(this);
+            MainForm.InitializeControls();
 
-            mainForm.Load += new EventHandler(mainForm_Load);
-            pluginManager = new PluginManager(this);
-            pluginManager.ScanAndLoadPlugins();
+            MainForm.Load += new EventHandler(mainForm_Load);
+            PluginManager = new PluginManager(this);
+            PluginManager.ScanAndLoadPlugins();
         }
 
         private void InitializeClient(GridClient client)
@@ -354,7 +300,7 @@ namespace Radegast
             client.Settings.STORE_LAND_PATCHES = true;
 
             client.Settings.USE_ASSET_CACHE = true;
-            client.Settings.ASSET_CACHE_DIR = Path.Combine(userDir, "cache");
+            client.Settings.ASSET_CACHE_DIR = Path.Combine(UserDir, "cache");
             client.Assets.Cache.AutoPruneEnabled = false;
             client.Assets.Cache.ComputeAssetCacheFilename = ComputeCacheName;
 
@@ -397,8 +343,8 @@ namespace Radegast
             client.Groups.GroupLeaveReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupDropped += new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply += new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-            if (netcom != null)
-                netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
+            if (Netcom != null)
+                Netcom.ClientConnected += new EventHandler<EventArgs>(netcom_ClientConnected);
             client.Network.LoginProgress += new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
         }
 
@@ -408,21 +354,14 @@ namespace Radegast
             client.Groups.GroupLeaveReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupDropped -= new EventHandler<GroupDroppedEventArgs>(Groups_GroupsChanged);
             client.Groups.GroupJoinedReply -= new EventHandler<GroupOperationEventArgs>(Groups_GroupsChanged);
-            if (netcom != null)
-                netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
+            if (Netcom != null)
+                Netcom.ClientConnected -= new EventHandler<EventArgs>(netcom_ClientConnected);
             client.Network.LoginProgress -= new EventHandler<LoginProgressEventArgs>(Network_LoginProgress);
         }
 
         public void SetClientTag()
         {
-            if (GlobalSettings["send_rad_client_tag"])
-            {
-                client.Settings.CLIENT_IDENTIFICATION_TAG = new UUID("b748af88-58e2-995b-cf26-9486dea8e830");
-            }
-            else
-            {
-                client.Settings.CLIENT_IDENTIFICATION_TAG = UUID.Zero;
-            }
+            Client.Settings.CLIENT_IDENTIFICATION_TAG = GlobalSettings["send_rad_client_tag"] ? new UUID("b748af88-58e2-995b-cf26-9486dea8e830") : UUID.Zero;
         }
         private void GetWorldTimeZone()
         {
@@ -446,10 +385,7 @@ namespace Radegast
 
             try
             {
-                if (WordTimeZone != null)
-                    now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, WordTimeZone);
-                else
-                    now = DateTime.UtcNow.AddHours(-7);
+                now = WordTimeZone != null ? TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, WordTimeZone) : DateTime.UtcNow.AddHours(-7);
             }
             catch (Exception)
             {
@@ -463,13 +399,13 @@ namespace Radegast
         public void Reconnect()
         {
             TabConsole.DisplayNotificationInChat("Attempting to reconnect...", ChatBufferTextStyle.StatusDarkBlue);
-            Logger.Log("Attemting to reconnect", Helpers.LogLevel.Info, client);
-            GridClient oldClient = client;
-            client = new GridClient();
+            Logger.Log("Attemting to reconnect", Helpers.LogLevel.Info, Client);
+            GridClient oldClient = Client;
+            Client = new GridClient();
             UnregisterClientEvents(oldClient);
-            InitializeClient(client);
-            OnClientChanged(new ClientChangedEventArgs(oldClient, client));
-            netcom.Login();
+            InitializeClient(Client);
+            OnClientChanged(new ClientChangedEventArgs(oldClient, Client));
+            Netcom.Login();
         }
 
         public void CleanUp()
@@ -482,98 +418,96 @@ namespace Radegast
                 COF = null;
             }
 
-            if (names != null)
+            if (Names != null)
             {
-                names.Dispose();
-                names = null;
+                Names.Dispose();
+                Names = null;
             }
 
-            if (gridManager != null)
+            if (GridManger != null)
             {
-                gridManager.Dispose();
-                gridManager = null;
+                GridManger.Dispose();
+                GridManger = null;
             }
 
-            if (rlv != null)
+            if (RLV != null)
             {
-                rlv.Dispose();
-                rlv = null;
+                RLV.Dispose();
+                RLV = null;
             }
 
-            if (client != null)
+            if (Client != null)
             {
-                UnregisterClientEvents(client);
+                UnregisterClientEvents(Client);
             }
 
-            if (pluginManager != null)
+            if (PluginManager != null)
             {
-                pluginManager.Dispose();
-                pluginManager = null;
+                PluginManager.Dispose();
+                PluginManager = null;
             }
 
-            if (movement != null)
+            if (Movement != null)
             {
-                movement.Dispose();
-                movement = null;
+                Movement.Dispose();
+                Movement = null;
             }
-            if (commandsManager != null)
+            if (CommandsManager != null)
             {
-                commandsManager.Dispose();
-                commandsManager = null;
+                CommandsManager.Dispose();
+                CommandsManager = null;
             }
             if (ContextActionManager != null)
             {
                 ContextActionManager.Dispose();
                 ContextActionManager = null;
             }
-            if (mediaManager != null)
+            if (MediaManager != null)
             {
-                mediaManager.Dispose();
-                mediaManager = null;
+                MediaManager.Dispose();
+                MediaManager = null;
             }
-            if (state != null)
+            if (State != null)
             {
-                state.Dispose();
-                state = null;
+                State.Dispose();
+                State = null;
             }
-            if (netcom != null)
+            if (Netcom != null)
             {
-                netcom.Dispose();
-                netcom = null;
+                Netcom.Dispose();
+                Netcom = null;
             }
-            if (mainForm != null)
+            if (MainForm != null)
             {
-                mainForm.Load -= new EventHandler(mainForm_Load);
+                MainForm.Load -= new EventHandler(mainForm_Load);
             }
             Logger.Log("RadegastInstance finished cleaning up.", Helpers.LogLevel.Debug);
         }
 
         void mainForm_Load(object sender, EventArgs e)
         {
-            pluginManager.StartPlugins();
+            PluginManager.StartPlugins();
         }
 
         void netcom_ClientConnected(object sender, EventArgs e)
         {
-            client.Self.RequestMuteList();
+            Client.Self.RequestMuteList();
         }
 
         void Network_LoginProgress(object sender, LoginProgressEventArgs e)
         {
-            if (e.Status == LoginStatus.ConnectingToSim)
+            if (e.Status != LoginStatus.ConnectingToSim) return;
+            try
             {
-                try
+                if (!Directory.Exists(ClientDir))
                 {
-                    if (!Directory.Exists(ClientDir))
-                    {
-                        Directory.CreateDirectory(ClientDir);
-                    }
-                    clientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
+                    Directory.CreateDirectory(ClientDir);
                 }
-                catch (Exception ex)
-                {
-                    Logger.Log("Failed to create client directory", Helpers.LogLevel.Warning, ex);
-                }
+                ClientSettings = new Settings(Path.Combine(ClientDir, "client_settings.xml"));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed to create client directory", Helpers.LogLevel.Warning, ex);
             }
         }
 
@@ -603,34 +537,23 @@ namespace Radegast
 
         void Groups_GroupsChanged(object sender, EventArgs e)
         {
-            client.Groups.RequestCurrentGroups();
+            Client.Groups.RequestCurrentGroups();
         }
 
         public static string SafeFileName(string fileName)
         {
-            foreach (char lDisallowed in Path.GetInvalidFileNameChars())
-            {
-                fileName = fileName.Replace(lDisallowed.ToString(), "_");
-            }
-
-            return fileName;
+            return Path.GetInvalidFileNameChars().Aggregate(fileName, (current, lDisallowed) => current.Replace(lDisallowed.ToString(), "_"));
         }
 
         public string ChatFileName(string session)
         {
-            string fileName = session;
-
-            foreach (char lDisallowed in System.IO.Path.GetInvalidFileNameChars())
-            {
-                fileName = fileName.Replace(lDisallowed.ToString(), "_");
-            }
-
+            string fileName = System.IO.Path.GetInvalidFileNameChars().Aggregate(session, (current, lDisallowed) => current.Replace(lDisallowed.ToString(), "_"));
             return Path.Combine(ClientDir, fileName);
         }
 
         public void LogClientMessage(string sessioName, string message)
         {
-            if (globalSettings["disable_chat_im_log"]) return;
+            if (GlobalSettings["disable_chat_im_log"]) return;
 
             lock (this)
             {
@@ -645,53 +568,34 @@ namespace Radegast
 
         void Groups_CurrentGroups(object sender, CurrentGroupsEventArgs e)
         {
-            this.groups = e.Groups;
+            this.Groups = e.Groups;
         }
 
         private void InitializeLoggingAndConfig()
         {
             try
             {
-                userDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), Properties.Resources.ProgramName);
-                if (!Directory.Exists(userDir))
+                UserDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), Properties.Resources.ProgramName);
+                if (!Directory.Exists(UserDir))
                 {
-                    Directory.CreateDirectory(userDir);
+                    Directory.CreateDirectory(UserDir);
                 }
             }
             catch (Exception)
             {
-                userDir = System.Environment.CurrentDirectory;
+                UserDir = System.Environment.CurrentDirectory;
             };
 
-            globalLogFile = Path.Combine(userDir, Properties.Resources.ProgramName + ".log");
-            globalSettings = new Settings(Path.Combine(userDir, "settings.xml"));
-            frmSettings.InitSettigs(globalSettings, monoRuntime);
+            GlobalLogFile = Path.Combine(UserDir, Properties.Resources.ProgramName + ".log");
+            GlobalSettings = new Settings(Path.Combine(UserDir, "settings.xml"));
+            frmSettings.InitSettigs(GlobalSettings, MonoRuntime);
         }
 
-        public GridClient Client
-        {
-            get { return client; }
-        }
-
-        public RadegastNetcom Netcom
-        {
-            get { return netcom; }
-        }
-
-        public StateManager State
-        {
-            get { return state; }
-        }
-
-        public frmMain MainForm
-        {
-            get { return mainForm; }
-        }
-
-        public TabsConsole TabConsole
-        {
-            get { return mainForm.TabConsole; }
-        }
+        public GridClient Client { get; private set; }
+        public RadegastNetcom Netcom { get; private set; }
+        public StateManager State { get; private set; }
+        public frmMain MainForm { get; }
+        public TabsConsole TabConsole => MainForm.TabConsole;
 
         public void HandleThreadException(object sender, ThreadExceptionEventArgs e)
         {
@@ -699,7 +603,7 @@ namespace Radegast
                 + e.Exception.Message + Environment.NewLine
                 + e.Exception.StackTrace + Environment.NewLine,
                 Helpers.LogLevel.Error,
-                client);
+                Client);
         }
 
         #region Crash reporting
@@ -717,13 +621,13 @@ namespace Radegast
             try
             {
                 MarkerLock = new FileStream(CrashMarkerFileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
-                Logger.Log(string.Format("Successfully created and locked marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
+                Logger.Log($"Successfully created and locked marker file {CrashMarkerFileName}", Helpers.LogLevel.Debug);
                 return false || MonoRuntime;
             }
             catch
             {
                 MarkerLock = null;
-                Logger.Log(string.Format("Another instance detected, marker fils {0} locked", CrashMarkerFileName), Helpers.LogLevel.Debug);
+                Logger.Log($"Another instance detected, marker fils {CrashMarkerFileName} locked", Helpers.LogLevel.Debug);
                 return true;
             }
         }
@@ -733,19 +637,19 @@ namespace Radegast
             // Crash marker file found and is not locked by us
             if (File.Exists(CrashMarkerFileName) && MarkerLock == null)
             {
-                Logger.Log(string.Format("Found crash marker file {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
+                Logger.Log($"Found crash marker file {CrashMarkerFileName}", Helpers.LogLevel.Debug);
                 return LastExecStatus.OtherCrash;
             }
             else
             {
-                Logger.Log(string.Format("No crash marker file {0} found", CrashMarkerFileName), Helpers.LogLevel.Debug);
+                Logger.Log($"No crash marker file {CrashMarkerFileName} found", Helpers.LogLevel.Debug);
                 return LastExecStatus.Normal;
             }
         }
 
         public void MarkStartExecution()
         {
-            Logger.Log(string.Format("Marking start of execution run, creating file: {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
+            Logger.Log($"Marking start of execution run, creating file: {CrashMarkerFileName}", Helpers.LogLevel.Debug);
             try
             {
                 File.Create(CrashMarkerFileName).Dispose();
@@ -755,7 +659,7 @@ namespace Radegast
 
         public void MarkEndExecution()
         {
-            Logger.Log(string.Format("Marking end of execution run, deleting file: {0}", CrashMarkerFileName), Helpers.LogLevel.Debug);
+            Logger.Log($"Marking end of execution run, deleting file: {CrashMarkerFileName}", Helpers.LogLevel.Debug);
             try
             {
                 if (MarkerLock != null)
@@ -792,11 +696,11 @@ namespace Radegast
 
         void CopyObjectUUIDHandler(object sender, EventArgs e)
         {
-            if (mainForm.InvokeRequired)
+            if (MainForm.InvokeRequired)
             {
-                if (mainForm.IsHandleCreated || !MonoRuntime)
+                if (MainForm.IsHandleCreated || !MonoRuntime)
                 {
-                    mainForm.Invoke(new MethodInvoker(() => CopyObjectUUIDHandler(sender, e)));
+                    MainForm.Invoke(new MethodInvoker(() => CopyObjectUUIDHandler(sender, e)));
                 }
                 return;
             }
@@ -811,16 +715,13 @@ namespace Radegast
     #region Event classes
     public class ClientChangedEventArgs : EventArgs
     {
-        private GridClient m_OldClient;
-        private GridClient m_Client;
-
-        public GridClient OldClient { get { return m_OldClient; } }
-        public GridClient Client { get { return m_Client; } }
+        public GridClient OldClient { get; }
+        public GridClient Client { get; }
 
         public ClientChangedEventArgs(GridClient OldClient, GridClient Client)
         {
-            m_OldClient = OldClient;
-            m_Client = Client;
+            this.OldClient = OldClient;
+            this.Client = Client;
         }
     }
     #endregion Event classes
