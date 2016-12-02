@@ -29,6 +29,7 @@ LangString LanguageCode ${LANG_ENGLISH}  "en"
 
 ; The name of the installer
 Name "${APPNAME}"
+BrandingText "Made by a Cinder"
 
 ; The file to write
 OutFile "..\${APPNAME}-${VERSION}-installer.exe"
