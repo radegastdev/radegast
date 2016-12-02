@@ -52,8 +52,7 @@ namespace Radegast
             EventHandler<RLVEventArgs> handler = m_RLVRuleChanged;
             try
             {
-                if (handler != null)
-                    handler(this, e);
+                handler?.Invoke(this, e);
             }
             catch (Exception) { }
 
@@ -90,92 +89,36 @@ namespace Radegast
         
         static RLVManager()
         {
-            RLVWearables = new List<RLVWearable>(16);
-            RLVWearables.Add(new RLVWearable() { Name = "gloves", Type = WearableType.Gloves });
-            RLVWearables.Add(new RLVWearable() { Name = "jacket", Type = WearableType.Jacket });
-            RLVWearables.Add(new RLVWearable() { Name = "pants", Type = WearableType.Pants });
-            RLVWearables.Add(new RLVWearable() { Name = "shirt", Type = WearableType.Shirt });
-            RLVWearables.Add(new RLVWearable() { Name = "shoes", Type = WearableType.Shoes });
-            RLVWearables.Add(new RLVWearable() { Name = "skirt", Type = WearableType.Skirt });
-            RLVWearables.Add(new RLVWearable() { Name = "socks", Type = WearableType.Socks });
-            RLVWearables.Add(new RLVWearable() { Name = "underpants", Type = WearableType.Underpants });
-            RLVWearables.Add(new RLVWearable() { Name = "undershirt", Type = WearableType.Undershirt });
-            RLVWearables.Add(new RLVWearable() { Name = "skin", Type = WearableType.Skin });
-            RLVWearables.Add(new RLVWearable() { Name = "eyes", Type = WearableType.Eyes });
-            RLVWearables.Add(new RLVWearable() { Name = "hair", Type = WearableType.Hair });
-            RLVWearables.Add(new RLVWearable() { Name = "shape", Type = WearableType.Shape });
-            RLVWearables.Add(new RLVWearable() { Name = "alpha", Type = WearableType.Alpha });
-            RLVWearables.Add(new RLVWearable() { Name = "tattoo", Type = WearableType.Tattoo });
-            RLVWearables.Add(new RLVWearable() { Name = "physics", Type = WearableType.Physics });
+            RLVWearables = new List<RLVWearable>();
+            foreach (WearableType wear in Enum.GetValues(typeof(WearableType)))
+            {
+                if (wear.Equals(WearableType.Invalid)) continue;
+                string wearstr = Utils.EnumToText(wear);
+                RLVWearables.Add(new RLVWearable() {Name = wearstr.ToLower(), Type = wear});
+            }
 
-            RLVAttachments = new List<RLVAttachment>();
-            RLVAttachments.Add(new RLVAttachment() { Name = "none", Point = AttachmentPoint.Default });
-            RLVAttachments.Add(new RLVAttachment() { Name = "chest", Point = AttachmentPoint.Chest });
-            RLVAttachments.Add(new RLVAttachment() { Name = "skull", Point = AttachmentPoint.Skull });
-            RLVAttachments.Add(new RLVAttachment() { Name = "left shoulder", Point = AttachmentPoint.LeftShoulder });
-            RLVAttachments.Add(new RLVAttachment() { Name = "right shoulder", Point = AttachmentPoint.RightShoulder });
-            RLVAttachments.Add(new RLVAttachment() { Name = "left hand", Point = AttachmentPoint.LeftHand });
-            RLVAttachments.Add(new RLVAttachment() { Name = "right hand", Point = AttachmentPoint.RightHand });
-            RLVAttachments.Add(new RLVAttachment() { Name = "left foot", Point = AttachmentPoint.LeftFoot });
-            RLVAttachments.Add(new RLVAttachment() { Name = "right foot", Point = AttachmentPoint.RightFoot });
-            RLVAttachments.Add(new RLVAttachment() { Name = "spine", Point = AttachmentPoint.Spine });
-            RLVAttachments.Add(new RLVAttachment() { Name = "pelvis", Point = AttachmentPoint.Pelvis });
-            RLVAttachments.Add(new RLVAttachment() { Name = "mouth", Point = AttachmentPoint.Mouth });
-            RLVAttachments.Add(new RLVAttachment() { Name = "chin", Point = AttachmentPoint.Chin });
-            RLVAttachments.Add(new RLVAttachment() { Name = "left ear", Point = AttachmentPoint.LeftEar });
-            RLVAttachments.Add(new RLVAttachment() { Name = "right ear", Point = AttachmentPoint.RightEar });
-            RLVAttachments.Add(new RLVAttachment() { Name = "left eyeball", Point = AttachmentPoint.LeftEyeball });
-            RLVAttachments.Add(new RLVAttachment() { Name = "right eyeball", Point = AttachmentPoint.RightEyeball });
-            RLVAttachments.Add(new RLVAttachment() { Name = "nose", Point = AttachmentPoint.Nose });
-            RLVAttachments.Add(new RLVAttachment() { Name = "r upper arm", Point = AttachmentPoint.RightUpperArm });
-            RLVAttachments.Add(new RLVAttachment() { Name = "r forearm", Point = AttachmentPoint.RightForearm });
-            RLVAttachments.Add(new RLVAttachment() { Name = "l upper arm", Point = AttachmentPoint.LeftUpperArm });
-            RLVAttachments.Add(new RLVAttachment() { Name = "l forearm", Point = AttachmentPoint.LeftForearm });
-            RLVAttachments.Add(new RLVAttachment() { Name = "right hip", Point = AttachmentPoint.RightHip });
-            RLVAttachments.Add(new RLVAttachment() { Name = "r upper leg", Point = AttachmentPoint.RightUpperLeg });
-            RLVAttachments.Add(new RLVAttachment() { Name = "r lower leg", Point = AttachmentPoint.RightLowerLeg });
-            RLVAttachments.Add(new RLVAttachment() { Name = "left hip", Point = AttachmentPoint.LeftHip });
-            RLVAttachments.Add(new RLVAttachment() { Name = "l upper leg", Point = AttachmentPoint.LeftUpperLeg });
-            RLVAttachments.Add(new RLVAttachment() { Name = "l lower leg", Point = AttachmentPoint.LeftLowerLeg });
-            RLVAttachments.Add(new RLVAttachment() { Name = "stomach", Point = AttachmentPoint.Stomach });
-            RLVAttachments.Add(new RLVAttachment() { Name = "left pec", Point = AttachmentPoint.LeftPec });
-            RLVAttachments.Add(new RLVAttachment() { Name = "right pec", Point = AttachmentPoint.RightPec });
-            RLVAttachments.Add(new RLVAttachment() { Name = "center 2", Point = AttachmentPoint.HUDCenter2 });
-            RLVAttachments.Add(new RLVAttachment() { Name = "top right", Point = AttachmentPoint.HUDTopRight });
-            RLVAttachments.Add(new RLVAttachment() { Name = "top", Point = AttachmentPoint.HUDTop });
-            RLVAttachments.Add(new RLVAttachment() { Name = "top left", Point = AttachmentPoint.HUDTopLeft });
-            RLVAttachments.Add(new RLVAttachment() { Name = "center", Point = AttachmentPoint.HUDCenter });
-            RLVAttachments.Add(new RLVAttachment() { Name = "bottom left", Point = AttachmentPoint.HUDBottomLeft });
-            RLVAttachments.Add(new RLVAttachment() { Name = "bottom", Point = AttachmentPoint.HUDBottom });
-            RLVAttachments.Add(new RLVAttachment() { Name = "bottom right", Point = AttachmentPoint.HUDBottomRight });
-            RLVAttachments.Add(new RLVAttachment() { Name = "neck", Point = AttachmentPoint.Neck });
-            RLVAttachments.Add(new RLVAttachment() { Name = "root", Point = AttachmentPoint.Root });
+            RLVAttachments = new List<RLVAttachment>
+            {
+                new RLVAttachment() {Name = "none", Point = AttachmentPoint.Default}
+            };
+            foreach (AttachmentPoint pt in Enum.GetValues(typeof(AttachmentPoint)))
+            {
+                string ptstr = Utils.EnumToText(pt);
+                if (pt.Equals(AttachmentPoint.Default) || ptstr.StartsWith("HUD")) continue;
+                RLVAttachments.Add(new RLVAttachment {Name = ptstr.ToLower(), Point = pt});
+            }
         }
 
         public static WearableType WearableFromString(string type)
         {
             var found = RLVWearables.FindAll(w => w.Name == type);
-            if (found.Count == 1)
-            {
-                return found[0].Type;
-            }
-            else
-            {
-                return WearableType.Invalid;
-            }
+            return found.Count == 1 ? found[0].Type : WearableType.Invalid;
         }
 
         public static AttachmentPoint AttachmentPointFromString(string point)
         {
             var found = RLVAttachments.FindAll(a => a.Name == point);
-            if (found.Count == 1)
-            {
-                return found[0].Point;
-            }
-            else
-            {
-                return AttachmentPoint.Default;
-            }
+            return found.Count == 1 ? found[0].Point : AttachmentPoint.Default;
         }
 
         #endregion Helper classes, structs and enums
@@ -228,10 +171,10 @@ namespace Radegast
             }
         }
 
-        RadegastInstance instance;
-        GridClient client { get { return instance.Client; } }
-        Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]*))?=(?<param>\w+)", RegexOptions.Compiled);
-        List<RLVRule> rules = new List<RLVRule>();
+        readonly RadegastInstance instance;
+        GridClient client => instance.Client;
+        readonly Regex rlv_regex = new Regex(@"(?<behaviour>[^:=]+)(:(?<option>[^=]*))?=(?<param>\w+)", RegexOptions.Compiled);
+        readonly List<RLVRule> rules = new List<RLVRule>();
         System.Timers.Timer CleanupTimer;
 
         public RLVManager(RadegastInstance instance)
@@ -275,7 +218,7 @@ namespace Radegast
 
             foreach (UUID obj in objecs)
             {
-                if (client.Network.CurrentSim.ObjectsPrimitives.Find((Primitive p) => { return p.ID == obj; }) == null)
+                if (client.Network.CurrentSim.ObjectsPrimitives.Find((Primitive p) => p.ID == obj) == null)
                 {
                     Clear(obj);
                 }
@@ -307,59 +250,53 @@ namespace Radegast
                 var m = rlv_regex.Match(cmd);
                 if (!m.Success) continue;
 
-                var rule = new RLVRule();
-                rule.Behaviour = m.Groups["behaviour"].ToString().ToLower(); ;
-                rule.Option = m.Groups["option"].ToString().ToLower();
-                rule.Param = m.Groups["param"].ToString().ToLower();
-                rule.Sender = e.SourceID;
-                rule.SenderName = e.FromName;
+                var rule = new RLVRule
+                {
+                    Behaviour = m.Groups["behaviour"].ToString().ToLower(),
+                    Option = m.Groups["option"].ToString().ToLower(),
+                    Param = m.Groups["param"].ToString().ToLower(),
+                    Sender = e.SourceID,
+                    SenderName = e.FromName
+                };
 
                 Logger.DebugLog(rule.ToString());
 
                 if (rule.Param == "rem") rule.Param = "y";
                 if (rule.Param == "add") rule.Param = "n";
 
-                if (rule.Param == "n")
+                switch (rule.Param)
                 {
-                    lock (rules)
-                    {
-                        var existing = rules.Find(r =>
-                            r.Behaviour == rule.Behaviour &&
-                            r.Sender == rule.Sender &&
-                            r.Option == rule.Option);
+                    case "n":
+                        lock (rules)
+                        {
+                            var existing = rules.Find(r =>
+                                r.Behaviour == rule.Behaviour &&
+                                r.Sender == rule.Sender &&
+                                r.Option == rule.Option);
 
-                        if (existing != null)
-                        {
-                            rules.Remove(existing);
-                        }
-                        rules.Add(rule);
-                        OnRLVRuleChanged(new RLVEventArgs(rule));
-                    }
-                    continue;
-                }
-
-                if (rule.Param == "y")
-                {
-                    lock (rules)
-                    {
-                        if (rule.Option == "")
-                        {
-                            rules.RemoveAll((RLVRule r) =>
-                                {
-                                    return r.Behaviour == rule.Behaviour && r.Sender == rule.Sender;
-                                });
-                        }
-                        else
-                        {
-                            rules.RemoveAll((RLVRule r) =>
+                            if (existing != null)
                             {
-                                return r.Behaviour == rule.Behaviour && r.Sender == rule.Sender && r.Option == rule.Option;
-                            });
+                                rules.Remove(existing);
+                            }
+                            rules.Add(rule);
+                            OnRLVRuleChanged(new RLVEventArgs(rule));
                         }
-                    }
+                        continue;
+                    case "y":
+                        lock (rules)
+                        {
+                            if (rule.Option == "")
+                            {
+                                rules.RemoveAll((RLVRule r) => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender);
+                            }
+                            else
+                            {
+                                rules.RemoveAll((RLVRule r) => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender && r.Option == rule.Option);
+                            }
+                        }
 
-                    OnRLVRuleChanged(new RLVEventArgs(rule));
-                    continue;
+                        OnRLVRuleChanged(new RLVEventArgs(rule));
+                        continue;
                 }
 
 
@@ -526,20 +463,13 @@ namespace Radegast
                             // Do we have a specific wearable to check, ie @getoutfit:socks=99
                             if (!string.IsNullOrEmpty(rule.Option))
                             {
-                                if (wearables.ContainsKey(WearableFromString(rule.Option)))
-                                {
-                                    res = "1";
-                                }
-                                else
-                                {
-                                    res = "0";
-                                }
+                                res = wearables.ContainsKey(WearableFromString(rule.Option)) ? "1" : "0";
                             }
                             else
                             {
-                                for (int i = 0; i < RLVWearables.Count; i++)
+                                foreach (var t in RLVWearables)
                                 {
-                                    if (wearables.ContainsKey(RLVWearables[i].Type))
+                                    if (wearables.ContainsKey(t.Type))
                                     {
                                         res += "1";
                                     }
@@ -547,7 +477,6 @@ namespace Radegast
                                     {
                                         res += "0";
                                     }
-
                                 }
                             }
                             Respond(chan, res);
@@ -562,31 +491,24 @@ namespace Radegast
                             if (attachments.Count > 0)
                             {
                                 var myPoints = new List<AttachmentPoint>(attachments.Count);
-                                for (int i = 0; i < attachments.Count; i++)
+                                foreach (var p in attachments)
                                 {
-                                    if (!myPoints.Contains(attachments[i].PrimData.AttachmentPoint))
+                                    if (!myPoints.Contains(p.PrimData.AttachmentPoint))
                                     {
-                                        myPoints.Add(attachments[i].PrimData.AttachmentPoint);
+                                        myPoints.Add(p.PrimData.AttachmentPoint);
                                     }
                                 }
 
                                 // Do we want to check one single attachment
                                 if (!string.IsNullOrEmpty(rule.Option))
                                 {
-                                    if (myPoints.Contains(AttachmentPointFromString(rule.Option)))
-                                    {
-                                        res = "1";
-                                    }
-                                    else
-                                    {
-                                        res = "0";
-                                    }
+                                    res = myPoints.Contains(AttachmentPointFromString(rule.Option)) ? "1" : "0";
                                 }
                                 else
                                 {
-                                    for (int i = 0; i < RLVAttachments.Count; i++)
+                                    foreach (var a in RLVAttachments)
                                     {
-                                        if (myPoints.Contains(RLVAttachments[i].Point))
+                                        if (myPoints.Contains(a.Point))
                                         {
                                             res += "1";
                                         }
@@ -623,14 +545,7 @@ namespace Radegast
                                     InventoryNode folder = FindFolder(rule.Option);
                                     if (folder != null)
                                     {
-                                        var outfit = new List<InventoryItem>();
-                                        foreach (var item in folder.Nodes.Values)
-                                        {
-                                            if (CurrentOutfitFolder.CanBeWorn(item.Data))
-                                            {
-                                                outfit.Add((InventoryItem)(item.Data));
-                                            }
-                                        }
+                                        var outfit = (from item in folder.Nodes.Values where CurrentOutfitFolder.CanBeWorn(item.Data) select (InventoryItem) (item.Data)).ToList();
                                         instance.COF.RemoveFromOutfit(outfit);
                                     }
                                 }
@@ -705,13 +620,9 @@ namespace Radegast
                             InventoryNode folder = FindFolder(rule.Option);
                             if (folder != null)
                             {
-                                foreach (var f in folder.Nodes.Values)
-                                {
-                                    if (f.Data is InventoryFolder && !f.Data.Name.StartsWith("."))
-                                    {
-                                        res += f.Data.Name + ",";
-                                    }
-                                }
+                                res = folder.Nodes.Values.Where(
+                                    f => f.Data is InventoryFolder && !f.Data.Name.StartsWith(".")).Aggregate(
+                                        res, (current, f) => current + (f.Data.Name + ","));
                             }
                             
                             Respond(chan, res.TrimEnd(','));
@@ -726,13 +637,9 @@ namespace Radegast
                             if (root != null)
                             {
                                 res += "|" + GetWornIndicator(root) + ",";
-                                foreach (var n in root.Nodes.Values)
-                                {
-                                    if (n.Data is InventoryFolder && !n.Data.Name.StartsWith("."))
-                                    {
-                                        res += n.Data.Name + "|" + GetWornIndicator(n) + ",";
-                                    }
-                                }
+                                res = root.Nodes.Values.Where(
+                                    n => n.Data is InventoryFolder && !n.Data.Name.StartsWith(".")).Aggregate(
+                                        res, (current, n) => current + (n.Data.Name + "|" + GetWornIndicator(n) + ","));
                             }
 
                             Respond(chan, res.TrimEnd(','));
@@ -822,7 +729,7 @@ namespace Radegast
         private void Respond(int chan, string msg)
         {
 #if DEBUG
-            instance.TabConsole.DisplayNotificationInChat(string.Format("{0}: {1}", chan, msg), ChatBufferTextStyle.OwnerSay);
+            instance.TabConsole.DisplayNotificationInChat($"{chan}: {msg}", ChatBufferTextStyle.OwnerSay);
 #endif
             client.Self.Chat(msg, chan, ChatType.Normal);
         }
@@ -920,14 +827,7 @@ namespace Radegast
 
         public InventoryNode RLVRootFolder()
         {
-            foreach (var rn in client.Inventory.Store.RootNode.Nodes.Values)
-            {
-                if (rn.Data.Name == "#RLV" && rn.Data is InventoryFolder)
-                {
-                    return rn;
-                }
-            }
-            return null;
+            return client.Inventory.Store.RootNode.Nodes.Values.FirstOrDefault(rn => rn.Data.Name == "#RLV" && rn.Data is InventoryFolder);
         }
 
         public string FindFullInventoryPath(InventoryNode input, string pathConstruct)
@@ -943,9 +843,7 @@ namespace Radegast
         public InventoryNode FindFolder(string path)
         {
             var root = RLVRootFolder();
-            if (root == null) return null;
-
-            return FindFolderInternal(root, "/", "/" + Regex.Replace(path, @"^[/\s]*(.*)[/\s]*", @"$1").ToLower());
+            return root == null ? null : FindFolderInternal(root, "/", "/" + Regex.Replace(path, @"^[/\s]*(.*)[/\s]*", @"$1").ToLower());
         }
 
         protected InventoryNode FindFolderInternal(InventoryNode currentNode, string currentPath, string desiredPath)
@@ -954,15 +852,9 @@ namespace Radegast
             {
                 return currentNode;
             }
-            foreach (var n in currentNode.Nodes.Values)
-            {
-                var res = FindFolderInternal(n, (currentPath == "/" ? currentPath : currentPath + "/") + n.Data.Name.ToLower(), desiredPath);
-                if (res != null)
-                {
-                    return res;
-                }
-            }
-            return null;
+            return currentNode.Nodes.Values.Select(
+                n => FindFolderInternal(n, (currentPath == "/" ? currentPath : currentPath + "/") + n.Data.Name.ToLower(), desiredPath))
+                .FirstOrDefault(res => res != null);
         }
 
         public List<InventoryNode> FindFoldersKeyword(string[] keywords)
@@ -983,19 +875,17 @@ namespace Radegast
             if (currentNode.Data is InventoryFolder &&
                 !currentNode.Data.Name.StartsWith(".") &&
                 !currentNode.Data.Name.StartsWith("~") &&
-                keywords.All(keyword => currentPathParts.Contains(keyword)))
+                keywords.All(currentPathParts.Contains))
             {
                 matchingNodes.Add(currentNode);
             }
 
             foreach (var node in currentNode.Nodes.Values)
             {
-                if (node.Data is InventoryFolder)
-                {
-                    currentPathParts.Add(node.Data.Name.ToLower());
-                    FindFoldersKeywordsInternal(node, keywords, currentPathParts, ref matchingNodes);
-                    currentPathParts.RemoveAt(currentPathParts.Count - 1);
-                }
+                if (!(node.Data is InventoryFolder)) continue;
+                currentPathParts.Add(node.Data.Name.ToLower());
+                FindFoldersKeywordsInternal(node, keywords, currentPathParts, ref matchingNodes);
+                currentPathParts.RemoveAt(currentPathParts.Count - 1);
             }
 
             return;
@@ -1005,7 +895,7 @@ namespace Radegast
         {
             lock (rules)
             {
-                rules.RemoveAll((RLVRule r) => { return r.Sender == id; });
+                rules.RemoveAll((RLVRule r) => r.Sender == id);
             }
         }
 
@@ -1013,35 +903,24 @@ namespace Radegast
         {
             if (!Enabled) return false;
 
-            if (rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour && string.IsNullOrEmpty(r.Option); }).Count > 0)
-            {
-                return true;
-            }
-
-            return false;
+            return rules.FindAll((RLVRule r) => r.Behaviour == behaviour && string.IsNullOrEmpty(r.Option)).Count > 0;
         }
 
         public bool RestictionActive(string behaviour, string exception)
         {
             if (!Enabled) return false;
-            var set = rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour; });
+            var set = rules.FindAll((RLVRule r) => r.Behaviour == behaviour);
 
-            if (set.Count > 0 &&
-                set.FindAll((RLVRule r) => { return r.Option == exception; }).Count == 0 &&
-                set.FindAll((RLVRule r) => { return string.IsNullOrEmpty(r.Option); }).Count > 0
-                )
-            {
-                return true;
-            }
-
-            return false;
+            return set.Count > 0 &&
+                   set.FindAll((RLVRule r) => r.Option == exception).Count == 0 &&
+                   set.FindAll((RLVRule r) => string.IsNullOrEmpty(r.Option)).Count > 0;
         }
 
         public List<string> GetOptions(string behaviour)
         {
             List<string> ret = new List<string>();
 
-            foreach (var rule in rules.FindAll((RLVRule r) => { return r.Behaviour == behaviour && !string.IsNullOrEmpty(r.Option); }))
+            foreach (var rule in rules.FindAll((RLVRule r) => r.Behaviour == behaviour && !string.IsNullOrEmpty(r.Option)))
             {
                 if (!ret.Contains(rule.Option)) ret.Add(rule.Option);
             }
@@ -1053,12 +932,7 @@ namespace Radegast
         {
             if (!Enabled || a == null) return true;
 
-            if (rules.FindAll((RLVRule r) => { return r.Behaviour == "detach" && r.Sender == a.Prim.ID; }).Count > 0)
-            {
-                return false;
-            }
-
-            return true;
+            return rules.FindAll((RLVRule r) => r.Behaviour == "detach" && r.Sender == a.Prim.ID).Count <= 0;
         }
 
         public bool AllowDetach(InventoryItem item)
@@ -1068,14 +942,12 @@ namespace Radegast
             List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == client.Self.LocalID);
             foreach (var att in myAtt)
             {
-                if (CurrentOutfitFolder.GetAttachmentItem(att) == item.UUID)
+                if (CurrentOutfitFolder.GetAttachmentItem(att) != item.UUID) continue;
+                if (rules.FindAll((RLVRule r) => r.Behaviour == "detach" && r.Sender == att.ID).Count > 0)
                 {
-                    if (rules.FindAll((RLVRule r) => { return r.Behaviour == "detach" && r.Sender == att.ID; }).Count > 0)
-                    {
-                        return false;
-                    }
-                    break;
+                    return false;
                 }
+                break;
             }
             return true;
         }
@@ -1084,12 +956,7 @@ namespace Radegast
         {
             if (!Enabled || agent == UUID.Zero) return false;
 
-            if (rules.FindAll((RLVRule r) => { return r.Behaviour == "accepttp" && (r.Option == "" || r.Option == agent.ToString()); }).Count > 0)
-            {
-                return true;
-            }
-
-            return false;
+            return rules.FindAll((RLVRule r) => r.Behaviour == "accepttp" && (r.Option == "" || r.Option == agent.ToString())).Count > 0;
         }
     }
 }
