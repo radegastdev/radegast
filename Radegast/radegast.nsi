@@ -21,7 +21,7 @@ LangString LanguageCode ${LANG_ENGLISH}  "en"
 !define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
 
 !define APPNAME "Radegast"
-!define VERSION "2.20"
+!define VERSION "2.21"
 !define MAINEXEC "${APPNAME}.exe"
 !define DOTNET_VERSION "3.5"
 !define VOICEPACK "RadegastVoicepack-2.0.exe"
