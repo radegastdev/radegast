@@ -3,7 +3,7 @@ namespace Radegast
 { 
     public static class RadegastBuild
     {
-        public const string VersionString = "2.20.0";
+        public const string VersionString = "2.21.0";
         public const string BuildName = "Homebrew";
     }
 }
