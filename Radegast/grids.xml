@@ -105,32 +105,6 @@
       <string>1</string>
     </map>
 
-    <!-- ReactionGrid -->
-    <map>
-      <key>gridnick</key>
-      <string>reactiongrid</string>
-      <key>gridname</key>
-      <string>ReactionGrid</string>
-      <key>platform</key>
-      <string>OpenSim</string>
-
-      <key>loginuri</key>
-      <string>http://reactiongrid.com:8008/</string>
-      <key>loginpage</key>
-      <string>http://gsquared.info/portal</string>
-      <key>website</key>
-      <string>http://reactiongrid.com/Default.aspx</string>
-      <key>support</key>
-      <string>http://reactiongrid.com/Support.aspx</string>
-      <key>register</key>
-      <string>http://reactiongrid.com/Register.aspx</string>
-
-      <key>password</key>
-      <string>http://reactiongrid.com/Support/ResetPassword.aspx</string>
-      <key>version</key>
-      <string>0</string>
-    </map>
-
     <!-- 3rd Rock Grid -->
 
     <map>
@@ -247,62 +221,6 @@
       <string>0</string>
     </map>
 
-    <!-- Legend City Online -->
-    <map>
-      <key>gridnick</key>
-      <string>legendcityonline</string>
-      <key>gridname</key>
-      <string>Legend City Online</string>
-
-      <key>platform</key>
-      <string>OpenSim</string>
-      <key>loginuri</key>
-      <string>http://login.legendcityonline.com</string>
-      <key>loginpage</key>
-      <string>http://www.legendcityonline.com/welcome.php</string>
-      <key>helperuri</key>
-      <string>https://secure.legendcityonline.com/</string>
-      <key>website</key>
-      <string>http://www.legendcityonline.com/</string>
-
-      <key>support</key>
-      <string>http://www.legendcityonline.com/</string>
-      <key>register</key>
-      <string>http://www.legendcityonline.com/</string>
-      <key>password</key>
-      <string>http://www.legendcityonline.com/</string>
-      <key>version</key>
-      <string>0</string>
-    </map>
-
-    <!-- WorldSimTerra -->
-    <map>
-      <key>gridnick</key>
-      <string>worldsimterra</string>
-      <key>gridname</key>
-      <string>WorldSimTerra</string>
-      <key>platform</key>
-      <string>OpenSim</string>
-
-      <key>loginuri</key>
-      <string>http://wsterra.com:8002</string>
-      <key>loginpage</key>
-      <string>http://wsterra.com/log.php</string>
-      <key>helperuri</key>
-      <string>http://wsterra.com/</string>
-      <key>website</key>
-      <string>http://www.worldsimterra.com/</string>
-      <key>support</key>
-      <string>http://www.worldsimterra.com/</string>
-
-      <key>register</key>
-      <string>http://www.worldsimterra.com/</string>
-      <key>password</key>
-      <string>http://www.worldsimterra.com/</string>
-      <key>version</key>
-      <string>0</string>
-    </map>
-
     <!-- Your Alternative Life -->
 
     <map>
@@ -333,57 +251,6 @@
 
     </map>
 
-    <!-- The New World Grid -->
-    <map>
-      <key>gridnick</key>
-      <string>thenewworldgrid</string>
-
-      <key>gridname</key>
-      <string>The New World Grid</string>
-      <key>platform</key>
-      <string>OpenSim</string>
-      <key>loginuri</key>
-      <string>http://grid.newworldgrid.com:8002/</string>
-      <key>loginpage</key>
-      <string>http://account.newworldgrid.com/loginscreen.php</string>
-      <key>helperuri</key>
-      <string>http://account.newworldgrid.com/</string>
-
-      <key>website</key>
-      <string>http://www.newworldgrid.com/</string>
-      <key>support</key>
-      <string>http://www.newworldgrid.com/</string>
-      <key>register</key>
-      <string>http://www.newworldgrid.com/register</string>
-      <key>password</key>
-      <string>http://account.newworldgrid.com/</string>
-      <key>version</key>
-      <string>0</string>
-
-    </map>
-
-    <!-- Cyberlandia -->
-    <map>
-      <key>gridnick</key>
-      <string>cyberlandia</string>
-
-      <key>gridname</key>
-      <string>Cyberlandia</string>
-      <key>platform</key>
-      <string>OpenSim</string>
-      <key>loginuri</key>
-      <string>http://grid.cyberlandia.net:8002</string>
-      <key>loginpage</key>
-      <string></string>
-      <key>helperuri</key>
-      <string></string>
-
-      <key>website</key>
-      <string>http://www.cyberlandia.net</string>
-      <key>version</key>
-      <string>0</string>
-    </map>
-
     <!-- The Gor Grid -->
     <map>
       <key>gridnick</key>
@@ -404,26 +271,6 @@
       <string>http://thegorgrid.com/index.php?page=create</string>
       <key>password</key>
       <string>http://thegorgrid.com/index.php?page=change</string>
-      <key>version</key>
-      <string>0</string>
-    </map>
-
-    <!-- GiantGrid -->
-
-    <map>
-      <key>gridnick</key>
-      <string>giantgrid</string>
-      <key>gridname</key>
-      <string>GiantGrid</string>
-      <key>platform</key>
-      <string>OpenSim</string>
-      <key>loginuri</key>
-      <string>http://Gianttest.no-ip.biz:8002/</string>
-
-      <key>loginpage</key>
-      <string>http://gianttest.no-ip.biz:80/gridsplash?method=login</string>
-      <key>helperuri</key>
-      <string>http://gianttest.no-ip.biz/giantmap/</string>
       <key>version</key>
       <string>0</string>
     </map>
