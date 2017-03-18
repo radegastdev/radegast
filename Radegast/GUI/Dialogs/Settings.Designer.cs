@@ -341,7 +341,7 @@ namespace Radegast
             this.cbShowScriptErrors.Name = "cbShowScriptErrors";
             this.cbShowScriptErrors.Size = new System.Drawing.Size(110, 17);
             this.cbShowScriptErrors.TabIndex = 17;
-            this.cbShowScriptErrors.Text = "Show Script Erros";
+            this.cbShowScriptErrors.Text = "Show Script Errors";
             this.cbShowScriptErrors.UseVisualStyleBackColor = true;
             // 
             // label4
