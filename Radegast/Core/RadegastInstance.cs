@@ -463,7 +463,7 @@ namespace Radegast
         public void Reconnect()
         {
             TabConsole.DisplayNotificationInChat("Attempting to reconnect...", ChatBufferTextStyle.StatusDarkBlue);
-            Logger.Log("Attemting to reconnect", Helpers.LogLevel.Info, client);
+            Logger.Log("Attempting to reconnect", Helpers.LogLevel.Info, client);
             GridClient oldClient = client;
             client = new GridClient();
             UnregisterClientEvents(oldClient);
@@ -591,7 +591,7 @@ namespace Radegast
         }
 
         /// <summary>
-        /// Fetches avatar name from cache, if not in cache will requst name from the server
+        /// Fetches avatar name from cache, if not in cache will request name from the server
         /// </summary>
         /// <param name="key">Avatar UUID</param>
         /// <returns>Avatar name</returns>

@@ -53,13 +53,13 @@ namespace Radegast
         [Option("p", "password", HelpText = "Account password")]
         public string Password = string.Empty;
 
-        [Option("a", "autologin", HelpText = "Automatially login with provided user credentials")]
+        [Option("a", "autologin", HelpText = "Automatically login with provided user credentials")]
         public bool AutoLogin = false;
 
         [Option("g", "grid", HelpText = "Grid ID to login into, try --list-grids to see IDs used for this parameter")]
         public string Grid = string.Empty;
 
-        [Option("l", "location", HelpText = "Login location: last, home or regionname. Regioname can also be in format regionname/x/y/z")]
+        [Option("l", "location", HelpText = "Login location: last, home or region name. Region name can also be in format regionname/x/y/z")]
         public string Location = string.Empty;
 
         [Option(null, "list-grids", HelpText = "Lists grid IDs used for --grid option")]
@@ -183,7 +183,7 @@ namespace Radegast
 
                     OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
 
-                    string dlgMsg = "Radegast has encoutered an unrecoverable errror." + Environment.NewLine +
+                    string dlgMsg = "Radegast has encountered an unrecoverable error." + Environment.NewLine +
                         "Would you like to send the error report to help improve Radegast?";
 
                     var res = MessageBox.Show(dlgMsg, "Unrecoverable error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);

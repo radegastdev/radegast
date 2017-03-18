@@ -394,7 +394,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(80, 13);
             this.label8.TabIndex = 1;
-            this.label8.Text = "Peding uploads";
+            this.label8.Text = "Pending uploads";
             // 
             // lblActiveScripts
             // 
