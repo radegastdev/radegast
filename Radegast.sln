@@ -1,0 +1,87 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast", "Radegast\Radegast.csproj", "{F02F3C44-DCFC-964F-0516-85F7F141CCDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.Alice", "plugins\Radegast.Plugin.Alice\Radegast.Plugin.Alice.csproj", "{F9B15290-651E-0E8B-2E12-A6E89A3D30F3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD} = {F02F3C44-DCFC-964F-0516-85F7F141CCDD}
+		{9305ECC4-7FFF-1417-686C-AB2754057B83} = {9305ECC4-7FFF-1417-686C-AB2754057B83}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.SimpleBuilder", "plugins\Radegast.Plugin.SimpleBuilder\Radegast.Plugin.SimpleBuilder.csproj", "{6CADC6BB-D8C5-ADE5-A172-3D7F0D4A427F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD} = {F02F3C44-DCFC-964F-0516-85F7F141CCDD}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.IRC", "plugins\Radegast.Plugin.IRC\Radegast.Plugin.IRC.csproj", "{195B1187-85BC-EE94-0E2A-35477A8A2554}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD} = {F02F3C44-DCFC-964F-0516-85F7F141CCDD}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radegast.Plugin.Speech", "plugins\Radegast.Plugin.Speech\RadSpeech\Radegast.Plugin.Speech.csproj", "{9305ECC4-7FFF-1417-686C-AB2754057B83}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD} = {F02F3C44-DCFC-964F-0516-85F7F141CCDD}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechLin", "plugins\Radegast.Plugin.Speech\RadSpeechLin\RadSpeechLin.csproj", "{17A48A95-0307-1A3A-AC8C-52F098CEE5BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD} = {F02F3C44-DCFC-964F-0516-85F7F141CCDD}
+		{9305ECC4-7FFF-1417-686C-AB2754057B83} = {9305ECC4-7FFF-1417-686C-AB2754057B83}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechWin", "plugins\Radegast.Plugin.Speech\RadSpeechWin\RadSpeechWin.csproj", "{E2D28A95-CE35-1A3A-77BB-52F063FDE5BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD} = {F02F3C44-DCFC-964F-0516-85F7F141CCDD}
+		{9305ECC4-7FFF-1417-686C-AB2754057B83} = {9305ECC4-7FFF-1417-686C-AB2754057B83}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RadSpeechMac", "plugins\Radegast.Plugin.Speech\RadSpeechMac\RadSpeechMac.csproj", "{45A78A95-310A-1A3A-DA8F-52F0C6D1E5BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD} = {F02F3C44-DCFC-964F-0516-85F7F141CCDD}
+		{9305ECC4-7FFF-1417-686C-AB2754057B83} = {9305ECC4-7FFF-1417-686C-AB2754057B83}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD}.Debug|x86.ActiveCfg = Debug|x86
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD}.Debug|x86.Build.0 = Debug|x86
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD}.Release|x86.ActiveCfg = Release|x86
+		{F02F3C44-DCFC-964F-0516-85F7F141CCDD}.Release|x86.Build.0 = Release|x86
+		{F9B15290-651E-0E8B-2E12-A6E89A3D30F3}.Debug|x86.ActiveCfg = Debug|x86
+		{F9B15290-651E-0E8B-2E12-A6E89A3D30F3}.Debug|x86.Build.0 = Debug|x86
+		{F9B15290-651E-0E8B-2E12-A6E89A3D30F3}.Release|x86.ActiveCfg = Release|x86
+		{F9B15290-651E-0E8B-2E12-A6E89A3D30F3}.Release|x86.Build.0 = Release|x86
+		{6CADC6BB-D8C5-ADE5-A172-3D7F0D4A427F}.Debug|x86.ActiveCfg = Debug|x86
+		{6CADC6BB-D8C5-ADE5-A172-3D7F0D4A427F}.Debug|x86.Build.0 = Debug|x86
+		{6CADC6BB-D8C5-ADE5-A172-3D7F0D4A427F}.Release|x86.ActiveCfg = Release|x86
+		{6CADC6BB-D8C5-ADE5-A172-3D7F0D4A427F}.Release|x86.Build.0 = Release|x86
+		{195B1187-85BC-EE94-0E2A-35477A8A2554}.Debug|x86.ActiveCfg = Debug|x86
+		{195B1187-85BC-EE94-0E2A-35477A8A2554}.Debug|x86.Build.0 = Debug|x86
+		{195B1187-85BC-EE94-0E2A-35477A8A2554}.Release|x86.ActiveCfg = Release|x86
+		{195B1187-85BC-EE94-0E2A-35477A8A2554}.Release|x86.Build.0 = Release|x86
+		{9305ECC4-7FFF-1417-686C-AB2754057B83}.Debug|x86.ActiveCfg = Debug|x86
+		{9305ECC4-7FFF-1417-686C-AB2754057B83}.Debug|x86.Build.0 = Debug|x86
+		{9305ECC4-7FFF-1417-686C-AB2754057B83}.Release|x86.ActiveCfg = Release|x86
+		{9305ECC4-7FFF-1417-686C-AB2754057B83}.Release|x86.Build.0 = Release|x86
+		{17A48A95-0307-1A3A-AC8C-52F098CEE5BC}.Debug|x86.ActiveCfg = Debug|x86
+		{17A48A95-0307-1A3A-AC8C-52F098CEE5BC}.Debug|x86.Build.0 = Debug|x86
+		{17A48A95-0307-1A3A-AC8C-52F098CEE5BC}.Release|x86.ActiveCfg = Release|x86
+		{17A48A95-0307-1A3A-AC8C-52F098CEE5BC}.Release|x86.Build.0 = Release|x86
+		{E2D28A95-CE35-1A3A-77BB-52F063FDE5BC}.Debug|x86.ActiveCfg = Debug|x86
+		{E2D28A95-CE35-1A3A-77BB-52F063FDE5BC}.Debug|x86.Build.0 = Debug|x86
+		{E2D28A95-CE35-1A3A-77BB-52F063FDE5BC}.Release|x86.ActiveCfg = Release|x86
+		{E2D28A95-CE35-1A3A-77BB-52F063FDE5BC}.Release|x86.Build.0 = Release|x86
+		{45A78A95-310A-1A3A-DA8F-52F0C6D1E5BC}.Debug|x86.ActiveCfg = Debug|x86
+		{45A78A95-310A-1A3A-DA8F-52F0C6D1E5BC}.Debug|x86.Build.0 = Debug|x86
+		{45A78A95-310A-1A3A-DA8F-52F0C6D1E5BC}.Release|x86.ActiveCfg = Release|x86
+		{45A78A95-310A-1A3A-DA8F-52F0C6D1E5BC}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

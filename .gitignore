@@ -2,10 +2,9 @@
 *.suo
 bin
 obj
+packages
 compile.bat
-*.sln
 *.sln.cache
-*.csproj
 *.bak
 *.resources
 *~

@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9305ECC4-7FFF-1417-686C-AB2754057B83}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Radegast.Plugin.Speech</RootNamespace>
+    <AssemblyName>Radegast.Plugin.Speech</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <BaseIntermediateOutputPath>obj\x86\Debug\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <BaseIntermediateOutputPath>obj\x86\Release\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LibreMetaverse, Version=1.0.1.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\LibreMetaverse.1.0.1.17\lib\net40\LibreMetaverse.dll</HintPath>
+    </Reference>
+    <Reference Include="LibreMetaverse.StructuredData, Version=1.0.1.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\LibreMetaverse.StructuredData.1.0.1.17\lib\net40\LibreMetaverse.StructuredData.dll</HintPath>
+    </Reference>
+    <Reference Include="LibreMetaverse.Types, Version=1.0.1.17, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\LibreMetaverse.Types.1.0.1.17\lib\net40\LibreMetaverse.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.1.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\protobuf-net.2.1.0\lib\net45\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Radegast.exe" />
+    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
+      <HintPath>..\..\..\packages\zlib.net.1.0.4.0\lib\zlib.net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AreaControl.cs" />
+    <Content Include="BadBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CloseBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CommBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Conversation\BlueMenu.cs" />
+    <Compile Include="Conversation\Chat.cs" />
+    <Compile Include="Conversation\Closet.cs" />
+    <Compile Include="Conversation\ConferenceIMSession.cs" />
+    <Compile Include="Conversation\Control.cs" />
+    <Compile Include="Conversation\Friends.cs" />
+    <Compile Include="Conversation\Friendship.cs" />
+    <Compile Include="Conversation\GroupIMSession.cs" />
+    <Compile Include="Conversation\IMSession.cs" />
+    <Compile Include="Conversation\InvLandmark.cs" />
+    <Compile Include="Conversation\InvNotecard.cs" />
+    <Compile Include="Conversation\Max.cs" />
+    <Compile Include="Conversation\Mode.cs" />
+    <Compile Include="Conversation\Movement.cs" />
+    <Compile Include="Conversation\SingleIMSession.cs" />
+    <Compile Include="Conversation\Surroundings.cs" />
+    <Compile Include="Conversation\TalkingContextMenu.cs" />
+    <Compile Include="Conversation\Voice.cs" />
+    <Content Include="DialogBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Environment\Control.cs" />
+    <Compile Include="Environment\People.cs" />
+    <Compile Include="GUI\AvatarSpeechAction.cs" />
+    <Compile Include="GUI\NotecardReadAction.cs" />
+    <Compile Include="GUI\VoiceAssignment.Designer.cs">
+      <DependentUpon>VoiceAssignment.cs</DependentUpon>
+      <SubType>Dependency</SubType>
+    </Compile>
+    <Compile Include="GUI\VoiceAssignment.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <EmbeddedResource Include="GUI\VoiceAssignment.resx">
+      <DependentUpon>VoiceAssignment.cs</DependentUpon>
+      <SubType>DesignerType</SubType>
+    </EmbeddedResource>
+    <Content Include="GoodBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="IRadSpeech.cs" />
+    <Compile Include="Listen\Control.cs" />
+    <Compile Include="Listen\Recognizer.cs" />
+    <Content Include="MoneyBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OpenBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="PluginControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="ScanBeep.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Sound\Control.cs" />
+    <Compile Include="Sound\FmodSound.cs" />
+    <Compile Include="Talk\Control.cs" />
+    <Compile Include="Talk\Substitutions.cs" />
+    <Compile Include="Talk\Synthesizer.cs" />
+    <Compile Include="Talk\Voices.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
