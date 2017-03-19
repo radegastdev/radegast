@@ -42,7 +42,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2017, Cinder Roxley.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyFileVersion("3.0.0.0")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -59,5 +58,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion(Radegast.RadegastBuild.VersionString + ".*")]
-[assembly: AssemblyFileVersion(Radegast.RadegastBuild.VersionString + ".0")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
