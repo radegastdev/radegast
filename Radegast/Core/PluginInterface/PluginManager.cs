@@ -33,7 +33,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.CodeDom.Compiler;
-using System.Windows.Forms;
+using System.Linq;
 using OpenMetaverse;
 using Microsoft.CSharp;
 
@@ -51,14 +51,7 @@ namespace Radegast
         /// <summary>Is plugin started</summary>
         public bool Started { get; set; }
         /// <summary>Plugin class</summary>
-        public PluginAttribute Attribures
-        {
-            get
-            {
-                if (Plugin == null) return null;
-                return PluginManager.GetAttributes(Plugin);
-            }
-        }
+        public PluginAttribute Attribures => Plugin == null ? null : PluginManager.GetAttributes(Plugin);
 
         public AppDomain Domain;
     }
@@ -73,31 +66,31 @@ namespace Radegast
             {
                 "AIMLbot.dll",
                 "CommandLine.dll",
+                "fmod.dll",
+                "fmodstudio.dll",
+                "IKVM.",
+                "log4net.dll",
                 "Meebey.SmartIrc4net.dll",
                 "Monobjc.Cocoa.dll",
                 "Monobjc.dll",
+                "OpenCyc.dll",
+                "openjpeg-dotnet-x86_64.dll",
+                "openjpeg-dotnet.dll",
                 "OpenMetaverse.Rendering.Meshmerizer.dll",
                 "OpenMetaverse.StructuredData.dll",
                 "OpenMetaverse.dll",
                 "OpenMetaverseTypes.dll",
+                "OpenTK",
                 "PrimMesher.dll",
                 "RadSpeechLin.dll",
                 "RadSpeechMac.dll",
                 "RadSpeechWin.dll",
+                "SmartThreadPool",
                 "Tao.OpenGl.dll",
                 "Tao.Platform.Windows.dll",
                 "Tools.dll",
                 "XMLRPC.dll",
-                "fmodex-dotnet.dll",
-                "fmodex.dll",
-                "log4net.dll",
-                "openjpeg-dotnet-x86_64.dll",
-                "openjpeg-dotnet.dll",
-                "OpenCyc.dll",
-                "IKVM.",
-                "OpenTK",
                 "zlib.net.dll",
-                "SmartThreadPool",
             });
 
         /// <summary>List of file extensions that could potentially hold plugins</summary>
@@ -114,13 +107,7 @@ namespace Radegast
         /// <summary>
         /// Gets the list of currently loaded plugins
         /// </summary>
-        public List<PluginInfo> Plugins
-        {
-            get
-            {
-                return PluginsLoaded;
-            }
-        }
+        public List<PluginInfo> Plugins => PluginsLoaded;
 
         /// <summary>
         /// Creates new PluginManager
@@ -154,7 +141,7 @@ namespace Radegast
         {
             lock (PluginsLoaded)
             {
-                var pluginInfos = PluginsLoaded.FindAll(info => { return info.Plugin == plug.Plugin; });
+                var pluginInfos = PluginsLoaded.FindAll(info => info.Plugin == plug.Plugin);
 
                 foreach (var info in pluginInfos)
                 {
@@ -163,7 +150,7 @@ namespace Radegast
                     catch (Exception ex) { Logger.Log("ERROR in unloading plugin: " + info.Plugin.GetType().Name + " because " + ex, Helpers.LogLevel.Debug, ex); }
                     PluginsLoaded.Remove(info);
 
-                    if (domain != null && PluginsLoaded.Find(dinfo => { return dinfo.Domain == domain; }) == null)
+                    if (domain != null && PluginsLoaded.Find(dinfo => dinfo.Domain == domain) == null)
                     {
                         try { AppDomain.Unload(domain); }
                         catch (Exception ex) { Logger.Log("ERROR unloading application domain for : " + plug.FileName + "\n" + ex.Message, Helpers.LogLevel.Debug); }
@@ -183,14 +170,14 @@ namespace Radegast
 
             foreach (Attribute attr in Attribute.GetCustomAttributes(plug.GetType()))
             {
-                if (attr is PluginAttribute)
-                    a = (PluginAttribute)attr;
+                var attribute = attr as PluginAttribute;
+                if (attribute != null)
+                    a = attribute;
             }
 
             if (a == null)
             {
-                a = new PluginAttribute();
-                a.Name = plug.GetType().FullName;
+                a = new PluginAttribute {Name = plug.GetType().FullName};
             }
 
             return a;
@@ -227,32 +214,34 @@ namespace Radegast
         public void LoadPluginFile(string loadFileName, bool stratPlugins)
         {
             string ext = Path.GetExtension(loadFileName).ToLower();
-            if (ext == ".cs")
+            switch (ext)
             {
-                LoadCSharpScriptFile(loadFileName, stratPlugins);
-            }
-            else if (ext == ".dll" || ext == ".exe")
-            {
-                try
-                {
-                    LoadAssembly(loadFileName, stratPlugins);
-                }
-                catch (BadImageFormatException)
-                {
-                    // non .NET .dlls
-                }
-                catch (ReflectionTypeLoadException)
-                {
-                    // Out of date or dlls missing sub dependencies
-                }
-                catch (TypeLoadException)
-                {
-                    // Another version of: Out of date or dlls missing sub dependencies
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("ERROR in Radegast Plugin: " + loadFileName + " because " + ex, Helpers.LogLevel.Debug);
-                }
+                case ".cs":
+                    LoadCSharpScriptFile(loadFileName, stratPlugins);
+                    break;
+                case ".dll":
+                case ".exe":
+                    try
+                    {
+                        LoadAssembly(loadFileName, stratPlugins);
+                    }
+                    catch (BadImageFormatException)
+                    {
+                        // non .NET .dlls
+                    }
+                    catch (ReflectionTypeLoadException)
+                    {
+                        // Out of date or dlls missing sub dependencies
+                    }
+                    catch (TypeLoadException)
+                    {
+                        // Another version of: Out of date or dlls missing sub dependencies
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("ERROR in Radegast Plugin: " + loadFileName + " because " + ex, Helpers.LogLevel.Debug);
+                    }
+                    break;
             }
         }
 
@@ -281,14 +270,7 @@ namespace Radegast
             if (!AllowedPluginExtensions.Contains(Path.GetExtension(loadFileName).ToLower())) return true;
             loadFileName = Path.GetFileName(loadFileName).ToLower();
 
-            foreach (string blackList in PluginBlackList)
-            {
-                if (loadFileName.StartsWith(blackList.ToLower()))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return PluginBlackList.Any(blackList => loadFileName.StartsWith(blackList.ToLower()));
         }
 
         /// <summary>
@@ -316,8 +298,10 @@ namespace Radegast
             try
             {
                 // *** Generate dynamic compiler
-                Dictionary<string, string> loCompilerOptions = new Dictionary<string, string>();
-                loCompilerOptions.Add("CompilerVersion", "v3.5");
+                Dictionary<string, string> loCompilerOptions = new Dictionary<string, string>
+                {
+                    {"CompilerVersion", "v3.5"}
+                };
                 CSharpCodeProvider loCompiler = new CSharpCodeProvider(loCompilerOptions);
                 CompilerParameters loParameters = new CompilerParameters();
 
@@ -369,7 +353,6 @@ namespace Radegast
         /// Scans assembly for supported types
         /// </summary>
         /// <param name="loadfilename">File name from which assembly was loaded</param>
-        /// <param name="assembly">Assembly to scan for supported types</param>
         /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
         public void LoadAssembly(string loadfilename, bool startPlugins)
         {
@@ -384,7 +367,7 @@ namespace Radegast
         /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
         public void LoadAssembly(string loadfilename, Assembly assembly, bool startPlugins)
         {
-            if (null != PluginsLoaded.Find((PluginInfo info) => { return info.FileName == loadfilename; }))
+            if (null != PluginsLoaded.Find((PluginInfo info) => info.FileName == loadfilename))
             {
                 Logger.Log("Plugin already loaded, skipping: " + loadfilename, Helpers.LogLevel.Info);
                 if (startPlugins)
@@ -458,7 +441,7 @@ namespace Radegast
                         if (startPlugins && plug != null)
                         {
                             try { plug.StartPlugin(instance); info.Started = true; }
-                            catch (Exception ex) { Logger.Log(string.Format("Failed starting plugin {0}:", type), Helpers.LogLevel.Error, ex); }
+                            catch (Exception ex) { Logger.Log($"Failed starting plugin {type}:", Helpers.LogLevel.Error, ex); }
                         }
                     }
                     catch (Exception ex)
