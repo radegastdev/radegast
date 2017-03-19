@@ -45,31 +45,31 @@ using System.Threading;
 
 namespace Radegast
 {
-    public class CommandLine
+    public class CommandLineOpts
     {
-        [Option("u", "username", HelpText = "Username, use quotes to supply \"First Last\"")]
-        public string Username = string.Empty;
+        [Option('u', "username", HelpText = "Username, use quotes to supply \"First Last\"")]
+        public string Username { get; set; } = string.Empty;
 
-        [Option("p", "password", HelpText = "Account password")]
-        public string Password = string.Empty;
+        [Option('p', "password", HelpText = "Account password")]
+        public string Password { get; set; } = string.Empty;
 
-        [Option("a", "autologin", HelpText = "Automatially login with provided user credentials")]
-        public bool AutoLogin = false;
+        [Option('a', "autologin", HelpText = "Automatially login with provided user credentials")]
+        public bool AutoLogin { get; set; } = false;
 
-        [Option("g", "grid", HelpText = "Grid ID to login into, try --list-grids to see IDs used for this parameter")]
-        public string Grid = string.Empty;
+        [Option('g', "grid", HelpText = "Grid ID to login into, try --list-grids to see IDs used for this parameter")]
+        public string Grid { get; set; } = string.Empty;
 
-        [Option("l", "location", HelpText = "Login location: last, home or regionname. Regioname can also be in format regionname/x/y/z")]
-        public string Location = string.Empty;
+        [Option('l', "location", HelpText = "Login location: last, home or regionname. Regioname can also be in format regionname/x/y/z")]
+        public string Location { get; set; } = string.Empty;
 
-        [Option(null, "list-grids", HelpText = "Lists grid IDs used for --grid option")]
-        public bool ListGrids = false;
+        [Option("list-grids", HelpText = "Lists grid IDs used for --grid option")]
+        public bool ListGrids { get; set; } = false;
 
-        [Option(null, "loginuri", HelpText = "Use this URI to login (don't use with --grid)")]
-        public string LoginUri = string.Empty;
+        [Option("loginuri", HelpText = "Use this URI to login (don't use with --grid)")]
+        public string LoginUri { get; set; } = string.Empty;
 
-        [Option(null, "no-sound", HelpText = "Disable sound")]
-        public bool DisableSound = false;
+        [Option("no-sound", HelpText = "Disable sound")]
+        public bool DisableSound { get; set; } = false;
 
 
         public HelpText GetHeader()
@@ -81,7 +81,7 @@ namespace Radegast
             return header;
         }
 
-        [HelpOption("h", "help", HelpText = "Display this help screen.")]
+        [HelpOption('h', "help", HelpText = "Display this help screen.")]
         public string GetUsage()
         {
             HelpText usage = GetHeader();
@@ -97,7 +97,7 @@ namespace Radegast
         /// <summary>
         /// Parsed command line options
         /// </summary>
-        public static CommandLine CommandLine;
+        public static CommandLineOpts CommandLineOpts;
 
         static void RunRadegast(string[] args)
         {
@@ -115,12 +115,8 @@ namespace Radegast
             }
 
             // Read command line options
-            CommandLine = new CommandLine();
-            CommandLineParser parser = new CommandLineParser(new CommandLineParserSettings(Console.Error));
-            if (!parser.ParseArguments(args, CommandLine))
-            {
-                Environment.Exit(1);
-            }
+            CommandLineOpts = new CommandLineOpts();
+            CommandLine.Parser.Default.ParseArguments(args, CommandLineOpts);
 
             // Change current working directory to Radegast install dir
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
@@ -129,9 +125,9 @@ namespace Radegast
             Application.SetCompatibleTextRenderingDefault(false);
 
             // See if we only wanted to display list of grids
-            if (CommandLine.ListGrids)
+            if (CommandLineOpts.ListGrids)
             {
-                Console.WriteLine(CommandLine.GetHeader());
+                Console.WriteLine(CommandLineOpts.GetHeader());
                 Console.WriteLine();
                 GridManager grids = new GridManager();
                 Console.WriteLine("Use Grid ID as the parameter for --grid");

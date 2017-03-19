@@ -64,7 +64,7 @@ namespace Radegast.Media
             this.Instance = instance;
             manager = this;
 
-            if (MainProgram.CommandLine.DisableSound)
+            if (MainProgram.CommandLineOpts.DisableSound)
             {
                 soundSystemAvailable = false;
                 return;
