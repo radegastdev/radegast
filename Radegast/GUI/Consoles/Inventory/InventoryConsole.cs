@@ -604,7 +604,8 @@ namespace Radegast
             {
                 foreach (TreeNode child in node.Nodes)
                 {
-                    removeNode(child);
+                    if (child != null)
+                        removeNode(child);
                 }
 
                 lock (UUID2NodeCache)
