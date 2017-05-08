@@ -1,8 +1,12 @@
 # Author
 
-Project founder and development lead:
+Project founder:
 
 * **Latif Khalifa** (email latifer radegast.org)
+
+Current maintainer and lead developer:
+
+* **Cinder Roxley** (email cinder cinderblocks.biz)
 
 Developers:
 
@@ -13,8 +17,9 @@ Developers:
 
 # License
 
-**Radegast Metaverse Client**<br>
-*Copyright © 2009-2016, Radegast Development Team*<br>
+**Radegast Metaverse Client**
+*Copyright © 2009-2016, Radegast Development Team*
+*Copyright © 2017, Cinderblocks Design Co.*
 *All rights reserved.*
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
