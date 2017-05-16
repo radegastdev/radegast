@@ -187,7 +187,7 @@ namespace Radegast
             this.btnGive.Name = "btnGive";
             this.btnGive.Size = new System.Drawing.Size(107, 23);
             this.btnGive.TabIndex = 24;
-            this.btnGive.Text = "&Give Inventory";
+            this.btnGive.Text = "Give Inventory";
             this.btnGive.UseVisualStyleBackColor = true;
             this.btnGive.Click += new System.EventHandler(this.btnGive_Click);
             // 
