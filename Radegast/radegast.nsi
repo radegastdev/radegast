@@ -177,8 +177,8 @@ Section "${APPNAME} core (required)"
   SetOutPath $INSTDIR
 
   ; Put file there
-  File /r /x *.nsi /x *.bak /x *.mdb /x *.application /x *vshost*.* /x *installer*.* /x *.so /x *.dylib *.*
-  ; File Radegast.exe
+  File /r /x *.nsi /x *.bak /x *.mdb /x *.application /x *vshost*.* /x *installer*.* /x *.cs /x *.csproj /x *.so /x *.dylib *.*
+  ;File Radegast.exe
 
   ; Write the installation path into the registry
   WriteRegStr HKLM "SOFTWARE\${APPNAME}" "Install_Dir" "$INSTDIR"
@@ -204,15 +204,29 @@ SectionEnd
 Section /o "${APPNAME} Voice Pack (extra download)"
   AddSize 6662
   IfFileExists "$INSTDIR\SLVoice.exe" voice_download_exists
-  inetc::get /BANNER "Downloading Voice Files" \
-    "https://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
-  Pop $R0
-  StrCmp $R0 "OK" voice_download_success voice_download_failed
-  
+
+  DetailPrint "Beginning download of .NET 4.5."
+  NSISdl::download /TIMEOUT=30000 "https://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  Pop $0
+  DetailPrint "Result: $0"
+  StrCmp $0 "success" voice_download_success
+  StrCmp $0 "cancel" voice_download_cancelled
+  NSISdl::download /TIMEOUT=30000 /NOPROXY "https://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  Pop $0
+  DetailPrint "Result: $0"
+  StrCmp $0 "success" voice_download_success
+ 
+  MessageBox MB_ICONSTOP "Download failed: $0"
+  goto voice_download_end
+
   voice_download_success:
 	ExecWait '"$INSTDIR\${VOICEPACK}" /D=$INSTDIR' $0
     Delete "$INSTDIR\${VOICEPACK}"
     goto voice_download_end
+
+  voice_download_cancelled:
+    DetailPrint "Installation cancelled by user."
+	goto voice_download_end
 
   voice_download_failed:
     MessageBox MB_OK "Download failed: $R0. Skipping installation of voice."
