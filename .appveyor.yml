@@ -4,7 +4,7 @@ init:
   - ps: Write-Host "Setting version to '$env:TAG_VERSION'"
   - ps: Update-AppveyorBuild -Version "$env:TAG_VERSION"
 
-image: Visual Studio 2015
+image: Visual Studio 2017
 
 configuration: Release
 
@@ -17,6 +17,9 @@ build:
   project: radegast.sln
   parallel: true
   verbosity: minimal
+
+after_build:
+  - cmd: C:\Program Files (x86)\NSIS\makensis.exe Radegast\radegast.nsi
 
 cache:
   - packages -> **\packages.config
