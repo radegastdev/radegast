@@ -18,9 +18,6 @@ build:
   parallel: true
   verbosity: minimal
 
-after_build:
-  - cmd: 'C:\Program Files (x86)\NSIS\makensis.exe Radegast\radegast.nsi'
-
 cache:
   - packages -> **\packages.config
   - '%LocalAppData%\NuGet\Cache'
