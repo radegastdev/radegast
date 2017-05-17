@@ -17,13 +17,13 @@ XPStyle on                  ; add an XP manifest to the installer
 RequestExecutionLevel admin	; on Vista we must be admin because we write to Program Files
 
 LangString LanguageCode ${LANG_ENGLISH}  "en"
-!define DOTNET_URL "http://download.microsoft.com/download/0/6/1/061F001C-8752-4600-A198-53214C69B51F/dotnetfx35setup.exe"
+!define DOTNET_URL "https://download.microsoft.com/download/B/A/4/BA4A7E71-2906-4B2D-A0E1-80CF16844F5F/dotNetFx45_Full_setup.exe"
 !define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
 
 !define APPNAME "Radegast"
 !define VERSION "2.22"
 !define MAINEXEC "${APPNAME}.exe"
-!define DOTNET_VERSION "3.5"
+!define DOTNET_VERSION "4.5"
 !define VOICEPACK "RadegastVoicepack-2.0.exe"
 !define UNINST_REG "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
@@ -63,7 +63,7 @@ Section ".NET check"
 
   ; Set output path to the installation directory.
   SetOutPath $TEMP
-  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v3.5" "SP"
+  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4.5" "SP"
   ${If} $0 < "1"
 	goto CheckMSI
   ${EndIf}
@@ -124,13 +124,13 @@ Section ".NET check"
     goto DownloadDotNET
 
   DownloadDotNET:
-    DetailPrint "Beginning download of .NET 3.5SP1."
-    NSISdl::download /TIMEOUT=30000 ${DOTNET_URL} "$TEMP\dotnetfx35.exe" /END
+    DetailPrint "Beginning download of .NET 4.5."
+    NSISdl::download /TIMEOUT=30000 ${DOTNET_URL} "$TEMP\dotNetFx45_Full_setup.exe" /END
     Pop $0
     DetailPrint "Result: $0"
     StrCmp $0 "success" InstallDotNet
     StrCmp $0 "cancel" GiveUpDotNET
-    NSISdl::download /TIMEOUT=30000 /NOPROXY ${DOTNET_URL} "$TEMP\dotnetfx35.exe" /END
+    NSISdl::download /TIMEOUT=30000 /NOPROXY ${DOTNET_URL} "$TEMP\dotNetFx45_Full_setup.exe" /END
     Pop $0
     DetailPrint "Result: $0"
     StrCmp $0 "success" InstallDotNet
@@ -153,9 +153,9 @@ Section ".NET check"
     DetailPrint "Pausing installation while downloaded .NET Framework installer runs."
 	MessageBox MB_OKCANCEL "Setup will now install .NET Framework$\nThis will take a while." \
 	  IDOK +1 IDCANCEL GiveUpDotNET
-    ExecWait '$TEMP\dotnetfx35.exe /q /norestart /c:"install /q"'
+    ExecWait '$TEMP\dotNetFx45_Full_setup.exe /q /norestart /c:"install /q"'
     DetailPrint "Completed .NET Framework install/update. Removing .NET Framework installer."
-    Delete "$TEMP\dotnetfx35.exe"
+    Delete "$TEMP\dotNetFx45_Full_setup.exe"
     DetailPrint ".NET Framework installer removed."
 	goto NewDotNET
 
