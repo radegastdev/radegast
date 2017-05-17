@@ -21,12 +21,6 @@ build:
 after_build:
   - cmd: '"C:\Program Files (x86)\NSIS\makensis.exe" bin\Radegast.nsi'
 
-assembly_info:
-  patch: true
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-
 cache:
   - packages -> **\packages.config
   - '%LocalAppData%\NuGet\Cache'
