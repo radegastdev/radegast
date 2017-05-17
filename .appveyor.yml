@@ -32,6 +32,5 @@ assembly_info:
   assembly_informational_version: '{version}'
 
 before_build:
-  - del "C:\Program Files (x86)\MSBuild\4.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
   - nuget restore radegast.sln
 
