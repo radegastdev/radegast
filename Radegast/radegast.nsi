@@ -227,10 +227,6 @@ Section /o "${APPNAME} Voice Pack (extra download)"
   voice_download_cancelled:
     DetailPrint "Installation cancelled by user."
 	goto voice_download_end
-
-  voice_download_failed:
-    MessageBox MB_OK "Download failed: $R0. Skipping installation of voice."
-	goto voice_download_end
   
   voice_download_exists:
     DetailPrint  "Voice pack already present, skipping the install"
