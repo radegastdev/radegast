@@ -21,6 +21,11 @@ build:
 after_build:
   - cmd: '"C:\Program Files (x86)\NSIS\makensis.exe" bin\Radegast.nsi'
 
+artifacts:
+  - path: 'Radegast-*-installer.exe'
+    name: 'Radegast Installer'
+    type: Auto
+
 cache:
   - packages -> **\packages.config
   - '%LocalAppData%\NuGet\Cache'
