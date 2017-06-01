@@ -75,7 +75,7 @@ namespace Radegast
             if (client == null)
             {
                 client = new WebClient();
-                client.DownloadStringCompleted += new DownloadStringCompletedEventHandler(OnDownloadStringCompleted);
+                client.DownloadStringCompleted += OnDownloadStringCompleted;
             }
 
             WorkPool.QueueUserWorkItem((object state) =>
@@ -120,11 +120,12 @@ namespace Radegast
 
         private void FireCallback(UpdateCheckerArgs e)
         {
-            if (OnUpdateInfoReceived != null)
+            if (OnUpdateInfoReceived == null) return;
+            try
             {
-                try { OnUpdateInfoReceived(this, e); }
-                catch { }
+                OnUpdateInfoReceived(this, e);
             }
+            catch { }
         }
     }
 

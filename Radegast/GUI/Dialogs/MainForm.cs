@@ -1233,7 +1233,7 @@ namespace Radegast
 
         private void accessibilityGuideToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessLink("http://radegast.org/wiki/Accessibility_Guide");
+            ProcessLink("https://radegast.life/documentation/Accessibility_Guide");
         }
 
         private void aboutRadegastToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1259,7 +1259,7 @@ namespace Radegast
             if (ManualUpdateCheck)
                 tabsConsole.DisplayNotificationInChat("Checking for updates...", ChatBufferTextStyle.StatusBlue);
             updateChecker = new UpdateChecker();
-            updateChecker.OnUpdateInfoReceived += new UpdateChecker.UpdateInfoCallback(OnUpdateInfoReceived);
+            updateChecker.OnUpdateInfoReceived += OnUpdateInfoReceived;
             updateChecker.StartCheck();
         }
 

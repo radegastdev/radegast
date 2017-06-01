@@ -30,6 +30,7 @@
 //
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
@@ -62,7 +63,7 @@ namespace Radegast
 
             instance.GlobalSettings.OnSettingChanged += new Settings.SettingChangedCallback(GlobalSettings_OnSettingChanged);
 
-            lblVersion.Text = Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString;
+            lblVersion.Text = Properties.Resources.RadegastTitle + " " + Assembly.GetExecutingAssembly().GetName().Version;
 
             Load += new EventHandler(LoginConsole_Load);
 

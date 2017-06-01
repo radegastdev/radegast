@@ -742,15 +742,15 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
-            UUID allowedOwnner = UUID.Zero;
-            UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwnner);
-            Instance.State.LSLHelper.AllowedOwner = allowedOwnner;
+            UUID allowedOwner = UUID.Zero;
+            UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner);
+            Instance.State.LSLHelper.AllowedOwner = allowedOwner;
             Instance.State.LSLHelper.SaveSettings();
         }
 
         private void llLSLHelperInstructios_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Instance.MainForm.ProcessLink("http://radegast.org/wiki/LSL_Helper", false);
+            Instance.MainForm.ProcessLink("http://radegast.life/documentation/lsl-helper", false);
         }
 
         private void tbLSLAllowedOwner_Leave(object sender, EventArgs e)

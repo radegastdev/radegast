@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using OpenMetaverse;
 
 namespace Radegast
@@ -71,7 +72,7 @@ namespace Radegast
                 StringBuilder report = new StringBuilder();
                 AddStacktrace(ref report, ex);
                 AddPostField("report", report.ToString());
-                AddPostField("version", RadegastBuild.VersionString);
+                AddPostField("version", Assembly.GetExecutingAssembly().GetName().Version.ToString());
                 AddPostField("build", RadegastBuild.BuildName);
 
                 // Send the request

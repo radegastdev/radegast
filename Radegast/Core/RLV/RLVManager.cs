@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenMetaverse;
@@ -306,7 +307,7 @@ namespace Radegast
                         int chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            Respond(chan, "RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString + ")");
+                            Respond(chan, "RestrainedLife viewer v1.23 (" + Properties.Resources.RadegastTitle + " " + Assembly.GetExecutingAssembly().GetName().Version + ")");
                         }
                         break;
 
@@ -314,7 +315,7 @@ namespace Radegast
                         chan = 0;
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            Respond(chan, "RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString + ")");
+                            Respond(chan, "RestrainedLove viewer v1.23 (" + Properties.Resources.RadegastTitle + " " + Assembly.GetExecutingAssembly().GetName().Version + ")");
                         }
                         break;
 

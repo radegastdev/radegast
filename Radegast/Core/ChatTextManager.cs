@@ -37,6 +37,7 @@ using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System.Web.Script.Serialization;
 using System.ComponentModel;
+using System.Reflection;
 
 namespace Radegast
 {
@@ -159,7 +160,10 @@ namespace Radegast
         public void PrintStartupMessage()
         {
             ChatBufferItem title = new ChatBufferItem(
-                DateTime.Now, "", UUID.Zero, Properties.Resources.RadegastTitle + " " + RadegastBuild.VersionString, ChatBufferTextStyle.StartupTitle);
+                DateTime.Now, "",
+                UUID.Zero,
+                Properties.Resources.RadegastTitle + " " + Assembly.GetExecutingAssembly().GetName().Version, 
+                ChatBufferTextStyle.StartupTitle);
 
             ChatBufferItem ready = new ChatBufferItem(
                 DateTime.Now, "", UUID.Zero, "Ready.", ChatBufferTextStyle.StatusBlue);

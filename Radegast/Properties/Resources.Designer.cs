@@ -1041,7 +1041,7 @@ namespace Radegast.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to http://update.radegast.org/svc/get_latest.
+        ///   Looks up a localized string similar to http://update.radegast.life/v1/.
         /// </summary>
         internal static string UpdateCheckUri {
             get {

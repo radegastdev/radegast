@@ -74,10 +74,12 @@ namespace Radegast
 
         public HelpText GetHeader()
         {
-            HelpText header = new HelpText(Properties.Resources.RadegastTitle);
-            header.AdditionalNewLineAfterOption = true;
-            header.Copyright = new CopyrightInfo("Radegast Development Team", 2009, 2014);
-            header.AddPreOptionsLine("http://radegast.org/");
+            HelpText header = new HelpText(Properties.Resources.RadegastTitle)
+            {
+                AdditionalNewLineAfterOption = true,
+                Copyright = new CopyrightInfo("Radegast Development Team", 2009, 2017)
+            };
+            header.AddPreOptionsLine("https://radegast.life/");
             return header;
         }
 
