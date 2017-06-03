@@ -110,16 +110,8 @@ namespace Radegast
 
         void Inventory_ItemReceived(object sender, ItemReceivedEventArgs e)
         {
-            bool partOfCOF = false;
             var links = ContentLinks();
-            foreach (var cofItem in links)
-            {
-                if (cofItem.AssetUUID == e.Item.UUID)
-                {
-                    partOfCOF = true;
-                    break;
-                }
-            }
+            bool partOfCOF = links.Any(cofItem => cofItem.AssetUUID == e.Item.UUID);
 
             if (partOfCOF)
             {
@@ -129,26 +121,24 @@ namespace Radegast
                 }
             }
 
-            if (Content.Count == links.Count)
+            if (Content.Count != links.Count) return;
+            COFReady = true;
+            if (AppearanceSent)
             {
-                COFReady = true;
-                if (AppearanceSent)
+                InitialUpdate();
+            }
+            lock (Content)
+            {
+                foreach (InventoryItem link in Content.Values)
                 {
-                    InitialUpdate();
-                }
-                lock (Content)
-                {
-                    foreach (InventoryItem link in Content.Values)
+                    if (link.InventoryType == InventoryType.Wearable)
                     {
-                        if (link.InventoryType == InventoryType.Wearable)
-                        {
-                            InventoryWearable w = (InventoryWearable)link;
-                            InventoryItem lk = links.Find(l => l.AssetUUID == w.UUID);
-                            // Logger.DebugLog(string.Format("\nName: {0}\nDescription: {1}\nType: {2} - {3}", w.Name, lk == null ? "" : lk.Description, w.Flags.ToString(), w.WearableType.ToString())); ;
-                        }
+                        InventoryWearable w = (InventoryWearable)link;
+                        InventoryItem lk = links.Find(l => l.AssetUUID == w.UUID);
+                        // Logger.DebugLog(string.Format("\nName: {0}\nDescription: {1}\nType: {2} - {3}", w.Name, lk == null ? "" : lk.Description, w.Flags.ToString(), w.WearableType.ToString())); ;
                     }
-
                 }
+
             }
         }
 
@@ -220,10 +210,11 @@ namespace Radegast
 
         void InitCOF()
         {
-            List<InventoryBase> rootContent = Client.Inventory.Store.GetContents(Client.Inventory.Store.RootFolder.UUID);
+            var rootContent = Client.Inventory.Store.GetContents(Client.Inventory.Store.RootFolder.UUID);
             foreach (InventoryBase baseItem in rootContent)
             {
-                if (baseItem is InventoryFolder && ((InventoryFolder)baseItem).PreferredType == FolderType.CurrentOutfit)
+                if (baseItem is InventoryFolder 
+                    && ((InventoryFolder)baseItem).PreferredType == FolderType.CurrentOutfit)
                 {
                     COF = (InventoryFolder)baseItem;
                     break;
@@ -260,7 +251,7 @@ namespace Radegast
             InitialUpdateDone = true;
             lock (Content)
             {
-                List<Primitive> myAtt = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == Client.Self.LocalID);
+                var myAtt = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == Client.Self.LocalID);
 
                 foreach (InventoryItem item in Content.Values)
                 {
@@ -339,14 +330,7 @@ namespace Radegast
         /// <returns>True if the item is worn</returns>
         public static bool IsWorn(Dictionary<WearableType, AppearanceManager.WearableData> currentlyWorn, InventoryItem item)
         {
-            foreach (var n in currentlyWorn.Values)
-            {
-                if (n.ItemID == item.UUID)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return currentlyWorn.Values.Any(n => n.ItemID == item.UUID);
         }
 
         /// <summary>
@@ -381,7 +365,7 @@ namespace Radegast
             {
                 InventoryWearable w = (InventoryWearable)item;
                 int layer = 0;
-                string desc = string.Format("@{0}{1:00}", (int)w.WearableType, layer);
+                string desc = $"@{(int) w.WearableType}{layer:00}";
                 AddLink(item, desc);
             }
             else
@@ -512,20 +496,8 @@ namespace Radegast
                 if (IsBodyPart(item))
                 {
                     WearableType linkType = ((InventoryWearable)RealInventoryItem(item)).WearableType;
-                    bool hasBodyPart = false;
-
-                    foreach (var newItemTmp in newOutfit)
-                    {
-                        var newItem = RealInventoryItem(newItemTmp);
-                        if (IsBodyPart(newItem))
-                        {
-                            if (((InventoryWearable)newItem).WearableType == linkType)
-                            {
-                                hasBodyPart = true;
-                                break;
-                            }
-                        }
-                    }
+                    bool hasBodyPart = newOutfit.Select(RealInventoryItem).Where(IsBodyPart).Any(newItem =>
+                        ((InventoryWearable) newItem).WearableType == linkType);
 
                     if (hasBodyPart)
                     {
@@ -541,7 +513,7 @@ namespace Radegast
             Client.Inventory.Remove(toRemove, null);
 
             // Add links to new items
-            List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
+            List<InventoryItem> newItems = outfit.FindAll(CanBeWorn);
             foreach (var item in newItems)
             {
                 AddLink(item);
@@ -590,10 +562,10 @@ namespace Radegast
                         {
                             toRemove.Add(link.UUID);
                         }
-                        else if (currentItem is InventoryWearable)
+                        else
                         {
-                            var w = (InventoryWearable)currentItem;
-                            if (w.WearableType == ((InventoryWearable)realItem).WearableType)
+                            var w = currentItem as InventoryWearable;
+                            if (w?.WearableType == ((InventoryWearable) realItem).WearableType)
                             {
                                 toRemove.Add(link.UUID);
                             }
@@ -606,7 +578,7 @@ namespace Radegast
             Client.Inventory.Remove(toRemove, null);
 
             // Add links to new items
-            List<InventoryItem> newItems = outfit.FindAll(item => CanBeWorn(item));
+            List<InventoryItem> newItems = outfit.FindAll(CanBeWorn);
             foreach (var item in newItems)
             {
                 AddLink(item);
@@ -636,22 +608,10 @@ namespace Radegast
         public void RemoveFromOutfit(List<InventoryItem> items)
         {
             // Resolve inventory links
-            List<InventoryItem> outfit = new List<InventoryItem>();
-            foreach (var item in items)
-            {
-                var realItem = RealInventoryItem(item);
-                if (Instance.RLV.AllowDetach(realItem))
-                {
-                    outfit.Add(realItem);
-                }
-            }
+            List<InventoryItem> outfit = items.Select(RealInventoryItem).Where(realItem => Instance.RLV.AllowDetach(realItem)).ToList();
 
             // Remove links to all items that were removed
-            List<UUID> toRemove = new List<UUID>();
-            foreach (InventoryItem item in outfit.FindAll(item => CanBeWorn(item) && !IsBodyPart(item)))
-            {
-                toRemove.Add(item.UUID);
-            }
+            List<UUID> toRemove = outfit.FindAll(item => CanBeWorn(item) && !IsBodyPart(item)).Select(item => item.UUID).ToList();
             RemoveLink(toRemove);
 
             Client.Appearance.RemoveFromOutfit(outfit);

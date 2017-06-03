@@ -90,13 +90,13 @@ namespace Radegast.Commands
 
                 if (info.Parcels != null)
                 {
-                    for (int i = 0; i < info.Parcels.Length; i++)
+                    foreach (ParcelResourcesDetail parcelresource in info.Parcels)
                     {
                         sb.AppendLine();
-                        sb.AppendLine("Detailed usage for parcel " + info.Parcels[i].Name);
-                        for (int j = 0; j < info.Parcels[i].Objects.Length; j++)
+                        sb.AppendLine("Detailed usage for parcel " + parcelresource.Name);
+                        foreach (ObjectResourcesDetail ord in parcelresource.Objects)
                         {
-                            sb.AppendFormat("{0} KB - {1}", info.Parcels[i].Objects[j].Resources["memory"] / 1024, info.Parcels[i].Objects[j].Name);
+                            sb.AppendFormat("{0} KB - {1}", ord.Resources["memory"] / 1024, ord.Name);
                             sb.AppendLine();
                         }
                     }
@@ -126,10 +126,9 @@ namespace Radegast.Commands
                 foreach (KeyValuePair<AttachmentPoint, ObjectResourcesDetail[]> kvp in info.Attachments)
                 {
                     sb.AppendLine();
-                    sb.AppendLine(string.Format("Attached to {0} ", Utils.EnumToText(kvp.Key)) + ":");
-                    for (int i = 0; i < kvp.Value.Length; i++)
+                    sb.AppendLine($"Attached to {Utils.EnumToText(kvp.Key)} " + ":");
+                    foreach (var obj in kvp.Value)
                     {
-                        ObjectResourcesDetail obj = kvp.Value[i];
                         sb.AppendLine(obj.Name + " using " + obj.Resources["memory"] / 1024 + " KB");
                     }
                 }
