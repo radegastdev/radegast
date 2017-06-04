@@ -64,8 +64,8 @@ namespace Radegast
         public Parcel Parcel { get; set; }
 
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private GridClient client => instance.Client;
+        private RadegastNetcom netcom => instance.Netcom;
 
         private bool away = false;
         private bool flying = false;
@@ -339,7 +339,7 @@ namespace Radegast
             // First try the object tracker
             foreach (var s in Simulators)
             {
-                avi = s.ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
+                avi = s.ObjectsAvatars.Find((Avatar av) => av.ID == person);
                 if (avi != null)
                 {
                     sim = s;
@@ -350,7 +350,7 @@ namespace Radegast
             {
                 foreach (var s in Simulators)
                 {
-                    avi = s.ObjectsPrimitives.Find((Primitive av) => { return av.ID == person; });
+                    avi = s.ObjectsPrimitives.Find((Primitive av) => av.ID == person);
                     if (avi != null)
                     {
                         sim = s;
@@ -424,10 +424,7 @@ namespace Radegast
                     }
                 }
             }
-            if (position.Z > 0.1f)
-                return true;
-            else
-                return false;
+            return position.Z > 0.1f;
         }
 
         /// <summary>
@@ -600,8 +597,7 @@ namespace Radegast
                     Vector3 pos = client.Self.SimPosition + DefaultCameraOffset * client.Self.Movement.BodyRotation;
                     //Logger.Log("Setting camera position to " + pos.ToString(), Helpers.LogLevel.Debug);
                     client.Self.Movement.Camera.LookAt(
-                        pos,
-                        client.Self.SimPosition
+                        pos, client.Self.SimPosition
                     );
                 }
             }
@@ -610,7 +606,7 @@ namespace Radegast
         public Quaternion AvatarRotation(Simulator sim, UUID avID)
         {
             Quaternion rot = Quaternion.Identity;
-            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => { return a.ID == avID; });
+            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => a.ID == avID);
 
             if (av == null)
                 return rot;
@@ -635,7 +631,7 @@ namespace Radegast
         public Vector3 AvatarPosition(Simulator sim, UUID avID)
         {
             Vector3 pos = Vector3.Zero;
-            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => { return a.ID == avID; });
+            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => a.ID == avID);
             if (av != null)
             {
                 return AvatarPosition(sim, av);
@@ -734,10 +730,7 @@ namespace Radegast
                     lastLookAtEffect = Environment.TickCount;
                     client.Self.LookAtEffect(client.Self.AgentID, e.SourceID, Vector3d.Zero, LookAtType.Respond, lookAtEffect);
                     // keep looking at the speaker for 10 seconds
-                    if (lookAtTimer != null)
-                    {
-                        lookAtTimer.Change(10000, Timeout.Infinite);
-                    }
+                    lookAtTimer?.Change(10000, Timeout.Infinite);
                 }
             }
         }
