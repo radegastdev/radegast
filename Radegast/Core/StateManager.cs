@@ -67,22 +67,14 @@ namespace Radegast
         private GridClient client { get { return instance.Client; } }
         private RadegastNetcom netcom { get { return instance.Netcom; } }
 
-        private bool typing = false;
         private bool away = false;
-        private bool busy = false;
         private bool flying = false;
         private bool alwaysrun = false;
         private bool sitting = false;
 
-        private bool following = false;
-        private string followName = string.Empty;
-        private float followDistance = 3.0f;
         private UUID followID;
         private bool displayEndWalk = false;
 
-        private UUID awayAnimationID = new UUID("fd037134-85d4-f241-72c6-4f42164fedee");
-        private UUID busyAnimationID = new UUID("efcf670c2d188128973a034ebc806b67");
-        private UUID typingAnimationID = new UUID("c541c47f-e0c0-058b-ad1a-d6ae3a4584d9");
         internal static Random rnd = new Random();
         private System.Threading.Timer lookAtTimer;
 
@@ -105,33 +97,33 @@ namespace Radegast
         public event EventHandler<SitEventArgs> SitStateChanged;
 
         static List<KnownHeading> m_Headings;
-        public static List<KnownHeading> KnownHeadings
+        public static List<KnownHeading> KnownHeadings => m_Headings ?? (m_Headings = new List<KnownHeading>(16)
         {
-            get
-            {
-                if (m_Headings == null)
-                {
-                    m_Headings = new List<KnownHeading>(16);
-                    m_Headings.Add(new KnownHeading("E", "East", new Quaternion(0.00000f, 0.00000f, 0.00000f, 1.00000f)));
-                    m_Headings.Add(new KnownHeading("ENE", "East by Northeast", new Quaternion(0.00000f, 0.00000f, 0.19509f, 0.98079f)));
-                    m_Headings.Add(new KnownHeading("NE", "Northeast", new Quaternion(0.00000f, 0.00000f, 0.38268f, 0.92388f)));
-                    m_Headings.Add(new KnownHeading("NNE", "North by Northeast", new Quaternion(0.00000f, 0.00000f, 0.55557f, 0.83147f)));
-                    m_Headings.Add(new KnownHeading("N", "North", new Quaternion(0.00000f, 0.00000f, 0.70711f, 0.70711f)));
-                    m_Headings.Add(new KnownHeading("NNW", "North by Northwest", new Quaternion(0.00000f, 0.00000f, 0.83147f, 0.55557f)));
-                    m_Headings.Add(new KnownHeading("NW", "Nortwest", new Quaternion(0.00000f, 0.00000f, 0.92388f, 0.38268f)));
-                    m_Headings.Add(new KnownHeading("WNW", "West by Northwest", new Quaternion(0.00000f, 0.00000f, 0.98079f, 0.19509f)));
-                    m_Headings.Add(new KnownHeading("W", "West", new Quaternion(0.00000f, 0.00000f, 1.00000f, -0.00000f)));
-                    m_Headings.Add(new KnownHeading("WSW", "West by Southwest", new Quaternion(0.00000f, 0.00000f, 0.98078f, -0.19509f)));
-                    m_Headings.Add(new KnownHeading("SW", "Southwest", new Quaternion(0.00000f, 0.00000f, 0.92388f, -0.38268f)));
-                    m_Headings.Add(new KnownHeading("SSW", "South by Southwest", new Quaternion(0.00000f, 0.00000f, 0.83147f, -0.55557f)));
-                    m_Headings.Add(new KnownHeading("S", "South", new Quaternion(0.00000f, 0.00000f, 0.70711f, -0.70711f)));
-                    m_Headings.Add(new KnownHeading("SSE", "South by Southeast", new Quaternion(0.00000f, 0.00000f, 0.55557f, -0.83147f)));
-                    m_Headings.Add(new KnownHeading("SE", "Southeast", new Quaternion(0.00000f, 0.00000f, 0.38268f, -0.92388f)));
-                    m_Headings.Add(new KnownHeading("ESE", "East by Southeast", new Quaternion(0.00000f, 0.00000f, 0.19509f, -0.98078f)));
-                }
-                return m_Headings;
-            }
-        }
+            new KnownHeading("E", "East", new Quaternion(0.00000f, 0.00000f, 0.00000f, 1.00000f)),
+            new KnownHeading("ENE", "East by Northeast",
+                new Quaternion(0.00000f, 0.00000f, 0.19509f, 0.98079f)),
+            new KnownHeading("NE", "Northeast", new Quaternion(0.00000f, 0.00000f, 0.38268f, 0.92388f)),
+            new KnownHeading("NNE", "North by Northeast",
+                new Quaternion(0.00000f, 0.00000f, 0.55557f, 0.83147f)),
+            new KnownHeading("N", "North", new Quaternion(0.00000f, 0.00000f, 0.70711f, 0.70711f)),
+            new KnownHeading("NNW", "North by Northwest",
+                new Quaternion(0.00000f, 0.00000f, 0.83147f, 0.55557f)),
+            new KnownHeading("NW", "Nortwest", new Quaternion(0.00000f, 0.00000f, 0.92388f, 0.38268f)),
+            new KnownHeading("WNW", "West by Northwest",
+                new Quaternion(0.00000f, 0.00000f, 0.98079f, 0.19509f)),
+            new KnownHeading("W", "West", new Quaternion(0.00000f, 0.00000f, 1.00000f, -0.00000f)),
+            new KnownHeading("WSW", "West by Southwest",
+                new Quaternion(0.00000f, 0.00000f, 0.98078f, -0.19509f)),
+            new KnownHeading("SW", "Southwest", new Quaternion(0.00000f, 0.00000f, 0.92388f, -0.38268f)),
+            new KnownHeading("SSW", "South by Southwest",
+                new Quaternion(0.00000f, 0.00000f, 0.83147f, -0.55557f)),
+            new KnownHeading("S", "South", new Quaternion(0.00000f, 0.00000f, 0.70711f, -0.70711f)),
+            new KnownHeading("SSE", "South by Southeast",
+                new Quaternion(0.00000f, 0.00000f, 0.55557f, -0.83147f)),
+            new KnownHeading("SE", "Southeast", new Quaternion(0.00000f, 0.00000f, 0.38268f, -0.92388f)),
+            new KnownHeading("ESE", "East by Southeast",
+                new Quaternion(0.00000f, 0.00000f, 0.19509f, -0.98078f))
+        });
 
         public static Vector3 RotToEuler(Quaternion r)
         {
@@ -194,9 +186,9 @@ namespace Radegast
             this.instance = instance;
             this.instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             KnownAnimations = Animations.ToDictionary();
-            autosit = new AutoSit(this.instance);
-            pseudohome = new PseudoHome(this.instance);
-            lslHelper = new LSLHelper(this.instance);
+            AutoSit = new AutoSit(this.instance);
+            PseudoHome = new PseudoHome(this.instance);
+            LSLHelper = new LSLHelper(this.instance);
 
             beamTimer = new System.Timers.Timer();
             beamTimer.Enabled = false;
@@ -253,16 +245,16 @@ namespace Radegast
                 walkTimer = null;
             }
 
-            if (autosit != null)
+            if (AutoSit != null)
             {
-                autosit.Dispose();
-                autosit = null;
+                AutoSit.Dispose();
+                AutoSit = null;
             }
 
-            if (lslHelper == null)
+            if (LSLHelper != null)
             {
-                lslHelper.Dispose();
-                lslHelper = null;
+                LSLHelper.Dispose();
+                LSLHelper = null;
             }
         }
 
@@ -283,10 +275,7 @@ namespace Radegast
                 client.Objects.RequestObject(client.Network.CurrentSim, client.Self.SittingOn);
             }
 
-            if (SitStateChanged != null)
-            {
-                SitStateChanged(this, new SitEventArgs(this.sitting));
-            }
+            SitStateChanged?.Invoke(this, new SitEventArgs(this.sitting));
         }
 
         /// <summary>
@@ -334,6 +323,7 @@ namespace Radegast
         {
             return TryFindPrim(person, out sim, out position, true);
         }
+
         public bool TryFindPrim(UUID person, out Simulator sim, out Vector3 position, bool onlyAvatars)
         {
             Simulator[] Simulators = null;
@@ -396,10 +386,7 @@ namespace Radegast
                 }
             }
 
-            if (position.Z > 0.1f)
-                return true;
-            else
-                return false;
+            return position.Z > 0.1f;
         }
 
         public bool TryLocatePrim(Primitive avi, out Simulator sim, out Vector3 position)
@@ -495,8 +482,8 @@ namespace Radegast
             WorkPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(15 * 1000);
-                autosit.TrySit();
-                pseudohome.ETGoHome();
+                AutoSit.TrySit();
+                PseudoHome.ETGoHome();
             });
             client.Self.Movement.SetFOVVerticalAngle(FOVVerticalAngle);
         }
@@ -526,7 +513,7 @@ namespace Radegast
 
         void netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            typing = away = busy = walking = false;
+            IsTyping = away = IsBusy = IsWalking = false;
 
             if (lookAtTimer != null)
             {
@@ -568,7 +555,7 @@ namespace Radegast
                 SetDefaultCamera();
             }
 
-            if (!following) return;
+            if (!IsFollowing) return;
 
             Avatar av;
             client.Network.CurrentSim.ObjectsAvatars.TryGetValue(e.Update.LocalID, out av);
@@ -584,9 +571,9 @@ namespace Radegast
 
         void FollowUpdate(Vector3 pos)
         {
-            if (Vector3.Distance(pos, client.Self.SimPosition) > followDistance)
+            if (Vector3.Distance(pos, client.Self.SimPosition) > FollowDistance)
             {
-                Vector3 target = pos + Vector3.Normalize(client.Self.SimPosition - pos) * (followDistance - 1f);
+                Vector3 target = pos + Vector3.Normalize(client.Self.SimPosition - pos) * (FollowDistance - 1f);
                 client.Self.AutoPilotCancel();
                 Vector3d glb = GlobalPosition(client.Network.CurrentSim, target);
                 client.Self.AutoPilot(glb.X, glb.Y, glb.Z);
@@ -687,13 +674,13 @@ namespace Radegast
 
         public void Follow(string name, UUID id)
         {
-            followName = name;
+            FollowName = name;
             followID = id;
-            following = followID != UUID.Zero;
+            IsFollowing = followID != UUID.Zero;
 
-            if (following)
+            if (IsFollowing)
             {
-                walking = false;
+                IsWalking = false;
 
                 Vector3 target = AvatarPosition(client.Network.CurrentSim, id);
                 if (Vector3.Zero != target)
@@ -707,8 +694,8 @@ namespace Radegast
 
         public void StopFollowing()
         {
-            following = false;
-            followName = string.Empty;
+            IsFollowing = false;
+            FollowName = string.Empty;
             followID = UUID.Zero;
         }
 
@@ -757,7 +744,7 @@ namespace Radegast
         #endregion Look at effect
 
         #region Walking (move to)
-        private bool walking = false;
+
         private System.Threading.Timer walkTimer;
         private int walkChekInterval = 500;
         private Vector3d walkToTarget;
@@ -786,10 +773,10 @@ namespace Radegast
         {
             walkToTarget = globalPos;
 
-            if (following)
+            if (IsFollowing)
             {
-                following = false;
-                followName = string.Empty;
+                IsFollowing = false;
+                FollowName = string.Empty;
             }
 
             if (walkTimer == null)
@@ -799,7 +786,7 @@ namespace Radegast
 
             lastDistanceChanged = System.Environment.TickCount;
             client.Self.AutoPilotCancel();
-            walking = true;
+            IsWalking = true;
             client.Self.AutoPilot(walkToTarget.X, walkToTarget.Y, walkToTarget.Z);
             FireWalkStateCanged();
         }
@@ -827,7 +814,7 @@ namespace Radegast
                     EndWalking();
                     return;
                 }
-                if (walkTimer != null) walkTimer.Change(walkChekInterval, Timeout.Infinite);
+                walkTimer?.Change(walkChekInterval, Timeout.Infinite);
             }
         }
 
@@ -835,7 +822,7 @@ namespace Radegast
         {
             if (e.Message.Contains("Autopilot cancel"))
             {
-                if (walking)
+                if (IsWalking)
                 {
                     EndWalking();
                 }
@@ -846,16 +833,16 @@ namespace Radegast
         {
             if (OnWalkStateCanged != null)
             {
-                try { OnWalkStateCanged(walking); }
+                try { OnWalkStateCanged(IsWalking); }
                 catch (Exception) { }
             }
         }
 
         public void EndWalking()
         {
-            if (walking)
+            if (IsWalking)
             {
-                walking = false;
+                IsWalking = false;
                 Logger.Log("Finished walking.", Helpers.LogLevel.Debug, client);
                 walkTimer.Dispose();
                 walkTimer = null;
@@ -869,7 +856,7 @@ namespace Radegast
                     if (walkToTarget != Vector3d.Zero)
                     {
                         System.Threading.Thread.Sleep(1000);
-                        msg += string.Format(" {0:0} meters from destination", Vector3d.Distance(client.Self.GlobalPosition, walkToTarget));
+                        msg += $" {Vector3d.Distance(client.Self.GlobalPosition, walkToTarget):0} meters from destination";
                         walkToTarget = Vector3d.Zero;
                     }
 
@@ -884,25 +871,15 @@ namespace Radegast
         public void SetTyping(bool typing)
         {
             if (!client.Network.Connected) return;
-
-            Dictionary<UUID, bool> typingAnim = new Dictionary<UUID, bool>();
-            typingAnim.Add(typingAnimationID, typing);
-
+            var typingAnim = new Dictionary<UUID, bool> {{TypingAnimationID, typing}};
             client.Self.Animate(typingAnim, false);
-
-            if (typing)
-                client.Self.Chat(string.Empty, 0, ChatType.StartTyping);
-            else
-                client.Self.Chat(string.Empty, 0, ChatType.StopTyping);
-
-            this.typing = typing;
+            client.Self.Chat(string.Empty, 0, typing ? ChatType.StartTyping : ChatType.StopTyping);
+            IsTyping = typing;
         }
 
         public void SetAway(bool away)
         {
-            Dictionary<UUID, bool> awayAnim = new Dictionary<UUID, bool>();
-            awayAnim.Add(awayAnimationID, away);
-
+            var awayAnim = new Dictionary<UUID, bool> {{AwayAnimationID, away}};
             client.Self.Animate(awayAnim, true);
             if (UseMoveControl) client.Self.Movement.Away = away;
             this.away = away;
@@ -910,26 +887,24 @@ namespace Radegast
 
         public void SetBusy(bool busy)
         {
-            Dictionary<UUID, bool> busyAnim = new Dictionary<UUID, bool>();
-            busyAnim.Add(busyAnimationID, busy);
-
+            var busyAnim = new Dictionary<UUID, bool> {{BusyAnimationID, busy}};
             client.Self.Animate(busyAnim, true);
-            this.busy = busy;
+            this.IsBusy = busy;
         }
 
-        public void SetFlying(bool flying)
+        public void SetFlying(bool fly)
         {
-            this.flying = client.Self.Movement.Fly = flying;
+            flying = client.Self.Movement.Fly = fly;
         }
 
-        public void SetAlwaysRun(bool alwaysrun)
+        public void SetAlwaysRun(bool always_run)
         {
-            this.alwaysrun = client.Self.Movement.AlwaysRun = alwaysrun;
+            alwaysrun = client.Self.Movement.AlwaysRun = always_run;
         }
 
-        public void SetSitting(bool sitting, UUID target)
+        public void SetSitting(bool sit, UUID target)
         {
-            this.sitting = sitting;
+            sitting = sit;
 
             if (sitting)
             {
@@ -945,17 +920,14 @@ namespace Radegast
                 else
                 {
                     instance.TabConsole.DisplayNotificationInChat("Unsit prevented by RLV");
-                    this.sitting = true;
+                    sitting = true;
                     return;
                 }
             }
 
-            if (SitStateChanged != null)
-            {
-                SitStateChanged(this, new SitEventArgs(this.sitting));
-            }
+            SitStateChanged?.Invoke(this, new SitEventArgs(sitting));
 
-            if (!this.sitting)
+            if (!sitting)
             {
                 StopAllAnimations();
             }
@@ -963,7 +935,7 @@ namespace Radegast
 
         public void StopAllAnimations()
         {
-            Dictionary<UUID, bool> stop = new Dictionary<UUID, bool>();
+            var stop = new Dictionary<UUID, bool>();
 
             client.Self.SignaledAnimations.ForEach((UUID anim) =>
             {
@@ -979,7 +951,7 @@ namespace Radegast
             }
         }
 
-        static public Vector3d GlobalPosition(Simulator sim, Vector3 pos)
+        public static Vector3d GlobalPosition(Simulator sim, Vector3 pos)
         {
             uint globalX, globalY;
             Utils.LongToUInts(sim.Handle, out globalX, out globalY);
@@ -1061,10 +1033,9 @@ namespace Radegast
                 for (int j = 1; j < numBeans; j++)
                 {
                     UUID newBeam = UUID.Random();
-                    Vector3d scatter;
                     Vector3d cross = new Vector3d(0, 0, 1);
                     cross.Normalize();
-                    scatter = GlobalPosition(targetPrim) + cross * (j * 0.2d) * (j % 2 == 0 ? 1 : -1);
+                    var scatter = GlobalPosition(targetPrim) + cross * (j * 0.2d) * (j % 2 == 0 ? 1 : -1);
 
                     client.Self.BeamEffect(client.Self.AgentID, UUID.Zero, scatter, beamColors[beamRandom.Next(0, 3)], 1.0f, beamID[j + i - 1]);
                 }
@@ -1073,7 +1044,7 @@ namespace Radegast
 
         }
 
-        public void SetPointing(Primitive prim, int numBeans)
+        public void SetPointing(Primitive prim, int num_beans)
         {
             UnSetPointing();
             client.Self.Movement.TurnToward(prim.Position);
@@ -1082,7 +1053,7 @@ namespace Radegast
             beamID = new List<UUID>();
             beamTarget = new List<Vector3d>();
             targetPrim = prim;
-            this.numBeans = numBeans;
+            numBeans = num_beans;
 
             client.Self.PointAtEffect(client.Self.AgentID, prim.ID, Vector3d.Zero, PointAtType.Select, pointID);
 
@@ -1104,48 +1075,13 @@ namespace Radegast
             beamTimer.Enabled = true;
         }
 
-        public UUID TypingAnimationID
-        {
-            get { return typingAnimationID; }
-            set { typingAnimationID = value; }
-        }
-
-        public UUID AwayAnimationID
-        {
-            get { return awayAnimationID; }
-            set { awayAnimationID = value; }
-        }
-
-        public UUID BusyAnimationID
-        {
-            get { return busyAnimationID; }
-            set { busyAnimationID = value; }
-        }
-
-        public bool IsTyping
-        {
-            get { return typing; }
-        }
-
-        public bool IsAway
-        {
-            get
-            {
-                if (UseMoveControl) return client.Self.Movement.Away;
-                return away;
-            }
-        }
-
-        public bool IsBusy
-        {
-            get { return busy; }
-        }
-
-        public bool IsFlying
-        {
-            get { return client.Self.Movement.Fly; }
-        }
-
+        public UUID TypingAnimationID { get; set; } = new UUID("c541c47f-e0c0-058b-ad1a-d6ae3a4584d9");
+        public UUID AwayAnimationID { get; set; } = new UUID("fd037134-85d4-f241-72c6-4f42164fedee");
+        public UUID BusyAnimationID { get; set; } = new UUID("efcf670c2d188128973a034ebc806b67");
+        public bool IsTyping { get; private set; } = false;
+        public bool IsAway => UseMoveControl ? client.Self.Movement.Away : away;
+        public bool IsBusy { get; private set; } = false;
+        public bool IsFlying => client.Self.Movement.Fly;
         public bool IsSitting
         {
             get
@@ -1159,56 +1095,19 @@ namespace Radegast
             }
         }
 
-        public bool IsPointing
-        {
-            get { return pointID != UUID.Zero; }
-        }
-
-        public bool IsFollowing
-        {
-            get { return following; }
-        }
-
-        public string FollowName
-        {
-            get { return followName; }
-            set { followName = value; }
-        }
-
-        public float FollowDistance
-        {
-            get { return followDistance; }
-            set { followDistance = value; }
-        }
-
-        public bool IsWalking
-        {
-            get { return walking; }
-        }
-
-        private AutoSit autosit;
-        public AutoSit AutoSit
-        {
-            get { return autosit; }
-        }
-
-        private LSLHelper lslHelper;
-        public LSLHelper LSLHelper
-        {
-            get { return lslHelper; }
-        }
-
-        private PseudoHome pseudohome;
+        public bool IsPointing => pointID != UUID.Zero;
+        public bool IsFollowing { get; private set; } = false;
+        public string FollowName { get; set; } = string.Empty;
+        public float FollowDistance { get; set; } = 3.0f;
+        public bool IsWalking { get; private set; } = false;
+        public AutoSit AutoSit { get; private set; }
+        public LSLHelper LSLHelper { get; private set; }
+        public PseudoHome PseudoHome { get; }
 
         /// <summary>
         /// Experimental Option that sometimes the Client has more authority than state mananger
         /// </summary>
         public static bool UseMoveControl;
-
-        public PseudoHome PseudoHome
-        {
-            get { return pseudohome; }
-        }
     }
 
     public class SitEventArgs : EventArgs
