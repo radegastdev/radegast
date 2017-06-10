@@ -1,2 +1,7 @@
 language: csharp
 solution: Radegast.sln
+
+matrix:
+  include:
+    - mono: latest
+    - mono: 3.10.0
