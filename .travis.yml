@@ -6,6 +6,6 @@ matrix:
     - mono: latest
       script:
         - xbuild /p:Configuration=ReleaseLinux Radegast.sln
-    - mono: 3.10.0
+    - mono: 3.12.0
       script:
         - xbuild /p:Configuration=ReleaseLinux Radegast.sln
