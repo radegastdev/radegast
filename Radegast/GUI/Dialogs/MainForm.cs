@@ -944,6 +944,8 @@ namespace Radegast
                 existing.Visible = false;
             }
 
+            instance.MediaManager.PlayUISound(UISounds.PieAppear);
+
             notifications.Add(control);
             control.Visible = true;
             control.Anchor = AnchorStyles.Top | AnchorStyles.Left;
