@@ -300,15 +300,15 @@ namespace Radegast
                 // *** Generate dynamic compiler
                 Dictionary<string, string> loCompilerOptions = new Dictionary<string, string>
                 {
-                    {"CompilerVersion", "v3.5"}
+                    {"CompilerVersion", "v4.0"}
                 };
                 CSharpCodeProvider loCompiler = new CSharpCodeProvider(loCompilerOptions);
                 CompilerParameters loParameters = new CompilerParameters();
 
                 // *** Start by adding any referenced assemblies
-                loParameters.ReferencedAssemblies.Add("OpenMetaverse.StructuredData.dll");
-                loParameters.ReferencedAssemblies.Add("OpenMetaverseTypes.dll");
-                loParameters.ReferencedAssemblies.Add("OpenMetaverse.dll");
+                loParameters.ReferencedAssemblies.Add("LibreMetaverse.StructuredData.dll");
+                loParameters.ReferencedAssemblies.Add("LibreMetaverse.Types.dll");
+                loParameters.ReferencedAssemblies.Add("LibreMetaverse.dll");
                 loParameters.ReferencedAssemblies.Add("Radegast.exe");
                 loParameters.ReferencedAssemblies.Add("System.dll");
                 loParameters.ReferencedAssemblies.Add("System.Core.dll");
