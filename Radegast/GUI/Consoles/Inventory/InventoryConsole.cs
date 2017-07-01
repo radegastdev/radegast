@@ -143,15 +143,19 @@ namespace Radegast
             {
                 invTree.BackColor = Color.FromKnownColor(KnownColor.Window);
                 invTree.ForeColor = invTree.LineColor = Color.FromKnownColor(KnownColor.WindowText);
-                InventoryFolder f = new InventoryFolder(UUID.Random());
-                f.Name = "";
-                f.ParentUUID = UUID.Zero;
-                f.PreferredType = FolderType.None;
-                TreeNode dirNode = new TreeNode();
-                dirNode.Name = f.UUID.ToString();
-                dirNode.Text = f.Name;
-                dirNode.Tag = f;
-                dirNode.ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower());
+                InventoryFolder f = new InventoryFolder(UUID.Random())
+                {
+                    Name = "",
+                    ParentUUID = UUID.Zero,
+                    PreferredType = FolderType.None
+                };
+                TreeNode dirNode = new TreeNode
+                {
+                    Name = f.UUID.ToString(),
+                    Text = f.Name,
+                    Tag = f,
+                    ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower())
+                };
                 dirNode.SelectedImageIndex = dirNode.ImageIndex;
                 invTree.Nodes.Add(dirNode);
                 invTree.Sort();
@@ -508,11 +512,13 @@ namespace Radegast
 
         TreeNode AddDir(TreeNode parentNode, InventoryFolder f)
         {
-            TreeNode dirNode = new TreeNode();
-            dirNode.Name = f.UUID.ToString();
-            dirNode.Text = f.Name;
-            dirNode.Tag = f;
-            dirNode.ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower());
+            TreeNode dirNode = new TreeNode
+            {
+                Name = f.UUID.ToString(),
+                Text = f.Name,
+                Tag = f,
+                ImageIndex = GetDirImageIndex(f.PreferredType.ToString().ToLower())
+            };
             dirNode.SelectedImageIndex = dirNode.ImageIndex;
             if (parentNode == null)
             {
@@ -532,10 +538,12 @@ namespace Radegast
 
         TreeNode AddItem(TreeNode parent, InventoryItem item)
         {
-            TreeNode itemNode = new TreeNode();
-            itemNode.Name = item.UUID.ToString();
-            itemNode.Text = ItemLabel(item, false);
-            itemNode.Tag = item;
+            TreeNode itemNode = new TreeNode
+            {
+                Name = item.UUID.ToString(),
+                Text = ItemLabel(item, false),
+                Tag = item
+            };
             int img = -1;
             InventoryItem linkedItem = null;
 
@@ -706,16 +714,7 @@ namespace Radegast
 
         private void TraverseNodes(InventoryNode start)
         {
-            bool has_items = false;
-
-            foreach (InventoryNode node in start.Nodes.Values)
-            {
-                if (node.Data is InventoryItem)
-                {
-                    has_items = true;
-                    break;
-                }
-            }
+            bool has_items = start.Nodes.Values.Any(node => node.Data is InventoryItem);
 
             if (!has_items || start.NeedsUpdate)
             {
@@ -742,9 +741,8 @@ namespace Radegast
 
                 if (!success)
                 {
-                    Logger.Log(string.Format("Failed fetching folder {0}, got {1} items out of {2}",
-                        f.Name, Inventory.Items[f.UUID].Nodes.Count, 
-                        ((InventoryFolder)Inventory.Items[f.UUID].Data).DescendentCount),
+                    Logger.Log(
+                        $"Failed fetching folder {f.Name}, got {Inventory.Items[f.UUID].Nodes.Count} items out of {((InventoryFolder) Inventory.Items[f.UUID].Data).DescendentCount}",
                         Helpers.LogLevel.Error, client);
                 }
             }
@@ -971,14 +969,7 @@ namespace Radegast
             txtCreator.Tag = item.CreatorID;
             txtCreated.Text = item.CreationDate.ToString();
 
-            if (item.AssetUUID != UUID.Zero)
-            {
-                txtAssetID.Text = item.AssetUUID.ToString();
-            }
-            else
-            {
-                txtAssetID.Text = String.Empty;
-            }
+            txtAssetID.Text = item.AssetUUID != UUID.Zero ? item.AssetUUID.ToString() : string.Empty;
 
             txtInvID.Text = item.UUID.ToString();
 
@@ -1045,7 +1036,7 @@ namespace Radegast
         void cbNextOwnerUpdate_CheckedChanged(object sender, EventArgs e)
         {
             InventoryItem item = null;
-            if (pnlItemProperties.Tag != null && pnlItemProperties.Tag is InventoryItem)
+            if (pnlItemProperties.Tag is InventoryItem)
             {
                 item = (InventoryItem)pnlItemProperties.Tag;
             }
@@ -1064,7 +1055,7 @@ namespace Radegast
         private void txtItemName_Leave(object sender, EventArgs e)
         {
             InventoryItem item = null;
-            if (pnlItemProperties.Tag != null && pnlItemProperties.Tag is InventoryItem)
+            if (pnlItemProperties.Tag is InventoryItem)
             {
                 item = (InventoryItem)pnlItemProperties.Tag;
             }
@@ -1645,7 +1636,7 @@ namespace Radegast
         #region Context menu folder
         private void OnInvContextClick(object sender, EventArgs e)
         {
-            if (invTree.SelectedNode == null || !(invTree.SelectedNode.Tag is InventoryBase))
+            if (!(invTree.SelectedNode?.Tag is InventoryBase))
             {
                 return;
             }
@@ -1962,7 +1953,7 @@ namespace Radegast
 
             instance.TabConsole.DisplayNotificationInChat("New notecard created, enter notecard name and press enter", ChatBufferTextStyle.Invisible);
             var node = findNodeForItem(item.ParentUUID);
-            if (node != null) node.Expand();
+            node?.Expand();
             node = findNodeForItem(item.UUID);
             if (node != null)
             {
@@ -1987,7 +1978,7 @@ namespace Radegast
 
             instance.TabConsole.DisplayNotificationInChat("New script created, enter script name and press enter", ChatBufferTextStyle.Invisible);
             var node = findNodeForItem(item.ParentUUID);
-            if (node != null) node.Expand();
+            node?.Expand();
             node = findNodeForItem(item.UUID);
             if (node != null)
             {
@@ -2103,25 +2094,23 @@ namespace Radegast
         void TreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
             // Check if we need to go into edit mode for new items
-            if (newItemName != string.Empty)
+            if (newItemName == string.Empty) return;
+            foreach (TreeNode n in e.Node.Nodes)
             {
-                foreach (TreeNode n in e.Node.Nodes)
+                if (n.Name == newItemName)
                 {
-                    if (n.Name == newItemName)
-                    {
-                        n.BeginEdit();
-                        break;
-                    }
+                    n.BeginEdit();
+                    break;
                 }
-                newItemName = string.Empty;
             }
+            newItemName = string.Empty;
         }
 
         private bool _EditingNode = false;
 
         private void OnLabelEditTimer(object sender)
         {
-            if (_EditNode == null || !(_EditNode.Tag is InventoryBase))
+            if (!(_EditNode?.Tag is InventoryBase))
                 return;
 
             if (InvokeRequired)
