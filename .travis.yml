@@ -4,8 +4,8 @@ solution: Radegast.sln
 matrix:
   include:
     - mono: latest
-	  script:
+      script:
         - xbuild /p:Configuration=ReleaseLinux Radegast.sln
     - mono: 3.10.0
-	  script:
+      script:
         - xbuild /p:Configuration=ReleaseLinux Radegast.sln
