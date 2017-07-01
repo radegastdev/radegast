@@ -37,7 +37,7 @@ namespace Radegast
     public class RadegastMovement : IDisposable
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private Timer timer;
         private Vector3 forward = new Vector3(1, 0, 0);
         private bool turningLeft = false;
@@ -47,9 +47,7 @@ namespace Radegast
 
         public bool TurningLeft
         {
-            get {
-                return turningLeft;
-            }
+            get => turningLeft;
             set {
                 turningLeft = value;
                 if (value) {
@@ -65,10 +63,7 @@ namespace Radegast
 
         public bool TurningRight
         {
-            get
-            {
-                return turningRight;
-            }
+            get => turningRight;
             set
             {
                 turningRight = value;
@@ -85,10 +80,7 @@ namespace Radegast
 
         public bool MovingForward
         {
-            get
-            {
-                return movingForward;
-            }
+            get => movingForward;
             set
             {
                 movingForward = value;
@@ -104,10 +96,7 @@ namespace Radegast
 
         public bool MovingBackward
         {
-            get
-            {
-                return movingBackward;
-            }
+            get => movingBackward;
             set
             {
                 movingBackward = value;
