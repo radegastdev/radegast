@@ -5,7 +5,12 @@ matrix:
       solution: Radegast.sln
       script:
         - xbuild /p:Configuration=ReleaseLinux Radegast.sln
-    - mono: 4.0.5
+    - mono: 4.2.4
+      language: csharp
+      solution: Radegast.sln
+      script:
+        - xbuild /p:Configuration=ReleaseLinux Radegast.sln
+    - mono: 4.6.2
       language: csharp
       solution: Radegast.sln
       script:
@@ -13,7 +18,7 @@ matrix:
     - language: objective-c
       env:
         global:
-          - MONO_VERSION=4.0.5
+          - MONO_VERSION=4.2.4
       install:
         - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
         - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
@@ -22,9 +27,18 @@ matrix:
     - language: objective-c
       env:
         global:
-          - MONO_VERSION=5.0.1
+          - MONO_VERSION=4.6.2
       install:
-        - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
+        - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
+        - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
+      script:
+        - xbuild /p:Configuration=ReleaseMacOS Radegast.sln
+    - language: objective-c
+      env:
+        global:
+          - MONO_VERSION=5.2.0
+      install:
+        - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
         - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
       script:
         - xbuild /p:Configuration=ReleaseMacOS Radegast.sln
