@@ -69,6 +69,10 @@ namespace Radegast
                 "fmod.dll",
                 "fmodstudio.dll",
                 "IKVM.",
+                "LibreMetaverse.Rendering.Meshmerizer.dll",
+                "LibreMetaverse.StructuredData.dll",
+                "LibreMetaverse.dll",
+                "LibreMetaverseTypes.dll",
                 "log4net.dll",
                 "Meebey.SmartIrc4net.dll",
                 "Monobjc.Cocoa.dll",
@@ -81,7 +85,9 @@ namespace Radegast
                 "OpenMetaverse.dll",
                 "OpenMetaverseTypes.dll",
                 "OpenTK",
+                "OpenTK.GLControl.dll",
                 "PrimMesher.dll",
+                "protobuf-net.dll",
                 "RadSpeechLin.dll",
                 "RadSpeechMac.dll",
                 "RadSpeechWin.dll",
@@ -89,7 +95,8 @@ namespace Radegast
                 "Tao.OpenGl.dll",
                 "Tao.Platform.Windows.dll",
                 "Tools.dll",
-                "XMLRPC.dll",
+                "XMLRPC.dll"
+                "XmlRpcCs.dll",
                 "zlib.net.dll",
             });
 
