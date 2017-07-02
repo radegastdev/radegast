@@ -57,7 +57,21 @@ namespace Radegast
         {
             foreach (ListViewItem item in lvwPlugins.SelectedItems)
             {
-                instance.PluginManager.UnloadPlugin((PluginInfo)item.Tag);
+                var plugin = item.Tag as PluginInfo;
+                if (plugin == null)
+                {
+                    Logger.Log($"ERROR Attempting to unload a null plugin: {item}", Helpers.LogLevel.Warning);
+                    continue;
+                }
+
+                try
+                {
+                    instance.PluginManager.UnloadPlugin(plugin);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"ERROR unable to unload plugin: {plugin.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning, ex);
+                }
             }
             ListPlugins();
         }
@@ -75,8 +89,16 @@ namespace Radegast
                 {
                     for (int i = 0; i < dlg.FileNames.Length; i++)
                     {
-                        instance.PluginManager.LoadPluginFile(dlg.FileNames[i], true);
+                        try
+                        {
+                            instance.PluginManager.LoadPluginFile(dlg.FileNames[i], true);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log($"ERROR unable to load plugin: {dlg.FileNames[i]} because {ex}", Helpers.LogLevel.Warning);
+                        }
                     }
+
                     ListPlugins();
                 }
             }
@@ -86,9 +108,22 @@ namespace Radegast
         {
             foreach (ListViewItem item in lvwPlugins.SelectedItems)
             {
-                PluginInfo info = (PluginInfo)item.Tag;
-                instance.PluginManager.UnloadPlugin((PluginInfo)item.Tag);
-                instance.PluginManager.LoadPluginFile(info.FileName, true);
+                var plugin = item.Tag as PluginInfo;
+                if (plugin == null)
+                {
+                    Logger.Log($"ERROR Attempting to unload a null plugin: {item}", Helpers.LogLevel.Warning);
+                    continue;
+                }
+
+                try
+                {
+                    instance.PluginManager.UnloadPlugin(plugin);
+                    instance.PluginManager.LoadPluginFile(plugin.FileName, true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"ERROR unable to reload plugin: {plugin.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning);
+                }
                 ListPlugins();
             }
         }
