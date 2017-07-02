@@ -18,24 +18,12 @@ matrix:
     - language: objective-c
       env:
         global:
-          - MONO_VERSION=4.4.2
-      install:
-        - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
-        - export PATH=$PATH:/Library/Frameworks/Mono.framework/Versions/Current/bin
-        - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
-      before_script:
-        - nuget restore Radegast.sln -Verbosity detailed
-        - nuget update Radegast.sln -Verbosity detailed
-      script:
-        - xbuild /p:Configuration=ReleaseMacOS Radegast.sln
-    - language: objective-c
-      env:
-        global:
           - MONO_VERSION=4.6.2
       install:
         - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
         - export PATH=$PATH:/Library/Frameworks/Mono.framework/Versions/Current/bin
         - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
+        - brew install nuget
       before_script:
         - nuget restore Radegast.sln -Verbosity detailed
         - nuget update Radegast.sln -Verbosity detailed
@@ -49,6 +37,7 @@ matrix:
         - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
         - export PATH=$PATH:/Library/Frameworks/Mono.framework/Versions/Current/bin
         - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
+        - brew install nuget
       before_script:
         - nuget restore Radegast.sln -Verbosity detailed
         - nuget update Radegast.sln -Verbosity detailed
