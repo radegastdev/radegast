@@ -300,15 +300,15 @@
       <DependentUpon>AnimTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Assets\Guesture.Designer.cs">
-      <DependentUpon>Guesture.cs</DependentUpon>
+    <Compile Include="GUI\Consoles\Assets\Gesture.Designer.cs">
+      <DependentUpon>Gesture.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Assets\Guesture.cs">
+    <Compile Include="GUI\Consoles\Assets\Gesture.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Assets\Guesture.resx">
-      <DependentUpon>Guesture.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Consoles\Assets\Gesture.resx">
+      <DependentUpon>Gesture.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
     <Compile Include="GUI\Consoles\Assets\Landmark.Designer.cs">
