@@ -21,6 +21,7 @@ matrix:
           - MONO_VERSION=4.4.2
       install:
         - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
+        - sudo mkdir -p /usr/local/bin
         - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
       script:
         - xbuild /p:Configuration=ReleaseMacOS Radegast.sln
@@ -30,6 +31,7 @@ matrix:
           - MONO_VERSION=4.6.2
       install:
         - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
+        - sudo mkdir -p /usr/local/bin
         - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
       script:
         - xbuild /p:Configuration=ReleaseMacOS Radegast.sln
@@ -39,6 +41,7 @@ matrix:
           - MONO_VERSION=5.2.0
       install:
         - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
+        - sudo mkdir -p /usr/local/bin
         - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg" -target /
       script:
         - xbuild /p:Configuration=ReleaseMacOS Radegast.sln
