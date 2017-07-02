@@ -95,7 +95,7 @@ namespace Radegast
                 "Tao.OpenGl.dll",
                 "Tao.Platform.Windows.dll",
                 "Tools.dll",
-                "XMLRPC.dll"
+                "XMLRPC.dll",
                 "XmlRpcCs.dll",
                 "zlib.net.dll",
             });
