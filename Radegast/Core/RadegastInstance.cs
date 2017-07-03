@@ -282,7 +282,15 @@ namespace Radegast
 
             MainForm.Load += new EventHandler(mainForm_Load);
             PluginManager = new PluginManager(this);
-            PluginManager.ScanAndLoadPlugins();
+
+            try
+            {
+                PluginManager.ScanAndLoadPlugins();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"ERROR scanning and loading plugins: {ex}", Helpers.LogLevel.Warning);
+            }
         }
 
         private void InitializeClient(GridClient client)

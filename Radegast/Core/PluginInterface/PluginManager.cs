@@ -140,7 +140,7 @@ namespace Radegast
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log($"ERROR in unloading plugin: {pluginToUnload.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning, ex);
+                        Logger.Log($"ERROR stopping plugin: {pluginToUnload.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning, ex);
                     }
                     Plugins.Remove(pluginToUnload);
 
@@ -190,6 +190,7 @@ namespace Radegast
         /// </summary>
         /// <param name="path">File to load</param>
         /// <param name="startPlugins">Start plugins that are found in the assembly</param>
+        /// <exception cref="Exception">On failure</exception>
         public void LoadPluginFile(string path, bool startPlugins)
         {
             var extension = Path.GetExtension(path)?.ToLower();
@@ -208,36 +209,30 @@ namespace Radegast
         /// <summary>
         /// Scans and load plugins from Radegast application folder without starting them
         /// </summary>
+        /// <exception cref="Exception">On failure</exception>
         public void ScanAndLoadPlugins()
         {
-            try
+            var pluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrEmpty(pluginDirectory))
             {
-                var pluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                if (string.IsNullOrEmpty(pluginDirectory))
-                {
-                    return;
-                }
-
-                foreach (var pluginPath in Directory.GetFiles(pluginDirectory))
-                {
-                    if (IsBlacklisted(pluginPath))
-                    {
-                        continue;
-                    }
-
-                    try
-                    {
-                        LoadPluginFile(pluginPath, false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log($"ERROR unable to load plugin: {pluginPath} because {ex}", Helpers.LogLevel.Warning);
-                    }
-                }
+                return;
             }
-            catch (Exception ex)
+
+            foreach (var pluginPath in Directory.GetFiles(pluginDirectory))
             {
-                Logger.Log($"ERROR scanning and loading plugins: {ex}", Helpers.LogLevel.Warning);
+                if (IsBlacklisted(pluginPath))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    LoadPluginFile(pluginPath, false);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log($"ERROR unable to load plugin: {pluginPath} because {ex}", Helpers.LogLevel.Warning);
+                }
             }
         }
 
@@ -286,6 +281,7 @@ namespace Radegast
         /// </summary>
         /// <param name="pluginPath">The source file to load</param>
         /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
+        /// <exception cref="Exception">On failure</exception>
         public void LoadCSharpScriptFile(string pluginPath, bool startPlugins)
         {
             var source = File.ReadAllText(pluginPath);
@@ -298,6 +294,7 @@ namespace Radegast
         /// <param name="pluginPath">File name from which source was loaded</param>
         /// <param name="source">Source code</param>
         /// <param name="startPlugins">Start plugins found in the assembly after complilation</param>
+        /// <exception cref="Exception">On failure</exception>
         public void LoadCSharpScript(string pluginPath, string source, bool startPlugins)
         {
             // *** Generate dynamic compiler
@@ -352,6 +349,7 @@ namespace Radegast
         /// </summary>
         /// <param name="assemblyPath">Path to the assembly</param>
         /// <param name="startPlugins">Start plugins found in the specified assembly after they're loaded</param>
+        /// <exception cref="Exception">On failure</exception>
         public void LoadAssembly(string assemblyPath, bool startPlugins)
         {
             LoadAssembly(assemblyPath, null, startPlugins);
@@ -363,15 +361,13 @@ namespace Radegast
         /// <param name="assemblyPath">Path to the assembly to load or the path to where pluginAssembly was loaded from.</param>
         /// <param name="pluginAssembly">Assembly to load plugins from. May be null to specify the assembly needs to be loaded from assemblyPath.</param>
         /// <param name="startPlugins">Start plugins found in the specified assembly after they're loaded.</param>
+        /// <exception cref="Exception">On failure</exception>
         public void LoadAssembly(string assemblyPath, Assembly pluginAssembly, bool startPlugins)
         {
             if (IsPluginLoaded(assemblyPath))
             {
                 Logger.Log($"Plugin already loaded, skipping: {assemblyPath}", Helpers.LogLevel.Info);
-                if (startPlugins)
-                {
-                    Instance.TabConsole.DisplayNotificationInChat($"Plugin already loaded, skipping: {assemblyPath}");
-                }
+                Instance.TabConsole.DisplayNotificationInChat($"Plugin already loaded, skipping: {assemblyPath}");
                 return;
             }
 
@@ -398,7 +394,14 @@ namespace Radegast
                         continue;
                     }
 
-                    LoadPluginFromType(assemblyPath, startPlugins, type);
+                    try
+                    {
+                        InstantiatePluginFromType(assemblyPath, startPlugins, type);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log($"Cannot load {type.Name} from {pluginAssembly.FullName} because: {ex}", Helpers.LogLevel.Warning);
+                    }
                 }
                 else
                 {
@@ -408,7 +411,14 @@ namespace Radegast
             }
         }
 
-        private void LoadPluginFromType(string pluginPath, bool startPlugins, Type pluginType)
+        /// <summary>
+        /// Instantiates a new plugin from the specified type.
+        /// </summary>
+        /// <param name="pluginPath">Path to the plugin.</param>
+        /// <param name="startPlugins">Start plugins found in the specified assembly after they're loaded.</param>
+        /// <param name="pluginType">Type of object to instantiate a new plugin from</param>
+        /// <exception cref="Exception">On failure</exception>
+        private void InstantiatePluginFromType(string pluginPath, bool startPlugins, Type pluginType)
         {
             IRadegastPlugin pluginInstance = null;
 
@@ -428,7 +438,7 @@ namespace Radegast
                 }
                 else
                 {
-                    throw new Exception($"Cannot load {pluginPath} because {pluginType} has no usable constructor.");
+                    throw new Exception($"No suitable constructor found in {pluginType.Name}.");
                 }
             }
 
