@@ -1023,7 +1023,7 @@ namespace Radegast
                     break;
 
                 case AssetType.Gesture:
-                    Guesture gesture = new Guesture(instance, (InventoryGesture)item);
+                    Gesture gesture = new Gesture(instance, (InventoryGesture)item);
                     gesture.Dock = DockStyle.Fill;
                     pnlDetail.Controls.Add(gesture);
                     break;

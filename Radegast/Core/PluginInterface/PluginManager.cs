@@ -46,13 +46,17 @@ namespace Radegast
     public class PluginManager : IDisposable
     {
         /// <summary>List of files that should not be scanned for plugins</summary>
-        public static readonly List<string> PluginBlackList = new List<string>(new[]
+        public static readonly List<string> PluginBlackList = new List<string>(new string[]
         {
             "AIMLbot.dll",
             "CommandLine.dll",
             "fmod.dll",
             "fmodstudio.dll",
             "IKVM.",
+            "LibreMetaverse.Rendering.Meshmerizer.dll",
+            "LibreMetaverse.StructuredData.dll",
+            "LibreMetaverse.dll",
+            "LibreMetaverseTypes.dll",
             "log4net.dll",
             "Meebey.SmartIrc4net.dll",
             "Monobjc.Cocoa.dll",
@@ -65,7 +69,9 @@ namespace Radegast
             "OpenMetaverse.dll",
             "OpenMetaverseTypes.dll",
             "OpenTK",
+            "OpenTK.GLControl.dll",
             "PrimMesher.dll",
+            "protobuf-net.dll",
             "RadSpeechLin.dll",
             "RadSpeechMac.dll",
             "RadSpeechWin.dll",
@@ -74,11 +80,12 @@ namespace Radegast
             "Tao.Platform.Windows.dll",
             "Tools.dll",
             "XMLRPC.dll",
+            "XmlRpcCs.dll",
             "zlib.net.dll",
         });
 
         /// <summary>List of file extensions that could potentially hold plugins</summary>
-        public static readonly List<string> AllowedPluginExtensions = new List<string>(new[]
+        public static readonly List<string> AllowedPluginExtensions = new List<string>(new string[]
         {
             ".cs",
             ".dll",

@@ -30,7 +30,7 @@
 //
 namespace Radegast
 {
-    partial class Guesture
+    partial class Gesture
     {
         /// <summary> 
         /// Required designer variable.
@@ -58,7 +58,7 @@ namespace Radegast
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Guesture));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Gesture));
             this.lnPanel = new Radegast.LineNumberPanel();
             this.rtbInfo = new Radegast.RRichTextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
@@ -144,14 +144,14 @@ namespace Radegast
             this.tlblStatus.Text = "Status";
             this.tlblStatus.ToolTipText = "Status";
             // 
-            // Guesture
+            // Gesture
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.rtbInfo);
             this.Controls.Add(this.lnPanel);
             this.Controls.Add(this.toolStrip1);
-            this.Name = "Guesture";
+            this.Name = "Gesture";
             this.Size = new System.Drawing.Size(383, 334);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
