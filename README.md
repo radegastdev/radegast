@@ -1,3 +1,7 @@
+# Status of Radegast
+The Radegast Project was founded by Latif Khalifa, who sadly passed away in 2016 and will be missed by many. Development of Radegast is continuing in his memory under the new title of [Radegast-ng](https://radegast.life) by Cinder Roxley.
+* https://bitbucket.org/cinderblocks/radegast/
+
 # Author
 
 Project founder and development lead:
