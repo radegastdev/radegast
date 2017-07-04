@@ -22,33 +22,29 @@ namespace Radegast
         public bool IsStarted { get; private set; }
 
         /// <summary>Plugin class</summary>
-        public PluginAttribute Attribures => GetAttributes();
+        public PluginAttribute Attribures { get; }
 
         /// <summary>Domain the plugin was loaded in.</summary>
         public AppDomain Domain { get; }
 
         public PluginInfo(string filename, IRadegastPlugin plugin, AppDomain domain)
         {
+            this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
             this.FileName = filename;
-            this.Plugin = plugin;
             this.Domain = domain;
-        }
 
-        /// <summary>
-        /// Gets extended atributes for plugin
-        /// </summary>
-        /// <returns>Extended atributes for plugin</returns>
-        public PluginAttribute GetAttributes()
-        {
-            if (Plugin == null)
+            PluginAttribute pluginAttributes = null;
+            try
             {
-                return null;
+                var customAttributes = Attribute.GetCustomAttributes(Plugin.GetType());
+                pluginAttributes = customAttributes.First(attribute => attribute is PluginAttribute) as PluginAttribute;
+            }
+            catch
+            {
+                // Suppress
             }
 
-            var customAttributes = Attribute.GetCustomAttributes(Plugin.GetType());
-            var pluginAttributes = customAttributes.First(attribute => attribute is PluginAttribute) as PluginAttribute;
-
-            return pluginAttributes ?? new PluginAttribute { Name = Plugin.GetType().FullName };
+            this.Attribures = pluginAttributes ?? new PluginAttribute {Name = Plugin.GetType().FullName};
         }
 
         /// <summary>
