@@ -143,7 +143,7 @@ namespace Radegast
                     var currentPluginDomain = pluginToUnload.Domain;
                     try
                     {
-                        pluginToUnload.Plugin.StopPlugin(Instance);
+                        pluginToUnload.Stop(Instance);
                     }
                     catch (Exception ex)
                     {

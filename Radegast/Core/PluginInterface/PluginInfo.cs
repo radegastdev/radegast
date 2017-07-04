@@ -48,13 +48,39 @@ namespace Radegast
         }
 
         /// <summary>
-        /// Starts the plugin.
+        /// Starts the plugin. Attempts to start a plugin that has already been started will result in an exception.
         /// </summary>
         /// <param name="instance">Radegast instance</param>
+        /// <exception cref="Exception">On failure</exception>
         public void Start(RadegastInstance instance)
         {
-            Plugin.StartPlugin(instance);
-            IsStarted = true;
+            if (!IsStarted)
+            {
+                Plugin.StartPlugin(instance);
+                IsStarted = true;
+            }
+            else
+            {
+                throw new Exception("Plugin is already started");
+            }
+        }
+
+        /// <summary>
+        /// Stops the plugin. Attempts to stop a plugin that has already been stopped will result in an exception.
+        /// </summary>
+        /// <param name="instance">Radegast instance</param>
+        /// <exception cref="Exception">On failure</exception>
+        public void Stop(RadegastInstance instance)
+        {
+            if (IsStarted)
+            {
+                Plugin.StopPlugin(instance);
+                IsStarted = false;
+            }
+            else
+            {
+                throw new Exception("Attemping is already stopped");
+            }
         }
     }
 }
