@@ -86,9 +86,9 @@ namespace Radegast
             gestureAsset = (AssetGesture)asset;
             if (gestureAsset.Decode())
             {
-                for (int i = 0; i < gestureAsset.Sequence.Count; i++)
+                foreach (GestureStep step in gestureAsset.Sequence)
                 {
-                    rtbInfo.AppendText(gestureAsset.Sequence[i].ToString().Trim() + Environment.NewLine);
+                    rtbInfo.AppendText(step.ToString().Trim() + Environment.NewLine);
                 }
             }
         }

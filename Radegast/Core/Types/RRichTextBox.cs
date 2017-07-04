@@ -194,11 +194,8 @@ namespace Radegast
             {
                 if (usedColors == null)
                 {
-                    usedColors = new List<Color>();
-                    usedColors.Add(ForeColor);
-                    usedColors.Add(CommentColor);
-                    usedColors.Add(StringColor);
-                    
+                    usedColors = new List<Color> {ForeColor, CommentColor, StringColor};
+
                     foreach (LSLKeyWord w in KeyWords.Values)
                     {
                         if (!usedColors.Contains(w.Color))
@@ -353,7 +350,7 @@ namespace Radegast
 
             public override string ToString()
             {
-                return string.Format("Ln {0}  Col {1}", Line + 1, Column + 1);
+                return $"Ln {Line + 1}  Col {Column + 1}";
             }
         }
 
@@ -494,7 +491,7 @@ namespace Radegast
         public void InsertLink(string text, int position)
         {
             if (position < 0 || position > this.Text.Length)
-                throw new ArgumentOutOfRangeException("position");
+                throw new ArgumentOutOfRangeException(nameof(position));
 
             this.SelectionStart = position;
             this.SelectedText = text;
@@ -523,15 +520,15 @@ namespace Radegast
         private string RtfUnicode(string s)
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < s.Length; i++)
+            foreach (char c in s)
             {
-                if (s[i] > (char)255)
+                if (c > (char)255)
                 {
-                    sb.Append(string.Format("\\u{0}?", (short)s[i]));
+                    sb.Append($"\\u{(short) c}?");
                 }
                 else
                 {
-                    sb.Append(s[i]);
+                    sb.Append(c);
                 }
             }
             return sb.ToString();
@@ -549,7 +546,7 @@ namespace Radegast
         public void InsertLink(string text, string hyperlink, int position)
         {
             if (position < 0 || position > this.Text.Length)
-                throw new ArgumentOutOfRangeException("position");
+                throw new ArgumentOutOfRangeException(nameof(position));
 
             this.SelectionStart = position;
 
