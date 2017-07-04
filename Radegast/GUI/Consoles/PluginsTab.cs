@@ -91,7 +91,7 @@ namespace Radegast
                     {
                         try
                         {
-                            instance.PluginManager.LoadPluginFile(dlg.FileNames[i], true);
+                            instance.PluginManager.LoadPlugin(dlg.FileNames[i]);
                         }
                         catch (Exception ex)
                         {
@@ -118,7 +118,7 @@ namespace Radegast
                 try
                 {
                     instance.PluginManager.UnloadPlugin(plugin);
-                    instance.PluginManager.LoadPluginFile(plugin.FileName, true);
+                    instance.PluginManager.LoadPlugin(plugin.FileName);
                 }
                 catch (Exception ex)
                 {
