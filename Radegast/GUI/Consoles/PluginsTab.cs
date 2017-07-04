@@ -70,7 +70,7 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log($"ERROR unable to unload plugin: {plugin.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning, ex);
+                    instance.TabConsole.DisplayNotificationInChat($"ERROR unable to unload plugin: {plugin.Plugin.GetType().Name} because {ex}", ChatBufferTextStyle.Error);
                 }
             }
             ListPlugins();
@@ -95,7 +95,7 @@ namespace Radegast
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log($"ERROR unable to load plugin: {dlg.FileNames[i]} because {ex}", Helpers.LogLevel.Warning);
+                            instance.TabConsole.DisplayNotificationInChat($"ERROR unable to load plugin: {dlg.FileNames[i]} because {ex}", ChatBufferTextStyle.Error);
                         }
                     }
 
@@ -111,7 +111,7 @@ namespace Radegast
                 var plugin = item.Tag as PluginInfo;
                 if (plugin == null)
                 {
-                    Logger.Log($"ERROR Attempting to unload a null plugin: {item}", Helpers.LogLevel.Warning);
+                    Logger.Log($"ERROR Attempting to reload a null plugin: {item}", Helpers.LogLevel.Warning);
                     continue;
                 }
 
@@ -122,7 +122,7 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log($"ERROR unable to reload plugin: {plugin.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning);
+                    instance.TabConsole.DisplayNotificationInChat($"ERROR unable to reload plugin: {item} because {ex}", ChatBufferTextStyle.Error);
                 }
                 ListPlugins();
             }
