@@ -15,28 +15,34 @@ namespace Radegast
         /// <summary>File name from which the plugin was loaded, cannot load plugin twice from the same file</summary>
         public string FileName { get; }
 
-        /// <summary>Plugin class</summary>
-        public IRadegastPlugin Plugin { get; }
+        /// <summary>Display name</summary>
+        public string DisplayName { get; set; }
 
         /// <summary>Is plugin started</summary>
         public bool IsStarted { get; private set; }
 
-        /// <summary>Plugin class</summary>
+        /// <summary>Plugin attributes</summary>
         public PluginAttribute Attribures { get; }
 
         /// <summary>Domain the plugin was loaded in.</summary>
         public AppDomain Domain { get; }
 
+        /// <summary>Plugin instance</summary>
+        private IRadegastPlugin PluginInstance { get; }
+
+        public override string ToString() => DisplayName;
+
         public PluginInfo(string filename, IRadegastPlugin plugin, AppDomain domain)
         {
-            this.Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
+            this.PluginInstance = plugin ?? throw new ArgumentNullException(nameof(plugin));
             this.FileName = filename;
             this.Domain = domain;
+            this.DisplayName = PluginInstance.GetType().Name;
 
             PluginAttribute pluginAttributes = null;
             try
             {
-                var customAttributes = Attribute.GetCustomAttributes(Plugin.GetType());
+                var customAttributes = Attribute.GetCustomAttributes(PluginInstance.GetType());
                 pluginAttributes = customAttributes.First(attribute => attribute is PluginAttribute) as PluginAttribute;
             }
             catch
@@ -44,7 +50,7 @@ namespace Radegast
                 // Suppress
             }
 
-            this.Attribures = pluginAttributes ?? new PluginAttribute {Name = Plugin.GetType().FullName};
+            this.Attribures = pluginAttributes ?? new PluginAttribute {Name = PluginInstance.GetType().FullName};
         }
 
         /// <summary>
@@ -56,7 +62,7 @@ namespace Radegast
         {
             if (!IsStarted)
             {
-                Plugin.StartPlugin(instance);
+                PluginInstance.StartPlugin(instance);
                 IsStarted = true;
             }
             else
@@ -74,7 +80,7 @@ namespace Radegast
         {
             if (IsStarted)
             {
-                Plugin.StopPlugin(instance);
+                PluginInstance.StopPlugin(instance);
                 IsStarted = false;
             }
             else

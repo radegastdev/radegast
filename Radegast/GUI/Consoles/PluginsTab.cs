@@ -70,7 +70,7 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    instance.TabConsole.DisplayNotificationInChat($"ERROR unable to unload plugin: {plugin.Plugin.GetType().Name} because {ex}", ChatBufferTextStyle.Error);
+                    instance.TabConsole.DisplayNotificationInChat($"ERROR unable to unload plugin: {plugin} because {ex}", ChatBufferTextStyle.Error);
                 }
             }
             ListPlugins();

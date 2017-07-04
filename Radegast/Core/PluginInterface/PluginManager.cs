@@ -123,7 +123,7 @@ namespace Radegast
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log($"ERROR unloading plugin: {plugin.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning, ex);
+                        Logger.Log($"ERROR unloading plugin: {plugin} because {ex}", Helpers.LogLevel.Warning, ex);
                     }
                 }
             }
@@ -137,7 +137,7 @@ namespace Radegast
         {
             lock (Plugins)
             {
-                var pluginsToUnload = Plugins.FindAll(loadedPlugin => loadedPlugin.Plugin == plugin.Plugin);
+                var pluginsToUnload = Plugins.FindAll(loadedPlugin => plugin.FileName == loadedPlugin.FileName);
                 foreach (var pluginToUnload in pluginsToUnload)
                 {
                     var currentPluginDomain = pluginToUnload.Domain;
@@ -147,7 +147,7 @@ namespace Radegast
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log($"ERROR stopping plugin: {pluginToUnload.Plugin.GetType().Name} because {ex}", Helpers.LogLevel.Warning, ex);
+                        Logger.Log($"ERROR stopping plugin: {pluginToUnload} because {ex}", Helpers.LogLevel.Warning, ex);
                     }
                     Plugins.Remove(pluginToUnload);
 
@@ -219,7 +219,7 @@ namespace Radegast
             {
                 foreach (var newPlugin in pluginsToStart)
                 {
-                    Logger.DebugLog($"Starting {newPlugin.Plugin.GetType().FullName}");
+                    Logger.DebugLog($"Starting {newPlugin}");
                     try
                     {
                         newPlugin.Start(Instance);
@@ -248,7 +248,6 @@ namespace Radegast
 
             if (IsPluginLoaded(path))
             {
-                Logger.Log($"Plugin already loaded, skipping: {path}", Helpers.LogLevel.Info);
                 Instance.TabConsole.DisplayNotificationInChat($"Plugin already loaded, skipping: {path}");
                 return new List<PluginInfo>();
             }
@@ -423,7 +422,6 @@ namespace Radegast
                 }
                 else
                 {
-                    // TODO: What are these?
                     Instance.CommandsManager.LoadType(type);
                     Instance.ContextActionManager.LoadType(type);
                 }
