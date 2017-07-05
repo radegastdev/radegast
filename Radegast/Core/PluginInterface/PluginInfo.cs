@@ -34,7 +34,12 @@ namespace Radegast
 
         public PluginInfo(string filename, IRadegastPlugin plugin, AppDomain domain)
         {
-            this.PluginInstance = plugin ?? throw new ArgumentNullException(nameof(plugin));
+            if (plugin == null)
+            {
+                throw new ArgumentNullException(nameof(plugin));
+            }
+
+            this.PluginInstance = plugin;
             this.FileName = filename;
             this.Domain = domain;
             this.DisplayName = PluginInstance.GetType().Name;
