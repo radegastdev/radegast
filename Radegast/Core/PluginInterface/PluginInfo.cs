@@ -72,7 +72,7 @@ namespace Radegast
             }
             else
             {
-                throw new Exception("Plugin is already started");
+                throw new Exception("Attempting to start a plugin that is already in the running state.");
             }
         }
 
@@ -90,7 +90,7 @@ namespace Radegast
             }
             else
             {
-                throw new Exception("Attemping is already stopped");
+                throw new Exception("Attempting to stop a plugin that is already in the stopped state.");
             }
         }
     }
