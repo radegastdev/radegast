@@ -68,7 +68,7 @@ namespace Radegast.Commands
             string loadfilename = String.Join(" ", cmdArgs);
             try
             {
-                instance.PluginManager.LoadAssembly(loadfilename, true);
+                instance.PluginManager.LoadPlugin(loadfilename);
             }
             catch (Exception ex)
             {

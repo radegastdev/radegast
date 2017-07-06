@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using Radegast.Commands;
@@ -282,7 +283,6 @@ namespace Radegast
 
             MainForm.Load += new EventHandler(mainForm_Load);
             PluginManager = new PluginManager(this);
-            PluginManager.ScanAndLoadPlugins();
         }
 
         private void InitializeClient(GridClient client)
@@ -486,7 +486,15 @@ namespace Radegast
 
         void mainForm_Load(object sender, EventArgs e)
         {
-            PluginManager.StartPlugins();
+            try
+            {
+                var pluginDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                PluginManager.LoadPluginsInDirectory(pluginDirectory);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"ERROR scanning and loading plugins: {ex}", Helpers.LogLevel.Warning);
+            }
         }
 
         void netcom_ClientConnected(object sender, EventArgs e)

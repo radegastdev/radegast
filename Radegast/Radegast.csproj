@@ -198,6 +198,7 @@
     <Compile Include="Core\NameManager.cs" />
     <Compile Include="Core\PluginInterface\IRadegastPlugin.cs" />
     <Compile Include="Core\PluginInterface\PluginAttribute.cs" />
+    <Compile Include="Core\PluginInterface\PluginInfo.cs" />
     <Compile Include="Core\PluginInterface\PluginManager.cs" />
     <Compile Include="Core\PrimDeserializer.cs" />
     <Compile Include="Core\PrimExporter.cs" />
