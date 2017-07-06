@@ -84,6 +84,20 @@ namespace Radegast
             "zlib.net.dll",
         });
 
+        /// <summary>Collection of assemblies that are referenced when compiling scripts.</summary>
+        private static readonly string[] ReferencedAssemblies = new string[]
+        {
+            "LibreMetaverse.StructuredData.dll",
+            "LibreMetaverse.Types.dll",
+            "LibreMetaverse.dll",
+            "Radegast.exe",
+            "System.dll",
+            "System.Core.dll",
+            "System.Xml.dll",
+            "System.Drawing.dll",
+            "System.Windows.Forms.dll",
+        };
+
         /// <summary>List of file extensions that could potentially hold plugins</summary>
         private static readonly List<string> AllowedPluginExtensions = new List<string>(new string[]
         {
@@ -305,17 +319,7 @@ namespace Radegast
             var compilerParameters = new CompilerParameters();
 
             // *** Start by adding any referenced assemblies
-            compilerParameters.ReferencedAssemblies.AddRange(new[] {
-                "LibreMetaverse.StructuredData.dll",
-                "LibreMetaverse.Types.dll",
-                "LibreMetaverse.dll",
-                "Radegast.exe",
-                "System.dll",
-                "System.Core.dll",
-                "System.Xml.dll",
-                "System.Drawing.dll",
-                "System.Windows.Forms.dll",
-            });
+            compilerParameters.ReferencedAssemblies.AddRange(ReferencedAssemblies);
 
             // *** Load the resulting assembly into memory
             compilerParameters.GenerateInMemory = true;
