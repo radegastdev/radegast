@@ -196,7 +196,7 @@ namespace Radegast
         /// </summary>
         /// <param name="pluginsToStart">Plugins to start.</param>
         /// <exception cref="Exception">On failure</exception>
-        private void StartPlugins(List<PluginInfo> pluginsToStart)
+        private void StartPlugins(IEnumerable<PluginInfo> pluginsToStart)
         {
             lock (Plugins)
             {
@@ -422,7 +422,7 @@ namespace Radegast
         /// <exception cref="Exception">On failure.</exception>
         private PluginInfo LoadPluginFromType(string pluginPath, Type pluginType)
         {
-            IRadegastPlugin pluginInstance = null;
+            IRadegastPlugin pluginInstance;
 
             // Does the assembly have a constructor that has a RadegastInstance parameter?
             var constructorInfo = pluginType.GetConstructor(new Type[] { typeof(RadegastInstance) });

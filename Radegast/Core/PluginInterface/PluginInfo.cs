@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Radegast
 {
@@ -29,6 +25,12 @@ namespace Radegast
 
         public override string ToString() => DisplayName;
 
+        /// <summary>
+        /// Constructs a new PluginInfo
+        /// </summary>
+        /// <param name="filename">Path to the plugin.</param>
+        /// <param name="plugin">Valid plugin instance. Must not be null.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="plugin"/> is <see langword="null"/></exception>
         public PluginInfo(string filename, IRadegastPlugin plugin)
         {
             if (plugin == null)
