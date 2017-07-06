@@ -24,15 +24,12 @@ namespace Radegast
         /// <summary>Plugin attributes</summary>
         public PluginAttribute Attribures { get; }
 
-        /// <summary>Domain the plugin was loaded in.</summary>
-        public AppDomain Domain { get; }
-
         /// <summary>Plugin instance</summary>
         private IRadegastPlugin PluginInstance { get; }
 
         public override string ToString() => DisplayName;
 
-        public PluginInfo(string filename, IRadegastPlugin plugin, AppDomain domain)
+        public PluginInfo(string filename, IRadegastPlugin plugin)
         {
             if (plugin == null)
             {
@@ -41,7 +38,6 @@ namespace Radegast
 
             this.PluginInstance = plugin;
             this.FileName = filename;
-            this.Domain = domain;
             this.DisplayName = PluginInstance.GetType().Name;
 
             PluginAttribute pluginAttributes = null;

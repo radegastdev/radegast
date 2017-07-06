@@ -140,7 +140,6 @@ namespace Radegast
                 var pluginsToUnload = Plugins.FindAll(loadedPlugin => plugin.FileName == loadedPlugin.FileName);
                 foreach (var pluginToUnload in pluginsToUnload)
                 {
-                    var currentPluginDomain = pluginToUnload.Domain;
                     try
                     {
                         pluginToUnload.Stop(Instance);
@@ -150,22 +149,6 @@ namespace Radegast
                         Logger.Log($"ERROR stopping plugin: {pluginToUnload} because {ex}", Helpers.LogLevel.Warning, ex);
                     }
                     Plugins.Remove(pluginToUnload);
-
-                    // Unload the domain housing the plugin we just unloaded if it was the last plugin in it.
-                    var pluginWasInADomain = currentPluginDomain != null;
-                    var domainIsNowEmpty = Plugins.Find(loadedPlugin => loadedPlugin.Domain == currentPluginDomain) == null;
-
-                    if (pluginWasInADomain && domainIsNowEmpty)
-                    {
-                        try
-                        {
-                            AppDomain.Unload(currentPluginDomain);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log($"ERROR unloading application domain for : {plugin.FileName}\n{ex.Message}", Helpers.LogLevel.Warning);
-                        }
-                    }
                 }
             }
         }
@@ -461,7 +444,7 @@ namespace Radegast
                 }
             }
 
-            return new PluginInfo(pluginPath, pluginInstance, null);
+            return new PluginInfo(pluginPath, pluginInstance);
         }
     }
 }
