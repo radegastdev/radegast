@@ -1059,9 +1059,6 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Properties\Settings.Designer.cs" />
-    <Content Include="Radegast.exe.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="RadegastBuild.cs" />
     <Content Include="character\attentions.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
