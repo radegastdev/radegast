@@ -45,6 +45,7 @@ using System.Threading;
 
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using Radegast.Core;
 
 namespace Radegast
 {
@@ -187,6 +188,8 @@ namespace Radegast
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
         {
+            GestureManager.Instance.StopMonitoring();
+
             if (TreeUpdateTimer != null)
             {
                 TreeUpdateTimer.Stop();
@@ -859,6 +862,8 @@ namespace Radegast
             }
 
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
+            GestureManager.Instance.BeginMonitoring();
+
             WorkPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
 
             if (!instance.MonoRuntime || IsHandleCreated)

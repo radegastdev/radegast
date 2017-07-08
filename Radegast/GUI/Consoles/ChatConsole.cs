@@ -38,6 +38,7 @@ using System.Windows.Forms;
 using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using Radegast.Core;
 
 namespace Radegast
 {
@@ -564,7 +565,11 @@ namespace Radegast
                 }
                 #endregion
 
-                netcom.ChatOut(msg, type, ch);
+                var processedMessage = GestureManager.Instance.PreProcessChatMessage(msg).Trim();
+                if (!string.IsNullOrEmpty(processedMessage))
+                {
+                    netcom.ChatOut(processedMessage, type, ch);
+                }
             }
 
         }
