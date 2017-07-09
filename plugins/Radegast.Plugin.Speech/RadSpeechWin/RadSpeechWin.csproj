@@ -68,14 +68,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LibreMetaverse, Version=1.0.6.45, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\LibreMetaverse.1.0.6.45\lib\net40\LibreMetaverse.dll</HintPath>
+    <Reference Include="LibreMetaverse, Version=1.0.10.71, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\LibreMetaverse.1.0.10.71\lib\net40\LibreMetaverse.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.StructuredData, Version=1.0.6.45, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\LibreMetaverse.StructuredData.1.0.6.45\lib\net40\LibreMetaverse.StructuredData.dll</HintPath>
+    <Reference Include="LibreMetaverse.StructuredData, Version=1.0.10.71, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\LibreMetaverse.StructuredData.1.0.10.71\lib\net40\LibreMetaverse.StructuredData.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.Types, Version=1.0.6.45, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\LibreMetaverse.Types.1.0.6.45\lib\net40\LibreMetaverse.Types.dll</HintPath>
+    <Reference Include="LibreMetaverse.Types, Version=1.0.10.71, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\LibreMetaverse.Types.1.0.10.71\lib\net40\LibreMetaverse.Types.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
