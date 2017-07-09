@@ -180,6 +180,7 @@
     <Compile Include="Core\Contexts\TurnToAction.cs" />
     <Compile Include="Core\Contexts\WalkToAction.cs" />
     <Compile Include="Core\DAEExport.cs" />
+    <Compile Include="Core\GestureManager.cs" />
     <Compile Include="Core\GridManager.cs" />
     <Compile Include="Core\IMTextManager.cs" />
     <Compile Include="Core\ITextPrinter.cs" />
