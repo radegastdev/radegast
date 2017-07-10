@@ -319,7 +319,7 @@ namespace Radegast
 
             if (instance.GlobalSettings["av_name_link"])
             {
-                textPrinter.InsertLink(fromName, string.Format("secondlife:///app/agent/{0}/about", fromID));
+                textPrinter.InsertLink(fromName, $"secondlife:///app/agent/{fromID}/about");
             }
             else
             {

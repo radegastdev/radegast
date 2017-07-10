@@ -151,16 +151,16 @@ namespace Radegast
 
         public class FontSetting
         {
-            [ScriptIgnoreAttribute]
+            [ScriptIgnore]
             public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 8.0f);
 
-            [ScriptIgnoreAttribute]
+            [ScriptIgnore]
             public Font Font;
 
-            [ScriptIgnoreAttribute]
+            [ScriptIgnore]
             public Color ForeColor;
 
-            [ScriptIgnoreAttribute]
+            [ScriptIgnore]
             public Color BackColor;
 
 
@@ -170,14 +170,7 @@ namespace Radegast
             {
                 get
                 {
-                    if (ForeColor != null)
-                    {
-                        return ColorTranslator.ToHtml(ForeColor);
-                    }
-                    else
-                    {
-                        return ColorTranslator.ToHtml(SystemColors.ControlText);
-                    }
+                    return ColorTranslator.ToHtml(ForeColor);
                 }
                 set
                 {
@@ -189,14 +182,7 @@ namespace Radegast
             {
                 get
                 {
-                    if (BackColor != null)
-                    {
-                        return ColorTranslator.ToHtml(BackColor);
-                    }
-                    else
-                    {
-                        return ColorTranslator.ToHtml(SystemColors.ControlText);
-                    }
+                    return ColorTranslator.ToHtml(BackColor);
                 }
                 set
                 {
@@ -213,10 +199,7 @@ namespace Radegast
                         TypeConverter converter = TypeDescriptor.GetConverter(typeof(Font));
                         return converter.ConvertToString(this.Font);
                     }
-                    else
-                    {
-                        return null;
-                    }
+                    return null;
                 }
                 set
                 {

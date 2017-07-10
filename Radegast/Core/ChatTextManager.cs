@@ -221,7 +221,7 @@ namespace Radegast
 
                 if (item.Style == ChatBufferTextStyle.Normal && item.ID != UUID.Zero && instance.GlobalSettings["av_name_link"])
                 {
-                    textPrinter.InsertLink(item.From, string.Format("secondlife:///app/agent/{0}/about", item.ID));
+                    textPrinter.InsertLink(item.From, $"secondlife:///app/agent/{item.ID}/about");
                 }
                 else
                 {
@@ -268,7 +268,7 @@ namespace Radegast
             sb.Append(e.Message);
 
             ChatBufferItem item = new ChatBufferItem(
-                DateTime.Now, string.Format("(channel {0}) {1}", e.Channel, client.Self.Name), client.Self.AgentID, sb.ToString(), ChatBufferTextStyle.StatusDarkBlue);
+                DateTime.Now, $"(channel {e.Channel}) {client.Self.Name}", client.Self.AgentID, sb.ToString(), ChatBufferTextStyle.StatusDarkBlue);
 
             ProcessBufferItem(item, true);
 
