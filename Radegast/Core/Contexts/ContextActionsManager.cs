@@ -30,6 +30,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using OpenMetaverse;
 
@@ -113,7 +114,7 @@ namespace Radegast
         public void AddContributions(ToolStripDropDown strip, Object o)
         {
             SetCurrentItem(strip, o);
-            AddContributions(strip, o != null ? o.GetType() : null, o);
+            AddContributions(strip, o?.GetType(), o);
         }
 
         /// <summary>
@@ -128,18 +129,13 @@ namespace Radegast
             itemsIn.ForEach(o =>
                                 {
                                     string txt = (o.Text ?? "").ToLower().Trim();
-                                    foreach (var i in strip.Items)
+                                    if (strip.Items.Cast<ToolStripItem>().Any(item => txt == (item.Text ?? "").ToLower().Trim()))
                                     {
-                                        ToolStripItem item = (ToolStripItem)i;
-                                        if (txt != (item.Text ?? "").ToLower().Trim()) continue;
                                         txt = null;
-                                        break;
                                     }
-                                    foreach (var item in items)
+                                    if (items.Any(item => txt == (item.Text ?? "").ToLower().Trim()))
                                     {
-                                        if (txt != (item.Text ?? "").ToLower().Trim()) continue;
                                         txt = null;
-                                        break;
                                     }
                                     if (txt != null) items.Add(o);
                                 });
@@ -169,24 +165,9 @@ namespace Radegast
                 var v = i.GetToolItems(obj, type);
                 if (v != null)
                 {
-                    foreach (ToolStripMenuItem item in v)
-                    {
-                        bool alreadyPresent = false;
-                        foreach (object down in strip.Items)
-                        {
-                            if (down is ToolStripMenuItem)
-                            {
-                                ToolStripMenuItem mi = (ToolStripMenuItem) down;
-                                if ((mi.Text ?? "").ToLower() == (item.Text ?? "").ToLower())
-                                {
-                                    alreadyPresent = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (alreadyPresent) continue;
-                        items.Add(item);
-                    }
+                    items.AddRange(from item in v let alreadyPresent = strip.Items.OfType<ToolStripMenuItem>()
+                        .Any(mi => string.Equals((mi.Text ?? ""), (item.Text ?? ""), StringComparison.CurrentCultureIgnoreCase))
+                                   where !alreadyPresent select item);
                 }
             }
             items.Sort(CompareItems);
@@ -229,12 +210,12 @@ namespace Radegast
             if (sender is Control)
             {
                 Control control = (Control)sender;
-                return string.Format("{0}{1} {2} {3}", t, control.Text, control.Name, ToString(control.Tag));
+                return $"{t}{control.Text} {control.Name} {ToString(control.Tag)}";
             }
             if (sender is ListViewItem)
             {
                 ListViewItem control = (ListViewItem)sender;
-                return string.Format("{0}{1} {2} {3}", t, control.Text, control.Name, ToString(control.Tag));
+                return $"{t}{control.Text} {control.Name} {ToString(control.Tag)}";
             }
             return t + sender;
         }
@@ -276,13 +257,12 @@ namespace Radegast
                 Button button = (Button)control;
                 string newVariable = obj.GetType() == type
                                          ? type.Name
-                                         : string.Format("{0} -> {1}", obj.GetType().Name, type.Name);
+                                         : $"{obj.GetType().Name} -> {type.Name}";
                 items.Add(new ToolStripMenuItem(button.Text, null,
                                                 (sender, e) =>
                                                 {
                                                     button.PerformClick();
-                                                    Logger.DebugLog(String.Format("Button: {0} {1} {2} {3}",
-                                                                                  newVariable, e, sender, obj));
+                                                    Logger.DebugLog($"Button: {newVariable} {e} {sender} {obj}");
                                                 })
                               {
                                   Enabled = button.Enabled,

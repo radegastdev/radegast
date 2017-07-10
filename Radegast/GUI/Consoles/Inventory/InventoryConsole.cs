@@ -29,7 +29,6 @@
 // $Id$
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -72,7 +71,7 @@ namespace Radegast
         private int updateInterval = 1000;
         private Thread InventoryUpdate;
         private List<UUID> WornItems = new List<UUID>();
-        private bool appearnceWasBusy;
+        private bool appearanceWasBusy;
         private InvNodeSorter sorter;
         private List<UUID> QueuedFolders = new List<UUID>();
         private Dictionary<UUID, int> FolderFetchRetries = new Dictionary<UUID, int>();
@@ -217,9 +216,9 @@ namespace Radegast
         void Appearance_AppearanceSet(object sender, AppearanceSetEventArgs e)
         {
             UpdateWornLabels();
-            if (appearnceWasBusy)
+            if (appearanceWasBusy)
             {
-                appearnceWasBusy = false;
+                appearanceWasBusy = false;
                 client.Appearance.RequestSetAppearance(true);
             }
         }
@@ -1462,56 +1461,53 @@ namespace Radegast
 
                     if (item.InventoryType == InventoryType.LSL)
                     {
-                        ctxItem = new ToolStripMenuItem("Edit script", null, OnInvContextClick);
-                        ctxItem.Name = "edit_script";
+                        ctxItem = new ToolStripMenuItem("Edit script", null, OnInvContextClick) {Name = "edit_script"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (item.AssetType == AssetType.Texture)
                     {
-                        ctxItem = new ToolStripMenuItem("View", null, OnInvContextClick);
-                        ctxItem.Name = "view_image";
+                        ctxItem = new ToolStripMenuItem("View", null, OnInvContextClick) {Name = "view_image"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (item.InventoryType == InventoryType.Landmark)
                     {
-                        ctxItem = new ToolStripMenuItem("Teleport", null, OnInvContextClick);
-                        ctxItem.Name = "lm_teleport";
+                        ctxItem = new ToolStripMenuItem("Teleport", null, OnInvContextClick) {Name = "lm_teleport"};
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Info", null, OnInvContextClick);
-                        ctxItem.Name = "lm_info";
+                        ctxItem = new ToolStripMenuItem("Info", null, OnInvContextClick) {Name = "lm_info"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (item.InventoryType == InventoryType.Notecard)
                     {
-                        ctxItem = new ToolStripMenuItem("Open", null, OnInvContextClick);
-                        ctxItem.Name = "notecard_open";
+                        ctxItem = new ToolStripMenuItem("Open", null, OnInvContextClick) {Name = "notecard_open"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (item.InventoryType == InventoryType.Gesture)
                     {
-                        ctxItem = new ToolStripMenuItem("Play", null, OnInvContextClick);
-                        ctxItem.Name = "gesture_play";
+                        ctxItem = new ToolStripMenuItem("Play", null, OnInvContextClick) {Name = "gesture_play"};
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Info", null, OnInvContextClick);
-                        ctxItem.Name = "gesture_info";
+                        ctxItem = new ToolStripMenuItem("Info", null, OnInvContextClick) {Name = "gesture_info"};
                         ctxInv.Items.Add(ctxItem);
 
                         if (instance.Client.Self.ActiveGestures.ContainsKey(item.UUID))
                         {
-                            ctxItem = new ToolStripMenuItem("Deactivate", null, OnInvContextClick);
-                            ctxItem.Name = "gesture_deactivate";
+                            ctxItem = new ToolStripMenuItem("Deactivate", null, OnInvContextClick)
+                            {
+                                Name = "gesture_deactivate"
+                            };
                             ctxInv.Items.Add(ctxItem);
                         }
                         else
                         {
-                            ctxItem = new ToolStripMenuItem("Activate", null, OnInvContextClick);
-                            ctxItem.Name = "gesture_activate";
+                            ctxItem = new ToolStripMenuItem("Activate", null, OnInvContextClick)
+                            {
+                                Name = "gesture_activate"
+                            };
                             ctxInv.Items.Add(ctxItem);
                         }
                     }
@@ -1520,55 +1516,49 @@ namespace Radegast
                     {
                         if (!client.Self.SignaledAnimations.ContainsKey(item.AssetUUID))
                         {
-                            ctxItem = new ToolStripMenuItem("Play", null, OnInvContextClick);
-                            ctxItem.Name = "animation_play";
+                            ctxItem = new ToolStripMenuItem("Play", null, OnInvContextClick) {Name = "animation_play"};
                             ctxInv.Items.Add(ctxItem);
                         }
                         else
                         {
-                            ctxItem = new ToolStripMenuItem("Stop", null, OnInvContextClick);
-                            ctxItem.Name = "animation_stop";
+                            ctxItem = new ToolStripMenuItem("Stop", null, OnInvContextClick) {Name = "animation_stop"};
                             ctxInv.Items.Add(ctxItem);
                         }
                     }
 
                     if (item.InventoryType == InventoryType.Object)
                     {
-                        ctxItem = new ToolStripMenuItem("Rez inworld", null, OnInvContextClick);
-                        ctxItem.Name = "rez_inworld";
+                        ctxItem = new ToolStripMenuItem("Rez inworld", null, OnInvContextClick) {Name = "rez_inworld"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
-                    ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
-                    ctxItem.Name = "rename_item";
+                    ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick) {Name = "rename_item"};
                     ctxInv.Items.Add(ctxItem);
 
                     ctxInv.Items.Add(new ToolStripSeparator());
 
-                    ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick);
-                    ctxItem.Name = "cut_item";
+                    ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick) {Name = "cut_item"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick);
-                    ctxItem.Name = "copy_item";
+                    ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick) {Name = "copy_item"};
                     ctxInv.Items.Add(ctxItem);
 
                     if (instance.InventoryClipboard != null)
                     {
-                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick);
-                        ctxItem.Name = "paste_item";
+                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick) {Name = "paste_item"};
                         ctxInv.Items.Add(ctxItem);
 
                         if (instance.InventoryClipboard.Item is InventoryItem)
                         {
-                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick);
-                            ctxItem.Name = "paste_item_link";
+                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick)
+                            {
+                                Name = "paste_item_link"
+                            };
                             ctxInv.Items.Add(ctxItem);
                         }
                     }
 
-                    ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
-                    ctxItem.Name = "delete_item";
+                    ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick) {Name = "delete_item"};
 
                     if (IsAttached(item) || IsWorn(item))
                     {
@@ -1578,8 +1568,8 @@ namespace Radegast
 
                     if (IsAttached(item) && instance.RLV.AllowDetach(attachments[item.UUID]))
                     {
-                        ctxItem = new ToolStripMenuItem("Detach from yourself", null, OnInvContextClick);
-                        ctxItem.Name = "detach";
+                        ctxItem =
+                            new ToolStripMenuItem("Detach from yourself", null, OnInvContextClick) {Name = "detach"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
@@ -1603,9 +1593,12 @@ namespace Radegast
                                     name += " (" + alreadyAttached.Name + ")";
                                 }
 
-                                ToolStripMenuItem ptItem = new ToolStripMenuItem(name, null, OnInvContextClick);
-                                ptItem.Name = pt.ToString();
-                                ptItem.Tag = pt;
+                                ToolStripMenuItem ptItem =
+                                    new ToolStripMenuItem(name, null, OnInvContextClick)
+                                    {
+                                        Name = pt.ToString(),
+                                        Tag = pt
+                                    };
                                 ptItem.Name = "attach_to";
                                 ctxItemAttach.DropDownItems.Add(ptItem);
                             }
@@ -1619,20 +1612,24 @@ namespace Radegast
                                     name += " (" + alreadyAttached.Name + ")";
                                 }
 
-                                ToolStripMenuItem ptItem = new ToolStripMenuItem(name, null, OnInvContextClick);
-                                ptItem.Name = pt.ToString();
-                                ptItem.Tag = pt;
+                                ToolStripMenuItem ptItem =
+                                    new ToolStripMenuItem(name, null, OnInvContextClick)
+                                    {
+                                        Name = pt.ToString(),
+                                        Tag = pt
+                                    };
                                 ptItem.Name = "attach_to";
                                 ctxItemAttachHUD.DropDownItems.Add(ptItem);
                             }
                         }
 
-                        ctxItem = new ToolStripMenuItem("Add to Worn", null, OnInvContextClick);
-                        ctxItem.Name = "wear_attachment_add";
+                        ctxItem = new ToolStripMenuItem("Add to Worn", null, OnInvContextClick)
+                        {
+                            Name = "wear_attachment_add"
+                        };
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick);
-                        ctxItem.Name = "wear_attachment";
+                        ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick) {Name = "wear_attachment"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
@@ -1642,15 +1639,38 @@ namespace Radegast
 
                         if (IsWorn(item))
                         {
-                            ctxItem = new ToolStripMenuItem("Take off", null, OnInvContextClick);
-                            ctxItem.Name = "item_take_off";
+                            ctxItem =
+                                new ToolStripMenuItem("Take off", null, OnInvContextClick) {Name = "wearable_take_off"};
                             ctxInv.Items.Add(ctxItem);
                         }
                         else
                         {
-                            ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick);
-                            ctxItem.Name = "item_wear";
-                            ctxInv.Items.Add(ctxItem);
+                            InventoryWearable wearable = item as InventoryWearable;
+                            switch (wearable.WearableType)
+                            {
+                                case WearableType.Invalid:
+                                    break;
+                                case WearableType.Alpha:
+                                case WearableType.Gloves:
+                                case WearableType.Jacket:
+                                case WearableType.Pants:
+                                case WearableType.Physics:
+                                case WearableType.Shirt:
+                                case WearableType.Shoes:
+                                case WearableType.Socks:
+                                case WearableType.Skirt:
+                                case WearableType.Tattoo:
+                                case WearableType.Underpants:
+                                case WearableType.Undershirt:
+                                    ctxItem = new ToolStripMenuItem("Add to Worn", null, OnInvContextClick) { Name = "wearable_add" };
+                                    ctxInv.Items.Add(ctxItem);
+                                    goto default;
+                                default:
+                                    ctxItem = new ToolStripMenuItem("Wear", null, OnInvContextClick) { Name = "wearable_wear" };
+                                    ctxInv.Items.Add(ctxItem);
+                                    break;
+                            }
+                            
                         }
                     }
 
@@ -1790,7 +1810,7 @@ namespace Radegast
                             if (item is InventoryItem)
                                 newOutfit.Add((InventoryItem)item);
                         }
-                        appearnceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.ReplaceOutfit(newOutfit);
                         UpdateWornLabels();
                         break;
@@ -1802,7 +1822,7 @@ namespace Radegast
                             if (item is InventoryItem)
                                 addToOutfit.Add((InventoryItem)item);
                         }
-                        appearnceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.AddToOutfit(addToOutfit, true);
                         UpdateWornLabels();
                         break;
@@ -1814,7 +1834,7 @@ namespace Radegast
                             if (item is InventoryItem)
                                 removeFromOutfit.Add((InventoryItem)item);
                         }
-                        appearnceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.RemoveFromOutfit(removeFromOutfit);
                         UpdateWornLabels();
                         break;
@@ -1901,8 +1921,8 @@ namespace Radegast
                         UpdateItemInfo(item);
                         break;
 
-                    case "item_take_off":
-                        appearnceWasBusy = client.Appearance.ManagerBusy;
+                    case "wearable_take_off":
+                        appearanceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.RemoveFromOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         lock (WornItems)
@@ -1914,9 +1934,15 @@ namespace Radegast
                         }
                         break;
 
-                    case "item_wear":
-                        appearnceWasBusy = client.Appearance.ManagerBusy;
+                    case "wearable_wear":
+                        appearanceWasBusy = client.Appearance.ManagerBusy;
                         instance.COF.AddToOutfit(item, true);
+                        invTree.SelectedNode.Text = ItemLabel(item, false);
+                        break;
+
+                    case "wearable_add":
+                        appearanceWasBusy = client.Appearance.ManagerBusy;
+                        instance.COF.AddToOutfit(item, false);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 

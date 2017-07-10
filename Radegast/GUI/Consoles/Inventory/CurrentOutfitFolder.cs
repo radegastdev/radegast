@@ -553,7 +553,7 @@ namespace Radegast
             foreach (var item in items)
             {
                 InventoryItem realItem = RealInventoryItem(item);
-                if (realItem is InventoryWearable)
+                if (replace && realItem is InventoryWearable)
                 {
                     foreach (var link in current)
                     {
