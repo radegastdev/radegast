@@ -458,7 +458,7 @@ namespace Radegast
                     case "getoutfit":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
-                            var wearables = client.Appearance.GetWearables();
+                            var wearables = client.Appearance.GetWearablesByType();
                             string res = "";
 
                             // Do we have a specific wearable to check, ie @getoutfit:socks=99
@@ -757,7 +757,7 @@ namespace Radegast
 
         protected string GetWornIndicator(InventoryNode node)
         {
-            var currentOutfit = client.Appearance.GetWearables();
+            var currentOutfit = new List<AppearanceManager.WearableData>(client.Appearance.GetWearables());
             var currentAttachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
             int myItemsCount = 0;
             int myItemsWornCount = 0;

@@ -2143,13 +2143,14 @@ namespace Radegast
                 }
             }
             WornItems.Clear();
-            foreach (AppearanceManager.WearableData wearable in client.Appearance.GetWearables().Values)
+            foreach (var wearable in client.Appearance.GetWearables())
             {
                 TreeNode node = findNodeForItem(wearable.ItemID);
                 if (node != null)
                 {
-                    node.Text = ItemLabel((InventoryBase)node.Tag, false);
+                    node.Text = ItemLabel((InventoryBase) node.Tag, false);
                 }
+
             }
             invTree.EndUpdate();
         }

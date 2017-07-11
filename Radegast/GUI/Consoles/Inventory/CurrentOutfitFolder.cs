@@ -33,6 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using LibreMetaverse;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
@@ -328,9 +329,9 @@ namespace Radegast
         /// <param name="currentlyWorn">Current outfit</param>
         /// <param name="item">Item to check</param>
         /// <returns>True if the item is worn</returns>
-        public static bool IsWorn(Dictionary<WearableType, AppearanceManager.WearableData> currentlyWorn, InventoryItem item)
+        public static bool IsWorn(List<AppearanceManager.WearableData> currentlyWorn, InventoryItem item)
         {
-            return currentlyWorn.Values.Any(n => n.ItemID == item.UUID);
+            return currentlyWorn.Any(worn => worn.ItemID == item.UUID);
         }
 
         /// <summary>
