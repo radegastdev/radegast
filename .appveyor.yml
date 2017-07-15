@@ -20,7 +20,7 @@ build:
 
 after_build:
   - cmd: '"C:\Program Files (x86)\NSIS\makensis.exe" bin\Radegast.nsi'
-  - cmd: 7z a -ttar -so Radegast-$env:TAG_VERSION.tar bin\ | 7z a -si Radegast-$env:TAG_VERSION.tbz
+  - cmd: '7z a -ttar -so Radegast-%version%.tar bin\ | 7z a -si Radegast-%version%.tbz'
 
 artifacts:
   - path: 'Radegast-*-installer.exe'
