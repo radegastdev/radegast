@@ -28,7 +28,7 @@ artifacts:
     type: Auto
   - path: 'Radegast-{version}.tbz'
     name: 'Radegast Linux'
-	type: Auto
+    type: Auto
 
 cache:
   - packages -> **\packages.config
