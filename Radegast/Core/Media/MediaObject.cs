@@ -58,20 +58,20 @@ namespace Radegast.Media
 
 
         // A SOUND represents the data (buffer or stream)
-        public FMOD.Sound FMODSound => sound;
-        protected FMOD.Sound sound = null;
+        public Sound FMODSound => sound;
+        protected Sound sound = null;
 
         // A CHANNEL represents a playback instance of a sound.
         public Channel FMODChannel => channel;
         protected Channel channel = null;
 
         // Additional info for callbacks goes here.
-        protected FMOD.CREATESOUNDEXINFO extraInfo;
-        protected static FMOD.CHANNEL_CALLBACK endCallback;
+        protected CREATESOUNDEXINFO extraInfo;
+        protected static CHANNEL_CALLBACK endCallback;
 
         // Vectors used for orienting spatial axes.
-        protected static FMOD.VECTOR UpVector;
-        protected static FMOD.VECTOR ZeroVector;
+        protected static VECTOR UpVector;
+        protected static VECTOR ZeroVector;
 
         /// <summary>
         /// Base FMOD system object, of which there is only one.
@@ -84,7 +84,7 @@ namespace Radegast.Media
         protected MediaObject()
         {
             // Zero out the extra info structure.
-            extraInfo = new FMOD.CREATESOUNDEXINFO();
+            extraInfo = new CREATESOUNDEXINFO();
             extraInfo.cbsize = Marshal.SizeOf(extraInfo);
         }
 
@@ -156,8 +156,8 @@ namespace Radegast.Media
         /// <summary>
         /// Update the 3D position of a sound source.
         /// </summary>
-        protected FMOD.VECTOR position = new FMOD.VECTOR();
-        public OpenMetaverse.Vector3 Position
+        protected VECTOR position = new VECTOR();
+        public Vector3 Position
         {
             set
             {
@@ -190,7 +190,7 @@ namespace Radegast.Media
             {
                 invoke(new SoundDelegate(delegate
                 {
-                    MediaManager.FMODExec(channel.stop());
+                    FMODExec(channel.stop());
                 }));
             }
         }
@@ -200,11 +200,11 @@ namespace Radegast.Media
         /// </summary>
         /// <param name="omvV"></param>
         /// <returns></returns>
-        protected FMOD.VECTOR FromOMVSpace(OpenMetaverse.Vector3 omvV)
+        protected VECTOR FromOMVSpace(Vector3 omvV)
         {
             // OMV  X is forward/East, Y is left/North, Z is up.
             // FMOD Z is forward/East, X is right/South, Y is up.
-            FMOD.VECTOR v = new FMOD.VECTOR
+            VECTOR v = new VECTOR
             {
                 x = -omvV.Y,
                 y = omvV.Z,
@@ -215,14 +215,14 @@ namespace Radegast.Media
 
         protected static Dictionary<IntPtr,MediaObject> allSounds;
         protected static Dictionary<IntPtr, MediaObject> allChannels;
-        protected void RegisterSound(FMOD.Sound sound)
+        protected void RegisterSound(Sound sound)
         {
             IntPtr raw = sound.getRaw();
             if (allSounds.ContainsKey(raw))
                 allSounds.Remove(raw);
             allSounds.Add(raw, this);
         }
-        protected void RegisterChannel(FMOD.Channel channel)
+        protected void RegisterChannel(Channel channel)
         {
             IntPtr raw = channel.getRaw();
             if (allChannels.ContainsKey(raw))
@@ -254,7 +254,7 @@ namespace Radegast.Media
         /// <returns></returns>
 
         // Subclasses override these methods to handle callbacks.
-        protected virtual FMOD.RESULT EndCallbackHandler() { return RESULT.OK; }
+        protected virtual RESULT EndCallbackHandler() { return RESULT.OK; }
 
         /// <summary>
         /// Main handler for playback-end callback.
@@ -285,20 +285,20 @@ namespace Radegast.Media
             return RESULT.OK;
         }
 
-        protected static void FMODExec(FMOD.RESULT result)
+        protected static void FMODExec(RESULT result)
         {
-            if (result != FMOD.RESULT.OK)
+            if (result != RESULT.OK)
             {
-                throw new MediaException($"FMOD error! {result} - {FMOD.Error.String(result)}");
+                throw new MediaException($"FMOD error! {result} - {Error.String(result)}");
             }
         }
 
-        protected static void FMODExec(FMOD.RESULT result, string trace)
+        protected static void FMODExec(RESULT result, string trace)
         {
             Logger.Log($"FMOD call {trace} returned {result}", Helpers.LogLevel.Info);
-            if (result != FMOD.RESULT.OK)
+            if (result != RESULT.OK)
             {
-                throw new MediaException($"FMOD error! {result} - {FMOD.Error.String(result)}");
+                throw new MediaException($"FMOD error! {result} - {Error.String(result)}");
             }
         }
 

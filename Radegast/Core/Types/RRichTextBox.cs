@@ -45,7 +45,7 @@ namespace Radegast
         /// <summary> 
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         private bool supressOnTextChanged = false;
         private bool syntaxHighLightEnabled = false;
@@ -91,16 +91,16 @@ namespace Radegast
                 monoRuntime = true;
             }
 
-            rtfHeader = this.Rtf.Substring(0, this.Rtf.IndexOf('{', 2)) + " ";
+            rtfHeader = Rtf.Substring(0, Rtf.IndexOf('{', 2)) + " ";
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.ttKeyWords = new ToolTip(this.components);
-            this.ttTimer = new System.Threading.Timer(ttTimerElapsed, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+            components = new Container();
+            ttKeyWords = new ToolTip(components);
+            ttTimer = new System.Threading.Timer(ttTimerElapsed, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
         }
 
         /// <summary> 
@@ -289,7 +289,7 @@ namespace Radegast
                 if (syntaxHighLightEnabled && value != null)
                 {
                     BeginUpdate();
-                    base.Rtf = ReHighlight(value);
+                    Rtf = ReHighlight(value);
                     EndUpdate();
                 }
                 else
@@ -480,7 +480,7 @@ namespace Radegast
         /// <param name="text">Text to be inserted</param>
         public void InsertLink(string text)
         {
-            InsertLink(text, this.SelectionStart);
+            InsertLink(text, SelectionStart);
         }
 
         /// <summary>
@@ -490,14 +490,14 @@ namespace Radegast
         /// <param name="position">Insert position</param>
         public void InsertLink(string text, int position)
         {
-            if (position < 0 || position > this.Text.Length)
+            if (position < 0 || position > Text.Length)
                 throw new ArgumentOutOfRangeException(nameof(position));
 
-            this.SelectionStart = position;
-            this.SelectedText = text;
-            this.Select(position, text.Length);
-            this.SetSelectionLink(true);
-            this.Select(position + text.Length, 0);
+            SelectionStart = position;
+            SelectedText = text;
+            Select(position, text.Length);
+            SetSelectionLink(true);
+            Select(position + text.Length, 0);
         }
 
         /// <summary>
@@ -511,7 +511,7 @@ namespace Radegast
         /// <param name="hyperlink">Invisible hyperlink string to be inserted</param>
         public void InsertLink(string text, string hyperlink)
         {
-            InsertLink(text, hyperlink, this.SelectionStart);
+            InsertLink(text, hyperlink, SelectionStart);
         }
 
         //public const char LinkSeparator = (char)0x1970;
@@ -545,10 +545,10 @@ namespace Radegast
         /// <param name="position">Insert position</param>
         public void InsertLink(string text, string hyperlink, int position)
         {
-            if (position < 0 || position > this.Text.Length)
+            if (position < 0 || position > Text.Length)
                 throw new ArgumentOutOfRangeException(nameof(position));
 
-            this.SelectionStart = position;
+            SelectionStart = position;
 
             if (monoRuntime)
             {
@@ -557,10 +557,10 @@ namespace Radegast
             }
             else
             {
-                this.SelectedRtf = rtfHeader + RtfUnicode(text) + @"\v " + LinkSeparator + hyperlink + @"\v0}";
-                this.Select(position, text.Length + hyperlink.Length + 1);
-                this.SetSelectionLink(true);
-                this.Select(position + text.Length + hyperlink.Length + 1, 0);
+                SelectedRtf = rtfHeader + RtfUnicode(text) + @"\v " + LinkSeparator + hyperlink + @"\v0}";
+                Select(position, text.Length + hyperlink.Length + 1);
+                SetSelectionLink(true);
+                Select(position + text.Length + hyperlink.Length + 1, 0);
             }
         }
 

@@ -555,7 +555,7 @@ namespace Radegast
         public IEnumerable<ToolStripItem> Choices()
         {
             List<ToolStripItem> lst = new List<ToolStripItem>();
-            foreach (ToolStripItem item in this.Items)
+            foreach (ToolStripItem item in Items)
             {
                 lst.Add(item);
             }

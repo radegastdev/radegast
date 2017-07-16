@@ -76,9 +76,9 @@ namespace Radegast
             netcom = this.instance.Netcom;
             client = this.instance.Client;
             this.fullName = fullName;
-            this.AgentID = agentID;
+            AgentID = agentID;
 
-            this.Text = fullName + " (profile) - " + Properties.Resources.ProgramName;
+            Text = fullName + " (profile) - " + Properties.Resources.ProgramName;
             txtUUID.Text = agentID.ToString();
 
             if (client.Friends.FriendList.ContainsKey(agentID))
@@ -115,7 +115,7 @@ namespace Radegast
             instance.InventoryClipboardUpdated += new EventHandler<EventArgs>(instance_InventoryClipboardUpdated);
             InitializeProfile();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmProfile_Disposed(object sender, EventArgs e)
@@ -434,7 +434,7 @@ namespace Radegast
                 rlPicPanel.Hide();
             }
 
-            this.BeginInvoke(
+            BeginInvoke(
                 new OnSetProfileProperties(SetProfileProperties),
                 new object[] { e.Properties });
         }

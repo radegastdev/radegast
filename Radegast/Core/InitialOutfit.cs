@@ -43,7 +43,7 @@ namespace Radegast
 
         public InitialOutfit(RadegastInstance instance)
         {
-            this.Instance = instance;
+            Instance = instance;
             Store = Client.Inventory.Store;
         }
 

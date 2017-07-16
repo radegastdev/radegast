@@ -44,7 +44,7 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(ntfLoadURL_Disposed);
             
-            this.ev = e;
+            ev = e;
             this.instance = instance;
 
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
@@ -58,7 +58,7 @@ namespace Radegast
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void ntfLoadURL_Disposed(object sender, EventArgs e)

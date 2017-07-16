@@ -29,11 +29,11 @@ namespace RadegastSpeech.Conversation
         private LinkedList<Mode> interruptions;
 
         // The permanent conversations.
-        private Conversation.Chat chat;
-        private Conversation.Closet inventory;
-        private Conversation.Friends friends;
-        private Conversation.Voice voice;
-        private Conversation.Surroundings surroundings;
+        private Chat chat;
+        private Closet inventory;
+        private Friends friends;
+        private Voice voice;
+        private Surroundings surroundings;
         private Mode currentMode;
         private Mode interrupted;
         internal string LoginName;
@@ -666,7 +666,7 @@ namespace RadegastSpeech.Conversation
         /// <param name="e"></param>
         void OnNotificationDisplayed(object sender, NotificationEventArgs e)
         {
-            AddInterruption(new Conversation.BlueMenu(control, e));
+            AddInterruption(new BlueMenu(control, e));
         }
 
         /// <summary>
@@ -677,7 +677,7 @@ namespace RadegastSpeech.Conversation
         void Netcom_InstantMessageSent(object sender, Radegast.Netcom.InstantMessageSentEventArgs e)
         {
             // Message to an individual
-            Conversation.IMSession sess = (IMSession)control.converse.GetConversation(control.instance.Names.Get(e.TargetID, true));
+            IMSession sess = (IMSession)control.converse.GetConversation(control.instance.Names.Get(e.TargetID, true));
             if (sess != null)
                 sess.OnMessage(Client.Self.AgentID, Client.Self.Name, e.Message);
         }
@@ -693,7 +693,7 @@ namespace RadegastSpeech.Conversation
             WorkPool.QueueUserWorkItem(sync =>
                 {
                     Thread.Sleep(100); // Give tab a chance to show up
-                    Conversation.IMSession sess = null;
+                    IMSession sess = null;
                     string groupName;
 
                     // All sorts of things come in as a instant messages. For actual messages

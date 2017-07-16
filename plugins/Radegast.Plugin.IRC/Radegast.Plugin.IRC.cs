@@ -35,7 +35,7 @@ using OpenMetaverse;
 
 namespace Radegast.Plugin.IRC
 {
-    [Radegast.Plugin(Name = "IRC Relay", Description = "Relays SL group chat to a IRC network", Version = "0.1")]
+    [Plugin(Name = "IRC Relay", Description = "Relays SL group chat to a IRC network", Version = "0.1")]
     public class IRCPlugin : IRadegastPlugin
     {
         RadegastInstance instance;

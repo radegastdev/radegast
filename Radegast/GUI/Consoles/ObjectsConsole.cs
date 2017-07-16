@@ -112,7 +112,7 @@ namespace Radegast
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Avatars_UUIDNameReply);
             instance.State.OnWalkStateCanged += new StateManager.WalkStateCanged(State_OnWalkStateCanged);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmObjects_Disposed(object sender, EventArgs e)
@@ -147,7 +147,7 @@ namespace Radegast
                 return;
             }
 
-            btnSitOn.Text = (this.instance.State.IsSitting ? "Stand Up" : "Sit On");
+            btnSitOn.Text = (instance.State.IsSitting ? "Stand Up" : "Sit On");
         }
 
         public void RefreshObjectList()
@@ -664,7 +664,7 @@ namespace Radegast
                     PrimFlags.ObjectGroupOwned == (prim.Flags & PrimFlags.ObjectGroupOwned) &&
                     UUID.Zero != prim.Properties.GroupID)
                 {
-                    System.Threading.AutoResetEvent nameReceivedSignal = new System.Threading.AutoResetEvent(false);
+                    AutoResetEvent nameReceivedSignal = new AutoResetEvent(false);
                     EventHandler<GroupNamesEventArgs> cbGroupName = new EventHandler<GroupNamesEventArgs>(
                         delegate(object sender, GroupNamesEventArgs e)
                         {
@@ -1140,10 +1140,10 @@ namespace Radegast
             else
                 ctxMenuObjects.Items.Add("Hide Contents", null, btnCloseContents_Click);
 
-            ctxMenuObjects.Items.Add(this.instance.State.IsSitting ? "Stand Up" : "Sit On", null, btnSitOn_Click);
+            ctxMenuObjects.Items.Add(instance.State.IsSitting ? "Stand Up" : "Sit On", null, btnSitOn_Click);
             ctxMenuObjects.Items.Add("Turn To", null, btnTurnTo_Click);
             ctxMenuObjects.Items.Add("Walk To", null, btnWalkTo_Click);
-            ctxMenuObjects.Items.Add(this.instance.State.IsPointing ? "Unpoint" : "Point At", null, btnPointAt_Click);
+            ctxMenuObjects.Items.Add(instance.State.IsPointing ? "Unpoint" : "Point At", null, btnPointAt_Click);
             ctxMenuObjects.Items.Add("3D View", null, btnView_Click);
             ctxMenuObjects.Items.Add("Take", null, btnTake_Click);
             ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);

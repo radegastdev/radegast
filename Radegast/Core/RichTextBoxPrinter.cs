@@ -159,7 +159,7 @@ namespace Radegast
             }
         }
 
-        public System.Drawing.Color ForeColor
+        public Color ForeColor
         {
             get
             {
@@ -171,7 +171,7 @@ namespace Radegast
             }
         }
 
-        public System.Drawing.Color BackColor
+        public Color BackColor
         {
             get
             {
@@ -183,7 +183,7 @@ namespace Radegast
             }
         }
 
-        public System.Drawing.Font Font
+        public Font Font
         {
             get
             {

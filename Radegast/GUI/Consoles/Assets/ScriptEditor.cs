@@ -74,7 +74,7 @@ namespace Radegast
             lblScripStatus.TextChanged += (sender, e) =>
                 instance.TabConsole.DisplayNotificationInChat(lblScripStatus.Text, ChatBufferTextStyle.Invisible);
             Dock = DockStyle.Fill;
-            this.TabStop = false;
+            TabStop = false;
 
             if (prim == null)
             {
@@ -103,7 +103,7 @@ namespace Radegast
                 rtb.SelectionStart = 0;
             }
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void SscriptEditor_Disposed(object sender, EventArgs e)

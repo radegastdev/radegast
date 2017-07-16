@@ -37,7 +37,7 @@ using AIMLbot;
 
 namespace Radegast.Plugin.Alice
 {
-    [Radegast.Plugin(Name = "ALICE Chatbot", Description = "A.L.I.C.E. based AI chat bot", Version = "1.1")]
+    [Plugin(Name = "ALICE Chatbot", Description = "A.L.I.C.E. based AI chat bot", Version = "1.1")]
     public class AliceAI : IRadegastPlugin
     {
         private RadegastInstance Instance;
@@ -45,7 +45,7 @@ namespace Radegast.Plugin.Alice
 
         private bool Enabled = false;
         private Avatar.AvatarProperties MyProfile;
-        private AIMLbot.Bot Alice;
+        private Bot Alice;
         private Hashtable AliceUsers = new Hashtable();
         private ToolStripMenuItem MenuButton, EnabledButton;
         private TalkToAvatar talkToAvatar;
@@ -305,7 +305,7 @@ namespace Radegast.Plugin.Alice
         {
             try
             {
-                Alice = new AIMLbot.Bot();
+                Alice = new Bot();
                 Alice.isAcceptingUserInput = false;
                 Alice.loadSettings();
                 AIMLbot.Utils.AIMLLoader loader = new AIMLbot.Utils.AIMLLoader(Alice);
@@ -316,7 +316,7 @@ namespace Radegast.Plugin.Alice
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine("Failed loading ALICE: " + ex.Message);
+                Console.WriteLine("Failed loading ALICE: " + ex.Message);
                 return false;
             }
         }
@@ -416,10 +416,10 @@ namespace Radegast.Plugin.Alice
                         Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
                         string msg = e.Message.ToLower();
                         msg = msg.Replace(FirstName(Client.Self.Name).ToLower(), "");
-                        AIMLbot.User user;
+                        User user;
                         if (AliceUsers.ContainsKey(e.FromName))
                         {
-                            user = (AIMLbot.User)AliceUsers[e.FromName];
+                            user = (User)AliceUsers[e.FromName];
                         }
                         else
                         {
@@ -444,8 +444,8 @@ namespace Radegast.Plugin.Alice
                             System.Threading.Thread.Sleep(1000);
                         }
                         Instance.State.SetTyping(false);
-                        AIMLbot.Request req = new Request(msg, user, Alice);
-                        AIMLbot.Result res = Alice.Chat(req);
+                        Request req = new Request(msg, user, Alice);
+                        Result res = Alice.Chat(req);
                         string outp = res.Output;
                         if (outp.Length > 1000)
                         {
@@ -501,10 +501,10 @@ namespace Radegast.Plugin.Alice
                     lock (syncChat)
                     {
                         Alice.GlobalSettings.updateSetting("location", "region " + Client.Network.CurrentSim.Name);
-                        AIMLbot.User user;
+                        User user;
                         if (AliceUsers.ContainsKey(e.IM.FromAgentName))
                         {
-                            user = (AIMLbot.User)AliceUsers[e.IM.FromAgentName];
+                            user = (User)AliceUsers[e.IM.FromAgentName];
                         }
                         else
                         {
@@ -513,8 +513,8 @@ namespace Radegast.Plugin.Alice
                             user.Predicates.addSetting("name", FirstName(e.IM.FromAgentName));
                             AliceUsers[e.IM.FromAgentName] = user;
                         }
-                        AIMLbot.Request req = new Request(e.IM.Message, user, Alice);
-                        AIMLbot.Result res = Alice.Chat(req);
+                        Request req = new Request(e.IM.Message, user, Alice);
+                        Result res = Alice.Chat(req);
                         string msg = res.Output;
                         if (msg.Length > 1000)
                         {

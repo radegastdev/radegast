@@ -64,7 +64,7 @@ namespace Radegast.Rendering
 
     public class TextureInfo
     {
-        public System.Drawing.Image Texture;
+        public Image Texture;
         public int TexturePointer;
         public bool HasAlpha;
         public bool FullAlpha;
@@ -82,7 +82,7 @@ namespace Radegast.Rendering
         public byte[] TextureData = null;
         public byte[] TGAData = null;
         public bool LoadAssetFromCache = false;
-        public OpenMetaverse.ImageType ImageType = OpenMetaverse.ImageType.Normal;
+        public ImageType ImageType = ImageType.Normal;
         public string BakeName = string.Empty;
         public UUID AvatarID = UUID.Zero;
     }
@@ -227,9 +227,9 @@ namespace Radegast.Rendering
         public virtual int CompareTo(object other)
         {
             SceneObject o = (SceneObject)other;
-            if (this.DistanceSquared < o.DistanceSquared)
+            if (DistanceSquared < o.DistanceSquared)
                 return -1;
-            if (this.DistanceSquared > o.DistanceSquared)
+            if (DistanceSquared > o.DistanceSquared)
                 return 1;
             return 0;
         }

@@ -57,7 +57,7 @@ namespace Radegast
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
 
         private InventoryManager Manager;
-        private OpenMetaverse.Inventory Inventory;
+        private Inventory Inventory;
         private TreeNode invRootNode;
         private string newItemName = string.Empty;
         private List<UUID> fetchedFolders = new List<UUID>();
@@ -101,7 +101,7 @@ namespace Radegast
             UpdateStatus("Reading cache");
             Init1();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public void Init1()
@@ -174,7 +174,7 @@ namespace Radegast
             invTree.NodeMouseClick += new TreeNodeMouseClickEventHandler(invTree_MouseClick);
             invTree.NodeMouseDoubleClick += new TreeNodeMouseClickEventHandler(invTree_NodeMouseDoubleClick);
 
-            _EditTimer = new System.Threading.Timer(OnLabelEditTimer, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+            _EditTimer = new System.Threading.Timer(OnLabelEditTimer, null, Timeout.Infinite, Timeout.Infinite);
 
             // Callbacks
             Inventory.InventoryObjectAdded += new EventHandler<InventoryObjectAddedEventArgs>(Inventory_InventoryObjectAdded);
@@ -2211,7 +2211,7 @@ namespace Radegast
             {
                 e.CancelEdit = true;
                 _EditNode = e.Node;
-                _EditTimer.Change(20, System.Threading.Timeout.Infinite);
+                _EditTimer.Change(20, Timeout.Infinite);
             }
         }
 
@@ -2430,8 +2430,8 @@ namespace Radegast
 
             public SearchResult(InventoryBase inv, int level)
             {
-                this.Inv = inv;
-                this.Level = level;
+                Inv = inv;
+                Level = level;
             }
         }
 

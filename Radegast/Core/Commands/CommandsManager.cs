@@ -263,7 +263,7 @@ namespace Radegast.Commands
         /// <param name="cmdline"></param>
         public void ExecuteCommand(string cmdline)
         {
-            ExecuteCommand(this.WriteLine, cmdline);
+            ExecuteCommand(WriteLine, cmdline);
         }
 
         /// <summary>

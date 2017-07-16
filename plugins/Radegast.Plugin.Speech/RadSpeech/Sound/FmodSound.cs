@@ -41,14 +41,14 @@ namespace RadegastSpeech.Sound
 {
     class FmodSound : Control
     {
-        Radegast.Media.Speech speechPlayer;
+        Speech speechPlayer;
         private AutoResetEvent playing;
 
         internal FmodSound(PluginControl pc)
             : base(pc)
         {
             playing = new AutoResetEvent(false);
-            speechPlayer = new Radegast.Media.Speech();
+            speechPlayer = new Speech();
             speechPlayer.OnSpeechDone += new Speech.SpeechDoneCallback(SpeechDoneHandler);
         }
 

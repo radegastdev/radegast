@@ -61,11 +61,11 @@ namespace Radegast.Rendering
 
             public TextItem(string text, Font font, Color color, Rectangle box, TextFormatFlags flags)
             {
-                this.Text = text;
-                this.Font = font;
-                this.Color = color;
-                this.Box = box;
-                this.Flags = flags | TextFormatFlags.NoPrefix;
+                Text = text;
+                Font = font;
+                Color = color;
+                Box = box;
+                Flags = flags | TextFormatFlags.NoPrefix;
             }
         }
 
@@ -80,7 +80,7 @@ namespace Radegast.Rendering
 
         public TextRendering(RadegastInstance instance)
         {
-            this.Instance = instance;
+            Instance = instance;
             textItems = new List<TextItem>();
         }
 
@@ -95,7 +95,7 @@ namespace Radegast.Rendering
 
         public static Size Measure(string text, Font font, TextFormatFlags flags)
         {
-            return TextRenderer.MeasureText(text, font, TextRendering.MaxSize, flags);
+            return TextRenderer.MeasureText(text, font, MaxSize, flags);
         }
 
         public void Begin()
@@ -177,7 +177,7 @@ namespace Radegast.Rendering
                  s = TextRenderer.MeasureText(
                     item.Text,
                     item.Font,
-                    TextRendering.MaxSize,
+                    MaxSize,
                     item.Flags);
             }
             catch

@@ -110,7 +110,7 @@ namespace Radegast.Rendering
         public frmPrimWorkshop(RadegastInstance instance, uint rootLocalID)
             : base(instance)
         {
-            this.RootPrimLocalID = rootLocalID;
+            RootPrimLocalID = rootLocalID;
 
             InitializeComponent();
             Disposed += new EventHandler(frmPrimWorkshop_Disposed);
@@ -127,7 +127,7 @@ namespace Radegast.Rendering
             Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
             Client.Objects.ObjectDataBlockUpdate += new EventHandler<ObjectDataBlockUpdateEventArgs>(Objects_ObjectDataBlockUpdate);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmPrimWorkshop_Disposed(object sender, EventArgs e)
@@ -593,7 +593,7 @@ namespace Radegast.Rendering
         #region Public methods
         public void SetView(Vector3 center, int roll, int pitch, int yaw, int zoom)
         {
-            this.Center = center;
+            Center = center;
             scrollRoll.Value = roll;
             scrollPitch.Value = pitch;
             scrollYaw.Value = yaw;
@@ -868,7 +868,7 @@ namespace Radegast.Rendering
             Render(true);
 
             byte[] color = new byte[4];
-            GL.ReadPixels(x, glControl.Height - y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, color);
+            GL.ReadPixels(x, glControl.Height - y, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, color);
 
             GL.PopAttrib();
 

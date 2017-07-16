@@ -37,9 +37,9 @@ namespace Radegast.Netcom
     {
         public ChatSentEventArgs(string message, ChatType type, int channel)
         {
-            this.Message = message;
-            this.Type = type;
-            this.Channel = channel;
+            Message = message;
+            Type = type;
+            Channel = channel;
         }
 
         public string Message { get; }

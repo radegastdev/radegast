@@ -6,7 +6,7 @@ namespace Radegast
 {
     public partial class RegionInfo : RadegastTabControl
     {
-        System.Windows.Forms.Timer refresh;
+        Timer refresh;
         UUID parcelGroupID = UUID.Zero;
 
         public RegionInfo()
@@ -20,7 +20,7 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(RegionInfo_Disposed);
 
-            refresh = new System.Windows.Forms.Timer()
+            refresh = new Timer()
             {
                 Enabled = false,
                 Interval = 1000,
@@ -34,7 +34,7 @@ namespace Radegast
             UpdateDisplay();
             client.Parcels.RequestDwell(client.Network.CurrentSim, instance.State.Parcel.LocalID);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void RegionInfo_Disposed(object sender, EventArgs e)

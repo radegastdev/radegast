@@ -47,7 +47,7 @@ namespace SimpleBuilderNamespace
     /// Example implementation of a control that can be used
     /// as Radegast tab and loeaded as a plugin
     /// </summary>
-    [Radegast.Plugin(Name = "SimpleBuilder Plugin", Description = "Allows you to build some basic prims, like boxes, cylinder, tubes, ... (requires permission!)", Version = "1.0")]
+    [Plugin(Name = "SimpleBuilder Plugin", Description = "Allows you to build some basic prims, like boxes, cylinder, tubes, ... (requires permission!)", Version = "1.0")]
     public partial class SimpleBuilder : RadegastTabControl, IRadegastPlugin
     {
         System.Threading.AutoResetEvent primDone = new System.Threading.AutoResetEvent(false);
@@ -135,7 +135,7 @@ namespace SimpleBuilderNamespace
         /// <param name="inst">Main RadegastInstance</param>
         public void StartPlugin(RadegastInstance inst)
         {
-            this.instance = inst;
+            instance = inst;
 
             propRequester = new PropertiesQueue(instance);
             propRequester.OnTick += new PropertiesQueue.TickCallback(propRequester_OnTick);
@@ -359,7 +359,7 @@ namespace SimpleBuilderNamespace
 
             PrimType primType = (PrimType)Enum.Parse(typeof(PrimType), btn.Text);
 
-            this.BuildAndRez(primType);
+            BuildAndRez(primType);
         }
 
         private void BuildAndRez(PrimType primType)
@@ -497,7 +497,7 @@ namespace SimpleBuilderNamespace
                     {
                         distance = 0;
                     }
-                    if (IncludePrim(prim) && (prim.Position != Vector3.Zero) && (distance < (int)this.numRadius.Value))
+                    if (IncludePrim(prim) && (prim.Position != Vector3.Zero) && (distance < (int)numRadius.Value))
                     {
                         Prims.Add(prim);
                         if (prim.Properties == null)

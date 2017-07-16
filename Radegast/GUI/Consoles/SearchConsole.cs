@@ -77,7 +77,7 @@ namespace Radegast
             lvwPlaces.ListViewItemSorter = new PlaceSorter();
             lvwGroups.ListViewItemSorter = new GroupSorter();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void SearchConsole_Disposed(object sender, EventArgs e)
@@ -747,7 +747,7 @@ namespace Radegast
             txtEventName.Text = evt.Name;
             txtEventType.Text = evt.Category.ToString();
             txtEventMaturity.Text = evt.Flags.ToString();
-            txtEventDate.Text = OpenMetaverse.Utils.UnixTimeToDateTime(evt.DateUTC).ToString("r");
+            txtEventDate.Text = Utils.UnixTimeToDateTime(evt.DateUTC).ToString("r");
             txtEventDuration.Text = string.Format("{0}:{1:00}", evt.Duration / 60u, evt.Duration % 60u);
             txtEventOrganizer.Text = instance.Names.Get(evt.Creator, string.Empty);
             txtEventOrganizer.Tag = evt.Creator;
@@ -784,7 +784,7 @@ namespace Radegast
         {
             var evt = (DirectoryManager.EventInfo)pnlEventDetail.Tag;
             float localX, localY;
-            ulong handle = OpenMetaverse.Helpers.GlobalPosToRegionHandle((float)evt.GlobalPos.X, (float)evt.GlobalPos.Y, out localX, out localY);
+            ulong handle = Helpers.GlobalPosToRegionHandle((float)evt.GlobalPos.X, (float)evt.GlobalPos.Y, out localX, out localY);
             client.Self.Teleport(handle, new Vector3(localX, localY, (float)evt.GlobalPos.Z));
         }
 

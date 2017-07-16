@@ -49,7 +49,7 @@ namespace Radegast
             Disposed += new EventHandler(DebugConsole_Disposed);
             RadegastAppender.Log += new EventHandler<LogEventArgs>(RadegastAppender_Log);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void DebugConsole_Disposed(object sender, EventArgs e)

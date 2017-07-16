@@ -208,13 +208,13 @@ namespace Radegast.Rendering
 
         public void AddVolume(BoundingVolume vol, Vector3 scale)
         {
-            if (vol.Min.X < this.Min.X) this.Min.X = vol.Min.X;
-            if (vol.Min.Y < this.Min.Y) this.Min.Y = vol.Min.Y;
-            if (vol.Min.Z < this.Min.Z) this.Min.Z = vol.Min.Z;
+            if (vol.Min.X < Min.X) Min.X = vol.Min.X;
+            if (vol.Min.Y < Min.Y) Min.Y = vol.Min.Y;
+            if (vol.Min.Z < Min.Z) Min.Z = vol.Min.Z;
 
-            if (vol.Max.X > this.Max.X) this.Max.X = vol.Max.X;
-            if (vol.Max.Y > this.Max.Y) this.Max.Y = vol.Max.Y;
-            if (vol.Max.Z > this.Max.Z) this.Max.Z = vol.Max.Z;
+            if (vol.Max.X > Max.X) Max.X = vol.Max.X;
+            if (vol.Max.Y > Max.Y) Max.Y = vol.Max.Y;
+            if (vol.Max.Z > Max.Z) Max.Z = vol.Max.Z;
             Vector3 dist = Max - Min;
             R = dist.Length();
             CalcScaled(scale);

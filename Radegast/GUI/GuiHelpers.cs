@@ -9,7 +9,7 @@ namespace Radegast.GUI
         {
             try
             {
-                var instance = Radegast.RadegastInstance.GlobalInstance;
+                var instance = RadegastInstance.GlobalInstance;
                 if (instance.GlobalSettings["theme_compatibility_mode"])
                 {
                     ApplyThemeCompatibilityModeRecursive(root);

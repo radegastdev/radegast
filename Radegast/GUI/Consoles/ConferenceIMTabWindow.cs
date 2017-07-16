@@ -55,13 +55,13 @@ namespace Radegast
             Disposed += new EventHandler(IMTabWindow_Disposed);
 
             this.instance = instance;
-            this.client = instance.Client;
-            this.SessionName = sessionName;
+            client = instance.Client;
+            SessionName = sessionName;
             netcom = this.instance.Netcom;
 
-            this.SessionId = session;
+            SessionId = session;
 
-            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Conference, this.SessionId, sessionName);
+            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Conference, SessionId, sessionName);
             
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
@@ -73,7 +73,7 @@ namespace Radegast
                 client.Self.ChatterBoxAcceptInvite(session);
             }
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
@@ -111,7 +111,7 @@ namespace Radegast
             if (cbxInput.Text.Length == 0) return;
 
             SendMessage(cbxInput.Text);
-            this.ClearIMInput();
+            ClearIMInput();
         }
 
         private void cbxInput_TextChanged(object sender, EventArgs e)
@@ -190,7 +190,7 @@ namespace Radegast
 
             SendMessage(message);
 
-            this.ClearIMInput();
+            ClearIMInput();
         }
 
         private void SendMessage(string msg)

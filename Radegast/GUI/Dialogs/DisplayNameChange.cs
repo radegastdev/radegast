@@ -49,7 +49,7 @@ namespace Radegast
         {
             InitializeComponent();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public DisplayNameChange(RadegastInstance inst)
@@ -61,7 +61,7 @@ namespace Radegast
 
             Client.Self.SetDisplayNameReply += new EventHandler<SetDisplayNameReplyEventArgs>(Self_SetDisplayNameReply);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void DisplayNameChange_Disposed(object sender, EventArgs e)
@@ -101,7 +101,7 @@ namespace Radegast
         {
             WorkPool.QueueUserWorkItem(sync =>
                 {
-                    Client.Avatars.GetDisplayNames(new List<OpenMetaverse.UUID>() { Client.Self.AgentID },
+                    Client.Avatars.GetDisplayNames(new List<UUID>() { Client.Self.AgentID },
                         (success, names, badIDs) =>
                         {
                             if (!success || names.Length < 1)

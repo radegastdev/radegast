@@ -119,7 +119,7 @@ namespace Radegast
             RefreshControlsAvailability();
             RefreshGroupInfo();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void GroupDetails_Disposed(object sender, EventArgs e)
@@ -240,7 +240,7 @@ namespace Radegast
                 btnSave.Tag = msg;
             }
 
-            string text = msg.Message.Replace("\n", System.Environment.NewLine);
+            string text = msg.Message.Replace("\n", Environment.NewLine);
             int pos = msg.Message.IndexOf('|');
             string title = msg.Message.Substring(0, pos);
             text = text.Remove(0, pos + 1);
@@ -415,7 +415,7 @@ namespace Radegast
                 return;
             }
 
-            this.titles = e.Titles;
+            titles = e.Titles;
 
             foreach (GroupTitle title in titles.Values)
             {
@@ -726,7 +726,7 @@ namespace Radegast
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            this.FindForm().Close();
+            FindForm().Close();
         }
 
         private void tcGroupDetails_SelectedIndexChanged(object sender, EventArgs e)

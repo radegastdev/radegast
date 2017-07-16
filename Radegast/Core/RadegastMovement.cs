@@ -125,7 +125,7 @@ namespace Radegast
         public RadegastMovement(RadegastInstance instance)
         {
             this.instance = instance;
-            timer = new System.Timers.Timer(100);
+            timer = new Timer(100);
             timer.Elapsed +=new ElapsedEventHandler(timer_Elapsed);
             timer.Enabled = false;
         }

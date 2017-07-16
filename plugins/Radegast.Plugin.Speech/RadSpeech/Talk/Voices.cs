@@ -397,7 +397,7 @@ namespace RadegastSpeech.Talk
             root = r;
             rateModification = rate;
             pitchModification = pitch;
-            this.Male = root.Male;
+            Male = root.Male;
         }
     }
 }

@@ -53,14 +53,14 @@ namespace Radegast
             this.instance = instance;
 
             this.target = target;
-            this.SessionId = session;
-            this.TargetName = toName;
+            SessionId = session;
+            TargetName = toName;
 
-            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Agent, this.SessionId, toName);
+            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Agent, SessionId, toName);
 
             AddNetcomEvents();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void IMTabWindow_Disposed(object sender, EventArgs e)
@@ -163,7 +163,7 @@ namespace Radegast
                 msg = "*** IM blocked by sender's viewer";
 
             netcom.SendInstantMessage(msg, target, SessionId);
-            this.ClearIMInput();
+            ClearIMInput();
         }
 
         void ChatHistoryPrev()

@@ -160,18 +160,18 @@ namespace Radegast
                 cbxFontSize.Items.Add((float)i + 0.5f);
             }
 
-            foreach (var font in System.Drawing.FontFamily.Families)
+            foreach (var font in FontFamily.Families)
             {
                 cbxFont.Items.Add(font.Name);
             }
 
             //var colorTypes = typeof(System.Drawing.Color);
             //var props = colorTypes.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
-            var knownColors = typeof(System.Drawing.KnownColor).GetEnumValues();
+            var knownColors = typeof(KnownColor).GetEnumValues();
 
             foreach (var item in knownColors)
             {
-                var color = System.Drawing.Color.FromKnownColor((System.Drawing.KnownColor)item);
+                var color = Color.FromKnownColor((KnownColor)item);
                 cbxForeground.Items.Add(color);
                 cbxBackground.Items.Add(color);
             }
@@ -221,7 +221,7 @@ namespace Radegast
         {
             if (settingInitialized)
             {
-                frmSettings.InitSettigs(instance.GlobalSettings, instance.MonoRuntime);
+                InitSettigs(instance.GlobalSettings, instance.MonoRuntime);
             }
 
             InitializeComponent();
@@ -229,7 +229,7 @@ namespace Radegast
             InitColorSettings();
 
             s = instance.GlobalSettings;
-            tbpGraphics.Controls.Add(new Radegast.Rendering.GraphicsPreferences(instance));
+            tbpGraphics.Controls.Add(new Rendering.GraphicsPreferences(instance));
             cbChatTimestamps.Checked = s["chat_timestamps"].AsBoolean();
 
             cbIMTimeStamps.Checked = s["im_timestamps"].AsBoolean();
@@ -419,7 +419,7 @@ namespace Radegast
 
             UpdateEnabled();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void UpdateEnabled()

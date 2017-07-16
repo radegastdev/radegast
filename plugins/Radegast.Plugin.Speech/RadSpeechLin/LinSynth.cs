@@ -172,7 +172,7 @@ namespace RadegastSpeech
 			}
 			catch( Exception e )
 			{
-				System.Console.WriteLine( "Festival process error " + e.Message );
+				Console.WriteLine( "Festival process error " + e.Message );
 				return;
 			}
  

@@ -178,7 +178,7 @@ namespace Radegast
             InitializeStatusTimer();
             RefreshWindowTitle();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -221,7 +221,7 @@ namespace Radegast
                 instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             }
 
-            this.instance.CleanUp();
+            instance.CleanUp();
         }
         #endregion
 
@@ -318,7 +318,7 @@ namespace Radegast
             // disconnect, since ShowDialog() blocks GUI thread
             (new Thread(new ThreadStart(() =>
                 {
-                    System.Threading.Thread.Sleep(3000);
+                    Thread.Sleep(3000);
                     DisplayAutoReconnectForm();
                 }
                 ))
@@ -389,7 +389,7 @@ namespace Radegast
         {
             if (instance.GlobalSettings["confirm_exit"].AsBoolean())
             {
-                if (MessageBox.Show("Are you sure you want to exit Radegast?", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                if (MessageBox.Show("Are you sure you want to exit Radegast?", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 {
                     e.Cancel = true;
                     return;
@@ -542,7 +542,7 @@ namespace Radegast
                 sb.Append("Logged Out");
             }
 
-            this.Text = sb.ToString();
+            Text = sb.ToString();
 
             // When minimized to tray, update tray tool tip also
             if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_tray"])
@@ -720,7 +720,7 @@ namespace Radegast
                 firstLoad = false;
                 TabConsole.SelectTab("login");
                 ResourceManager rm = Properties.Resources.ResourceManager;
-                ResourceSet set = rm.GetResourceSet(System.Globalization.CultureInfo.CurrentCulture, true, true);
+                ResourceSet set = rm.GetResourceSet(CultureInfo.CurrentCulture, true, true);
                 System.Collections.IDictionaryEnumerator de = set.GetEnumerator();
                 while (de.MoveNext() == true)
                 {
@@ -735,7 +735,7 @@ namespace Radegast
 
                 if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
                 {
-                    pnlDialog.BackColor = System.Drawing.Color.FromArgb(120, 220, 255);
+                    pnlDialog.BackColor = Color.FromArgb(120, 220, 255);
                 }
 
             }
@@ -1219,7 +1219,7 @@ namespace Radegast
 
         private void timerWorldClock_Tick(object sender, EventArgs e)
         {
-            lblTime.Text = instance.GetWorldTime().ToString("h:mm tt", System.Globalization.CultureInfo.InvariantCulture);
+            lblTime.Text = instance.GetWorldTime().ToString("h:mm tt", CultureInfo.InvariantCulture);
         }
 
         private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)

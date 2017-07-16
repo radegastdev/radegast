@@ -72,7 +72,7 @@ namespace RadegastSpeech.Conversation
         void note_OnNotificationClicked(object sender, EventArgs e, NotificationEventArgs notice)
         {
             Button b = sender as Button;
-            Talker.SayMore( b.Text, RadegastSpeech.Talk.BeepType.Good);
+            Talker.SayMore( b.Text, Talk.BeepType.Good);
         }
 
         void ReadOptions()

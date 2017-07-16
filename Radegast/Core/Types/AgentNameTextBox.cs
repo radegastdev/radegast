@@ -35,7 +35,7 @@ using OpenMetaverse;
 
 namespace Radegast
 {
-    public class AgentNameTextBox : System.Windows.Forms.TextBox
+    public class AgentNameTextBox : TextBox
     {
         private UUID agentID;
         private GridClient client { get { return RadegastInstance.GlobalInstance.Client; } }
@@ -101,7 +101,7 @@ namespace Radegast
                 return;
             }
 
-            base.Text = name;
+            Text = name;
         }
     }
 }

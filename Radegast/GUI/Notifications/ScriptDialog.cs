@@ -89,7 +89,7 @@ namespace Radegast
             args.Buttons.Add(ignoreBtn);
             FireNotificationCallback(args);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void b_Click(object sender, EventArgs e)

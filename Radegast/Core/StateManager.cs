@@ -48,9 +48,9 @@ namespace Radegast
 
         public KnownHeading(string id, string name, Quaternion heading)
         {
-            this.ID = id;
-            this.Name = name;
-            this.Heading = heading;
+            ID = id;
+            Name = name;
+            Heading = heading;
         }
 
         public override string ToString()
@@ -275,7 +275,7 @@ namespace Radegast
                 client.Objects.RequestObject(client.Network.CurrentSim, client.Self.SittingOn);
             }
 
-            SitStateChanged?.Invoke(this, new SitEventArgs(this.sitting));
+            SitStateChanged?.Invoke(this, new SitEventArgs(sitting));
         }
 
         /// <summary>
@@ -777,7 +777,7 @@ namespace Radegast
                 walkTimer = new System.Threading.Timer(new TimerCallback(walkTimerElapsed), null, walkChekInterval, Timeout.Infinite);
             }
 
-            lastDistanceChanged = System.Environment.TickCount;
+            lastDistanceChanged = Environment.TickCount;
             client.Self.AutoPilotCancel();
             IsWalking = true;
             client.Self.AutoPilot(walkToTarget.X, walkToTarget.Y, walkToTarget.Z);
@@ -798,10 +798,10 @@ namespace Radegast
             {
                 if (lastDistance != (int)distance)
                 {
-                    lastDistanceChanged = System.Environment.TickCount;
+                    lastDistanceChanged = Environment.TickCount;
                     lastDistance = (int)distance;
                 }
-                else if ((System.Environment.TickCount - lastDistanceChanged) > 10000)
+                else if ((Environment.TickCount - lastDistanceChanged) > 10000)
                 {
                     // Our distance to the target has not changed in 10s, give up
                     EndWalking();
@@ -848,7 +848,7 @@ namespace Radegast
 
                     if (walkToTarget != Vector3d.Zero)
                     {
-                        System.Threading.Thread.Sleep(1000);
+                        Thread.Sleep(1000);
                         msg += $" {Vector3d.Distance(client.Self.GlobalPosition, walkToTarget):0} meters from destination";
                         walkToTarget = Vector3d.Zero;
                     }
@@ -882,7 +882,7 @@ namespace Radegast
         {
             var busyAnim = new Dictionary<UUID, bool> {{BusyAnimationID, busy}};
             client.Self.Animate(busyAnim, true);
-            this.IsBusy = busy;
+            IsBusy = busy;
         }
 
         public void SetFlying(bool fly)
@@ -1107,7 +1107,7 @@ namespace Radegast
 
         public SitEventArgs(bool sitting)
         {
-            this.Sitting = sitting;
+            Sitting = sitting;
         }
     }
 }

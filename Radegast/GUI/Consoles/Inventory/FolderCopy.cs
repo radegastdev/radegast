@@ -11,8 +11,8 @@ namespace Radegast
 
         public FolderCopy(RadegastInstance instance)
         {
-            this.Instance = instance;
-            this.Client = this.Instance.Client;
+            Instance = instance;
+            Client = Instance.Client;
         }
 
         public void GetFolders(string folder)

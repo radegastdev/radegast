@@ -56,11 +56,11 @@ namespace Radegast
 
         public IMTextManager(RadegastInstance instance, ITextPrinter textPrinter, IMTextManagerType type, UUID sessionID, string sessionName)
         {
-            this.SessionID = sessionID;
+            SessionID = sessionID;
             this.sessionName = sessionName;
-            this.TextPrinter = textPrinter;
-            this.textBuffer = new ArrayList();
-            this.Type = type;
+            TextPrinter = textPrinter;
+            textBuffer = new ArrayList();
+            Type = type;
 
             this.instance = instance;
             PrintLastLog();
@@ -165,9 +165,9 @@ namespace Radegast
         public void ProcessIM(object e, bool isNewMessage)
         {
             if (e is InstantMessageEventArgs)
-                this.ProcessIncomingIM((InstantMessageEventArgs)e, isNewMessage);
+                ProcessIncomingIM((InstantMessageEventArgs)e, isNewMessage);
             else if (e is InstantMessageSentEventArgs)
-                this.ProcessOutgoingIM((InstantMessageSentEventArgs)e, isNewMessage);
+                ProcessOutgoingIM((InstantMessageSentEventArgs)e, isNewMessage);
         }
 
         private void ProcessOutgoingIM(InstantMessageSentEventArgs e, bool isNewMessage)
@@ -431,7 +431,7 @@ namespace Radegast
             string last = string.Empty;
             try
             {
-                last = IMTextManager.ReadEndTokens(instance.ChatFileName(sessionName + ".txt"), 20, Encoding.UTF8, Environment.NewLine);
+                last = ReadEndTokens(instance.ChatFileName(sessionName + ".txt"), 20, Encoding.UTF8, Environment.NewLine);
             }
             catch { }
 

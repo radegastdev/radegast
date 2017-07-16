@@ -555,7 +555,7 @@ namespace Radegast
 
         public string ChatFileName(string session)
         {
-            string fileName = System.IO.Path.GetInvalidFileNameChars().Aggregate(session, (current, lDisallowed) => current.Replace(lDisallowed.ToString(), "_"));
+            string fileName = Path.GetInvalidFileNameChars().Aggregate(session, (current, lDisallowed) => current.Replace(lDisallowed.ToString(), "_"));
             return Path.Combine(ClientDir, fileName);
         }
 
@@ -576,14 +576,14 @@ namespace Radegast
 
         void Groups_CurrentGroups(object sender, CurrentGroupsEventArgs e)
         {
-            this.Groups = e.Groups;
+            Groups = e.Groups;
         }
 
         private void InitializeLoggingAndConfig()
         {
             try
             {
-                UserDir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData), Properties.Resources.ProgramName);
+                UserDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Properties.Resources.ProgramName);
                 if (!Directory.Exists(UserDir))
                 {
                     Directory.CreateDirectory(UserDir);
@@ -591,7 +591,7 @@ namespace Radegast
             }
             catch (Exception)
             {
-                UserDir = System.Environment.CurrentDirectory;
+                UserDir = Environment.CurrentDirectory;
             }
 
             GlobalLogFile = Path.Combine(UserDir, Properties.Resources.ProgramName + ".log");

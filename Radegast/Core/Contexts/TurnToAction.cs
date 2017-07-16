@@ -57,7 +57,7 @@ namespace Radegast
             Simulator sim = null;
             Vector3 pos;
 
-            if (base.TryFindPos(target, out sim, out pos))
+            if (TryFindPos(target, out sim, out pos))
             {
                 instance.TabConsole.DisplayNotificationInChat(string.Format("Facing {0}", pname));
                 Client.Self.Movement.TurnToward(instance.State.ToLocalPosition(sim.Handle, pos));

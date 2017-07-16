@@ -116,7 +116,7 @@ namespace Radegast
 
         void chk_MouseHover(object sender, EventArgs e)
         {
-            this.OnMouseHover(e);
+            OnMouseHover(e);
         }
  
         protected override void OnSubscribeControlEvents(Control c)

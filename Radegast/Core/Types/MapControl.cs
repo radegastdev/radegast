@@ -51,7 +51,7 @@ namespace Radegast
             Zoom = 1.0f;
             InitializeComponent();
             Disposed += new EventHandler(MapControl_Disposed);
-            this.Instance = instance;
+            Instance = instance;
 
             downloader = new ParallelDownloader();
 
@@ -67,7 +67,7 @@ namespace Radegast
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
             RegisterClientEvents();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void MapControl_Disposed(object sender, EventArgs e)

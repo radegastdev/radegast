@@ -57,7 +57,7 @@ namespace Radegast
             UpdateInfo();
             cbImageType.Text = "TGA";
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
 		}
 		#endregion
 		
@@ -97,7 +97,7 @@ namespace Radegast
                 var img = new SLImageHandler(instance, textureID, string.Empty);
                 img.Height = 96;
                 img.Width = 96;
-                img.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+                img.BorderStyle = BorderStyle.FixedSingle;
                 texturesPanel.Controls.Add(img);
             }
         }

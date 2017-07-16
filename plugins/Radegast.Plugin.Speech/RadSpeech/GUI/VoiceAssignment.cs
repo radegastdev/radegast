@@ -103,7 +103,7 @@ namespace RadegastSpeech.GUI
             }
             sample += ".";
 
-            this.BeginInvoke(new MethodInvoker(delegate()
+            BeginInvoke(new MethodInvoker(delegate()
             {
                 control.talker.Say(null,
                     sample,

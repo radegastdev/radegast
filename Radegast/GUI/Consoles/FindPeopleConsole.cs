@@ -50,7 +50,7 @@ namespace Radegast
             Disposed += new EventHandler(FindPeopleConsole_Disposed);
 
             LLUUIDs = new Dictionary<string, UUID>();
-            this.QueryID = queryID;
+            QueryID = queryID;
 
             this.instance = instance;
             netcom = this.instance.Netcom;
@@ -59,7 +59,7 @@ namespace Radegast
             // Callbacks
             client.Directory.DirPeopleReply += new EventHandler<DirPeopleReplyEventArgs>(Directory_DirPeopleReply);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void FindPeopleConsole_Disposed(object sender, EventArgs e)
@@ -69,7 +69,7 @@ namespace Radegast
 
         void Directory_DirPeopleReply(object sender, DirPeopleReplyEventArgs e)
         {
-            if (e.QueryID != this.QueryID) return;
+            if (e.QueryID != QueryID) return;
 
             if (InvokeRequired)
             {

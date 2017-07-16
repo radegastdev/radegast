@@ -136,7 +136,7 @@ namespace Radegast
             // Callbacks
             RegisterClientEvents(client);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -1236,14 +1236,14 @@ namespace Radegast
 
         private void TabsConsole_Load(object sender, EventArgs e)
         {
-            owner = this.FindForm();
+            owner = FindForm();
         }
 
         private void ctxTabs_Opening(object sender, CancelEventArgs e)
         {
             e.Cancel = false;
 
-            Point pt = this.PointToClient(Cursor.Position);
+            Point pt = PointToClient(Cursor.Position);
             ToolStripItem stripItem = tstTabs.GetItemAt(pt);
 
             if (stripItem == null)

@@ -42,11 +42,11 @@ namespace Radegast
 
         public ChatBufferItem(DateTime timestamp, string from, UUID id, string text, ChatBufferTextStyle style)
         {
-            this.Timestamp = timestamp;
-            this.From = from;
-            this.ID = id;
-            this.Text = text;
-            this.Style = style;
+            Timestamp = timestamp;
+            From = from;
+            ID = id;
+            Text = text;
+            Style = style;
         }
 
         public DateTime Timestamp { get; set; }

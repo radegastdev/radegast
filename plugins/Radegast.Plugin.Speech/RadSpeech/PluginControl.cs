@@ -38,7 +38,7 @@ using OpenMetaverse.StructuredData;
 
 namespace RadegastSpeech
 {
-    [Radegast.Plugin(Name = "Speech", Description = "Adds TTS and STT accesibility capabilities to Radegast", Version = "0.3")]
+    [Plugin(Name = "Speech", Description = "Adds TTS and STT accesibility capabilities to Radegast", Version = "0.3")]
     public class PluginControl : IRadegastPlugin
     {
         private const string VERSION = "0.3";
@@ -334,7 +334,7 @@ namespace RadegastSpeech
                 SpeechButton.Checked = false;
                 config["enabled"] = OSD.FromBoolean(false);
                 SaveSpeechSettings();
-                System.Windows.Forms.MessageBox.Show("Speech failed initialization: " + e.Message);
+                MessageBox.Show("Speech failed initialization: " + e.Message);
                 return;
             }
         }
@@ -380,10 +380,10 @@ namespace RadegastSpeech
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show("Speech can not start.  See log.");
+                MessageBox.Show("Speech can not start.  See log.");
                 Logger.Log("Speech can not start.", Helpers.LogLevel.Error, e);
 
-                System.Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.StackTrace);
                 MarkDisabled();
                 return;
             }
@@ -444,7 +444,7 @@ namespace RadegastSpeech
                 throw new Exception("No startup directory found " + dirName);
 
             // The filename depends on the platform.
-            System.Version version = System.Environment.OSVersion.Version;
+            Version version = System.Environment.OSVersion.Version;
             string loadfilename = null;
             switch (System.Environment.OSVersion.Platform)
             {

@@ -56,8 +56,8 @@ namespace Radegast
         public Grid(string ID, string name, string loginURI)
         {
             this.ID = ID;
-            this.Name = name;
-            this.LoginURI = loginURI;
+            Name = name;
+            LoginURI = loginURI;
         }
 
         public override string ToString()

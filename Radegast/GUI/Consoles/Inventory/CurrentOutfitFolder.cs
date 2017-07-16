@@ -53,8 +53,8 @@ namespace Radegast
         #region Construction and disposal
         public CurrentOutfitFolder(RadegastInstance instance)
         {
-            this.Instance = instance;
-            this.Client = instance.Client;
+            Instance = instance;
+            Client = instance.Client;
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterClientEvents(Client);
         }

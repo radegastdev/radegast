@@ -115,7 +115,7 @@ namespace Radegast
         public RadegastForm(RadegastInstance instance)
             : base()
         {
-            this.Instance = instance;
+            Instance = instance;
             instance.OnRadegastFormCreated(this);
         }
 

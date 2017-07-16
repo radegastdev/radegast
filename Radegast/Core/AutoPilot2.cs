@@ -257,7 +257,7 @@ namespace Radegast
         public AutoPilot2(GridClient client)
         {
             Client = client;
-            Client.Objects.TerseObjectUpdate += new System.EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
+            Client.Objects.TerseObjectUpdate += new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             ticker.Elapsed += new ElapsedEventHandler(ticker_Elapsed);
         }
 
@@ -474,9 +474,9 @@ namespace Radegast
                 if (distance != lastDistance || lastDistanceChanged < 0)
                 {
                     lastDistance = distance;
-                    lastDistanceChanged = System.Environment.TickCount;
+                    lastDistanceChanged = Environment.TickCount;
                 }
-                else if (Math.Abs(System.Environment.TickCount - lastDistanceChanged) > stuckTimeout)
+                else if (Math.Abs(Environment.TickCount - lastDistanceChanged) > stuckTimeout)
                 {
                     Stop(AutoPilotStatus.Failed);
                 }

@@ -84,7 +84,7 @@ namespace Radegast
         {
             InitializeComponent();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public SLImageHandler(RadegastInstance instance, UUID image, string label)
@@ -98,7 +98,7 @@ namespace Radegast
             InitializeComponent();
             Init(instance, image, label);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public void Init(RadegastInstance instance, UUID image, string label)
@@ -107,7 +107,7 @@ namespace Radegast
             pictureBox1.AllowDrop = true;
 
             this.instance = instance;
-            this.imageID = image;
+            imageID = image;
 
             Text = string.IsNullOrEmpty(label) ? "Image" : label;
 
@@ -157,7 +157,7 @@ namespace Radegast
 
         void Assets_ImageReceiveProgress(object sender, ImageReceiveProgressEventArgs e)
         {
-            if (this.imageID != e.ImageID)
+            if (imageID != e.ImageID)
             {
                 return;
             }
@@ -194,7 +194,7 @@ namespace Radegast
             try
             {
                 ManagedImage tmp;
-                System.Drawing.Image img;
+                Image img;
                 if (OpenJPEG.DecodeToImage(assetTexture.AssetData, out tmp, out img))
                 {
                     pictureBox1.Image = img;
@@ -206,7 +206,7 @@ namespace Radegast
 
         private void Assets_OnImageReceived(AssetTexture assetTexture)
         {
-            if (assetTexture.AssetID != this.imageID)
+            if (assetTexture.AssetID != imageID)
             {
                 return;
             }
@@ -240,8 +240,8 @@ namespace Radegast
             }
             catch (Exception excp)
             {
-                this.Hide();
-                System.Console.WriteLine("Error decoding image: " + excp.Message);
+                Hide();
+                Console.WriteLine("Error decoding image: " + excp.Message);
             }
         }
 
@@ -261,7 +261,7 @@ namespace Radegast
                 return;
             }
 
-            System.Windows.Forms.SaveFileDialog dlg = new SaveFileDialog();
+            SaveFileDialog dlg = new SaveFileDialog();
             dlg.AddExtension = true;
             dlg.RestoreDirectory = true;
             dlg.Title = "Save image as...";
@@ -490,7 +490,7 @@ namespace Radegast
 
         public ImageUpdatedEventArgs(UUID imageID)
         {
-            this.NewImageID = imageID;
+            NewImageID = imageID;
         }
     }
 }

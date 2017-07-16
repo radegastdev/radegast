@@ -46,14 +46,14 @@ namespace Radegast
             this.instance = instance;
             this.avatar = avatar;
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public void GetTextures()
         {
             if (avatar.Textures == null) return;
 
-            lblName.Text = this.avatar.Name;
+            lblName.Text = avatar.Name;
 
             for (int j = 0; j < avatar.Textures.FaceTextures.Length; j++)
             {

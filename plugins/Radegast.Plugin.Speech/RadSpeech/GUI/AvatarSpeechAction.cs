@@ -85,8 +85,8 @@ namespace RadegastSpeech.GUI
             else
                 return;
 
-            System.Windows.Forms.Form va =
-                    new RadegastSpeech.GUI.VoiceAssignment(control, name, id );
+            Form va =
+                    new VoiceAssignment(control, name, id );
             va.Show();
             
         }

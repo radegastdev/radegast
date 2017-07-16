@@ -69,7 +69,7 @@ namespace Radegast
             // Callbacks
             client.Objects.ObjectProperties += new EventHandler<ObjectPropertiesEventArgs>(Objects_ObjectProperties);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void AttachmentDetail_Disposed(object sender, EventArgs e)

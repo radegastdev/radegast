@@ -174,8 +174,8 @@ namespace Radegast
         public ExtendedRichTextBox()
         {
 
-            this.myToolTip = new ToolTip();
-            this.ContextMenu = new ContextMenu();
+            myToolTip = new ToolTip();
+            ContextMenu = new ContextMenu();
 
             // Initialize default text and background colors
             textColor = RtfColor.Black;
@@ -210,7 +210,7 @@ namespace Radegast
 
             // Get the horizontal and vertical resolutions at which the object is
             // being displayed
-            using (Graphics _graphics = this.CreateGraphics())
+            using (Graphics _graphics = CreateGraphics())
             {
                 xDpi = _graphics.DpiX;
                 yDpi = _graphics.DpiY;
@@ -781,11 +781,11 @@ namespace Radegast
         {
 
             // Move caret to the end of the text
-            this.Select(this.TextLength, 0);
+            Select(TextLength, 0);
 
             // Since SelectedRtf is null, this will append the string to the
             // end of the existing RTF
-            this.SelectedRtf = _rtf;
+            SelectedRtf = _rtf;
         }
 
         /// <summary>
@@ -799,7 +799,7 @@ namespace Radegast
         /// <param name="_rtf"></param>
         public void InsertRtf(string _rtf)
         {
-            this.SelectedRtf = _rtf;
+            SelectedRtf = _rtf;
         }
 
         /// <summary>
@@ -808,7 +808,7 @@ namespace Radegast
         /// <param name="_text"></param>
         public void AppendTextAsRtf(string _text)
         {
-            AppendTextAsRtf(_text, this.Font);
+            AppendTextAsRtf(_text, Font);
         }
 
         /// <summary>
@@ -846,7 +846,7 @@ namespace Radegast
         public void AppendTextAsRtf(string _text, Font _font, RtfColor _textColor, RtfColor _backColor)
         {
             // Move carret to the end of the text
-            this.Select(this.TextLength, 0);
+            Select(TextLength, 0);
 
             InsertTextAsRtf(_text, _font, _textColor, _backColor);
         }
@@ -860,7 +860,7 @@ namespace Radegast
         /// <param name="_text"></param>
         public void InsertTextAsRtf(string _text)
         {
-            InsertTextAsRtf(_text, this.Font);
+            InsertTextAsRtf(_text, Font);
         }
 
 
@@ -925,7 +925,7 @@ namespace Radegast
             // it to the RTF string.
             _rtf.Append(GetDocumentArea(_text, _font));
 
-            this.SelectedRtf = _rtf.ToString();
+            SelectedRtf = _rtf.ToString();
         }
 
         /// <summary>
@@ -1049,7 +1049,7 @@ namespace Radegast
 
             // Create the font table using the RichTextBox's current font and append
             // it to the RTF string
-            _rtf.Append(GetFontTable(this.Font));
+            _rtf.Append(GetFontTable(Font));
 
             // Create the image control string and append it to the RTF string
             _rtf.Append(GetImagePrefix(_image));
@@ -1060,7 +1060,7 @@ namespace Radegast
             // Close the RTF image control string
             _rtf.Append(RTF_IMAGE_POST);
 
-            this.SelectedRtf = _rtf.ToString();
+            SelectedRtf = _rtf.ToString();
         }
 
         /// <summary>
@@ -1207,7 +1207,7 @@ namespace Radegast
                 _stream = new MemoryStream();
 
                 // Get a graphics context from the RichTextBox
-                using (_graphics = this.CreateGraphics())
+                using (_graphics = CreateGraphics())
                 {
 
                     // Get the device context from the graphics context
@@ -1508,11 +1508,11 @@ namespace Radegast
         /// <param name="trackpos">this is updated while the scroll bar is wiggling up and down.</param>
         public ScrollBarInformation(int min, int max, int page, int pos, int trackpos)
         {
-            this.Minimum = min;
-            this.Maximum = max;
-            this.Page = page;
-            this.Position = pos;
-            this.TrackPosition = trackpos;
+            Minimum = min;
+            Maximum = max;
+            Page = page;
+            Position = pos;
+            TrackPosition = trackpos;
         }
 
         /// <summary>

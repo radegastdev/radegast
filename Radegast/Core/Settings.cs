@@ -194,10 +194,10 @@ namespace Radegast
             {
                 get
                 {
-                    if (this.Font != null)
+                    if (Font != null)
                     {
                         TypeConverter converter = TypeDescriptor.GetConverter(typeof(Font));
-                        return converter.ConvertToString(this.Font);
+                        return converter.ConvertToString(Font);
                     }
                     return null;
                 }
@@ -206,11 +206,11 @@ namespace Radegast
                     try
                     {
                         TypeConverter converter = TypeDescriptor.GetConverter(typeof(Font));
-                        this.Font = converter.ConvertFromString(value) as Font;
+                        Font = converter.ConvertFromString(value) as Font;
                     }
                     catch (Exception)
                     {
-                        this.Font = DefaultFont;
+                        Font = DefaultFont;
                     }
 
                 }
@@ -366,7 +366,7 @@ namespace Radegast
             return ret;
         }
 
-        public System.Collections.IDictionaryEnumerator GetEnumerator()
+        public IDictionaryEnumerator GetEnumerator()
         {
             return SettingsData.GetEnumerator();
         }

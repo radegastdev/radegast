@@ -84,7 +84,7 @@ namespace Radegast
             lvwObjects.ListViewItemSorter = new SorterClass(instance);
             cbChatType.SelectedIndex = 1;
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -376,7 +376,7 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("Grid_OnCoarseLocationUpdate: " + ex, OpenMetaverse.Helpers.LogLevel.Error, client);
+                    Logger.Log("Grid_OnCoarseLocationUpdate: " + ex, Helpers.LogLevel.Error, client);
                 }
                 finally
                 {
@@ -1007,8 +1007,8 @@ namespace Radegast
         public int Compare(object x, object y)
         {
 
-            System.Windows.Forms.ListViewItem item1 = (System.Windows.Forms.ListViewItem)x;
-            System.Windows.Forms.ListViewItem item2 = (System.Windows.Forms.ListViewItem)y;
+            ListViewItem item1 = (ListViewItem)x;
+            ListViewItem item2 = (ListViewItem)y;
 
             if ((item1.Tag is UUID) && ((UUID)item1.Tag == instance.Client.Self.AgentID))
                 return -1;

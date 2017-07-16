@@ -69,7 +69,7 @@ namespace Radegast
                 Owner = instance.MainForm;
             }
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Control_TextChanged(object sender, EventArgs e)
@@ -133,7 +133,7 @@ namespace Radegast
                 DockedToMain = false;
                 if (!ShowInTaskbar)
                     ShowInTaskbar = true;
-                this.Text = tab.Label + " - " + Properties.Resources.ProgramName;
+                Text = tab.Label + " - " + Properties.Resources.ProgramName;
             }
         }
 

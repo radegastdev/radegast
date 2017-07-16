@@ -57,8 +57,8 @@ namespace Radegast
 
         public ChatTextManager(RadegastInstance instance, ITextPrinter textPrinter)
         {
-            this.TextPrinter = textPrinter;
-            this.textBuffer = new List<ChatBufferItem>();
+            TextPrinter = textPrinter;
+            textBuffer = new List<ChatBufferItem>();
 
             this.instance = instance;
             InitializeConfig();

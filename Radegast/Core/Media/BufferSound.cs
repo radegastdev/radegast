@@ -46,7 +46,7 @@ namespace Radegast.Media
         private UUID Id;
         private UUID ContainerId;
         private Boolean prefetchOnly = false;
-        private FMOD.MODE mode;
+        private MODE mode;
         public Sound Sound => sound;
         private bool loopSound = false;
         /// <summary>
@@ -85,18 +85,18 @@ namespace Radegast.Media
                 Helpers.LogLevel.Debug);
 
             // Set flags to determine how it will be played.
-            mode = FMOD.MODE.DEFAULT |
-                FMOD.MODE._3D |         // Need 3D effects for placement
-                FMOD.MODE.OPENMEMORY;   // Use sound data in memory
+            mode = MODE.DEFAULT |
+                MODE._3D |         // Need 3D effects for placement
+                MODE.OPENMEMORY;   // Use sound data in memory
 
             // Set coordinate space interpretation.
             if (global)
-                mode |= FMOD.MODE._3D_WORLDRELATIVE;
+                mode |= MODE._3D_WORLDRELATIVE;
             else
-                mode |= FMOD.MODE._3D_HEADRELATIVE;
+                mode |= MODE._3D_HEADRELATIVE;
 
             if (loopSound)
-                mode |= FMOD.MODE.LOOP_NORMAL;
+                mode |= MODE.LOOP_NORMAL;
 
             // Fetch the sound data.
             manager.Instance.Client.Assets.RequestAsset(

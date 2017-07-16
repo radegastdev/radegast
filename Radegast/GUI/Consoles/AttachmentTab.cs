@@ -51,7 +51,7 @@ namespace Radegast
 
             InitializeComponent(); // TODO: Was this second initialization intentional...?
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void AttachmentTab_Load(object sender, EventArgs e)

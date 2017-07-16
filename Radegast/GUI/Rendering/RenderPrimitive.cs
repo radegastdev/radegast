@@ -561,7 +561,7 @@ namespace Radegast.Rendering
                         {
                             scene.DownloadTexture(new TextureLoadItem()
                             {
-                                Prim = this.Prim,
+                                Prim = Prim,
                                 TeFace = teFace,
                                 Data = data
                             }, false);

@@ -53,7 +53,7 @@ namespace RadegastSpeech
         }
 
         public void Speak(
-            RadegastSpeech.Talk.QueuedSpeech utterance,
+            QueuedSpeech utterance,
             string filename)
         {
             synth.Speak(utterance, filename);

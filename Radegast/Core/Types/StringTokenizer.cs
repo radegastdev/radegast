@@ -59,10 +59,10 @@ namespace Radegast
     {
         public Token(TokenKind kind, string value, int line, int column)
         {
-            this.Kind = kind;
-            this.Value = value;
-            this.Line = line;
-            this.Column = column;
+            Kind = kind;
+            Value = value;
+            Line = line;
+            Column = column;
         }
 
         public int Column { get; }
@@ -124,8 +124,8 @@ namespace Radegast
 
 	    private void Reset()
 		{
-			this.IgnoreWhiteSpace = false;
-			this.SymbolChars = new char[]{'=', '+', '-', '/', ',', '.', '*', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']', ':', ';', '<', '>', '?', '|', '\\'};
+			IgnoreWhiteSpace = false;
+			SymbolChars = new char[]{'=', '+', '-', '/', ',', '.', '*', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']', ':', ';', '<', '>', '?', '|', '\\'};
 
 			line = 1;
 			column = 1;
@@ -173,7 +173,7 @@ namespace Radegast
 				case ' ':
 				case '\t':
 				{
-					if (this.IgnoreWhiteSpace)
+					if (IgnoreWhiteSpace)
 					{
 						Consume();
 						goto ReadToken;

@@ -37,10 +37,10 @@ namespace Radegast.Netcom
     {
         public InstantMessageSentEventArgs(string message, UUID targetID, UUID sessionID, DateTime timestamp)
         {
-            this.Message = message;
-            this.TargetID = targetID;
-            this.SessionID = sessionID;
-            this.Timestamp = timestamp;
+            Message = message;
+            TargetID = targetID;
+            SessionID = sessionID;
+            Timestamp = timestamp;
         }
 
         public string Message { get; }

@@ -56,7 +56,7 @@ namespace Radegast
             this.anim = anim;
             this.n = n;
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void AnimDetail_Disposed(object sender, EventArgs e)

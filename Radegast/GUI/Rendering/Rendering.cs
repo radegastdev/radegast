@@ -167,8 +167,8 @@ namespace Radegast.Rendering
         {
             InitializeComponent();
 
-            this.Instance = instance;
-            this.Client = instance.Client;
+            Instance = instance;
+            Client = instance.Client;
 
             UseMultiSampling = Instance.GlobalSettings["use_multi_sampling"];
 
@@ -209,7 +209,7 @@ namespace Radegast.Rendering
             Instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             Application.Idle += new EventHandler(Application_Idle);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void DisposeInternal()
@@ -330,16 +330,16 @@ namespace Radegast.Rendering
         #region Tab Events
         public void RegisterTabEvents()
         {
-            this.RadegastTab.TabAttached += new EventHandler(RadegastTab_TabAttached);
-            this.RadegastTab.TabDetached += new EventHandler(RadegastTab_TabDetached);
-            this.RadegastTab.TabClosed += new EventHandler(RadegastTab_TabClosed);
+            RadegastTab.TabAttached += new EventHandler(RadegastTab_TabAttached);
+            RadegastTab.TabDetached += new EventHandler(RadegastTab_TabDetached);
+            RadegastTab.TabClosed += new EventHandler(RadegastTab_TabClosed);
         }
 
         public void UnregisterTabEvents()
         {
-            this.RadegastTab.TabAttached -= new EventHandler(RadegastTab_TabAttached);
-            this.RadegastTab.TabDetached -= new EventHandler(RadegastTab_TabDetached);
-            this.RadegastTab.TabClosed -= new EventHandler(RadegastTab_TabClosed);
+            RadegastTab.TabAttached -= new EventHandler(RadegastTab_TabAttached);
+            RadegastTab.TabDetached -= new EventHandler(RadegastTab_TabDetached);
+            RadegastTab.TabClosed -= new EventHandler(RadegastTab_TabClosed);
         }
 
         void RadegastTab_TabDetached(object sender, EventArgs e)
@@ -354,7 +354,7 @@ namespace Radegast.Rendering
 
         void RadegastTab_TabClosed(object sender, EventArgs e)
         {
-            if (this.RadegastTab != null)
+            if (RadegastTab != null)
             {
                 UnregisterTabEvents();
             }
@@ -788,7 +788,7 @@ namespace Radegast.Rendering
             else
             {
                 // If we're docked but not active tab, throttle
-                if (!this.RadegastTab.Selected && !this.RadegastTab.Detached)
+                if (!RadegastTab.Selected && !RadegastTab.Detached)
                 {
                     throttle = true;
                 }
@@ -1106,7 +1106,7 @@ namespace Radegast.Rendering
 
                     using (MemoryStream byteData = new MemoryStream(imageBytes))
                     {
-                        img = OpenMetaverse.Imaging.LoadTGAClass.LoadTGA(byteData);
+                        img = LoadTGAClass.LoadTGA(byteData);
                     }
 
                     Bitmap bitmap = (Bitmap)img;
@@ -1597,7 +1597,7 @@ namespace Radegast.Rendering
                     GLAvatar ga = new GLAvatar();
 
                     //ga.morph(av);
-                    RenderAvatar ra = new Rendering.RenderAvatar();
+                    RenderAvatar ra = new RenderAvatar();
                     ra.avatar = av;
                     ra.glavatar = ga;
                     updateAVtes(ra);
@@ -2609,9 +2609,9 @@ namespace Radegast.Rendering
             Render(true);
 
             byte[] color = new byte[4];
-            GL.ReadPixels(x, glControl.Height - y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, color);
+            GL.ReadPixels(x, glControl.Height - y, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, color);
             float depth = 0f;
-            GL.ReadPixels(x, glControl.Height - y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, ref depth);
+            GL.ReadPixels(x, glControl.Height - y, 1, 1, PixelFormat.DepthComponent, PixelType.Float, ref depth);
             OpenTK.Vector3 worldPosTK = OpenTK.Vector3.Zero;
             Math3D.GluUnProject(x, glControl.Height - y, depth, ModelMatrix, ProjectionMatrix, Viewport, out worldPosTK);
             worldPos = RHelp.OMVVector3(worldPosTK);

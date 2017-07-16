@@ -62,7 +62,7 @@ namespace Radegast
 			GatherInfo();
 			Exporter = new PrimExporter(client);
 
-			Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+			GUI.GuiHelpers.ApplyGuiFixes(this);
 		}
 		#endregion
 		
@@ -164,10 +164,10 @@ namespace Radegast
 		
 		void BtnExportClick(object sender, EventArgs e)
 		{
-			this.Enabled = false;
+			Enabled = false;
 			Exporter.LogMessage = LogMessage;
 			
-			Thread t = new Thread(new System.Threading.ThreadStart(delegate()
+			Thread t = new Thread(new ThreadStart(delegate()
 			{
 				try
 				{
@@ -175,7 +175,7 @@ namespace Radegast
 					LogMessage("Export Successful.");
 					if (InvokeRequired)
 					{
-						BeginInvoke(new MethodInvoker(() => this.Enabled = true));
+						BeginInvoke(new MethodInvoker(() => Enabled = true));
 					}
 				}
 				catch (Exception ex)

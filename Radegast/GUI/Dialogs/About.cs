@@ -41,7 +41,7 @@ namespace Radegast
             InitializeComponent();
             txtTitle.Text = Properties.Resources.RadegastTitle + " " + Assembly.GetExecutingAssembly().GetName().Version;
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void lblHomepage_Click(object sender, System.EventArgs e)

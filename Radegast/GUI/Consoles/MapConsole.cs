@@ -61,7 +61,7 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(frmMap_Disposed);
 
-            this.instance = inst;
+            instance = inst;
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
 
             Visible = false;
@@ -70,7 +70,7 @@ namespace Radegast
             // Register callbacks
             RegisterClientEvents(client);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)

@@ -55,9 +55,9 @@ namespace Radegast
             Disposed += new EventHandler(IMTabWindow_Disposed);
 
             this.instance = instance;
-            this.SessionId = session;
+            SessionId = session;
 
-            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Group, this.SessionId, sessionName);
+            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Group, SessionId, sessionName);
 
             btnShow.Text = "Show";
             chatSplit.Panel2Collapsed = true;
@@ -70,7 +70,7 @@ namespace Radegast
             }
             Load += new EventHandler(GroupIMTabWindow_Load);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -253,7 +253,7 @@ namespace Radegast
         private void btnSend_Click(object sender, EventArgs e)
         {
             SendMsg();
-            this.ClearIMInput();
+            ClearIMInput();
         }
 
         private void btnShow_Click(object sender, EventArgs e)
@@ -370,7 +370,7 @@ namespace Radegast
                 message = "/me " + message.Substring(1);
             }
 
-            this.ClearIMInput();
+            ClearIMInput();
 
             if (instance.RLV.RestictionActive("sendim")) return;
 

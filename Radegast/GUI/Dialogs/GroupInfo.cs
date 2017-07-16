@@ -49,7 +49,7 @@ namespace Radegast
             AutoSavePosition = true;
 
             this.instance = instance;
-            this.Group = group;
+            Group = group;
 
             GroupDetails = new GroupDetails(instance, group);
             GroupDetails.Dock = DockStyle.Fill;
@@ -59,7 +59,7 @@ namespace Radegast
             Text = group.Name + " - Group information";
             instance.Netcom.ClientDisconnected += new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmGroupInfo_Disposed(object sender, System.EventArgs e)
@@ -68,7 +68,7 @@ namespace Radegast
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            ((Radegast.Netcom.RadegastNetcom)sender).ClientDisconnected -= new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            ((Netcom.RadegastNetcom)sender).ClientDisconnected -= new System.EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
             if (InvokeRequired)
             {

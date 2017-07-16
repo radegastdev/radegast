@@ -88,7 +88,7 @@ namespace Radegast
                 txtAmount.Text = LastPayed.ToString();
             }
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void frmPay_Disposed(object sender, EventArgs e)

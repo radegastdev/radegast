@@ -50,7 +50,7 @@ namespace Radegast
         {
             InitializeComponent();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public ImageUploadConsole(RadegastInstance instance)
@@ -65,7 +65,7 @@ namespace Radegast
             UpdateButtons();
             OriginalCapsTimeout = client.Settings.CAPS_TIMEOUT;
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void ImageUploadConsole_Disposed(object sender, EventArgs e)
@@ -144,7 +144,7 @@ namespace Radegast
 
             txtStatus.AppendText("Loading...\n");
 
-            string extension = System.IO.Path.GetExtension(FileName).ToLower();
+            string extension = Path.GetExtension(FileName).ToLower();
 
             try
             {
@@ -157,7 +157,7 @@ namespace Radegast
                         ManagedImage managedImage;
 
                         // Upload JPEG2000 images untouched
-                        UploadData = System.IO.File.ReadAllBytes(FileName);
+                        UploadData = File.ReadAllBytes(FileName);
 
                         OpenJPEG.DecodeToImage(UploadData, out managedImage, out image);
                         bitmap = (Bitmap)image;
@@ -168,7 +168,7 @@ namespace Radegast
                         bitmap = LoadTGAClass.LoadTGA(FileName);
                         break;
                     default:
-                        bitmap = (Bitmap)System.Drawing.Image.FromFile(FileName);
+                        bitmap = (Bitmap)Image.FromFile(FileName);
                         break;
                 }
 

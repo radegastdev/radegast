@@ -124,7 +124,7 @@ namespace Radegast
 
         private void TCI(object sender, EventArgs e, object target)
         {
-            if (!this.ExecAsync)
+            if (!ExecAsync)
             {
                 TryCatch(() => OnInvoke(sender, e, target));
                 return;

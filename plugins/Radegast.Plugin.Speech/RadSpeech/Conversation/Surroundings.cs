@@ -36,7 +36,7 @@ namespace RadegastSpeech.Conversation
 {
     class Surroundings : Mode
     {
-        private Radegast.ObjectsConsole obTab;
+        private ObjectsConsole obTab;
         public bool Announce { get; set; }
         private Primitive currentPrim = new Primitive();
         

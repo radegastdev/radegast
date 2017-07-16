@@ -67,7 +67,7 @@ namespace Radegast
 
             Load += new EventHandler(LoginConsole_Load);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void MainConsole_Disposed(object sender, EventArgs e)
@@ -80,7 +80,7 @@ namespace Radegast
         {
             if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
             {
-                panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
+                panel1.BackColor = Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(225)))));
             }
 
             cbxLocation.SelectedIndex = 0;

@@ -82,7 +82,7 @@ namespace Radegast
                 }
             }
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Notecard_Disposed(object sender, EventArgs e)

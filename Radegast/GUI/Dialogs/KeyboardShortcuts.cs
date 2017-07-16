@@ -42,7 +42,7 @@ namespace Radegast
             InitializeComponent();
             this.instance = instance;
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void btnClose_Click(object sender, EventArgs e)

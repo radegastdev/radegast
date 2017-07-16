@@ -87,13 +87,13 @@ namespace Radegast
             if (OnNotificationDisplayed == null) return;
             try
             {
-                e.Type = this.Type;
+                e.Type = Type;
                 WorkPool.QueueUserWorkItem(o => Notificaton_Displayed(this, e));
             }
             catch (Exception ex)
             {
                 Console.WriteLine("" + ex);
-                OpenMetaverse.Logger.Log("Error executing notification callback", OpenMetaverse.Helpers.LogLevel.Warning, ex);
+                Logger.Log("Error executing notification callback", Helpers.LogLevel.Warning, ex);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Radegast
             catch (Exception ex)
             {
                 Console.WriteLine("" + ex);
-                OpenMetaverse.Logger.Log("Error executing notification displayed", OpenMetaverse.Helpers.LogLevel.Warning, ex);
+                Logger.Log("Error executing notification displayed", Helpers.LogLevel.Warning, ex);
             }
         }
     }
@@ -202,8 +202,8 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    OpenMetaverse.Logger.Log("Error executing OnNotificationClosed " + Text,
-                                             OpenMetaverse.Helpers.LogLevel.Warning, ex);
+                    Logger.Log("Error executing OnNotificationClosed " + Text,
+                                             Helpers.LogLevel.Warning, ex);
                 }
                 if (!CanClose) Dispose();
             }
@@ -224,7 +224,7 @@ namespace Radegast
             }
             catch (Exception ex)
             {
-                OpenMetaverse.Logger.Log("Error executing OnNotificationClicked", OpenMetaverse.Helpers.LogLevel.Warning, ex);
+                Logger.Log("Error executing OnNotificationClicked", Helpers.LogLevel.Warning, ex);
             }
             if (CanClose)
             {

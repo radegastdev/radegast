@@ -117,7 +117,7 @@ namespace Radegast
 
             // Read command line options
             CommandLineOpts = new CommandLineOpts();
-            CommandLine.Parser.Default.ParseArguments(args, CommandLineOpts);
+            Parser.Default.ParseArguments(args, CommandLineOpts);
 
             // Change current working directory to Radegast install dir
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));

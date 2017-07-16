@@ -60,7 +60,7 @@ namespace Radegast
         public InventoryBackup(RadegastInstance instance, UUID rootFolder)
         {
             InitializeComponent();
-            Disposed += new System.EventHandler(InventoryBackup_Disposed);
+            Disposed += new EventHandler(InventoryBackup_Disposed);
 
             this.instance = instance;
 
@@ -71,10 +71,10 @@ namespace Radegast
                 rootNode = inv.GetNodeFor(rootFolder);
             }
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
-        void InventoryBackup_Disposed(object sender, System.EventArgs e)
+        void InventoryBackup_Disposed(object sender, EventArgs e)
         {
 
         }
@@ -98,7 +98,7 @@ namespace Radegast
             }
         }
 
-        private void btnFolder_Click(object sender, System.EventArgs e)
+        private void btnFolder_Click(object sender, EventArgs e)
         {
             openFileDialog1.CheckFileExists = false;
             DialogResult res = openFileDialog1.ShowDialog();

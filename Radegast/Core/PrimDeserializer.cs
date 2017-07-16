@@ -48,8 +48,8 @@ namespace Radegast
     {
         public static void ImportFromFile(GridClient client)
         {
-            WindowWrapper mainWindow = new WindowWrapper(frmMain.ActiveForm.Handle);
-            System.Windows.Forms.OpenFileDialog dlg = new OpenFileDialog();
+            WindowWrapper mainWindow = new WindowWrapper(Form.ActiveForm.Handle);
+            OpenFileDialog dlg = new OpenFileDialog();
             dlg.Title = "Open object file";
             dlg.Filter = "XML file (*.xml)|*.xml";
             dlg.Multiselect = false;
@@ -58,7 +58,7 @@ namespace Radegast
             if (res == DialogResult.OK)
             {
 
-                Thread t = new Thread(new System.Threading.ThreadStart(delegate()
+                Thread t = new Thread(new ThreadStart(delegate()
                 {
                     try
                     {

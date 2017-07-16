@@ -54,7 +54,7 @@ namespace Radegast
             this.instance = instance;
             this.roles = roles;
             this.group = group;
-            this.netcom = instance.Netcom;
+            netcom = instance.Netcom;
 
             picker = new AvatarPicker(instance) { Dock = DockStyle.Fill };
             Controls.Add(picker);
@@ -70,7 +70,7 @@ namespace Radegast
                 if (role.Key != UUID.Zero)
                     cmbRoles.Items.Add(role.Value);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void picker_SelectionChaged(object sender, EventArgs e)
@@ -87,9 +87,9 @@ namespace Radegast
             Logger.DebugLog("Group picker disposed");
         }
 
-        void Netcom_ClientDisconnected(object sender, OpenMetaverse.DisconnectedEventArgs e)
+        void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
         {
-            ((Radegast.Netcom.RadegastNetcom)sender).ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
+            ((Netcom.RadegastNetcom)sender).ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
 
             if (!instance.MonoRuntime || IsHandleCreated)
                 BeginInvoke(new MethodInvoker(() =>

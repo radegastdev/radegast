@@ -164,7 +164,7 @@ namespace Radegast
 
         public void Export(string Filename)
         {
-            this.FileName = Filename;
+            FileName = Filename;
 
             MeshedPrims.Clear();
 
@@ -804,7 +804,7 @@ namespace Radegast
                     // Set tranform matrix (node position, rotation and scale)
                     var matrix = node.AppendChild(Doc.CreateElement("matrix"));
 
-                    var srt = Radegast.Rendering.Math3D.CreateSRTMatrix(obj.Prim.Scale, obj.Prim.Rotation, obj.Prim.Position);
+                    var srt = Rendering.Math3D.CreateSRTMatrix(obj.Prim.Scale, obj.Prim.Rotation, obj.Prim.Position);
                     string matrixVal = "";
                     for (int i = 0; i < 4; i++)
                     {

@@ -83,14 +83,14 @@ namespace Radegast
             if (chkVoiceEnable.Checked)
                 Start();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void Start()
         {
             if (gateway == null)
             {
-                gateway = new VoiceGateway(this.instance.Client);
+                gateway = new VoiceGateway(instance.Client);
             }
 
             // Initialize progress bar
@@ -455,7 +455,7 @@ namespace Radegast
         #region Talk control
         void OnMouseUp(object sender, MouseEventArgs e)
         {
-            this.BeginInvoke(new MethodInvoker(delegate()
+            BeginInvoke(new MethodInvoker(delegate()
             {
                 if (e.Button == MouseButtons.Left)
                 {
@@ -467,7 +467,7 @@ namespace Radegast
 
         void OnMouseDown(object sender, MouseEventArgs e)
         {
-            this.BeginInvoke(new MethodInvoker(delegate()
+            BeginInvoke(new MethodInvoker(delegate()
             {
 
                 if (e.Button == MouseButtons.Left)
@@ -539,7 +539,7 @@ namespace Radegast
         /// </summary>
         private void chkVoiceEnable_Click(object sender, EventArgs e)
         {
-            this.BeginInvoke(new MethodInvoker(delegate()
+            BeginInvoke(new MethodInvoker(delegate()
             {
                 config["enabled"] = new OSDBoolean(chkVoiceEnable.Checked);
                 instance.GlobalSettings.Save();

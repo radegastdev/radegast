@@ -38,9 +38,9 @@ namespace Radegast
                 throw new ArgumentNullException(nameof(plugin));
             }
 
-            this.PluginInstance = plugin;
-            this.FileName = filename;
-            this.DisplayName = PluginInstance.GetType().Name;
+            PluginInstance = plugin;
+            FileName = filename;
+            DisplayName = PluginInstance.GetType().Name;
 
             PluginAttribute pluginAttributes = null;
             try
@@ -53,7 +53,7 @@ namespace Radegast
                 // Suppress
             }
 
-            this.Attribures = pluginAttributes ?? new PluginAttribute {Name = PluginInstance.GetType().FullName};
+            Attribures = pluginAttributes ?? new PluginAttribute {Name = PluginInstance.GetType().FullName};
         }
 
         /// <summary>

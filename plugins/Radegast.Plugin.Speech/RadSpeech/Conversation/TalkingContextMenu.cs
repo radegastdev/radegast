@@ -137,8 +137,8 @@ namespace RadegastSpeech.Conversation
         /// <param name="e"></param>
         private void OnSpeechMenu( object sender, EventArgs e )
         {
-            System.Windows.Forms.Form va =
-                new RadegastSpeech.GUI.VoiceAssignment(control, menuFor, id);
+            Form va =
+                new GUI.VoiceAssignment(control, menuFor, id);
             va.Show();
         }
 

@@ -60,7 +60,7 @@ namespace Radegast
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         private void btnTeleport_Click(object sender, EventArgs e)

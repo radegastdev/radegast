@@ -14,7 +14,7 @@ namespace RadegastSpeech.Conversation
         protected bool isMuted = false;
         protected GridClient Client { get { return control.instance.Client; }}
         protected Talk.Control Talker { get { return control.talker; } }
-        protected Conversation.Control Converse { get { return control.converse; } }
+        protected Control Converse { get { return control.converse; } }
         protected Radegast.TabsConsole TabConsole { get { return control.instance.TabConsole; } }
         protected Listen.Control Listener { get { return control.listener; } }
         private static Regex BadNameChars;

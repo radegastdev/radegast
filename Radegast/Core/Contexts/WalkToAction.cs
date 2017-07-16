@@ -57,7 +57,7 @@ namespace Radegast
             Simulator sim = null;
             Vector3 pos;
 
-            if (base.TryFindPos(target, out sim, out pos))
+            if (TryFindPos(target, out sim, out pos))
             {
                 instance.TabConsole.DisplayNotificationInChat(string.Format("Walking to {0}", pname));
                 instance.State.MoveTo(sim, pos, false);

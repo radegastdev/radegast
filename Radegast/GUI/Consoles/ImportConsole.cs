@@ -67,7 +67,7 @@ namespace Radegast
 			primCount.Text = "";
 			textureCount.Text = "";
 
-			Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+			GUI.GuiHelpers.ApplyGuiFixes(this);
 		}
 		#endregion
 		
@@ -228,7 +228,7 @@ namespace Radegast
 		
 		void EnableWindow()
 		{
-			this.Enabled = true;
+			Enabled = true;
 		}
 		#endregion
 		
@@ -271,11 +271,11 @@ namespace Radegast
 		
 		void BtnUploadClick(object sender, EventArgs e)
 		{
-			this.Enabled = false;
+			Enabled = false;
 			if (cmbImageOptions.SelectedIndex == -1)
 			{
 				MessageBox.Show("You must select an Image Option before you can import an object.","Import Object Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-				this.Enabled = true;
+				Enabled = true;
 				return;
 			}
 			switch(cmbImageOptions.SelectedIndex)
@@ -301,19 +301,19 @@ namespace Radegast
 				if (!float.TryParse(txtX.Text,out x))
 				{
 					MessageBox.Show("X Coordinate needs to be a Float position!  Example: 1.500","Import Object Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-					this.Enabled = true;
+					Enabled = true;
 					return;
 				}
 				if (!float.TryParse(txtY.Text,out y))
 				{
 					MessageBox.Show("Y Coordinate needs to be a Float position!  Example: 1.500","Import Object Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-					this.Enabled = true;
+					Enabled = true;
 					return;
 				}
 				if (!float.TryParse(txtZ.Text,out z))
 				{
 					MessageBox.Show("Z Coordinate needs to be a Float position!  Example: 1.500","Import Object Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-					this.Enabled = true;
+					Enabled = true;
 					return;
 				}
 				Importer.RezAt = new Vector3(x,y,z);
@@ -324,7 +324,7 @@ namespace Radegast
 				Importer.RezAt.Z += 3.5f;
 			}
 			
-			Thread t = new Thread(new System.Threading.ThreadStart(delegate()
+			Thread t = new Thread(new ThreadStart(delegate()
 			{
 				try
 				{

@@ -117,7 +117,7 @@ namespace Radegast
         /// <param name="instance">Radegast instance PluginManager is associated with</param>
         public PluginManager(RadegastInstance instance)
         {
-            this.Instance = instance;
+            Instance = instance;
         }
 
         /// <summary>

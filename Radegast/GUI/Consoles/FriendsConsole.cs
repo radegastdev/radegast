@@ -78,7 +78,7 @@ namespace Radegast
             Load += new EventHandler(FriendsConsole_Load);
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void Names_NameUpdated(object sender, UUIDNameReplyEventArgs e)
@@ -406,7 +406,7 @@ namespace Radegast
         public void ShowContextMenu()
         {
             RadegastContextMenuStrip menu = GetContextMenu();
-            if (menu.HasSelection) menu.Show(listFriends, listFriends.PointToClient(System.Windows.Forms.Control.MousePosition));
+            if (menu.HasSelection) menu.Show(listFriends, listFriends.PointToClient(MousePosition));
         }
 
         public RadegastContextMenuStrip GetContextMenu()

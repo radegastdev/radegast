@@ -61,7 +61,7 @@ namespace Radegast.Rendering
 
         public RenderTerrain(RadegastInstance instance)
         {
-            this.Instance = instance;
+            Instance = instance;
             renderer = new MeshmerizerR();
         }
 

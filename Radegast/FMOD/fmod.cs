@@ -1720,7 +1720,7 @@ namespace FMOD
         public static bool operator ==(HandleBase a, HandleBase b)
         {
             // If both are null, or both are same instance, return true.
-            if (Object.ReferenceEquals(a, b))
+            if (ReferenceEquals(a, b))
             {
                 return true;
             }

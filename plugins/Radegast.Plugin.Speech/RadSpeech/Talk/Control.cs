@@ -412,7 +412,7 @@ namespace RadegastSpeech.Talk
             }
             catch (Exception e)
             {
-                System.Console.WriteLine("Synth shutdown " + e.Message);
+                Console.WriteLine("Synth shutdown " + e.Message);
             }
         }
         #endregion

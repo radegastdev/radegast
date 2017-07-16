@@ -49,7 +49,7 @@ namespace Radegast
         {
             InitializeComponent();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         public MeshUploadConsole(RadegastInstance instance)
@@ -62,7 +62,7 @@ namespace Radegast
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             UpdateButtons();
 
-            Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void MeshUploadConsole_Disposed(object sender, EventArgs e)
@@ -179,7 +179,7 @@ namespace Radegast
             o.Multiselect = true;
             var res = o.ShowDialog();
 
-            if (res != System.Windows.Forms.DialogResult.OK)
+            if (res != DialogResult.OK)
                 return;
 
             lock (FileNames)
