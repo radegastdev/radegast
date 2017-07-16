@@ -50,7 +50,7 @@ namespace Radegast
     /// <summary>
     /// Enum representing different modes of handling display names
     /// </summary>
-    public enum NameMode : int
+    public enum NameMode
     {
         /// <summary> No display names </summary>
         Standard,

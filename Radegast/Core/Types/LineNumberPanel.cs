@@ -85,7 +85,6 @@ namespace Radegast
         }
 
         public LineNumberPanel()
-            : base()
         {
             SetStyle(
                 ControlStyles.DoubleBuffer |

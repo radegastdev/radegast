@@ -50,11 +50,6 @@ namespace Radegast.Commands
             this.instance = instance;
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
         {
             StringBuilder sb = new StringBuilder();

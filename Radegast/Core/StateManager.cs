@@ -1006,7 +1006,6 @@ namespace Radegast
                 int i = 0;
                 for (i = 0; i < numBeans; i++)
                 {
-                    UUID newBeam = UUID.Random();
                     Vector3d scatter;
 
                     if (i == 0)
@@ -1025,7 +1024,6 @@ namespace Radegast
 
                 for (int j = 1; j < numBeans; j++)
                 {
-                    UUID newBeam = UUID.Random();
                     Vector3d cross = new Vector3d(0, 0, 1);
                     cross.Normalize();
                     var scatter = GlobalPosition(targetPrim) + cross * (j * 0.2d) * (j % 2 == 0 ? 1 : -1);

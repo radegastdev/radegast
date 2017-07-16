@@ -34,8 +34,6 @@ namespace Radegast.Netcom
 {
     public class OverrideEventArgs : EventArgs
     {
-        private bool _cancel = false;
-
         public OverrideEventArgs()
         {
 
@@ -43,13 +41,9 @@ namespace Radegast.Netcom
 
         public OverrideEventArgs(bool cancel)
         {
-            _cancel = cancel;
+            Cancel = cancel;
         }
 
-        public bool Cancel
-        {
-            get { return _cancel; }
-            set { _cancel = value; }
-        }
+        public bool Cancel { get; set; } = false;
     }
 }

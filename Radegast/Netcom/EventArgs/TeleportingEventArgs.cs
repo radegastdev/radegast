@@ -34,23 +34,14 @@ namespace Radegast.Netcom
 {
     public class TeleportingEventArgs : OverrideEventArgs
     {
-        private string _sim;
-        private Vector3 _coordinates;
-
-        public TeleportingEventArgs(string sim, Vector3 coordinates) : base()
+        public TeleportingEventArgs(string sim, Vector3 coordinates)
         {
-            _sim = sim;
-            _coordinates = coordinates;
+            SimName = sim;
+            Coordinates = coordinates;
         }
 
-        public string SimName
-        {
-            get { return _sim; }
-        }
+        public string SimName { get; }
 
-        public Vector3 Coordinates
-        {
-            get { return _coordinates; }
-        }
+        public Vector3 Coordinates { get; }
     }
 }

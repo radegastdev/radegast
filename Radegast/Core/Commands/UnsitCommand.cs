@@ -48,11 +48,6 @@ namespace Radegast.Commands
             Usage = "unsit";
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
         {
             Instance.State.SetSitting(false, UUID.Zero);

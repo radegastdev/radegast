@@ -53,7 +53,6 @@ namespace Radegast
         public bool DisposeOnDetachedClose = true;
 
         public DettachableControl()
-            : base()
         {
             SizeChanged += new System.EventHandler(DettachableControl_SizeChanged);
         }

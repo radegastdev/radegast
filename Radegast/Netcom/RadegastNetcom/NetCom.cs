@@ -51,8 +51,7 @@ namespace Radegast.Netcom
         private bool loggingIn = false;
         private bool loggedIn = false;
         private bool teleporting = false;
-        private bool agreeToTos = false;
-        public bool AgreeToTos { get { return agreeToTos; } set { agreeToTos = value; } }
+        public bool AgreeToTos { get; set; } = false;
         private Grid grid;
         public Grid Grid { get { return grid; } }
 
@@ -176,7 +175,7 @@ namespace Radegast.Netcom
             LoginProgressEventArgs ea = new LoginProgressEventArgs(e.Status, e.Message, string.Empty);
 
             if (CanSyncInvoke)
-                netcomSync.BeginInvoke(new OnClientLoginRaise(OnClientLoginStatus), new object[] { e });
+                netcomSync.BeginInvoke(new OnClientLoginRaise(OnClientLoginStatus), e);
             else
                 OnClientLoginStatus(e);
         }

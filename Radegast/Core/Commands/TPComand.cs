@@ -54,11 +54,6 @@ namespace Radegast.Commands
             
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
         void PrintUsage()
         {
             wl("Wrong arguments for \"tp\" command. For detailed description type: " + CommandsManager.CmdPrefix + "tp help");

@@ -53,11 +53,6 @@ namespace Radegast.Commands
             args = new List<string>();
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
         bool arg(string a)
         {
             return args.Count == 0 || args.Contains(a);

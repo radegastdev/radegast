@@ -74,7 +74,6 @@ namespace Radegast
 
         private void FindURLs(string text)
         {
-            StringBuilder sb = new StringBuilder();
             string[] lineParts = urlRegex.Split(text);
             int linePartIndex;
 

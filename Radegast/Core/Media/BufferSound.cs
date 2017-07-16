@@ -58,13 +58,11 @@ namespace Radegast.Media
         /// Creates a new sound object
         /// </summary>
         public BufferSound(UUID objectId, UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
-            : base()
         {
             InitBuffer(objectId, soundId, loop, global, worldpos, vol);
         }
 
         public BufferSound(UUID objectId, UUID soundId, bool loop, bool global, Vector3d worldpos, float vol)
-            : base()
         {
             InitBuffer(objectId, soundId, loop, global, new Vector3(worldpos), vol);
         }

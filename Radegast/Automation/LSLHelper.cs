@@ -190,7 +190,7 @@ namespace Radegast.Automation
 
                         client.Groups.GroupMembersReply += handler;
                         client.Groups.RequestGroupMembers(groupID);
-                        bool success = gotMembers.WaitOne(30 * 1000, false);
+                        gotMembers.WaitOne(30 * 1000, false);
                         client.Groups.GroupMembersReply -= handler;
 
                         if (Members != null && Members.ContainsKey(invitee))

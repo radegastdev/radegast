@@ -432,16 +432,10 @@ namespace Radegast
             if (oldStatus != newStatus)
             {
                 status = newStatus;
-                if (OnStatusChange != null)
-                {
-                    OnStatusChange(status, NextWaypoint);
-                }
+                OnStatusChange?.Invoke(status, NextWaypoint);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -491,7 +485,6 @@ namespace Radegast
                 }
                 else if (Math.Abs(System.Environment.TickCount - lastDistanceChanged) > stuckTimeout)
                 {
-                    Vector3d nextWaypoint = NextWaypoint;
                     Stop(AutoPilotStatus.Failed);
                 }
             }

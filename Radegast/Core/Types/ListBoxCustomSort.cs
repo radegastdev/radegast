@@ -37,7 +37,6 @@ namespace Radegast
     public class ListBoxCustomSort : ListBox
     {
         public ListBoxCustomSort()
-            : base()
         {
         }
 

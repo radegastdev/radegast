@@ -59,7 +59,6 @@ namespace Radegast.Media
         ManualResetEvent initDone = new ManualResetEvent(false);
 
         public MediaManager(RadegastInstance instance)
-            : base()
         {
             this.Instance = instance;
             manager = this;

@@ -447,10 +447,6 @@ namespace Radegast.LSL
         public EmptyStatement(Parser yyp)
             : base(((LSLSyntax
                 )yyp)) { }
-        public override string ToString()
-        {
-            return base.ToString();
-        }
 
         public override string yyname { get { return "EmptyStatement"; } }
         public override int yynum { get { return 111; } }

@@ -741,11 +741,11 @@ namespace Radegast
             foreach (var obj in MeshedPrims)
             {
                 int total_num_vertices = 0;
-                string name = string.Format("prim{0}", prim_nr++);
+                string name = $"prim{prim_nr++}";
                 string geomID = name;
 
                 var geom = geomLib.AppendChild(Doc.CreateElement("geometry"));
-                geom.Attributes.Append(Doc.CreateAttribute("id")).InnerText = string.Format("{0}-{1}", geomID, "mesh");
+                geom.Attributes.Append(Doc.CreateAttribute("id")).InnerText = $"{geomID}-mesh";
                 var mesh = geom.AppendChild(Doc.CreateElement("mesh"));
 
                 List<float> position_data = new List<float>();
@@ -759,9 +759,8 @@ namespace Radegast
                     var face = obj.Faces[face_num];
                     total_num_vertices += face.Vertices.Count;
 
-                    for (int i = 0; i < face.Vertices.Count; i++)
+                    foreach (var v in face.Vertices)
                     {
-                        var v = face.Vertices[i];
                         position_data.Add(v.Position.X);
                         position_data.Add(v.Position.Y);
                         position_data.Add(v.Position.Z);
@@ -775,17 +774,17 @@ namespace Radegast
                     }
                 }
 
-                AddSource(mesh, string.Format("{0}-{1}", geomID, "positions"), "XYZ", position_data);
-                AddSource(mesh, string.Format("{0}-{1}", geomID, "normals"), "XYZ", normal_data);
-                AddSource(mesh, string.Format("{0}-{1}", geomID, "map0"), "ST", uv_data);
+                AddSource(mesh, $"{geomID}-positions", "XYZ", position_data);
+                AddSource(mesh, $"{geomID}-normals", "XYZ", normal_data);
+                AddSource(mesh, $"{geomID}-map0", "ST", uv_data);
 
                 // Add the <vertices> element
                 {
                     var verticesNode = mesh.AppendChild(Doc.CreateElement("vertices"));
-                    verticesNode.Attributes.Append(Doc.CreateAttribute("id")).InnerText = string.Format("{0}-{1}", geomID, "vertices");
+                    verticesNode.Attributes.Append(Doc.CreateAttribute("id")).InnerText = $"{geomID}-vertices";
                     var verticesInput = verticesNode.AppendChild(Doc.CreateElement("input"));
                     verticesInput.Attributes.Append(Doc.CreateAttribute("semantic")).InnerText = "POSITION";
-                    verticesInput.Attributes.Append(Doc.CreateAttribute("source")).InnerText = string.Format("#{0}-{1}", geomID, "positions");
+                    verticesInput.Attributes.Append(Doc.CreateAttribute("source")).InnerText = $"#{geomID}-positions";
                 }
 
                 var objMaterials = GetMaterials(obj);
@@ -797,38 +796,48 @@ namespace Radegast
                 }
 
                 var node = scene.AppendChild(Doc.CreateElement("node"));
-                node.Attributes.Append(Doc.CreateAttribute("type")).InnerText = "NODE";
-                node.Attributes.Append(Doc.CreateAttribute("id")).InnerText = geomID;
-                node.Attributes.Append(Doc.CreateAttribute("name")).InnerText = geomID;
-
-                // Set tranform matrix (node position, rotation and scale)
-                var matrix = node.AppendChild(Doc.CreateElement("matrix"));
-
-                var srt = Radegast.Rendering.Math3D.CreateSRTMatrix(obj.Prim.Scale, obj.Prim.Rotation, obj.Prim.Position);
-                string matrixVal = "";
-                for (int i = 0; i < 4; i++)
+                if (node.Attributes != null)
                 {
-                    for (int j = 0; j < 4; j++)
+                    node.Attributes.Append(Doc.CreateAttribute("type")).InnerText = "NODE";
+                    node.Attributes.Append(Doc.CreateAttribute("id")).InnerText = geomID;
+                    node.Attributes.Append(Doc.CreateAttribute("name")).InnerText = geomID;
+
+                    // Set tranform matrix (node position, rotation and scale)
+                    var matrix = node.AppendChild(Doc.CreateElement("matrix"));
+
+                    var srt = Radegast.Rendering.Math3D.CreateSRTMatrix(obj.Prim.Scale, obj.Prim.Rotation, obj.Prim.Position);
+                    string matrixVal = "";
+                    for (int i = 0; i < 4; i++)
                     {
-                        matrixVal += srt[j * 4 + i].ToString(invariant) + " ";
+                        for (int j = 0; j < 4; j++)
+                        {
+                            matrixVal += srt[j * 4 + i].ToString(invariant) + " ";
+                        }
                     }
+                    matrix.InnerText = matrixVal.TrimEnd();
+
+                    // Geometry of the node
+                    var nodeGeometry = node.AppendChild(Doc.CreateElement("instance_geometry"));
+
+                    // Bind materials
+                    var tq = nodeGeometry.AppendChild(Doc.CreateElement("bind_material"))
+                        .AppendChild(Doc.CreateElement("technique_common"));
+                    foreach (var objMaterial in objMaterials)
+                    {
+                        var instanceMaterial = tq.AppendChild(Doc.CreateElement("instance_material"));
+                        if (instanceMaterial.Attributes != null)
+                        {
+                            instanceMaterial.Attributes.Append(Doc.CreateAttribute("symbol")).InnerText =
+                                $"{objMaterial.Name}-material";
+                            instanceMaterial.Attributes.Append(Doc.CreateAttribute("target")).InnerText =
+                                $"#{objMaterial.Name}-material";
+                        }
+                    }
+
+                    if (nodeGeometry.Attributes != null)
+                        nodeGeometry.Attributes.Append(Doc.CreateAttribute("url")).InnerText =
+                            $"#{geomID}-mesh";
                 }
-                matrix.InnerText = matrixVal.TrimEnd();
-
-                // Geometry of the node
-                var nodeGeometry = node.AppendChild(Doc.CreateElement("instance_geometry"));
-
-                // Bind materials
-                var tq = nodeGeometry.AppendChild(Doc.CreateElement("bind_material"))
-                    .AppendChild(Doc.CreateElement("technique_common"));
-                foreach (var objMaterial in objMaterials)
-                {
-                    var instanceMaterial = tq.AppendChild(Doc.CreateElement("instance_material"));
-                    instanceMaterial.Attributes.Append(Doc.CreateAttribute("symbol")).InnerText = string.Format("{0}-{1}", objMaterial.Name, "material");
-                    instanceMaterial.Attributes.Append(Doc.CreateAttribute("target")).InnerText = string.Format("#{0}-{1}", objMaterial.Name, "material");
-                }
-
-                nodeGeometry.Attributes.Append(Doc.CreateAttribute("url")).InnerText = string.Format("#{0}-{1}", geomID, "mesh");
             }
 
             GenerateEffects(effects);
@@ -837,15 +846,21 @@ namespace Radegast
             foreach (var objMaterial in AllMeterials)
             {
                 var mat = materials.AppendChild(Doc.CreateElement("material"));
-                mat.Attributes.Append(Doc.CreateAttribute("id")).InnerText = objMaterial.Name + "-material";
-                var matEffect = mat.AppendChild(Doc.CreateElement("instance_effect"));
-                matEffect.Attributes.Append(Doc.CreateAttribute("url")).InnerText = string.Format("#{0}-{1}", objMaterial.Name, "fx");
+                if (mat.Attributes != null)
+                {
+                    mat.Attributes.Append(Doc.CreateAttribute("id")).InnerText = objMaterial.Name + "-material";
+                    var matEffect = mat.AppendChild(Doc.CreateElement("instance_effect"));
+                    if (matEffect.Attributes != null)
+                        matEffect.Attributes.Append(Doc.CreateAttribute("url")).InnerText =
+                            $"#{objMaterial.Name}-fx";
+                }
             }
 
-            root.AppendChild(Doc.CreateElement("scene"))
+            XmlAttributeCollection xmlAttributeCollection = root.AppendChild(Doc.CreateElement("scene"))
                 .AppendChild(Doc.CreateElement("instance_visual_scene"))
-                .Attributes.Append(Doc.CreateAttribute("url")).InnerText = "#Scene";
-
+                .Attributes;
+            if (xmlAttributeCollection != null)
+                xmlAttributeCollection.Append(Doc.CreateAttribute("url")).InnerText = "#Scene";
         }
 
         string DocToString(XmlDocument doc)
@@ -854,18 +869,16 @@ namespace Radegast
             try
             {
                 using (MemoryStream outs = new MemoryStream())
+                using (XmlTextWriter writter = new XmlTextWriter(outs, Encoding.UTF8))
                 {
-                    using (XmlTextWriter writter = new XmlTextWriter(outs, Encoding.UTF8))
+                    writter.Formatting = Formatting.Indented;
+                    doc.WriteContentTo(writter);
+                    writter.Flush();
+                    outs.Flush();
+                    outs.Position = 0;
+                    using (StreamReader sr = new StreamReader(outs))
                     {
-                        writter.Formatting = Formatting.Indented;
-                        doc.WriteContentTo(writter);
-                        writter.Flush();
-                        outs.Flush();
-                        outs.Position = 0;
-                        using (StreamReader sr = new StreamReader(outs))
-                        {
-                            ret += sr.ReadToEnd();
-                        }
+                        ret += sr.ReadToEnd();
                     }
                 }
             }

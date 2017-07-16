@@ -67,7 +67,6 @@ namespace Radegast
         }
 
         public AgentNameTextBox()
-            : base()
         {
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             Disposed += new EventHandler(CleanupHandlers);

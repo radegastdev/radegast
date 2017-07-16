@@ -683,7 +683,6 @@ namespace Radegast
                                     }
                                     else
                                     {
-                                        StringBuilder sb = new StringBuilder();
                                         foreach (var node in matching_nodes)
                                         {
                                             string fullPath = FindFullInventoryPath(node, "");

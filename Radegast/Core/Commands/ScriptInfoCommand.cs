@@ -51,24 +51,20 @@ namespace Radegast.Commands
             this.instance = instance;
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
         public override void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
         {
             if (cmdArgs.Length == 0)
             {
                 AttachmentInfo(WriteLine);
             }
-            else if (cmdArgs[0] == "avatar")
+            else switch (cmdArgs[0])
             {
-                AttachmentInfo(WriteLine);
-            }
-            else if (cmdArgs[0] == "parcel")
-            {
-                ParcelInfo(WriteLine);
+                case "avatar":
+                    AttachmentInfo(WriteLine);
+                    break;
+                case "parcel":
+                    ParcelInfo(WriteLine);
+                    break;
             }
 
         }

@@ -38,7 +38,6 @@ namespace Radegast
         public static readonly string NewlineMarker = new string('\u00b6', 1);
 
         public ChatInputBox()
-            : base()
         {
         }
 
