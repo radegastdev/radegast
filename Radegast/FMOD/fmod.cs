@@ -2027,8 +2027,7 @@ namespace FMOD
         {
             sound = null;
 
-            byte[] stringData;
-            stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
+            var stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
             
             exinfo.cbsize = Marshal.SizeOf(exinfo);
 
@@ -2061,8 +2060,7 @@ namespace FMOD
         {
             sound = null;
 
-            byte[] stringData;
-            stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
+            var stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
             
             exinfo.cbsize = Marshal.SizeOf(exinfo);
 

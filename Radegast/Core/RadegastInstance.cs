@@ -592,7 +592,7 @@ namespace Radegast
             catch (Exception)
             {
                 UserDir = System.Environment.CurrentDirectory;
-            };
+            }
 
             GlobalLogFile = Path.Combine(UserDir, Properties.Resources.ProgramName + ".log");
             GlobalSettings = new Settings(Path.Combine(UserDir, "settings.xml"));

@@ -145,33 +145,31 @@ namespace Radegast
             txtStatus.AppendText("Loading...\n");
 
             string extension = System.IO.Path.GetExtension(FileName).ToLower();
-            Bitmap bitmap = null;
 
             try
             {
-                if (extension == ".jp2" || extension == ".j2c")
+                Bitmap bitmap = null;
+                switch (extension)
                 {
-                    Image image;
-                    ManagedImage managedImage;
+                    case ".jp2":
+                    case ".j2c":
+                        Image image;
+                        ManagedImage managedImage;
 
-                    // Upload JPEG2000 images untouched
-                    UploadData = System.IO.File.ReadAllBytes(FileName);
+                        // Upload JPEG2000 images untouched
+                        UploadData = System.IO.File.ReadAllBytes(FileName);
 
-                    OpenJPEG.DecodeToImage(UploadData, out managedImage, out image);
-                    bitmap = (Bitmap)image;
+                        OpenJPEG.DecodeToImage(UploadData, out managedImage, out image);
+                        bitmap = (Bitmap)image;
 
-                    txtStatus.AppendText("Loaded raw JPEG2000 data " + FileName + "\n");
-                }
-                else
-                {
-                    if (extension == ".tga")
-                    {
+                        txtStatus.AppendText("Loaded raw JPEG2000 data " + FileName + "\n");
+                        break;
+                    case ".tga":
                         bitmap = LoadTGAClass.LoadTGA(FileName);
-                    }
-                    else
-                    {
+                        break;
+                    default:
                         bitmap = (Bitmap)System.Drawing.Image.FromFile(FileName);
-                    }
+                        break;
                 }
 
                 txtStatus.AppendText("Loaded image " + FileName + "\n");

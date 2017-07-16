@@ -133,12 +133,15 @@ namespace Radegast
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            WindowWrapper mainWindow = new WindowWrapper(frmMain.ActiveForm.Handle);
-            System.Windows.Forms.SaveFileDialog dlg = new SaveFileDialog();
-            dlg.AddExtension = true;
-            dlg.RestoreDirectory = true;
-            dlg.Title = "Save object as...";
-            dlg.Filter = "XML file (*.xml)|*.xml";
+            if (Form.ActiveForm == null) return;
+            WindowWrapper mainWindow = new WindowWrapper(Form.ActiveForm.Handle);
+            SaveFileDialog dlg = new SaveFileDialog
+            {
+                AddExtension = true,
+                RestoreDirectory = true,
+                Title = "Save object as...",
+                Filter = "XML file (*.xml)|*.xml"
+            };
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
@@ -163,7 +166,6 @@ namespace Radegast
                 t.IsBackground = true;
                 t.Start();
             }
-
         }
 
         private void button1_Click(object sender, EventArgs e)

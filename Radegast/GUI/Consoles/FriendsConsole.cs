@@ -130,7 +130,7 @@ namespace Radegast
                     else if (!fi1.IsOnline && fi2.IsOnline)
                         return 1;
                     else
-                        return string.Compare(fi1.Name, fi2.Name);
+                        return String.CompareOrdinal(fi1.Name, fi2.Name);
                 }
             );
 

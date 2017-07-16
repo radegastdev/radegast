@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenMetaverse;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Radegast
 {
@@ -219,11 +220,13 @@ namespace Radegast
             {
                 if (parcel.ID == UUID.Zero) continue;
 
-                ListViewItem item = new ListViewItem();
-                item.Name = parcel.ID.ToString();
-                item.Text = parcel.Name;
-                item.Tag = parcel;
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, parcel.Dwell.ToString()));
+                ListViewItem item = new ListViewItem
+                {
+                    Name = parcel.ID.ToString(),
+                    Text = parcel.Name,
+                    Tag = parcel
+                };
+                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, parcel.Dwell.ToString(CultureInfo.InvariantCulture)));
                 lvwPlaces.Items.Add(item);
             }
             lvwPlaces.Sort();
@@ -321,10 +324,7 @@ namespace Radegast
                 switch (SortBy)
                 {
                     case SortByColumn.Name:
-                        if (CurrentOrder == SortOrder.Ascending)
-                            return string.Compare(item1.Text, item2.Text);
-                        else
-                            return string.Compare(item2.Text, item1.Text);
+                        return CurrentOrder == SortOrder.Ascending ? String.CompareOrdinal(item1.Text, item2.Text) : String.CompareOrdinal(item2.Text, item1.Text);
 
                     case SortByColumn.Traffic:
                         if (CurrentOrder == SortOrder.Ascending)
@@ -552,10 +552,9 @@ namespace Radegast
                 switch (SortBy)
                 {
                     case SortByColumn.Name:
-                        if (CurrentOrder == SortOrder.Ascending)
-                            return string.Compare(item1.Text, item2.Text);
-                        else
-                            return string.Compare(item2.Text, item1.Text);
+                        return CurrentOrder == SortOrder.Ascending 
+                            ? String.CompareOrdinal(item1.Text, item2.Text) 
+                            : String.CompareOrdinal(item2.Text, item1.Text);
 
                     case SortByColumn.Members:
                         if (CurrentOrder == SortOrder.Ascending)
@@ -713,8 +712,8 @@ namespace Radegast
                     DirectoryManager.EventsSearchData e2 = (DirectoryManager.EventsSearchData)((ListViewItem)b).Tag;
 
                     if (e1.Time < e2.Time) return -1;
-                    else if (e1.Time > e2.Time) return 1;
-                    else return string.Compare(e1.Name, e2.Name);
+                    if (e1.Time > e2.Time) return 1;
+                    return String.CompareOrdinal(e1.Name, e2.Name);
                 }
                 catch { }
                 return 0;

@@ -280,7 +280,7 @@ namespace Radegast
             if (i1 == i2) return 0;
             if (i1 is ToolStripSeparator)
                 return (i2 is ToolStripSeparator) ? 0 : -1;
-            int i = string.Compare(i1.Text, i2.Text);
+            int i = String.CompareOrdinal(i1.Text, i2.Text);
             return i == 0 ? i1.GetHashCode().CompareTo(i2.GetHashCode()) : i;
         }
 

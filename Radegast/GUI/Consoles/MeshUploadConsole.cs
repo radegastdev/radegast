@@ -30,6 +30,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading;
@@ -226,7 +227,7 @@ namespace Radegast
                 {
                     filename = FileNames.Dequeue();
                 }
-                Msg(string.Format("Processing: {0}", filename));
+                Msg($"Processing: {filename}");
 
                 var parser = new OpenMetaverse.ImportExport.ColladaLoader();
                 var prims = parser.Load(filename, UploadImages);
@@ -236,10 +237,10 @@ namespace Radegast
                     continue;
                 }
 
-                Msg(string.Format("Parse collada file success, found {0} objects", prims.Count));
+                Msg($"Parse collada file success, found {prims.Count} objects");
                 Msg("Uploading...");
 
-                var uploader = new OpenMetaverse.ImportExport.ModelUploader(client, prims, Path.GetFileNameWithoutExtension(filename), "Radegast " + DateTime.Now.ToString());
+                var uploader = new OpenMetaverse.ImportExport.ModelUploader(client, prims, Path.GetFileNameWithoutExtension(filename), "Radegast " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
                 var uploadDone = new AutoResetEvent(false);
 
                 uploader.IncludePhysicsStub = true;

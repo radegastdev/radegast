@@ -643,13 +643,13 @@ namespace Radegast
 
         private static string ReplaceEx(string original, string pattern, string replacement)
         {
-            int count, position0, position1;
-            count = position0 = position1 = 0;
+            int position0, position1;
+            var count = position0 = position1 = 0;
             string upperString = original.ToUpper();
             string upperPattern = pattern.ToUpper();
             int inc = (original.Length / pattern.Length) * (replacement.Length - pattern.Length);
             char[] chars = new char[original.Length + Math.Max(0, inc)];
-            while ((position1 = upperString.IndexOf(upperPattern, position0)) != -1)
+            while ((position1 = upperString.IndexOf(upperPattern, position0, StringComparison.Ordinal)) != -1)
             {
                 for (int i = position0; i < position1; ++i)
                     chars[count++] = original[i];

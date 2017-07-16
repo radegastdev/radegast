@@ -1033,7 +1033,7 @@ namespace Radegast
             else if (distance1 > distance2)
                 return 1;
             else
-                return string.Compare(item1.Text, item2.Text);
+                return String.CompareOrdinal(item1.Text, item2.Text);
 
         }
     }

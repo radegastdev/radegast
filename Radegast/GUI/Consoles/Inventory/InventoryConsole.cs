@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 #if (COGBOT_LIBOMV || USE_STHREADS)
@@ -971,7 +972,7 @@ namespace Radegast
             txtItemDescription.Text = item.Description;
             txtCreator.AgentID = item.CreatorID;
             txtCreator.Tag = item.CreatorID;
-            txtCreated.Text = item.CreationDate.ToString();
+            txtCreated.Text = item.CreationDate.ToString(CultureInfo.InvariantCulture);
 
             txtAssetID.Text = item.AssetUUID != UUID.Zero ? item.AssetUUID.ToString() : string.Empty;
 
@@ -1735,12 +1736,12 @@ namespace Radegast
                         break;
 
                     case "new_notecard":
-                        client.Inventory.RequestCreateItem(f.UUID, "New Note", "Radegast note: " + DateTime.Now.ToString(),
+                        client.Inventory.RequestCreateItem(f.UUID, "New Note", "Radegast note: " + DateTime.Now.ToString(CultureInfo.InvariantCulture),
                             AssetType.Notecard, UUID.Zero, InventoryType.Notecard, PermissionMask.All, NotecardCreated);
                         break;
 
                     case "new_script":
-                        client.Inventory.RequestCreateItem(f.UUID, "New script", "Radegast script: " + DateTime.Now.ToString(),
+                        client.Inventory.RequestCreateItem(f.UUID, "New script", "Radegast script: " + DateTime.Now.ToString(CultureInfo.InvariantCulture),
                             AssetType.LSLText, UUID.Zero, InventoryType.LSL, PermissionMask.All, ScriptCreated);
                         break;
 
@@ -2458,7 +2459,7 @@ namespace Radegast
                 }
                 else
                 {
-                    return string.Compare(b1.Name, b2.Name);
+                    return String.CompareOrdinal(b1.Name, b2.Name);
                 }
             });
 
@@ -2616,7 +2617,6 @@ namespace Radegast
             int offset = 20 * (res.Level + 1);
             Rectangle rec = new Rectangle(e.Bounds.X + offset, e.Bounds.Y, e.Bounds.Width - offset, e.Bounds.Height);
 
-            Image icon = null;
             int iconIx = 0;
 
             if (res.Inv is InventoryFolder)
@@ -2639,7 +2639,7 @@ namespace Radegast
 
             try
             {
-                icon = frmMain.ResourceImages.Images[iconIx];
+                var icon = frmMain.ResourceImages.Images[iconIx];
                 g.DrawImageUnscaled(icon, e.Bounds.X + offset - 18, e.Bounds.Y);
             }
             catch { }
@@ -2777,12 +2777,9 @@ namespace Radegast
     // Create a node sorter that implements the IComparer interface.
     public class InvNodeSorter : System.Collections.IComparer
     {
-        bool _sysfirst = true;
-        bool _bydate = true;
-
         int CompareFolders(InventoryFolder x, InventoryFolder y)
         {
-            if (_sysfirst)
+            if (SystemFoldersFirst)
             {
                 if (x.PreferredType != FolderType.None && y.PreferredType == FolderType.None)
                 {
@@ -2793,11 +2790,11 @@ namespace Radegast
                     return 1;
                 }
             }
-            return String.Compare(x.Name, y.Name);
+            return String.CompareOrdinal(x.Name, y.Name);
         }
 
-        public bool SystemFoldersFirst { set { _sysfirst = value; } get { return _sysfirst; } }
-        public bool ByDate { set { _bydate = value; } get { return _bydate; } }
+        public bool SystemFoldersFirst { set; get; } = true;
+        public bool ByDate { set; get; } = true;
 
         public int Compare(object x, object y)
         {
@@ -2826,7 +2823,7 @@ namespace Radegast
             InventoryItem item1 = (InventoryItem)tx.Tag;
             InventoryItem item2 = (InventoryItem)ty.Tag;
 
-            if (_bydate)
+            if (ByDate)
             {
                 if (item1.CreationDate < item2.CreationDate)
                 {

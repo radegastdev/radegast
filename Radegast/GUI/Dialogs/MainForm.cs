@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Timers;
@@ -489,14 +490,14 @@ namespace Radegast
             {
                 tlblLoginName.Text = instance.Names.Get(client.Self.AgentID, client.Self.Name);
                 tlblMoneyBalance.Text = client.Self.Balance.ToString();
-                icoHealth.Text = client.Self.Health.ToString() + "%";
+                icoHealth.Text = client.Self.Health.ToString(CultureInfo.CurrentCulture) + "%";
 
                 var cs = client.Network.CurrentSim;
                 tlblRegionInfo.Text =
                     (cs == null ? "No region" : cs.Name) +
-                    " (" + Math.Floor(client.Self.SimPosition.X).ToString() + ", " +
-                    Math.Floor(client.Self.SimPosition.Y).ToString() + ", " +
-                    Math.Floor(client.Self.SimPosition.Z).ToString() + ")";
+                    " (" + Math.Floor(client.Self.SimPosition.X).ToString(CultureInfo.CurrentCulture) + ", " +
+                    Math.Floor(client.Self.SimPosition.Y).ToString(CultureInfo.CurrentCulture) + ", " +
+                    Math.Floor(client.Self.SimPosition.Z).ToString(CultureInfo.CurrentCulture) + ")";
             }
             else
             {

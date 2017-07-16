@@ -247,7 +247,7 @@ namespace Radegast
             cbAutoReconnect.CheckedChanged += new EventHandler(cbAutoReconnect_CheckedChanged);
 
             cbResolveURIs.Checked = s["resolve_uris"].AsBoolean();
-            cbResolveURIs.CheckedChanged += new EventHandler(cbResolveURIs_CheckedChanged); ;
+            cbResolveURIs.CheckedChanged += new EventHandler(cbResolveURIs_CheckedChanged);
 
             cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
             cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);

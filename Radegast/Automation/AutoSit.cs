@@ -52,7 +52,7 @@ namespace Radegast.Automation
                 OSDMap map = (OSDMap)osd;
                 prefs.Primitive = map.ContainsKey("Primitive") ? map["Primitive"].AsUUID() : UUID.Zero;
                 prefs.PrimitiveName = prefs.Primitive != UUID.Zero && map.ContainsKey("PrimitiveName") ? map["PrimitiveName"].AsString() : "";
-                prefs.Enabled = map.ContainsKey("Enabled") ? map["Enabled"].AsBoolean() : false;
+                prefs.Enabled = map.ContainsKey("Enabled") && map["Enabled"].AsBoolean();
             }
 
             return prefs;

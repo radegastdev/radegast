@@ -218,23 +218,15 @@ namespace Radegast
             }
 
             InstantMessage msg = e.IM;
-            AssetType type;
             UUID groupID;
 
-            if (msg.BinaryBucket.Length >= 18)
-            {
-                groupID = new UUID(msg.BinaryBucket, 2);
-            }
-            else
-            {
-                groupID = msg.FromAgentID;
-            }
+            groupID = msg.BinaryBucket.Length >= 18 ? new UUID(msg.BinaryBucket, 2) : msg.FromAgentID;
 
             if (groupID != group.ID) return;
 
             if (msg.BinaryBucket.Length > 18 && msg.BinaryBucket[0] != 0)
             {
-                type = (AssetType)msg.BinaryBucket[1];
+                var type = (AssetType)msg.BinaryBucket[1];
                 destinationFolderID = client.Inventory.FindFolderForType(type);
                 int icoIndx = InventoryConsole.GetItemImageIndex(type.ToString().ToLower());
                 if (icoIndx >= 0)
@@ -1400,23 +1392,11 @@ namespace Radegast
             switch (SortBy)
             {
                 case SortByColumn.Name:
-                    if (CurrentOrder == SortOrder.Ascending)
-                        return string.Compare(member1.Name, member2.Name);
-                    else
-                        return string.Compare(member2.Name, member1.Name);
-
+                    return CurrentOrder == SortOrder.Ascending ? String.CompareOrdinal(member1.Name, member2.Name) : String.CompareOrdinal(member2.Name, member1.Name);
                 case SortByColumn.Title:
-                    if (CurrentOrder == SortOrder.Ascending)
-                        return string.Compare(member1.Base.Title, member2.Base.Title);
-                    else
-                        return string.Compare(member2.Base.Title, member1.Base.Title);
-
+                    return CurrentOrder == SortOrder.Ascending ? String.CompareOrdinal(member1.Base.Title, member2.Base.Title) : String.CompareOrdinal(member2.Base.Title, member1.Base.Title);
                 case SortByColumn.LastOnline:
-                    if (CurrentOrder == SortOrder.Ascending)
-                        return DateTime.Compare(member1.LastOnline, member2.LastOnline);
-                    else
-                        return DateTime.Compare(member2.LastOnline, member1.LastOnline);
-
+                    return CurrentOrder == SortOrder.Ascending ? DateTime.Compare(member1.LastOnline, member2.LastOnline) : DateTime.Compare(member2.LastOnline, member1.LastOnline);
                 case SortByColumn.Contribution:
                     if (member1.Base.Contribution < member2.Base.Contribution)
                         return CurrentOrder == SortOrder.Ascending ? -1 : 1;
@@ -1475,22 +1455,17 @@ namespace Radegast
             switch (SortBy)
             {
                 case SortByColumn.Subject:
-                    if (CurrentOrder == SortOrder.Ascending)
-                        return string.Compare(member1.Subject, member2.Subject);
-                    else
-                        return string.Compare(member2.Subject, member1.Subject);
-
+                    return CurrentOrder == SortOrder.Ascending
+                        ? String.CompareOrdinal(member1.Subject, member2.Subject) 
+                        : String.CompareOrdinal(member2.Subject, member1.Subject);
                 case SortByColumn.Sender:
-                    if (CurrentOrder == SortOrder.Ascending)
-                        return string.Compare(member1.FromName, member2.FromName);
-                    else
-                        return string.Compare(member2.FromName, member1.FromName);
-
+                    return CurrentOrder == SortOrder.Ascending 
+                        ? String.CompareOrdinal(member1.FromName, member2.FromName) 
+                        : String.CompareOrdinal(member2.FromName, member1.FromName);
                 case SortByColumn.Date:
-                    if (CurrentOrder == SortOrder.Ascending)
-                        return IntCompare(member1.Timestamp, member2.Timestamp);
-                    else
-                        return IntCompare(member2.Timestamp, member1.Timestamp);
+                    return CurrentOrder == SortOrder.Ascending 
+                        ? IntCompare(member1.Timestamp, member2.Timestamp) 
+                        : IntCompare(member2.Timestamp, member1.Timestamp);
             }
 
             return 0;

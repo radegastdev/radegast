@@ -146,7 +146,7 @@ namespace Radegast
                             titem.DisplayStyle = ToolStripItemDisplayStyle.Text;
                         }
 
-                        titem.Name = item.UUID.ToString(); ;
+                        titem.Name = item.UUID.ToString();
                         titem.Tag = item;
                         titem.Click += new EventHandler(attachmentMenuItem_Click);
 

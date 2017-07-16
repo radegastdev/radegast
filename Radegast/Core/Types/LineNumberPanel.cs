@@ -117,18 +117,18 @@ namespace Radegast
             }
 
             Point pos = new Point(0, (int)(g.VisibleClipBounds.Y + font_height / 3));
-            int first_index, first_line, first_line_y;
-            first_index = rtb.GetCharIndexFromPosition(pos);
-            first_line = rtb.GetLineFromCharIndex(first_index);
-            first_line_y = 1 + rtb.GetPositionFromCharIndex(first_index).Y;
+            var first_index = rtb.GetCharIndexFromPosition(pos);
+            var first_line = rtb.GetLineFromCharIndex(first_index);
+            var first_line_y = 1 + rtb.GetPositionFromCharIndex(first_index).Y;
 
             int i = first_line;
-            int x = 0;
             Single y = 0;
             int total_lines = rtb.GetLineFromCharIndex(Int32.MaxValue) + 1;
-            StringFormat align = new StringFormat(StringFormatFlags.NoWrap);
-            align.Alignment = StringAlignment.Far;
-            align.LineAlignment = StringAlignment.Center;
+            StringFormat align = new StringFormat(StringFormatFlags.NoWrap)
+            {
+                Alignment = StringAlignment.Far,
+                LineAlignment = StringAlignment.Center
+            };
             int maxWidth = 0;
 
             while (y < g.VisibleClipBounds.Y + g.VisibleClipBounds.Height)
@@ -141,7 +141,7 @@ namespace Radegast
                 }
 
                 y = first_line_y - 1 + font_height * (i - first_line - 1);
-                x = Width - (int)tSize.Width - 5;
+                var x = Width - (int)tSize.Width - 5;
 
                 if (i <= total_lines)
                 {

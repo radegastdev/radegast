@@ -242,12 +242,17 @@ namespace Radegast
 		
 		void BtnBrowseClick(object sender, EventArgs e)
 		{
-			WindowWrapper mainWindow = new WindowWrapper(frmMain.ActiveForm.Handle);
-			System.Windows.Forms.OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Title = "Open object file";
-			dlg.Filter = "XML file (*.xml)|*.xml";
-			dlg.Multiselect = false;
-			DialogResult res = dlg.ShowDialog();
+		    if (Form.ActiveForm != null)
+		    {
+		        WindowWrapper mainWindow = new WindowWrapper(Form.ActiveForm.Handle);
+		    }
+		    OpenFileDialog dlg = new OpenFileDialog
+		    {
+		        Title = "Open object file",
+		        Filter = "XML file (*.xml)|*.xml",
+		        Multiselect = false
+		    };
+		    DialogResult res = dlg.ShowDialog();
 			
 			if (res != DialogResult.OK)
 				return;

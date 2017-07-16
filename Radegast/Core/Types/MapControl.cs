@@ -459,11 +459,12 @@ namespace Radegast
             if (tile != null)
             {
                 int targetSize = 256;
-                for (targetSize = 128; targetSize > PixRegS; targetSize /= 2) ;
+                for (targetSize = 128; targetSize > PixRegS; targetSize /= 2)
+                { }
                 targetSize *= 2;
                 if (targetSize != 256)
                 {
-                    string id = string.Format("{0},{1}", handle, targetSize);
+                    string id = $"{handle},{targetSize}";
                     if (smallerTiles.ContainsKey(id))
                     {
                         tile = smallerTiles[id];
@@ -855,7 +856,7 @@ namespace Radegast
 
         protected virtual HttpWebRequest SetupRequest(Uri address, string acceptHeader)
         {
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(address);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(address);
             request.Method = "GET";
 
             if (!string.IsNullOrEmpty(acceptHeader))

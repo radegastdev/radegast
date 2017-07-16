@@ -113,32 +113,26 @@ namespace Radegast
 		public void ImportFromFile(string filename)
 		{
 			ImportDirectory = Path.GetDirectoryName(filename);
-			string xml;
-			List<Primitive> prims;
-			
-			xml = File.ReadAllText(filename);
-			
-			prims = Helpers.OSDToPrimList(OSDParser.DeserializeLLSDXml(xml));
+            var xml = File.ReadAllText(filename);
+			var prims = Helpers.OSDToPrimList(OSDParser.DeserializeLLSDXml(xml));
 			
 			Dictionary<uint, Linkset> linksets = new Dictionary<uint, Linkset>();
-			for (int i = 0; i < prims.Count; i++)
+			foreach (Primitive prim in prims)
 			{
-				Primitive prim = prims[i];
-				
-				if (prim.ParentID == 0)
-				{
-					if (linksets.ContainsKey(prim.LocalID))
-						linksets[prim.LocalID].RootPrim = prim;
-					else
-						linksets[prim.LocalID] = new Linkset(prim);
-				}
-				else
-				{
-					if (!linksets.ContainsKey(prim.ParentID))
-						linksets[prim.ParentID] = new Linkset();
+			    if (prim.ParentID == 0)
+			    {
+			        if (linksets.ContainsKey(prim.LocalID))
+			            linksets[prim.LocalID].RootPrim = prim;
+			        else
+			            linksets[prim.LocalID] = new Linkset(prim);
+			    }
+			    else
+			    {
+			        if (!linksets.ContainsKey(prim.ParentID))
+			            linksets[prim.ParentID] = new Linkset();
 					
-					linksets[prim.ParentID].Children.Add(prim);
-				}
+			        linksets[prim.ParentID].Children.Add(prim);
+			    }
 			}
 			
 			primsCreated = new List<Primitive>();

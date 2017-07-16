@@ -78,22 +78,18 @@ namespace Radegast
 		
 		public void ExportToFile(string filename, uint localID)
 		{
-			Primitive exportPrim;
-			uint localid;
+		    uint localid;
 			
 			ExportDirectory = Path.Combine(Path.GetDirectoryName(filename),Path.GetFileNameWithoutExtension(filename));
 			Directory.CreateDirectory(ExportDirectory);
 			
-			exportPrim = Client.Network.CurrentSim.ObjectsPrimitives.Find(
-				delegate(Primitive prim) { return prim.LocalID == localID; }
+			var exportPrim = Client.Network.CurrentSim.ObjectsPrimitives.Find(
+			    prim => prim.LocalID == localID
 			);
 			
 			if (exportPrim != null)
 			{
-				if (exportPrim.ParentID != 0)
-					localid = exportPrim.ParentID;
-				else
-					localid = exportPrim.LocalID;
+				localid = exportPrim.ParentID != 0 ? exportPrim.ParentID : exportPrim.LocalID;
 				
 				uLocalID = localid;
 				// Check for export permission first

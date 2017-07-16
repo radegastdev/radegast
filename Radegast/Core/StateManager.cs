@@ -1031,7 +1031,7 @@ namespace Radegast
                     client.Self.BeamEffect(client.Self.AgentID, UUID.Zero, scatter, beamColors[beamRandom.Next(0, 3)], 1.0f, beamID[j + i - 1]);
                 }
             }
-            catch (Exception) { };
+            catch (Exception) { }
 
         }
 

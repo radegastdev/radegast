@@ -222,32 +222,35 @@ namespace Radegast
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            WindowWrapper mainWindow = new WindowWrapper(frmMain.ActiveForm.Handle);
-            System.Windows.Forms.SaveFileDialog dlg = new SaveFileDialog();
-            dlg.AddExtension = true;
-            dlg.RestoreDirectory = true;
-            dlg.Title = "Save object as...";
-            dlg.Filter = "XML file (*.xml)|*.xml";
+            if (Form.ActiveForm == null) return;
+            WindowWrapper mainWindow = new WindowWrapper(Form.ActiveForm.Handle);
+            SaveFileDialog dlg = new SaveFileDialog
+            {
+                AddExtension = true,
+                RestoreDirectory = true,
+                Title = "Save object as...",
+                Filter = "XML file (*.xml)|*.xml"
+            };
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
             {
                 Thread t = new Thread(new ThreadStart(delegate()
+                {
+                    try
                     {
-                        try
-                        {
-                            PrimSerializer s = new PrimSerializer(client);
-                            string primsXmls = s.GetSerializedPrims(client.Network.CurrentSim, selectedPrim.LocalID);
-                            System.IO.File.WriteAllText(dlg.FileName, primsXmls);
-                            s.CleanUp();
-                            s = null;
-                            MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        catch (Exception excp)
-                        {
-                            MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                    }));
+                        PrimSerializer s = new PrimSerializer(client);
+                        string primsXmls = s.GetSerializedPrims(client.Network.CurrentSim, selectedPrim.LocalID);
+                        System.IO.File.WriteAllText(dlg.FileName, primsXmls);
+                        s.CleanUp();
+                        s = null;
+                        MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception excp)
+                    {
+                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }));
                 t.IsBackground = true;
                 t.Start();
             }

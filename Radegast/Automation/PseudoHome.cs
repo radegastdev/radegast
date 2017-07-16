@@ -55,7 +55,7 @@ namespace Radegast.Automation
             if (osd != null && osd.Type == OSDType.Map)
             {
                 OSDMap map = (OSDMap)osd;
-                prefs.Enabled = map.ContainsKey("Enabled") ? map["Enabled"].AsBoolean() : false;
+                prefs.Enabled = map.ContainsKey("Enabled") && map["Enabled"].AsBoolean();
                 prefs.Region = map.ContainsKey("Region") ? map["Region"].AsString().Trim() : "";
                 prefs.Position = map.ContainsKey("Position") ? map["Position"].AsVector3() : new Vector3();
                 prefs.Tolerance = map.ContainsKey("Tolerance") ? Math.Min(256, Math.Max(1, map["Tolerance"].AsUInteger())) : 256;

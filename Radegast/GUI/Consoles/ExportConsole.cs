@@ -82,11 +82,10 @@ namespace Radegast
 		
 		void GatherInfo()
 		{
-			Primitive exportPrim;
-			uint localid;
+		    uint localid;
 			
-			exportPrim = Client.Network.CurrentSim.ObjectsPrimitives.Find(
-				delegate(Primitive prim) { return prim.LocalID == uLocalID; }
+			var exportPrim = Client.Network.CurrentSim.ObjectsPrimitives.Find(
+			    prim => prim.LocalID == uLocalID
 			);
 			
 			if (exportPrim != null)
@@ -103,34 +102,31 @@ namespace Radegast
 					}
 				);
 				
-				for (int i = 0; i < prims.Count; i++)
+				foreach (Primitive prim in prims)
 				{
-					Primitive prim = prims[i];
-					UUID texture;
-					
-					if (prim.Textures.DefaultTexture.TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
-					    !Textures.Contains(prim.Textures.DefaultTexture.TextureID))
-					{
-						texture = new UUID(prim.Textures.DefaultTexture.TextureID);
-						Textures.Add(texture);
+				    if (prim.Textures.DefaultTexture.TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
+				        !Textures.Contains(prim.Textures.DefaultTexture.TextureID))
+				    {
+				        var texture = new UUID(prim.Textures.DefaultTexture.TextureID);
+				        Textures.Add(texture);
 						
-						for (int j = 0; j < prim.Textures.FaceTextures.Length; j++)
-						{
-							if (prim.Textures.FaceTextures[j] != null &&
-							    prim.Textures.FaceTextures[j].TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
-							    !Textures.Contains(prim.Textures.FaceTextures[j].TextureID))
-							{
-								texture = new UUID(prim.Textures.FaceTextures[j].TextureID);
-								Textures.Add(texture);
-							}
-						}
+				        foreach (Primitive.TextureEntryFace face in prim.Textures.FaceTextures)
+				        {
+				            if (face != null &&
+				                face.TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
+				                !Textures.Contains(face.TextureID))
+				            {
+				                texture = new UUID(face.TextureID);
+				                Textures.Add(texture);
+				            }
+				        }
 						
-						if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && !Textures.Contains(prim.Sculpt.SculptTexture))
-						{
-							texture = new UUID(prim.Sculpt.SculptTexture);
-							Textures.Add(texture);
-						}
-					}
+				        if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && !Textures.Contains(prim.Sculpt.SculptTexture))
+				        {
+				            texture = new UUID(prim.Sculpt.SculptTexture);
+				            Textures.Add(texture);
+				        }
+				    }
 				}
 				objectName.Text = exportPrim.Properties.Name;
 				objectUUID.Text = exportPrim.ID.ToString();
@@ -141,11 +137,8 @@ namespace Radegast
 		
 		void ValidatePath(string fname)
 		{
-			string path = Path.GetDirectoryName(fname);
-			if (Directory.Exists(path))
-				btnExport.Enabled = true;
-			else
-				btnExport.Enabled = false;
+		    string path = Path.GetDirectoryName(fname);
+		    btnExport.Enabled = Directory.Exists(path);
 		}
 		#endregion
 		

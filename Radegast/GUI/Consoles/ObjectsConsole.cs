@@ -1442,7 +1442,7 @@ namespace Radegast
                 return 1;
             }
 
-            return string.Compare(prim1.Properties.Name, prim2.Properties.Name);
+            return String.CompareOrdinal(prim1.Properties.Name, prim2.Properties.Name);
         }
         //this routine should return -1 if xy and 0 if x==y.
         // for our sample we'll just use string comparison
