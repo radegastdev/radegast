@@ -36,7 +36,6 @@ using System.Drawing;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using OpenMetaverse.Imaging;
-using OpenMetaverse.Assets;
 
 namespace Radegast
 {
@@ -409,7 +408,7 @@ namespace Radegast
             {
                 gotImage.Reset();
                 byte[] tgaData;
-                Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
+                Client.Assets.RequestImage(textureID, (state, assetTexture) =>
                 {
                     ManagedImage mi;
                     if (state == TextureRequestState.Finished && OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi))

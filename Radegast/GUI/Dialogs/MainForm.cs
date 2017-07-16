@@ -48,8 +48,6 @@ using System.IO;
 using System.Web;
 using Radegast.Netcom;
 using OpenMetaverse;
-using OpenMetaverse.StructuredData;
-using OpenMetaverse.Assets;
 
 namespace Radegast
 {
@@ -766,7 +764,7 @@ namespace Radegast
                 {
                     profile = new frmProfile(instance, name, agentID);
 
-                    profile.Disposed += (object sender, EventArgs e) =>
+                    profile.Disposed += (sender, e) =>
                         {
                             lock (shownProfiles)
                             {
@@ -824,7 +822,7 @@ namespace Radegast
                 {
                     profile = new frmGroupInfo(instance, group);
 
-                    profile.Disposed += (object sender, EventArgs e) =>
+                    profile.Disposed += (sender, e) =>
                         {
                             lock (shownGroupProfiles)
                             {
@@ -1207,7 +1205,7 @@ namespace Radegast
                 UUID.Random(),
                 InventoryType.Landmark,
                 PermissionMask.All,
-                (bool success, InventoryItem item) =>
+                (success, item) =>
                 {
                     if (success)
                     {
@@ -1446,7 +1444,7 @@ namespace Radegast
             {
                 keyboardShortcutsForm = new frmKeyboardShortcuts(instance);
 
-                keyboardShortcutsForm.Disposed += (object senderx, EventArgs ex) =>
+                keyboardShortcutsForm.Disposed += (senderx, ex) =>
                     {
                         if (components != null)
                         {
@@ -1639,7 +1637,7 @@ namespace Radegast
 
         private void myAttachmentsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Avatar av = client.Network.CurrentSim.ObjectsAvatars.Find((Avatar a) => { return a.ID == client.Self.AgentID; });
+            Avatar av = client.Network.CurrentSim.ObjectsAvatars.Find(a => { return a.ID == client.Self.AgentID; });
 
             if (av == null)
             {

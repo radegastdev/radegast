@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using Radegast;
-using OpenMetaverse;
 using OpenMetaverse.Voice;
 
 namespace RadegastSpeech.Conversation

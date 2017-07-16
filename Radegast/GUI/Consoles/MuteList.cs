@@ -30,11 +30,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using OpenMetaverse;
 
@@ -105,7 +100,7 @@ namespace Radegast
                 lvMuteList.BeginUpdate();
                 lvMuteList.Items.Clear();
 
-                client.Self.MuteList.ForEach((MuteEntry me) =>
+                client.Self.MuteList.ForEach(me =>
                     {
                         string type = "";
                         switch (me.Type)

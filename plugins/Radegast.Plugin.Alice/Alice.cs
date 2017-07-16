@@ -30,11 +30,7 @@
 //
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Radegast;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using AIMLbot;
@@ -89,14 +85,14 @@ namespace Radegast.Plugin.Alice
             {
                 Enabled = false;
             }
-            btn_DisableOnStart = new ToolStripMenuItem("Disable on start", null, (object sender, EventArgs e) =>
+            btn_DisableOnStart = new ToolStripMenuItem("Disable on start", null, (sender, e) =>
             {
                 DisableOnStart = btn_DisableOnStart.Checked = !DisableOnStart;
                 Instance.GlobalSettings["plugin.alice.disableOnStart"] = OSD.FromBoolean(DisableOnStart);
             });
             btn_DisableOnStart.Checked = DisableOnStart;
 
-            EnabledButton = new ToolStripMenuItem("Enabled", null, (object sender, EventArgs e) =>
+            EnabledButton = new ToolStripMenuItem("Enabled", null, (sender, e) =>
             {
                 Enabled = SetEnabled(!Enabled);
                 EnabledButton.Checked = MenuButton.Checked = Enabled;
@@ -112,7 +108,7 @@ namespace Radegast.Plugin.Alice
                 respondWithoutName = Instance.GlobalSettings["plugin.alice.respondWithoutName"].AsBoolean();
             }
 
-            respondWithoutNameButton = new ToolStripMenuItem("Respond without name", null, (object sender, EventArgs e) =>
+            respondWithoutNameButton = new ToolStripMenuItem("Respond without name", null, (sender, e) =>
             {
                 respondWithoutName = respondWithoutNameButton.Checked = !respondWithoutName;
                 Instance.GlobalSettings["plugin.alice.respondWithoutName"] = OSD.FromBoolean(respondWithoutName);
@@ -127,7 +123,7 @@ namespace Radegast.Plugin.Alice
                 respondRange = Instance.GlobalSettings["plugin.alice.respondRange"];
             }
 
-            distance_5m = new ToolStripMenuItem("5m range", null, (object sender, EventArgs e) =>
+            distance_5m = new ToolStripMenuItem("5m range", null, (sender, e) =>
             {
                 distance_5m.Checked = !distance_5m.Checked;
                 if (distance_5m.Checked)
@@ -145,7 +141,7 @@ namespace Radegast.Plugin.Alice
                 }
             });
 
-            distance_10m = new ToolStripMenuItem("10m range", null, (object sender, EventArgs e) =>
+            distance_10m = new ToolStripMenuItem("10m range", null, (sender, e) =>
             {
                 distance_10m.Checked = !distance_10m.Checked;
                 if (distance_10m.Checked)
@@ -163,7 +159,7 @@ namespace Radegast.Plugin.Alice
                 }
             });
 
-            distance_15m = new ToolStripMenuItem("15m range", null, (object sender, EventArgs e) =>
+            distance_15m = new ToolStripMenuItem("15m range", null, (sender, e) =>
             {
                 distance_15m.Checked = !distance_15m.Checked;
                 if (distance_15m.Checked)
@@ -181,7 +177,7 @@ namespace Radegast.Plugin.Alice
                 }
             });
 
-            distance_20m = new ToolStripMenuItem("20m range", null, (object sender, EventArgs e) =>
+            distance_20m = new ToolStripMenuItem("20m range", null, (sender, e) =>
             {
                 distance_20m.Checked = !distance_20m.Checked;
                 if (distance_20m.Checked)
@@ -208,7 +204,7 @@ namespace Radegast.Plugin.Alice
                 shout2shout = Instance.GlobalSettings["plugin.alice.shout2shout"].AsBoolean();
             }
 
-            btn_shout2shout = new ToolStripMenuItem("Shout response to Shout", null, (object sender, EventArgs e) =>
+            btn_shout2shout = new ToolStripMenuItem("Shout response to Shout", null, (sender, e) =>
             {
                 shout2shout = btn_shout2shout.Checked = !shout2shout;
                 Instance.GlobalSettings["plugin.alice.shout2shout"] = OSD.FromBoolean(shout2shout);
@@ -223,13 +219,13 @@ namespace Radegast.Plugin.Alice
                 whisper2whisper = Instance.GlobalSettings["plugin.alice.whisper2whisper"].AsBoolean();
             }
 
-            btn_whisper2whisper = new ToolStripMenuItem("Whisper response to Whisper", null, (object sender, EventArgs e) =>
+            btn_whisper2whisper = new ToolStripMenuItem("Whisper response to Whisper", null, (sender, e) =>
             {
                 whisper2whisper = btn_whisper2whisper.Checked = !whisper2whisper;
                 Instance.GlobalSettings["plugin.alice.whisper2whisper"] = OSD.FromBoolean(whisper2whisper);
             });
 
-            MenuButton = new ToolStripMenuItem("ALICE chatbot", null, (object sender, EventArgs e) =>
+            MenuButton = new ToolStripMenuItem("ALICE chatbot", null, (sender, e) =>
             {
                 Enabled = SetEnabled(!Enabled);
                 EnabledButton.Checked = MenuButton.Checked = Enabled;
@@ -278,7 +274,7 @@ namespace Radegast.Plugin.Alice
 
             MenuButton.DropDownItems.Add(btn_enableDelay);
             MenuButton.DropDownItems.Add(btn_DisableOnStart);
-            MenuButton.DropDownItems.Add("Reload AIML", null, (object sender, EventArgs e) =>
+            MenuButton.DropDownItems.Add("Reload AIML", null, (sender, e) =>
             {
                 Alice = null;
                 GC.Collect();

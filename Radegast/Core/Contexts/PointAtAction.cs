@@ -29,7 +29,6 @@
 // $Id: 
 //
 using System;
-using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast

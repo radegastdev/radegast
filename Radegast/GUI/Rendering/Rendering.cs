@@ -33,10 +33,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using System.Text;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
 using Thread = ThreadPoolUtil.Thread;
@@ -50,7 +48,6 @@ using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using OpenMetaverse.Assets;
 using OpenMetaverse.Imaging;
-using OpenMetaverse.StructuredData;
 using OpenMetaverse.Packets;
 #endregion Usings
 
@@ -1158,13 +1155,13 @@ namespace Radegast.Rendering
             {
                 if (RenderSettings.PrimitiveRenderingEnabled)
                 {
-                    List<Primitive> mainPrims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive root) => root.ParentID == 0);
+                    List<Primitive> mainPrims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(root => root.ParentID == 0);
                     foreach (Primitive mainPrim in mainPrims)
                     {
                         UpdatePrimBlocking(mainPrim);
                         Client.Network.CurrentSim.ObjectsPrimitives
-                            .FindAll((Primitive child) => child.ParentID == mainPrim.LocalID)
-                            .ForEach((Primitive subPrim) => UpdatePrimBlocking(subPrim));
+                            .FindAll(child => child.ParentID == mainPrim.LocalID)
+                            .ForEach(subPrim => UpdatePrimBlocking(subPrim));
                     }
                 }
 
@@ -1175,13 +1172,13 @@ namespace Radegast.Rendering
                     {
                         UpdatePrimBlocking(avatar);
                         Client.Network.CurrentSim.ObjectsPrimitives
-                            .FindAll((Primitive child) => child.ParentID == avatar.LocalID)
-                            .ForEach((Primitive attachedPrim) =>
+                            .FindAll(child => child.ParentID == avatar.LocalID)
+                            .ForEach(attachedPrim =>
                             {
                                 UpdatePrimBlocking(attachedPrim);
                                 Client.Network.CurrentSim.ObjectsPrimitives
-                                    .FindAll((Primitive child) => child.ParentID == attachedPrim.LocalID)
-                                    .ForEach((Primitive attachedPrimChild) =>
+                                    .FindAll(child => child.ParentID == attachedPrim.LocalID)
+                                    .ForEach(attachedPrimChild =>
                                     {
                                         UpdatePrimBlocking(attachedPrimChild);
                                     });
@@ -2988,7 +2985,7 @@ namespace Radegast.Rendering
                 }
                 else
                 {
-                    instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
+                    instance.Client.Assets.RequestImage(textureID, (state, assetTexture) =>
                         {
                             ManagedImage mi;
                             if (state == TextureRequestState.Finished && OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi))

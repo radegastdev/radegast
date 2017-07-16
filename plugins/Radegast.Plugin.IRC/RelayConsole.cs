@@ -38,7 +38,6 @@ using System.Threading;
 using System.Windows.Forms;
 using Meebey.SmartIrc4net;
 using OpenMetaverse;
-using OpenMetaverse.Packets;
 using OpenMetaverse.StructuredData;
 
 namespace Radegast.Plugin.IRC

@@ -36,7 +36,6 @@ using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System.Web.Script.Serialization;
-using System.ComponentModel;
 using System.Reflection;
 
 namespace Radegast

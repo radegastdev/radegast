@@ -31,11 +31,7 @@
 //
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 using OpenMetaverse;
@@ -257,39 +253,39 @@ namespace Radegast
             cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
 
             cbRLV.Checked = s["rlv_enabled"].AsBoolean();
-            cbRLV.CheckedChanged += (object sender, EventArgs e) =>
+            cbRLV.CheckedChanged += (sender, e) =>
             {
                 s["rlv_enabled"] = new OSDBoolean(cbRLV.Checked);
             };
 
             cbRLVDebug.Checked = s["rlv_debugcommands"].AsBoolean();
-            cbRLVDebug.CheckedChanged += (object sender, EventArgs e) =>
+            cbRLVDebug.CheckedChanged += (sender, e) =>
             {
                 s["rlv_debugcommands"] = new OSDBoolean(cbRLVDebug.Checked);
             };
 
             cbMUEmotes.Checked = s["mu_emotes"].AsBoolean();
-            cbMUEmotes.CheckedChanged += (object sender, EventArgs e) =>
+            cbMUEmotes.CheckedChanged += (sender, e) =>
             {
                 s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
             };
 
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
             cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
-            cbMinToTrey.CheckedChanged += (object sender, EventArgs e) =>
+            cbMinToTrey.CheckedChanged += (sender, e) =>
             {
                 s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
             };
 
 
             cbNoTyping.Checked = s["no_typing_anim"].AsBoolean();
-            cbNoTyping.CheckedChanged += (object sender, EventArgs e) =>
+            cbNoTyping.CheckedChanged += (sender, e) =>
             {
                 s["no_typing_anim"] = OSD.FromBoolean(cbNoTyping.Checked);
             };
 
             txtAutoResponse.Text = s["auto_response_text"];
-            txtAutoResponse.TextChanged += (object sender, EventArgs e) =>
+            txtAutoResponse.TextChanged += (sender, e) =>
             {
                 s["auto_response_text"] = txtAutoResponse.Text;
             };
@@ -302,7 +298,7 @@ namespace Radegast
             }
 
             cbSyntaxHighlight.Checked = s["script_syntax_highlight"].AsBoolean();
-            cbSyntaxHighlight.CheckedChanged += (object sender, EventArgs e) =>
+            cbSyntaxHighlight.CheckedChanged += (sender, e) =>
             {
                 s["script_syntax_highlight"] = OSD.FromBoolean(cbSyntaxHighlight.Checked);
             };
@@ -366,7 +362,7 @@ namespace Radegast
             };
 
             cbFriendsHighlight.Checked = s["friends_notification_highlight"].AsBoolean();
-            cbFriendsHighlight.CheckedChanged += (object sender, EventArgs e) =>
+            cbFriendsHighlight.CheckedChanged += (sender, e) =>
             {
                 s["friends_notification_highlight"] = new OSDBoolean(cbFriendsHighlight.Checked);
             };

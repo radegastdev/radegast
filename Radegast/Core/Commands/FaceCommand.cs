@@ -28,9 +28,8 @@
 //
 // $Id$
 //
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -133,7 +132,7 @@ Examples:
             }
 
             KnownHeading kh = null;
-            kh = StateManager.KnownHeadings.Find((KnownHeading h) => { return h.ID == subcmd.ToUpper(); });
+            kh = StateManager.KnownHeadings.Find(h => { return h.ID == subcmd.ToUpper(); });
             if (kh != null)
             {
                 Client.Self.Movement.BodyRotation = Client.Self.Movement.HeadRotation = kh.Heading;
@@ -149,7 +148,7 @@ Examples:
             {
                 case "person":
                     List<UUID> people = Chat.GetAvatarList();
-                    UUID person = people.Find((UUID id) => { return Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()); });
+                    UUID person = people.Find(id => { return Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()); });
                     if (person == UUID.Zero)
                     {
                         WriteLine("Could not find {0}", subarg);
@@ -187,7 +186,7 @@ Examples:
                     Objects = (ObjectsConsole)TC.Tabs["objects"].Control;
                     List<Primitive> prims = Objects.GetObjectList();
 
-                    Primitive target = prims.Find((Primitive prim) =>
+                    Primitive target = prims.Find(prim =>
                     {
                         return prim.Properties != null
                             && prim.Properties.Name.ToLower().Contains(subarg.ToLower());

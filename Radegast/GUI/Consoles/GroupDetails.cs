@@ -37,8 +37,6 @@ using Thread = ThreadPoolUtil.Thread;
 using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
-using System.Threading;
-using System.Timers;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
@@ -866,7 +864,7 @@ namespace Radegast
                     item.Name = role.Name;
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, role.Name));
                     item.Tag = role;
-                    var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                    var foundRole = roleMembers.Find(kvp => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
                     bool hasRole = foundRole.Value == m.Base.ID;
                     item.Checked = hasRole;
                     lvwAssignedRoles.Items.Add(item);
@@ -910,7 +908,7 @@ namespace Radegast
                     continue;
 
                 GroupRole role = (GroupRole)item.Tag;
-                var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                var foundRole = roleMembers.Find(kvp => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
                 bool hasRole = foundRole.Value == m.Base.ID;
 
                 if (item.Checked != hasRole)
@@ -959,7 +957,7 @@ namespace Radegast
                         continue;
 
                     GroupRole role = (GroupRole)item.Tag;
-                    var foundRole = roleMembers.Find((KeyValuePair<UUID, UUID> kvp) => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                    var foundRole = roleMembers.Find(kvp => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
                     bool hasRole = foundRole.Value == m.Base.ID;
 
                     if (item.Checked != hasRole)
@@ -1047,7 +1045,7 @@ namespace Radegast
             }
             else if (roleMembers != null)
             {
-                var mmb = roleMembers.FindAll((KeyValuePair<UUID, UUID> kvp) => { return kvp.Key == role.ID; });
+                var mmb = roleMembers.FindAll(kvp => { return kvp.Key == role.ID; });
                 foreach (var m in mmb)
                 {
                     lvwAssignedMembers.Items.Add(instance.Names.Get(m.Value));

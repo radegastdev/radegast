@@ -41,8 +41,6 @@ using Thread = ThreadPoolUtil.Thread;
 using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
-using System.Threading;
-
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using Path = System.IO.Path;

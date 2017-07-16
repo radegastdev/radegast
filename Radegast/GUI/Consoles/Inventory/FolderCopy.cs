@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using OpenMetaverse;
 
 namespace Radegast
@@ -56,7 +52,7 @@ namespace Radegast
                 if (item is InventoryItem)
                 {
                     copied.Reset();
-                    Client.Inventory.RequestCopyItem(item.UUID, newFolderID, item.Name, folder.OwnerID, (InventoryBase target) =>
+                    Client.Inventory.RequestCopyItem(item.UUID, newFolderID, item.Name, folder.OwnerID, target =>
                     {
                         Instance.TabConsole.DisplayNotificationInChat(string.Format("    * Copied {0} to {1}", item.Name, dest.Name));
                         copied.Set();

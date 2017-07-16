@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using OpenMetaverse;
-using OpenMetaverse.Assets;
+﻿using OpenMetaverse;
 using Radegast;
 using System.Windows.Forms;
 

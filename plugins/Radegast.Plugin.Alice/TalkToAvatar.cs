@@ -1,7 +1,4 @@
-using System;
 using System.Windows.Forms;
-
-using AIMLbot;
 using AIMLBot = AIMLbot.Bot;
 
 using OpenMetaverse;

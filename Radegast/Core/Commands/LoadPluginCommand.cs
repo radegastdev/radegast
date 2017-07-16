@@ -29,9 +29,6 @@
 // $Id$
 //
 using System;
-using System.Reflection;
-using System.IO;
-using OpenMetaverse;
 
 namespace Radegast.Commands
 {

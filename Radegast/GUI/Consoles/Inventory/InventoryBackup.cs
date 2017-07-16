@@ -29,7 +29,6 @@
 // $Id: RadegastInstance.cs 152 2009-08-24 14:19:58Z latifer@gmail.com $
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 #if (COGBOT_LIBOMV || USE_STHREADS)
@@ -265,7 +264,7 @@ namespace Radegast
                                 }
                                 else
                                 {
-                                    client.Assets.RequestInventoryAsset(item, true, (AssetDownload transfer, Asset asset) =>
+                                    client.Assets.RequestInventoryAsset(item, true, (transfer, asset) =>
                                         {
                                             if (transfer.Success)
                                             {

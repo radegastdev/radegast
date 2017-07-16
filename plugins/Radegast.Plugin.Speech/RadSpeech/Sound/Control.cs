@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using OpenMetaverse;
-
-namespace RadegastSpeech.Sound
+﻿namespace RadegastSpeech.Sound
 {
     abstract class Control : AreaControl
     {

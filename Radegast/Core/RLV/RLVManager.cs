@@ -219,7 +219,7 @@ namespace Radegast
 
             foreach (UUID obj in objecs)
             {
-                if (client.Network.CurrentSim.ObjectsPrimitives.Find((Primitive p) => p.ID == obj) == null)
+                if (client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ID == obj) == null)
                 {
                     Clear(obj);
                 }
@@ -288,11 +288,11 @@ namespace Radegast
                         {
                             if (rule.Option == "")
                             {
-                                rules.RemoveAll((RLVRule r) => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender);
+                                rules.RemoveAll(r => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender);
                             }
                             else
                             {
-                                rules.RemoveAll((RLVRule r) => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender && r.Option == rule.Option);
+                                rules.RemoveAll(r => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender && r.Option == rule.Option);
                             }
                         }
 
@@ -895,7 +895,7 @@ namespace Radegast
         {
             lock (rules)
             {
-                rules.RemoveAll((RLVRule r) => r.Sender == id);
+                rules.RemoveAll(r => r.Sender == id);
             }
         }
 
@@ -903,24 +903,24 @@ namespace Radegast
         {
             if (!Enabled) return false;
 
-            return rules.FindAll((RLVRule r) => r.Behaviour == behaviour && string.IsNullOrEmpty(r.Option)).Count > 0;
+            return rules.FindAll(r => r.Behaviour == behaviour && string.IsNullOrEmpty(r.Option)).Count > 0;
         }
 
         public bool RestictionActive(string behaviour, string exception)
         {
             if (!Enabled) return false;
-            var set = rules.FindAll((RLVRule r) => r.Behaviour == behaviour);
+            var set = rules.FindAll(r => r.Behaviour == behaviour);
 
             return set.Count > 0 &&
-                   set.FindAll((RLVRule r) => r.Option == exception).Count == 0 &&
-                   set.FindAll((RLVRule r) => string.IsNullOrEmpty(r.Option)).Count > 0;
+                   set.FindAll(r => r.Option == exception).Count == 0 &&
+                   set.FindAll(r => string.IsNullOrEmpty(r.Option)).Count > 0;
         }
 
         public List<string> GetOptions(string behaviour)
         {
             List<string> ret = new List<string>();
 
-            foreach (var rule in rules.FindAll((RLVRule r) => r.Behaviour == behaviour && !string.IsNullOrEmpty(r.Option)))
+            foreach (var rule in rules.FindAll(r => r.Behaviour == behaviour && !string.IsNullOrEmpty(r.Option)))
             {
                 if (!ret.Contains(rule.Option)) ret.Add(rule.Option);
             }
@@ -932,18 +932,18 @@ namespace Radegast
         {
             if (!Enabled || a == null) return true;
 
-            return rules.FindAll((RLVRule r) => r.Behaviour == "detach" && r.Sender == a.Prim.ID).Count <= 0;
+            return rules.FindAll(r => r.Behaviour == "detach" && r.Sender == a.Prim.ID).Count <= 0;
         }
 
         public bool AllowDetach(InventoryItem item)
         {
             if (!Enabled || item == null) return true;
 
-            List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == client.Self.LocalID);
+            List<Primitive> myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
             foreach (var att in myAtt)
             {
                 if (CurrentOutfitFolder.GetAttachmentItem(att) != item.UUID) continue;
-                if (rules.FindAll((RLVRule r) => r.Behaviour == "detach" && r.Sender == att.ID).Count > 0)
+                if (rules.FindAll(r => r.Behaviour == "detach" && r.Sender == att.ID).Count > 0)
                 {
                     return false;
                 }
@@ -956,7 +956,7 @@ namespace Radegast
         {
             if (!Enabled || agent == UUID.Zero) return false;
 
-            return rules.FindAll((RLVRule r) => r.Behaviour == "accepttp" && (r.Option == "" || r.Option == agent.ToString())).Count > 0;
+            return rules.FindAll(r => r.Behaviour == "accepttp" && (r.Option == "" || r.Option == agent.ToString())).Count > 0;
         }
     }
 }

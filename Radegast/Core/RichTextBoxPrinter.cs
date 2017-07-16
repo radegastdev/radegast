@@ -29,7 +29,6 @@
 // $Id$
 //
 using System;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Windows.Forms;

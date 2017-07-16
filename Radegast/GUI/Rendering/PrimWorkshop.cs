@@ -33,7 +33,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 #if (COGBOT_LIBOMV || USE_STHREADS)
@@ -46,7 +45,6 @@ using System.Threading;
 using OpenTK.Graphics.OpenGL;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
-using OpenMetaverse.Assets;
 using OpenMetaverse.Imaging;
 
 #endregion Usings
@@ -584,7 +582,7 @@ namespace Radegast.Rendering
                     if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(RootPrimLocalID))
                     {
                         UpdatePrimBlocking(Client.Network.CurrentSim.ObjectsPrimitives[RootPrimLocalID]);
-                        var children = Client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => { return p.ParentID == RootPrimLocalID; });
+                        var children = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => { return p.ParentID == RootPrimLocalID; });
                         children.ForEach(p => UpdatePrimBlocking(p));
                     }
                 }
@@ -1042,7 +1040,7 @@ namespace Radegast.Rendering
             try
             {
                 gotImage.Reset();
-                instance.Client.Assets.RequestImage(textureID, (TextureRequestState state, AssetTexture assetTexture) =>
+                instance.Client.Assets.RequestImage(textureID, (state, assetTexture) =>
                     {
                         try
                         {

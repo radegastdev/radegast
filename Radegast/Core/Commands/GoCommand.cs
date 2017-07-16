@@ -28,9 +28,8 @@
 //
 // $Id$
 //
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -142,7 +141,7 @@ Examples:
 
                 if (args.Count > 0)
                 {
-                    kh = StateManager.KnownHeadings.Find((KnownHeading h) => { return h.ID == args[0].ToUpper(); });
+                    kh = StateManager.KnownHeadings.Find(h => h.ID == args[0].ToUpper());
                     if (kh != null)
                         heading = kh.Heading;
                 }
@@ -181,7 +180,7 @@ Examples:
                 
                 case "person":
                     List<UUID> people = Chat.GetAvatarList();
-                    UUID person = people.Find((UUID id) => { return Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()); });
+                    UUID person = people.Find(id => Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()));
                     if (person == UUID.Zero)
                     {
                         WriteLine("Could not find {0}", subarg);
@@ -220,11 +219,8 @@ Examples:
                     Objects = (ObjectsConsole)TC.Tabs["objects"].Control;
                     List<Primitive> prims = Objects.GetObjectList();
 
-                    Primitive target = prims.Find((Primitive prim) =>
-                        {
-                            return prim.Properties != null
-                                && prim.Properties.Name.ToLower().Contains(subarg.ToLower());
-                        });
+                    Primitive target = prims.Find(prim => prim.Properties != null
+                                                          && prim.Properties.Name.ToLower().Contains(subarg.ToLower()));
 
                     if (target == null)
                     {

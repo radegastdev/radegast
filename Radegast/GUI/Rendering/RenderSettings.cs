@@ -29,8 +29,6 @@
 // $Id$
 //
 
-using System;
-using OpenMetaverse;
 using OpenMetaverse.Rendering;
 
 namespace Radegast.Rendering

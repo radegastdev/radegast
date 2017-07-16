@@ -29,7 +29,6 @@
 // $Id: TabsConsole.cs 361 2009-10-24 15:04:57Z latifer $
 //
 using System;
-using System.Windows.Forms;
 using OpenMetaverse.StructuredData;
 
 namespace Radegast

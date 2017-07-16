@@ -151,7 +151,7 @@ namespace Radegast
                         titem.Click += new EventHandler(attachmentMenuItem_Click);
 
                         var saveToInv = new ToolStripMenuItem("Save to inventory");
-                        saveToInv.Click += (object xsender, EventArgs xe) =>
+                        saveToInv.Click += (xsender, xe) =>
                             {
                                 client.Inventory.RequestCopyItemFromNotecard(UUID.Zero,
                                     notecard.UUID,

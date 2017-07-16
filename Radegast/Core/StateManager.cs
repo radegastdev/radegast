@@ -339,7 +339,7 @@ namespace Radegast
             // First try the object tracker
             foreach (var s in Simulators)
             {
-                avi = s.ObjectsAvatars.Find((Avatar av) => av.ID == person);
+                avi = s.ObjectsAvatars.Find(av => av.ID == person);
                 if (avi != null)
                 {
                     sim = s;
@@ -350,7 +350,7 @@ namespace Radegast
             {
                 foreach (var s in Simulators)
                 {
-                    avi = s.ObjectsPrimitives.Find((Primitive av) => av.ID == person);
+                    avi = s.ObjectsPrimitives.Find(av => av.ID == person);
                     if (avi != null)
                     {
                         sim = s;
@@ -606,7 +606,7 @@ namespace Radegast
         public Quaternion AvatarRotation(Simulator sim, UUID avID)
         {
             Quaternion rot = Quaternion.Identity;
-            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => a.ID == avID);
+            Avatar av = sim.ObjectsAvatars.Find(a => a.ID == avID);
 
             if (av == null)
                 return rot;
@@ -631,7 +631,7 @@ namespace Radegast
         public Vector3 AvatarPosition(Simulator sim, UUID avID)
         {
             Vector3 pos = Vector3.Zero;
-            Avatar av = sim.ObjectsAvatars.Find((Avatar a) => a.ID == avID);
+            Avatar av = sim.ObjectsAvatars.Find(a => a.ID == avID);
             if (av != null)
             {
                 return AvatarPosition(sim, av);
@@ -930,7 +930,7 @@ namespace Radegast
         {
             var stop = new Dictionary<UUID, bool>();
 
-            client.Self.SignaledAnimations.ForEach((UUID anim) =>
+            client.Self.SignaledAnimations.ForEach(anim =>
             {
                 if (!KnownAnimations.ContainsKey(anim))
                 {

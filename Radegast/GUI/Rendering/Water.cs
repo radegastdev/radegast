@@ -30,21 +30,10 @@
 //
 
 #region Usings
-using System;
-using System.Collections.Generic;
+
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Windows.Forms;
-using System.Text;
-using System.Threading;
-using System.Linq;
 using OpenTK.Graphics.OpenGL;
-using OpenMetaverse;
-using OpenMetaverse.Rendering;
-using OpenMetaverse.Assets;
-using OpenMetaverse.Imaging;
-using OpenMetaverse.StructuredData;
+
 #endregion Usings
 
 namespace Radegast.Rendering

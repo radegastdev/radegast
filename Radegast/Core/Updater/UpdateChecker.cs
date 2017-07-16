@@ -29,8 +29,6 @@
 // $Id: RadegastInstance.cs 234 2009-09-13 12:45:52Z logicmoo $
 //
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
 using System.Net;
 using OpenMetaverse;
@@ -41,7 +39,6 @@ using Thread = ThreadPoolUtil.Thread;
 using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
-using System.Threading;
 
 
 namespace Radegast
@@ -78,7 +75,7 @@ namespace Radegast
                 client.DownloadStringCompleted += OnDownloadStringCompleted;
             }
 
-            WorkPool.QueueUserWorkItem((object state) =>
+            WorkPool.QueueUserWorkItem(state =>
                 {
                     client.DownloadStringAsync(new Uri(Properties.Resources.UpdateCheckUri));
                 }

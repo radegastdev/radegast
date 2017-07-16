@@ -31,7 +31,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Reflection;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
@@ -124,7 +123,7 @@ namespace Radegast
 
         public void RegisterGrid(Grid grid)
         {
-            int ix = Grids.FindIndex((Grid g) => { return g.ID == grid.ID; });
+            int ix = Grids.FindIndex(g => { return g.ID == grid.ID; });
             if (ix < 0)
             {
                 Grids.Add(grid);

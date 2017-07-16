@@ -319,7 +319,7 @@ namespace Radegast
                             UUID sessionID = UUID.Zero;
                             string sessionName = string.Empty;
 
-                            EventHandler<GroupChatJoinedEventArgs> handler = (object isender, GroupChatJoinedEventArgs ie) =>
+                            EventHandler<GroupChatJoinedEventArgs> handler = (isender, ie) =>
                                 {
                                     if (ie.TmpSessionID == tmpID)
                                     {

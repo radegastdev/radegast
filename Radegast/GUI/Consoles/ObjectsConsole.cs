@@ -29,7 +29,6 @@
 // $Id$
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Timers;
@@ -41,9 +40,7 @@ using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
 using System.Threading;
-using System.Drawing;
 using OpenMetaverse;
-using OpenMetaverse.Assets;
 
 namespace Radegast
 {
@@ -432,7 +429,7 @@ namespace Radegast
                         switch (item.InventoryType)
                         {
                             case InventoryType.Notecard:
-                                ctxContents.Items.Add("Edit Notecard", null, (object sd, EventArgs ev) =>
+                                ctxContents.Items.Add("Edit Notecard", null, (sd, ev) =>
                                     {
                                         InventoryNotecard inv = (InventoryNotecard)entry.Tag;
                                         new Notecard(instance, inv, prim) { Detached = true };
@@ -441,7 +438,7 @@ namespace Radegast
                                 break;
 
                             case InventoryType.LSL:
-                                ctxContents.Items.Add("Edit Script", null, (object sd, EventArgs ev) =>
+                                ctxContents.Items.Add("Edit Script", null, (sd, ev) =>
                                     {
                                         InventoryLSL inv = (InventoryLSL)entry.Tag;
                                         new ScriptEditor(instance, inv, prim) { Detached = true };
@@ -456,7 +453,7 @@ namespace Radegast
 
             if (lstContents.SelectedItems.Count > 0)
             {
-                ctxContents.Items.Add("Delete", null, (object sd, EventArgs ev) =>
+                ctxContents.Items.Add("Delete", null, (sd, ev) =>
                 {
                     foreach (ListViewItem i in lstContents.SelectedItems)
                         if (i.Tag is InventoryItem)
@@ -473,7 +470,7 @@ namespace Radegast
             {
                 if (instance.InventoryClipboard.Item is InventoryItem)
                 {
-                    ctxContents.Items.Add("Paste from Inventory", null, (object sd, EventArgs ev) =>
+                    ctxContents.Items.Add("Paste from Inventory", null, (sd, ev) =>
                     {
                         if (instance.InventoryClipboard.Item is InventoryLSL)
                         {
@@ -487,7 +484,7 @@ namespace Radegast
                 }
                 else if (instance.InventoryClipboard.Item is InventoryFolder)
                 {
-                    ctxContents.Items.Add("Paste Folder Contents", null, (object sd, EventArgs ev) =>
+                    ctxContents.Items.Add("Paste Folder Contents", null, (sd, ev) =>
                     {
                         foreach (InventoryBase oldItem in client.Inventory.Store.GetContents((InventoryFolder)instance.InventoryClipboard.Item))
                         {
@@ -964,7 +961,7 @@ namespace Radegast
         void UpdateChildren()
         {
             if (currentPrim == null) return;
-            var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll((Primitive p) => p.ParentID == currentPrim.LocalID);
+            var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == currentPrim.LocalID);
             if (prims == null || prims.Count == 0) return;
             List<uint> toGetNames = new List<uint>();
 

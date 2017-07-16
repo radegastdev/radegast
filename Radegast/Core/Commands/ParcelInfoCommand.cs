@@ -28,8 +28,8 @@
 //
 // $Id: CommandsManager.cs 226 2009-09-12 18:10:30Z logicmoo $
 //
+
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Text;
 using OpenMetaverse;

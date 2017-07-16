@@ -28,11 +28,8 @@
 //
 // $Id: InventoryConsole.cs 446 2009-11-11 15:31:11Z latifer $
 //
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 using OpenMetaverse;
-using System.Windows.Forms;
 
 namespace Radegast
 {

@@ -30,12 +30,7 @@
 //
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Data;
 using System.Linq;
-using System.Text;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
 using Thread = ThreadPoolUtil.Thread;
@@ -47,8 +42,6 @@ using System.Windows.Forms;
 using System.IO;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using OpenMetaverse.Assets;
-using OpenMetaverse.Imaging;
 
 namespace Radegast
 {

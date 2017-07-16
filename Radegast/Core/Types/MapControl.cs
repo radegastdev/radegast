@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Windows.Forms;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.IO;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
@@ -18,7 +14,6 @@ using Monitor = ThreadPoolUtil.Monitor;
 using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.Http;
-using OpenMetaverse.Assets;
 
 namespace Radegast
 {
@@ -322,7 +317,7 @@ namespace Radegast
                         30 * 1000,
                         "image/x-j2c",
                         null,
-                        (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
+                        (request, response, responseData, error) =>
                         {
                             if (error == null && responseData != null)
                             {
@@ -345,7 +340,7 @@ namespace Radegast
             }
             else
             {
-                Client.Assets.RequestImage(imageID, (TextureRequestState state, AssetTexture assetTexture) =>
+                Client.Assets.RequestImage(imageID, (state, assetTexture) =>
                 {
                     switch (state)
                     {
@@ -414,7 +409,7 @@ namespace Radegast
                     20 * 1000,
                     null,
                     null,
-                    (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
+                    (request, response, responseData, error) =>
                     {
                         if (error == null && responseData != null)
                         {
@@ -735,7 +730,7 @@ namespace Radegast
                 if (parcelID != UUID.Zero)
                 {
                     ManualResetEvent done = new ManualResetEvent(false);
-                    EventHandler<ParcelInfoReplyEventArgs> handler = (object sender, ParcelInfoReplyEventArgs e) =>
+                    EventHandler<ParcelInfoReplyEventArgs> handler = (sender, e) =>
                     {
                         if (e.Parcel.ID == parcelID)
                         {
@@ -901,7 +896,7 @@ namespace Radegast
                             req,
                             item.millisecondsTimeout,
                             item.downloadProgressCallback,
-                            (HttpWebRequest request, HttpWebResponse response, byte[] responseData, Exception error) =>
+                            (request, response, responseData, error) =>
                             {
                                 lock (activeDownloads) activeDownloads.Remove(request);
                                 item.completedCallback(request, response, responseData, error);

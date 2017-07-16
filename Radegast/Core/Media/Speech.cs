@@ -29,7 +29,6 @@
 // $Id: Sound.cs 502 2010-03-14 23:13:46Z latifer $
 //
 using System;
-using System.Runtime.InteropServices;
 using FMOD;
 using OpenMetaverse;
 

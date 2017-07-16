@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using OpenMetaverse;
 using Radegast;
-using System.Text.RegularExpressions;
-using System.Net;
 using System.Windows.Forms;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;

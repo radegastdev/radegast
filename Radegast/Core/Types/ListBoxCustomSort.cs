@@ -29,7 +29,6 @@
 // $Id: ListBoxCustomSort.cs 300 2009-10-05 09:29:46Z latifer@gmail.com $
 //
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Radegast

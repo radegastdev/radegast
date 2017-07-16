@@ -39,7 +39,6 @@ using Thread = ThreadPoolUtil.Thread;
 using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
-using System.Threading;
 
 
 namespace Radegast
@@ -103,7 +102,7 @@ namespace Radegast
             WorkPool.QueueUserWorkItem(sync =>
                 {
                     Client.Avatars.GetDisplayNames(new List<OpenMetaverse.UUID>() { Client.Self.AgentID },
-                        (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
+                        (success, names, badIDs) =>
                         {
                             if (!success || names.Length < 1)
                             {

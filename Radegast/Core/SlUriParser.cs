@@ -247,7 +247,7 @@ namespace Radegast
 
             using (ManualResetEvent gotName = new ManualResetEvent(false))
             {
-                EventHandler<UUIDNameReplyEventArgs> handler = (object sender, UUIDNameReplyEventArgs e) =>
+                EventHandler<UUIDNameReplyEventArgs> handler = (sender, e) =>
                 {
                     if (e.Names.ContainsKey(agentID))
                     {
@@ -303,7 +303,7 @@ namespace Radegast
 
             using (ManualResetEvent gotName = new ManualResetEvent(false))
             {
-                EventHandler<GroupNamesEventArgs> handler = (object sender, GroupNamesEventArgs e) =>
+                EventHandler<GroupNamesEventArgs> handler = (sender, e) =>
                 {
                     if (e.GroupNames.ContainsKey(groupID))
                     {
@@ -341,7 +341,7 @@ namespace Radegast
             
             using (ManualResetEvent gotName = new ManualResetEvent(false))
             {
-                EventHandler<ParcelInfoReplyEventArgs> handler = (object sender, ParcelInfoReplyEventArgs e) =>
+                EventHandler<ParcelInfoReplyEventArgs> handler = (sender, e) =>
                 {
                     if (e.Parcel.ID == parcelID)
                     {

@@ -863,7 +863,7 @@ namespace Radegast
             Logger.Log("Finished updating invenory folders, saving cache...", Helpers.LogLevel.Debug, client);
             GestureManager.Instance.BeginMonitoring();
 
-            WorkPool.QueueUserWorkItem((object state) => Inventory.SaveToDisk(instance.InventoryCacheFileName));
+            WorkPool.QueueUserWorkItem(state => Inventory.SaveToDisk(instance.InventoryCacheFileName));
 
             if (!instance.MonoRuntime || IsHandleCreated)
                 Invoke(new MethodInvoker(() =>
@@ -2076,14 +2076,14 @@ namespace Radegast
             {
                 if (instance.InventoryClipboard.Item is InventoryItem)
                 {
-                    client.Inventory.RequestCopyItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name, instance.InventoryClipboard.Item.OwnerID, (InventoryBase target) =>
+                    client.Inventory.RequestCopyItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name, instance.InventoryClipboard.Item.OwnerID, target =>
                     {
                     }
                     );
                 }
                 else if (instance.InventoryClipboard.Item is InventoryFolder)
                 {
-                    WorkPool.QueueUserWorkItem((object state) =>
+                    WorkPool.QueueUserWorkItem(state =>
                         {
                             UUID newFolderID = client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, FolderType.None);
                             Thread.Sleep(500);
@@ -2101,7 +2101,7 @@ namespace Radegast
                                 //names.Add(oldItem.Name);
                                 //items.Add(oldItem.UUID);
                                 //oldOwner = oldItem.OwnerID;
-                                client.Inventory.RequestCopyItem(oldItem.UUID, newFolderID, oldItem.Name, oldItem.OwnerID, (InventoryBase target) => { });
+                                client.Inventory.RequestCopyItem(oldItem.UUID, newFolderID, oldItem.Name, oldItem.OwnerID, target => { });
                             }
 
                             //if (folders.Count > 0)
@@ -2446,7 +2446,7 @@ namespace Radegast
             searchRes.Add(new SearchResult(me, level));
             var sorted = Inventory.GetContents(folderID);
 
-            sorted.Sort((InventoryBase b1, InventoryBase b2) =>
+            sorted.Sort((b1, b2) =>
             {
                 if (b1 is InventoryFolder && !(b2 is InventoryFolder))
                 {

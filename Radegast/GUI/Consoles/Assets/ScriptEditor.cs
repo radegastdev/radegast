@@ -71,7 +71,7 @@ namespace Radegast
 
             rtb.SyntaxHighlightEnabled = instance.GlobalSettings["script_syntax_highlight"].AsBoolean();
             lblScripStatus.Text = string.Empty;
-            lblScripStatus.TextChanged += (object sender, EventArgs e) =>
+            lblScripStatus.TextChanged += (sender, e) =>
                 instance.TabConsole.DisplayNotificationInChat(lblScripStatus.Text, ChatBufferTextStyle.Invisible);
             Dock = DockStyle.Fill;
             this.TabStop = false;
@@ -700,7 +700,7 @@ namespace Radegast
 
         private void tbtbSave_Click(object sender, EventArgs e)
         {
-            InventoryManager.ScriptUpdatedCallback handler = (bool uploadSuccess, string uploadStatus, bool compileSuccess, List<string> compileMessages, UUID itemID, UUID assetID) =>
+            InventoryManager.ScriptUpdatedCallback handler = (uploadSuccess, uploadStatus, compileSuccess, compileMessages, itemID, assetID) =>
             {
                 if (!IsHandleCreated && instance.MonoRuntime) return;
 

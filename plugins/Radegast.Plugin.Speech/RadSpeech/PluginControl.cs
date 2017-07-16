@@ -29,9 +29,6 @@
 // $Id: PluginControl.cs 203 2009-09-07 19:26:02Z mojitotech@gmail.com $
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using System.Reflection;
 using Radegast;

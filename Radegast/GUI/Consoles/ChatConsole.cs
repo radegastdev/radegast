@@ -30,14 +30,12 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Radegast.Netcom;
 using OpenMetaverse;
-using OpenMetaverse.StructuredData;
 using Radegast.Core;
 
 namespace Radegast
@@ -323,7 +321,7 @@ namespace Radegast
                             continue;
                         }
 
-                        Avatar foundAvi = e.Simulator.ObjectsAvatars.Find((Avatar av) => { return av.ID == key; });
+                        Avatar foundAvi = e.Simulator.ObjectsAvatars.Find(av => { return av.ID == key; });
 
                         // CoarseLocationUpdate gives us hight of 0 when actual height is
                         // between 1024-4096m on OpenSim grids. 1020 on SL

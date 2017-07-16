@@ -30,11 +30,10 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Text;
 using FMOD;
 using System.Threading;
 using OpenMetaverse;
-using OpenMetaverse.Assets;
+
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
 using Thread = ThreadPoolUtil.Thread;

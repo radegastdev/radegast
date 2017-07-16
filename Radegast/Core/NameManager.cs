@@ -31,8 +31,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
 using Thread = ThreadPoolUtil.Thread;
@@ -192,7 +190,7 @@ namespace Radegast
                 List<UUID> req = null;
                 if (!PendingLookups.Dequeue(Timeout.Infinite, ref req)) break;
                 lookupGate.WaitOne(90 * 1000);
-                client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
+                client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
                 {
                     if (success)
                     {
@@ -377,7 +375,7 @@ namespace Radegast
                     }
                     else
                     {
-                        client.Avatars.GetDisplayNames(req, (bool success, AgentDisplayName[] names, UUID[] badIDs) =>
+                        client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
                         {
                             if (success)
                             {
@@ -656,7 +654,7 @@ namespace Radegast
             using (ManualResetEvent gotName = new ManualResetEvent(false))
             {
 
-                EventHandler<UUIDNameReplyEventArgs> handler = (object sender, UUIDNameReplyEventArgs e) =>
+                EventHandler<UUIDNameReplyEventArgs> handler = (sender, e) =>
                 {
                     if (e.Names.ContainsKey(agentID))
                     {

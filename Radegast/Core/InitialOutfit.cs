@@ -31,7 +31,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using OpenMetaverse;
-using OpenMetaverse.StructuredData;
 
 namespace Radegast
 {
@@ -72,7 +71,7 @@ namespace Radegast
             UUID ret = UUID.Zero;
             AutoResetEvent folderCreated = new AutoResetEvent(false);
 
-            EventHandler<InventoryObjectAddedEventArgs> handler = (object sender, InventoryObjectAddedEventArgs e) =>
+            EventHandler<InventoryObjectAddedEventArgs> handler = (sender, e) =>
             {
                 if (e.Obj.Name == name && e.Obj is InventoryFolder && ((InventoryFolder)e.Obj).PreferredType == type)
                 {
@@ -103,7 +102,7 @@ namespace Radegast
 
             AutoResetEvent folderFetched = new AutoResetEvent(false);
 
-            EventHandler<FolderUpdatedEventArgs> handler = (object sender, FolderUpdatedEventArgs e) =>
+            EventHandler<FolderUpdatedEventArgs> handler = (sender, e) =>
             {
                 if (e.FolderID == folder.UUID)
                 {

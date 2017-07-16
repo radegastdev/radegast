@@ -33,16 +33,8 @@
 //
 
 
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Reflection;
 using OpenMetaverse;
-using OpenMetaverse.Imaging;
-using OpenMetaverse.Rendering;
-using OpenMetaverse.StructuredData;
 
 namespace Radegast.Rendering
 {

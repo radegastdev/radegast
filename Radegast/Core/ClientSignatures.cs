@@ -28,11 +28,8 @@
 //
 // $Id: IMTextManager.cs 361 2009-10-24 15:04:57Z latifer $
 //
-using System;
+
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Reflection;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 

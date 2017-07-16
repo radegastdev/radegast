@@ -115,13 +115,10 @@ namespace Radegast.Commands
                 Objects = (ObjectsConsole)TC.Tabs["objects"].Control;
                 List<Primitive> prims = Objects.GetObjectList();
 
-                List<Primitive> targets = prims.FindAll((Primitive prim) =>
-                {
-                    return prim.Properties != null
-                        && prim.Properties.Name.ToLower().Contains(subarg.ToLower());
-                });
+                List<Primitive> targets = prims.FindAll(prim => prim.Properties != null
+                                                                && prim.Properties.Name.ToLower().Contains(subarg.ToLower()));
 
-                if (targets == null || targets.Count == 0)
+                if (targets.Count == 0)
                 {
                     WriteLine("Could not find '{0}' nearby", subarg);
                     return;
@@ -158,8 +155,8 @@ namespace Radegast.Commands
             if (subcmd == "person")
             {
                 List<UUID> people = Chat.GetAvatarList();
-                people = people.FindAll((UUID id) => { return id != Client.Self.AgentID && Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()); });
-                if (people == null || people.Count == 0)
+                people = people.FindAll(id => id != Client.Self.AgentID && Instance.Names.Get(id).ToLower().StartsWith(subarg.ToLower()));
+                if (people.Count == 0)
                 {
                     WriteLine("Could not find {0}", subarg);
                     return;
@@ -172,7 +169,7 @@ namespace Radegast.Commands
                     Vector3 targetPos = Vector3.Zero;
 
                     // try to find where they are
-                    Avatar avi = Client.Network.CurrentSim.ObjectsAvatars.Find((Avatar av) => { return av.ID == person; });
+                    Avatar avi = Client.Network.CurrentSim.ObjectsAvatars.Find(av => av.ID == person);
 
                     if (avi != null)
                     {
@@ -223,7 +220,6 @@ namespace Radegast.Commands
                 }
 
                 wl(sb.ToString());
-                return;
             }
         }
     }

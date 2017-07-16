@@ -28,7 +28,7 @@
 //
 // $Id$
 //
-using System;
+
 using OpenMetaverse;
 
 namespace Radegast.Commands
@@ -36,7 +36,7 @@ namespace Radegast.Commands
     public class RadegastCommand : IRadegastCommand
     {
         private readonly CommandExecuteDelegate _execute;
-        private Radegast.RadegastInstance _instance;
+        private RadegastInstance _instance;
 
         /// <summary>
         /// Radegast instance received during start command

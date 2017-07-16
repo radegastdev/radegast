@@ -100,7 +100,7 @@ namespace Radegast
                 SLImageHandler img = new SLImageHandler(instance, parcel.SnapshotID, "");
                 img.Dock = DockStyle.Fill;
                 pnlDetail.Controls.Add(img);
-                pnlDetail.Disposed += (object senderx, EventArgs ex) =>
+                pnlDetail.Disposed += (senderx, ex) =>
                 {
                     img.Dispose();
                 };

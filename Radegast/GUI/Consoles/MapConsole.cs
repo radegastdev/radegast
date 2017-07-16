@@ -100,7 +100,7 @@ namespace Radegast
             if (map == null)
             {
                 mmap = new MapControl(instance);
-                mmap.MapTargetChanged += (object sender, MapTargetChangedEventArgs e) =>
+                mmap.MapTargetChanged += (sender, e) =>
                 {
                     txtRegion.Text = e.Region.Name;
                     nudX.Value = e.LocalX;
@@ -401,7 +401,7 @@ namespace Radegast
             lblStatus.Text = "Teleporting to " + txtRegion.Text;
             prgTeleport.Style = ProgressBarStyle.Marquee;
 
-            WorkPool.QueueUserWorkItem((object state) =>
+            WorkPool.QueueUserWorkItem(state =>
                 {
                     if (!client.Self.Teleport(txtRegion.Text, new Vector3((int)nudX.Value, (int)nudY.Value, (int)nudZ.Value)))
                     {
@@ -431,7 +431,7 @@ namespace Radegast
                     WorkPool.QueueUserWorkItem(sync =>
                         {
                             ManualResetEvent done = new ManualResetEvent(false);
-                            EventHandler<GridRegionEventArgs> handler = (object sender, GridRegionEventArgs e) =>
+                            EventHandler<GridRegionEventArgs> handler = (sender, e) =>
                                 {
                                     regionHandles[e.Region.Name] = Utils.UIntsToLong((uint)e.Region.X, (uint)e.Region.Y);
                                     if (e.Region.Name == regionName)
@@ -546,7 +546,7 @@ namespace Radegast
                 ddOnlineFriends.Items.Add("Online Friends");
                 ddOnlineFriends.SelectedIndex = 0;
 
-                var friends = client.Friends.FriendList.FindAll((FriendInfo f) => { return f.CanSeeThemOnMap && f.IsOnline; });
+                var friends = client.Friends.FriendList.FindAll(f => { return f.CanSeeThemOnMap && f.IsOnline; });
                 if (friends != null)
                 {
                     foreach (var f in friends)
@@ -629,7 +629,7 @@ namespace Radegast
         private void ddOnlineFriends_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ddOnlineFriends.SelectedIndex < 1) return;
-            mapFriend = client.Friends.FriendList.Find((FriendInfo f) => { return f.Name == ddOnlineFriends.SelectedItem.ToString(); });
+            mapFriend = client.Friends.FriendList.Find(f => { return f.Name == ddOnlineFriends.SelectedItem.ToString(); });
             if (mapFriend != null)
             {
                 targetRegionHandle = 0;

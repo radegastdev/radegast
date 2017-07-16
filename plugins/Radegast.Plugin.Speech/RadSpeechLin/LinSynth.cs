@@ -2,14 +2,10 @@
 #define USEFILE
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.IO;
 using System.Diagnostics;
 using RadegastSpeech.Talk;
 using System.Text.RegularExpressions;
-using OpenMetaverse;
-using Radegast;
 using OpenMetaverse.StructuredData;
 
 namespace RadegastSpeech

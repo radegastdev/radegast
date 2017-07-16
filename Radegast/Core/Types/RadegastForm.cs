@@ -29,10 +29,7 @@
 // $Id: DettachableControl.cs 211 2009-09-09 06:46:18Z latifer@gmail.com $
 //
 using System;
-using System.Threading;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Text;
 using System.ComponentModel;
 using System.Drawing;
 using OpenMetaverse;

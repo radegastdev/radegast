@@ -29,16 +29,9 @@
 // $Id: FriendshipOfferNotification.cs 175 2009-08-29 13:52:32Z latifer@gmail.com $
 //
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using OpenMetaverse;
-using OpenMetaverse.Assets;
-using OpenMetaverse.Packets;
 
 namespace Radegast
 {

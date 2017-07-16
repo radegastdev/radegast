@@ -28,9 +28,8 @@
 //
 // $Id$
 //
-using System;
+
 using System.Collections.Generic;
-using System.Threading;
 using System.Text;
 using OpenMetaverse;
 using OpenMetaverse.Messages.Linden;
@@ -73,7 +72,7 @@ namespace Radegast.Commands
         {
             WriteLine("Requesting script resources information...");
             UUID currectParcel = Client.Parcels.RequestRemoteParcelID(Client.Self.SimPosition, Client.Network.CurrentSim.Handle, Client.Network.CurrentSim.ID);
-            Client.Parcels.GetParcelResouces(currectParcel, true, (bool success, LandResourcesInfo info) =>
+            Client.Parcels.GetParcelResouces(currectParcel, true, (success, info) =>
             {
                 if (!success || info == null) return;
 
@@ -103,7 +102,7 @@ namespace Radegast.Commands
 
         public void AttachmentInfo(ConsoleWriteLine WriteLine)
         {
-            Client.Self.GetAttachmentResources((bool success, AttachmentResourcesMessage info) =>
+            Client.Self.GetAttachmentResources((success, info) =>
             {
                 if (!success || info == null)
                 {

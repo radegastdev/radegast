@@ -37,7 +37,6 @@ using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
 using System.Threading;
-using System.Windows.Forms;
 using System.IO;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;

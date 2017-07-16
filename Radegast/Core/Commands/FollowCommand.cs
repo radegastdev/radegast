@@ -28,10 +28,8 @@
 //
 // $Id$
 //
-using System;
+
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 using OpenMetaverse;
@@ -87,7 +85,7 @@ namespace Radegast.Commands
             }
 
             List<UUID> people = Chat.GetAvatarList();
-            UUID person = people.Find((UUID id) => { return Instance.Names.Get(id).ToLower().StartsWith(cmd.ToLower()); });
+            UUID person = people.Find(id => Instance.Names.Get(id).ToLower().StartsWith(cmd.ToLower()));
             if (person == UUID.Zero)
             {
                 WriteLine("Could not find {0}", cmd);

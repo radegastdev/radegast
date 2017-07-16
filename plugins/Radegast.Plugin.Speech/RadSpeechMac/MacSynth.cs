@@ -1,16 +1,11 @@
 ﻿// Define CARBON to use the lower level interface
 //#define CARBON
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using RadegastSpeech.Talk;
-using Radegast;
-using Monobjc;
 using Monobjc.Cocoa;
-using System.Runtime.InteropServices;
 using OpenMetaverse.StructuredData;
 
 namespace RadegastSpeech

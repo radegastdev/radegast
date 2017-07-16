@@ -88,7 +88,7 @@ namespace Radegast
             try
             {
                 e.Type = this.Type;
-                WorkPool.QueueUserWorkItem((object o) => Notificaton_Displayed(this, e));
+                WorkPool.QueueUserWorkItem(o => Notificaton_Displayed(this, e));
             }
             catch (Exception ex)
             {
