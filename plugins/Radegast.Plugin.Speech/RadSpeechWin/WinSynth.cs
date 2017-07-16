@@ -19,7 +19,6 @@ namespace RadegastSpeech
         private PromptBuilder pb;
         private PromptStyle mainStyle;
         private FileStream mstream;
-        private PromptVolume promptVol = PromptVolume.Loud;
         private string[] BeepNames;
         private OSDMap voiceProperties;
         PromptRate voiceRate
