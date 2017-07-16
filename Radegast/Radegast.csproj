@@ -101,17 +101,17 @@
     <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse, Version=1.1.5.98, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.1.1.5.98\lib\net40\LibreMetaverse.dll</HintPath>
+    <Reference Include="LibreMetaverse, Version=1.1.6.101, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.1.1.6.101\lib\net40\LibreMetaverse.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.Rendering.Meshmerizer, Version=1.1.5.98, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.Rendering.Meshmerizer.1.1.5.98\lib\net40\LibreMetaverse.Rendering.Meshmerizer.dll</HintPath>
+    <Reference Include="LibreMetaverse.Rendering.Meshmerizer, Version=1.1.6.101, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.Rendering.Meshmerizer.1.1.6.101\lib\net40\LibreMetaverse.Rendering.Meshmerizer.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.StructuredData, Version=1.1.5.98, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.StructuredData.1.1.5.98\lib\net40\LibreMetaverse.StructuredData.dll</HintPath>
+    <Reference Include="LibreMetaverse.StructuredData, Version=1.1.6.101, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.StructuredData.1.1.6.101\lib\net40\LibreMetaverse.StructuredData.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.Types, Version=1.1.5.98, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.Types.1.1.5.98\lib\net40\LibreMetaverse.Types.dll</HintPath>
+    <Reference Include="LibreMetaverse.Types, Version=1.1.6.101, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.Types.1.1.6.101\lib\net40\LibreMetaverse.Types.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -122,8 +122,8 @@
     <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=2.2.1.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.2.2.1\lib\net40\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net, Version=2.3.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net.2.3.0\lib\net40\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
