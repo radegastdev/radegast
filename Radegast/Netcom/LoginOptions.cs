@@ -35,20 +35,6 @@ namespace Radegast.Netcom
 {
     public class LoginOptions
     {
-        private string firstName;
-        private string lastName;
-        private string password;
-        private string version = string.Empty;
-        private string channel = string.Empty;
-
-        private StartLocationType startLocation = StartLocationType.Home;
-        private string startLocationCustom = string.Empty;
-
-        private Grid grid;
-        private string gridCustomLoginUri = string.Empty;
-        private LastExecStatus lastExecEvent = LastExecStatus.Normal;
-
-
         public LoginOptions()
         {
 
@@ -59,75 +45,35 @@ namespace Radegast.Netcom
             return pass.Length == 35 && pass.StartsWith("$1$");
         }
 
-        public string FirstName
-        {
-            get { return firstName; }
-            set { firstName = value; }
-        }
+        public string FirstName { get; set; }
 
-        public string LastName
-        {
-            get { return lastName; }
-            set { lastName = value; }
-        }
+        public string LastName { get; set; }
 
         public string FullName
         {
             get
             {
-                if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+                if (string.IsNullOrEmpty(FirstName) || string.IsNullOrEmpty(LastName))
                     return string.Empty;
                 else
-                    return firstName + " " + lastName;
+                    return FirstName + " " + LastName;
             }
         }
 
-        public string Password
-        {
-            get { return password; }
-            set { password = value; }
-        }
+        public string Password { get; set; }
 
-        public StartLocationType StartLocation
-        {
-            get { return startLocation; }
-            set { startLocation = value; }
-        }
+        public StartLocationType StartLocation { get; set; } = StartLocationType.Home;
 
-        public string StartLocationCustom
-        {
-            get { return startLocationCustom; }
-            set { startLocationCustom = value; }
-        }
+        public string StartLocationCustom { get; set; } = string.Empty;
 
-        public string Channel
-        {
-            get { return channel; }
-            set { channel = value; }
-        }
+        public string Channel { get; set; } = string.Empty;
 
-        public string Version
-        {
-            get { return version; }
-            set { version = value; }
-        }
+        public string Version { get; set; } = string.Empty;
 
-        public Grid Grid
-        {
-            get { return grid; }
-            set { grid = value; }
-        }
+        public Grid Grid { get; set; }
 
-        public string GridCustomLoginUri
-        {
-            get { return gridCustomLoginUri; }
-            set { gridCustomLoginUri = value; }
-        }
+        public string GridCustomLoginUri { get; set; } = string.Empty;
 
-        public LastExecStatus LastExecEvent
-        {
-            get { return lastExecEvent; }
-            set { lastExecEvent = value; }
-        }
+        public LastExecStatus LastExecEvent { get; set; } = LastExecStatus.Normal;
     }
 }

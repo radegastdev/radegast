@@ -45,7 +45,6 @@ namespace Radegast
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private GridClient client { get { return instance.Client; } }
-        private ChatTextManager chatManager;
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
         private RadegastMovement movement { get { return instance.Movement; } }
@@ -77,8 +76,8 @@ namespace Radegast
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             RegisterClientEvents(client);
 
-            chatManager = new ChatTextManager(instance, new RichTextBoxPrinter(rtbChat));
-            chatManager.PrintStartupMessage();
+            ChatManager = new ChatTextManager(instance, new RichTextBoxPrinter(rtbChat));
+            ChatManager.PrintStartupMessage();
 
             this.instance.MainForm.Load += new EventHandler(MainForm_Load);
 
@@ -114,8 +113,8 @@ namespace Radegast
             netcom.ClientLoginStatus -= new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
             netcom.ClientLoggedOut -= new EventHandler(netcom_ClientLoggedOut);
             UnregisterClientEvents(client);
-            chatManager.Dispose();
-            chatManager = null;
+            ChatManager.Dispose();
+            ChatManager = null;
         }
 
         static public Font ChangeFontSize(Font font, float fontSize)
@@ -603,10 +602,7 @@ namespace Radegast
             }
         }
 
-        public ChatTextManager ChatManager
-        {
-            get { return chatManager; }
-        }
+        public ChatTextManager ChatManager { get; private set; }
 
         private void tbtnStartIM_Click(object sender, EventArgs e)
         {

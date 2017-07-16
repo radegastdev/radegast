@@ -43,8 +43,6 @@ namespace Radegast
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
         private RadegastNetcom netcom { get { return instance.Netcom; } }
-        private UUID session;
-        private IMTextManager textManager;
         private object AvatarListSyncRoot = new object();
         private List<string> chatHistory = new List<string>();
         private int chatPointer;
@@ -57,9 +55,9 @@ namespace Radegast
             Disposed += new EventHandler(IMTabWindow_Disposed);
 
             this.instance = instance;
-            this.session = session;
+            this.SessionId = session;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Group, this.session, sessionName);
+            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Group, this.SessionId, sessionName);
 
             btnShow.Text = "Show";
             chatSplit.Panel2Collapsed = true;
@@ -114,7 +112,7 @@ namespace Radegast
         {
             if (instance.Netcom.IsLoggedIn)
             {
-                client.Self.RequestLeaveGroupChat(session);
+                client.Self.RequestLeaveGroupChat(SessionId);
             }
 
             UnregisterClientEvents(client);
@@ -134,7 +132,7 @@ namespace Radegast
 
         void Netcom_Connected(object sender, EventArgs e)
         {
-            client.Self.RequestJoinGroupChat(session);
+            client.Self.RequestJoinGroupChat(SessionId);
             RefreshControls();
         }
 
@@ -165,13 +163,13 @@ namespace Radegast
 
         void Self_ChatSessionMemberLeft(object sender, ChatSessionMemberLeftEventArgs e)
         {
-            if (e.SessionID == session)
+            if (e.SessionID == SessionId)
                 UpdateParticipantList();
         }
 
         void Self_ChatSessionMemberAdded(object sender, ChatSessionMemberAddedEventArgs e)
         {
-            if (e.SessionID == session)
+            if (e.SessionID == SessionId)
                 UpdateParticipantList();
         }
 
@@ -193,7 +191,7 @@ namespace Radegast
 
                     List<ChatSessionMember> participants;
 
-                    if (client.Self.GroupChatSessions.TryGetValue(session, out participants))
+                    if (client.Self.GroupChatSessions.TryGetValue(SessionId, out participants))
                     {
                         ChatSessionMember[] members = participants.ToArray();
                         for (int i = 0; i < members.Length; i++)
@@ -222,7 +220,7 @@ namespace Radegast
 
         void Self_GroupChatJoined(object sender, GroupChatJoinedEventArgs e)
         {
-            if (e.SessionID != session && e.TmpSessionID != session)
+            if (e.SessionID != SessionId && e.TmpSessionID != SessionId)
             {
                 return;
             }
@@ -236,19 +234,19 @@ namespace Radegast
 
             if (e.Success)
             {
-                textManager.TextPrinter.PrintTextLine("Join Group Chat Success!", Color.Green);
+                TextManager.TextPrinter.PrintTextLine("Join Group Chat Success!", Color.Green);
                 WaitForSessionStart.Set();
             }
             else
             {
-                textManager.TextPrinter.PrintTextLine("Join Group Chat failed.", Color.Red);
+                TextManager.TextPrinter.PrintTextLine("Join Group Chat failed.", Color.Red);
             }
         }
 
         public void CleanUp()
         {
-            textManager.CleanUp();
-            textManager = null;
+            TextManager.CleanUp();
+            TextManager = null;
             instance = null;
         }
 
@@ -378,10 +376,10 @@ namespace Radegast
 
             if (message.Length > 1023) message = message.Remove(1023);
 
-            if (!client.Self.GroupChatSessions.ContainsKey(session))
+            if (!client.Self.GroupChatSessions.ContainsKey(SessionId))
             {
                 WaitForSessionStart.Reset();
-                client.Self.RequestJoinGroupChat(session);
+                client.Self.RequestJoinGroupChat(SessionId);
             }
             else
             {
@@ -390,11 +388,11 @@ namespace Radegast
 
             if (WaitForSessionStart.WaitOne(10000, false))
             {
-                client.Self.InstantMessageGroup(session, message);
+                client.Self.InstantMessageGroup(SessionId, message);
             }
             else
             {
-                textManager.TextPrinter.PrintTextLine("Cannot send group IM.", Color.Red);
+                TextManager.TextPrinter.PrintTextLine("Cannot send group IM.", Color.Red);
             }
         }
 
@@ -413,17 +411,9 @@ namespace Radegast
             instance.MainForm.ProcessLink(e.LinkText);
         }
 
-        public UUID SessionId
-        {
-            get { return session; }
-            set { session = value; }
-        }
+        public UUID SessionId { get; set; }
 
-        public IMTextManager TextManager
-        {
-            get { return textManager; }
-            set { textManager = value; }
-        }
+        public IMTextManager TextManager { get; set; }
 
         private void Participants_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -516,7 +506,7 @@ namespace Radegast
         {
             if (Participants.SelectedItems.Count != 1) return;
             UUID av = (UUID)Participants.SelectedItems[0].Tag;
-            instance.Client.Groups.EjectUser(session, av);
+            instance.Client.Groups.EjectUser(SessionId, av);
         }
 
         private void ctxBan_Click(object sender, EventArgs e)

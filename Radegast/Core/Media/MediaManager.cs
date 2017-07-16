@@ -48,8 +48,8 @@ namespace Radegast.Media
         /// <summary>
         /// Indicated wheather spund sytem is ready for use
         /// </summary>
-        public bool SoundSystemAvailable => soundSystemAvailable;
-        private bool soundSystemAvailable = false;
+        public bool SoundSystemAvailable { get; private set; } = false;
+
         private Thread soundThread;
         private Thread listenerThread;
         public RadegastInstance Instance;
@@ -64,7 +64,7 @@ namespace Radegast.Media
 
             if (MainProgram.CommandLineOpts.DisableSound)
             {
-                soundSystemAvailable = false;
+                SoundSystemAvailable = false;
                 return;
             }
 
@@ -145,7 +145,7 @@ namespace Radegast.Media
             // Initialize the FMOD sound package
             InitFMOD();
             initDone.Set();
-            if (!this.soundSystemAvailable) return;
+            if (!this.SoundSystemAvailable) return;
 
             SoundDelegate action = null;
 
@@ -281,7 +281,7 @@ namespace Radegast.Media
                     1.0f)   // Rolloff factor
                 );
 
-                soundSystemAvailable = true;
+                SoundSystemAvailable = true;
                 Logger.Log("Initialized FMOD Ex: " + outputType, Helpers.LogLevel.Debug);
             }
             catch (Exception ex)
@@ -658,7 +658,7 @@ namespace Radegast.Media
         /// <param name="sound">UUID of the sound to play</param>
         public void PlayUISound(UUID sound)
         {
-            if (!soundSystemAvailable) return;
+            if (!SoundSystemAvailable) return;
 
             new BufferSound(
                 UUID.Random(),

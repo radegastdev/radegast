@@ -92,18 +92,17 @@ namespace Radegast
         /// <summary>
         /// Instance of Radegast
         /// </summary>
-        protected RadegastInstance Instance { get { return instance; } }
-        private RadegastInstance instance = null;
+        protected RadegastInstance Instance { get; } = null;
 
         /// <summary>
         /// Instance of OpenMetaverse's GridClient
         /// </summary>
-        protected GridClient Client { get { return instance.Client; } }
+        protected GridClient Client { get { return Instance.Client; } }
 
         /// <summary>
         /// Instance of RadegastNetcom
         /// </summary>
-        protected RadegastNetcom Netcom { get { return instance.Netcom; } }
+        protected RadegastNetcom Netcom { get { return Instance.Netcom; } }
 
         private System.Threading.Timer SettingsTimer;
         private const int SettingsTimerTimeout = 500;
@@ -116,7 +115,7 @@ namespace Radegast
         public RadegastForm(RadegastInstance instance)
             : base()
         {
-            this.instance = instance;
+            this.Instance = instance;
             instance.OnRadegastFormCreated(this);
         }
 
@@ -144,7 +143,7 @@ namespace Radegast
 
         protected void SavePosition()
         {
-            if (instance == null) return;
+            if (Instance == null) return;
 
             Instance.GlobalSettings[GetSettingsKey("left")] = OSD.FromInteger(Left);
             Instance.GlobalSettings[GetSettingsKey("top")] = OSD.FromInteger(Top);
@@ -154,7 +153,7 @@ namespace Radegast
 
         protected void ClearSavedPosition()
         {
-            if (instance == null) return;
+            if (Instance == null) return;
 
             Instance.GlobalSettings.Remove(GetSettingsKey("left"));
             Instance.GlobalSettings.Remove(GetSettingsKey("top"));
@@ -164,7 +163,7 @@ namespace Radegast
 
         protected void RestoreSavedPosition()
         {
-            if (instance == null) return;
+            if (Instance == null) return;
 
             int left = Left, top = Top, width = Width, height = Height;
 

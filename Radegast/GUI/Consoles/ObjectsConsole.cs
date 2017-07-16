@@ -50,7 +50,7 @@ namespace Radegast
 
         private RadegastInstance instance;
         private GridClient client { get { return instance.Client; } }
-        private Primitive currentPrim = new Primitive();
+
         private float searchRadius = 40.0f;
         //public List<InventoryBase> subitems;
         PropertiesQueue propRequester;
@@ -58,7 +58,7 @@ namespace Radegast
         private ObjectConsoleFilter filter;
         private ObjectSorter PrimSorter;
 
-        public Primitive CurrentPrim { get { return currentPrim; } }
+        public Primitive CurrentPrim { get; private set; } = new Primitive();
 
         public ObjectsConsole(RadegastInstance instance)
         {
@@ -273,7 +273,7 @@ namespace Radegast
                 }
             }
 
-            if (props.ObjectID == currentPrim.ID)
+            if (props.ObjectID == CurrentPrim.ID)
             {
                 UpdateCurrentObject(false);
             }
@@ -327,8 +327,8 @@ namespace Radegast
 
             ContentsThread = new Thread(new ThreadStart(() =>
                 {
-                    lstContents.Tag = currentPrim;
-                    List<InventoryBase> items = client.Inventory.GetTaskInventory(currentPrim.ID, currentPrim.LocalID, 1000 * 30);
+                    lstContents.Tag = CurrentPrim;
+                    List<InventoryBase> items = client.Inventory.GetTaskInventory(CurrentPrim.ID, CurrentPrim.LocalID, 1000 * 30);
                     lstContents.Invoke(new MethodInvoker(() => UpdateContentsList(items)));
                 }));
 
@@ -547,7 +547,7 @@ namespace Radegast
 
         void UpdateCurrentObject(bool updateContents)
         {
-            if (currentPrim.Properties == null) return;
+            if (CurrentPrim.Properties == null) return;
 
             if (InvokeRequired)
             {
@@ -557,9 +557,9 @@ namespace Radegast
 
             // currentItem.Text = GetObjectName(currentPrim);
 
-            txtObjectName.Text = currentPrim.Properties.Name;
-            txtDescription.Text = currentPrim.Properties.Description;
-            if ((currentPrim.Flags & PrimFlags.ObjectModify) == PrimFlags.ObjectModify)
+            txtObjectName.Text = CurrentPrim.Properties.Name;
+            txtDescription.Text = CurrentPrim.Properties.Description;
+            if ((CurrentPrim.Flags & PrimFlags.ObjectModify) == PrimFlags.ObjectModify)
             {
                 txtObjectName.ReadOnly = txtDescription.ReadOnly = false;
                 gbxObjectDetails.Text = "Object details (you can modify)";
@@ -570,11 +570,11 @@ namespace Radegast
                 gbxObjectDetails.Text = "Object details";
             }
 
-            txtHover.Text = currentPrim.Text;
-            txtOwner.AgentID = currentPrim.Properties.OwnerID;
-            txtCreator.AgentID = currentPrim.Properties.CreatorID;
+            txtHover.Text = CurrentPrim.Text;
+            txtOwner.AgentID = CurrentPrim.Properties.OwnerID;
+            txtCreator.AgentID = CurrentPrim.Properties.CreatorID;
 
-            Permissions p = currentPrim.Properties.Permissions;
+            Permissions p = CurrentPrim.Properties.Permissions;
             cbOwnerModify.Checked = (p.OwnerMask & PermissionMask.Modify) != 0;
             cbOwnerCopy.Checked = (p.OwnerMask & PermissionMask.Copy) != 0;
             cbOwnerTransfer.Checked = (p.OwnerMask & PermissionMask.Transfer) != 0;
@@ -591,7 +591,7 @@ namespace Radegast
             cbNextOwnCopy.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
             cbNextOwnTransfer.CheckedChanged += cbNextOwnerUpdate_CheckedChanged;
 
-            if (currentPrim.Properties.OwnerID == client.Self.AgentID)
+            if (CurrentPrim.Properties.OwnerID == client.Self.AgentID)
             {
                 cbNextOwnModify.Enabled = cbNextOwnCopy.Enabled = cbNextOwnTransfer.Enabled = true;
             }
@@ -603,10 +603,10 @@ namespace Radegast
             txtPrims.Text = (client.Network.CurrentSim.ObjectsPrimitives.FindAll(
                 delegate(Primitive prim)
                 {
-                    return prim.ParentID == currentPrim.LocalID || prim.LocalID == currentPrim.LocalID;
+                    return prim.ParentID == CurrentPrim.LocalID || prim.LocalID == CurrentPrim.LocalID;
                 })).Count.ToString();
 
-            if ((currentPrim.Flags & PrimFlags.Money) != 0)
+            if ((CurrentPrim.Flags & PrimFlags.Money) != 0)
             {
                 btnPay.Enabled = true;
             }
@@ -615,9 +615,9 @@ namespace Radegast
                 btnPay.Enabled = false;
             }
 
-            if (currentPrim.Properties.SaleType != SaleType.Not)
+            if (CurrentPrim.Properties.SaleType != SaleType.Not)
             {
-                btnBuy.Text = string.Format("Buy $L{0}", currentPrim.Properties.SalePrice);
+                btnBuy.Text = string.Format("Buy $L{0}", CurrentPrim.Properties.SalePrice);
                 btnBuy.Enabled = true;
             }
             else
@@ -745,9 +745,9 @@ namespace Radegast
                 }
             }
 
-            if (e.Prim.ID == currentPrim.ID)
+            if (e.Prim.ID == CurrentPrim.ID)
             {
-                if (currentPrim.Properties != null)
+                if (CurrentPrim.Properties != null)
                 {
                     UpdateCurrentObject(false);
                 }
@@ -853,7 +853,7 @@ namespace Radegast
         {
             if (btnPointAt.Text == "Point At")
             {
-                instance.State.SetPointing(currentPrim, 3);
+                instance.State.SetPointing(CurrentPrim, 3);
                 btnPointAt.Text = "Unpoint";
             }
             else if (btnPointAt.Text == "Unpoint")
@@ -867,17 +867,17 @@ namespace Radegast
         {
             if (!instance.State.IsSitting)
             {
-                instance.State.SetSitting(true, currentPrim.ID);
+                instance.State.SetSitting(true, CurrentPrim.ID);
             }
             else
             {
-                instance.State.SetSitting(false, currentPrim.ID);
+                instance.State.SetSitting(false, CurrentPrim.ID);
             }
         }
 
         private void btnTouch_Click(object sender, EventArgs e)
         {
-            client.Self.Touch(currentPrim.LocalID);
+            client.Self.Touch(CurrentPrim.LocalID);
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
@@ -910,7 +910,7 @@ namespace Radegast
                 {
                     try
                     {
-                        currentPrim = Prims[lstPrims.SelectedIndices[0]];
+                        CurrentPrim = Prims[lstPrims.SelectedIndices[0]];
                     }
                     catch
                     {
@@ -920,11 +920,11 @@ namespace Radegast
                 }
 
                 gbxInworld.Enabled = true;
-                btnBuy.Tag = currentPrim;
+                btnBuy.Tag = CurrentPrim;
 
-                if (currentPrim.Properties == null || currentPrim.OwnerID == UUID.Zero || (currentPrim.Properties != null && currentPrim.Properties.CreatorID == UUID.Zero))
+                if (CurrentPrim.Properties == null || CurrentPrim.OwnerID == UUID.Zero || (CurrentPrim.Properties != null && CurrentPrim.Properties.CreatorID == UUID.Zero))
                 {
-                    client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
+                    client.Objects.SelectObject(client.Network.CurrentSim, CurrentPrim.LocalID);
                 }
 
                 UpdateCurrentObject();
@@ -942,12 +942,12 @@ namespace Radegast
             if (lstChildren.SelectedItems.Count == 1)
             {
                 gbxInworld.Enabled = true;
-                currentPrim = lstChildren.SelectedItems[0].Tag as Primitive;
-                btnBuy.Tag = currentPrim;
+                CurrentPrim = lstChildren.SelectedItems[0].Tag as Primitive;
+                btnBuy.Tag = CurrentPrim;
 
-                if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.CreatorID == UUID.Zero))
+                if (CurrentPrim.Properties == null || (CurrentPrim.Properties != null && CurrentPrim.Properties.CreatorID == UUID.Zero))
                 {
-                    client.Objects.SelectObject(client.Network.CurrentSim, currentPrim.LocalID);
+                    client.Objects.SelectObject(client.Network.CurrentSim, CurrentPrim.LocalID);
                 }
 
                 UpdateCurrentObject();
@@ -960,8 +960,8 @@ namespace Radegast
 
         void UpdateChildren()
         {
-            if (currentPrim == null) return;
-            var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == currentPrim.LocalID);
+            if (CurrentPrim == null) return;
+            var prims = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == CurrentPrim.LocalID);
             if (prims == null || prims.Count == 0) return;
             List<uint> toGetNames = new List<uint>();
 
@@ -998,12 +998,12 @@ namespace Radegast
 
         private void btnPay_Click(object sender, EventArgs e)
         {
-            (new frmPay(instance, currentPrim.ID, currentPrim.Properties.Name, true)).ShowDialog();
+            (new frmPay(instance, CurrentPrim.ID, CurrentPrim.Properties.Name, true)).ShowDialog();
         }
 
         private void btnDetach_Click(object sender, EventArgs e)
         {
-            var toDetach = CurrentOutfitFolder.GetAttachmentItem(currentPrim);
+            var toDetach = CurrentOutfitFolder.GetAttachmentItem(CurrentPrim);
             if (toDetach != UUID.Zero)
             {
                 if (client.Inventory.Store.Contains(toDetach))
@@ -1015,13 +1015,13 @@ namespace Radegast
 
         private void btnView_Click(object sender, EventArgs e)
         {
-            if (currentPrim.PrimData.PCode != PCode.Prim)
+            if (CurrentPrim.PrimData.PCode != PCode.Prim)
             {
                 instance.TabConsole.DisplayNotificationInChat("Cannot display objects of that type", ChatBufferTextStyle.Error);
                 return;
             }
 
-            Rendering.frmPrimWorkshop pw = new Rendering.frmPrimWorkshop(instance, currentPrim.LocalID);
+            Rendering.frmPrimWorkshop pw = new Rendering.frmPrimWorkshop(instance, CurrentPrim.LocalID);
             pw.Show();
         }
 
@@ -1035,7 +1035,7 @@ namespace Radegast
         {
             if (lstPrims.SelectedIndices.Count != 1) return;
             btnBuy.Enabled = false;
-            client.Objects.BuyObject(client.Network.CurrentSim, currentPrim.LocalID, currentPrim.Properties.SaleType, currentPrim.Properties.SalePrice, client.Self.ActiveGroup, client.Inventory.FindFolderForType(AssetType.Object));
+            client.Objects.BuyObject(client.Network.CurrentSim, CurrentPrim.LocalID, CurrentPrim.Properties.SaleType, CurrentPrim.Properties.SalePrice, client.Self.ActiveGroup, client.Inventory.FindFolderForType(AssetType.Object));
         }
 
         private void rbDistance_CheckedChanged(object sender, EventArgs e)
@@ -1061,7 +1061,7 @@ namespace Radegast
         private void btnTurnTo_Click(object sender, EventArgs e)
         {
             if (lstPrims.SelectedIndices.Count != 1) return;
-            client.Self.Movement.TurnToward(currentPrim.Position);
+            client.Self.Movement.TurnToward(CurrentPrim.Position);
         }
 
         private void btnWalkTo_Click(object sender, EventArgs e)
@@ -1074,7 +1074,7 @@ namespace Radegast
             }
             else
             {
-                instance.State.WalkTo(currentPrim);
+                instance.State.WalkTo(CurrentPrim);
             }
         }
 
@@ -1126,14 +1126,14 @@ namespace Radegast
             ctxMenuObjects.Items.Clear();
             ctxMenuObjects.Items.Add("Click/Touch", null, btnTouch_Click);
 
-            if (currentPrim.ParentID == client.Self.LocalID)
+            if (CurrentPrim.ParentID == client.Self.LocalID)
                 ctxMenuObjects.Items.Add("Detach", null, btnDetach_Click);
 
-            if ((currentPrim.Flags & PrimFlags.Money) != 0)
+            if ((CurrentPrim.Flags & PrimFlags.Money) != 0)
                 ctxMenuObjects.Items.Add("Pay", null, btnPay_Click);
 
-            if (currentPrim.Properties != null && currentPrim.Properties.SaleType != SaleType.Not)
-                ctxMenuObjects.Items.Add(string.Format("Buy for ${0}", currentPrim.Properties.SalePrice), null, btnBuy_Click);
+            if (CurrentPrim.Properties != null && CurrentPrim.Properties.SaleType != SaleType.Not)
+                ctxMenuObjects.Items.Add(string.Format("Buy for ${0}", CurrentPrim.Properties.SalePrice), null, btnBuy_Click);
 
             if (gbxInworld.Visible)
                 ctxMenuObjects.Items.Add("Show Contents", null, btnContents_Click);
@@ -1149,31 +1149,31 @@ namespace Radegast
             ctxMenuObjects.Items.Add("Delete", null, btnDelete_Click);
             ctxMenuObjects.Items.Add("Return", null, btnReturn_Click);
 
-            if (currentPrim.Properties != null)
+            if (CurrentPrim.Properties != null)
             {
-                if (currentPrim.Properties.CreatorID == client.Self.AgentID &&
-                    currentPrim.Properties.OwnerID == client.Self.AgentID)
+                if (CurrentPrim.Properties.CreatorID == client.Self.AgentID &&
+                    CurrentPrim.Properties.OwnerID == client.Self.AgentID)
                 {
                     ctxMenuObjects.Items.Add("Export", null, btnExport_Click);
                 }
             }
 
-            if (currentPrim.Properties != null)
+            if (CurrentPrim.Properties != null)
             {
-                bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Object && me.ID == currentPrim.ID);
+                bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Object && me.ID == CurrentPrim.ID);
 
                 if (isMuted)
                 {
                     ctxMenuObjects.Items.Add("Unmute", null, (a, b) =>
                         {
-                            client.Self.RemoveMuteListEntry(currentPrim.ID, currentPrim.Properties.Name);
+                            client.Self.RemoveMuteListEntry(CurrentPrim.ID, CurrentPrim.Properties.Name);
                         });
                 }
                 else
                 {
                     ctxMenuObjects.Items.Add("Mute", null, (a, b) =>
                     {
-                        client.Self.UpdateMuteListEntry(MuteType.Object, currentPrim.ID, currentPrim.Properties.Name);
+                        client.Self.UpdateMuteListEntry(MuteType.Object, CurrentPrim.ID, CurrentPrim.Properties.Name);
                     });
                 }
             }
@@ -1191,7 +1191,7 @@ namespace Radegast
             //    );
             //}
 
-            instance.ContextActionManager.AddContributions(ctxMenuObjects, currentPrim);
+            instance.ContextActionManager.AddContributions(ctxMenuObjects, CurrentPrim);
         }
 
         public RadegastContextMenuStrip GetContextMenu()
@@ -1202,24 +1202,24 @@ namespace Radegast
         private void btnTake_Click(object sender, EventArgs e)
         {
             instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-            client.Inventory.RequestDeRezToInventory(currentPrim.LocalID);
+            client.Inventory.RequestDeRezToInventory(CurrentPrim.LocalID);
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (currentPrim.Properties != null && currentPrim.Properties.OwnerID != client.Self.AgentID)
+            if (CurrentPrim.Properties != null && CurrentPrim.Properties.OwnerID != client.Self.AgentID)
                 btnReturn_Click(sender, e);
             else
             {
                 instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-                client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.AgentInventoryTake, client.Inventory.FindFolderForType(FolderType.Trash), UUID.Random());
+                client.Inventory.RequestDeRezToInventory(CurrentPrim.LocalID, DeRezDestination.AgentInventoryTake, client.Inventory.FindFolderForType(FolderType.Trash), UUID.Random());
             }
         }
 
         private void btnReturn_Click(object sender, EventArgs e)
         {
             instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
-            client.Inventory.RequestDeRezToInventory(currentPrim.LocalID, DeRezDestination.ReturnToOwner, UUID.Zero, UUID.Random());
+            client.Inventory.RequestDeRezToInventory(CurrentPrim.LocalID, DeRezDestination.ReturnToOwner, UUID.Zero, UUID.Random());
         }
 
         private void btnCloseContents_Click(object sender, EventArgs e)
@@ -1239,7 +1239,7 @@ namespace Radegast
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            instance.MainForm.DisplayExportConsole(currentPrim.LocalID);
+            instance.MainForm.DisplayExportConsole(CurrentPrim.LocalID);
         }
 
         private void lstContents_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -1308,7 +1308,7 @@ namespace Radegast
 
         void UpdateMuteButton()
         {
-            bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Object && me.ID == currentPrim.ID);
+            bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Object && me.ID == CurrentPrim.ID);
 
             if (isMuted)
             {
@@ -1324,33 +1324,33 @@ namespace Radegast
         {
             if (lstPrims.SelectedIndices.Count != 1) return;
 
-            if (currentPrim.Properties == null) return;
+            if (CurrentPrim.Properties == null) return;
 
             if (btnMute.Text == "Mute")
             {
-                client.Self.UpdateMuteListEntry(MuteType.Object, currentPrim.ID, currentPrim.Properties.Name);
+                client.Self.UpdateMuteListEntry(MuteType.Object, CurrentPrim.ID, CurrentPrim.Properties.Name);
             }
             else
             {
-                client.Self.RemoveMuteListEntry(currentPrim.ID, currentPrim.Properties.Name);
+                client.Self.RemoveMuteListEntry(CurrentPrim.ID, CurrentPrim.Properties.Name);
             }
         }
 
         private void txtObjectName_Leave(object sender, EventArgs e)
         {
-            if (currentPrim == null) return;
-            if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.Name != txtObjectName.Text))
+            if (CurrentPrim == null) return;
+            if (CurrentPrim.Properties == null || (CurrentPrim.Properties != null && CurrentPrim.Properties.Name != txtObjectName.Text))
             {
-                client.Objects.SetName(client.Network.CurrentSim, currentPrim.LocalID, txtObjectName.Text);
+                client.Objects.SetName(client.Network.CurrentSim, CurrentPrim.LocalID, txtObjectName.Text);
             }
         }
 
         private void txtDescription_Leave(object sender, EventArgs e)
         {
-            if (currentPrim == null) return;
-            if (currentPrim.Properties == null || (currentPrim.Properties != null && currentPrim.Properties.Description != txtDescription.Text))
+            if (CurrentPrim == null) return;
+            if (CurrentPrim.Properties == null || (CurrentPrim.Properties != null && CurrentPrim.Properties.Description != txtDescription.Text))
             {
-                client.Objects.SetDescription(client.Network.CurrentSim, currentPrim.LocalID, txtDescription.Text);
+                client.Objects.SetDescription(client.Network.CurrentSim, CurrentPrim.LocalID, txtDescription.Text);
             }
         }
 
@@ -1365,7 +1365,7 @@ namespace Radegast
 
             if (pm == PermissionMask.None) return;
 
-            client.Objects.SetPermissions(client.Network.CurrentSim, new List<uint>() { currentPrim.LocalID }, PermissionWho.NextOwner, pm, cb.Checked);
+            client.Objects.SetPermissions(client.Network.CurrentSim, new List<uint>() { CurrentPrim.LocalID }, PermissionWho.NextOwner, pm, cb.Checked);
         }
 
         private void lstPrims_Enter(object sender, EventArgs e)
@@ -1418,9 +1418,8 @@ namespace Radegast
     public class ObjectSorter : IComparer<Primitive>
     {
         private AgentManager me;
-        private bool sortByName = false;
 
-        public bool SortByName { get { return sortByName; } set { sortByName = value; } }
+        public bool SortByName { get; set; } = false;
 
         public ObjectSorter(AgentManager me)
         {
@@ -1448,7 +1447,7 @@ namespace Radegast
         // for our sample we'll just use string comparison
         public int Compare(Primitive prim1, Primitive prim2)
         {
-            if (sortByName)
+            if (SortByName)
             {
                 return NameCompare(prim1, prim2);
             }

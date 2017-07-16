@@ -36,17 +36,16 @@ namespace Radegast.Commands
     public class RadegastCommand : IRadegastCommand
     {
         private readonly CommandExecuteDelegate _execute;
-        private RadegastInstance _instance;
 
         /// <summary>
         /// Radegast instance received during start command
         /// </summary>
-        protected RadegastInstance Instance { get { return _instance; } }
+        protected RadegastInstance Instance { get; private set; }
 
         /// <summary>
         /// GridClinet associated with RadegastInstanc received during command startup
         /// </summary>
-        protected GridClient Client { get { return _instance.Client; } }
+        protected GridClient Client { get { return Instance.Client; } }
         /// <summary>
         /// for subclasses (they should override Execute)
         /// </summary>
@@ -57,7 +56,7 @@ namespace Radegast.Commands
         /// <param name="inst"></param>
         public RadegastCommand(RadegastInstance inst)
         {
-            _instance = inst;
+            Instance = inst;
             _execute = null;
         }
 
@@ -68,7 +67,7 @@ namespace Radegast.Commands
         /// <param name="exec"></param>
         public RadegastCommand(RadegastInstance inst, CommandExecuteDelegate exec)
         {
-            _instance = inst;
+            Instance = inst;
             _execute = exec;
         }
 
@@ -80,13 +79,13 @@ namespace Radegast.Commands
 
         virtual public void StartCommand(RadegastInstance inst)
         {
-            _instance = inst;
+            Instance = inst;
         }
 
         // maybe we shoould make this class abstract to force people to implement
         virtual public void Dispose()
         {
-            _instance = null;
+            Instance = null;
         }
 
         virtual public void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)

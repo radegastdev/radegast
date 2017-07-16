@@ -42,9 +42,6 @@ namespace Radegast
         private RadegastNetcom netcom;
         private GridClient client;
 
-        private UUID queryID;
-        private Dictionary<string, UUID> findPeopleResults;
-
         public event EventHandler SelectedIndexChanged;
 
         public FindPeopleConsole(RadegastInstance instance, UUID queryID)
@@ -52,8 +49,8 @@ namespace Radegast
             InitializeComponent();
             Disposed += new EventHandler(FindPeopleConsole_Disposed);
 
-            findPeopleResults = new Dictionary<string, UUID>();
-            this.queryID = queryID;
+            LLUUIDs = new Dictionary<string, UUID>();
+            this.QueryID = queryID;
 
             this.instance = instance;
             netcom = this.instance.Netcom;
@@ -72,7 +69,7 @@ namespace Radegast
 
         void Directory_DirPeopleReply(object sender, DirPeopleReplyEventArgs e)
         {
-            if (e.QueryID != this.queryID) return;
+            if (e.QueryID != this.QueryID) return;
 
             if (InvokeRequired)
             {
@@ -85,7 +82,7 @@ namespace Radegast
             foreach (DirectoryManager.AgentSearchData person in e.MatchedPeople)
             {
                 string fullName = person.FirstName + " " + person.LastName;
-                findPeopleResults.Add(fullName, person.AgentID);
+                LLUUIDs.Add(fullName, person.AgentID);
 
                 ListViewItem item = lvwFindPeople.Items.Add(fullName);
                 item.SubItems.Add(person.Online ? "Yes" : "No");
@@ -97,7 +94,7 @@ namespace Radegast
 
         public void ClearResults()
         {
-            findPeopleResults.Clear();
+            LLUUIDs.Clear();
             lvwFindPeople.Items.Clear();
         }
 
@@ -111,16 +108,9 @@ namespace Radegast
             if (SelectedIndexChanged != null) SelectedIndexChanged(this, e);
         }
 
-        public Dictionary<string, UUID> LLUUIDs
-        {
-            get { return findPeopleResults; }
-        }
+        public Dictionary<string, UUID> LLUUIDs { get; }
 
-        public UUID QueryID
-        {
-            get { return queryID; }
-            set { queryID = value; }
-        }
+        public UUID QueryID { get; set; }
 
         public int SelectedIndex
         {
@@ -170,7 +160,7 @@ namespace Radegast
                 if (lvwFindPeople.SelectedItems.Count == 0) return UUID.Zero;
 
                 string name = lvwFindPeople.SelectedItems[0].Text;
-                return findPeopleResults[name];
+                return LLUUIDs[name];
             }
         }
     }

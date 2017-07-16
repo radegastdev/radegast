@@ -59,9 +59,9 @@ namespace Radegast
 
             if (disposing)
             {
-                lock (tabs)
+                lock (Tabs)
                 {
-                    System.Collections.Generic.List<string> tabNames = new System.Collections.Generic.List<string>(tabs.Keys);
+                    System.Collections.Generic.List<string> tabNames = new System.Collections.Generic.List<string>(Tabs.Keys);
                     for (int i = 0; i < tabNames.Count; i++)
                     {
                         if (tabNames[i] != "chat")

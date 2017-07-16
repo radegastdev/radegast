@@ -281,15 +281,10 @@ namespace Radegast
     {
         public WindowWrapper(IntPtr handle)
         {
-            _hwnd = handle;
+            Handle = handle;
         }
 
-        public IntPtr Handle
-        {
-            get { return _hwnd; }
-        }
-
-        private IntPtr _hwnd;
+        public IntPtr Handle { get; }
     }
 
 }

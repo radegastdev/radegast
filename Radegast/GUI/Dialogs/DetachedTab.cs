@@ -42,8 +42,6 @@ namespace Radegast
         private RadegastTab tab;
 
         //For reattachment
-        private ToolStrip strip;
-        private Panel container;
 
         int mainTop;
         int mainLeft;
@@ -109,21 +107,13 @@ namespace Radegast
                 if (tab.CloseOnDetachedClose)
                     tab.Close();
                 else
-                    tab.AttachTo(strip, container);
+                    tab.AttachTo(ReattachStrip, ReattachContainer);
             }
         }
 
-        public ToolStrip ReattachStrip
-        {
-            get { return strip; }
-            set { strip = value; }
-        }
+        public ToolStrip ReattachStrip { get; set; }
 
-        public Panel ReattachContainer
-        {
-            get { return container; }
-            set { container = value; }
-        }
+        public Panel ReattachContainer { get; set; }
 
         private void UpdatePos()
         {

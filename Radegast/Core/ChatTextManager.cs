@@ -48,7 +48,6 @@ namespace Radegast
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private GridClient client { get { return instance.Client; } }
-        private ITextPrinter textPrinter;
 
         private List<ChatBufferItem> textBuffer;
 
@@ -58,7 +57,7 @@ namespace Radegast
 
         public ChatTextManager(RadegastInstance instance, ITextPrinter textPrinter)
         {
-            this.textPrinter = textPrinter;
+            this.TextPrinter = textPrinter;
             this.textBuffer = new List<ChatBufferItem>();
 
             this.instance = instance;
@@ -190,57 +189,57 @@ namespace Radegast
                     if(fontSettings.ContainsKey("Timestamp"))
                     {
                         var fontSetting = fontSettings["Timestamp"];
-                        textPrinter.ForeColor = fontSetting.ForeColor;
-                        textPrinter.BackColor = fontSetting.BackColor;
-                        textPrinter.Font = fontSetting.Font;
-                        textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
+                        TextPrinter.ForeColor = fontSetting.ForeColor;
+                        TextPrinter.BackColor = fontSetting.BackColor;
+                        TextPrinter.Font = fontSetting.Font;
+                        TextPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
                     }
                     else
                     {
-                        textPrinter.ForeColor = SystemColors.GrayText;
-                        textPrinter.BackColor = Color.Transparent;
-                        textPrinter.Font = Settings.FontSetting.DefaultFont;
-                        textPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
+                        TextPrinter.ForeColor = SystemColors.GrayText;
+                        TextPrinter.BackColor = Color.Transparent;
+                        TextPrinter.Font = Settings.FontSetting.DefaultFont;
+                        TextPrinter.PrintText(item.Timestamp.ToString("[HH:mm] "));
                     }
                 }
 
                 if(fontSettings.ContainsKey("Name"))
                 {
                     var fontSetting = fontSettings["Name"];
-                    textPrinter.ForeColor = fontSetting.ForeColor;
-                    textPrinter.BackColor = fontSetting.BackColor;
-                    textPrinter.Font = fontSetting.Font;
+                    TextPrinter.ForeColor = fontSetting.ForeColor;
+                    TextPrinter.BackColor = fontSetting.BackColor;
+                    TextPrinter.Font = fontSetting.Font;
                 }
                 else
                 {
-                    textPrinter.ForeColor = SystemColors.WindowText;
-                    textPrinter.BackColor = Color.Transparent;
-                    textPrinter.Font = Settings.FontSetting.DefaultFont;
+                    TextPrinter.ForeColor = SystemColors.WindowText;
+                    TextPrinter.BackColor = Color.Transparent;
+                    TextPrinter.Font = Settings.FontSetting.DefaultFont;
                 }
 
                 if (item.Style == ChatBufferTextStyle.Normal && item.ID != UUID.Zero && instance.GlobalSettings["av_name_link"])
                 {
-                    textPrinter.InsertLink(item.From, $"secondlife:///app/agent/{item.ID}/about");
+                    TextPrinter.InsertLink(item.From, $"secondlife:///app/agent/{item.ID}/about");
                 }
                 else
                 {
-                    textPrinter.PrintText(item.From);
+                    TextPrinter.PrintText(item.From);
                 }
 
                 if(fontSettings.ContainsKey(item.Style.ToString()))
                 {
                     var fontSetting = fontSettings[item.Style.ToString()];
-                    textPrinter.ForeColor = fontSetting.ForeColor;
-                    textPrinter.BackColor = fontSetting.BackColor;
-                    textPrinter.Font = fontSetting.Font;
+                    TextPrinter.ForeColor = fontSetting.ForeColor;
+                    TextPrinter.BackColor = fontSetting.BackColor;
+                    TextPrinter.Font = fontSetting.Font;
                 }
                 else
                 {
-                    textPrinter.ForeColor = SystemColors.WindowText;
-                    textPrinter.BackColor = Color.Transparent;
-                    textPrinter.Font = Settings.FontSetting.DefaultFont;
+                    TextPrinter.ForeColor = SystemColors.WindowText;
+                    TextPrinter.BackColor = Color.Transparent;
+                    TextPrinter.Font = Settings.FontSetting.DefaultFont;
                 }
-                textPrinter.PrintTextLine(item.Text);
+                TextPrinter.PrintTextLine(item.Text);
             }
         }
 
@@ -408,7 +407,7 @@ namespace Radegast
 
         public void ReprintAllText()
         {
-            textPrinter.ClearText();
+            TextPrinter.ClearText();
 
             foreach (ChatBufferItem item in textBuffer)
             {
@@ -421,21 +420,16 @@ namespace Radegast
             textBuffer.Clear();
         }
 
-        public ITextPrinter TextPrinter
-        {
-            get { return textPrinter; }
-            set { textPrinter = value; }
-        }
+        public ITextPrinter TextPrinter { get; set; }
     }
 
     public class ChatLineAddedArgs : EventArgs
     {
-        ChatBufferItem mItem;
-        public ChatBufferItem Item { get { return mItem; } }
+        public ChatBufferItem Item { get; }
 
         public ChatLineAddedArgs(ChatBufferItem item)
         {
-            mItem = item;
+            Item = item;
         }
     }
 }

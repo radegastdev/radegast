@@ -41,8 +41,6 @@ namespace Radegast
     {
         private RadegastInstance instance;
         private RadegastNetcom netcom;
-        private UUID session;
-        private IMTextManager textManager;
         private GridClient client;
         private List<UUID> participants = new List<UUID>();
         ManualResetEvent WaitForSessionStart = new ManualResetEvent(false);
@@ -61,9 +59,9 @@ namespace Radegast
             this.SessionName = sessionName;
             netcom = this.instance.Netcom;
 
-            this.session = session;
+            this.SessionId = session;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Conference, this.session, sessionName);
+            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Conference, this.SessionId, sessionName);
             
             // Callbacks
             netcom.ClientLoginStatus += new EventHandler<LoginProgressEventArgs>(netcom_ClientLoginStatus);
@@ -104,8 +102,8 @@ namespace Radegast
 
         public void CleanUp()
         {
-            textManager.CleanUp();
-            textManager = null;
+            TextManager.CleanUp();
+            TextManager = null;
         }
 
         private void btnSend_Click(object sender, EventArgs e)
@@ -217,7 +215,7 @@ namespace Radegast
             }
             if (message.Length > 0)
             {
-                client.Self.InstantMessageGroup(session, message);
+                client.Self.InstantMessageGroup(SessionId, message);
             }
         }
 
@@ -236,17 +234,9 @@ namespace Radegast
             instance.MainForm.ProcessLink(e.LinkText);
         }
 
-        public UUID SessionId
-        {
-            get { return session; }
-            set { session = value; }
-        }
+        public UUID SessionId { get; set; }
 
-        public IMTextManager TextManager
-        {
-            get { return textManager; }
-            set { textManager = value; }
-        }
+        public IMTextManager TextManager { get; set; }
 
         private void cbxInput_VisibleChanged(object sender, EventArgs e)
         {

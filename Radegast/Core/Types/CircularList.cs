@@ -47,7 +47,7 @@ namespace Radegast
     public class CircularList<T> : List<T>
     {
         #region Member Variables
-        private bool loop = true;
+
         private int index;
         #endregion
 
@@ -57,11 +57,7 @@ namespace Radegast
         /// If true, the list will loop to the beginning when Next
         /// is called after the last element has been accessed.
         /// </summary>
-        public bool Loop
-        {
-            get { return loop; }
-            set { loop = value; }
-        }
+        public bool Loop { get; set; } = true;
 
         /// <summary>
         /// The next element in the list. The user is responsible for
@@ -75,7 +71,7 @@ namespace Radegast
             {
                 if (index >= Count)
                 {
-                    if (!loop)
+                    if (!Loop)
                     {
                         return default(T);
                     }
@@ -92,7 +88,7 @@ namespace Radegast
         {
             get
             {
-                if (Count == 0 || (!loop && index >= Count))
+                if (Count == 0 || (!Loop && index >= Count))
                 {
                     return false;
                 }

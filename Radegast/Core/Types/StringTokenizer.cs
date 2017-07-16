@@ -57,38 +57,21 @@ namespace Radegast
 
     public class Token
     {
-        int line;
-        int column;
-        string value;
-        TokenKind kind;
-
         public Token(TokenKind kind, string value, int line, int column)
         {
-            this.kind = kind;
-            this.value = value;
-            this.line = line;
-            this.column = column;
+            this.Kind = kind;
+            this.Value = value;
+            this.Line = line;
+            this.Column = column;
         }
 
-        public int Column
-        {
-            get { return this.column; }
-        }
+        public int Column { get; }
 
-        public TokenKind Kind
-        {
-            get { return this.kind; }
-        }
+        public TokenKind Kind { get; }
 
-        public int Line
-        {
-            get { return this.line; }
-        }
+        public int Line { get; }
 
-        public string Value
-        {
-            get { return this.value; }
-        }
+        public string Value { get; }
     }
 
 	/// <summary>
@@ -104,17 +87,14 @@ namespace Radegast
 
 		string data;
 
-		bool ignoreWhiteSpace;
-		char[] symbolChars;
-
-		int saveLine;
+	    int saveLine;
 		int saveCol;
 		int savePos;
 
 		public StringTokenizer(TextReader reader)
 		{
 			if (reader == null)
-				throw new ArgumentNullException("reader");
+				throw new ArgumentNullException(nameof(reader));
 
 			data = reader.ReadToEnd();
 
@@ -124,7 +104,7 @@ namespace Radegast
 		public StringTokenizer(string data)
 		{
 			if (data == null)
-				throw new ArgumentNullException("data");
+				throw new ArgumentNullException(nameof(data));
 
 			this.data = data;
 
@@ -134,26 +114,18 @@ namespace Radegast
 		/// <summary>
 		/// gets or sets which characters are part of TokenKind.Symbol
 		/// </summary>
-		public char[] SymbolChars
-		{
-			get { return this.symbolChars; }
-			set { this.symbolChars = value; }
-		}
+		public char[] SymbolChars { get; set; }
 
-		/// <summary>
+	    /// <summary>
 		/// if set to true, white space characters will be ignored,
 		/// but EOL and whitespace inside of string will still be tokenized
 		/// </summary>
-		public bool IgnoreWhiteSpace
-		{
-			get { return this.ignoreWhiteSpace; }
-			set { this.ignoreWhiteSpace = value; }
-		}
+		public bool IgnoreWhiteSpace { get; set; }
 
-		private void Reset()
+	    private void Reset()
 		{
-			this.ignoreWhiteSpace = false;
-			this.symbolChars = new char[]{'=', '+', '-', '/', ',', '.', '*', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']', ':', ';', '<', '>', '?', '|', '\\'};
+			this.IgnoreWhiteSpace = false;
+			this.SymbolChars = new char[]{'=', '+', '-', '/', ',', '.', '*', '~', '!', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']', ':', ';', '<', '>', '?', '|', '\\'};
 
 			line = 1;
 			column = 1;
@@ -201,7 +173,7 @@ namespace Radegast
 				case ' ':
 				case '\t':
 				{
-					if (this.ignoreWhiteSpace)
+					if (this.IgnoreWhiteSpace)
 					{
 						Consume();
 						goto ReadToken;
@@ -475,8 +447,8 @@ namespace Radegast
 		/// </summary>
 		protected bool IsSymbol(char c)
 		{
-			for (int i=0; i<symbolChars.Length; i++)
-				if (symbolChars[i] == c)
+			for (int i=0; i<SymbolChars.Length; i++)
+				if (SymbolChars[i] == c)
 					return true;
 
 			return false;

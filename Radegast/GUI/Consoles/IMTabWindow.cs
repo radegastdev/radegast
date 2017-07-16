@@ -41,9 +41,6 @@ namespace Radegast
         private RadegastInstance instance;
         private RadegastNetcom netcom { get { return instance.Netcom; } }
         private UUID target;
-        private UUID session;
-        private string toName;
-        private IMTextManager textManager;
         private bool typing = false;
         private List<string> chatHistory = new List<string>();
         private int chatPointer;
@@ -56,10 +53,10 @@ namespace Radegast
             this.instance = instance;
 
             this.target = target;
-            this.session = session;
-            this.toName = toName;
+            this.SessionId = session;
+            this.TargetName = toName;
 
-            textManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Agent, this.session, toName);
+            TextManager = new IMTextManager(this.instance, new RichTextBoxPrinter(rtbIMText), IMTextManagerType.Agent, this.SessionId, toName);
 
             AddNetcomEvents();
 
@@ -104,8 +101,8 @@ namespace Radegast
         public void CleanUp()
         {
             instance.TabConsole.RemoveTab(SessionId.ToString());
-            textManager.CleanUp();
-            textManager = null;
+            TextManager.CleanUp();
+            TextManager = null;
             RemoveNetcomEvents();
         }
 
@@ -136,14 +133,14 @@ namespace Radegast
 
                 if (!typing)
                 {
-                    netcom.SendIMStartTyping(target, session);
+                    netcom.SendIMStartTyping(target, SessionId);
                     typing = true;
                 }
             }
             else
             {
                 btnSend.Enabled = false;
-                netcom.SendIMStopTyping(target, session);
+                netcom.SendIMStopTyping(target, SessionId);
                 typing = false;
             }
         }
@@ -165,7 +162,7 @@ namespace Radegast
             if (instance.RLV.RestictionActive("sendim", target.ToString()))
                 msg = "*** IM blocked by sender's viewer";
 
-            netcom.SendInstantMessage(msg, target, session);
+            netcom.SendInstantMessage(msg, target, SessionId);
             this.ClearIMInput();
         }
 
@@ -233,7 +230,7 @@ namespace Radegast
 
         private void tbtnProfile_Click(object sender, EventArgs e)
         {
-            instance.MainForm.ShowAgentProfile(toName, target);
+            instance.MainForm.ShowAgentProfile(TargetName, target);
         }
 
         private void btnOfferTeleport_Click(object sender, EventArgs e)
@@ -243,7 +240,7 @@ namespace Radegast
 
         private void btnPay_Click(object sender, EventArgs e)
         {
-            (new frmPay(instance, target, toName, false)).ShowDialog();
+            (new frmPay(instance, target, TargetName, false)).ShowDialog();
         }
 
         public UUID TargetId
@@ -252,23 +249,11 @@ namespace Radegast
             set { target = value; }
         }
 
-        public string TargetName
-        {
-            get { return toName; }
-            set { toName = value; }
-        }
+        public string TargetName { get; set; }
 
-        public UUID SessionId
-        {
-            get { return session; }
-            set { session = value; }
-        }
+        public UUID SessionId { get; set; }
 
-        public IMTextManager TextManager
-        {
-            get { return textManager; }
-            set { textManager = value; }
-        }
+        public IMTextManager TextManager { get; set; }
 
         private void cbxInput_VisibleChanged(object sender, EventArgs e)
         {
@@ -282,7 +267,7 @@ namespace Radegast
 
         private void cbAlwaysDing_CheckedChanged(object sender, EventArgs e)
         {
-            textManager.DingOnAllIncoming = ((CheckBox)sender).Checked;
+            TextManager.DingOnAllIncoming = ((CheckBox)sender).Checked;
         }
     }
 }

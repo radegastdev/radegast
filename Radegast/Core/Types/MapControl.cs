@@ -36,7 +36,6 @@ namespace Radegast
         GridRegion targetRegion, nullRegion;
         bool centered = false;
         int PixRegS;
-        float maxZoom = 6f, minZoom = 0.5f;
         string targetParcelName = null;
         System.Threading.Timer repaint;
         bool needRepaint = false;
@@ -44,8 +43,8 @@ namespace Radegast
         public bool UseExternalTiles = false;
         public event EventHandler<MapTargetChangedEventArgs> MapTargetChanged;
         public event EventHandler<EventArgs> ZoomChanged;
-        public float MaxZoom { get { return maxZoom; } }
-        public float MinZoom { get { return minZoom; } }
+        public float MaxZoom { get; } = 6f;
+        public float MinZoom { get; } = 0.5f;
 
         public MapControl(RadegastInstance instance)
         {
@@ -175,7 +174,7 @@ namespace Radegast
             get { return zoom; }
             set
             {
-                if (value >= minZoom && value <= maxZoom)
+                if (value >= MinZoom && value <= MaxZoom)
                 {
                     zoom = value;
                     pixelsPerMeter = 1f / zoom;
@@ -820,20 +819,9 @@ namespace Radegast
         Queue<QueuedItem> queue = new Queue<QueuedItem>();
         List<HttpWebRequest> activeDownloads = new List<HttpWebRequest>();
 
-        int m_ParallelDownloads = 15;
-        X509Certificate2 m_ClientCert;
+        public int ParallelDownloads { get; set; } = 15;
 
-        public int ParallelDownloads
-        {
-            get { return m_ParallelDownloads; }
-            set { m_ParallelDownloads = value; }
-        }
-
-        public X509Certificate2 ClientCert
-        {
-            get { return m_ClientCert; }
-            set { m_ClientCert = value; }
-        }
+        public X509Certificate2 ClientCert { get; set; }
 
         public ParallelDownloader()
         {
@@ -863,8 +851,8 @@ namespace Radegast
                 request.Accept = acceptHeader;
 
             // Add the client certificate to the request if one was given
-            if (m_ClientCert != null)
-                request.ClientCertificates.Add(m_ClientCert);
+            if (ClientCert != null)
+                request.ClientCertificates.Add(ClientCert);
 
             // Leave idle connections to this endpoint open for up to 60 seconds
             request.ServicePoint.MaxIdleTime = 0;

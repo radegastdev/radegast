@@ -1490,12 +1490,6 @@ namespace Radegast
     /// </summary>
     public class ScrollBarInformation
     {
-        int nMin = 0;
-        int nMax = 0;
-        int nPage = 0;
-        int nPos = 0;
-        int nTrackPos = 0;
-
         /// <summary>
         /// Sets up an empty scroll bar information class.
         /// </summary>
@@ -1514,53 +1508,37 @@ namespace Radegast
         /// <param name="trackpos">this is updated while the scroll bar is wiggling up and down.</param>
         public ScrollBarInformation(int min, int max, int page, int pos, int trackpos)
         {
-            this.nMin = min;
-            this.nMax = max;
-            this.nPage = page;
-            this.nPos = pos;
-            this.nTrackPos = trackpos;
+            this.Minimum = min;
+            this.Maximum = max;
+            this.Page = page;
+            this.Position = pos;
+            this.TrackPosition = trackpos;
         }
 
         /// <summary>
         /// Specifies the minimum scrolling position.
         /// </summary>
         /// <value>the minimum scrolling position</value>
-        public int Minimum
-        {
-            get { return nMin; }
-            set { nMin = value; }
-        }
+        public int Minimum { get; set; } = 0;
 
         /// <summary>
         /// Specifies the maximum scrolling position.
         /// </summary>
         /// <value>the maximum scrolling position</value>
-        public int Maximum
-        {
-            get { return nMax; }
-            set { nMax = value; }
-        }
+        public int Maximum { get; set; } = 0;
 
         /// <summary>
         /// Specifies the page size. A scroll bar uses this value to determine the
         /// appropriate size of the proportional scroll box.
         /// </summary>
         /// <value></value>
-        public int Page
-        {
-            get { return nPage; }
-            set { nPage = value; }
-        }
+        public int Page { get; set; } = 0;
 
         /// <summary>
         /// The position of the thumb inside the scroll bar.
         /// </summary>
         /// <value></value>
-        public int Position
-        {
-            get { return nPos; }
-            set { nPos = value; }
-        }
+        public int Position { get; set; } = 0;
 
         /// <summary>
         /// Specifies the immediate position of a scroll box that the user is dragging.
@@ -1569,11 +1547,7 @@ namespace Radegast
         /// SetScrollInfo function ignores this member.
         /// </summary>
         /// <value>the immediated position of the scroll box</value>
-        public int TrackPosition
-        {
-            get { return nTrackPos; }
-            set { nTrackPos = value; }
-        }
+        public int TrackPosition { get; set; } = 0;
     }
     #endregion
 }

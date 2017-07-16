@@ -658,7 +658,6 @@ namespace Radegast.Rendering
         public bool Manual;
         Vector3 mPosition;
         Vector3 mFocalPoint;
-        bool mModified;
 
         /// <summary>Camera position</summary>
         public Vector3 Position
@@ -701,7 +700,7 @@ namespace Radegast.Rendering
         /// <summary>Draw distance</summary>
         public float Far;
         /// <summary>Has camera been modified</summary>
-        public bool Modified { get { return mModified; } set { mModified = value; } }
+        public bool Modified { get; set; }
 
         public float TimeToTarget = 0f;
 
@@ -710,7 +709,7 @@ namespace Radegast.Rendering
 
         void Modify()
         {
-            mModified = true;
+            Modified = true;
         }
 
         public void Step(float time)

@@ -40,64 +40,46 @@ namespace Radegast
         public bool CloseOnDetachedClose = false;
 
         private RadegastInstance instance;
-        private ToolStripButton button;
-        private Control control;
 
-        private Button defaultControlButton;
-        private string name;
         private string label;
-        private RadegastTab mergedTab;
-        private Form owner;
         private string originalLabel;
-        
-        private bool allowMerge = true;
-        private bool allowDetach = true;
-        private bool allowClose = true;
-        private bool allowHide = true;
-
-        private bool partialHighlighted = false;
-        private bool highlighted = false;
-        private bool selected = false;
-        private bool detached = false;
-        private bool merged = false;
-        private bool hidden = false;
 
         public RadegastTab(RadegastInstance instance, ToolStripButton button, Control control, string name, string label)
         {
             this.instance = instance;
-            this.button = button;
-            this.control = control;
-            this.name = name;
+            this.Button = button;
+            this.Control = control;
+            this.Name = name;
             this.label = label;
         }
 
         public void Close()
         {
-            if (!allowClose) return;
+            if (!AllowClose) return;
 
-            if (control != null)
+            if (Control != null)
             {
-                if (control.Parent != null && control.Parent is Form)
+                if (Control.Parent != null && Control.Parent is Form)
                 {
-                    control.Parent.Dispose();
+                    Control.Parent.Dispose();
                 }
 
-                if (instance.TabConsole.toolStripContainer1.ContentPanel.Contains(control))
+                if (instance.TabConsole.toolStripContainer1.ContentPanel.Contains(Control))
                 {
-                    instance.TabConsole.toolStripContainer1.ContentPanel.Controls.Remove(control);
+                    instance.TabConsole.toolStripContainer1.ContentPanel.Controls.Remove(Control);
                 }
-                control.Dispose();
-                control = null;
+                Control.Dispose();
+                Control = null;
             }
 
-            if (button != null)
+            if (Button != null)
             {
-                if (instance.TabConsole.tstTabs.Items.Contains(button))
+                if (instance.TabConsole.tstTabs.Items.Contains(Button))
                 {
-                    instance.TabConsole.tstTabs.Items.Remove(button);
+                    instance.TabConsole.tstTabs.Items.Remove(Button);
                 }
-                button.Dispose();
-                button = null;
+                Button.Dispose();
+                Button = null;
             }
 
 
@@ -106,73 +88,73 @@ namespace Radegast
 
         public void Select()
         {
-            if (detached) return;
+            if (Detached) return;
 
-            if (hidden)
+            if (Hidden)
             {
-                hidden = false;
+                Hidden = false;
             }
 
-            control.Visible = true;
-            control.BringToFront();
+            Control.Visible = true;
+            Control.BringToFront();
 
-            if (!partialHighlighted) Unhighlight();
-            button.Visible = true;
-            button.Checked = true;
-            selected = true;
+            if (!PartiallyHighlighted) Unhighlight();
+            Button.Visible = true;
+            Button.Checked = true;
+            Selected = true;
 
             OnTabSelected(EventArgs.Empty);
         }
 
         public void Deselect()
         {
-            if (detached) return;
+            if (Detached) return;
 
-            if (control != null) control.Visible = false;
-            if (button != null) button.Checked = false;
+            if (Control != null) Control.Visible = false;
+            if (Button != null) Button.Checked = false;
 
-            selected = false;
+            Selected = false;
 
             OnTabDeselected(EventArgs.Empty);
         }
 
         public void Hide()
         {
-            if (!allowHide || detached) return;
+            if (!AllowHide || Detached) return;
 
-            if (control != null) control.Visible = false;
-            if (button != null) button.Visible = false;
+            if (Control != null) Control.Visible = false;
+            if (Button != null) Button.Visible = false;
 
-            hidden = true;
+            Hidden = true;
 
             OnTabHidden(EventArgs.Empty);
         }
 
         public void Show()
         {
-            if (detached) return;
+            if (Detached) return;
 
-            if (button != null) button.Visible = true;
+            if (Button != null) Button.Visible = true;
             Select();
 
-            hidden = false;
+            Hidden = false;
 
             OnTabShown(EventArgs.Empty);
         }
 
         public void PartialHighlight()
         {
-            if (detached)
+            if (Detached)
             {
                 //do nothing?!
             }
             else
             {
-                button.Image = null;
-                button.ForeColor = Color.Blue;
+                Button.Image = null;
+                Button.ForeColor = Color.Blue;
             }
 
-            partialHighlighted = true;
+            PartiallyHighlighted = true;
             OnTabPartiallyHighlighted(EventArgs.Empty);
         }
 
@@ -185,19 +167,19 @@ namespace Radegast
                     (Control is GroupIMTabWindow && instance.GlobalSettings["highlight_on_group_chat"]) ||
                     (Control is ConferenceIMTabWindow && instance.GlobalSettings["highlight_on_group_chat"]))
                 {
-                    FormFlash.StartFlash(control.FindForm());
+                    FormFlash.StartFlash(Control.FindForm());
                 }
             }
 
-            if (selected) return;
+            if (Selected) return;
 
-            if (!detached)
+            if (!Detached)
             {
-                button.Image = Properties.Resources.arrow_forward_16;
-                button.ForeColor = Color.Red;
+                Button.Image = Properties.Resources.arrow_forward_16;
+                Button.ForeColor = Color.Red;
             }
 
-            highlighted = true;
+            Highlighted = true;
             OnTabHighlighted(EventArgs.Empty);
         }
 
@@ -205,86 +187,86 @@ namespace Radegast
         {
             FormFlash.StopFlash(instance.MainForm);
 
-            if (!detached)
+            if (!Detached)
             {
-                button.Image = null;
-                button.ForeColor = Color.FromKnownColor(KnownColor.ControlText);
+                Button.Image = null;
+                Button.ForeColor = Color.FromKnownColor(KnownColor.ControlText);
             }
 
-            highlighted = partialHighlighted = false;
+            Highlighted = PartiallyHighlighted = false;
             OnTabUnhighlighted(EventArgs.Empty);
         }
 
         public void AttachTo(ToolStrip strip, Panel container)
         {
-            if (!allowDetach) return;
-            if (!detached) return;
+            if (!AllowDetach) return;
+            if (!Detached) return;
 
-            button.Visible = true;
+            Button.Visible = true;
             foreach (Control c in container.Controls)
                 c.Hide();
-            container.Controls.Add(control);
+            container.Controls.Add(Control);
 
-            owner = null;
-            detached = false;
+            Owner = null;
+            Detached = false;
             OnTabAttached(EventArgs.Empty);
         }
 
         public void Detach(RadegastInstance instance)
         {
-            if (!allowDetach) return;
-            if (detached) return;
-            button.Visible = false;
-            owner = new frmDetachedTab(instance, this);
-            owner.Show();
-            owner.Focus();
-            detached = true;
+            if (!AllowDetach) return;
+            if (Detached) return;
+            Button.Visible = false;
+            Owner = new frmDetachedTab(instance, this);
+            Owner.Show();
+            Owner.Focus();
+            Detached = true;
             OnTabDetached(EventArgs.Empty);            
         }
 
         public void MergeWith(RadegastTab tab)
         {
-            if (!allowMerge) return;
-            if (merged) return;
+            if (!AllowMerge) return;
+            if (Merged) return;
 
             SplitContainer container = new SplitContainer();
             container.Dock = DockStyle.Fill;
             container.BorderStyle = BorderStyle.Fixed3D;
             container.SplitterDistance = container.Width / 2;
-            container.Panel1.Controls.Add(control);
+            container.Panel1.Controls.Add(Control);
             container.Panel2.Controls.Add(tab.Control);
 
-            control.Visible = true;
+            Control.Visible = true;
             tab.Control.Visible = true;
 
-            control = container;
+            Control = container;
             tab.Control = container;
             
-            mergedTab = tab;
-            tab.mergedTab = this;
+            MergedTab = tab;
+            tab.MergedTab = this;
 
             originalLabel = label;
             tab.originalLabel = tab.label;
             this.Label = label + "+" + tab.Label;
             
-            merged = tab.merged = true;
+            Merged = tab.Merged = true;
 
             OnTabMerged(EventArgs.Empty);
         }
 
         public RadegastTab Split()
         {
-            if (!allowMerge) return null;
-            if (!merged) return null;
+            if (!AllowMerge) return null;
+            if (!Merged) return null;
 
-            RadegastTab returnTab = mergedTab;
-            mergedTab = null;
-            returnTab.mergedTab = null;
+            RadegastTab returnTab = MergedTab;
+            MergedTab = null;
+            returnTab.MergedTab = null;
 
-            SplitContainer container = (SplitContainer)control;
-            control = container.Panel1.Controls[0];
+            SplitContainer container = (SplitContainer)Control;
+            Control = container.Panel1.Controls[0];
             returnTab.Control = container.Panel2.Controls[0];
-            merged = returnTab.merged = false;
+            Merged = returnTab.Merged = false;
 
             this.Label = originalLabel;
             OnTabSplit(EventArgs.Empty);
@@ -292,102 +274,47 @@ namespace Radegast
             return returnTab;
         }
 
-        public ToolStripButton Button
-        {
-            get { return button; }
-            set { button = value; }
-        }
+        public ToolStripButton Button { get; set; }
 
-        public Control Control
-        {
-            get { return control; }
-            set { control = value; }
-        }
+        public Control Control { get; set; }
 
-        public Button DefaultControlButton
-        {
-            get { return defaultControlButton; }
-            set { defaultControlButton = value; }
-        }
+        public Button DefaultControlButton { get; set; }
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name { get; }
 
         public string Label
         {
             get { return label; }
-            set { label = button.Text = value; }
+            set { label = Button.Text = value; }
         }
 
-        public RadegastTab MergedTab
-        {
-            get { return mergedTab; }
-        }
+        public RadegastTab MergedTab { get; private set; }
 
-        public Form Owner
-        {
-            get { return owner; }
-        }
+        public Form Owner { get; private set; }
 
-        public bool AllowMerge
-        {
-            get { return allowMerge; }
-            set { allowMerge = value; }
-        }
+        public bool AllowMerge { get; set; } = true;
 
-        public bool AllowDetach
-        {
-            get { return allowDetach; }
-            set { allowDetach = value; }
-        }
+        public bool AllowDetach { get; set; } = true;
 
-        public bool AllowClose
-        {
-            get { return allowClose; }
-            set { allowClose = value; }
-        }
+        public bool AllowClose { get; set; } = true;
 
-        public bool PartiallyHighlighted
-        {
-            get { return partialHighlighted; }
-        }
+        public bool PartiallyHighlighted { get; private set; } = false;
 
-        public bool Highlighted
-        {
-            get { return highlighted; }
-        }
+        public bool Highlighted { get; private set; } = false;
 
-        public bool Selected
-        {
-            get { return selected; }
-        }
+        public bool Selected { get; private set; } = false;
 
-        public bool Detached
-        {
-            get { return detached; }
-        }
+        public bool Detached { get; private set; } = false;
 
-        public bool Merged
-        {
-            get { return merged; }
-        }
+        public bool Merged { get; private set; } = false;
 
-        public bool AllowHide
-        {
-            get { return allowHide; }
-            set { allowHide = value; }
-        }
+        public bool AllowHide { get; set; } = true;
 
-        public bool Hidden
-        {
-            get { return hidden; }
-        }
+        public bool Hidden { get; private set; } = false;
 
         public bool Visible
         {
-            get { return !hidden; }
+            get { return !Hidden; }
 
             set
             {
@@ -395,7 +322,7 @@ namespace Radegast
                 {
                     Show();
                 }
-                else if (allowHide)
+                else if (AllowHide)
                 {
                     Hide();
                 }

@@ -35,13 +35,6 @@ namespace Radegast
 {
     public class ChatBufferItem
     {
-        private DateTime timestamp;
-        private string from;
-        private UUID id;
-        private string text;
-        private ChatBufferTextStyle style;
-        private ChatEventArgs rawMessage;
-
         public ChatBufferItem()
         {
 
@@ -49,48 +42,24 @@ namespace Radegast
 
         public ChatBufferItem(DateTime timestamp, string from, UUID id, string text, ChatBufferTextStyle style)
         {
-            this.timestamp = timestamp;
-            this.from = from;
-            this.id = id;
-            this.text = text;
-            this.style = style;
+            this.Timestamp = timestamp;
+            this.From = from;
+            this.ID = id;
+            this.Text = text;
+            this.Style = style;
         }
 
-        public DateTime Timestamp
-        {
-            get { return timestamp; }
-            set { timestamp = value; }
-        }
+        public DateTime Timestamp { get; set; }
 
-        public string From
-        {
-            get { return from; }
-            set { from = value; }
-        }
+        public string From { get; set; }
 
-        public UUID ID
-        {
-            get { return id; }
-            set { id = value; }
-        }
+        public UUID ID { get; set; }
 
-        public string Text
-        {
-            get { return text; }
-            set { text = value; }
-        }
+        public string Text { get; set; }
 
-        public ChatBufferTextStyle Style
-        {
-            get { return style; }
-            set { style = value; }
-        }
+        public ChatBufferTextStyle Style { get; set; }
 
-        public ChatEventArgs RawMessage
-        {
-            get { return rawMessage; }
-            set { rawMessage = value; }
-        }
+        public ChatEventArgs RawMessage { get; set; }
     }
 
     public enum ChatBufferTextStyle

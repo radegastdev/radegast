@@ -67,7 +67,6 @@ namespace Radegast
         private Vector3d myGlobalPosition;
         private List<Vector3d> waypoints = new List<Vector3d>();
         private int waypointIndex = 0;
-        private AutoPilotStatus status = AutoPilotStatus.Idle;
         private double waypointRadius = 2d;
         private Timer ticker = new Timer(500);
         private int stuckTimeout = 10000;
@@ -81,13 +80,7 @@ namespace Radegast
         /// <summary>
         /// The Status of the AutoPilot instance
         /// </summary>
-        public AutoPilotStatus Status
-        {
-            get
-            {
-                return status;
-            }
-        }
+        public AutoPilotStatus Status { get; private set; } = AutoPilotStatus.Idle;
 
         /// <summary>
         /// The Vector3d Waypoints in the AutoPilot instance
@@ -158,7 +151,7 @@ namespace Radegast
                     {
                         throw new ArgumentOutOfRangeException("NextWaypointIndex", "Value must be greater than or equal to 0 and less than the number of Waypoints");
                     }
-                    if (status != AutoPilotStatus.Idle)
+                    if (Status != AutoPilotStatus.Idle)
                     {
                         Client.Self.AutoPilotCancel();
                         SetStatus(AutoPilotStatus.Moving);
@@ -317,7 +310,7 @@ namespace Radegast
         {
             if (waypoints.Count > 1)
             {
-                if (status == AutoPilotStatus.Idle)
+                if (Status == AutoPilotStatus.Idle)
                 {
                     ticker.Start();
                     return MoveToNextWaypoint(false);
@@ -359,7 +352,7 @@ namespace Radegast
         /// <returns>Next Waypoint index</returns>
         public int Pause()
         {
-            if (status == AutoPilotStatus.Moving)
+            if (Status == AutoPilotStatus.Moving)
             {
                 ticker.Stop();
                 Client.Self.AutoPilotCancel();
@@ -379,7 +372,7 @@ namespace Radegast
         /// <returns>Next Waypoint index</returns>
         public int Resume()
         {
-            if (status == AutoPilotStatus.Paused)
+            if (Status == AutoPilotStatus.Paused)
             {
                 ticker.Start();
                 return MoveToNextWaypoint(false);
@@ -415,7 +408,7 @@ namespace Radegast
             }
             else
             {
-                throw new ArgumentOutOfRangeException("newStatus", "Value cannot be Moving");
+                throw new ArgumentOutOfRangeException(nameof(newStatus), "Value cannot be Moving");
             }
         }
         #endregion Public Methods
@@ -428,11 +421,11 @@ namespace Radegast
         /// <returns>True if OnStatusChanged triggered</returns>
         private bool SetStatus(AutoPilotStatus newStatus)
         {
-            AutoPilotStatus oldStatus = status;
+            AutoPilotStatus oldStatus = Status;
             if (oldStatus != newStatus)
             {
-                status = newStatus;
-                OnStatusChange?.Invoke(status, NextWaypoint);
+                Status = newStatus;
+                OnStatusChange?.Invoke(Status, NextWaypoint);
                 return true;
             }
             return false;
@@ -443,7 +436,7 @@ namespace Radegast
         /// </summary>
         private void Objects_TerseObjectUpdate(object sender, TerseObjectUpdateEventArgs e)
         {
-            if (status == AutoPilotStatus.Moving && e.Update.Avatar && e.Update.LocalID == Client.Self.LocalID)
+            if (Status == AutoPilotStatus.Moving && e.Update.Avatar && e.Update.LocalID == Client.Self.LocalID)
             {
                 uint regionX, regionY;
                 Utils.LongToUInts(e.Simulator.Handle, out regionX, out regionY);
@@ -475,7 +468,7 @@ namespace Radegast
         /// </summary>
         private void ticker_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (status == AutoPilotStatus.Moving)
+            if (Status == AutoPilotStatus.Moving)
             {
                 int distance = (int)Vector3d.Distance(myGlobalPosition, NextWaypoint);
                 if (distance != lastDistance || lastDistanceChanged < 0)
