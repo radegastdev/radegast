@@ -110,7 +110,7 @@ namespace Radegast.Rendering
         #region Public fields
         /// <summary>Interpolated local position of the object</summary>
         public Vector3 InterpolatedPosition;
-        /// <summary>Interpolated local rotation of the object/summary>
+        /// <summary>Interpolated local rotation of the object</summary>
         public Quaternion InterpolatedRotation;
         /// <summary>Rendered position of the object in the region</summary>
         public Vector3 RenderPosition;

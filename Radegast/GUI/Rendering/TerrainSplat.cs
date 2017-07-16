@@ -77,8 +77,11 @@ namespace Radegast.Rendering
         /// Builds a composited terrain texture given the region texture
         /// and heightmap settings
         /// </summary>
+        /// <param name="instance">Radegast Instance</param>
         /// <param name="heightmap">Terrain heightmap</param>
-        /// <param name="regionInfo">Region information including terrain texture parameters</param>
+        /// <param name="textureIDs"></param>
+        /// <param name="startHeights"></param>
+        /// <param name="heightRanges"></param>
         /// <returns>A composited 256x256 RGB texture ready for rendering</returns>
         /// <remarks>Based on the algorithm described at http://opensimulator.org/wiki/Terrain_Splatting
         /// </remarks>

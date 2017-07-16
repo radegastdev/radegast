@@ -57,7 +57,6 @@ namespace Radegast.Media
         /// <summary>
         /// Creates a new sound object
         /// </summary>
-        /// <param name="system">Sound system</param>
         public BufferSound(UUID objectId, UUID soundId, bool loop, bool global, Vector3 worldpos, float vol)
             : base()
         {

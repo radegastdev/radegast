@@ -64,10 +64,7 @@ namespace Radegast.Media
 
         Timer updateTimer = null;
         uint updateIntervl = 500;
-        /// <summary>
-        /// Creates a new sound object
-        /// </summary>
-        /// <param name="system">Sound system</param>
+
         public Stream()
         {
         }

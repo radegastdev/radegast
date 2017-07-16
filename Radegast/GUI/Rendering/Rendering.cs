@@ -1390,7 +1390,7 @@ namespace Radegast.Rendering
         /// Finds the closest distance between the given pos and an object
         /// (Assumes that the object is a box slightly)
         /// </summary>
-        /// <param name="vector3"></param>
+        /// <param name="calcPos"></param>
         /// <param name="p"></param>
         /// <returns></returns>
         private float FindClosestDistanceSquared(Vector3 calcPos, SceneObject p)

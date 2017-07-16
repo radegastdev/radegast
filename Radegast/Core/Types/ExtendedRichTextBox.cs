@@ -341,6 +341,7 @@ namespace Radegast
         /// </summary>
         /// <param name="hWnd">the window to send the message to</param>
         /// <param name="nBar">the number of the sroll bar to look at</param>
+        /// <param name="info"></param>
         /// <returns></returns>
         [DllImport("user32", CharSet = CharSet.Auto)]
         private static extern int GetScrollInfo(HandleRef hWnd, int nBar, ref SCROLLINFO info);
@@ -827,7 +828,7 @@ namespace Radegast
         /// </summary>
         /// <param name="_text"></param>
         /// <param name="_font"></param>
-        /// <param name="_color"></param>
+        /// <param name="_textColor"></param>
         public void AppendTextAsRtf(string _text, Font _font, RtfColor _textColor)
         {
             AppendTextAsRtf(_text, _font, _textColor, highlightColor);
@@ -880,7 +881,7 @@ namespace Radegast
         /// </summary>
         /// <param name="_text"></param>
         /// <param name="_font"></param>
-        /// <param name="_color"></param>
+        /// <param name="_textColor"></param>
         public void InsertTextAsRtf(string _text, Font _font, RtfColor _textColor)
         {
             InsertTextAsRtf(_text, _font, _textColor, highlightColor);
@@ -902,8 +903,8 @@ namespace Radegast
         /// </remarks>
         /// <param name="_text"></param>
         /// <param name="_font"></param>
-        /// <param name="_color"></param>
-        /// <param name="_color"></param>
+        /// <param name="_textColor"></param>
+        /// <param name="_backColor"></param>
         public void InsertTextAsRtf(string _text, Font _font, RtfColor _textColor, RtfColor _backColor)
         {
 
