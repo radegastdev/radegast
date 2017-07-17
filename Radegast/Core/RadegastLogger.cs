@@ -68,7 +68,7 @@ namespace Radegast
                 if (m_Log != null)
                     OnLog(this, new LogEventArgs(le));
                 
-                Console.Write("{0} [", le.TimeStamp.ToString("HH:mm:ss"));
+                Console.Write("{0:HH:mm:ss} [", le.TimeStamp);
                 WriteColorText(DeriveColor(le.Level.Name), le.Level.Name);
                 Console.Write("]: - ");
 

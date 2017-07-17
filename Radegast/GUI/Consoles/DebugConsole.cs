@@ -68,7 +68,7 @@ namespace Radegast
             }
 
             rtbLog.SelectionColor = Color.FromKnownColor(KnownColor.WindowText);
-            rtbLog.AppendText(string.Format("{0} [", e.LogEntry.TimeStamp.ToString("HH:mm:ss")));
+            rtbLog.AppendText(string.Format("{0:HH:mm:ss} [", e.LogEntry.TimeStamp));
 
             if (e.LogEntry.Level == Level.Error)
             {
