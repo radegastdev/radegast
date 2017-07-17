@@ -42,7 +42,7 @@ using System.Web.Script.Serialization;
 
 namespace Radegast
 {
-    public enum AutoResponseType : int
+    public enum AutoResponseType
     {
         WhenBusy = 0,
         WhenFromNonFriend = 1,

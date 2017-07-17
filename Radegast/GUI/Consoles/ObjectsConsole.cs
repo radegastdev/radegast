@@ -1408,7 +1408,7 @@ namespace Radegast
 
     }
 
-    public enum ObjectConsoleFilter : int
+    public enum ObjectConsoleFilter
     {
         Rezzed = 0,
         Attached = 1,
