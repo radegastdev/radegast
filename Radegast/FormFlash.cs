@@ -94,6 +94,7 @@ public struct FLASHWINFO
     public Int32 dwTimeout;
 }
 
+[Flags]
 public enum FLASHWINFOFLAGS
 {
     FLASHW_STOP = 0,

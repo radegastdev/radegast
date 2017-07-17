@@ -4314,7 +4314,7 @@ namespace FMOD
 
     class StringMarshalHelper
     {
-        static internal void NativeToBuilder(StringBuilder builder, IntPtr nativeMem)
+        internal static void NativeToBuilder(StringBuilder builder, IntPtr nativeMem)
         {
             byte[] bytes = new byte[builder.Capacity];
             Marshal.Copy(nativeMem, bytes, 0, builder.Capacity);

@@ -46,11 +46,8 @@ namespace Radegast.Commands
         /// GridClinet associated with RadegastInstanc received during command startup
         /// </summary>
         protected GridClient Client { get { return Instance.Client; } }
+
         /// <summary>
-        /// for subclasses (they should override Execute)
-        /// </summary>
-        /// <param name="name"></param>
-       /// <summary>
         /// For simple creation of new commands
         /// </summary>
         /// <param name="inst"></param>
@@ -71,24 +68,24 @@ namespace Radegast.Commands
             _execute = exec;
         }
 
-        virtual public string Name { get; set; }
+        public virtual string Name { get; set; }
 
-        virtual public string Description { get; set; }
+        public virtual string Description { get; set; }
 
-        virtual public string Usage { get; set; }
+        public virtual string Usage { get; set; }
 
-        virtual public void StartCommand(RadegastInstance inst)
+        public virtual void StartCommand(RadegastInstance inst)
         {
             Instance = inst;
         }
 
         // maybe we shoould make this class abstract to force people to implement
-        virtual public void Dispose()
+        public virtual void Dispose()
         {
             Instance = null;
         }
 
-        virtual public void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
+        public virtual void Execute(string name, string[] cmdArgs, ConsoleWriteLine WriteLine)
         {
             if (_execute == null) WriteLine("Someone did not implement {0}!", name);
             else _execute(name, cmdArgs, WriteLine);

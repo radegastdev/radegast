@@ -117,7 +117,7 @@ namespace Radegast
             ChatManager = null;
         }
 
-        static public Font ChangeFontSize(Font font, float fontSize)
+        public static Font ChangeFontSize(Font font, float fontSize)
         {
             if (font != null)
             {

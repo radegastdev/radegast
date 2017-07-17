@@ -475,7 +475,7 @@ namespace Radegast.Rendering
                     using (var compressed = new DeflateStream(f, CompressionMode.Decompress))
                     {
                         int read = 0;
-                        while ((read = compressed.Read(tgaData, read, uncompressedSize - read)) > 0) ;
+                        while ((read = compressed.Read(tgaData, read, uncompressedSize - read)) > 0) { }
                     }
                 }
 

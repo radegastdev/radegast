@@ -249,7 +249,7 @@ namespace Radegast
         /// <param name="type">The type it will target</param>
         /// <param name="control">Parent control that has buttons on it</param>
         /// <param name="obj">Will becvome the button's target when </param>
-        static public void GleanContributions_Helper(ICollection<ToolStripMenuItem> items, Type type, Control control, Object obj)
+        public static void GleanContributions_Helper(ICollection<ToolStripMenuItem> items, Type type, Control control, Object obj)
         {
             if (control == null) return;
             if (control is Button)

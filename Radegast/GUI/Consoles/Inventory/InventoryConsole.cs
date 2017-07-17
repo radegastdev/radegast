@@ -2834,7 +2834,7 @@ namespace Radegast
                     return -1;
                 }
             }
-            return string.Compare(item1.Name, item2.Name);
+            return String.CompareOrdinal(item1.Name, item2.Name);
         }
     }
     #endregion
