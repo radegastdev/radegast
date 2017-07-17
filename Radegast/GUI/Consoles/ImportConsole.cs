@@ -94,7 +94,7 @@ namespace Radegast
 				LogMessage("Loading {0}...",fileName);
 				string xml = File.ReadAllText(fileName);
 				List<Primitive> prims = Helpers.OSDToPrimList(OSDParser.DeserializeLLSDXml(xml));
-				int count = prims.Count();
+				int count = prims.Count;
 				string name = "";
 				string desc = "";
 				Importer.Textures = new Dictionary<UUID, UUID>();
@@ -128,7 +128,7 @@ namespace Radegast
 				}
 				objectName.Text = name;
 				primCount.Text = prims.Count.ToString();
-				textureCount.Text = Importer.Textures.Count().ToString();
+				textureCount.Text = Importer.Textures.Count.ToString();
 				LogMessage("Reading complete, Ready to import...");
 			}
 		}

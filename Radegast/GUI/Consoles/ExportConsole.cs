@@ -131,7 +131,7 @@ namespace Radegast
 				objectName.Text = exportPrim.Properties.Name;
 				objectUUID.Text = exportPrim.ID.ToString();
 				primCount.Text = prims.Count.ToString();
-				textureCount.Text = Textures.Count().ToString();
+				textureCount.Text = Textures.Count.ToString();
 			}
 		}
 		
