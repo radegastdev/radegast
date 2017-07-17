@@ -719,17 +719,12 @@ namespace Radegast.Rendering
                                 case Shininess.High:
                                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 94f);
                                     break;
-
                                 case Shininess.Medium:
                                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 64f);
                                     break;
-
                                 case Shininess.Low:
                                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
                                     break;
-
-
-                                case Shininess.None:
                                 default:
                                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
                                     break;

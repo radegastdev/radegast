@@ -361,7 +361,7 @@ namespace Radegast
             }
             catch (Exception ex)
             {
-                Logger.Log("Failed executing automation action: " + ex.ToString(), Helpers.LogLevel.Warning);
+                Logger.Log("Failed executing automation action: " + ex, Helpers.LogLevel.Warning);
             }
 
             switch (e.IM.Dialog)
@@ -1304,12 +1304,10 @@ namespace Radegast
         public RadegastTab Tab;
 
         public TabEventArgs()
-            : base()
         {
         }
 
         public TabEventArgs(RadegastTab tab)
-            : base()
         {
             Tab = tab;
         }

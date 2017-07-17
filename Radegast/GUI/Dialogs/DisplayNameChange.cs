@@ -107,7 +107,6 @@ namespace Radegast
                             if (!success || names.Length < 1)
                             {
                                 UpdateStatus("Failed to get curret name");
-                                return;
                             }
                             else
                             {

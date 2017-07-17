@@ -116,7 +116,6 @@ namespace Radegast
         {
             get
             {
-                if (lvwFindPeople.SelectedItems == null) return -1;
                 if (lvwFindPeople.SelectedItems.Count == 0) return -1;
 
                 return lvwFindPeople.SelectedIndices[0];
@@ -127,10 +126,7 @@ namespace Radegast
         {
             get
             {
-                if (lvwFindPeople.SelectedItems == null) return string.Empty;
-                if (lvwFindPeople.SelectedItems.Count == 0) return string.Empty;
-
-                return lvwFindPeople.SelectedItems[0].Text;
+                return lvwFindPeople.SelectedItems.Count == 0 ? string.Empty : lvwFindPeople.SelectedItems[0].Text;
             }
         }
 
@@ -138,17 +134,18 @@ namespace Radegast
         {
             get
             {
-                if (lvwFindPeople.SelectedItems == null) return false;
                 if (lvwFindPeople.SelectedItems.Count == 0) return false;
 
                 string yesNo = lvwFindPeople.SelectedItems[0].SubItems[0].Text;
 
-                if (yesNo == "Yes")
-                    return true;
-                else if (yesNo == "No")
-                    return false;
-                else
-                    return false;
+                switch (yesNo)
+                {
+                    case "Yes":
+                        return true;
+                    case "No":
+                    default:
+                        return false;
+                }
             }
         }
 
@@ -156,7 +153,6 @@ namespace Radegast
         {
             get
             {
-                if (lvwFindPeople.SelectedItems == null) return UUID.Zero;
                 if (lvwFindPeople.SelectedItems.Count == 0) return UUID.Zero;
 
                 string name = lvwFindPeople.SelectedItems[0].Text;

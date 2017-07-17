@@ -790,7 +790,6 @@ namespace Radegast
             {
                 var sourceControl = sender as ComboBox;
                 var selectedColor = (Color)sourceControl.Items[e.Index];
-                if(sourceControl.Items[e.Index] is Color)
                 {
                     var brushPreview = new SolidBrush(selectedColor);
 

@@ -377,7 +377,6 @@ namespace Radegast.Rendering
             {
                 if (!IsHandleCreated) return;
                 BeginInvoke(new MethodInvoker(() => Dispose()));
-                return;
             }
         }
 
@@ -608,7 +607,7 @@ namespace Radegast.Rendering
                 return;
             }
 
-            Logger.Log("Initializing OpenGL mode: " + GLMode.ToString(), Helpers.LogLevel.Info);
+            Logger.Log("Initializing OpenGL mode: " + GLMode, Helpers.LogLevel.Info);
 
             glControl.Paint += glControl_Paint;
             glControl.Resize += glControl_Resize;
@@ -1310,7 +1309,6 @@ namespace Radegast.Rendering
                 // We are the root prim, return our interpolated position
                 pos = obj.InterpolatedPosition;
                 rot = obj.InterpolatedRotation;
-                return;
             }
             else
             {
@@ -1649,7 +1647,7 @@ namespace Radegast.Rendering
                     continue;
                 }
 
-                Logger.Log("Requesting new animation asset " + anim.AnimationID.ToString(), Helpers.LogLevel.Info);
+                Logger.Log("Requesting new animation asset " + anim.AnimationID, Helpers.LogLevel.Info);
 
                 Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, animRecievedCallback);
             }
@@ -2862,7 +2860,6 @@ namespace Radegast.Rendering
             else
             {
                 PendingTasks.Enqueue(GenerateSculptOrMeshPrim(rprim, prim));
-                return;
             }
         }
 

@@ -26,7 +26,6 @@ namespace RadegastSpeech
                 rec = null;
                 Logger.Log("Speech recognition disabled, " + e.Message,
                     Helpers.LogLevel.Warning);
-                return;
             }
         }
 

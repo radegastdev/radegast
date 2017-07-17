@@ -81,7 +81,6 @@ namespace Radegast
         #endregion
 
         public RRichTextBox()
-            : base()
         {
             InitializeComponent();
 

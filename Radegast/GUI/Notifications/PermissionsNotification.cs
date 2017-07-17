@@ -58,7 +58,7 @@ namespace Radegast
             this.questions = questions;
 
             txtMessage.BackColor = instance.MainForm.NotificationBackground;
-            txtMessage.Text = "Object " + objectName + " owned by " + objectOwner + " is asking permission to " + questions.ToString() + ". Do you accept?";
+            txtMessage.Text = "Object " + objectName + " owned by " + objectOwner + " is asking permission to " + questions + ". Do you accept?";
 
             // Fire off event
             NotificationEventArgs args = new NotificationEventArgs(instance);

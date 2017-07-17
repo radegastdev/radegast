@@ -257,7 +257,7 @@ namespace Radegast.Media
             }
             else
             {
-                Logger.Log("Failed to download sound: " + transfer.Status.ToString(),
+                Logger.Log("Failed to download sound: " + transfer.Status,
                                         Helpers.LogLevel.Error);
             }
         }

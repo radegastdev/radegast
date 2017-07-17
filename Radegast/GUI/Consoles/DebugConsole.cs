@@ -89,7 +89,7 @@ namespace Radegast
 
             rtbLog.AppendText(e.LogEntry.Level.Name);
             rtbLog.SelectionColor = Color.FromKnownColor(KnownColor.WindowText);
-            rtbLog.AppendText(string.Format("]: - {0}{1}", e.LogEntry.MessageObject.ToString(), Environment.NewLine));
+            rtbLog.AppendText(string.Format("]: - {0}{1}", e.LogEntry.MessageObject, Environment.NewLine));
         }
 
         private void rtbLog_LinkClicked(object sender, LinkClickedEventArgs e)

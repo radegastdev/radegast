@@ -114,7 +114,7 @@ namespace Radegast
                 lblSentBy.Text, System.Environment.NewLine,
                 txtNotice.Text
                 );
-            if (btnSave.Visible == true)
+            if (btnSave.Visible)
             {
                 args.Buttons.Add(btnSave);
                 args.Text += string.Format("{0}Attachment: {1}", System.Environment.NewLine, txtItemName.Text);

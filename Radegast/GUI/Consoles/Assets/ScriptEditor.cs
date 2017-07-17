@@ -680,7 +680,7 @@ namespace Radegast
 
         private void syntaxHiglightingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rtb.SyntaxHighlightEnabled == true)
+            if (rtb.SyntaxHighlightEnabled)
             {
                 rtb.SyntaxHighlightEnabled = false;
             }

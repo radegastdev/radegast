@@ -2810,7 +2810,6 @@ namespace Radegast.LSL
         }
         public yyLSLSyntax
         ()
-            : base()
         {
             arr = new int[] { 
 101,4,6,52,0,

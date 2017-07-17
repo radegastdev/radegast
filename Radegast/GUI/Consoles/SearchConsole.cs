@@ -110,7 +110,7 @@ namespace Radegast
             if (console.QueryID != e.QueryID) return;
 
             totalResults += e.MatchedPeople.Count;
-            lblResultCount.Text = totalResults.ToString() + " people found";
+            lblResultCount.Text = totalResults + " people found";
 
             txtPersonName.Enabled = true;
             btnFind.Enabled = true;
@@ -241,7 +241,7 @@ namespace Radegast
                 placeMatches -= 1;
 
             lblNrPlaces.Visible = true;
-            lblNrPlaces.Text = string.Format("{0} places found", placeMatches > 100 ? "More than " + (placeStart + 100).ToString() : (placeStart + placeMatches).ToString());
+            lblNrPlaces.Text = string.Format("{0} places found", placeMatches > 100 ? "More than " + (placeStart + 100) : (placeStart + placeMatches).ToString());
 
 
         }
@@ -431,7 +431,7 @@ namespace Radegast
                 groupMatches -= 1;
 
             lblNrGroups.Visible = true;
-            lblNrGroups.Text = string.Format("{0} groups found", groupMatches > 100 ? "More than " + (groupStart + 100).ToString() : (groupStart + groupMatches).ToString());
+            lblNrGroups.Text = string.Format("{0} groups found", groupMatches > 100 ? "More than " + (groupStart + 100) : (groupStart + groupMatches).ToString());
         }
 
         private void btnSearchGroup_Click(object sender, EventArgs e)
@@ -609,7 +609,7 @@ namespace Radegast
                 if (evt.ID == 0) continue;
 
                 ListViewItem item = new ListViewItem();
-                item.Name = "evt" + evt.ID.ToString();
+                item.Name = "evt" + evt.ID;
                 item.Text = evt.Name;
                 item.Tag = evt;
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, evt.Date));
@@ -628,7 +628,7 @@ namespace Radegast
                 eventMatches -= 1;
 
             lblNrEvents.Visible = true;
-            lblNrEvents.Text = string.Format("{0} events found", eventMatches > eventsPerPage ? "More than " + (eventStart + eventsPerPage).ToString() : (eventStart + eventMatches).ToString());
+            lblNrEvents.Text = string.Format("{0} events found", eventMatches > eventsPerPage ? "More than " + (eventStart + eventsPerPage) : (eventStart + eventMatches).ToString());
         }
 
 

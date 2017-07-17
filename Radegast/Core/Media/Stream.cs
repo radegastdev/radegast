@@ -148,7 +148,7 @@ namespace Radegast.Media
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log("Error playing stream: " + ex.ToString(), Helpers.LogLevel.Debug);
+                        Logger.Log("Error playing stream: " + ex, Helpers.LogLevel.Debug);
                     }
                 }));
         }

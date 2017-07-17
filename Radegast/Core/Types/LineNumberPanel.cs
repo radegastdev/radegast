@@ -41,7 +41,7 @@ namespace Radegast
     [Browsable(true),
         Category("Containers"),
         Description("Used in conjuction with ritch text box to display lone numbers")]
-    public partial class LineNumberPanel : Control
+    public class LineNumberPanel : Control
     {
         private RRichTextBox rtb;
         private SolidBrush brush;

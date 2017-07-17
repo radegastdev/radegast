@@ -241,7 +241,7 @@ namespace SimpleBuilderNamespace
 
             if (prim.ParentID == client.Self.LocalID)
             {
-                return string.Format("{0} attached to {1}", name, prim.PrimData.AttachmentPoint.ToString());
+                return string.Format("{0} attached to {1}", name, prim.PrimData.AttachmentPoint);
             }
             else if (ownerName != "Loading...")
             {
@@ -345,7 +345,6 @@ namespace SimpleBuilderNamespace
             if (InvokeRequired)
             {
                 BeginInvoke(new MethodInvoker(() => Self_ChatFromSimulator(sender, e)));
-                return;
             }
 
             //txtChat.Text = e.Message;
@@ -530,7 +529,7 @@ namespace SimpleBuilderNamespace
                 else
                     instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ": Failed to save object", ChatBufferTextStyle.Error);
 
-                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ":" + ex.ToString(), ChatBufferTextStyle.Error);
+                instance.MainForm.TabConsole.DisplayNotificationInChat(pluginName + ":" + ex, ChatBufferTextStyle.Error);
             }
             
         }

@@ -392,7 +392,7 @@ namespace Radegast
                             if ((item.Permissions.OwnerMask & PermissionMask.Transfer) == 0)
                                 sub.Text += " (no transfer)";
 
-                            sub.Text += " (" + item.InventoryType.ToString() + ")";
+                            sub.Text += " (" + item.InventoryType + ")";
                             entry.ToolTipText = sub.Text;
 
                             lstContents.Items.Add(entry);
@@ -673,8 +673,7 @@ namespace Radegast
                                 e.GroupNames.TryGetValue(prim.Properties.GroupID, out ownerName);
                                 if (string.IsNullOrEmpty(ownerName))
                                     ownerName = "Loading...";
-                                if (null != nameReceivedSignal)
-                                    nameReceivedSignal.Set();
+                                nameReceivedSignal.Set();
                             }
                         });
                     client.Groups.GroupNamesReply += cbGroupName;
@@ -689,7 +688,7 @@ namespace Radegast
 
             if (prim.ParentID == client.Self.LocalID)
             {
-                return string.Format("{0} attached to {1}", name, prim.PrimData.AttachmentPoint.ToString());
+                return string.Format("{0} attached to {1}", name, prim.PrimData.AttachmentPoint);
             }
             else if (ownerName != "Loading...")
             {
@@ -1270,7 +1269,6 @@ namespace Radegast
                 lstContents_MouseDoubleClick(null, null);
 
                 e.SuppressKeyPress = e.Handled = true;
-                return;
             }
             //else if (e.KeyCode == Keys.Apps)
             //{

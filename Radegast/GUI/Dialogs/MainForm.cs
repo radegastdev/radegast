@@ -707,7 +707,6 @@ namespace Radegast
                     TabConsole.SelectNextTab();
                 }
                 e.Handled = e.SuppressKeyPress = true;
-                return;
             }
         }
 
@@ -722,7 +721,7 @@ namespace Radegast
                 ResourceManager rm = Properties.Resources.ResourceManager;
                 ResourceSet set = rm.GetResourceSet(CultureInfo.CurrentCulture, true, true);
                 System.Collections.IDictionaryEnumerator de = set.GetEnumerator();
-                while (de.MoveNext() == true)
+                while (de.MoveNext())
                 {
                     if (de.Entry.Value is Image)
                     {
@@ -1641,11 +1640,11 @@ namespace Radegast
                 return;
             }
 
-            if (!instance.TabConsole.TabExists("AT: " + av.ID.ToString()))
+            if (!instance.TabConsole.TabExists("AT: " + av.ID))
             {
-                instance.TabConsole.AddTab("AT: " + av.ID.ToString(), "My Attachments", new AttachmentTab(instance, av));
+                instance.TabConsole.AddTab("AT: " + av.ID, "My Attachments", new AttachmentTab(instance, av));
             }
-            instance.TabConsole.SelectTab("AT: " + av.ID.ToString());
+            instance.TabConsole.SelectTab("AT: " + av.ID);
 
         }
 

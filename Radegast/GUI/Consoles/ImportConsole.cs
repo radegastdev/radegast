@@ -167,7 +167,7 @@ namespace Radegast
 			{
 				if (texture == UUID.Zero)
 					continue;
-				string file = Path.Combine(path,texture.ToString() + ".jp2");
+				string file = Path.Combine(path,texture + ".jp2");
 				if (!File.Exists(file))
 				{
 					LogMessage("Failed to find texture {0}",texture.ToString());
@@ -206,7 +206,7 @@ namespace Radegast
 			
 			foreach(UUID texture in textures)
 			{
-				string file = Path.Combine(path,texture.ToString() + ".jp2");
+				string file = Path.Combine(path,texture + ".jp2");
 				LogMessage("Uploading texture {0}...",texture.ToString());
 				bool ret = upldr.UploadImage(file,"Import of " + Path.GetFileNameWithoutExtension(txtFileName.Text),uploaddir);
 				if (ret)

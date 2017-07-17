@@ -126,7 +126,6 @@ namespace RadegastSpeech.Conversation
                 if (!(selected is InventoryFolder))
                 {
                     Talker.SayMore("Going farther is not yet implemented.");
-                    return;
                 }
             }
         }

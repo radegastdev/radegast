@@ -35,7 +35,7 @@ namespace Radegast
 {
     class TransparentButton : Button
     {
-        public TransparentButton() : base()
+        public TransparentButton()
         {
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             BackColor = Color.Transparent;

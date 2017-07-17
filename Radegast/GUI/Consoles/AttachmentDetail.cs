@@ -114,7 +114,7 @@ namespace Radegast
                 }
             );
 
-            lblPrimCount.Text = "Prims: " + parts.Count.ToString();
+            lblPrimCount.Text = "Prims: " + parts.Count;
         }
 
         void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)

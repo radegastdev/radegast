@@ -67,7 +67,7 @@ namespace Radegast
 
                 if (msg.Dialog == InstantMessageDialog.InventoryOffered)
                 {
-                    txtInfo.Text = string.Format("{0} has offered you {1} \"{2}\".", msg.FromAgentName, type.ToString(), msg.Message);
+                    txtInfo.Text = string.Format("{0} has offered you {1} \"{2}\".", msg.FromAgentName, type, msg.Message);
                 }
                 else if (msg.Dialog == InstantMessageDialog.TaskInventoryOffered)
                 {

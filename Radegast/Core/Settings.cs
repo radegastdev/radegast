@@ -297,7 +297,7 @@ namespace Radegast
             {
                 if (string.IsNullOrEmpty(key))
                 {
-                    Logger.DebugLog("Warning: trying to set an emprty setting: " + Environment.StackTrace.ToString());
+                    Logger.DebugLog("Warning: trying to set an emprty setting: " + Environment.StackTrace);
                 }
                 else
                 {

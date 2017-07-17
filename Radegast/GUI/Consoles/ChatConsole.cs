@@ -203,7 +203,7 @@ namespace Radegast
             }
             catch (Exception ex)
             {
-                Logger.DebugLog("Failed to update radar: " + ex.ToString());
+                Logger.DebugLog("Failed to update radar: " + ex);
             }
         }
 
@@ -717,12 +717,12 @@ namespace Radegast
             Avatar av = currentAvatar;
             if (av == null) return;
 
-            if (!instance.TabConsole.TabExists("AT: " + av.ID.ToString()))
+            if (!instance.TabConsole.TabExists("AT: " + av.ID))
             {
-                instance.TabConsole.AddTab("AT: " + av.ID.ToString(), "AT: " + av.Name, new AttachmentTab(instance, av));
+                instance.TabConsole.AddTab("AT: " + av.ID, "AT: " + av.Name, new AttachmentTab(instance, av));
 
             }
-            instance.TabConsole.SelectTab("AT: " + av.ID.ToString());
+            instance.TabConsole.SelectTab("AT: " + av.ID);
         }
 
         private void tbtnAnim_Click(object sender, EventArgs e)

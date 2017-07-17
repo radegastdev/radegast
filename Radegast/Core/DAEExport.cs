@@ -231,7 +231,7 @@ namespace Radegast
                 var id = Textures[i];
                 if (TextureNames[i] == null)
                 {
-                    OnProgress("Skipping " + id.ToString() + " due to insufficient permissions");
+                    OnProgress("Skipping " + id + " due to insufficient permissions");
                     continue;
                 }
 
@@ -294,7 +294,7 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    OnProgress("Failed: " + ex.ToString());
+                    OnProgress("Failed: " + ex);
                     TextureNames[i] = null;
                 }
 

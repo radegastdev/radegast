@@ -844,7 +844,7 @@ namespace Radegast.Rendering
                     {
                         string mtlName = String.Format("material{0}-{1}", primNr, face.ID);
                         Primitive.TextureEntryFace tex = face.TextureFace;
-                        string texName = tex.TextureID.ToString() + ".tga";
+                        string texName = tex.TextureID + ".tga";
 
                         // FIXME: Convert the source to TGA (if needed) and copy to the destination
 
@@ -1244,7 +1244,7 @@ namespace Radegast.Rendering
                 VFSblock block = new VFSblock();
                 offset = block.readblock(blockdata, offset);
 
-                FileStream writer = File.Open(OpenMetaverse.Settings.RESOURCE_DIR + System.IO.Path.DirectorySeparatorChar + block.mFileID.ToString(), FileMode.Create);
+                FileStream writer = File.Open(OpenMetaverse.Settings.RESOURCE_DIR + System.IO.Path.DirectorySeparatorChar + block.mFileID, FileMode.Create);
                 byte[] data = new byte[block.mSize];
                 datastream.Seek(block.mLocation, SeekOrigin.Begin);
                 datastream.Read(data, 0, block.mSize);

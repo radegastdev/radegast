@@ -174,7 +174,7 @@ namespace Radegast
                 }
                 catch (Exception e)
                 {
-                    string errMsg = "Unhandled " + e.ToString() + ": " +
+                    string errMsg = "Unhandled " + e + ": " +
                         e.Message + Environment.NewLine +
                         e.StackTrace + Environment.NewLine;
 

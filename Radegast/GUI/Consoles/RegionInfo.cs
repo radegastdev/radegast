@@ -129,7 +129,7 @@ namespace Radegast
             lblSpareTime.Text = string.Format("{0:0.0} ms", Math.Max(0f, 1000f / 45f - total));
 
             lblCPUClass.Text = client.Network.CurrentSim.CPUClass.ToString();
-            lblDataCenter.Text = client.Network.CurrentSim.ColoLocation.ToString();
+            lblDataCenter.Text = client.Network.CurrentSim.ColoLocation;
             lblVersion.Text = client.Network.CurrentSim.SimVersion;
         }
 
@@ -138,7 +138,7 @@ namespace Radegast
             Parcel p = instance.State.Parcel;
             txtParcelTitle.Text = p.Name;
             txtParcelDescription.Text = p.Desc;
-            lblSimType.Text = client.Network.CurrentSim.ProductName.ToString();
+            lblSimType.Text = client.Network.CurrentSim.ProductName;
 
             pnlParcelImage.Controls.Clear();
 

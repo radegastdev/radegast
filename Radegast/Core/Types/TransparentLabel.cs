@@ -37,7 +37,6 @@ namespace Radegast
     class TransparentLabel : Label
     {
         public TransparentLabel()
-            : base()
         {
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             BackColor = Color.Transparent;

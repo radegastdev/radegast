@@ -220,7 +220,6 @@ namespace Radegast
                 btnSave.Enabled = false;
                 btnUpload.Enabled = false;
                 txtStatus.AppendText(string.Format("Failed to load the image:\n{0}\n", ex.Message));
-                return;
             }
         }
 
@@ -326,7 +325,7 @@ namespace Radegast
             }
 
             txtStatus.AppendText("Upload success.\n");
-            txtStatus.AppendText("New image ID: " + AssetID.ToString() + "\n");
+            txtStatus.AppendText("New image ID: " + AssetID + "\n");
         }
 
         private void UploadHandler(bool success, string status, UUID itemID, UUID assetID)
@@ -355,7 +354,7 @@ namespace Radegast
             }
 
             txtStatus.AppendText("Upload success.\n");
-            txtStatus.AppendText("New image ID: " + AssetID.ToString() + "\n");
+            txtStatus.AppendText("New image ID: " + AssetID + "\n");
         }
 
         private void btnUpload_Click(object sender, EventArgs e)

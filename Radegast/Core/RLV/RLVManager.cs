@@ -887,8 +887,6 @@ namespace Radegast
                 FindFoldersKeywordsInternal(node, keywords, currentPathParts, ref matchingNodes);
                 currentPathParts.RemoveAt(currentPathParts.Count - 1);
             }
-
-            return;
         }
 
         public void Clear(UUID id)

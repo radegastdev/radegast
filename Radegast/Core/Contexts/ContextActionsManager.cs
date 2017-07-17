@@ -54,7 +54,7 @@ namespace Radegast
         /// </summary>
         /// <param name="libomvType"></param>
         /// <param name="label"></param>
-        /// <param name="handler">Action<object,EventArgs></param>
+        /// <param name="handler">Action&lt;object,EventArgs&gt;</param>
         public void RegisterContextAction(Type libomvType, String label, EventHandler handler)
         {
             RegisterContextAction(new ContextAction(instance)
@@ -68,7 +68,7 @@ namespace Radegast
 
         /// <summary>
         /// Deregister a Context Action 
-        ///  <code></code>DeregisterContextAction(typeof(Object), "Clueless Object!");</code>
+        ///  <code>DeregisterContextAction(typeof(Object), "Clueless Object!")</code>
         /// </summary>
         /// <param name="libomvType"></param>
         /// <param name="label"></param>

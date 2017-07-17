@@ -290,7 +290,6 @@ namespace RadegastSpeech
                 }
 
                 instance.TabConsole.DisplayNotificationInChat("Voice rate set to " + props["voice_speed"]);
-                return;
             }
         }
 
@@ -335,7 +334,6 @@ namespace RadegastSpeech
                 config["enabled"] = OSD.FromBoolean(false);
                 SaveSpeechSettings();
                 MessageBox.Show("Speech failed initialization: " + e.Message);
-                return;
             }
         }
 

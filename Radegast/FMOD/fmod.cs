@@ -1700,7 +1700,7 @@ namespace FMOD
             return rawPtr;
         }
 
-        protected IntPtr rawPtr;
+        protected readonly IntPtr rawPtr;
 
         #region equality
 

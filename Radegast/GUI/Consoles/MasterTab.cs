@@ -200,7 +200,7 @@ namespace Radegast
             int nTextures = 0;
 
             foreach (UUID textureID in textures) {
-                SLImageHandler img = new SLImageHandler(instance, textureID, "Texture " + (nTextures + 1).ToString());
+                SLImageHandler img = new SLImageHandler(instance, textureID, "Texture " + (nTextures + 1));
                 img.Location = new Point(0, nTextures++ * img.Height);
                 img.Dock = DockStyle.Top;
                 img.Height = 450;

@@ -179,7 +179,7 @@ namespace Radegast
                     zoom = value;
                     pixelsPerMeter = 1f / zoom;
                     PixRegS = (int)(regionSize / zoom);
-                    Logger.DebugLog("Region tile size = " + PixRegS.ToString());
+                    Logger.DebugLog("Region tile size = " + PixRegS);
                     Invalidate();
                 }
             }
@@ -312,7 +312,7 @@ namespace Radegast
                 else
                 {
                     downloader.QueueDownlad(
-                        new Uri(string.Format("{0}/?texture_id={1}", url.ToString(), imageID.ToString())),
+                        new Uri(string.Format("{0}/?texture_id={1}", url, imageID)),
                         30 * 1000,
                         "image/x-j2c",
                         null,
@@ -879,7 +879,7 @@ namespace Radegast
                     for (int i = nr; i < ParallelDownloads && queue.Count > 0; i++)
                     {
                         QueuedItem item = queue.Dequeue();
-                        Logger.DebugLog("Requesting " + item.address.ToString());
+                        Logger.DebugLog("Requesting " + item.address);
                         HttpWebRequest req = SetupRequest(item.address, item.contentType);
                         CapsBase.DownloadDataAsync(
                             req,

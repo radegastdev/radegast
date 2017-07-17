@@ -115,7 +115,6 @@ namespace RadegastSpeech.Conversation
             {
                 ReadSection();
                 e.Handled = true;
-                return;
             }
         }
 

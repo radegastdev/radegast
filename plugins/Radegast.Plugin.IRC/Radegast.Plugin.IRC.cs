@@ -75,9 +75,9 @@ namespace Radegast.Plugin.IRC
         void IRCButton_Click(object sender, EventArgs e)
         {
             relayNr++;
-            string tabName = "irc_relay_" + relayNr.ToString();
+            string tabName = "irc_relay_" + relayNr;
 
-            instance.TabConsole.AddTab(tabName, "IRC Relay " + relayNr.ToString(), new RelayConsole(instance));
+            instance.TabConsole.AddTab(tabName, "IRC Relay " + relayNr, new RelayConsole(instance));
             instance.TabConsole.SelectTab(tabName);
         }
     }

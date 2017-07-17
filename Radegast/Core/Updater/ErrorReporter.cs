@@ -51,7 +51,7 @@ namespace Radegast
         {
             if (ex == null) return;
 
-            report.AppendFormat("{0}: ", ex.ToString());
+            report.AppendFormat("{0}: ", ex);
             report.AppendLine(ex.Message);
             report.AppendLine(ex.StackTrace);
             report.AppendLine();

@@ -44,7 +44,6 @@ namespace Radegast
         public RadegastTabControl() { }
 
         public RadegastTabControl(RadegastInstance instance)
-            : base()
         {
             this.instance = instance;
         }

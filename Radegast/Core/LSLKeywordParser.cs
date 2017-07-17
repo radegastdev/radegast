@@ -117,7 +117,6 @@ namespace Radegast
                     {
                         ret.Add(kw.KeyWord, kw);
                     }
-                    continue;
                 }
             }
             return ret;

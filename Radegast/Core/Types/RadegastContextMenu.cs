@@ -173,7 +173,6 @@ namespace Radegast
             public object Selection;
 
             public ContextMenuEventArgs(RadegastContextMenuStrip tab, ToolStripDropDownItem item, object target)
-                : base()
             {
                 Menu = tab;
                 MenuItem = item;
@@ -222,7 +221,6 @@ namespace Radegast
         /// Initializes a new instance of the System.Windows.Forms.ContextMenuStrip class.
         /// </summary>
         public RadegastContextMenuStrip()
-            : base()
         {
             RegisterEvents();
         }

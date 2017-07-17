@@ -383,7 +383,7 @@ namespace Radegast
 
             if(isNewMessage)
             {
-                instance.LogClientMessage(sessionName + ".txt", fromName + sb.ToString());
+                instance.LogClientMessage(sessionName + ".txt", fromName + sb);
             }
 
             TextPrinter.PrintTextLine(sb.ToString());

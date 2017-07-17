@@ -179,7 +179,7 @@ namespace Radegast
             }
             else
             {
-                Logger.Log("Created inventory item " + itemID.ToString(), Helpers.LogLevel.Info);
+                Logger.Log("Created inventory item " + itemID, Helpers.LogLevel.Info);
 
                 lblStatus.Text = "Sending to " + friend.Name;
                 Logger.Log("Sending item to " + friend.Name, Helpers.LogLevel.Info);

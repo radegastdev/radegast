@@ -37,7 +37,7 @@ namespace Radegast
 {
     [ToolStripItemDesignerAvailability(
         ToolStripItemDesignerAvailability.ToolStrip)]
-    public partial class ToolStripCheckBox
+    public class ToolStripCheckBox
         : ToolStripControlHost
     {
         public CheckBox CheckBoxControl

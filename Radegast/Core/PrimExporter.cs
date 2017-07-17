@@ -172,7 +172,7 @@ namespace Radegast
 			}
 			else
 			{
-				throw new Exception("Couldn't find id " + localID.ToString() + " in the " +
+				throw new Exception("Couldn't find id " + localID + " in the " +
 				                    Client.Network.CurrentSim.ObjectsPrimitives.Count + 
 				                    " objects currently indexed in the current simulator.");
 			}

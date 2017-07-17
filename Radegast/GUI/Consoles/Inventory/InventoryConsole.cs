@@ -941,7 +941,7 @@ namespace Radegast
                 }
             }
 
-            UpdateStatus("Loading... " + UUID2NodeCache.Count.ToString() + " items");
+            UpdateStatus("Loading... " + UUID2NodeCache.Count + " items");
         }
 
         #endregion
@@ -1281,7 +1281,7 @@ namespace Radegast
 
             if (IsAttached(item))
             {
-                raw += " (worn on " + AttachedTo(item).ToString() + ")";
+                raw += " (worn on " + AttachedTo(item) + ")";
             }
 
             return raw;

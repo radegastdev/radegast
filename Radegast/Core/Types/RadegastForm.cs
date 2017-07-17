@@ -108,12 +108,10 @@ namespace Radegast
         private const int SettingsTimerTimeout = 500;
 
         public RadegastForm()
-            : base()
         {
         }
 
         public RadegastForm(RadegastInstance instance)
-            : base()
         {
             Instance = instance;
             instance.OnRadegastFormCreated(this);

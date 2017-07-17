@@ -1168,7 +1168,7 @@ namespace Radegast.Rendering
                 state.easeoutfactor = 1.0f;
                 state.easeoutrot = Quaternion.Identity;
 
-                if (b.Loop == true)
+                if (b.Loop)
                 {
                     int frame = 0;
                     foreach (binBVHJointKey key in joint.rotationkeys)
@@ -2026,7 +2026,6 @@ namespace Radegast.Rendering
                     case "female":
                         sex = EparamSex.SEX_FEMALE;
                         break;
-                    case "both:":
                     default:
                         sex = EparamSex.SEX_BOTH;
                         break;
