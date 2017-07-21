@@ -179,12 +179,20 @@ namespace Radegast
             netcom.ClientLoggedOut += new EventHandler(netcom_ClientLoggedOut);
             netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(netcom_ClientDisconnected);
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
+            client.Network.SimChanged += Network_SimChanged;
+
             RegisterClientEvents(client);
 
             InitializeStatusTimer();
             RefreshWindowTitle();
 
             Radegast.GUI.GuiHelpers.ApplyGuiFixes(this);
+        }
+
+        private void Network_SimChanged(object sender, SimChangedEventArgs e)
+        {
+            SetHoverHeightFromSettings();
+            client.Network.CurrentSim.Caps.CapabilitiesReceived += Caps_CapabilitiesReceived;
         }
 
         private void RegisterClientEvents(GridClient client)
@@ -358,6 +366,12 @@ namespace Radegast
 
                 statusTimer.Start();
                 RefreshWindowTitle();
+
+                if (instance.GlobalSettings.ContainsKey("AvatarHoverOffsetZ"))
+                {
+                    var hoverHeight = instance.GlobalSettings["AvatarHoverOffsetZ"];
+                    Client.Self.SetHoverHeight(hoverHeight);
+                }
             }
         }
 
@@ -1729,5 +1743,42 @@ namespace Radegast
             tabsConsole.Tabs["mesh upload console"].Select();
         }
 
+        private void setHoverHeightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var hoverHeight = 0.0;
+            if (instance.GlobalSettings.ContainsKey("AvatarHoverOffsetZ"))
+            {
+                hoverHeight = instance.GlobalSettings["AvatarHoverOffsetZ"];
+            }
+
+            var hoverHeightControl = new frmHoverHeight(hoverHeight);
+            hoverHeightControl.HoverHeightChanged += HoverHeightControl_HoverHeightChanged;
+            hoverHeightControl.Show();
+        }
+
+        private void HoverHeightControl_HoverHeightChanged(object sender, HoverHeightChangedEventArgs e)
+        {
+            instance.GlobalSettings["AvatarHoverOffsetZ"] = e.HoverHeight;
+            Client.Self.SetHoverHeight(e.HoverHeight);
+        }
+
+        private void Caps_CapabilitiesReceived(object sender, CapabilitiesReceivedEventArgs e)
+        {
+            e.Simulator.Caps.CapabilitiesReceived -= Caps_CapabilitiesReceived;
+
+            if (e.Simulator == client.Network.CurrentSim)
+            {
+                SetHoverHeightFromSettings();
+            }
+        }
+
+        private void SetHoverHeightFromSettings()
+        {
+            if (instance.GlobalSettings.ContainsKey("AvatarHoverOffsetZ"))
+            {
+                var hoverHeight = instance.GlobalSettings["AvatarHoverOffsetZ"];
+                Client.Self.SetHoverHeight(hoverHeight);
+            }
+        }
     }
 }

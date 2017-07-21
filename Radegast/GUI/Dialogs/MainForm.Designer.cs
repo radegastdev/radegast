@@ -157,6 +157,7 @@ namespace Radegast
             this.ctxTreyRestore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.ctxTreyExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.setHoverHeightToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -318,6 +319,7 @@ namespace Radegast
             this.tmnuControlAlwaysRun,
             this.groundSitToolStripMenuItem,
             this.standToolStripMenuItem,
+            this.setHoverHeightToolStripMenuItem,
             this.stopAllAnimationsToolStripMenuItem,
             this.changeMyDisplayNameToolStripMenuItem,
             this.muteListToolStripMenuItem,
@@ -373,6 +375,13 @@ namespace Radegast
             this.stopAllAnimationsToolStripMenuItem.Size = new System.Drawing.Size(223, 22);
             this.stopAllAnimationsToolStripMenuItem.Text = "Stop All Animations";
             this.stopAllAnimationsToolStripMenuItem.Click += new System.EventHandler(this.stopAllAnimationsToolStripMenuItem_Click);
+            // 
+            // setHoverHeightToolStripMenuItem
+            // 
+            this.setHoverHeightToolStripMenuItem.Name = "setHoverHeightToolStripMenuItem";
+            this.setHoverHeightToolStripMenuItem.Size = new System.Drawing.Size(222, 22);
+            this.setHoverHeightToolStripMenuItem.Text = "Set Hover Height";
+            this.setHoverHeightToolStripMenuItem.Click += new System.EventHandler(this.setHoverHeightToolStripMenuItem_Click);
             // 
             // changeMyDisplayNameToolStripMenuItem
             // 
@@ -1070,6 +1079,7 @@ namespace Radegast
         private System.Windows.Forms.ToolStripMenuItem matureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem adultToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uploadmeshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setHoverHeightToolStripMenuItem;
     }
 }
 
