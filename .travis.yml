@@ -10,11 +10,6 @@ matrix:
       solution: Radegast.sln
       script:
         - xbuild /p:Configuration=ReleaseLinux Radegast.sln
-    - mono: 4.8.1
-      language: csharp
-      solution: Radegast.sln
-      script:
-        - xbuild /p:Configuration=ReleaseLinux Radegast.sln
 #    - language: objective-c
 #      env:
 #        global:
