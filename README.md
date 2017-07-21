@@ -2,7 +2,7 @@
 
 Project founder:
 
-* **Latif Khalifa** (email latifer radegast.org)
+* **Latif Khalifa**
 
 Current maintainer and lead developer:
 
@@ -31,57 +31,62 @@ Redistribution and use in source and binary forms, with or without modification,
 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 * Neither the name of the application "Radegast", nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
-<small>*THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*</small>
+`THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.`
 
 # Bundled libraries
 
-Based on SLeek (BSD License)<br>
-Copyright © 2006-2008, Paul Clement (a.k.a. Delta)<br>
-All rights reserved.<br>
+Based on SLeek
+Copyright © 2006-2008, Paul Clement (a.k.a. Delta)
+All rights reserved.
 
-Uses PrimMesher (BSD License)<br>
-© 2010 Dahlia Trimble<br>
-http://forge.opensimulator.org/gf/project/primmesher/<br>
+Uses PrimMesher
+Copyright © 2010 Dahlia Trimble
+http://forge.opensimulator.org/gf/project/primmesher/
 
-Uses AIMLBot (LGPL License)<br>
-The AIMLBot library (Program#) is a .NET implementation of the AIML standard.<br>
-© 2006 Nicholas H.Tollervey (http://ntoll.org)<br>
-http://aimlbot.sourceforge.net/<br>
-
-Uses FMOD Library (FMOD Non Commercial License)<br>
-FMOD Ex SoundSystem Copyright © 2005-2009 Firelight Technologies Pty, Ltd.<br>
+Uses FMOD Library (FMOD Non Commercial License)
+FMODStudio SoundSystem Copyright © 2005-2009 Firelight Technologies Pty, Ltd.
 Redistributions in binary form must follow the following rules:
 * The FMOD library cannot be used for resale or other commercial distribution
 * This license cannot be used for products which do not make profit but are still commercially released
 * This license cannot be used for commercial services, where the executable containing fmod is not sold, but the data is
-(If you want to redistribute Radegast commercially, remove fmodex.dll, fmodex*.so and fmodex*.dylib)<br>
+(If you want to redistribute Radegast commercially, remove fmod.dll, fmod*.so and fmod*.dylib)
 
-Uses Ogg Vorbis codec (BSD License)<br>
-Copyright © 2002, Xiph.org Foundation<br>
+Uses Ogg Vorbis codec
+Copyright © 2002, Xiph.org Foundation
 
-Uses log4net (Apache 2.0 License)<br>
-Copyright © Apache Software Foundation<br>
+Uses log4net
+Copyright © Apache Software Foundation
 
-Uses LSL parser from OpenSimulator project (BSD License)<br>
-Copyright © Contributors, http://opensimulator.org/<br>
+Uses LSL parser from OpenSimulator project (BSD License)
+Copyright © Contributors, http://opensimulator.org/
 
-Uses TAO OpenGL framework (MIT License)<br>
-Copyright © 2003-2007 Tao Framework Team<br>
-http://www.taoframework.com<br>
-All rights reserved.<br>
+Uses OpenTK 3D Library
+Copyright (c) 2006 - 2014 Stefanos Apostolopoulos <stapostol@gmail.com> for the Open Toolkit library.
 
-Uses artwork files are licenced under the<br>
-Creative Commons Share and Share Alike 3.0<br>
-Copyright © 2002-2009 Linden Research Inc.<br>
+Uses artwork files are licenced under the
+Creative Commons Share and Share Alike 3.0
+Copyright © 2002-2009 Linden Research Inc.
 
-Command Line Library (MIT License)<br>
-Copyright © 2005 - 2010 Giacomo Stelluti Scala<br>
-http://commandline.codeplex.com/<br>
+Command Line Library
+Copyright © 2005 - 2010 Giacomo Stelluti Scala
+http://commandline.codeplex.com/
 
-Uses code snippets from CSAT Library (MIT License)<br>
-Copyright © 2011 mjt<br>
-http://code.google.com/p/csat/<br>
+Uses code snippets from CSAT Library
+Copyright © 2011 mjt
+http://code.google.com/p/csat/
 
-Uses SmartIrc4net (LGPL)<br>
-Copyright © 2003-2005 Mirco Bauer<br>
-http://www.meebey.net/projects/smartirc4net/<br>
+Uses protobuf-net
+Copyright © Google Inc.
+Copyright © 2008 Marc Gravell
+
+Uses zlib.net
+Copyright © 1996-2017 Greg Roelofs, Jean-loup Gailly and Mark Adler.
+
+Uses AIMLBot (LGPL License)
+The AIMLBot library (Program#) is a .NET implementation of the AIML standard.
+© 2006 Nicholas H.Tollervey (http://ntoll.org)
+http://aimlbot.sourceforge.net/
+
+Uses SmartIrc4net (LGPL)
+Copyright © 2003-2005 Mirco Bauer
+http://www.meebey.net/projects/smartirc4net/
