@@ -149,50 +149,26 @@ namespace Radegast
 
         public string Content
         {
-            get
-            {
-                return rtb.Text;
-            }
-            set
-            {
-                rtb.Text = value;
-            }
+            get => rtb.Text;
+            set => rtb.Text = value;
         }
 
         public Color ForeColor
         {
-            get
-            {
-                return rtb.SelectionColor;
-            }
-            set
-            {
-                rtb.SelectionColor = value;
-            }
+            get => rtb.SelectionColor;
+            set => rtb.SelectionColor = value;
         }
 
         public Color BackColor
         {
-            get
-            {
-                return rtb.SelectionBackColor;
-            }
-            set
-            {
-                rtb.SelectionBackColor = value;
-            }
+            get => rtb.SelectionBackColor;
+            set => rtb.SelectionBackColor = value;
         }
 
         public Font Font
         {
-            get
-            {
-                return rtb.SelectionFont;
-            }
-            set
-            {
-                rtb.SelectionFont = value;
-            }
+            get => rtb.SelectionFont;
+            set => rtb.SelectionFont = value;
         }
 
         #endregion

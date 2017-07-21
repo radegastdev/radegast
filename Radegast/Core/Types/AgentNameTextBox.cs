@@ -38,13 +38,13 @@ namespace Radegast
     public class AgentNameTextBox : TextBox
     {
         private UUID agentID;
-        private GridClient client { get { return RadegastInstance.GlobalInstance.Client; } }
-        private RadegastInstance instance { get { return RadegastInstance.GlobalInstance; } }
+        private GridClient client => RadegastInstance.GlobalInstance.Client;
+        private RadegastInstance instance => RadegastInstance.GlobalInstance;
 
         [Browsable(false)]
         public UUID AgentID
         {
-            get { return agentID; }
+            get => agentID;
 
             set
             {

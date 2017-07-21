@@ -48,7 +48,7 @@ namespace Radegast
     public partial class InventoryBackup : Form
     {
         private RadegastInstance instance;
-        GridClient client { get { return instance.Client; } }
+        GridClient client => instance.Client;
         private Inventory inv;
         private Thread backupThread;
         private string folderName;

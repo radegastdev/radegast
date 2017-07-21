@@ -50,8 +50,8 @@ namespace Radegast
         };
 
         private RadegastInstance instance;
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
-        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom => instance.Netcom;
+        private GridClient client => instance.Client;
         private TabsConsole tabConsole;
         private OSDMap config;
         public VoiceGateway gateway = null;
@@ -122,19 +122,16 @@ namespace Radegast
             lock (e.Menu)
             {
                 // Figure out what this menu applies to.
-                if (e.Menu.Selection is ListViewItem)
+                ListViewItem item = e.Menu.Selection as ListViewItem;
+                if (item?.Tag is VoiceParticipant)
                 {
-                    ListViewItem item = e.Menu.Selection as ListViewItem;
-                    if (item.Tag is VoiceParticipant)
-                    {
-                        selected = item.Tag as VoiceParticipant;
-                        ToolStripButton muteButton;
-                        if (selected.IsMuted)
-                            muteButton = new ToolStripButton("Unmute", null, new EventHandler(OnUnMuteClick));
-                        else
-                            muteButton = new ToolStripButton("Mute", null, new EventHandler(OnMuteClick));
-                        e.Menu.Items.Add(muteButton);
-                    }
+                    selected = item.Tag as VoiceParticipant;
+                    ToolStripButton muteButton;
+                    if (selected.IsMuted)
+                        muteButton = new ToolStripButton("Unmute", null, new EventHandler(OnUnMuteClick));
+                    else
+                        muteButton = new ToolStripButton("Mute", null, new EventHandler(OnMuteClick));
+                    e.Menu.Items.Add(muteButton);
                 }
             }
         }

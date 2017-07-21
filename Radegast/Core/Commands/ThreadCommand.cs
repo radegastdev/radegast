@@ -44,22 +44,13 @@ namespace Radegast.Commands
     {
         private List<Thread> _listed = null;
         List<Thread> _commandThreads = new List<Thread>();
-        Queue<KeyValuePair<string, ThreadStart>> _commandQueue { get { return instance.CommandsManager.CommandQueue; } }
+        Queue<KeyValuePair<string, ThreadStart>> _commandQueue => instance.CommandsManager.CommandQueue;
         private RadegastInstance instance;
-        public string Name
-        {
-            get { return "thread"; }
-        }
+        public string Name => "thread";
 
-        public string Description
-        {
-            get { return "Runs a command in a thread"; }
-        }
+        public string Description => "Runs a command in a thread";
 
-        public string Usage
-        {
-            get { return "thread <long running command>"; }
-        }
+        public string Usage => "thread <long running command>";
 
         public void StartCommand(RadegastInstance inst)
         {

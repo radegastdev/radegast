@@ -51,10 +51,7 @@ namespace Radegast
         ]
         public bool AutoSavePosition
         {
-            get
-            {
-                return autoSavePosition;
-            }
+            get => autoSavePosition;
 
             set
             {
@@ -82,10 +79,7 @@ namespace Radegast
                     return settingsKeyBase;
             }
 
-            set
-            {
-                settingsKeyBase = value;
-            }
+            set => settingsKeyBase = value;
         }
         private string settingsKeyBase = string.Empty;
 
@@ -97,12 +91,12 @@ namespace Radegast
         /// <summary>
         /// Instance of OpenMetaverse's GridClient
         /// </summary>
-        protected GridClient Client { get { return Instance.Client; } }
+        protected GridClient Client => Instance.Client;
 
         /// <summary>
         /// Instance of RadegastNetcom
         /// </summary>
-        protected RadegastNetcom Netcom { get { return Instance.Netcom; } }
+        protected RadegastNetcom Netcom => Instance.Netcom;
 
         private System.Threading.Timer SettingsTimer;
         private const int SettingsTimerTimeout = 500;
@@ -221,12 +215,9 @@ namespace Radegast
 
         private void TriggerSavePosition()
         {
-            if (SettingsTimer != null)
-            {
-                SettingsTimer.Change(
-                    SettingsTimerTimeout,
-                    System.Threading.Timeout.Infinite);
-            }
+            SettingsTimer?.Change(
+                SettingsTimerTimeout,
+                System.Threading.Timeout.Infinite);
         }
 
         private void SettingsTimer_Tick(object e)

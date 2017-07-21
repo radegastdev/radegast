@@ -102,8 +102,7 @@ namespace Radegast
             try
             {
                 e.HookNotification(this);
-                if (OnNotificationDisplayed != null)
-                    OnNotificationDisplayed(notification, e);
+                OnNotificationDisplayed?.Invoke(notification, e);
             }
             catch (Exception ex)
             {
@@ -197,8 +196,7 @@ namespace Radegast
             {
                 try
                 {
-                    if (OnNotificationClosed != null)
-                        OnNotificationClosed(this, this);
+                    OnNotificationClosed?.Invoke(this, this);
                 }
                 catch (Exception ex)
                 {
@@ -219,8 +217,7 @@ namespace Radegast
             ButtonSelected = true;
             try
             {
-                if (OnNotificationClicked != null)
-                    OnNotificationClicked(sender, e, this);
+                OnNotificationClicked?.Invoke(sender, e, this);
             }
             catch (Exception ex)
             {

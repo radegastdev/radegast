@@ -39,7 +39,7 @@ namespace Radegast.Commands
 {
     public class FaceCommand : RadegastCommand
     {
-        TabsConsole TC { get { return Instance.TabConsole; } }
+        TabsConsole TC => Instance.TabConsole;
         ObjectsConsole Objects;
         ChatConsole Chat;
         Vector3 targetPos = Vector3.Zero;

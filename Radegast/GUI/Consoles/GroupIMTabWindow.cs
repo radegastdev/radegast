@@ -41,8 +41,8 @@ namespace Radegast
     public partial class GroupIMTabWindow : UserControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private GridClient client => instance.Client;
+        private RadegastNetcom netcom => instance.Netcom;
         private object AvatarListSyncRoot = new object();
         private List<string> chatHistory = new List<string>();
         private int chatPointer;

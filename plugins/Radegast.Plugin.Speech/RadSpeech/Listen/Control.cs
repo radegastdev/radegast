@@ -11,14 +11,12 @@
 
         internal void CreateGrammar(string name, string[] options)
         {
-            if (recog == null) return;
-            recog.CreateGrammar(name, options);
+            recog?.CreateGrammar(name, options);
         }
         internal override void Start()
         {
             // If we have a recognizer, start it.
-            if (recog != null)
-                recog.Start();
+            recog?.Start();
         }
         internal override void Shutdown()
         {
@@ -28,13 +26,11 @@
         }
         internal void ActivateGrammar(string name)
         {
-            if (recog == null) return;
-            recog.ActivateGrammar(name);
+            recog?.ActivateGrammar(name);
         }
         internal void DeactivateGrammar(string name)
         {
-            if (recog == null) return;
-            recog.DeactivateGrammar(name);
+            recog?.DeactivateGrammar(name);
         }
 
     }

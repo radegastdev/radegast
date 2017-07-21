@@ -49,7 +49,7 @@ namespace Radegast
         public List<Primitive> Prims = new List<Primitive>();
 
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
 
         private float searchRadius = 40.0f;
         //public List<InventoryBase> subitems;
@@ -514,10 +514,8 @@ namespace Radegast
 
         void OpenObject(object sender, EventArgs e)
         {
-            if (!(lstContents.Tag is Primitive)) return;
-
-            Primitive prim = (Primitive)lstContents.Tag;
-            if (prim.Properties == null) return;
+            Primitive prim = lstContents.Tag as Primitive;
+            if (prim?.Properties == null) return;
 
             List<InventoryItem> items = new List<InventoryItem>();
 
@@ -1516,10 +1514,7 @@ namespace Radegast
                     }
                 }
 
-                if (OnTick != null)
-                {
-                    OnTick(props.Count);
-                }
+                OnTick?.Invoke(props.Count);
             }
         }
 

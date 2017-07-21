@@ -10,8 +10,8 @@ namespace RadegastSpeech.Environment
     class People
     {
         private PluginControl control;
-        private Talk.Control Talker { get { return control.talker; } }
-        private GridClient Client { get { return control.instance.Client; } }
+        private Talk.Control Talker => control.talker;
+        private GridClient Client => control.instance.Client;
         private Dictionary<UUID, AvatarInfo> information;
         private readonly string[] genders;
         private Random random;

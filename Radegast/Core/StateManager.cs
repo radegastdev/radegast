@@ -967,7 +967,7 @@ namespace Radegast
         private UUID sphereID;
         private List<UUID> beamID;
         private int numBeans;
-        private Color4[] beamColors = new Color4[3] { new Color4(0, 255, 0, 255), new Color4(255, 0, 0, 255), new Color4(0, 0, 255, 255) };
+        private Color4[] beamColors = new Color4[] { new Color4(0, 255, 0, 255), new Color4(255, 0, 0, 255), new Color4(0, 0, 255, 255) };
         private Primitive targetPrim;
 
         public void UnSetPointing()

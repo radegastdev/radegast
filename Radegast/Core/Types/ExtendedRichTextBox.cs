@@ -654,10 +654,7 @@ namespace Radegast
         /// <summary>
         /// Returns if updates to the controls are under way with BeginUpdate
         /// </summary>
-        public bool Updating
-        {
-            get { return _Updating > 0; }
-        }
+        public bool Updating => _Updating > 0;
 
         #endregion
         #region ScrollBarDetails
@@ -1256,12 +1253,9 @@ namespace Radegast
             }
             finally
             {
-                if (_graphics != null)
-                    _graphics.Dispose();
-                if (_metaFile != null)
-                    _metaFile.Dispose();
-                if (_stream != null)
-                    _stream.Close();
+                _graphics?.Dispose();
+                _metaFile?.Dispose();
+                _stream?.Close();
             }
         }
 

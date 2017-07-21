@@ -22,9 +22,7 @@ namespace RadegastSpeech.Talk
                 "OpenBeep.wav",
                 "CloseBeep.wav"};
 
-            if (control.osLayer == null) return;
- 
-            control.osLayer.SpeechStart(
+            control.osLayer?.SpeechStart(
                 control,
                 BeepNames);
 		}
@@ -35,26 +33,22 @@ namespace RadegastSpeech.Talk
 
         internal void Stop()
         {
-            if (control.osLayer != null)
-                control.osLayer.SpeechHalt();
+            control.osLayer?.SpeechHalt();
         }
 
         internal Dictionary<string, AvailableVoice> GetVoices()
         {
-            if (control.osLayer == null) return null;
-            return control.osLayer.GetVoices();
+            return control.osLayer?.GetVoices();
         }
 
         internal void Speak(QueuedSpeech q, string outputfile)
         {
-            if (control.osLayer == null) return;
-            control.osLayer.Speak(q, outputfile);
+            control.osLayer?.Speak(q, outputfile);
         }
 
         internal void Shutdown()
         {
-            if (control.osLayer == null) return;
-            control.osLayer.SpeechStop();
+            control.osLayer?.SpeechStop();
         }
 
     }

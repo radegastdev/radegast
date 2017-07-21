@@ -662,11 +662,8 @@ namespace Radegast.Rendering
         /// <summary>Camera position</summary>
         public Vector3 Position
         {
-            get
-            {
-                return mPosition;
-            }
-            
+            get => mPosition;
+
             set
             {
                 if (mPosition != value)
@@ -680,11 +677,8 @@ namespace Radegast.Rendering
         /// <summary>Camera target</summary>
         public Vector3 FocalPoint
         {
-            get
-            {
-                return mFocalPoint;
-            }
-            
+            get => mFocalPoint;
+
             set
             {
                 if (mFocalPoint != value)

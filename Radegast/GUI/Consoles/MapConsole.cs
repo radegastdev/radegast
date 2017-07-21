@@ -47,8 +47,8 @@ namespace Radegast
     public partial class MapConsole : UserControl
     {
         RadegastInstance instance;
-        GridClient client { get { return instance.Client; } }
-        bool Active { get { return client.Network.Connected; } }
+        GridClient client => instance.Client;
+        bool Active => client.Network.Connected;
         WebBrowser map;
         MapControl mmap;
         Regex slscheme = new Regex("^secondlife://(.+)/([0-9]+)/([0-9]+)");
@@ -306,10 +306,7 @@ namespace Radegast
                     lastTick = Environment.TickCount;
                     InTeleport = false;
                     Network_SimChanged(null, null);
-                    if (mmap != null)
-                    {
-                        mmap.ClearTarget();
-                    }
+                    mmap?.ClearTarget();
                     break;
 
                 default:
@@ -393,9 +390,9 @@ namespace Radegast
         {
             if (!Active) return;
 
-            if (instance.MonoRuntime && map != null)
+            if (instance.MonoRuntime)
             {
-                map.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
+                map?.Navigate(Path.GetDirectoryName(Application.ExecutablePath) + @"/worldmap.html");
             }
 
             lblStatus.Text = "Teleporting to " + txtRegion.Text;
@@ -580,10 +577,7 @@ namespace Radegast
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            if (mmap != null)
-            {
-                mmap.RefreshRegionAgents();
-            }
+            mmap?.RefreshRegionAgents();
         }
 
         #endregion GUIEvents

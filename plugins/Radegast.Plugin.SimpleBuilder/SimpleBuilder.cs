@@ -68,10 +68,7 @@ namespace SimpleBuilderNamespace
 
         private Primitive m_selectedPrim;
         public Primitive selectedPrim {
-            get
-            {
-                return m_selectedPrim;
-            }
+            get => m_selectedPrim;
             set
             {
                 if(value == null){
@@ -190,8 +187,7 @@ namespace SimpleBuilderNamespace
                 if(lstPrims != null)
                     lstPrims.VirtualListSize = Prims.Count;
             }
-            if(lstPrims != null)
-                lstPrims.Invalidate();
+            lstPrims?.Invalidate();
         }
 
         private bool IncludePrim(Primitive prim)

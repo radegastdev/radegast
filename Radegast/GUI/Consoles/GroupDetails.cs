@@ -46,10 +46,10 @@ namespace Radegast
     public partial class GroupDetails : UserControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private Group group;
         private Dictionary<UUID, GroupTitle> titles;
-        private Dictionary<UUID, Group> myGroups { get { return instance.Groups; } }
+        private Dictionary<UUID, Group> myGroups => instance.Groups;
         private List<KeyValuePair<UUID, UUID>> roleMembers;
         private Dictionary<UUID, GroupRole> roles;
         private bool isMember;

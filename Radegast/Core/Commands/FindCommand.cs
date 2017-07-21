@@ -40,7 +40,7 @@ namespace Radegast.Commands
 {
     public class FindCommand : RadegastCommand
     {
-        TabsConsole TC { get { return Instance.TabConsole; } }
+        TabsConsole TC => Instance.TabConsole;
         ObjectsConsole Objects;
         ChatConsole Chat;
         ConsoleWriteLine wl;

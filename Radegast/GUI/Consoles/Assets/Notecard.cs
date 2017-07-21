@@ -39,7 +39,7 @@ namespace Radegast
     public partial class Notecard : DettachableControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private InventoryNotecard notecard;
         private AssetNotecard receivedNotecard;
         private Primitive prim;

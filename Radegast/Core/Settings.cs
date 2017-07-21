@@ -168,26 +168,14 @@ namespace Radegast
 
             public string ForeColorString
             {
-                get
-                {
-                    return ColorTranslator.ToHtml(ForeColor);
-                }
-                set
-                {
-                    ForeColor = ColorTranslator.FromHtml(value);
-                }
+                get => ColorTranslator.ToHtml(ForeColor);
+                set => ForeColor = ColorTranslator.FromHtml(value);
             }
 
             public string BackColorString
             {
-                get
-                {
-                    return ColorTranslator.ToHtml(BackColor);
-                }
-                set
-                {
-                    BackColor = ColorTranslator.FromHtml(value);
-                }
+                get => ColorTranslator.ToHtml(BackColor);
+                set => BackColor = ColorTranslator.FromHtml(value);
             }
 
             public string FontString
@@ -283,16 +271,14 @@ namespace Radegast
 
         #region IDictionary Implementation
 
-        public int Count { get { return SettingsData.Count; } }
-        public bool IsReadOnly { get { return false; } }
-        public ICollection<string> Keys { get { return SettingsData.Keys; } }
-        public ICollection<OSD> Values { get { return SettingsData.Values; } }
+        public int Count => SettingsData.Count;
+        public bool IsReadOnly => false;
+        public ICollection<string> Keys => SettingsData.Keys;
+        public ICollection<OSD> Values => SettingsData.Values;
+
         public OSD this[string key]
         {
-            get
-            {
-                return SettingsData[key];
-            }
+            get => SettingsData[key];
             set 
             {
                 if (string.IsNullOrEmpty(key))

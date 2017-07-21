@@ -110,12 +110,9 @@ namespace Radegast.Automation
 
         public PseudoHomePreferences Preferences
         {
-            get { return !m_instance.Client.Network.Connected ? null : (PseudoHomePreferences)m_instance.ClientSettings; }
+            get => !m_instance.Client.Network.Connected ? null : (PseudoHomePreferences)m_instance.ClientSettings;
 
-            set
-            {
-                m_instance.ClientSettings["PseudoHome"] = value;
-            }
+            set => m_instance.ClientSettings["PseudoHome"] = value;
         }
 
         public void ETGoHome()

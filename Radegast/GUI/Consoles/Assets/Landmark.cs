@@ -38,7 +38,7 @@ namespace Radegast
     public partial class Landmark : DettachableControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private InventoryLandmark landmark;
         private AssetLandmark decodedLandmark;
         private UUID parcelID;

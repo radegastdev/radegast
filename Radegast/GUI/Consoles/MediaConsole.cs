@@ -9,16 +9,13 @@ namespace Radegast
     public partial class MediaConsole : DettachableControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private Settings s;
         private float m_audioVolume;
 
         private float audioVolume
         {
-            get
-            {
-                return m_audioVolume;
-            }
+            get => m_audioVolume;
             set
             {
                 if (value >= 0f && value < 1f)
@@ -151,8 +148,7 @@ namespace Radegast
             lock (parcelMusicLock)
             {
                 playing = false;
-                if (parcelStream != null)
-                    parcelStream.Dispose();
+                parcelStream?.Dispose();
                 parcelStream = null;
                 lblStation.Tag = lblStation.Text = string.Empty;
                 txtSongTitle.Text = string.Empty;

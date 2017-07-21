@@ -40,13 +40,7 @@ namespace Radegast
     public class ToolStripCheckBox
         : ToolStripControlHost
     {
-        public CheckBox CheckBoxControl
-        {
-            get
-            {
-                return Control as CheckBox;
-            }
-        }
+        public CheckBox CheckBoxControl => Control as CheckBox;
 
         /// <summary>
         /// Is check box ticked
@@ -54,14 +48,8 @@ namespace Radegast
         [Category("Appearance")]
         public bool Checked
         {
-            get
-            {
-                return CheckBoxControl.Checked;
-            }
-            set
-            {
-                CheckBoxControl.Checked = value;
-            }
+            get => CheckBoxControl.Checked;
+            set => CheckBoxControl.Checked = value;
         }
 
         /// <summary>
@@ -70,14 +58,8 @@ namespace Radegast
         [Category("Appearance")]
         public CheckState CheckState
         {
-            get
-            {
-                return CheckBoxControl.CheckState;
-            }
-            set
-            {
-                CheckBoxControl.CheckState = value;
-            }
+            get => CheckBoxControl.CheckState;
+            set => CheckBoxControl.CheckState = value;
         }
 
         /// <summary>
@@ -86,14 +68,8 @@ namespace Radegast
         [Category("Appearance")]
         public override string Text
         {
-            get
-            {
-                return CheckBoxControl.Text;
-            }
-            set
-            {
-                CheckBoxControl.Text = value;
-            }
+            get => CheckBoxControl.Text;
+            set => CheckBoxControl.Text = value;
         }
 
         /// <summary>
@@ -135,18 +111,12 @@ namespace Radegast
 
         void ToolStripCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (CheckedChanged != null)
-            {
-                CheckedChanged(this, e);
-            }
+            CheckedChanged?.Invoke(this, e);
         }
 
         void ToolStripCheckBox_CheckStateChanged(object sender, EventArgs e)
         {
-            if (CheckStateChanged != null)
-            {
-                CheckStateChanged(this, e);
-            }
+            CheckStateChanged?.Invoke(this, e);
         }
     }
 }

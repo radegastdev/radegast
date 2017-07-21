@@ -102,24 +102,12 @@ namespace Radegast.Netcom
             return 0;
         }
 
-        public string Sim
-        {
-            get { return GetSim(location); }
-        }
+        public string Sim => GetSim(location);
 
-        public int X
-        {
-            get { return GetX(location); }
-        }
+        public int X => GetX(location);
 
-        public int Y
-        {
-            get { return GetY(location); }
-        }
+        public int Y => GetY(location);
 
-        public int Z
-        {
-            get { return GetZ(location); }
-        }
+        public int Z => GetZ(location);
     }
 }

@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 #if (COGBOT_LIBOMV || USE_STHREADS)
@@ -42,7 +43,6 @@ using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
 using System.Threading;
-using System.Linq;
 using OpenTK.Graphics.OpenGL;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
@@ -82,7 +82,7 @@ namespace Radegast.Rendering
         /// </summary>
         public float DrawDistance
         {
-            get { return drawDistance; }
+            get => drawDistance;
             set
             {
                 drawDistance = value;
@@ -553,8 +553,7 @@ namespace Radegast.Rendering
         {
             RenderingEnabled = false;
 
-            if (glControl != null)
-                glControl.Dispose();
+            glControl?.Dispose();
             glControl = null;
 
             GLMode = null;
@@ -3266,15 +3265,15 @@ namespace Radegast.Rendering
                 Bone b;
                 if (av.glavatar.skel.mBones.TryGetValue(bone, out b))
                 {
-                    textBox_sx.Text = (b.scale.X - 1.0f).ToString();
-                    textBox_sy.Text = (b.scale.Y - 1.0f).ToString();
-                    textBox_sz.Text = (b.scale.Z - 1.0f).ToString();
+                    textBox_sx.Text = (b.scale.X - 1.0f).ToString(CultureInfo.InvariantCulture);
+                    textBox_sy.Text = (b.scale.Y - 1.0f).ToString(CultureInfo.InvariantCulture);
+                    textBox_sz.Text = (b.scale.Z - 1.0f).ToString(CultureInfo.InvariantCulture);
 
                     float x, y, z;
                     b.rot.GetEulerAngles(out x, out y, out z);
-                    textBox_x.Text = x.ToString();
-                    textBox_y.Text = y.ToString();
-                    textBox_z.Text = z.ToString();
+                    textBox_x.Text = x.ToString(CultureInfo.InvariantCulture);
+                    textBox_y.Text = y.ToString(CultureInfo.InvariantCulture);
+                    textBox_z.Text = z.ToString(CultureInfo.InvariantCulture);
 
                 }
 

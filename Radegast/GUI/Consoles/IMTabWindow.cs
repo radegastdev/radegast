@@ -39,7 +39,7 @@ namespace Radegast
     public partial class IMTabWindow : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private RadegastNetcom netcom => instance.Netcom;
         private UUID target;
         private bool typing = false;
         private List<string> chatHistory = new List<string>();
@@ -245,8 +245,8 @@ namespace Radegast
 
         public UUID TargetId
         {
-            get { return target; }
-            set { target = value; }
+            get => target;
+            set => target = value;
         }
 
         public string TargetName { get; set; }

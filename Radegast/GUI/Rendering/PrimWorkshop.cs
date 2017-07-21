@@ -138,10 +138,7 @@ namespace Radegast.Rendering
                 textRendering = null;
             }
 
-            if (glControl != null)
-            {
-                glControl.Dispose();
-            }
+            glControl?.Dispose();
             glControl = null;
             Client.Objects.TerseObjectUpdate -= new EventHandler<TerseObjectUpdateEventArgs>(Objects_TerseObjectUpdate);
             Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_ObjectUpdate);
@@ -180,8 +177,7 @@ namespace Radegast.Rendering
         {
             RenderingEnabled = false;
 
-            if (glControl != null)
-                glControl.Dispose();
+            glControl?.Dispose();
             glControl = null;
 
             GLMode = null;

@@ -56,10 +56,7 @@ namespace Radegast
                 System.Threading.Thread.Sleep(500);
                 Client.Self.AutoPilotLocal((int)Waypoints[nwp].X, (int)Waypoints[nwp].Y, (int)Waypoints[nwp].Z);
             }
-            get
-            {
-                return nwp;
-            }
+            get => nwp;
         }
 
         public AutoPilot(GridClient client)

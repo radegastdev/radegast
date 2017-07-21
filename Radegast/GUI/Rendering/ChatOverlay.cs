@@ -192,7 +192,7 @@ namespace Radegast.Rendering
         public int ImgWidth;
         public int ImgHeight;
 
-        public ChatBufferTextStyle Style { get { return item.Style; } }
+        public ChatBufferTextStyle Style => item.Style;
 
         int textureID = -1;
         int widthForTextureGenerated = -1;

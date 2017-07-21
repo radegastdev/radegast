@@ -41,7 +41,7 @@ namespace Radegast.Plugin.Alice
     public class AliceAI : IRadegastPlugin
     {
         private RadegastInstance Instance;
-        private GridClient Client { get { return Instance.Client; } }
+        private GridClient Client => Instance.Client;
 
         private bool Enabled = false;
         private Avatar.AvatarProperties MyProfile;

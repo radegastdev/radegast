@@ -67,11 +67,7 @@ namespace Radegast
         {
             get
             {
-                if (MapTab != null)
-                {
-                    return (MapConsole)MapTab.Control;
-                }
-                return null;
+                return (MapConsole) MapTab?.Control;
             }
         }
 
@@ -95,34 +91,25 @@ namespace Radegast
         /// <summary>
         /// Drop down that contains the tools menu
         /// </summary>
-        public ToolStripDropDownButton ToolsMenu
-        {
-            get { return tbnTools; }
-        }
+        public ToolStripDropDownButton ToolsMenu => tbnTools;
 
         /// <summary>
         /// Dropdown that contains the heelp menu
         /// </summary>
-        public ToolStripDropDownButton HelpMenu
-        {
-            get { return tbtnHelp; }
-        }
+        public ToolStripDropDownButton HelpMenu => tbtnHelp;
 
         /// <summary>
         /// Drop down that contants the plugins menu. Make sure to set it Visible if
         /// you add items to this menu, it's hidden by default
         /// </summary>
-        public ToolStripDropDownButton PluginsMenu
-        {
-            get { return tbnPlugins; }
-        }
+        public ToolStripDropDownButton PluginsMenu => tbnPlugins;
 
         #endregion
 
         #region Private members
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private GridClient client => instance.Client;
+        private RadegastNetcom netcom => instance.Netcom;
         private System.Timers.Timer statusTimer;
         private AutoPilot ap;
         private bool AutoPilotActive = false;
@@ -379,8 +366,7 @@ namespace Radegast
             loginToolStripMenuItem.Enabled = true;
             InAutoReconnect = false;
 
-            if (statusTimer != null)
-                statusTimer.Stop();
+            statusTimer?.Stop();
 
             RefreshStatusBar();
             RefreshWindowTitle();
@@ -909,10 +895,7 @@ namespace Radegast
         #region Notifications
         CircularList<Control> notifications = new CircularList<Control>();
 
-        public Color NotificationBackground
-        {
-            get { return pnlDialog.BackColor; }
-        }
+        public Color NotificationBackground => pnlDialog.BackColor;
 
         void ResizeNotificationByControl(Control active)
         {
@@ -963,10 +946,7 @@ namespace Radegast
 
             btnDialogNextControl.Visible = notifications.Count > 1;
 
-            if (active != null)
-            {
-                active.Focus();
-            }
+            active?.Focus();
         }
 
         public void RemoveNotification(Control control)
@@ -1455,10 +1435,7 @@ namespace Radegast
 
                 keyboardShortcutsForm.Disposed += (senderx, ex) =>
                     {
-                        if (components != null)
-                        {
-                            components.Remove(keyboardShortcutsForm);
-                        }
+                        components?.Remove(keyboardShortcutsForm);
                         keyboardShortcutsForm = null;
                     };
 
@@ -1466,10 +1443,7 @@ namespace Radegast
                 keyboardShortcutsForm.Top = Top + 100;
                 keyboardShortcutsForm.Left = Left + 100;
 
-                if (components != null)
-                {
-                    components.Add(keyboardShortcutsForm);
-                }
+                components?.Add(keyboardShortcutsForm);
             }
         }
 

@@ -41,7 +41,7 @@ namespace Radegast.Netcom
     public partial class RadegastNetcom : IDisposable
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         public LoginOptions loginOptions;
 
         public bool AgreeToTos { get; set; } = false;
@@ -61,8 +61,7 @@ namespace Radegast.Netcom
         protected virtual void OnClientConnected(EventArgs e)
         {
             EventHandler<EventArgs> handler = m_ClientConnected;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>Thread sync lock object</summary>
@@ -118,13 +117,7 @@ namespace Radegast.Netcom
             RegisterClientEvents(client);
         }
 
-        private bool CanSyncInvoke
-        {
-            get
-            {
-                return NetcomSync != null && !NetcomSync.IsDisposed && NetcomSync.IsHandleCreated && NetcomSync.InvokeRequired;
-            }
-        }
+        private bool CanSyncInvoke => NetcomSync != null && !NetcomSync.IsDisposed && NetcomSync.IsHandleCreated && NetcomSync.InvokeRequired;
 
         public void Dispose()
         {
@@ -382,8 +375,8 @@ namespace Radegast.Netcom
 
         public LoginOptions LoginOptions
         {
-            get { return loginOptions; }
-            set { loginOptions = value; }
+            get => loginOptions;
+            set => loginOptions = value;
         }
 
         public Control NetcomSync { get; set; }

@@ -38,7 +38,8 @@ namespace Radegast.Rendering
     public partial class GraphicsPreferences : UserControl
     {
         RadegastInstance Instance;
-        GridClient Client { get { return Instance.Client; } }
+        GridClient Client => Instance.Client;
+
         SceneWindow Window
         {
             get

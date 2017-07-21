@@ -122,13 +122,7 @@ namespace Radegast
             }
         }
 
-        public string SelectedName
-        {
-            get
-            {
-                return lvwFindPeople.SelectedItems.Count == 0 ? string.Empty : lvwFindPeople.SelectedItems[0].Text;
-            }
-        }
+        public string SelectedName => lvwFindPeople.SelectedItems.Count == 0 ? string.Empty : lvwFindPeople.SelectedItems[0].Text;
 
         public bool SelectedOnlineStatus
         {

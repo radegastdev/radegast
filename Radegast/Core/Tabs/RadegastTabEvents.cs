@@ -49,62 +49,62 @@ namespace Radegast
 
         protected virtual void OnTabSelected(EventArgs e)
         {
-            if (TabSelected != null) TabSelected(this, e);
+            TabSelected?.Invoke(this, e);
         }
 
         protected virtual void OnTabDeselected(EventArgs e)
         {
-            if (TabDeselected != null) TabDeselected(this, e);
+            TabDeselected?.Invoke(this, e);
         }
 
         protected virtual void OnTabHighlighted(EventArgs e)
         {
-            if (TabHighlighted != null) TabHighlighted(this, e);
+            TabHighlighted?.Invoke(this, e);
         }
 
         protected virtual void OnTabUnhighlighted(EventArgs e)
         {
-            if (TabUnhighlighted != null) TabUnhighlighted(this, e);
+            TabUnhighlighted?.Invoke(this, e);
         }
 
         protected virtual void OnTabPartiallyHighlighted(EventArgs e)
         {
-            if (TabPartiallyHighlighted != null) TabPartiallyHighlighted(this, e);
+            TabPartiallyHighlighted?.Invoke(this, e);
         }
 
         protected virtual void OnTabMerged(EventArgs e)
         {
-            if (TabMerged != null) TabMerged(this, e);
+            TabMerged?.Invoke(this, e);
         }
 
         protected virtual void OnTabSplit(EventArgs e)
         {
-            if (TabSplit != null) TabSplit(this, e);
+            TabSplit?.Invoke(this, e);
         }
 
         protected virtual void OnTabDetached(EventArgs e)
         {
-            if (TabDetached != null) TabDetached(this, e);
+            TabDetached?.Invoke(this, e);
         }
 
         protected virtual void OnTabAttached(EventArgs e)
         {
-            if (TabAttached != null) TabAttached(this, e);
+            TabAttached?.Invoke(this, e);
         }
 
         protected virtual void OnTabClosed(EventArgs e)
         {
-            if (TabClosed != null) TabClosed(this, e);
+            TabClosed?.Invoke(this, e);
         }
 
         protected virtual void OnTabHidden(EventArgs e)
         {
-            if (TabHidden != null) TabHidden(this, e);
+            TabHidden?.Invoke(this, e);
         }
 
         protected virtual void OnTabShown(EventArgs e)
         {
-            if (TabShown != null) TabShown(this, e);
+            TabShown?.Invoke(this, e);
         }
     }
 }

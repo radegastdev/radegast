@@ -46,7 +46,7 @@ namespace Radegast
         public bool DingOnAllIncoming = false;
 
         RadegastInstance instance;
-        RadegastNetcom netcom { get { return instance.Netcom; } }
+        RadegastNetcom netcom => instance.Netcom;
         IMTextManagerType Type;
         string sessionName;
         bool AutoResponseSent = false;

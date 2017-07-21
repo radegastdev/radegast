@@ -43,7 +43,7 @@ namespace Radegast
     public partial class ScriptEditor : UserControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private InventoryLSL script;
         private string scriptName;
         private string fileName;
@@ -162,10 +162,7 @@ namespace Radegast
 
         public bool Detached
         {
-            get
-            {
-                return detached;
-            }
+            get => detached;
 
             set
             {
@@ -193,10 +190,7 @@ namespace Radegast
         {
             detached = true;
 
-            if (detachedForm != null)
-            {
-                detachedForm.Dispose();
-            }
+            detachedForm?.Dispose();
 
             detachedForm = new Form();
             originalParent = Parent;

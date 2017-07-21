@@ -41,10 +41,7 @@ namespace Radegast.Automation
         public UUID AllowedOwner;
 
         RadegastInstance instance;
-        GridClient client
-        {
-            get { return instance.Client; }
-        }
+        GridClient client => instance.Client;
 
         public LSLHelper(RadegastInstance instance)
         {

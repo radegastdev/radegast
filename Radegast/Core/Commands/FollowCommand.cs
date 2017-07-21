@@ -38,7 +38,7 @@ namespace Radegast.Commands
 {
     public class FollowCommand : RadegastCommand
     {
-        TabsConsole TC { get { return Instance.TabConsole; } }
+        TabsConsole TC => Instance.TabConsole;
         ChatConsole Chat;
 
         public FollowCommand(RadegastInstance instance)

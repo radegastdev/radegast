@@ -48,8 +48,8 @@ namespace Radegast
     public partial class MasterTab : UserControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private GridClient client => instance.Client;
+        private RadegastNetcom netcom => instance.Netcom;
         private Avatar avatar;
         public UUID selectedID;
         public Primitive selectedPrim;

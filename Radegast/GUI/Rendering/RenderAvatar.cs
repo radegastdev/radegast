@@ -2233,7 +2233,7 @@ namespace Radegast.Rendering
 
         public override Primitive BasePrim
         {
-            get { return avatar; }
+            get => avatar;
             set
             {
                 if (value is Avatar)

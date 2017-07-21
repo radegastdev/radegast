@@ -54,8 +54,7 @@ namespace RadegastSpeech.Sound
 
         internal override void Stop()
         {
-            if (speechPlayer == null) return;
-            speechPlayer.Stop();
+            speechPlayer?.Stop();
         }
 
         /// <summary>

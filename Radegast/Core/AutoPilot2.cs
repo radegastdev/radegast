@@ -88,10 +88,7 @@ namespace Radegast
         /// <exception cref="ArgumentOutOfRangeException">Must have at least 2 Waypoints</exception>
         public List<Vector3d> Waypoints
         {
-            get
-            {
-                return waypoints;
-            }
+            get => waypoints;
             set
             {
                 if (value.Count > 1)
@@ -109,24 +106,12 @@ namespace Radegast
         /// <summary>
         /// The previous Vector3d Waypoint along the path. Returns Vector3d.Zero if there is no previous waypoint.
         /// </summary>
-        public Vector3d PreviousWaypoint
-        {
-            get
-            {
-                return waypointIndex >= 1 ? waypoints[waypointIndex - 1] : Vector3d.Zero;
-            }
-        }
+        public Vector3d PreviousWaypoint => waypointIndex >= 1 ? waypoints[waypointIndex - 1] : Vector3d.Zero;
 
         /// <summary>
         /// The next Vector3d Waypoint along the path. Returns Vector3d.Zero if there is no next waypoint.
         /// </summary>
-        public Vector3d NextWaypoint
-        {
-            get
-            {
-                return waypointIndex < waypoints.Count ? waypoints[waypointIndex] : Vector3d.Zero;
-            }
-        }
+        public Vector3d NextWaypoint => waypointIndex < waypoints.Count ? waypoints[waypointIndex] : Vector3d.Zero;
 
         /// <summary>
         /// The next Waypoint's index. A new value will immediately take effect if AutoPilot is not Idle
@@ -163,33 +148,18 @@ namespace Radegast
                     throw new Exception("Must have at least 2 Waypoints");
                 }
             }
-            get
-            {
-                return waypointIndex;
-            }
+            get => waypointIndex;
         }
 
         /// <summary>
         /// The next Waypoint's index
         /// </summary>
-        public bool NextWaypointIsFinal
-        {
-            get
-            {
-                return waypointIndex == (waypoints.Count - 1);
-            }
-        }
+        public bool NextWaypointIsFinal => waypointIndex == (waypoints.Count - 1);
 
         /// <summary>
         /// Returns true if next Waypoint is the Start
         /// </summary>
-        public bool NextWaypointIsStart
-        {
-            get
-            {
-                return waypointIndex == 0 && waypoints.Count > 1;
-            }
-        }
+        public bool NextWaypointIsStart => waypointIndex == 0 && waypoints.Count > 1;
 
         /// <summary>
         /// The Waypoint detection radius
@@ -197,10 +167,7 @@ namespace Radegast
         /// <exception cref="ArgumentOutOfRangeException">WaypointRadius must be greater than 0</exception>
         public double WaypointRadius
         {
-            get
-            {
-                return waypointRadius;
-            }
+            get => waypointRadius;
             set
             {
                 if (value > 0)
@@ -220,10 +187,7 @@ namespace Radegast
         /// <exception cref="ArgumentOutOfRangeException">StuckTimeout must be greater than 0</exception>
         public int StuckTimeout
         {
-            get
-            {
-                return stuckTimeout;
-            }
+            get => stuckTimeout;
             set
             {
                 if (value > 0)

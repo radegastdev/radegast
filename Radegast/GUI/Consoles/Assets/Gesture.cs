@@ -38,7 +38,7 @@ namespace Radegast
     public partial class Gesture : DettachableControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private InventoryGesture gesture;
         private AssetGesture gestureAsset;
 

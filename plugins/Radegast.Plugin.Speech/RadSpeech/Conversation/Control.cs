@@ -548,8 +548,7 @@ namespace RadegastSpeech.Conversation
             if (Command(message)) return;
 
             // Let the current conversation handle it.
-            if (currentMode != null)
-                currentMode.Hear(message);
+            currentMode?.Hear(message);
         }
 
         internal void SelectConversation(Mode c)
@@ -563,8 +562,7 @@ namespace RadegastSpeech.Conversation
             if (currentMode == c) return;
 
             // Let the old conversation deactivate any event hooks, grammars, etc.
-            if (currentMode != null)
-                currentMode.Stop();
+            currentMode?.Stop();
 
             currentMode = c;
             currentMode.Start();
@@ -654,8 +652,7 @@ namespace RadegastSpeech.Conversation
         internal void ChangeFocus(Mode toThis)
         {
             currentMode = toThis;
-            if (currentMode != null)
-                currentMode.Start();
+            currentMode?.Start();
         }
 
 
@@ -678,8 +675,7 @@ namespace RadegastSpeech.Conversation
         {
             // Message to an individual
             IMSession sess = (IMSession)control.converse.GetConversation(control.instance.Names.Get(e.TargetID, true));
-            if (sess != null)
-                sess.OnMessage(Client.Self.AgentID, Client.Self.Name, e.Message);
+            sess?.OnMessage(Client.Self.AgentID, Client.Self.Name, e.Message);
         }
 
 
@@ -748,8 +744,7 @@ namespace RadegastSpeech.Conversation
                                 sess = (IMSession)control.converse.GetConversation(Utils.BytesToString(e.IM.BinaryBucket));
                             }
 
-                            if (sess != null)
-                                sess.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
+                            sess?.OnMessage(e.IM.FromAgentID, e.IM.FromAgentName, e.IM.Message);
                             break;
 
                         case InstantMessageDialog.FriendshipOffered:

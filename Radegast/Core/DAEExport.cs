@@ -63,7 +63,7 @@ namespace Radegast
         };
 
         RadegastInstance Instance;
-        GridClient Client { get { return Instance.Client; } }
+        GridClient Client => Instance.Client;
         System.Globalization.CultureInfo invariant = System.Globalization.CultureInfo.InvariantCulture;
         MeshmerizerR Mesher;
         XmlDocument Doc;
@@ -72,10 +72,7 @@ namespace Radegast
 
         void OnProgress(string message)
         {
-            if (Progress != null)
-            {
-                Progress(this, new DAEStatutsEventArgs(message));
-            }
+            Progress?.Invoke(this, new DAEStatutsEventArgs(message));
         }
 
         public DAEExport(RadegastInstance instance, Primitive requestedPrim)

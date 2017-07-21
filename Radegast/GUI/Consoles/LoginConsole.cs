@@ -41,7 +41,7 @@ namespace Radegast
     public partial class LoginConsole : UserControl, IRadegastTabControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private RadegastNetcom netcom => instance.Netcom;
 
         public LoginConsole(RadegastInstance instance)
         {

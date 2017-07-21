@@ -42,7 +42,7 @@ namespace Radegast
     public partial class SLImageHandler : DettachableControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private UUID imageID;
 
         byte[] jpegdata;
@@ -54,17 +54,13 @@ namespace Radegast
 
         public PictureBoxSizeMode SizeMode
         {
-            get { return pictureBox1.SizeMode; }
-            set { pictureBox1.SizeMode = value; }
+            get => pictureBox1.SizeMode;
+            set => pictureBox1.SizeMode = value;
         }
 
         public override string Text
         {
-            get
-            {
-                
-                return base.Text;
-            }
+            get => base.Text;
             set
             {
                 base.Text = value;
@@ -351,10 +347,7 @@ namespace Radegast
                 }
 
                 var handler = ImageUpdated;
-                if (handler != null)
-                {
-                    handler(this, new ImageUpdatedEventArgs(imgID));
-                }
+                handler?.Invoke(this, new ImageUpdatedEventArgs(imgID));
             }
         }
 

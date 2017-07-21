@@ -67,10 +67,7 @@ namespace Radegast
 
         public virtual bool Detached
         {
-            get
-            {
-                return detached;
-            }
+            get => detached;
 
             set
             {
@@ -98,14 +95,16 @@ namespace Radegast
         {
             detached = true;
             AttachedSize = Size;
-            
-            if (detachedForm != null)
-            {
-                detachedForm.Dispose();
-            }
 
-            detachedForm = new RadegastForm(RadegastInstance.GlobalInstance) { SettingsKeyBase = GetType().ToString(), AutoSavePosition = true };
-            detachedForm.Icon = Properties.Resources.radegast_icon;
+            detachedForm?.Dispose();
+
+            detachedForm =
+                new RadegastForm(RadegastInstance.GlobalInstance)
+                {
+                    SettingsKeyBase = GetType().ToString(),
+                    AutoSavePosition = true,
+                    Icon = Properties.Resources.radegast_icon
+                };
             OriginalParent = Parent;
             Parent = detachedForm;
             Dock = DockStyle.Fill;
@@ -124,10 +123,7 @@ namespace Radegast
                 OriginalParent.ControlAdded += new ControlEventHandler(originalParent_ControlAdded);
             }
 
-            if (OnDetached != null)
-            {
-                OnDetached();
-            }
+            OnDetached?.Invoke();
         }
 
         protected virtual void ControlIsNotRetachable() { }
@@ -170,10 +166,7 @@ namespace Radegast
                 Dispose();
             }
 
-            if (OnRetached != null)
-            {
-                OnRetached();
-            }
+            OnRetached?.Invoke();
         }
 
         protected virtual void SetTitle()

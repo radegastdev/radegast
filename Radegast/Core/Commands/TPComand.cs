@@ -38,9 +38,9 @@ namespace Radegast.Commands
 {
     public class TPCommand : RadegastCommand
     {
-        TabsConsole TC { get { return Instance.TabConsole; } }
+        TabsConsole TC => Instance.TabConsole;
         public static string FolderName = "Radegast Landmarks";
-        Inventory Inv { get { return Client.Inventory.Store; } }
+        Inventory Inv => Client.Inventory.Store;
         ConsoleWriteLine wl;
 
         public TPCommand(RadegastInstance instance)

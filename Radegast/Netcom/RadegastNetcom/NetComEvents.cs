@@ -61,52 +61,52 @@ namespace Radegast.Netcom
 
         protected virtual void OnClientLoggingIn(OverrideEventArgs e)
         {
-            if (ClientLoggingIn != null) ClientLoggingIn(this, e);
+            ClientLoggingIn?.Invoke(this, e);
         }
 
         protected virtual void OnClientLoginStatus(LoginProgressEventArgs e)
         {
-            if (ClientLoginStatus != null) ClientLoginStatus(this, e);
+            ClientLoginStatus?.Invoke(this, e);
         }
 
         protected virtual void OnClientLoggingOut(OverrideEventArgs e)
         {
-            if (ClientLoggingOut != null) ClientLoggingOut(this, e);
+            ClientLoggingOut?.Invoke(this, e);
         }
 
         protected virtual void OnClientLoggedOut(EventArgs e)
         {
-            if (ClientLoggedOut != null) ClientLoggedOut(this, e);
+            ClientLoggedOut?.Invoke(this, e);
         }
 
         protected virtual void OnClientDisconnected(DisconnectedEventArgs e)
         {
-            if (ClientDisconnected != null) ClientDisconnected(this, e);
+            ClientDisconnected?.Invoke(this, e);
         }
 
         protected virtual void OnChatReceived(ChatEventArgs e)
         {
-            if (ChatReceived != null) ChatReceived(this, e);
+            ChatReceived?.Invoke(this, e);
         }
 
         protected virtual void OnChatSent(ChatSentEventArgs e)
         {
-            if (ChatSent != null) ChatSent(this, e);
+            ChatSent?.Invoke(this, e);
         }
 
         protected virtual void OnInstantMessageReceived(InstantMessageEventArgs e)
         {
-            if (InstantMessageReceived != null) InstantMessageReceived(this, e);
+            InstantMessageReceived?.Invoke(this, e);
         }
 
         protected virtual void OnInstantMessageSent(InstantMessageSentEventArgs e)
         {
-            if (InstantMessageSent != null) InstantMessageSent(this, e);
+            InstantMessageSent?.Invoke(this, e);
         }
 
         protected virtual void OnTeleporting(TeleportingEventArgs e)
         {
-            if (Teleporting != null) Teleporting(this, e);
+            Teleporting?.Invoke(this, e);
         }
 
         protected virtual void OnTeleportStatusChanged(TeleportEventArgs e)

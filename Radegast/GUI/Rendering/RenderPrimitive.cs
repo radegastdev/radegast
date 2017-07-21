@@ -384,7 +384,7 @@ namespace Radegast.Rendering
         /// </summary>
         public override Primitive BasePrim
         {
-            get { return Prim; }
+            get => Prim;
             set
             {
                 Prim = value;

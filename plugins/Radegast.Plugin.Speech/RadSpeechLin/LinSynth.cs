@@ -42,10 +42,8 @@ namespace RadegastSpeech
                 pc.SaveSpeechSettings();
             }
 
-			string server = speech["server"].AsString();
-            if (server==null)
-                server = "localhost:1314";
-			string[] parts = server.Split(':');
+			string server = speech["server"].AsString() ?? "localhost:1314";
+            string[] parts = server.Split(':');
 			serverhost = parts[0];
 			if (parts.Length>1)
 				serverport = parts[1];
@@ -205,28 +203,25 @@ namespace RadegastSpeech
                 bool skip = false;
 
                 // Check for additional information about this voice
-                if (voiceProperties != null)
+                string propString = voiceProperties?[name].AsString();
+                if (propString != null)
                 {
-                    string propString = voiceProperties[name].AsString();
-                    if (propString != null)
-                    {
-                        // Properties are a series of blank-separated keywords
-                        string[] props = propString.Split(' ');
+                    // Properties are a series of blank-separated keywords
+                    string[] props = propString.Split(' ');
 
-                        foreach (string key in props)
+                    foreach (string key in props)
+                    {
+                        switch (key)
                         {
-                            switch (key)
-                            {
-                                case "male":
-                                    male = true;
-                                    break;
-                                case "female":
-                                    male = false;
-                                    break;
-                                case "ignore":
-                                    skip = true;
-                                    break;
-                            }
+                            case "male":
+                                male = true;
+                                break;
+                            case "female":
+                                male = false;
+                                break;
+                            case "ignore":
+                                skip = true;
+                                break;
                         }
                     }
                 }

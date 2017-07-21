@@ -39,7 +39,7 @@ namespace Radegast.Plugin.IRC
     public class IRCPlugin : IRadegastPlugin
     {
         RadegastInstance instance;
-        GridClient Client { get { return instance.Client; } }
+        GridClient Client => instance.Client;
 
         ToolStripMenuItem IRCButton;
         int relayNr = 0;

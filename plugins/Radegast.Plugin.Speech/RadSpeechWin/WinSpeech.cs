@@ -43,8 +43,7 @@ namespace RadegastSpeech
 
         public void SpeechHalt()
         {
-            if (synth != null)
-                synth.Halt();
+            synth?.Halt();
         }
 
         public Dictionary<string, AvailableVoice> GetVoices()
@@ -81,32 +80,27 @@ namespace RadegastSpeech
 
         private void recog_OnWinRecognition(string text)
         {
-            if (OnRecognition != null)
-                OnRecognition(text);
+            OnRecognition?.Invoke(text);
         }
 
         public void RecogStop()
         {
-            if (recog != null)
-                recog.Stop();
+            recog?.Stop();
         }
 
         public void CreateGrammar( string name, string[] alternatives )
         {
-            if (recog != null)
-                recog.CreateGrammar(name, alternatives);
+            recog?.CreateGrammar(name, alternatives);
         }
 
         public void ActivateGrammar(string name)
         {
-            if (recog != null)
-                recog.ActivateGrammar(name);
+            recog?.ActivateGrammar(name);
         }
 
         public void DeactivateGrammar(string name)
         {
-            if (recog != null)
-                recog.DeactivateGrammar(name);
+            recog?.DeactivateGrammar(name);
         }
         #endregion
     }

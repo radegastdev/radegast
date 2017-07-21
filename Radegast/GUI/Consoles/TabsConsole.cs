@@ -105,8 +105,8 @@ namespace Radegast
         public event TabCallback OnTabRemoved;
 
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
+        private GridClient client => instance.Client;
+        private RadegastNetcom netcom => instance.Netcom;
         public ChatTextManager MainChatManger { get; private set; }
 
         public Dictionary<string, RadegastTab> Tabs { get; } = new Dictionary<string, RadegastTab>();
@@ -637,9 +637,9 @@ namespace Radegast
             {
                 instance.TabConsole.SelectTab((client.Self.AgentID ^ agentID).ToString());
             }
-            else if (active != null)
+            else
             {
-                active.Focus();
+                active?.Focus();
             }
 
             return true;
@@ -675,10 +675,7 @@ namespace Radegast
             Tabs[e.IM.IMSessionID.ToString()].Highlight();
             imTab.TextManager.ProcessIM(e, true);
 
-            if (active != null)
-            {
-                active.Focus();
-            }
+            active?.Focus();
         }
 
         private void HandleGroupIM(InstantMessageEventArgs e)
@@ -701,10 +698,7 @@ namespace Radegast
             imTab.TextManager.ProcessIM(e, true);
             Tabs[e.IM.IMSessionID.ToString()].Highlight();
 
-            if (active != null)
-            {
-                active.Focus();
-            }
+            active?.Focus();
         }
 
         public void InitializeMainTab()

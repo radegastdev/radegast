@@ -134,10 +134,7 @@ namespace Radegast
             }
         }
 
-        public Grid this[int ix]
-        {
-            get { return Grids[ix]; }
-        }
+        public Grid this[int ix] => Grids[ix];
 
         public Grid this[string gridID]
         {
@@ -160,9 +157,6 @@ namespace Radegast
             return false;
         }
 
-        public int Count
-        {
-            get { return Grids.Count; }
-        }
+        public int Count => Grids.Count;
     }
 }

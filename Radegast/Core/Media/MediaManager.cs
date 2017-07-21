@@ -592,7 +592,7 @@ namespace Radegast.Media
                 AllObjectVolume = value;
                 BufferSound.AdjustVolumes();
             }
-            get { return AllObjectVolume; }
+            get => AllObjectVolume;
         }
 
         /// <summary>
@@ -625,7 +625,7 @@ namespace Radegast.Media
 
                 m_objectEnabled = value;
             }
-            get { return m_objectEnabled; }
+            get => m_objectEnabled;
         }
 
         void Self_ChatFromSimulator(object sender, ChatEventArgs e)

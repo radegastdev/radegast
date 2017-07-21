@@ -53,7 +53,7 @@ namespace Radegast
     public partial class InventoryConsole : UserControl
     {
         RadegastInstance instance;
-        GridClient client { get { return instance.Client; } }
+        GridClient client => instance.Client;
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
 
         private InventoryManager Manager;

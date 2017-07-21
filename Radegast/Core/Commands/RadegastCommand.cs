@@ -45,7 +45,7 @@ namespace Radegast.Commands
         /// <summary>
         /// GridClinet associated with RadegastInstanc received during command startup
         /// </summary>
-        protected GridClient Client { get { return Instance.Client; } }
+        protected GridClient Client => Instance.Client;
 
         /// <summary>
         /// For simple creation of new commands

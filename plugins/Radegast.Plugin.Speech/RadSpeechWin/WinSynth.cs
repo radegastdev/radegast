@@ -107,16 +107,10 @@ namespace RadegastSpeech
             System.Collections.ObjectModel.ReadOnlyCollection<SpeechAudioFormatInfo> formats =
                 wv.winVoice.VoiceInfo.SupportedAudioFormats;
 
-            format = formats.FirstOrDefault();
-
-            if (format == null)
-            {
-                // The voice did not tell us its parameters, so we pick some.
-                format = new SpeechAudioFormatInfo(
-                    16000,      // Samples per second
-                    AudioBitsPerSample.Sixteen,
-                    AudioChannel.Mono);
-            }
+            format = formats.FirstOrDefault() ?? new SpeechAudioFormatInfo(
+                         16000,      // Samples per second
+                         AudioBitsPerSample.Sixteen,
+                         AudioChannel.Mono);
 
             // First set up to synthesize the message into a WAV file.
             mstream = new FileStream(outputfile, FileMode.Create, FileAccess.Write);

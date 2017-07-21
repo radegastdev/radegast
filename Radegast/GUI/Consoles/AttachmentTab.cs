@@ -39,7 +39,7 @@ namespace Radegast
     public partial class AttachmentTab : UserControl
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private Avatar av;
 
         public AttachmentTab(RadegastInstance instance, Avatar iav)

@@ -79,16 +79,13 @@ namespace Radegast
                 return (NameMode)instance.GlobalSettings["display_name_mode"].AsInteger();
             }
 
-            set
-            {
-                instance.GlobalSettings["display_name_mode"] = (int)value;
-            }
+            set => instance.GlobalSettings["display_name_mode"] = (int)value;
         }
         #endregion public fields and properties
 
         #region private fields and properties
         RadegastInstance instance;
-        GridClient client { get { return instance.Client; } }
+        GridClient client => instance.Client;
         Timer requestTimer;
         Timer cacheTimer;
         string cacheFileName;

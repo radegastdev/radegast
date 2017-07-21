@@ -138,7 +138,7 @@ namespace Radegast
         /// </summary>
         public InventoryClipboard InventoryClipboard
         {
-            get { return inventoryClipboard; }
+            get => inventoryClipboard;
             set
             {
                 inventoryClipboard = value;

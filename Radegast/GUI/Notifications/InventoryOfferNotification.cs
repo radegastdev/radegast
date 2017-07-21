@@ -38,7 +38,7 @@ namespace Radegast
     public partial class ntfInventoryOffer : Notification
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private InstantMessage msg;
         private AssetType type = AssetType.Unknown;
         private UUID objectID = UUID.Zero;

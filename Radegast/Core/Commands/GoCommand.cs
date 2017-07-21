@@ -41,7 +41,7 @@ namespace Radegast.Commands
     {
         Regex subCommand;
         RegexOptions regexOptions = RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.IgnoreCase;
-        TabsConsole TC { get { return Instance.TabConsole; } }
+        TabsConsole TC => Instance.TabConsole;
         ObjectsConsole Objects;
         ChatConsole Chat;
         Vector3 targetPos = Vector3.Zero;

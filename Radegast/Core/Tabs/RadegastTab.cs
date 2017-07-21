@@ -284,8 +284,8 @@ namespace Radegast
 
         public string Label
         {
-            get { return label; }
-            set { label = Button.Text = value; }
+            get => label;
+            set => label = Button.Text = value;
         }
 
         public RadegastTab MergedTab { get; private set; }
@@ -314,7 +314,7 @@ namespace Radegast
 
         public bool Visible
         {
-            get { return !Hidden; }
+            get => !Hidden;
 
             set
             {

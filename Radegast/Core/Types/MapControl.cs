@@ -20,7 +20,7 @@ namespace Radegast
     public partial class MapControl : UserControl
     {
         RadegastInstance Instance;
-        GridClient Client { get { return Instance.Client; } }
+        GridClient Client => Instance.Client;
         ParallelDownloader downloader;
         Color background;
         float zoom;
@@ -91,8 +91,9 @@ namespace Radegast
                 lock (regionTiles)
                 {
                     foreach (Image img in regionTiles.Values)
-                        if (img != null)
-                            img.Dispose();
+                    {
+                        img?.Dispose();
+                    }
                     regionTiles.Clear();
                 }
                 regionTiles = null;
@@ -171,7 +172,7 @@ namespace Radegast
 
         public float Zoom
         {
-            get { return zoom; }
+            get => zoom;
             set
             {
                 if (value >= MinZoom && value <= MaxZoom)
@@ -231,10 +232,7 @@ namespace Radegast
                 {
                     targetRegion = regions[handle];
                     GetTargetParcel();
-                    if (MapTargetChanged != null)
-                    {
-                        MapTargetChanged(this, new MapTargetChangedEventArgs(targetRegion, (int)localX, (int)localY));
-                    }
+                    MapTargetChanged?.Invoke(this, new MapTargetChangedEventArgs(targetRegion, (int)localX, (int)localY));
                 }
                 else
                 {
@@ -703,8 +701,7 @@ namespace Radegast
             else
                 Zoom -= 0.25f;
 
-            if (ZoomChanged != null)
-                ZoomChanged(this, EventArgs.Empty);
+            ZoomChanged?.Invoke(this, EventArgs.Empty);
         }
 
         bool dragging = false;
@@ -766,10 +763,7 @@ namespace Radegast
                     {
                         targetRegion = regions[handle];
                         GetTargetParcel();
-                        if (MapTargetChanged != null)
-                        {
-                            MapTargetChanged(this, new MapTargetChangedEventArgs(targetRegion, (int)localX, (int)localY));
-                        }
+                        MapTargetChanged?.Invoke(this, new MapTargetChangedEventArgs(targetRegion, (int)localX, (int)localY));
                     }
                     else
                     {

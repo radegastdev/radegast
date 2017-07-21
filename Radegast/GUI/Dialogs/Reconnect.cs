@@ -40,7 +40,7 @@ namespace Radegast
         
         public int ReconnectTime
         {
-            get { return reconnectTime; }
+            get => reconnectTime;
             set
             {
                 reconnectTime = value;

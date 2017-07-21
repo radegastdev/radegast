@@ -66,16 +66,11 @@ namespace Radegast
             }
             return o;
         }
-        protected ContextActionsManager ContextActionManager
-        {
-            get { return Instance.ContextActionManager; }
-        }
+        protected ContextActionsManager ContextActionManager => Instance.ContextActionManager;
+
         public virtual RadegastInstance Instance
         {
-            get
-            {
-                return instance;
-            }
+            get => instance;
             set
             {
                 if (instance == value)
@@ -84,13 +79,7 @@ namespace Radegast
             }
         }
 
-        protected virtual GridClient Client
-        {
-            get
-            {
-                return Instance.Client;
-            }
-        }
+        protected virtual GridClient Client => Instance.Client;
 
         public ContextAction(RadegastInstance inst)
         {
@@ -204,7 +193,7 @@ namespace Radegast
             {
                 oneOf = GetValue(ContextType, DeRef(oneOf));
             }
-            if (Handler != null) Handler(oneOf, e);
+            Handler?.Invoke(oneOf, e);
         }
 
         public virtual void IContextAction(RadegastInstance instance)

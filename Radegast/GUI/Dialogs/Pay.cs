@@ -37,13 +37,13 @@ namespace Radegast
     public partial class frmPay : RadegastForm
     {
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
         private UUID target;
         private string name;
         private UUID owner;
         private bool isObject;
         private Button[] buttons;
-        private int[] defaultAmounts = new int[4] { 1, 5, 10, 20 };
+        private int[] defaultAmounts = new int[] { 1, 5, 10, 20 };
         public static int LastPayed = -1;
 
         public frmPay(RadegastInstance instance, UUID target, string name, bool isObject)
@@ -57,7 +57,7 @@ namespace Radegast
             this.isObject = isObject;
 
             // Buttons
-            buttons = new Button[4] { btnFastPay1, btnFastPay2, btnFastPay3, btnFastPay4 };
+            buttons = new Button[] { btnFastPay1, btnFastPay2, btnFastPay3, btnFastPay4 };
             for (int i = 0; i < buttons.Length; i++)
             {
                 buttons[i].Click += new EventHandler(frmPay_Click);

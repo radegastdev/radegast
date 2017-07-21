@@ -5,652 +5,652 @@ namespace Radegast.LSL
     //%+STRING_CONSTANT+3
     public class STRING_CONSTANT : TOKEN
     {
-        public override string yyname { get { return "STRING_CONSTANT"; } }
-        public override int yynum { get { return 3; } }
+        public override string yyname => "STRING_CONSTANT";
+        public override int yynum => 3;
         public STRING_CONSTANT(Lexer yyl) : base(yyl) { }
     }
     //%INCREMENT+4
     public class INCREMENT : TOKEN
     {
-        public override string yyname { get { return "INCREMENT"; } }
-        public override int yynum { get { return 4; } }
+        public override string yyname => "INCREMENT";
+        public override int yynum => 4;
         public INCREMENT(Lexer yyl) : base(yyl) { }
     }
     //%DECREMENT+5
     public class DECREMENT : TOKEN
     {
-        public override string yyname { get { return "DECREMENT"; } }
-        public override int yynum { get { return 5; } }
+        public override string yyname => "DECREMENT";
+        public override int yynum => 5;
         public DECREMENT(Lexer yyl) : base(yyl) { }
     }
     //%PLUS_EQUALS+6
     public class PLUS_EQUALS : TOKEN
     {
-        public override string yyname { get { return "PLUS_EQUALS"; } }
-        public override int yynum { get { return 6; } }
+        public override string yyname => "PLUS_EQUALS";
+        public override int yynum => 6;
         public PLUS_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%MINUS_EQUALS+7
     public class MINUS_EQUALS : TOKEN
     {
-        public override string yyname { get { return "MINUS_EQUALS"; } }
-        public override int yynum { get { return 7; } }
+        public override string yyname => "MINUS_EQUALS";
+        public override int yynum => 7;
         public MINUS_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%STAR_EQUALS+8
     public class STAR_EQUALS : TOKEN
     {
-        public override string yyname { get { return "STAR_EQUALS"; } }
-        public override int yynum { get { return 8; } }
+        public override string yyname => "STAR_EQUALS";
+        public override int yynum => 8;
         public STAR_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%SLASH_EQUALS+9
     public class SLASH_EQUALS : TOKEN
     {
-        public override string yyname { get { return "SLASH_EQUALS"; } }
-        public override int yynum { get { return 9; } }
+        public override string yyname => "SLASH_EQUALS";
+        public override int yynum => 9;
         public SLASH_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%PERCENT_EQUALS+10
     public class PERCENT_EQUALS : TOKEN
     {
-        public override string yyname { get { return "PERCENT_EQUALS"; } }
-        public override int yynum { get { return 10; } }
+        public override string yyname => "PERCENT_EQUALS";
+        public override int yynum => 10;
         public PERCENT_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%SEMICOLON+11
     public class SEMICOLON : TOKEN
     {
-        public override string yyname { get { return "SEMICOLON"; } }
-        public override int yynum { get { return 11; } }
+        public override string yyname => "SEMICOLON";
+        public override int yynum => 11;
         public SEMICOLON(Lexer yyl) : base(yyl) { }
     }
     //%LEFT_BRACE+12
     public class LEFT_BRACE : TOKEN
     {
-        public override string yyname { get { return "LEFT_BRACE"; } }
-        public override int yynum { get { return 12; } }
+        public override string yyname => "LEFT_BRACE";
+        public override int yynum => 12;
         public LEFT_BRACE(Lexer yyl) : base(yyl) { }
     }
     //%RIGHT_BRACE+13
     public class RIGHT_BRACE : TOKEN
     {
-        public override string yyname { get { return "RIGHT_BRACE"; } }
-        public override int yynum { get { return 13; } }
+        public override string yyname => "RIGHT_BRACE";
+        public override int yynum => 13;
         public RIGHT_BRACE(Lexer yyl) : base(yyl) { }
     }
     //%COMMA+14
     public class COMMA : TOKEN
     {
-        public override string yyname { get { return "COMMA"; } }
-        public override int yynum { get { return 14; } }
+        public override string yyname => "COMMA";
+        public override int yynum => 14;
         public COMMA(Lexer yyl) : base(yyl) { }
     }
     //%EQUALS+15
     public class EQUALS : TOKEN
     {
-        public override string yyname { get { return "EQUALS"; } }
-        public override int yynum { get { return 15; } }
+        public override string yyname => "EQUALS";
+        public override int yynum => 15;
         public EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%LEFT_PAREN+16
     public class LEFT_PAREN : TOKEN
     {
-        public override string yyname { get { return "LEFT_PAREN"; } }
-        public override int yynum { get { return 16; } }
+        public override string yyname => "LEFT_PAREN";
+        public override int yynum => 16;
         public LEFT_PAREN(Lexer yyl) : base(yyl) { }
     }
     //%RIGHT_PAREN+17
     public class RIGHT_PAREN : TOKEN
     {
-        public override string yyname { get { return "RIGHT_PAREN"; } }
-        public override int yynum { get { return 17; } }
+        public override string yyname => "RIGHT_PAREN";
+        public override int yynum => 17;
         public RIGHT_PAREN(Lexer yyl) : base(yyl) { }
     }
     //%PLUS+18
     public class PLUS : TOKEN
     {
-        public override string yyname { get { return "PLUS"; } }
-        public override int yynum { get { return 18; } }
+        public override string yyname => "PLUS";
+        public override int yynum => 18;
         public PLUS(Lexer yyl) : base(yyl) { }
     }
     //%MINUS+19
     public class MINUS : TOKEN
     {
-        public override string yyname { get { return "MINUS"; } }
-        public override int yynum { get { return 19; } }
+        public override string yyname => "MINUS";
+        public override int yynum => 19;
         public MINUS(Lexer yyl) : base(yyl) { }
     }
     //%STAR+20
     public class STAR : TOKEN
     {
-        public override string yyname { get { return "STAR"; } }
-        public override int yynum { get { return 20; } }
+        public override string yyname => "STAR";
+        public override int yynum => 20;
         public STAR(Lexer yyl) : base(yyl) { }
     }
     //%SLASH+21
     public class SLASH : TOKEN
     {
-        public override string yyname { get { return "SLASH"; } }
-        public override int yynum { get { return 21; } }
+        public override string yyname => "SLASH";
+        public override int yynum => 21;
         public SLASH(Lexer yyl) : base(yyl) { }
     }
     //%PERCENT+22
     public class PERCENT : TOKEN
     {
-        public override string yyname { get { return "PERCENT"; } }
-        public override int yynum { get { return 22; } }
+        public override string yyname => "PERCENT";
+        public override int yynum => 22;
         public PERCENT(Lexer yyl) : base(yyl) { }
     }
     //%AT+23
     public class AT : TOKEN
     {
-        public override string yyname { get { return "AT"; } }
-        public override int yynum { get { return 23; } }
+        public override string yyname => "AT";
+        public override int yynum => 23;
         public AT(Lexer yyl) : base(yyl) { }
     }
     //%PERIOD+24
     public class PERIOD : TOKEN
     {
-        public override string yyname { get { return "PERIOD"; } }
-        public override int yynum { get { return 24; } }
+        public override string yyname => "PERIOD";
+        public override int yynum => 24;
         public PERIOD(Lexer yyl) : base(yyl) { }
     }
     //%LEFT_ANGLE+25
     public class LEFT_ANGLE : TOKEN
     {
-        public override string yyname { get { return "LEFT_ANGLE"; } }
-        public override int yynum { get { return 25; } }
+        public override string yyname => "LEFT_ANGLE";
+        public override int yynum => 25;
         public LEFT_ANGLE(Lexer yyl) : base(yyl) { }
     }
     //%RIGHT_ANGLE+26
     public class RIGHT_ANGLE : TOKEN
     {
-        public override string yyname { get { return "RIGHT_ANGLE"; } }
-        public override int yynum { get { return 26; } }
+        public override string yyname => "RIGHT_ANGLE";
+        public override int yynum => 26;
         public RIGHT_ANGLE(Lexer yyl) : base(yyl) { }
     }
     //%LEFT_BRACKET+27
     public class LEFT_BRACKET : TOKEN
     {
-        public override string yyname { get { return "LEFT_BRACKET"; } }
-        public override int yynum { get { return 27; } }
+        public override string yyname => "LEFT_BRACKET";
+        public override int yynum => 27;
         public LEFT_BRACKET(Lexer yyl) : base(yyl) { }
     }
     //%RIGHT_BRACKET+28
     public class RIGHT_BRACKET : TOKEN
     {
-        public override string yyname { get { return "RIGHT_BRACKET"; } }
-        public override int yynum { get { return 28; } }
+        public override string yyname => "RIGHT_BRACKET";
+        public override int yynum => 28;
         public RIGHT_BRACKET(Lexer yyl) : base(yyl) { }
     }
     //%EQUALS_EQUALS+29
     public class EQUALS_EQUALS : TOKEN
     {
-        public override string yyname { get { return "EQUALS_EQUALS"; } }
-        public override int yynum { get { return 29; } }
+        public override string yyname => "EQUALS_EQUALS";
+        public override int yynum => 29;
         public EQUALS_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%EXCLAMATION_EQUALS+30
     public class EXCLAMATION_EQUALS : TOKEN
     {
-        public override string yyname { get { return "EXCLAMATION_EQUALS"; } }
-        public override int yynum { get { return 30; } }
+        public override string yyname => "EXCLAMATION_EQUALS";
+        public override int yynum => 30;
         public EXCLAMATION_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%LESS_EQUALS+31
     public class LESS_EQUALS : TOKEN
     {
-        public override string yyname { get { return "LESS_EQUALS"; } }
-        public override int yynum { get { return 31; } }
+        public override string yyname => "LESS_EQUALS";
+        public override int yynum => 31;
         public LESS_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%GREATER_EQUALS+32
     public class GREATER_EQUALS : TOKEN
     {
-        public override string yyname { get { return "GREATER_EQUALS"; } }
-        public override int yynum { get { return 32; } }
+        public override string yyname => "GREATER_EQUALS";
+        public override int yynum => 32;
         public GREATER_EQUALS(Lexer yyl) : base(yyl) { }
     }
     //%AMP+33
     public class AMP : TOKEN
     {
-        public override string yyname { get { return "AMP"; } }
-        public override int yynum { get { return 33; } }
+        public override string yyname => "AMP";
+        public override int yynum => 33;
         public AMP(Lexer yyl) : base(yyl) { }
     }
     //%STROKE+34
     public class STROKE : TOKEN
     {
-        public override string yyname { get { return "STROKE"; } }
-        public override int yynum { get { return 34; } }
+        public override string yyname => "STROKE";
+        public override int yynum => 34;
         public STROKE(Lexer yyl) : base(yyl) { }
     }
     //%CARET+35
     public class CARET : TOKEN
     {
-        public override string yyname { get { return "CARET"; } }
-        public override int yynum { get { return 35; } }
+        public override string yyname => "CARET";
+        public override int yynum => 35;
         public CARET(Lexer yyl) : base(yyl) { }
     }
     //%TILDE+36
     public class TILDE : TOKEN
     {
-        public override string yyname { get { return "TILDE"; } }
-        public override int yynum { get { return 36; } }
+        public override string yyname => "TILDE";
+        public override int yynum => 36;
         public TILDE(Lexer yyl) : base(yyl) { }
     }
     //%EXCLAMATION+37
     public class EXCLAMATION : TOKEN
     {
-        public override string yyname { get { return "EXCLAMATION"; } }
-        public override int yynum { get { return 37; } }
+        public override string yyname => "EXCLAMATION";
+        public override int yynum => 37;
         public EXCLAMATION(Lexer yyl) : base(yyl) { }
     }
     //%AMP_AMP+38
     public class AMP_AMP : TOKEN
     {
-        public override string yyname { get { return "AMP_AMP"; } }
-        public override int yynum { get { return 38; } }
+        public override string yyname => "AMP_AMP";
+        public override int yynum => 38;
         public AMP_AMP(Lexer yyl) : base(yyl) { }
     }
     //%STROKE_STROKE+39
     public class STROKE_STROKE : TOKEN
     {
-        public override string yyname { get { return "STROKE_STROKE"; } }
-        public override int yynum { get { return 39; } }
+        public override string yyname => "STROKE_STROKE";
+        public override int yynum => 39;
         public STROKE_STROKE(Lexer yyl) : base(yyl) { }
     }
     //%LEFT_SHIFT+40
     public class LEFT_SHIFT : TOKEN
     {
-        public override string yyname { get { return "LEFT_SHIFT"; } }
-        public override int yynum { get { return 40; } }
+        public override string yyname => "LEFT_SHIFT";
+        public override int yynum => 40;
         public LEFT_SHIFT(Lexer yyl) : base(yyl) { }
     }
     //%RIGHT_SHIFT+41
     public class RIGHT_SHIFT : TOKEN
     {
-        public override string yyname { get { return "RIGHT_SHIFT"; } }
-        public override int yynum { get { return 41; } }
+        public override string yyname => "RIGHT_SHIFT";
+        public override int yynum => 41;
         public RIGHT_SHIFT(Lexer yyl) : base(yyl) { }
     }
     //%IF+42
     public class IF : TOKEN
     {
-        public override string yyname { get { return "IF"; } }
-        public override int yynum { get { return 42; } }
+        public override string yyname => "IF";
+        public override int yynum => 42;
         public IF(Lexer yyl) : base(yyl) { }
     }
     //%ELSE+43
     public class ELSE : TOKEN
     {
-        public override string yyname { get { return "ELSE"; } }
-        public override int yynum { get { return 43; } }
+        public override string yyname => "ELSE";
+        public override int yynum => 43;
         public ELSE(Lexer yyl) : base(yyl) { }
     }
     //%DO+44
     public class DO : TOKEN
     {
-        public override string yyname { get { return "DO"; } }
-        public override int yynum { get { return 44; } }
+        public override string yyname => "DO";
+        public override int yynum => 44;
         public DO(Lexer yyl) : base(yyl) { }
     }
     //%WHILE+45
     public class WHILE : TOKEN
     {
-        public override string yyname { get { return "WHILE"; } }
-        public override int yynum { get { return 45; } }
+        public override string yyname => "WHILE";
+        public override int yynum => 45;
         public WHILE(Lexer yyl) : base(yyl) { }
     }
     //%FOR+46
     public class FOR : TOKEN
     {
-        public override string yyname { get { return "FOR"; } }
-        public override int yynum { get { return 46; } }
+        public override string yyname => "FOR";
+        public override int yynum => 46;
         public FOR(Lexer yyl) : base(yyl) { }
     }
     //%DEFAULT_STATE+47
     public class DEFAULT_STATE : TOKEN
     {
-        public override string yyname { get { return "DEFAULT_STATE"; } }
-        public override int yynum { get { return 47; } }
+        public override string yyname => "DEFAULT_STATE";
+        public override int yynum => 47;
         public DEFAULT_STATE(Lexer yyl) : base(yyl) { }
     }
     //%STATE+48
     public class STATE : TOKEN
     {
-        public override string yyname { get { return "STATE"; } }
-        public override int yynum { get { return 48; } }
+        public override string yyname => "STATE";
+        public override int yynum => 48;
         public STATE(Lexer yyl) : base(yyl) { }
     }
     //%JUMP+49
     public class JUMP : TOKEN
     {
-        public override string yyname { get { return "JUMP"; } }
-        public override int yynum { get { return 49; } }
+        public override string yyname => "JUMP";
+        public override int yynum => 49;
         public JUMP(Lexer yyl) : base(yyl) { }
     }
     //%RETURN+50
     public class RETURN : TOKEN
     {
-        public override string yyname { get { return "RETURN"; } }
-        public override int yynum { get { return 50; } }
+        public override string yyname => "RETURN";
+        public override int yynum => 50;
         public RETURN(Lexer yyl) : base(yyl) { }
     }
     //%INTEGER_TYPE+51
     public class INTEGER_TYPE : TOKEN
     {
-        public override string yyname { get { return "INTEGER_TYPE"; } }
-        public override int yynum { get { return 51; } }
+        public override string yyname => "INTEGER_TYPE";
+        public override int yynum => 51;
         public INTEGER_TYPE(Lexer yyl) : base(yyl) { }
     }
     //%FLOAT_TYPE+52
     public class FLOAT_TYPE : TOKEN
     {
-        public override string yyname { get { return "FLOAT_TYPE"; } }
-        public override int yynum { get { return 52; } }
+        public override string yyname => "FLOAT_TYPE";
+        public override int yynum => 52;
         public FLOAT_TYPE(Lexer yyl) : base(yyl) { }
     }
     //%STRING_TYPE+53
     public class STRING_TYPE : TOKEN
     {
-        public override string yyname { get { return "STRING_TYPE"; } }
-        public override int yynum { get { return 53; } }
+        public override string yyname => "STRING_TYPE";
+        public override int yynum => 53;
         public STRING_TYPE(Lexer yyl) : base(yyl) { }
     }
     //%KEY_TYPE+54
     public class KEY_TYPE : TOKEN
     {
-        public override string yyname { get { return "KEY_TYPE"; } }
-        public override int yynum { get { return 54; } }
+        public override string yyname => "KEY_TYPE";
+        public override int yynum => 54;
         public KEY_TYPE(Lexer yyl) : base(yyl) { }
     }
     //%VECTOR_TYPE+55
     public class VECTOR_TYPE : TOKEN
     {
-        public override string yyname { get { return "VECTOR_TYPE"; } }
-        public override int yynum { get { return 55; } }
+        public override string yyname => "VECTOR_TYPE";
+        public override int yynum => 55;
         public VECTOR_TYPE(Lexer yyl) : base(yyl) { }
     }
     //%ROTATION_TYPE+56
     public class ROTATION_TYPE : TOKEN
     {
-        public override string yyname { get { return "ROTATION_TYPE"; } }
-        public override int yynum { get { return 56; } }
+        public override string yyname => "ROTATION_TYPE";
+        public override int yynum => 56;
         public ROTATION_TYPE(Lexer yyl) : base(yyl) { }
     }
     //%LIST_TYPE+57
     public class LIST_TYPE : TOKEN
     {
-        public override string yyname { get { return "LIST_TYPE"; } }
-        public override int yynum { get { return 57; } }
+        public override string yyname => "LIST_TYPE";
+        public override int yynum => 57;
         public LIST_TYPE(Lexer yyl) : base(yyl) { }
     }
     //%AT_ROT_TARGET_EVENT+58
     public class AT_ROT_TARGET_EVENT : TOKEN
     {
-        public override string yyname { get { return "AT_ROT_TARGET_EVENT"; } }
-        public override int yynum { get { return 58; } }
+        public override string yyname => "AT_ROT_TARGET_EVENT";
+        public override int yynum => 58;
         public AT_ROT_TARGET_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%AT_TARGET_EVENT+59
     public class AT_TARGET_EVENT : TOKEN
     {
-        public override string yyname { get { return "AT_TARGET_EVENT"; } }
-        public override int yynum { get { return 59; } }
+        public override string yyname => "AT_TARGET_EVENT";
+        public override int yynum => 59;
         public AT_TARGET_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%ATTACH_EVENT+60
     public class ATTACH_EVENT : TOKEN
     {
-        public override string yyname { get { return "ATTACH_EVENT"; } }
-        public override int yynum { get { return 60; } }
+        public override string yyname => "ATTACH_EVENT";
+        public override int yynum => 60;
         public ATTACH_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%CHANGED_EVENT+61
     public class CHANGED_EVENT : TOKEN
     {
-        public override string yyname { get { return "CHANGED_EVENT"; } }
-        public override int yynum { get { return 61; } }
+        public override string yyname => "CHANGED_EVENT";
+        public override int yynum => 61;
         public CHANGED_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%COLLISION_EVENT+62
     public class COLLISION_EVENT : TOKEN
     {
-        public override string yyname { get { return "COLLISION_EVENT"; } }
-        public override int yynum { get { return 62; } }
+        public override string yyname => "COLLISION_EVENT";
+        public override int yynum => 62;
         public COLLISION_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%COLLISION_END_EVENT+63
     public class COLLISION_END_EVENT : TOKEN
     {
-        public override string yyname { get { return "COLLISION_END_EVENT"; } }
-        public override int yynum { get { return 63; } }
+        public override string yyname => "COLLISION_END_EVENT";
+        public override int yynum => 63;
         public COLLISION_END_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%COLLISION_START_EVENT+64
     public class COLLISION_START_EVENT : TOKEN
     {
-        public override string yyname { get { return "COLLISION_START_EVENT"; } }
-        public override int yynum { get { return 64; } }
+        public override string yyname => "COLLISION_START_EVENT";
+        public override int yynum => 64;
         public COLLISION_START_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%CONTROL_EVENT+65
     public class CONTROL_EVENT : TOKEN
     {
-        public override string yyname { get { return "CONTROL_EVENT"; } }
-        public override int yynum { get { return 65; } }
+        public override string yyname => "CONTROL_EVENT";
+        public override int yynum => 65;
         public CONTROL_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%DATASERVER_EVENT+66
     public class DATASERVER_EVENT : TOKEN
     {
-        public override string yyname { get { return "DATASERVER_EVENT"; } }
-        public override int yynum { get { return 66; } }
+        public override string yyname => "DATASERVER_EVENT";
+        public override int yynum => 66;
         public DATASERVER_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%EMAIL_EVENT+67
     public class EMAIL_EVENT : TOKEN
     {
-        public override string yyname { get { return "EMAIL_EVENT"; } }
-        public override int yynum { get { return 67; } }
+        public override string yyname => "EMAIL_EVENT";
+        public override int yynum => 67;
         public EMAIL_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%HTTP_RESPONSE_EVENT+68
     public class HTTP_RESPONSE_EVENT : TOKEN
     {
-        public override string yyname { get { return "HTTP_RESPONSE_EVENT"; } }
-        public override int yynum { get { return 68; } }
+        public override string yyname => "HTTP_RESPONSE_EVENT";
+        public override int yynum => 68;
         public HTTP_RESPONSE_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%LAND_COLLISION_EVENT+69
     public class LAND_COLLISION_EVENT : TOKEN
     {
-        public override string yyname { get { return "LAND_COLLISION_EVENT"; } }
-        public override int yynum { get { return 69; } }
+        public override string yyname => "LAND_COLLISION_EVENT";
+        public override int yynum => 69;
         public LAND_COLLISION_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%LAND_COLLISION_END_EVENT+70
     public class LAND_COLLISION_END_EVENT : TOKEN
     {
-        public override string yyname { get { return "LAND_COLLISION_END_EVENT"; } }
-        public override int yynum { get { return 70; } }
+        public override string yyname => "LAND_COLLISION_END_EVENT";
+        public override int yynum => 70;
         public LAND_COLLISION_END_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%LAND_COLLISION_START_EVENT+71
     public class LAND_COLLISION_START_EVENT : TOKEN
     {
-        public override string yyname { get { return "LAND_COLLISION_START_EVENT"; } }
-        public override int yynum { get { return 71; } }
+        public override string yyname => "LAND_COLLISION_START_EVENT";
+        public override int yynum => 71;
         public LAND_COLLISION_START_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%LINK_MESSAGE_EVENT+72
     public class LINK_MESSAGE_EVENT : TOKEN
     {
-        public override string yyname { get { return "LINK_MESSAGE_EVENT"; } }
-        public override int yynum { get { return 72; } }
+        public override string yyname => "LINK_MESSAGE_EVENT";
+        public override int yynum => 72;
         public LINK_MESSAGE_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%LISTEN_EVENT+73
     public class LISTEN_EVENT : TOKEN
     {
-        public override string yyname { get { return "LISTEN_EVENT"; } }
-        public override int yynum { get { return 73; } }
+        public override string yyname => "LISTEN_EVENT";
+        public override int yynum => 73;
         public LISTEN_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%MONEY_EVENT+74
     public class MONEY_EVENT : TOKEN
     {
-        public override string yyname { get { return "MONEY_EVENT"; } }
-        public override int yynum { get { return 74; } }
+        public override string yyname => "MONEY_EVENT";
+        public override int yynum => 74;
         public MONEY_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%MOVING_END_EVENT+75
     public class MOVING_END_EVENT : TOKEN
     {
-        public override string yyname { get { return "MOVING_END_EVENT"; } }
-        public override int yynum { get { return 75; } }
+        public override string yyname => "MOVING_END_EVENT";
+        public override int yynum => 75;
         public MOVING_END_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%MOVING_START_EVENT+76
     public class MOVING_START_EVENT : TOKEN
     {
-        public override string yyname { get { return "MOVING_START_EVENT"; } }
-        public override int yynum { get { return 76; } }
+        public override string yyname => "MOVING_START_EVENT";
+        public override int yynum => 76;
         public MOVING_START_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%NO_SENSOR_EVENT+77
     public class NO_SENSOR_EVENT : TOKEN
     {
-        public override string yyname { get { return "NO_SENSOR_EVENT"; } }
-        public override int yynum { get { return 77; } }
+        public override string yyname => "NO_SENSOR_EVENT";
+        public override int yynum => 77;
         public NO_SENSOR_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%NOT_AT_ROT_TARGET_EVENT+78
     public class NOT_AT_ROT_TARGET_EVENT : TOKEN
     {
-        public override string yyname { get { return "NOT_AT_ROT_TARGET_EVENT"; } }
-        public override int yynum { get { return 78; } }
+        public override string yyname => "NOT_AT_ROT_TARGET_EVENT";
+        public override int yynum => 78;
         public NOT_AT_ROT_TARGET_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%NOT_AT_TARGET_EVENT+79
     public class NOT_AT_TARGET_EVENT : TOKEN
     {
-        public override string yyname { get { return "NOT_AT_TARGET_EVENT"; } }
-        public override int yynum { get { return 79; } }
+        public override string yyname => "NOT_AT_TARGET_EVENT";
+        public override int yynum => 79;
         public NOT_AT_TARGET_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%OBJECT_REZ_EVENT+80
     public class OBJECT_REZ_EVENT : TOKEN
     {
-        public override string yyname { get { return "OBJECT_REZ_EVENT"; } }
-        public override int yynum { get { return 80; } }
+        public override string yyname => "OBJECT_REZ_EVENT";
+        public override int yynum => 80;
         public OBJECT_REZ_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%ON_REZ_EVENT+81
     public class ON_REZ_EVENT : TOKEN
     {
-        public override string yyname { get { return "ON_REZ_EVENT"; } }
-        public override int yynum { get { return 81; } }
+        public override string yyname => "ON_REZ_EVENT";
+        public override int yynum => 81;
         public ON_REZ_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%REMOTE_DATA_EVENT+82
     public class REMOTE_DATA_EVENT : TOKEN
     {
-        public override string yyname { get { return "REMOTE_DATA_EVENT"; } }
-        public override int yynum { get { return 82; } }
+        public override string yyname => "REMOTE_DATA_EVENT";
+        public override int yynum => 82;
         public REMOTE_DATA_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%RUN_TIME_PERMISSIONS_EVENT+83
     public class RUN_TIME_PERMISSIONS_EVENT : TOKEN
     {
-        public override string yyname { get { return "RUN_TIME_PERMISSIONS_EVENT"; } }
-        public override int yynum { get { return 83; } }
+        public override string yyname => "RUN_TIME_PERMISSIONS_EVENT";
+        public override int yynum => 83;
         public RUN_TIME_PERMISSIONS_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%SENSOR_EVENT+84
     public class SENSOR_EVENT : TOKEN
     {
-        public override string yyname { get { return "SENSOR_EVENT"; } }
-        public override int yynum { get { return 84; } }
+        public override string yyname => "SENSOR_EVENT";
+        public override int yynum => 84;
         public SENSOR_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%STATE_ENTRY_EVENT+85
     public class STATE_ENTRY_EVENT : TOKEN
     {
-        public override string yyname { get { return "STATE_ENTRY_EVENT"; } }
-        public override int yynum { get { return 85; } }
+        public override string yyname => "STATE_ENTRY_EVENT";
+        public override int yynum => 85;
         public STATE_ENTRY_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%STATE_EXIT_EVENT+86
     public class STATE_EXIT_EVENT : TOKEN
     {
-        public override string yyname { get { return "STATE_EXIT_EVENT"; } }
-        public override int yynum { get { return 86; } }
+        public override string yyname => "STATE_EXIT_EVENT";
+        public override int yynum => 86;
         public STATE_EXIT_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%TIMER_EVENT+87
     public class TIMER_EVENT : TOKEN
     {
-        public override string yyname { get { return "TIMER_EVENT"; } }
-        public override int yynum { get { return 87; } }
+        public override string yyname => "TIMER_EVENT";
+        public override int yynum => 87;
         public TIMER_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%TOUCH_EVENT+88
     public class TOUCH_EVENT : TOKEN
     {
-        public override string yyname { get { return "TOUCH_EVENT"; } }
-        public override int yynum { get { return 88; } }
+        public override string yyname => "TOUCH_EVENT";
+        public override int yynum => 88;
         public TOUCH_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%TOUCH_START_EVENT+89
     public class TOUCH_START_EVENT : TOKEN
     {
-        public override string yyname { get { return "TOUCH_START_EVENT"; } }
-        public override int yynum { get { return 89; } }
+        public override string yyname => "TOUCH_START_EVENT";
+        public override int yynum => 89;
         public TOUCH_START_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%TOUCH_END_EVENT+90
     public class TOUCH_END_EVENT : TOKEN
     {
-        public override string yyname { get { return "TOUCH_END_EVENT"; } }
-        public override int yynum { get { return 90; } }
+        public override string yyname => "TOUCH_END_EVENT";
+        public override int yynum => 90;
         public TOUCH_END_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%HTTP_REQUEST_EVENT+91
     public class HTTP_REQUEST_EVENT : TOKEN
     {
-        public override string yyname { get { return "HTTP_REQUEST_EVENT"; } }
-        public override int yynum { get { return 91; } }
+        public override string yyname => "HTTP_REQUEST_EVENT";
+        public override int yynum => 91;
         public HTTP_REQUEST_EVENT(Lexer yyl) : base(yyl) { }
     }
     //%IDENT+92
     public class IDENT : TOKEN
     {
-        public override string yyname { get { return "IDENT"; } }
-        public override int yynum { get { return 92; } }
+        public override string yyname => "IDENT";
+        public override int yynum => 92;
         public IDENT(Lexer yyl) : base(yyl) { }
     }
     //%INTEGER_CONSTANT+93
     public class INTEGER_CONSTANT : TOKEN
     {
-        public override string yyname { get { return "INTEGER_CONSTANT"; } }
-        public override int yynum { get { return 93; } }
+        public override string yyname => "INTEGER_CONSTANT";
+        public override int yynum => 93;
         public INTEGER_CONSTANT(Lexer yyl) : base(yyl) { }
     }
     //%HEX_INTEGER_CONSTANT+94
     public class HEX_INTEGER_CONSTANT : TOKEN
     {
-        public override string yyname { get { return "HEX_INTEGER_CONSTANT"; } }
-        public override int yynum { get { return 94; } }
+        public override string yyname => "HEX_INTEGER_CONSTANT";
+        public override int yynum => 94;
         public HEX_INTEGER_CONSTANT(Lexer yyl) : base(yyl) { }
     }
     //%FLOAT_CONSTANT+95
     public class FLOAT_CONSTANT : TOKEN
     {
-        public override string yyname { get { return "FLOAT_CONSTANT"; } }
-        public override int yynum { get { return 95; } }
+        public override string yyname => "FLOAT_CONSTANT";
+        public override int yynum => 95;
         public FLOAT_CONSTANT(Lexer yyl) : base(yyl) { }
     }
     //%|LSLTokens

@@ -35,20 +35,11 @@ namespace Radegast.Commands
     public class LoadPluginCommand : IRadegastCommand
     {
         private RadegastInstance instance;
-        public string Name
-        {
-            get { return "loadplugin"; }
-        }
+        public string Name => "loadplugin";
 
-        public string Description
-        {
-            get { return "Loads plugins from a path"; }
-        }
+        public string Description => "Loads plugins from a path";
 
-        public string Usage
-        {
-            get { return "loadplugin c:\\\\myplugindir\\\\plugin.dll"; }
-        }
+        public string Usage => "loadplugin c:\\\\myplugindir\\\\plugin.dll";
 
         public void StartCommand(RadegastInstance inst)
         {

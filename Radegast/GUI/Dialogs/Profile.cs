@@ -250,10 +250,7 @@ namespace Radegast
 
             newPickID = UUID.Zero;
 
-            if (firstButton != null)
-            {
-                firstButton.PerformClick();
-            }
+            firstButton?.PerformClick();
         }
 
         void PickButtonClick(object sender, EventArgs e)

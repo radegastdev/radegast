@@ -46,8 +46,8 @@ namespace Radegast
         public event EventHandler<ChatLineAddedArgs> ChatLineAdded;
 
         private RadegastInstance instance;
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
-        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom => instance.Netcom;
+        private GridClient client => instance.Client;
 
         private List<ChatBufferItem> textBuffer;
 
@@ -174,10 +174,7 @@ namespace Radegast
 
         public void ProcessBufferItem(ChatBufferItem item, bool addToBuffer)
         {
-            if (ChatLineAdded != null)
-            {
-                ChatLineAdded(this, new ChatLineAddedArgs(item));
-            }
+            ChatLineAdded?.Invoke(this, new ChatLineAddedArgs(item));
 
             lock (SyncChat)
             {

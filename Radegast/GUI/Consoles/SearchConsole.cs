@@ -41,7 +41,7 @@ namespace Radegast
     {
         #region Private members
         private RadegastInstance instance;
-        private GridClient client { get { return instance.Client; } }
+        private GridClient client => instance.Client;
 
         private FindPeopleConsole console;
 

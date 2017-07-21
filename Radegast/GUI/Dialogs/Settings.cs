@@ -972,14 +972,11 @@ namespace Radegast
 
         private void lbxColorItems_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(sender is ListBox)
+            var sourceListbox = sender as ListBox;
+            if(sourceListbox?.SelectedItem is Settings.FontSetting)
             {
-                var sourceListbox = sender as ListBox;
-                if(sourceListbox.SelectedItem is Settings.FontSetting)
-                {
-                    var fontSettings = sourceListbox.SelectedItem as Settings.FontSetting;
-                    UpdateSelection(fontSettings);
-                }
+                var fontSettings = sourceListbox.SelectedItem as Settings.FontSetting;
+                UpdateSelection(fontSettings);
             }
         }
 

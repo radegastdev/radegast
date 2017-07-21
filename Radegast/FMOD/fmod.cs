@@ -994,8 +994,8 @@ namespace FMOD
         private IntPtr                      functionname_internal;      /* Function that the error occurred on */
         private IntPtr                      functionparams_internal;    /* Function parameters that the error ocurred on */
 
-        public string functionname   { get { return Marshal.PtrToStringAnsi(functionname_internal); } }
-        public string functionparams { get { return Marshal.PtrToStringAnsi(functionparams_internal); } }
+        public string functionname => Marshal.PtrToStringAnsi(functionname_internal);
+        public string functionparams => Marshal.PtrToStringAnsi(functionparams_internal);
     }
 
     /*
@@ -1255,7 +1255,7 @@ namespace FMOD
         public  uint              datalen;      /* [r] Length of the data contained in this tag */
         public  bool              updated;      /* [r] True if this tag has been updated since last being accessed with Sound::getTag */
 
-        public string name { get { return Marshal.PtrToStringAnsi(name_internal); } }
+        public string name => Marshal.PtrToStringAnsi(name_internal);
     }
 
 

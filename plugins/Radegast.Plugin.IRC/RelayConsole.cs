@@ -114,7 +114,7 @@ namespace Radegast.Plugin.IRC
 
         public IrcClient irc;
 
-        TabsConsole TC { get { return instance.TabConsole; } }
+        TabsConsole TC => instance.TabConsole;
         RichTextBoxPrinter textPrinter;
         private List<string> chatHistory = new List<string>();
         private int chatPointer;

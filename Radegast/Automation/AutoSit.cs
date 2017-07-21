@@ -107,7 +107,7 @@ namespace Radegast.Automation
 
         public AutoSitPreferences Preferences
         {
-            get { return !m_instance.Client.Network.Connected ? null : (AutoSitPreferences)m_instance.ClientSettings; }
+            get => !m_instance.Client.Network.Connected ? null : (AutoSitPreferences)m_instance.ClientSettings;
 
             set {
                 m_instance.ClientSettings["AutoSit"] = value;

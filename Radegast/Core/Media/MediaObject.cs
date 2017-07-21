@@ -127,10 +127,7 @@ namespace Radegast.Media
         protected float volume = 0.8f;
         public float Volume
         {
-            get
-            {
-                return volume;
-            }
+            get => volume;
             set
             {
                 volume = value;

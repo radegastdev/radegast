@@ -60,7 +60,7 @@ namespace Radegast
         [Browsable(true), Category("Behavior"), DefaultValue(false)]
         public bool SyntaxHighlightEnabled
         {
-            get { return syntaxHighLightEnabled; }
+            get => syntaxHighLightEnabled;
 
             set
             {
@@ -279,10 +279,7 @@ namespace Radegast
 
         public override string Text
         {
-            get
-            {
-                return base.Text;
-            }
+            get => base.Text;
             set
             {
                 if (syntaxHighLightEnabled && value != null)

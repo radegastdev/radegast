@@ -38,7 +38,7 @@ namespace Radegast
     {
 
         RadegastInstance Instance;
-        GridClient Client { get { return Instance.Client; }}
+        GridClient Client => Instance.Client;
         Inventory Store;
 
         public InitialOutfit(RadegastInstance instance)

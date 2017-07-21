@@ -18,8 +18,8 @@ namespace Radegast.LSL
             while (0 < s.kids.Count) kids.Add(s.kids.Pop());
         }
 
-        public override string yyname { get { return "LSLProgramRoot"; } }
-        public override int yynum { get { return 96; } }
+        public override string yyname => "LSLProgramRoot";
+        public override int yynum => 96;
         public LSLProgramRoot(Parser yyp) : base(yyp) { }
     }
     //%+GlobalDefinitions+97
@@ -52,8 +52,8 @@ namespace Radegast.LSL
             kids.Add(gfd);
         }
 
-        public override string yyname { get { return "GlobalDefinitions"; } }
-        public override int yynum { get { return 97; } }
+        public override string yyname => "GlobalDefinitions";
+        public override int yynum => 97;
         public GlobalDefinitions(Parser yyp) : base(yyp) { }
     }
     //%+GlobalVariableDeclaration+98
@@ -72,8 +72,8 @@ namespace Radegast.LSL
             kids.Add(a);
         }
 
-        public override string yyname { get { return "GlobalVariableDeclaration"; } }
-        public override int yynum { get { return 98; } }
+        public override string yyname => "GlobalVariableDeclaration";
+        public override int yynum => 98;
         public GlobalVariableDeclaration(Parser yyp) : base(yyp) { }
     }
     //%+GlobalFunctionDefinition+99
@@ -92,8 +92,8 @@ namespace Radegast.LSL
 
         public string Name { get; }
 
-        public override string yyname { get { return "GlobalFunctionDefinition"; } }
-        public override int yynum { get { return 99; } }
+        public override string yyname => "GlobalFunctionDefinition";
+        public override int yynum => 99;
         public GlobalFunctionDefinition(Parser yyp) : base(yyp) { }
     }
     //%+States+100
@@ -113,8 +113,8 @@ namespace Radegast.LSL
             kids.Add(us);
         }
 
-        public override string yyname { get { return "States"; } }
-        public override int yynum { get { return 100; } }
+        public override string yyname => "States";
+        public override int yynum => 100;
         public States(Parser yyp) : base(yyp) { }
     }
     //%+State+101
@@ -133,8 +133,8 @@ namespace Radegast.LSL
         }
         public string Name { get; }
 
-        public override string yyname { get { return "State"; } }
-        public override int yynum { get { return 101; } }
+        public override string yyname => "State";
+        public override int yynum => 101;
         public State(Parser yyp) : base(yyp) { }
     }
     //%+StateBody+102
@@ -154,8 +154,8 @@ namespace Radegast.LSL
             kids.Add(se);
         }
 
-        public override string yyname { get { return "StateBody"; } }
-        public override int yynum { get { return 102; } }
+        public override string yyname => "StateBody";
+        public override int yynum => 102;
         public StateBody(Parser yyp) : base(yyp) { }
     }
     //%+StateEvent+103
@@ -182,8 +182,8 @@ namespace Radegast.LSL
         }
         public string Name { get; }
 
-        public override string yyname { get { return "StateEvent"; } }
-        public override int yynum { get { return 103; } }
+        public override string yyname => "StateEvent";
+        public override int yynum => 103;
         public StateEvent(Parser yyp) : base(yyp) { }
     }
     //%+ArgumentDeclarationList+104
@@ -203,8 +203,8 @@ namespace Radegast.LSL
             kids.Add(d);
         }
 
-        public override string yyname { get { return "ArgumentDeclarationList"; } }
-        public override int yynum { get { return 104; } }
+        public override string yyname => "ArgumentDeclarationList";
+        public override int yynum => 104;
         public ArgumentDeclarationList(Parser yyp) : base(yyp) { }
     }
     //%+Declaration+105
@@ -225,8 +225,8 @@ namespace Radegast.LSL
 
         public string Id { get; }
 
-        public override string yyname { get { return "Declaration"; } }
-        public override int yynum { get { return 105; } }
+        public override string yyname => "Declaration";
+        public override int yynum => 105;
         public Declaration(Parser yyp) : base(yyp) { }
     }
     //%+Typename+106
@@ -240,8 +240,8 @@ namespace Radegast.LSL
             yytext = text;
         }
 
-        public override string yyname { get { return "Typename"; } }
-        public override int yynum { get { return 106; } }
+        public override string yyname => "Typename";
+        public override int yynum => 106;
         public Typename(Parser yyp) : base(yyp) { }
     }
     //%+Event+107
@@ -255,8 +255,8 @@ namespace Radegast.LSL
             yytext = text;
         }
 
-        public override string yyname { get { return "Event"; } }
-        public override int yynum { get { return 107; } }
+        public override string yyname => "Event";
+        public override int yynum => 107;
         public Event(Parser yyp) : base(yyp) { }
     }
     //%+CompoundStatement+108
@@ -272,8 +272,8 @@ namespace Radegast.LSL
             while (0 < sl.kids.Count) kids.Add(sl.kids.Pop());
         }
 
-        public override string yyname { get { return "CompoundStatement"; } }
-        public override int yynum { get { return 108; } }
+        public override string yyname => "CompoundStatement";
+        public override int yynum => 108;
     }
     //%+StatementList+109
     public class StatementList : SYMBOL
@@ -297,8 +297,8 @@ namespace Radegast.LSL
             AddStatement(s);
         }
 
-        public override string yyname { get { return "StatementList"; } }
-        public override int yynum { get { return 109; } }
+        public override string yyname => "StatementList";
+        public override int yynum => 109;
         public StatementList(Parser yyp) : base(yyp) { }
     }
     //%+Statement+110
@@ -389,8 +389,8 @@ namespace Radegast.LSL
             kids.Add(es);
         }
 
-        public override string yyname { get { return "Statement"; } }
-        public override int yynum { get { return 110; } }
+        public override string yyname => "Statement";
+        public override int yynum => 110;
         public Statement(Parser yyp) : base(yyp) { }
     }
     //%+EmptyStatement+111
@@ -400,8 +400,8 @@ namespace Radegast.LSL
             : base(((LSLSyntax
                 )yyp)) { }
 
-        public override string yyname { get { return "EmptyStatement"; } }
-        public override int yynum { get { return 111; } }
+        public override string yyname => "EmptyStatement";
+        public override int yynum => 111;
     }
     //%+Assignment+112
     public class Assignment : SYMBOL
@@ -423,20 +423,15 @@ namespace Radegast.LSL
             m_assignmentType = sa.AssignmentType;
             while (0 < sa.kids.Count) kids.Add(sa.kids.Pop());
         }
-        public string AssignmentType
-        {
-            get
-            {
-                return m_assignmentType;
-            }
-        }
+        public string AssignmentType => m_assignmentType;
+
         public override string ToString()
         {
             return base.ToString() + "<" + m_assignmentType + ">";
         }
 
-        public override string yyname { get { return "Assignment"; } }
-        public override int yynum { get { return 112; } }
+        public override string yyname => "Assignment";
+        public override int yynum => 112;
         public Assignment(Parser yyp) : base(yyp) { }
     }
     //%+SimpleAssignment+113
@@ -452,8 +447,8 @@ namespace Radegast.LSL
             else kids.Add(rhs);
         }
 
-        public override string yyname { get { return "SimpleAssignment"; } }
-        public override int yynum { get { return 113; } }
+        public override string yyname => "SimpleAssignment";
+        public override int yynum => 113;
         public SimpleAssignment(Parser yyp) : base(yyp) { }
     }
     //%+ReturnStatement+114
@@ -470,8 +465,8 @@ namespace Radegast.LSL
             else kids.Add(e);
         }
 
-        public override string yyname { get { return "ReturnStatement"; } }
-        public override int yynum { get { return 114; } }
+        public override string yyname => "ReturnStatement";
+        public override int yynum => 114;
     }
     //%+JumpLabel+115
     public class JumpLabel : SYMBOL
@@ -489,8 +484,8 @@ namespace Radegast.LSL
             return base.ToString() + "<" + LabelName + ">";
         }
 
-        public override string yyname { get { return "JumpLabel"; } }
-        public override int yynum { get { return 115; } }
+        public override string yyname => "JumpLabel";
+        public override int yynum => 115;
         public JumpLabel(Parser yyp) : base(yyp) { }
     }
     //%+JumpStatement+116
@@ -509,8 +504,8 @@ namespace Radegast.LSL
             return base.ToString() + "<" + TargetName + ">";
         }
 
-        public override string yyname { get { return "JumpStatement"; } }
-        public override int yynum { get { return 116; } }
+        public override string yyname => "JumpStatement";
+        public override int yynum => 116;
         public JumpStatement(Parser yyp) : base(yyp) { }
     }
     //%+StateChange+117
@@ -524,8 +519,8 @@ namespace Radegast.LSL
         }
         public string NewState { get; }
 
-        public override string yyname { get { return "StateChange"; } }
-        public override int yynum { get { return 117; } }
+        public override string yyname => "StateChange";
+        public override int yynum => 117;
         public StateChange(Parser yyp) : base(yyp) { }
     }
     //%+IfStatement+118
@@ -553,8 +548,8 @@ namespace Radegast.LSL
             else AddStatement(es);
         }
 
-        public override string yyname { get { return "IfStatement"; } }
-        public override int yynum { get { return 118; } }
+        public override string yyname => "IfStatement";
+        public override int yynum => 118;
         public IfStatement(Parser yyp) : base(yyp) { }
     }
     //%+WhileStatement+119
@@ -569,8 +564,8 @@ namespace Radegast.LSL
             else kids.Add(st);
         }
 
-        public override string yyname { get { return "WhileStatement"; } }
-        public override int yynum { get { return 119; } }
+        public override string yyname => "WhileStatement";
+        public override int yynum => 119;
         public WhileStatement(Parser yyp) : base(yyp) { }
     }
     //%+DoWhileStatement+120
@@ -585,8 +580,8 @@ namespace Radegast.LSL
             kids.Add(s);
         }
 
-        public override string yyname { get { return "DoWhileStatement"; } }
-        public override int yynum { get { return 120; } }
+        public override string yyname => "DoWhileStatement";
+        public override int yynum => 120;
         public DoWhileStatement(Parser yyp) : base(yyp) { }
     }
     //%+ForLoop+121
@@ -603,8 +598,8 @@ namespace Radegast.LSL
             else kids.Add(s);
         }
 
-        public override string yyname { get { return "ForLoop"; } }
-        public override int yynum { get { return 121; } }
+        public override string yyname => "ForLoop";
+        public override int yynum => 121;
         public ForLoop(Parser yyp) : base(yyp) { }
     }
     //%+ForLoopStatement+122
@@ -637,8 +632,8 @@ namespace Radegast.LSL
             kids.Add(sa);
         }
 
-        public override string yyname { get { return "ForLoopStatement"; } }
-        public override int yynum { get { return 122; } }
+        public override string yyname => "ForLoopStatement";
+        public override int yynum => 122;
         public ForLoopStatement(Parser yyp) : base(yyp) { }
     }
     //%+FunctionCall+123
@@ -657,8 +652,8 @@ namespace Radegast.LSL
         }
         public string Id { get; }
 
-        public override string yyname { get { return "FunctionCall"; } }
-        public override int yynum { get { return 123; } }
+        public override string yyname => "FunctionCall";
+        public override int yynum => 123;
         public FunctionCall(Parser yyp) : base(yyp) { }
     }
     //%+ArgumentList+124
@@ -683,15 +678,15 @@ namespace Radegast.LSL
             else kids.Add(a);
         }
 
-        public override string yyname { get { return "ArgumentList"; } }
-        public override int yynum { get { return 124; } }
+        public override string yyname => "ArgumentList";
+        public override int yynum => 124;
         public ArgumentList(Parser yyp) : base(yyp) { }
     }
     //%+Argument+125
     public class Argument : SYMBOL
     {
-        public override string yyname { get { return "Argument"; } }
-        public override int yynum { get { return 125; } }
+        public override string yyname => "Argument";
+        public override int yynum => 125;
         public Argument(Parser yyp) : base(yyp) { }
     }
     //%+ExpressionArgument+126
@@ -705,8 +700,8 @@ namespace Radegast.LSL
             else kids.Add(e);
         }
 
-        public override string yyname { get { return "ExpressionArgument"; } }
-        public override int yynum { get { return 126; } }
+        public override string yyname => "ExpressionArgument";
+        public override int yynum => 126;
         public ExpressionArgument(Parser yyp) : base(yyp) { }
     }
     //%+Constant+127
@@ -727,8 +722,8 @@ namespace Radegast.LSL
 
         public string Type { get; set; }
 
-        public override string yyname { get { return "Constant"; } }
-        public override int yynum { get { return 127; } }
+        public override string yyname => "Constant";
+        public override int yynum => 127;
         public Constant(Parser yyp) : base(yyp) { }
     }
     //%+VectorConstant+128
@@ -743,8 +738,8 @@ namespace Radegast.LSL
             kids.Add(valZ);
         }
 
-        public override string yyname { get { return "VectorConstant"; } }
-        public override int yynum { get { return 128; } }
+        public override string yyname => "VectorConstant";
+        public override int yynum => 128;
         public VectorConstant(Parser yyp) : base(yyp) { }
     }
     //%+RotationConstant+129
@@ -760,8 +755,8 @@ namespace Radegast.LSL
             kids.Add(valS);
         }
 
-        public override string yyname { get { return "RotationConstant"; } }
-        public override int yynum { get { return 129; } }
+        public override string yyname => "RotationConstant";
+        public override int yynum => 129;
         public RotationConstant(Parser yyp) : base(yyp) { }
     }
     //%+ListConstant+130
@@ -774,8 +769,8 @@ namespace Radegast.LSL
             kids.Add(al);
         }
 
-        public override string yyname { get { return "ListConstant"; } }
-        public override int yynum { get { return 130; } }
+        public override string yyname => "ListConstant";
+        public override int yynum => 130;
         public ListConstant(Parser yyp) : base(yyp) { }
     }
     //%+Expression+131
@@ -787,8 +782,8 @@ namespace Radegast.LSL
             else kids.Add(e);
         }
 
-        public override string yyname { get { return "Expression"; } }
-        public override int yynum { get { return 131; } }
+        public override string yyname => "Expression";
+        public override int yynum => 131;
         public Expression(Parser yyp) : base(yyp) { }
     }
     //%+ConstantExpression+132
@@ -801,8 +796,8 @@ namespace Radegast.LSL
             kids.Add(c);
         }
 
-        public override string yyname { get { return "ConstantExpression"; } }
-        public override int yynum { get { return 132; } }
+        public override string yyname => "ConstantExpression";
+        public override int yynum => 132;
         public ConstantExpression(Parser yyp) : base(yyp) { }
     }
     //%+IdentExpression+133
@@ -819,16 +814,10 @@ namespace Radegast.LSL
         {
             return base.ToString() + "<" + m_name + ">";
         }
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-        }
+        public string Name => m_name;
 
-        public override string yyname { get { return "IdentExpression"; } }
-        public override int yynum { get { return 133; } }
+        public override string yyname => "IdentExpression";
+        public override int yynum => 133;
         public IdentExpression(Parser yyp) : base(yyp) { }
     }
     //%+IdentDotExpression+134
@@ -847,8 +836,8 @@ namespace Radegast.LSL
         }
         public string Member { get; }
 
-        public override string yyname { get { return "IdentDotExpression"; } }
-        public override int yynum { get { return 134; } }
+        public override string yyname => "IdentDotExpression";
+        public override int yynum => 134;
         public IdentDotExpression(Parser yyp) : base(yyp) { }
     }
     //%+FunctionCallExpression+135
@@ -861,8 +850,8 @@ namespace Radegast.LSL
             kids.Add(fc);
         }
 
-        public override string yyname { get { return "FunctionCallExpression"; } }
-        public override int yynum { get { return 135; } }
+        public override string yyname => "FunctionCallExpression";
+        public override int yynum => 135;
         public FunctionCallExpression(Parser yyp) : base(yyp) { }
     }
     //%+BinaryExpression+136
@@ -883,8 +872,8 @@ namespace Radegast.LSL
             return base.ToString() + "<" + ExpressionSymbol + ">";
         }
 
-        public override string yyname { get { return "BinaryExpression"; } }
-        public override int yynum { get { return 136; } }
+        public override string yyname => "BinaryExpression";
+        public override int yynum => 136;
         public BinaryExpression(Parser yyp) : base(yyp) { }
     }
     //%+UnaryExpression+137
@@ -904,8 +893,8 @@ namespace Radegast.LSL
             return base.ToString() + "<" + UnarySymbol + ">";
         }
 
-        public override string yyname { get { return "UnaryExpression"; } }
-        public override int yynum { get { return 137; } }
+        public override string yyname => "UnaryExpression";
+        public override int yynum => 137;
         public UnaryExpression(Parser yyp) : base(yyp) { }
     }
     //%+TypecastExpression+138
@@ -920,8 +909,8 @@ namespace Radegast.LSL
         }
         public string TypecastType { get; set; }
 
-        public override string yyname { get { return "TypecastExpression"; } }
-        public override int yynum { get { return 138; } }
+        public override string yyname => "TypecastExpression";
+        public override int yynum => 138;
         public TypecastExpression(Parser yyp) : base(yyp) { }
     }
     //%+ParenthesisExpression+139
@@ -934,8 +923,8 @@ namespace Radegast.LSL
             kids.Add(s);
         }
 
-        public override string yyname { get { return "ParenthesisExpression"; } }
-        public override int yynum { get { return 139; } }
+        public override string yyname => "ParenthesisExpression";
+        public override int yynum => 139;
         public ParenthesisExpression(Parser yyp) : base(yyp) { }
     }
     //%+IncrementDecrementExpression+140
@@ -967,8 +956,8 @@ namespace Radegast.LSL
 
         public bool PostOperation { get; }
 
-        public override string yyname { get { return "IncrementDecrementExpression"; } }
-        public override int yynum { get { return 140; } }
+        public override string yyname => "IncrementDecrementExpression";
+        public override int yynum => 140;
         public IncrementDecrementExpression(Parser yyp) : base(yyp) { }
     }
 

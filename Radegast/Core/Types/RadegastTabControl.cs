@@ -39,7 +39,7 @@ namespace Radegast
         public RadegastTab RadegastTab { get; set; }
 
         protected RadegastInstance instance;
-        protected GridClient client { get { return instance.Client; } }
+        protected GridClient client => instance.Client;
 
         public RadegastTabControl() { }
 

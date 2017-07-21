@@ -43,17 +43,17 @@ namespace Radegast
     public partial class ChatConsole : UserControl
     {
         private RadegastInstance instance;
-        private RadegastNetcom netcom { get { return instance.Netcom; } }
-        private GridClient client { get { return instance.Client; } }
+        private RadegastNetcom netcom => instance.Netcom;
+        private GridClient client => instance.Client;
         private TabsConsole tabConsole;
         private Avatar currentAvatar;
-        private RadegastMovement movement { get { return instance.Movement; } }
+        private RadegastMovement movement => instance.Movement;
         private Regex chatRegex = new Regex(@"^/(\d+)\s*(.*)", RegexOptions.Compiled);
         private List<string> chatHistory = new List<string>();
         private int chatPointer;
 
         public readonly Dictionary<UUID, ulong> agentSimHandle = new Dictionary<UUID, ulong>();
-        public ChatInputBox ChatInputText { get { return cbxInput; } }
+        public ChatInputBox ChatInputText => cbxInput;
 
         public ChatConsole(RadegastInstance instance)
         {
