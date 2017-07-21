@@ -770,6 +770,12 @@
       <DependentUpon>GroupInvite.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
+    <Compile Include="GUI\Dialogs\HoverHeight.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Dialogs\HoverHeight.Designer.cs">
+      <DependentUpon>HoverHeight.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Dialogs\KeyboardShortcuts.Designer.cs">
       <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
       <SubType>Dependency</SubType>
@@ -777,6 +783,9 @@
     <Compile Include="GUI\Dialogs\KeyboardShortcuts.cs">
       <SubType>Form</SubType>
     </Compile>
+    <EmbeddedResource Include="GUI\Dialogs\HoverHeight.resx">
+      <DependentUpon>HoverHeight.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Dialogs\KeyboardShortcuts.resx">
       <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
       <SubType>DesignerType</SubType>
