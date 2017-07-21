@@ -13,6 +13,10 @@ namespace Radegast
         private bool IsScrolling { get; set; }
 
         private double _realHoverHeight;
+
+        /// <summary>
+        /// Gets or sets the real hover height
+        /// </summary>
         public double RealHoverHeight
         {
             get => _realHoverHeight;
@@ -35,6 +39,9 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Gets or sets the hover height for use in the TrackBar control.
+        /// </summary>
         public int FakeHoverHeight
         {
             get => (int)(RealHoverHeight * HoverHeightPrecision);
@@ -48,6 +55,10 @@ namespace Radegast
             }
         }
 
+        /// <summary>
+        /// Constructs a new hover height dialog.
+        /// </summary>
+        /// <param name="initialHoverHeight">Initial hover height</param>
         public frmHoverHeight(double initialHoverHeight)
         {
             InitializeComponent();
@@ -116,20 +127,36 @@ namespace Radegast
             }
         }
 
+        /// <summary>Raised whenever the hover height changes.</summary>
         public event EventHandler<HoverHeightChangedEventArgs> HoverHeightChanged;
-        void OnHoverHeightChanged(double newHoverHeight)
+
+        /// <summary>
+        /// Raises the HoverHeightChanged event
+        /// </summary>
+        /// <param name="newHoverHeight">New hover height</param>
+        private void OnHoverHeightChanged(double newHoverHeight)
         {
             HoverHeightChanged?.Invoke(this, new HoverHeightChangedEventArgs(newHoverHeight));
         }
 
+        /// <summary>
+        /// Raised whenever the hover height preview changes. This event is raised rapidly and
+        /// should only be used to preview the hover height locally.
+        /// </summary>
         public event EventHandler<HoverHeightChangedEventArgs> HoverHeightPreview;
-        void OnHoverHeightPreview(double newHoverHeight)
+
+        /// <summary>
+        /// Raises the HoverHeightPreview event
+        /// </summary>
+        /// <param name="newHoverHeight">New hover height</param>
+        private void OnHoverHeightPreview(double newHoverHeight)
         {
             HoverHeightPreview?.Invoke(this, new HoverHeightChangedEventArgs(newHoverHeight));
         }
 
+        /// <summary>Raised whenever a property changes</summary>
         public event PropertyChangedEventHandler PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
