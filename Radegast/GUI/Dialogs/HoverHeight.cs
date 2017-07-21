@@ -11,6 +11,7 @@ namespace Radegast
 
         private bool IsMouseDown { get; set; }
         private bool IsScrolling { get; set; }
+        private bool IsMono { get; }
 
         private double _realHoverHeight;
 
@@ -65,8 +66,11 @@ namespace Radegast
         /// Constructs a new hover height dialog.
         /// </summary>
         /// <param name="initialHoverHeight">Initial hover height</param>
-        public frmHoverHeight(double initialHoverHeight)
+        /// <param name="isMono">Determines if mono hacks should be applied</param>
+        public frmHoverHeight(double initialHoverHeight, bool isMono)
         {
+            IsMono = isMono;
+
             InitializeComponent();
 
             tbHoverHeight.Maximum = (int)(MaxHoverHeight * HoverHeightPrecision);
@@ -161,6 +165,20 @@ namespace Radegast
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
+            if (IsMono)
+            {
+                // TODO: PropertyChanged is always null on mono, we must manually update our controls
+                switch (propertyName)
+                {
+                    case nameof(FakeHoverHeight):
+                        tbHoverHeight.Value = FakeHoverHeight;
+                        break;
+                    case nameof(RealHoverHeight):
+                        txtHoverHeight.Text = RealHoverHeight.ToString("F3");
+                        break;
+                }
+            }
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }

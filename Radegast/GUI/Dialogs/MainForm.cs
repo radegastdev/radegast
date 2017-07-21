@@ -1751,7 +1751,7 @@ namespace Radegast
                 hoverHeight = instance.GlobalSettings["AvatarHoverOffsetZ"];
             }
 
-            var hoverHeightControl = new frmHoverHeight(hoverHeight);
+            var hoverHeightControl = new frmHoverHeight(hoverHeight, Instance.MonoRuntime);
             hoverHeightControl.HoverHeightChanged += HoverHeightControl_HoverHeightChanged;
             hoverHeightControl.Show();
         }
