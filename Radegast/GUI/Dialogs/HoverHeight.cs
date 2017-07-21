@@ -85,16 +85,16 @@ namespace Radegast
             var sourceBinding = sender as Binding;
             var sourceControl = sourceBinding.Control as TextBox;
 
-            var attemptedValue = 0.0;
-            if (double.TryParse(sourceControl.Text, out attemptedValue))
+            var attemptedHoverHeight = 0.0;
+            if (double.TryParse(sourceControl.Text, out attemptedHoverHeight))
             {
                 sourceControl.ForeColor = TextBox.DefaultForeColor;
-                if (attemptedValue < MinHoverHeight)
+                if (attemptedHoverHeight < MinHoverHeight)
                 {
                     e.Value = MinHoverHeight;
                     sourceControl.Text = e.Value.ToString();
                 }
-                else if(attemptedValue > MaxHoverHeight)
+                else if(attemptedHoverHeight > MaxHoverHeight)
                 {
                     e.Value = MaxHoverHeight;
                     sourceControl.Text = e.Value.ToString();
@@ -108,10 +108,7 @@ namespace Radegast
 
         private void tbHoverHeight_MouseCaptureChanged(object sender, EventArgs e)
         {
-            if (IsMouseDown)
-            {
-                IsMouseDown = false;
-            }
+            IsMouseDown = false;
 
             if (IsScrolling)
             {
