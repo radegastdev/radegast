@@ -55,6 +55,12 @@ namespace Radegast
             }
         }
 
+        /// <summary>Minimum hover height</summary>
+        public double MinHoverHeight => -2.0;
+
+        /// <summary>Maximum hover height</summary>
+        public double MaxHoverHeight => 2.0;
+
         /// <summary>
         /// Constructs a new hover height dialog.
         /// </summary>
@@ -63,8 +69,8 @@ namespace Radegast
         {
             InitializeComponent();
 
-            tbHoverHeight.Maximum = 2 * HoverHeightPrecision;
-            tbHoverHeight.Minimum = -2 * HoverHeightPrecision;
+            tbHoverHeight.Maximum = (int)(MaxHoverHeight * HoverHeightPrecision);
+            tbHoverHeight.Minimum = (int)(MinHoverHeight * HoverHeightPrecision);
             tbHoverHeight.DataBindings.Add(new Binding("Value", this, nameof(FakeHoverHeight), true, DataSourceUpdateMode.OnPropertyChanged));
 
             var textBinding = new Binding("Text", this, nameof(RealHoverHeight), true, DataSourceUpdateMode.OnPropertyChanged);
@@ -83,14 +89,14 @@ namespace Radegast
             if (double.TryParse(sourceControl.Text, out attemptedValue))
             {
                 sourceControl.ForeColor = TextBox.DefaultForeColor;
-                if (attemptedValue < -2.0)
+                if (attemptedValue < MinHoverHeight)
                 {
-                    e.Value = -2.0;
+                    e.Value = MinHoverHeight;
                     sourceControl.Text = e.Value.ToString();
                 }
-                else if(attemptedValue > 2.0)
+                else if(attemptedValue > MaxHoverHeight)
                 {
-                    e.Value = 2.0;
+                    e.Value = MaxHoverHeight;
                     sourceControl.Text = e.Value.ToString();
                 }
             }
