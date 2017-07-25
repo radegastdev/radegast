@@ -417,10 +417,7 @@ namespace Radegast
                     }
                     else
                     {
-                        if (OnWaypointArrival != null)
-                        {
-                            OnWaypointArrival(NextWaypoint);
-                        }
+                        OnWaypointArrival?.Invoke(NextWaypoint);
                         MoveToNextWaypoint();
                     }
                 }

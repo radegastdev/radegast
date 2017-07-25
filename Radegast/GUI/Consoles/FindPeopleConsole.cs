@@ -105,7 +105,7 @@ namespace Radegast
 
         protected virtual void OnSelectedIndexChanged(EventArgs e)
         {
-            if (SelectedIndexChanged != null) SelectedIndexChanged(this, e);
+            SelectedIndexChanged?.Invoke(this, e);
         }
 
         public Dictionary<string, UUID> LLUUIDs { get; }

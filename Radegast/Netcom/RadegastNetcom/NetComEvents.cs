@@ -111,17 +111,17 @@ namespace Radegast.Netcom
 
         protected virtual void OnTeleportStatusChanged(TeleportEventArgs e)
         {
-            if (TeleportStatusChanged != null) TeleportStatusChanged(this, e);
+            TeleportStatusChanged?.Invoke(this, e);
         }
 
         protected virtual void OnAlertMessageReceived(AlertMessageEventArgs e)
         {
-            if (AlertMessageReceived != null) AlertMessageReceived(this, e);
+            AlertMessageReceived?.Invoke(this, e);
         }
 
         protected virtual void OnMoneyBalanceUpdated(BalanceEventArgs e)
         {
-            if (MoneyBalanceUpdated != null) MoneyBalanceUpdated(this, e);
+            MoneyBalanceUpdated?.Invoke(this, e);
         }
     }
 }

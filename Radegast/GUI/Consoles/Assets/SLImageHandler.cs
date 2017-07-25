@@ -425,10 +425,7 @@ namespace Radegast
             {
                 UpdateImage(UUID.Zero);
                 var handler = ImageUpdated;
-                if (handler != null)
-                {
-                    handler(this, new ImageUpdatedEventArgs(UUID.Zero));
-                }
+                handler?.Invoke(this, new ImageUpdatedEventArgs(UUID.Zero));
             }
         }
 
@@ -455,10 +452,7 @@ namespace Radegast
                 UpdateImage(newID);
 
                 var handler = ImageUpdated;
-                if (handler != null)
-                {
-                    handler(this, new ImageUpdatedEventArgs(newID));
-                }
+                handler?.Invoke(this, new ImageUpdatedEventArgs(newID));
             }
         }
 
