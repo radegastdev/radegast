@@ -491,20 +491,20 @@ namespace Radegast
         {
             if (!client.Network.Connected) return;
 
-            if (e.Status == TeleportStatus.Progress)
+            switch (e.Status)
             {
-                client.Self.SphereEffect(client.Self.GlobalPosition, Color4.White, 4f, teleportEffect);
-            }
-
-            if (e.Status == TeleportStatus.Finished)
-            {
-                client.Self.SphereEffect(Vector3d.Zero, Color4.White, 0f, teleportEffect);
-                SetRandomHeading();
-            }
-
-            if (e.Status == TeleportStatus.Failed)
-            {
-                client.Self.SphereEffect(Vector3d.Zero, Color4.White, 0f, teleportEffect);
+                case TeleportStatus.Progress:
+                    instance.MediaManager.PlayUISound(UISounds.Teleport);
+                    client.Self.SphereEffect(client.Self.GlobalPosition, Color4.White, 4f, teleportEffect);
+                    break;
+                case TeleportStatus.Finished:
+                    client.Self.SphereEffect(Vector3d.Zero, Color4.White, 0f, teleportEffect);
+                    SetRandomHeading();
+                    break;
+                case TeleportStatus.Failed:
+                    instance.MediaManager.PlayUISound(UISounds.Error);
+                    client.Self.SphereEffect(Vector3d.Zero, Color4.White, 0f, teleportEffect);
+                    break;
             }
         }
 

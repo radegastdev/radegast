@@ -177,7 +177,9 @@ namespace Radegast.Netcom
         void Self_TeleportProgress(object sender, TeleportEventArgs e)
         {
             if (e.Status == TeleportStatus.Finished || e.Status == TeleportStatus.Failed)
+            {
                 IsTeleporting = false;
+            }
 
             if (CanSyncInvoke)
                 NetcomSync.BeginInvoke(new OnTeleportStatusRaise(OnTeleportStatusChanged), new object[] { e });
