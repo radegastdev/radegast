@@ -17,7 +17,7 @@ XPStyle on                  ; add an XP manifest to the installer
 RequestExecutionLevel admin	; on Vista we must be admin because we write to Program Files
 
 LangString LanguageCode ${LANG_ENGLISH}  "en"
-!define DOTNET_URL "https://download.microsoft.com/download/B/A/4/BA4A7E71-2906-4B2D-A0E1-80CF16844F5F/dotNetFx45_Full_setup.exe"
+!define DOTNET_URL "https://download.microsoft.com/download/F/9/4/F942F07D-F26F-4F30-B4E3-EBD54FABA377/NDP462-KB3151800-x86-x64-AllOS-ENU.exe"
 !define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
 
 !define APPNAME "Radegast"
@@ -124,13 +124,13 @@ Section ".NET check"
     goto DownloadDotNET
 
   DownloadDotNET:
-    DetailPrint "Beginning download of .NET 4.5."
-    NSISdl::download /TIMEOUT=30000 ${DOTNET_URL} "$TEMP\dotNetFx45_Full_setup.exe" /END
+    DetailPrint "Beginning download of .NET 4.6.2."
+    NSISdl::download /TIMEOUT=30000 ${DOTNET_URL} "$TEMP\dotNetFx462_Full_setup.exe" /END
     Pop $0
     DetailPrint "Result: $0"
     StrCmp $0 "success" InstallDotNet
     StrCmp $0 "cancel" GiveUpDotNET
-    NSISdl::download /TIMEOUT=30000 /NOPROXY ${DOTNET_URL} "$TEMP\dotNetFx45_Full_setup.exe" /END
+    NSISdl::download /TIMEOUT=30000 /NOPROXY ${DOTNET_URL} "$TEMP\dotNetFx462_Full_setup.exe" /END
     Pop $0
     DetailPrint "Result: $0"
     StrCmp $0 "success" InstallDotNet
@@ -153,9 +153,9 @@ Section ".NET check"
     DetailPrint "Pausing installation while downloaded .NET Framework installer runs."
 	MessageBox MB_OKCANCEL "Setup will now install .NET Framework$\nThis will take a while." \
 	  IDOK +1 IDCANCEL GiveUpDotNET
-    ExecWait '$TEMP\dotNetFx45_Full_setup.exe /q /norestart /c:"install /q"'
+    ExecWait '$TEMP\dotNetFx462_Full_setup.exe /q /norestart /c:"install /q"'
     DetailPrint "Completed .NET Framework install/update. Removing .NET Framework installer."
-    Delete "$TEMP\dotNetFx45_Full_setup.exe"
+    Delete "$TEMP\dotNetFx462_Full_setup.exe"
     DetailPrint ".NET Framework installer removed."
 	goto NewDotNET
 
@@ -205,7 +205,7 @@ Section /o "${APPNAME} Voice Pack (extra download)"
   AddSize 6662
   IfFileExists "$INSTDIR\SLVoice.exe" voice_download_exists
 
-  DetailPrint "Beginning download of .NET 4.5."
+  DetailPrint "Beginning download of Vivox Voicepack."
   NSISdl::download /TIMEOUT=30000 "http://downloads.radegast.life/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $0
   DetailPrint "Result: $0"
