@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Radegast.Plugin.IRC</RootNamespace>
     <AssemblyName>Radegast.Plugin.IRC</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -68,14 +69,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LibreMetaverse, Version=1.1.8.107, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibreMetaverse.1.1.8.107\lib\net40\LibreMetaverse.dll</HintPath>
+    <Reference Include="LibreMetaverse, Version=1.2.0.146, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibreMetaverse.1.2.0.146\lib\net461\LibreMetaverse.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.StructuredData, Version=1.1.8.107, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibreMetaverse.StructuredData.1.1.8.107\lib\net40\LibreMetaverse.StructuredData.dll</HintPath>
+    <Reference Include="LibreMetaverse.StructuredData, Version=1.2.0.146, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibreMetaverse.StructuredData.1.2.0.146\lib\net461\LibreMetaverse.StructuredData.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.Types, Version=1.1.8.107, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibreMetaverse.Types.1.1.8.107\lib\net40\LibreMetaverse.Types.dll</HintPath>
+    <Reference Include="LibreMetaverse.Types, Version=1.2.0.146, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibreMetaverse.Types.1.2.0.146\lib\net461\LibreMetaverse.Types.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -94,11 +95,11 @@
     <Reference Include="Meebey.SmartIrc4net">
       <HintPath>assemblies\Meebey.SmartIrc4net.dll</HintPath>
     </Reference>
-    <Reference Include="XmlRpcCs, Version=2.0.1.8, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\XmlRpcCS.2.0.1.8\lib\net40\XmlRpcCs.dll</HintPath>
+    <Reference Include="XmlRpcCs, Version=2.1.1.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\XmlRpcCs.2.1.1.2\lib\net461\XmlRpcCs.dll</HintPath>
     </Reference>
-    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
-      <HintPath>..\..\packages\zlib.net.1.0.4.0\lib\zlib.net.dll</HintPath>
+    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\zlib.net-mutliplatform.1.0.4\lib\net461\zlib.net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
