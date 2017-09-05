@@ -153,8 +153,7 @@ namespace Radegast.Core
 
             client.Assets.RequestAsset(gesture.AssetUUID, AssetType.Gesture, false, (_, asset) =>
             {
-                var assetGesture = asset as AssetGesture;
-                if (assetGesture == null)
+                if (!(asset is AssetGesture assetGesture))
                 {
                     return;
                 }
@@ -169,17 +168,18 @@ namespace Radegast.Core
                     Gestures.Add(gesture.UUID, new GestureTrigger());
                 }
 
-                var existingGestureTrigger = Gestures[gesture.UUID];
-                existingGestureTrigger.TriggerLower = assetGesture.Trigger.ToLower();
-                existingGestureTrigger.Replacement = assetGesture.ReplaceWith;
-                existingGestureTrigger.AssetID = assetGesture.AssetID;
+                if (Gestures.TryGetValue(gesture.UUID, out var existingGestureTrigger))
+                {
+                    existingGestureTrigger.TriggerLower = assetGesture.Trigger.ToLower();
+                    existingGestureTrigger.Replacement = assetGesture.ReplaceWith;
+                    existingGestureTrigger.AssetID = assetGesture.AssetID;
+                }
             });
         }
 
         private void Store_InventoryObjectUpdated(object sender, InventoryObjectUpdatedEventArgs e)
         {
-            var gesture = e.NewObject as InventoryGesture;
-            if (gesture == null)
+            if (!(e.NewObject is InventoryGesture gesture))
             {
                 return;
             }
@@ -189,8 +189,7 @@ namespace Radegast.Core
 
         private void Store_InventoryObjectAdded(object sender, InventoryObjectAddedEventArgs e)
         {
-            var gesture = e.Obj as InventoryGesture;
-            if (gesture == null)
+            if (!(e.Obj is InventoryGesture gesture))
             {
                 return;
             }
