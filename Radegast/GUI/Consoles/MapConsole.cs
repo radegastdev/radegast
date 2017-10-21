@@ -543,7 +543,7 @@ namespace Radegast
                 ddOnlineFriends.Items.Add("Online Friends");
                 ddOnlineFriends.SelectedIndex = 0;
 
-                var friends = client.Friends.FriendList.FindAll(f => { return f.CanSeeThemOnMap && f.IsOnline; });
+                var friends = client.Friends.FriendList.FindAll(f => f.CanSeeThemOnMap && f.IsOnline);
                 if (friends != null)
                 {
                     foreach (var f in friends)
@@ -571,7 +571,7 @@ namespace Radegast
         {
             if (mmap != null)
             {
-                mmap.Zoom = mmap.MinZoom + (mmap.MaxZoom - mmap.MinZoom) * (float)((float)zoomTracker.Value / 100f);
+                mmap.Zoom = mmap.MinZoom + (mmap.MaxZoom - mmap.MinZoom) * ((float)zoomTracker.Value / 100f);
             }
         }
 

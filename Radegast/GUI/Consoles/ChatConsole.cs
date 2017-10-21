@@ -655,10 +655,8 @@ namespace Radegast
             }
             else
             {
-                currentAvatar = client.Network.CurrentSim.ObjectsAvatars.Find(delegate(Avatar a)
-                {
-                    return a.ID == (UUID)lvwObjects.SelectedItems[0].Tag;
-                });
+                currentAvatar = client.Network.CurrentSim.ObjectsAvatars.Find(a =>
+                    a.ID == (UUID) lvwObjects.SelectedItems[0].Tag);
 
                 ctxPay.Enabled = ctxStartIM.Enabled = ctxProfile.Enabled = true;
                 ctxPoint.Enabled = ctxFollow.Enabled = ctxTextures.Enabled = ctxMaster.Enabled = ctxAttach.Enabled = ctxAnim.Enabled = currentAvatar != null;
@@ -834,14 +832,7 @@ namespace Radegast
             }
 
             bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Resident && me.ID == (UUID)lvwObjects.SelectedItems[0].Tag);
-            if (isMuted)
-            {
-                muteToolStripMenuItem.Text = "Unmute";
-            }
-            else
-            {
-                muteToolStripMenuItem.Text = "Mute";
-            }
+            muteToolStripMenuItem.Text = isMuted ? "Unmute" : "Mute";
 
             instance.ContextActionManager.AddContributions(
                 avatarContext, typeof(Avatar), lvwObjects.SelectedItems[0]);
@@ -908,12 +899,12 @@ namespace Radegast
 
             if (instance.State.TryFindAvatar(person, out sim, out pos))
             {
-                tabConsole.DisplayNotificationInChat(string.Format("Teleporting to {0}", pname));
+                tabConsole.DisplayNotificationInChat($"Teleporting to {pname}");
                 instance.State.MoveTo(sim, pos, true);
             }
             else
             {
-                tabConsole.DisplayNotificationInChat(string.Format("Could not locate {0}", pname));
+                tabConsole.DisplayNotificationInChat($"Could not locate {pname}");
             }
         }
 

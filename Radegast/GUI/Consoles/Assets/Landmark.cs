@@ -97,8 +97,7 @@ namespace Radegast
             pnlDetail.Visible = true;
             if (parcel.SnapshotID != UUID.Zero)
             {
-                SLImageHandler img = new SLImageHandler(instance, parcel.SnapshotID, "");
-                img.Dock = DockStyle.Fill;
+                SLImageHandler img = new SLImageHandler(instance, parcel.SnapshotID, "") {Dock = DockStyle.Fill};
                 pnlDetail.Controls.Add(img);
                 pnlDetail.Disposed += (senderx, ex) =>
                 {
@@ -112,20 +111,17 @@ namespace Radegast
 
             if (parcelLocation)
             {
-                localPosition = new Vector3();
-                localPosition.X = parcel.GlobalX % 256;
-                localPosition.Y = parcel.GlobalY % 256;
-                localPosition.Z = parcel.GlobalZ;
+                localPosition = new Vector3
+                {
+                    X = parcel.GlobalX % 256,
+                    Y = parcel.GlobalY % 256,
+                    Z = parcel.GlobalZ
+                };
             }
 
-            if (decodedLandmark == null)
-            {
-                txtParcelName.Text = string.Format("{0} - {1} ", parcel.Name, parcel.SimName);
-            }
-            else
-            {
-                txtParcelName.Text = string.Format("{0} - {1} ({2}, {3}, {4}) ", parcel.Name, parcel.SimName, (int)decodedLandmark.Position.X, (int)decodedLandmark.Position.Y, (int)decodedLandmark.Position.Z);
-            }
+            txtParcelName.Text = decodedLandmark == null 
+                ? $"{parcel.Name} - {parcel.SimName} " 
+                : $"{parcel.Name} - {parcel.SimName} ({(int) decodedLandmark.Position.X}, {(int) decodedLandmark.Position.Y}, {(int) decodedLandmark.Position.Z}) ";
 
             txtParcelDescription.Text = parcel.Description;
         }
