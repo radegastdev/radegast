@@ -53,6 +53,7 @@ namespace Radegast
             "fmod.dll",
             "fmodstudio.dll",
             "IKVM.",
+            "LibreMetaverse.PrimMesher.dll",
             "LibreMetaverse.Rendering.Meshmerizer.dll",
             "LibreMetaverse.StructuredData.dll",
             "LibreMetaverse.dll",
