@@ -551,6 +551,13 @@ namespace Radegast.Rendering
         #region glControl setup and disposal
         public void SetupGLControl()
         {
+            // Crash fix for users with SDL2.dll in their path. OpenTK will attempt to use
+            //   SDL2 if it's available, but SDL2 is unsupported and will crash users.
+            OpenTK.Toolkit.Init(new OpenTK.ToolkitOptions
+            {
+                Backend = OpenTK.PlatformBackend.PreferNative
+            });
+
             RenderingEnabled = false;
 
             glControl?.Dispose();
