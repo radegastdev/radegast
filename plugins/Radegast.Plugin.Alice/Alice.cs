@@ -429,9 +429,11 @@ namespace Radegast.Plugin.Alice
                             AliceUsers[e.FromName] = user;
                         }
 
+                        var typingAnimationIsEnabled = !Instance.GlobalSettings["no_typing_anim"].AsBoolean();
+
                         Client.Self.Movement.TurnToward(e.Position);
                         if (EnableRandomDelay) System.Threading.Thread.Sleep(1000 + 1000 * rand.Next(2));
-                        if (!Instance.State.IsTyping)
+                        if (!Instance.State.IsTyping && typingAnimationIsEnabled)
                         {
                             Instance.State.SetTyping(true);
                         }
@@ -443,7 +445,10 @@ namespace Radegast.Plugin.Alice
                         {
                             System.Threading.Thread.Sleep(1000);
                         }
-                        Instance.State.SetTyping(false);
+                        if (typingAnimationIsEnabled)
+                        {
+                            Instance.State.SetTyping(false);
+                        }
                         Request req = new Request(msg, user, Alice);
                         Result res = Alice.Chat(req);
                         string outp = res.Output;
