@@ -155,27 +155,25 @@ namespace Radegast.Automation
 
         public void TrySit()
         {
-            if (Preferences != null && m_instance.Client.Network.Connected)
+            if (Preferences != null
+                && m_instance.Client.Network.Connected
+                && Preferences.Enabled
+                && Preferences.Primitive != UUID.Zero)
             {
-                if (Preferences.Enabled && Preferences.Primitive != UUID.Zero)
+                var sitTarget = m_instance.Client.Network.CurrentSim.ObjectsPrimitives.Find(n => n.ID == Preferences.Primitive);
+                if (sitTarget != null)
                 {
                     if (!m_instance.State.IsSitting)
                     {
-                        m_instance.State.SetSitting(true, Preferences.Primitive);
-                        m_Timer.Enabled = true;
+                        m_instance.State.SetSitting(true, sitTarget.ID);
                     }
-                    else
+                    else if (m_instance.Client.Self.SittingOn != sitTarget.LocalID && !m_instance.RLV.RestictionActive("unsit"))
                     {
-                        if (!m_instance.Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(m_instance.Client.Self.SittingOn))
-                        {
-                            m_instance.State.SetSitting(false, UUID.Zero);
-                        }
+                        m_instance.State.SetSitting(false, UUID.Zero);
                     }
                 }
-                else
-                {
-                    m_Timer.Enabled = false;
-                }
+
+                m_Timer.Enabled = true;
             }
             else
             {
