@@ -108,9 +108,6 @@ namespace Radegast.Rendering
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public struct GLData
         {
             public float[] Vertices;
