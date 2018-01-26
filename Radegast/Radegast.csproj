@@ -95,27 +95,23 @@
   <PropertyGroup>
     <StartupObject>Radegast.MainProgram</StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Local|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug Local\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="C5, Version=2.5.0.0, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
       <HintPath>..\packages\C5.2.5.3\lib\net45\C5.dll</HintPath>
     </Reference>
     <Reference Include="CommandLine, Version=1.9.71.2, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.1.9.71\lib\net45\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse, Version=1.2.2.159, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.1.2.2.159\lib\net461\LibreMetaverse.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse.PrimMesher, Version=1.2.2.159, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.PrimMesher.1.2.2.159\lib\net461\LibreMetaverse.PrimMesher.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse.Rendering.Meshmerizer, Version=1.2.2.159, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.Rendering.Meshmerizer.1.2.2.159\lib\net461\LibreMetaverse.Rendering.Meshmerizer.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse.StructuredData, Version=1.2.2.159, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.StructuredData.1.2.2.159\lib\net461\LibreMetaverse.StructuredData.dll</HintPath>
-    </Reference>
-    <Reference Include="LibreMetaverse.Types, Version=1.2.2.159, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.Types.1.2.2.159\lib\net461\LibreMetaverse.Types.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -2428,6 +2424,28 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libremetaverse\LibreMetaverse.Rendering.Meshmerizer\LibreMetaverse.Rendering.Meshmerizer.csproj">
+      <Project>{95479b1d-0000-0000-0000-000000000000}</Project>
+      <Name>LibreMetaverse.Rendering.Meshmerizer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj">
+      <Project>{89d7a3e5-0000-0000-0000-000000000000}</Project>
+      <Name>LibreMetaverse.StructuredData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj">
+      <Project>{b37b02ad-0000-0000-0000-000000000000}</Project>
+      <Name>LibreMetaverse.Types</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libremetaverse\LibreMetaverse\LibreMetaverse.csproj">
+      <Project>{27c70f3a-0000-0000-0000-000000000000}</Project>
+      <Name>LibreMetaverse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\libremetaverse\PrimMesher\LibreMetaverse.PrimMesher.csproj">
+      <Project>{2e2b643f-f18b-4791-ba4b-6e82d0e794b6}</Project>
+      <Name>LibreMetaverse.PrimMesher</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

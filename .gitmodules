@@ -1,0 +1,3 @@
+[submodule "libremetaverse"]
+	path = libremetaverse
+	url = https://bitbucket.org/cinderblocks/libremetaverse
