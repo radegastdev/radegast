@@ -6,6 +6,10 @@ init:
 
 image: Visual Studio 2017
 
+branches:
+  except:
+    - localbuilding
+
 configuration: Release
 
 platform: x86
