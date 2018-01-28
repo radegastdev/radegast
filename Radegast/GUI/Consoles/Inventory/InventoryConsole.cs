@@ -1772,12 +1772,12 @@ namespace Radegast
                                 trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
                                 trashCreated.WaitOne(20 * 1000, false);
                                 Thread.Sleep(200);
-                                client.Inventory.MoveFolder(f.UUID, trash, f.Name);
+                                client.Inventory.MoveFolder(f.UUID, trash);
                             });
                             return;
                         }
 
-                        client.Inventory.MoveFolder(f.UUID, trash, f.Name);
+                        client.Inventory.MoveFolder(f.UUID, trash);
                         break;
 
                     case "empty_trash":
@@ -2067,7 +2067,7 @@ namespace Radegast
                 {
                     if (instance.InventoryClipboard.Item.UUID != dest.UUID)
                     {
-                        client.Inventory.MoveFolder(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name);
+                        client.Inventory.MoveFolder(instance.InventoryClipboard.Item.UUID, dest.UUID);
                     }
                 }
 
@@ -2231,7 +2231,7 @@ namespace Radegast
             {
                 InventoryFolder f = (InventoryFolder)e.Node.Tag;
                 f.Name = e.Label;
-                client.Inventory.MoveFolder(f.UUID, f.ParentUUID, f.Name);
+                client.Inventory.MoveFolder(f.UUID, f.ParentUUID);
             }
             else if (e.Node.Tag is InventoryItem)
             {
@@ -2270,12 +2270,12 @@ namespace Radegast
                 if (invTree.SelectedNode.Tag is InventoryItem)
                 {
                     InventoryItem item = invTree.SelectedNode.Tag as InventoryItem;
-                    client.Inventory.MoveItem(item.UUID, trash, item.Name);
+                    client.Inventory.MoveItem(item.UUID, trash);
                 }
                 else if (invTree.SelectedNode.Tag is InventoryFolder)
                 {
                     InventoryFolder f = invTree.SelectedNode.Tag as InventoryFolder;
-                    client.Inventory.MoveFolder(f.UUID, trash, f.Name);
+                    client.Inventory.MoveFolder(f.UUID, trash);
                 }
             }
             else if (e.KeyCode == Keys.Apps && invTree.SelectedNode != null)
@@ -2331,7 +2331,7 @@ namespace Radegast
             else if (sourceNode.Tag is InventoryFolder)
             {
                 InventoryFolder f = (InventoryFolder)sourceNode.Tag;
-                client.Inventory.MoveFolder(f.UUID, dest.UUID, f.Name);
+                client.Inventory.MoveFolder(f.UUID, dest.UUID);
             }
         }
 
