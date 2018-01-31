@@ -1,7 +1,7 @@
-﻿
+
 // 
 // Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2009-2018, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,18 +31,21 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
 using Radegast.Automation;
-using System.Web.Script.Serialization;
 
 namespace Radegast
 {
-    public enum AutoResponseType
+    public enum AutoResponseType : int
     {
         WhenBusy = 0,
         WhenFromNonFriend = 1,
@@ -53,8 +56,6 @@ namespace Radegast
     {
         private Settings s;
         private static bool settingInitialized = false;
-        private Settings.FontSetting currentlySelectedFontSetting = null;
-        Dictionary<string, Settings.FontSetting> chatFontSettings;
 
         public static void InitSettigs(Settings s, bool mono)
         {
@@ -66,11 +67,6 @@ namespace Radegast
             if (s["rlv_enabled"].Type == OSDType.Unknown)
             {
                 s["rlv_enabled"] = new OSDBoolean(false);
-            }
-
-            if (s["rlv_debugcommands"].Type == OSDType.Unknown)
-            {
-                s["rlv_debugcommands"] = new OSDBoolean(false);
             }
 
             if (s["mu_emotes"].Type == OSDType.Unknown)
@@ -105,10 +101,6 @@ namespace Radegast
 
             if (!s.ContainsKey("reconnect_time")) s["reconnect_time"] = 120;
 
-            if (!s.ContainsKey("resolve_uri_time")) s["resolve_uri_time"] = 100;
-
-            if (!s.ContainsKey("resolve_uris")) s["resolve_uris"] = true;
-
             if (!s.ContainsKey("transaction_notification_chat")) s["transaction_notification_chat"] = true;
 
             if (!s.ContainsKey("transaction_notification_dialog")) s["transaction_notification_dialog"] = true;
@@ -131,8 +123,6 @@ namespace Radegast
 
             if (!s.ContainsKey("disable_look_at")) s["disable_look_at"] = false;
 
-            if (!s.ContainsKey("confirm_exit")) s["confirm_exit"] = false;
-
             if (!s.ContainsKey("highlight_on_chat")) s["highlight_on_chat"] = true;
 
             if (!s.ContainsKey("highlight_on_im")) s["highlight_on_im"] = true;
@@ -143,77 +133,14 @@ namespace Radegast
 
             if (!s.ContainsKey("disable_http_inventory"))
             {
-                s["disable_http_inventory"] = false;
+                s["disable_http_inventory"] = mono;
             }
 
             if (!s.ContainsKey("on_script_question"))
             {
                 s["on_script_question"] = "Ask";
             }
-        }
-
-        private void InitColorSettings()
-        {
-            for (int i = 1; i <= 48; i++)
-            {
-                cbxFontSize.Items.Add((float)i);
-                cbxFontSize.Items.Add((float)i + 0.5f);
-            }
-
-            foreach (var font in FontFamily.Families)
-            {
-                cbxFont.Items.Add(font.Name);
-            }
-
-            //var colorTypes = typeof(System.Drawing.Color);
-            //var props = colorTypes.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.DeclaredOnly);
-            var knownColors = typeof(KnownColor).GetEnumValues();
-
-            foreach (var item in knownColors)
-            {
-                var color = Color.FromKnownColor((KnownColor)item);
-                cbxForeground.Items.Add(color);
-                cbxBackground.Items.Add(color);
-            }
-
-            cbxFont.SelectedItem = SystemFonts.DefaultFont.Name;
-            cbxFontSize.SelectedItem = SystemFonts.DefaultFont.Size;
-            cbxBold.Checked = SystemFonts.DefaultFont.Bold;
-            cbxItalic.Checked = SystemFonts.DefaultFont.Italic;
-            cbxForeground.SelectedItem = SystemColors.ControlText;
-            cbxBackground.SelectedItem = SystemColors.Control;
-
-            ReloadFontSettings();
-        }
-
-        private void ReloadFontSettings()
-        {
-            lbxColorItems.Items.Clear();
-
-            var chatFontsJson = Instance.GlobalSettings["chat_fonts"];
-            if (chatFontsJson.Type != OSDType.Unknown)
-            {
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                Dictionary<string, Settings.FontSetting> unpacked = new Dictionary<string, Settings.FontSetting>();
-                chatFontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(chatFontsJson);
-            }
-            else
-            {
-                chatFontSettings = Settings.DefaultFontSettings;
-            }
-
-            foreach (var item in chatFontSettings)
-            {
-                if(item.Value.Name != item.Key)
-                {
-                    item.Value.Name = item.Key;
-                }
-                lbxColorItems.Items.Add(item.Value);
-            }
-            if(chatFontSettings.Count > 0)
-            {
-                lbxColorItems.SetSelected(0, true);
-            }
+            
         }
 
         public frmSettings(RadegastInstance instance)
@@ -221,15 +148,14 @@ namespace Radegast
         {
             if (settingInitialized)
             {
-                InitSettigs(instance.GlobalSettings, instance.MonoRuntime);
+                frmSettings.InitSettigs(instance.GlobalSettings, instance.MonoRuntime);
             }
 
             InitializeComponent();
             AutoSavePosition = true;
-            InitColorSettings();
 
             s = instance.GlobalSettings;
-            tbpGraphics.Controls.Add(new Rendering.GraphicsPreferences(instance));
+            tbpGraphics.Controls.Add(new Radegast.Rendering.GraphicsPreferences(instance));
             cbChatTimestamps.Checked = s["chat_timestamps"].AsBoolean();
 
             cbIMTimeStamps.Checked = s["im_timestamps"].AsBoolean();
@@ -246,46 +172,44 @@ namespace Radegast
             cbAutoReconnect.Checked = s["auto_reconnect"].AsBoolean();
             cbAutoReconnect.CheckedChanged += new EventHandler(cbAutoReconnect_CheckedChanged);
 
-            cbResolveURIs.Checked = s["resolve_uris"].AsBoolean();
-            cbResolveURIs.CheckedChanged += new EventHandler(cbResolveURIs_CheckedChanged);
-
             cbHideLoginGraphics.Checked = s["hide_login_graphics"].AsBoolean();
             cbHideLoginGraphics.CheckedChanged += new EventHandler(cbHideLoginGraphics_CheckedChanged);
 
             cbRLV.Checked = s["rlv_enabled"].AsBoolean();
-            cbRLV.CheckedChanged += (sender, e) =>
+            cbRLV.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["rlv_enabled"] = new OSDBoolean(cbRLV.Checked);
             };
 
-            cbRLVDebug.Checked = s["rlv_debugcommands"].AsBoolean();
-            cbRLVDebug.CheckedChanged += (sender, e) =>
-            {
-                s["rlv_debugcommands"] = new OSDBoolean(cbRLVDebug.Checked);
-            };
-
             cbMUEmotes.Checked = s["mu_emotes"].AsBoolean();
-            cbMUEmotes.CheckedChanged += (sender, e) =>
+            cbMUEmotes.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["mu_emotes"] = new OSDBoolean(cbMUEmotes.Checked);
             };
 
+            if (s["chat_font_size"].Type != OSDType.Real)
+            {
+                s["chat_font_size"] = OSD.FromReal(((ChatConsole)instance.TabConsole.Tabs["chat"].Control).cbxInput.Font.Size);
+            }
+
+            cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
+
             if (!s.ContainsKey("minimize_to_tray")) s["minimize_to_tray"] = OSD.FromBoolean(false);
             cbMinToTrey.Checked = s["minimize_to_tray"].AsBoolean();
-            cbMinToTrey.CheckedChanged += (sender, e) =>
+            cbMinToTrey.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["minimize_to_tray"] = OSD.FromBoolean(cbMinToTrey.Checked);
             };
 
 
             cbNoTyping.Checked = s["no_typing_anim"].AsBoolean();
-            cbNoTyping.CheckedChanged += (sender, e) =>
+            cbNoTyping.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["no_typing_anim"] = OSD.FromBoolean(cbNoTyping.Checked);
             };
 
             txtAutoResponse.Text = s["auto_response_text"];
-            txtAutoResponse.TextChanged += (sender, e) =>
+            txtAutoResponse.TextChanged += (object sender, EventArgs e) =>
             {
                 s["auto_response_text"] = txtAutoResponse.Text;
             };
@@ -298,7 +222,7 @@ namespace Radegast
             }
 
             cbSyntaxHighlight.Checked = s["script_syntax_highlight"].AsBoolean();
-            cbSyntaxHighlight.CheckedChanged += (sender, e) =>
+            cbSyntaxHighlight.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["script_syntax_highlight"] = OSD.FromBoolean(cbSyntaxHighlight.Checked);
             };
@@ -312,8 +236,6 @@ namespace Radegast
             }
 
             txtReconnectTime.Text = s["reconnect_time"].AsInteger().ToString();
-
-            txtResolveURITime.Text = s["resolve_uri_time"].AsInteger().ToString();
 
             cbRadegastClientTag.Checked = s["send_rad_client_tag"];
             cbRadegastClientTag.CheckedChanged += (sender, e) =>
@@ -342,18 +264,6 @@ namespace Radegast
                 s["disable_look_at"] = cbDisableLookAt.Checked;
             };
 
-            cbConfirmExit.Checked = s["confirm_exit"];
-            cbConfirmExit.CheckedChanged += (sender, e) =>
-            {
-                s["confirm_exit"] = cbConfirmExit.Checked;
-            };
-
-            cbThemeCompatibilityMode.Checked = s["theme_compatibility_mode"];
-            cbThemeCompatibilityMode.CheckedChanged += (sender, e) =>
-            {
-                s["theme_compatibility_mode"] = cbThemeCompatibilityMode.Checked;
-            };
-
             cbTaskBarHighLight.Checked = s["taskbar_highlight"];
             cbTaskBarHighLight.CheckedChanged += (sender, e) =>
             {
@@ -362,7 +272,7 @@ namespace Radegast
             };
 
             cbFriendsHighlight.Checked = s["friends_notification_highlight"].AsBoolean();
-            cbFriendsHighlight.CheckedChanged += (sender, e) =>
+            cbFriendsHighlight.CheckedChanged += (object sender, EventArgs e) =>
             {
                 s["friends_notification_highlight"] = new OSDBoolean(cbFriendsHighlight.Checked);
             };
@@ -418,8 +328,6 @@ namespace Radegast
             cbAutoScriptPermission.Text = s["on_script_question"];
 
             UpdateEnabled();
-
-            GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void UpdateEnabled()
@@ -442,11 +350,6 @@ namespace Radegast
         void cbAutoReconnect_CheckedChanged(object sender, EventArgs e)
         {
             s["auto_reconnect"] = OSD.FromBoolean(cbAutoReconnect.Checked);
-        }
-
-        private void cbResolveURIs_CheckedChanged(object sender, EventArgs e)
-        {
-            s["resolve_uris"] = OSD.FromBoolean(cbResolveURIs.Checked);
         }
 
         void cbFriendsNotifications_CheckedChanged(object sender, EventArgs e)
@@ -472,6 +375,41 @@ namespace Radegast
         private void cbTrasactChat_CheckedChanged(object sender, EventArgs e)
         {
             s["transaction_notification_chat"] = OSD.FromBoolean(cbTrasactChat.Checked);
+        }
+
+        private void UpdateFontSize()
+        {
+            double f = 8.25;
+            double existing = s["chat_font_size"].AsReal();
+
+            if (!double.TryParse(cbFontSize.Text, out f))
+            {
+                cbFontSize.Text = s["chat_font_size"].AsReal().ToString(System.Globalization.CultureInfo.InvariantCulture);
+                return;
+            }
+
+            if (Math.Abs(existing - f) > 0.0001f)
+                s["chat_font_size"] = OSD.FromReal(f);
+
+        }
+
+        private void cbFontSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateFontSize();
+        }
+
+        private void cbFontSize_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                UpdateFontSize();
+                e.Handled = e.SuppressKeyPress = true;
+            }
+        }
+
+        private void cbFontSize_Leave(object sender, EventArgs e)
+        {
+            UpdateFontSize();
         }
 
         private void rbAutobusy_CheckedChanged(object sender, EventArgs e)
@@ -540,34 +478,9 @@ namespace Radegast
             s["reconnect_time"] = t;
         }
 
-        private void txtResolveURITime_TextChanged(object sender, EventArgs e)
-        {
-            string input = System.Text.RegularExpressions.Regex.Replace(txtResolveURITime.Text, @"[^\d]", "");
-            int t = 100;
-            int.TryParse(input, out t);
-
-            if (txtResolveURITime.Text != t.ToString())
-            {
-                txtResolveURITime.Text = t.ToString();
-                txtResolveURITime.Select(txtResolveURITime.Text.Length, 0);
-            }
-
-            s["resolve_uri_time"] = t;
-        }
-
         private void cbRadegastLogToFile_CheckedChanged(object sender, EventArgs e)
         {
             s["log_to_file"] = OSD.FromBoolean(cbRadegastLogToFile.Checked);
-        }
-
-        private void cbConfirmExit_CheckedChanged(object sender, EventArgs e)
-        {
-            s["confirm_exit"] = OSD.FromBoolean(cbConfirmExit.Checked);
-        }
-
-        private void cbThemeCompatibilityMode_CheckedChanged(object sender, EventArgs e)
-        {
-            s["theme_compatibility_mode"] = OSD.FromBoolean(cbThemeCompatibilityMode.Checked);
         }
 
         #region Auto-Sit
@@ -724,7 +637,16 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.LoadSettings();
-            tbLSLAllowedOwner.Text = Instance.State.LSLHelper.AllowedOwner.ToString();
+            String AllowedOwnner = "";
+            for(int i=0;i<Instance.State.LSLHelper.AllowedOwner.Count;i++)
+            {
+                if(i>0)
+                {
+                    AllowedOwnner += "\r\n";
+                }
+                AllowedOwnner += Instance.State.LSLHelper.AllowedOwner.ElementAt(i);
+            }
+            tbLSLAllowedOwner.Text = AllowedOwnner;
             cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
             cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
@@ -738,22 +660,36 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
-            UUID allowedOwner = UUID.Zero;
-            UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner);
-            Instance.State.LSLHelper.AllowedOwner = allowedOwner;
-            Instance.State.LSLHelper.SaveSettings();
+            Instance.State.LSLHelper.AllowedOwner.Clear();
+            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
+            {
+                foreach (String AllowedOwnner in tbLSLAllowedOwner.Text.Trim().Replace('\r',';').Replace('\n',';').Split(';'))
+                {
+                    if (AllowedOwnner.Trim().Length > 0)
+                    {
+                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
+                    }
+                }
+            }
         }
 
         private void llLSLHelperInstructios_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Instance.MainForm.ProcessLink("http://radegast.life/documentation/lsl-helper", false);
+            Instance.MainForm.ProcessLink("https://radegast-aae.nd-home.de/lsl_helper", false);
         }
 
         private void tbLSLAllowedOwner_Leave(object sender, EventArgs e)
         {
-            UUID allowedOwner = UUID.Zero;
-            if (UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner))
+            Instance.State.LSLHelper.AllowedOwner.Clear();
+            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
             {
+                foreach (String AllowedOwnner in tbLSLAllowedOwner.Text.Trim().Replace('\r',';').Replace('\n',';').Split(';'))
+                {
+                    if(AllowedOwnner.Trim().Length > 0)
+                    {
+                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
+                    }
+                }
             }
             else
             {
@@ -778,247 +714,5 @@ namespace Radegast
             s["on_script_question"] = cbAutoScriptPermission.Text;
         }
 
-        private void cbxForeground_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            const int kPreviewPadding = 2;
-            const int kTextOffset = 15;
-
-            var graphics = e.Graphics;
-            var bounds = e.Bounds;
-
-            if (e.Index >= 0 && sender is ComboBox)
-            {
-                var sourceControl = sender as ComboBox;
-                var selectedColor = (Color)sourceControl.Items[e.Index];
-                {
-                    var brushPreview = new SolidBrush(selectedColor);
-
-                    e.DrawBackground();
-
-                    if(e.State == DrawItemState.Selected)
-                    {
-                        graphics.DrawRectangle(SystemPens.Highlight, bounds);
-                    }
-
-                    graphics.DrawString(brushPreview.Color.Name,
-                        SystemFonts.DefaultFont,
-                        SystemBrushes.ControlText,
-                        bounds.X + kTextOffset,
-                        bounds.Top + kPreviewPadding);
-
-                    graphics.FillRectangle(brushPreview,
-                        bounds.X + kPreviewPadding,
-                        bounds.Y + kPreviewPadding,
-                        bounds.Height - kPreviewPadding,
-                        bounds.Height - kPreviewPadding);
-                }
-            }
-        }
-
-        private void cbxFont_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            const int kPreviewFontSize = 8;
-
-            var graphics = e.Graphics;
-            var bounds = e.Bounds;
-
-            if (e.Index >= 0 && sender is ComboBox)
-            {
-                var sourceControl = sender as ComboBox;
-                var fontName = sourceControl.Items[e.Index].ToString();
-                var fontPreview = new Font(fontName, kPreviewFontSize);
-
-                e.DrawBackground();
-
-                if(e.State == DrawItemState.Selected)
-                {
-                    graphics.DrawRectangle(SystemPens.Highlight, bounds);
-                }
-                else
-                {
-                    graphics.DrawRectangle(SystemPens.Window, bounds);
-                }
-
-                graphics.DrawString(fontName,
-                    fontPreview,
-                    SystemBrushes.ControlText,
-                    bounds.X,
-                    bounds.Top);
-
-            }
-        }
-
-        private Settings.FontSetting GetPreviewFontSettings()
-        {
-            float fontSize = SystemFonts.DefaultFont.Size;
-            string fontName = SystemFonts.DefaultFont.Name;
-            Color backColor = SystemColors.Window;
-            Color foreColor = SystemColors.ControlText;
-            FontStyle style = FontStyle.Regular;
-
-            if(cbxFontSize.SelectedItem is float)
-            {
-                fontSize = (float)cbxFontSize.SelectedItem;
-            }
-            if(cbxFont.SelectedItem is string)
-            {
-                fontName = (string)cbxFont.SelectedItem;
-            }
-            if(cbxForeground.SelectedItem is Color)
-            {
-                foreColor = (Color)cbxForeground.SelectedItem;
-            }
-            if(cbxBackground.SelectedItem is Color)
-            {
-                backColor = (Color)cbxBackground.SelectedItem;
-            }
-
-            if(cbxBold.Checked)
-            {
-                style |= FontStyle.Bold;
-            }
-            if(cbxItalic.Checked)
-            {
-                style |= FontStyle.Italic;
-            }
-
-            var previewFontSettings = new Settings.FontSetting(){
-                Name = string.Empty,
-                Font = new Font(fontName, fontSize, style),
-                ForeColor = foreColor,
-                BackColor = backColor
-            };
-
-            return previewFontSettings;
-        }
-
-        private void UpdatePreview()
-        {
-            var previewFontSettings = GetPreviewFontSettings();
-
-            lblPreview.Font = previewFontSettings.Font;
-            lblPreview.ForeColor = previewFontSettings.ForeColor;
-            lblPreview.BackColor = previewFontSettings.BackColor;
-        }
-
-        private void UpdateSelection(Settings.FontSetting selected)
-        {
-            currentlySelectedFontSetting = selected;
-            cbxFontSize.SelectedItem = selected.Font.Size;
-            cbxFont.SelectedItem = selected.Font.Name;
-            cbxForeground.SelectedItem = selected.ForeColor;
-            cbxBackground.SelectedItem = selected.BackColor;
-            cbxBold.Checked = selected.Font.Bold;
-            cbxItalic.Checked = selected.Font.Italic;
-        }
-
-        private void SaveCurrentFontSetting()
-        {
-            if(currentlySelectedFontSetting != null)
-            {
-                try
-                {
-                    var previewFontSettings = GetPreviewFontSettings();
-                    previewFontSettings.Name = currentlySelectedFontSetting.Name;
-
-                    chatFontSettings[currentlySelectedFontSetting.Name] = previewFontSettings;
-
-                    JavaScriptSerializer serializer = new JavaScriptSerializer();
-                    var json = serializer.Serialize(chatFontSettings);
-                    Instance.GlobalSettings["chat_fonts"] = json;
-                    Instance.GlobalSettings.Save();
-
-                    var previousIndex = lbxColorItems.SelectedIndex;
-                    ReloadFontSettings();
-                    lbxColorItems.SelectedIndex = previousIndex;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed to save font setting: " + ex.Message);
-                }
-            }
-        }
-
-        private void ResetFontSettings()
-        {
-            try
-            {
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                var json = serializer.Serialize(Settings.DefaultFontSettings);
-                Instance.GlobalSettings["chat_fonts"] = json;
-                Instance.GlobalSettings.Save();
-                ReloadFontSettings();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to reset font settings: " + ex.Message);
-            }
-        }
-
-        private void SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdatePreview();
-        }
-
-        private void cbxItalic_CheckStateChanged(object sender, EventArgs e)
-        {
-            UpdatePreview();
-        }
-
-        private void cbxBold_CheckStateChanged(object sender, EventArgs e)
-        {
-            UpdatePreview();
-        }
-
-        private void lbxColorItems_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var sourceListbox = sender as ListBox;
-            if(sourceListbox?.SelectedItem is Settings.FontSetting)
-            {
-                var fontSettings = sourceListbox.SelectedItem as Settings.FontSetting;
-                UpdateSelection(fontSettings);
-            }
-        }
-
-        private void lbxColorItems_MouseMove(object sender, MouseEventArgs e)
-        {
-            if(e.Button != MouseButtons.None)
-            {
-                ListBox sourceListbox = sender as ListBox;
-                if(sourceListbox != null)
-                {
-                    int itemIndex = sourceListbox.IndexFromPoint(new Point(e.X, e.Y));
-                    if(itemIndex != -1)
-                    {
-                        var selectedItem = sourceListbox.Items[itemIndex] as Settings.FontSetting;
-                        if(selectedItem != null && selectedItem != currentlySelectedFontSetting)
-                        {
-                            UpdateSelection(selectedItem);
-                            sourceListbox.SelectedIndex = itemIndex;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void lbxColorItems_MouseDown(object sender, MouseEventArgs e)
-        {
-            lbxColorItems_MouseMove(sender, e);
-        }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            SaveCurrentFontSetting();
-        }
-
-        private void btnResetFontSettings_Click(object sender, EventArgs e)
-        {
-            if(MessageBox.Show("Reset all color settings to the default values?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
-            {
-                ResetFontSettings();
-            }
-        }
     }
-
-
 }
