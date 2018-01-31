@@ -14,6 +14,7 @@ Developers:
 * **Mojito Sorbet**
 * **Robin Cornelius**
 * **Revolution Smythe**
+* **Nico Domagalla**
 
 [![Travis CI Status](https://travis-ci.org/cinderblocks/radegast.svg?branch=master)](https://travis-ci.org/cinderblocks/radegast)
 [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/ql37302tn67dvqih?svg=true)](https://ci.appveyor.com/project/cinderblocks57647/radegast)
@@ -21,7 +22,7 @@ Developers:
 # License
 
 **Radegast Metaverse Client**
-*Copyright © 2009-2016, Radegast Development Team*
+*Copyright © 2009-2018, Radegast Development Team*
 *Copyright © 2017, Cinderblocks Design Co.*
 *All rights reserved.*
 
