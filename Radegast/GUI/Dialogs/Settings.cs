@@ -724,7 +724,16 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.LoadSettings();
-            tbLSLAllowedOwner.Text = Instance.State.LSLHelper.AllowedOwner.ToString();
+            String AllowedOwnner = "";
+            for (int i = 0; Instance.State.LSLHelper.AllowedOwner != null && i < Instance.State.LSLHelper.AllowedOwner.Count; i++)
+            {
+                if (i > 0)
+                {
+                    AllowedOwnner += "\r\n";
+                }
+                AllowedOwnner += Instance.State.LSLHelper.AllowedOwner.ToArray()[i];
+            }
+            tbLSLAllowedOwner.Text = AllowedOwnner;
             cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
             cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
@@ -738,9 +747,17 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
-            UUID allowedOwner = UUID.Zero;
-            UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner);
-            Instance.State.LSLHelper.AllowedOwner = allowedOwner;
+            Instance.State.LSLHelper.AllowedOwner.Clear();
+            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
+            {
+                foreach (String AllowedOwnner in tbLSLAllowedOwner.Lines)
+                {
+                    if (AllowedOwnner.Trim().Length > 0)
+                    {
+                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
+                    }
+                }
+            }
             Instance.State.LSLHelper.SaveSettings();
         }
 
@@ -751,13 +768,16 @@ namespace Radegast
 
         private void tbLSLAllowedOwner_Leave(object sender, EventArgs e)
         {
-            UUID allowedOwner = UUID.Zero;
-            if (UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner))
+            Instance.State.LSLHelper.AllowedOwner.Clear();
+            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
             {
-            }
-            else
-            {
-                tbLSLAllowedOwner.Text = UUID.Zero.ToString();
+                foreach (String AllowedOwnner in tbLSLAllowedOwner.Lines)
+                {
+                    if (AllowedOwnner.Trim().Length > 0)
+                    {
+                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
+                    }
+                }
             }
             LSLHelperPrefsSave();
         }

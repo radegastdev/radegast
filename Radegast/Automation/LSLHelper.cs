@@ -38,7 +38,7 @@ namespace Radegast.Automation
     public class LSLHelper : IDisposable
     {
         public bool Enabled;
-        public UUID AllowedOwner;
+        public List<String> AllowedOwner;
 
         RadegastInstance instance;
         GridClient client => instance.Client;
@@ -46,6 +46,7 @@ namespace Radegast.Automation
         public LSLHelper(RadegastInstance instance)
         {
             this.instance = instance;
+            this.AllowedOwner = new List<string>();
         }
 
         public void Dispose()
@@ -61,7 +62,11 @@ namespace Radegast.Automation
                     return;
                 OSDMap map = (OSDMap)instance.ClientSettings["LSLHelper"];
                 Enabled = map["enabled"];
-                AllowedOwner = map["allowed_owner"];
+                AllowedOwner.Clear();
+                foreach (String AllowedOwnner in map["allowed_owner"].AsString().Split(';'))
+                {
+                    AllowedOwner.Add(AllowedOwnner);
+                }
             }
             catch { }
         }
@@ -71,9 +76,18 @@ namespace Radegast.Automation
             if (!client.Network.Connected) return;
             try
             {
+                String AllowedOwnner = "";
                 OSDMap map = new OSDMap(2);
                 map["enabled"] = Enabled;
-                map["allowed_owner"] = AllowedOwner;
+                for (int i = 0; i < AllowedOwner.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        AllowedOwnner += ";";
+                    }
+                    AllowedOwnner += AllowedOwner.ToArray()[i];
+                }
+                map["allowed_owner"] = AllowedOwnner;
                 instance.ClientSettings["LSLHelper"] = map;
             }
             catch { }
@@ -97,7 +111,7 @@ namespace Radegast.Automation
             {
                 case InstantMessageDialog.MessageFromObject:
                     {
-                        if (e.IM.FromAgentID != AllowedOwner)
+                        if (AllowedOwner.IndexOf(e.IM.FromAgentID.ToString()) == -1)
                         {
                             return true;
                         }
@@ -144,6 +158,56 @@ namespace Radegast.Automation
                                             string.Format("Gave {0} to {1}", item.Name, instance.Names.Get(sendTo, true)),
                                             ChatBufferTextStyle.ObjectChat)
                                     );
+                                    return true;
+                                }
+                            case "send_money":
+                                {
+                                    if (args.Length < 3) return true;
+                                    UUID sendTo = UUID.Zero;
+                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
+                                    int amount = 0;
+                                    if (int.TryParse(args[2].Trim(), out amount))
+                                    {
+                                        if (amount > client.Self.Balance) amount = client.Self.Balance;
+                                        client.Self.GiveAvatarMoney(sendTo, amount);
+                                    }
+                                    return true;
+                                }
+                            case "tell_balance":
+                                {
+                                    if (args.Length < 2) return true;
+                                    UUID sendTo = UUID.Zero;
+                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
+                                    string msg = String.Format("Hello, I have {0} L$ in my pocket.", client.Self.Balance);
+                                    client.Self.InstantMessage(sendTo, msg);
+                                    return true;
+                                }
+                            case "say": /* This one doesn't work yet. I don't know why. TODO. - Nico */
+                                {
+                                    if (args.Length < 2) return true;
+                                    ChatType ct = ChatType.Normal;
+                                    int chan = 0;
+                                    if (args.Length > 2 && int.TryParse(args[2].Trim(), out chan) && chan < 0)
+                                    {
+                                        chan = 0;
+                                    }
+                                    if (args.Length > 3)
+                                    {
+                                        switch (args[3].Trim().ToLower())
+                                        {
+                                            case "whisper":
+                                                {
+                                                    ct = ChatType.Whisper;
+                                                    break;
+                                                }
+                                            case "shout":
+                                                {
+                                                    ct = ChatType.Shout;
+                                                }
+                                                break;
+                                        }
+                                    }
+                                    client.Self.Chat(args[1].Trim(), chan, ct);
                                     return true;
                                 }
                         }
