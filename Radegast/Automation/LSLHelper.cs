@@ -1,6 +1,6 @@
-// 
+﻿// 
 // Radegast Metaverse Client
-//Copyright (c) 2009-2018, Radegast Development Team
+//Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,9 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Threading;
 
 using OpenMetaverse;
@@ -41,18 +38,14 @@ namespace Radegast.Automation
     public class LSLHelper : IDisposable
     {
         public bool Enabled;
-        public List<String> AllowedOwner;
+        public UUID AllowedOwner;
 
         RadegastInstance instance;
-        GridClient client
-        {
-            get { return instance.Client; }
-        }
+        GridClient client => instance.Client;
 
         public LSLHelper(RadegastInstance instance)
         {
             this.instance = instance;
-            AllowedOwner = new List<String>();
         }
 
         public void Dispose()
@@ -68,11 +61,7 @@ namespace Radegast.Automation
                     return;
                 OSDMap map = (OSDMap)instance.ClientSettings["LSLHelper"];
                 Enabled = map["enabled"];
-                AllowedOwner.Clear();
-                foreach(String AllowedOwnner in map["allowed_owner"].AsString().Split(';'))
-                {
-                    AllowedOwner.Add(AllowedOwnner);
-                }
+                AllowedOwner = map["allowed_owner"];
             }
             catch { }
         }
@@ -82,23 +71,12 @@ namespace Radegast.Automation
             if (!client.Network.Connected) return;
             try
             {
-                String AllowedOwnner = "";
                 OSDMap map = new OSDMap(2);
                 map["enabled"] = Enabled;
-                for(int i=0;i<AllowedOwner.Count;i++)
-                {
-                    if (i > 0)
-                    {
-                        AllowedOwnner += ";";
-                    }
-                    AllowedOwnner += AllowedOwner.ElementAt<String>(i);
-                }
-                map["allowed_owner"] = AllowedOwnner;
+                map["allowed_owner"] = AllowedOwner;
                 instance.ClientSettings["LSLHelper"] = map;
             }
-            catch
-            {
-            }
+            catch { }
         }
 
         /// <summary>
@@ -119,14 +97,14 @@ namespace Radegast.Automation
             {
                 case InstantMessageDialog.MessageFromObject:
                     {
-                        if (AllowedOwner.IndexOf(e.IM.FromAgentID.ToString()) == -1)
+                        if (e.IM.FromAgentID != AllowedOwner)
                         {
                             return true;
                         }
                         string[] args = e.IM.Message.Trim().Split('^');
                         if (args.Length < 1) return false;
 
-                        switch (args[0].Trim().ToLower())
+                        switch (args[0].Trim())
                         {
                             case "group_invite":
                                 {
@@ -168,56 +146,6 @@ namespace Radegast.Automation
                                     );
                                     return true;
                                 }
-                            case "send_money":
-                                {
-                                    if (args.Length < 3) return true;
-                                    UUID sendTo = UUID.Zero;
-                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
-                                    int amount = 0;
-                                    if(int.TryParse(args[2].Trim(),out amount))
-                                    {
-                                        if (amount > client.Self.Balance) amount = client.Self.Balance;
-                                        client.Self.GiveAvatarMoney(sendTo, amount);
-                                    }
-                                    return true;
-                                }
-                            case "tell_balance":
-                                {
-                                    if (args.Length < 2) return true;
-                                    UUID sendTo = UUID.Zero;
-                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
-                                    string msg = String.Format("Hello, I have {0} L$ in my pocket.",client.Self.Balance);
-                                    client.Self.InstantMessage(sendTo, msg);
-                                    return true;
-                                }
-                            case "say": /* This one doesnt work yet. I dont know, why. TODO. */
-                                {
-                                    if (args.Length < 2) return true;
-                                    ChatType ct = ChatType.Normal;
-                                    int chan = 0;
-                                    if(args.Length > 2 && int.TryParse(args[2].Trim(),out chan) && chan<0)
-                                    {
-                                        chan = 0;
-                                    }
-                                    if(args.Length > 3)
-                                    {
-                                        switch(args[3].Trim().ToLower())
-                                        {
-                                            case "whisper":
-                                                {
-                                                    ct = ChatType.Whisper;
-                                                    break;
-                                                }
-                                            case "shout":
-                                                {
-                                                    ct = ChatType.Shout;
-                                                }
-                                                break;
-                                        }
-                                    }
-                                    client.Self.Chat(args[1].Trim(), chan, ct);
-                                    return true;
-                                }
                         }
                     }
                     break;
@@ -256,7 +184,7 @@ namespace Radegast.Automation
 
                         client.Groups.GroupMembersReply += handler;
                         client.Groups.RequestGroupMembers(groupID);
-                        bool success = gotMembers.WaitOne(30 * 1000, false);
+                        gotMembers.WaitOne(30 * 1000, false);
                         client.Groups.GroupMembersReply -= handler;
 
                         if (Members != null && Members.ContainsKey(invitee))
