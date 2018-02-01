@@ -10,11 +10,11 @@ Current maintainer and lead developer:
 
 Developers:
 
+* **Nico Domagalla**
 * **Douglas R. Miles**
 * **Mojito Sorbet**
 * **Robin Cornelius**
 * **Revolution Smythe**
-* **Nico Domagalla**
 
 [![Travis CI Status](https://travis-ci.org/cinderblocks/radegast.svg?branch=master)](https://travis-ci.org/cinderblocks/radegast)
 [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/ql37302tn67dvqih?svg=true)](https://ci.appveyor.com/project/cinderblocks57647/radegast)
