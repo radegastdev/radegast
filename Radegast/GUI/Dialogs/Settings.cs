@@ -1034,6 +1034,11 @@ namespace Radegast
                 ResetFontSettings();
             }
         }
+
+        private void FrmSettings_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            LSLHelperPrefsSave();
+        }
     }
 
 
