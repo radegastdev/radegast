@@ -32,6 +32,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using OpenMetaverse;
@@ -724,16 +725,7 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.LoadSettings();
-            String AllowedOwnner = "";
-            for (int i = 0; Instance.State.LSLHelper.AllowedOwner != null && i < Instance.State.LSLHelper.AllowedOwner.Count; i++)
-            {
-                if (i > 0)
-                {
-                    AllowedOwnner += "\r\n";
-                }
-                AllowedOwnner += Instance.State.LSLHelper.AllowedOwner.ToArray()[i];
-            }
-            tbLSLAllowedOwner.Text = AllowedOwnner;
+            tbLSLAllowedOwner.Text = string.Join(Environment.NewLine, Instance.State.LSLHelper.AllowedOwners);
             cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
             cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
@@ -747,18 +739,33 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
-            Instance.State.LSLHelper.AllowedOwner.Clear();
-            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
+            Instance.State.LSLHelper.AllowedOwners.Clear();
+
+            var warnings = new StringBuilder();
+            foreach (var line in tbLSLAllowedOwner.Lines)
             {
-                foreach (String AllowedOwnner in tbLSLAllowedOwner.Lines)
+                if (string.IsNullOrWhiteSpace(line))
                 {
-                    if (AllowedOwnner.Trim().Length > 0)
-                    {
-                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
-                    }
+                    continue;
+                }
+
+                var owner = line.Trim().ToLower();
+                if (!UUID.TryParse(owner, out _))
+                {
+                    warnings.AppendLine($"Invalid owner UUID: {line}");
+                }
+                else
+                {
+                    Instance.State.LSLHelper.AllowedOwners.Add(owner);
                 }
             }
+            if (warnings.Length > 0)
+            {
+                MessageBox.Show(warnings.ToString(), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             Instance.State.LSLHelper.SaveSettings();
+            LSLHelperPrefsUpdate();
         }
 
         private void llLSLHelperInstructios_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -768,17 +775,6 @@ namespace Radegast
 
         private void tbLSLAllowedOwner_Leave(object sender, EventArgs e)
         {
-            Instance.State.LSLHelper.AllowedOwner.Clear();
-            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
-            {
-                foreach (String AllowedOwnner in tbLSLAllowedOwner.Lines)
-                {
-                    if (AllowedOwnner.Trim().Length > 0)
-                    {
-                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
-                    }
-                }
-            }
             LSLHelperPrefsSave();
         }
 
@@ -1037,6 +1033,11 @@ namespace Radegast
             {
                 ResetFontSettings();
             }
+        }
+
+        private void FrmSettings_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            LSLHelperPrefsSave();
         }
     }
 

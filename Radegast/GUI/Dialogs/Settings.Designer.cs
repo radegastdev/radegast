@@ -1269,6 +1269,7 @@ namespace Radegast
             this.tbpChat.ResumeLayout(false);
             this.tbpChat.PerformLayout();
             this.ResumeLayout(false);
+            this.FormClosing += FrmSettings_FormClosing;
 
         }
 

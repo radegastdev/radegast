@@ -38,7 +38,7 @@ namespace Radegast.Automation
     public class LSLHelper : IDisposable
     {
         public bool Enabled;
-        public List<String> AllowedOwner;
+        public HashSet<String> AllowedOwners;
 
         RadegastInstance instance;
         GridClient client => instance.Client;
@@ -46,7 +46,7 @@ namespace Radegast.Automation
         public LSLHelper(RadegastInstance instance)
         {
             this.instance = instance;
-            this.AllowedOwner = new List<string>();
+            this.AllowedOwners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void Dispose()
@@ -62,10 +62,11 @@ namespace Radegast.Automation
                     return;
                 OSDMap map = (OSDMap)instance.ClientSettings["LSLHelper"];
                 Enabled = map["enabled"];
-                AllowedOwner.Clear();
-                foreach (String AllowedOwnner in map["allowed_owner"].AsString().Split(';'))
+                AllowedOwners.Clear();
+                var allowedOwnerList = map["allowed_owner"].AsString();
+                if (!string.IsNullOrWhiteSpace(allowedOwnerList))
                 {
-                    AllowedOwner.Add(AllowedOwnner);
+                    AllowedOwners.UnionWith(allowedOwnerList.Split(';'));
                 }
             }
             catch { }
@@ -76,18 +77,9 @@ namespace Radegast.Automation
             if (!client.Network.Connected) return;
             try
             {
-                String AllowedOwnner = "";
                 OSDMap map = new OSDMap(2);
                 map["enabled"] = Enabled;
-                for (int i = 0; i < AllowedOwner.Count; i++)
-                {
-                    if (i > 0)
-                    {
-                        AllowedOwnner += ";";
-                    }
-                    AllowedOwnner += AllowedOwner.ToArray()[i];
-                }
-                map["allowed_owner"] = AllowedOwnner;
+                map["allowed_owner"] = string.Join(";", AllowedOwners);
                 instance.ClientSettings["LSLHelper"] = map;
             }
             catch { }
@@ -111,7 +103,7 @@ namespace Radegast.Automation
             {
                 case InstantMessageDialog.MessageFromObject:
                     {
-                        if (AllowedOwner.IndexOf(e.IM.FromAgentID.ToString()) == -1)
+                        if (!AllowedOwners.Contains(e.IM.FromAgentID.ToString()))
                         {
                             return true;
                         }
