@@ -32,6 +32,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using OpenMetaverse;
@@ -724,7 +725,7 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.LoadSettings();
-            tbLSLAllowedOwner.Text = Instance.State.LSLHelper.AllowedOwner.ToString();
+            tbLSLAllowedOwner.Text = string.Join(Environment.NewLine, Instance.State.LSLHelper.AllowedOwners);
             cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
             cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
@@ -738,10 +739,33 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
-            UUID allowedOwner = UUID.Zero;
-            UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner);
-            Instance.State.LSLHelper.AllowedOwner = allowedOwner;
+            Instance.State.LSLHelper.AllowedOwners.Clear();
+
+            var warnings = new StringBuilder();
+            foreach (var line in tbLSLAllowedOwner.Lines)
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
+                var owner = line.Trim().ToLower();
+                if (!UUID.TryParse(owner, out _))
+                {
+                    warnings.AppendLine($"Invalid owner UUID: {line}");
+                }
+                else
+                {
+                    Instance.State.LSLHelper.AllowedOwners.Add(owner);
+                }
+            }
+            if (warnings.Length > 0)
+            {
+                MessageBox.Show(warnings.ToString(), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             Instance.State.LSLHelper.SaveSettings();
+            LSLHelperPrefsUpdate();
         }
 
         private void llLSLHelperInstructios_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -751,14 +775,6 @@ namespace Radegast
 
         private void tbLSLAllowedOwner_Leave(object sender, EventArgs e)
         {
-            UUID allowedOwner = UUID.Zero;
-            if (UUID.TryParse(tbLSLAllowedOwner.Text, out allowedOwner))
-            {
-            }
-            else
-            {
-                tbLSLAllowedOwner.Text = UUID.Zero.ToString();
-            }
             LSLHelperPrefsSave();
         }
 
@@ -1017,6 +1033,11 @@ namespace Radegast
             {
                 ResetFontSettings();
             }
+        }
+
+        private void FrmSettings_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            LSLHelperPrefsSave();
         }
     }
 

@@ -10,6 +10,7 @@ Current maintainer and lead developer:
 
 Developers:
 
+* **Nico Domagalla**
 * **Douglas R. Miles**
 * **Mojito Sorbet**
 * **Robin Cornelius**
@@ -21,7 +22,7 @@ Developers:
 # License
 
 **Radegast Metaverse Client**
-*Copyright © 2009-2016, Radegast Development Team*
+*Copyright © 2009-2018, Radegast Development Team*
 *Copyright © 2017, Cinderblocks Design Co.*
 *All rights reserved.*
 

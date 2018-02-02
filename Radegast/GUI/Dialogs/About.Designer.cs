@@ -93,13 +93,13 @@ namespace Radegast
             // txtLicense
             // 
             this.txtLicense.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLicense.Location = new System.Drawing.Point(12, 144);
+            this.txtLicense.Location = new System.Drawing.Point(12, 156);
             this.txtLicense.MaximumSize = new System.Drawing.Size(315, 113);
             this.txtLicense.Multiline = true;
             this.txtLicense.Name = "txtLicense";
             this.txtLicense.ReadOnly = true;
             this.txtLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLicense.Size = new System.Drawing.Size(315, 106);
+            this.txtLicense.Size = new System.Drawing.Size(315, 89);
             this.txtLicense.TabIndex = 2;
             this.txtLicense.TabStop = false;
             this.txtLicense.Text = resources.GetString("txtLicense.Text");
@@ -107,13 +107,13 @@ namespace Radegast
             // txtOtherLicenses
             // 
             this.txtOtherLicenses.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtOtherLicenses.Location = new System.Drawing.Point(12, 258);
+            this.txtOtherLicenses.Location = new System.Drawing.Point(12, 251);
             this.txtOtherLicenses.MaximumSize = new System.Drawing.Size(315, 92);
             this.txtOtherLicenses.Multiline = true;
             this.txtOtherLicenses.Name = "txtOtherLicenses";
             this.txtOtherLicenses.ReadOnly = true;
             this.txtOtherLicenses.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtOtherLicenses.Size = new System.Drawing.Size(315, 81);
+            this.txtOtherLicenses.Size = new System.Drawing.Size(315, 88);
             this.txtOtherLicenses.TabIndex = 3;
             this.txtOtherLicenses.TabStop = false;
             this.txtOtherLicenses.Text = resources.GetString("txtOtherLicenses.Text");
@@ -125,11 +125,12 @@ namespace Radegast
             this.txtWrittenBy.Multiline = true;
             this.txtWrittenBy.Name = "txtWrittenBy";
             this.txtWrittenBy.ReadOnly = true;
-            this.txtWrittenBy.Size = new System.Drawing.Size(162, 111);
+            this.txtWrittenBy.Size = new System.Drawing.Size(162, 123);
             this.txtWrittenBy.TabIndex = 1;
             this.txtWrittenBy.TabStop = false;
-            this.txtWrittenBy.Text = "Written by Latif Khalifa\r\nwith contributions from\r\n- Cinder Roxley\r\n- Douglas R. " +
-    "Miles\r\n- Mojito Sorbet\r\n- Robin Cornelius\r\n- Revolution Smythe\r\n- Signpost Marv";
+            this.txtWrittenBy.Text = "Written by Latif Khalifa\r\nwith contributions from\r\n- Cinder Roxley\r\n- Nico Domaga" +
+    "lla\r\n- Douglas R. Miles\r\n- Mojito Sorbet\r\n- Robin Cornelius\r\n- Revolution Smythe" +
+    "\r\n- Signpost Marv";
             // 
             // btnClose
             // 
@@ -149,7 +150,7 @@ namespace Radegast
             this.lblHomepage.ForeColor = System.Drawing.Color.Blue;
             this.lblHomepage.Location = new System.Drawing.Point(12, 342);
             this.lblHomepage.Name = "lblHomepage";
-            this.lblHomepage.Size = new System.Drawing.Size(93, 13);
+            this.lblHomepage.Size = new System.Drawing.Size(64, 13);
             this.lblHomepage.TabIndex = 4;
             this.lblHomepage.Text = "radegast.life";
             this.lblHomepage.Click += new System.EventHandler(this.lblHomepage_Click);

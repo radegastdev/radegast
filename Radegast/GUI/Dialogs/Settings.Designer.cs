@@ -116,9 +116,8 @@ namespace Radegast
             this.gbLSLHelper = new System.Windows.Forms.GroupBox();
             this.llLSLHelperInstructios = new System.Windows.Forms.LinkLabel();
             this.cbLSLHelperEnabled = new System.Windows.Forms.CheckBox();
-            this.lblLSLUUID = new System.Windows.Forms.Label();
             this.tbLSLAllowedOwner = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lblLSLUUID = new System.Windows.Forms.Label();
             this.pseudoHome = new System.Windows.Forms.GroupBox();
             this.pseudoHomeSet = new System.Windows.Forms.Button();
             this.pseudoHomeTolerance = new System.Windows.Forms.NumericUpDown();
@@ -791,20 +790,20 @@ namespace Radegast
             // 
             this.gbLSLHelper.Controls.Add(this.llLSLHelperInstructios);
             this.gbLSLHelper.Controls.Add(this.cbLSLHelperEnabled);
-            this.gbLSLHelper.Controls.Add(this.lblLSLUUID);
             this.gbLSLHelper.Controls.Add(this.tbLSLAllowedOwner);
-            this.gbLSLHelper.Controls.Add(this.label3);
+            this.gbLSLHelper.Controls.Add(this.lblLSLUUID);
             this.gbLSLHelper.Location = new System.Drawing.Point(8, 218);
             this.gbLSLHelper.Name = "gbLSLHelper";
-            this.gbLSLHelper.Size = new System.Drawing.Size(263, 83);
+            this.gbLSLHelper.Size = new System.Drawing.Size(263, 170);
             this.gbLSLHelper.TabIndex = 2;
             this.gbLSLHelper.TabStop = false;
             this.gbLSLHelper.Text = "LSL Helper";
             // 
             // llLSLHelperInstructios
             // 
+            this.llLSLHelperInstructios.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.llLSLHelperInstructios.AutoSize = true;
-            this.llLSLHelperInstructios.Location = new System.Drawing.Point(196, 59);
+            this.llLSLHelperInstructios.Location = new System.Drawing.Point(196, 146);
             this.llLSLHelperInstructios.Name = "llLSLHelperInstructios";
             this.llLSLHelperInstructios.Size = new System.Drawing.Size(61, 13);
             this.llLSLHelperInstructios.TabIndex = 4;
@@ -814,8 +813,9 @@ namespace Radegast
             // 
             // cbLSLHelperEnabled
             // 
+            this.cbLSLHelperEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cbLSLHelperEnabled.AutoSize = true;
-            this.cbLSLHelperEnabled.Location = new System.Drawing.Point(9, 58);
+            this.cbLSLHelperEnabled.Location = new System.Drawing.Point(9, 145);
             this.cbLSLHelperEnabled.Name = "cbLSLHelperEnabled";
             this.cbLSLHelperEnabled.Size = new System.Drawing.Size(65, 17);
             this.cbLSLHelperEnabled.TabIndex = 3;
@@ -823,33 +823,29 @@ namespace Radegast
             this.cbLSLHelperEnabled.UseVisualStyleBackColor = true;
             this.cbLSLHelperEnabled.CheckedChanged += new System.EventHandler(this.cbLSLHelperEnabled_CheckedChanged);
             // 
-            // lblLSLUUID
-            // 
-            this.lblLSLUUID.AutoSize = true;
-            this.lblLSLUUID.Location = new System.Drawing.Point(6, 35);
-            this.lblLSLUUID.Name = "lblLSLUUID";
-            this.lblLSLUUID.Size = new System.Drawing.Size(34, 13);
-            this.lblLSLUUID.TabIndex = 1;
-            this.lblLSLUUID.Text = "UUID";
-            this.lblLSLUUID.Click += new System.EventHandler(this.lblLSLUUID_Click);
-            // 
             // tbLSLAllowedOwner
             // 
-            this.tbLSLAllowedOwner.Location = new System.Drawing.Point(47, 32);
-            this.tbLSLAllowedOwner.MaxLength = 36;
+            this.tbLSLAllowedOwner.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbLSLAllowedOwner.Location = new System.Drawing.Point(9, 32);
+            this.tbLSLAllowedOwner.MaxLength = 0;
+            this.tbLSLAllowedOwner.Multiline = true;
             this.tbLSLAllowedOwner.Name = "tbLSLAllowedOwner";
-            this.tbLSLAllowedOwner.Size = new System.Drawing.Size(210, 20);
+            this.tbLSLAllowedOwner.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbLSLAllowedOwner.Size = new System.Drawing.Size(248, 107);
             this.tbLSLAllowedOwner.TabIndex = 2;
             this.tbLSLAllowedOwner.Leave += new System.EventHandler(this.tbLSLAllowedOwner_Leave);
             // 
-            // label3
+            // lblLSLUUID
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(108, 13);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "Allowed object owner";
+            this.lblLSLUUID.AutoSize = true;
+            this.lblLSLUUID.Location = new System.Drawing.Point(6, 16);
+            this.lblLSLUUID.Name = "lblLSLUUID";
+            this.lblLSLUUID.Size = new System.Drawing.Size(154, 13);
+            this.lblLSLUUID.TabIndex = 0;
+            this.lblLSLUUID.Text = "Allowed object owners (UUIDs)";
+            this.lblLSLUUID.Click += new System.EventHandler(this.lblLSLUUID_Click);
             // 
             // pseudoHome
             // 
@@ -869,6 +865,7 @@ namespace Radegast
             // 
             // pseudoHomeSet
             // 
+            this.pseudoHomeSet.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pseudoHomeSet.Location = new System.Drawing.Point(94, 73);
             this.pseudoHomeSet.Name = "pseudoHomeSet";
             this.pseudoHomeSet.Size = new System.Drawing.Size(75, 23);
@@ -912,6 +909,8 @@ namespace Radegast
             // 
             // pseudoHomeLocation
             // 
+            this.pseudoHomeLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pseudoHomeLocation.Location = new System.Drawing.Point(87, 40);
             this.pseudoHomeLocation.Name = "pseudoHomeLocation";
             this.pseudoHomeLocation.ReadOnly = true;
@@ -920,6 +919,7 @@ namespace Radegast
             // 
             // pseudoHomeClear
             // 
+            this.pseudoHomeClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pseudoHomeClear.Location = new System.Drawing.Point(182, 73);
             this.pseudoHomeClear.Name = "pseudoHomeClear";
             this.pseudoHomeClear.Size = new System.Drawing.Size(75, 23);
@@ -939,8 +939,9 @@ namespace Radegast
             // 
             // pseudoHomeEnabled
             // 
+            this.pseudoHomeEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pseudoHomeEnabled.AutoSize = true;
-            this.pseudoHomeEnabled.Location = new System.Drawing.Point(6, 77);
+            this.pseudoHomeEnabled.Location = new System.Drawing.Point(9, 79);
             this.pseudoHomeEnabled.Name = "pseudoHomeEnabled";
             this.pseudoHomeEnabled.Size = new System.Drawing.Size(65, 17);
             this.pseudoHomeEnabled.TabIndex = 8;
@@ -966,6 +967,7 @@ namespace Radegast
             // 
             // autoSitEnabled
             // 
+            this.autoSitEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.autoSitEnabled.AutoSize = true;
             this.autoSitEnabled.Location = new System.Drawing.Point(9, 70);
             this.autoSitEnabled.Name = "autoSitEnabled";
@@ -977,6 +979,7 @@ namespace Radegast
             // 
             // autoSitSit
             // 
+            this.autoSitSit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.autoSitSit.Location = new System.Drawing.Point(94, 66);
             this.autoSitSit.Name = "autoSitSit";
             this.autoSitSit.Size = new System.Drawing.Size(75, 23);
@@ -987,6 +990,7 @@ namespace Radegast
             // 
             // autoSitClear
             // 
+            this.autoSitClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.autoSitClear.Location = new System.Drawing.Point(182, 66);
             this.autoSitClear.Name = "autoSitClear";
             this.autoSitClear.Size = new System.Drawing.Size(75, 23);
@@ -1007,6 +1011,8 @@ namespace Radegast
             // 
             // autoSitUUID
             // 
+            this.autoSitUUID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.autoSitUUID.Location = new System.Drawing.Point(47, 40);
             this.autoSitUUID.MaxLength = 36;
             this.autoSitUUID.Name = "autoSitUUID";
@@ -1016,6 +1022,8 @@ namespace Radegast
             // 
             // autoSitName
             // 
+            this.autoSitName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.autoSitName.Location = new System.Drawing.Point(47, 13);
             this.autoSitName.Name = "autoSitName";
             this.autoSitName.ReadOnly = true;
@@ -1261,6 +1269,7 @@ namespace Radegast
             this.tbpChat.ResumeLayout(false);
             this.tbpChat.PerformLayout();
             this.ResumeLayout(false);
+            this.FormClosing += FrmSettings_FormClosing;
 
         }
 
@@ -1330,9 +1339,8 @@ namespace Radegast
         private System.Windows.Forms.GroupBox gbLSLHelper;
         private System.Windows.Forms.LinkLabel llLSLHelperInstructios;
         public System.Windows.Forms.CheckBox cbLSLHelperEnabled;
-        public System.Windows.Forms.Label lblLSLUUID;
         public System.Windows.Forms.TextBox tbLSLAllowedOwner;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblLSLUUID;
         public System.Windows.Forms.CheckBox cbShowScriptErrors;
         public System.Windows.Forms.GroupBox gnAutoScriptPermission;
         public System.Windows.Forms.ComboBox cbAutoScriptPermission;
