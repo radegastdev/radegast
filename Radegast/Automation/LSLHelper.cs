@@ -62,11 +62,7 @@ namespace Radegast.Automation
                     return;
                 OSDMap map = (OSDMap)instance.ClientSettings["LSLHelper"];
                 Enabled = map["enabled"];
-                AllowedOwner.Clear();
-                foreach (String AllowedOwnner in map["allowed_owner"].AsString().Split(';'))
-                {
-                    AllowedOwner.Add(AllowedOwnner);
-                }
+                AllowedOwner = new List<string>(map["allowed_owner"].AsString().Split(';'));
             }
             catch { }
         }
@@ -76,18 +72,9 @@ namespace Radegast.Automation
             if (!client.Network.Connected) return;
             try
             {
-                String AllowedOwnner = "";
                 OSDMap map = new OSDMap(2);
                 map["enabled"] = Enabled;
-                for (int i = 0; i < AllowedOwner.Count; i++)
-                {
-                    if (i > 0)
-                    {
-                        AllowedOwnner += ";";
-                    }
-                    AllowedOwnner += AllowedOwner.ToArray()[i];
-                }
-                map["allowed_owner"] = AllowedOwnner;
+                map["allowed_owner"] = string.Join(";", AllowedOwner);
                 instance.ClientSettings["LSLHelper"] = map;
             }
             catch { }

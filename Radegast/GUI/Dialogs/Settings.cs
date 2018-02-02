@@ -724,16 +724,7 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.LoadSettings();
-            String AllowedOwnner = "";
-            for (int i = 0; Instance.State.LSLHelper.AllowedOwner != null && i < Instance.State.LSLHelper.AllowedOwner.Count; i++)
-            {
-                if (i > 0)
-                {
-                    AllowedOwnner += "\r\n";
-                }
-                AllowedOwnner += Instance.State.LSLHelper.AllowedOwner.ToArray()[i];
-            }
-            tbLSLAllowedOwner.Text = AllowedOwnner;
+            tbLSLAllowedOwner.Text = string.Join(Environment.NewLine, Instance.State.LSLHelper.AllowedOwner);
             cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
             cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
@@ -748,14 +739,18 @@ namespace Radegast
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
             Instance.State.LSLHelper.AllowedOwner.Clear();
-            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
+            foreach (var line in tbLSLAllowedOwner.Lines)
             {
-                foreach (String AllowedOwnner in tbLSLAllowedOwner.Lines)
+                if (!string.IsNullOrWhiteSpace(line))
                 {
-                    if (AllowedOwnner.Trim().Length > 0)
+                    if (!UUID.TryParse(line, out _))
                     {
-                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
+                        MessageBox.Show($"Invalid owner UUID: {line}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        Instance.State.LSLHelper.AllowedOwner.Clear();
+                        break;
                     }
+
+                    Instance.State.LSLHelper.AllowedOwner.Add(line.Trim().ToLower());
                 }
             }
             Instance.State.LSLHelper.SaveSettings();
@@ -768,17 +763,6 @@ namespace Radegast
 
         private void tbLSLAllowedOwner_Leave(object sender, EventArgs e)
         {
-            Instance.State.LSLHelper.AllowedOwner.Clear();
-            if (tbLSLAllowedOwner.Text.Trim().Length > 0)
-            {
-                foreach (String AllowedOwnner in tbLSLAllowedOwner.Lines)
-                {
-                    if (AllowedOwnner.Trim().Length > 0)
-                    {
-                        Instance.State.LSLHelper.AllowedOwner.Add(AllowedOwnner.Trim());
-                    }
-                }
-            }
             LSLHelperPrefsSave();
         }
 
