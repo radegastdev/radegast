@@ -32,6 +32,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using OpenMetaverse;
@@ -739,21 +740,32 @@ namespace Radegast
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
             Instance.State.LSLHelper.AllowedOwner.Clear();
+
+            var warnings = new StringBuilder();
             foreach (var line in tbLSLAllowedOwner.Lines)
             {
-                if (!string.IsNullOrWhiteSpace(line))
+                if (string.IsNullOrWhiteSpace(line))
                 {
-                    if (!UUID.TryParse(line, out _))
-                    {
-                        MessageBox.Show($"Invalid owner UUID: {line}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        Instance.State.LSLHelper.AllowedOwner.Clear();
-                        break;
-                    }
+                    continue;
+                }
 
-                    Instance.State.LSLHelper.AllowedOwner.Add(line.Trim().ToLower());
+                var owner = line.Trim().ToLower();
+                if (!UUID.TryParse(owner, out _))
+                {
+                    warnings.AppendLine($"Invalid owner UUID: {line}");
+                }
+                else
+                {
+                    Instance.State.LSLHelper.AllowedOwner.Add(owner);
                 }
             }
+            if (warnings.Length > 0)
+            {
+                MessageBox.Show(warnings.ToString(), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             Instance.State.LSLHelper.SaveSettings();
+            LSLHelperPrefsUpdate();
         }
 
         private void llLSLHelperInstructios_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
