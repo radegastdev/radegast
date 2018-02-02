@@ -725,7 +725,7 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.LoadSettings();
-            tbLSLAllowedOwner.Text = string.Join(Environment.NewLine, Instance.State.LSLHelper.AllowedOwner);
+            tbLSLAllowedOwner.Text = string.Join(Environment.NewLine, Instance.State.LSLHelper.AllowedOwners);
             cbLSLHelperEnabled.CheckedChanged -=new EventHandler(cbLSLHelperEnabled_CheckedChanged);
             cbLSLHelperEnabled.Checked = Instance.State.LSLHelper.Enabled;
             cbLSLHelperEnabled.CheckedChanged += new EventHandler(cbLSLHelperEnabled_CheckedChanged);
@@ -739,7 +739,7 @@ namespace Radegast
             }
 
             Instance.State.LSLHelper.Enabled = cbLSLHelperEnabled.Checked;
-            Instance.State.LSLHelper.AllowedOwner.Clear();
+            Instance.State.LSLHelper.AllowedOwners.Clear();
 
             var warnings = new StringBuilder();
             foreach (var line in tbLSLAllowedOwner.Lines)
@@ -756,7 +756,7 @@ namespace Radegast
                 }
                 else
                 {
-                    Instance.State.LSLHelper.AllowedOwner.Add(owner);
+                    Instance.State.LSLHelper.AllowedOwners.Add(owner);
                 }
             }
             if (warnings.Length > 0)
