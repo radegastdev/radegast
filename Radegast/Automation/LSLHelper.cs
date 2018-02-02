@@ -62,6 +62,7 @@ namespace Radegast.Automation
                     return;
                 OSDMap map = (OSDMap)instance.ClientSettings["LSLHelper"];
                 Enabled = map["enabled"];
+                AllowedOwners.Clear();
                 AllowedOwners.UnionWith(map["allowed_owner"].AsString().Split(';'));
             }
             catch { }
