@@ -152,28 +152,6 @@ namespace Radegast.Automation
                                     );
                                     return true;
                                 }
-                            case "send_money":
-                                {
-                                    if (args.Length < 3) return true;
-                                    UUID sendTo = UUID.Zero;
-                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
-                                    int amount = 0;
-                                    if (int.TryParse(args[2].Trim(), out amount))
-                                    {
-                                        if (amount > client.Self.Balance) amount = client.Self.Balance;
-                                        client.Self.GiveAvatarMoney(sendTo, amount);
-                                    }
-                                    return true;
-                                }
-                            case "tell_balance":
-                                {
-                                    if (args.Length < 2) return true;
-                                    UUID sendTo = UUID.Zero;
-                                    if (!UUID.TryParse(args[1].Trim(), out sendTo)) return false;
-                                    string msg = String.Format("Hello, I have {0} L$ in my pocket.", client.Self.Balance);
-                                    client.Self.InstantMessage(sendTo, msg);
-                                    return true;
-                                }
                             case "say": /* This one doesn't work yet. I don't know why. TODO. - Nico */
                                 {
                                     if (args.Length < 2) return true;
