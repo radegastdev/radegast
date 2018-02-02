@@ -149,7 +149,7 @@ namespace Radegast.Core
         /// <param name="gesture">Gesture that was added or updated.</param>
         private void UpdateInventoryGesture(InventoryGesture gesture)
         {
-/*            var client = RadegastInstance.GlobalInstance.Client;
+            var client = RadegastInstance.GlobalInstance.Client;
 
             client.Assets.RequestAsset(gesture.AssetUUID, AssetType.Gesture, false, (_, asset) =>
             {
@@ -174,7 +174,7 @@ namespace Radegast.Core
                     existingGestureTrigger.Replacement = assetGesture.ReplaceWith;
                     existingGestureTrigger.AssetID = assetGesture.AssetID;
                 }
-            });*/
+            });
         }
 
         private void Store_InventoryObjectUpdated(object sender, InventoryObjectUpdatedEventArgs e)
