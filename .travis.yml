@@ -3,9 +3,12 @@ matrix:
     - language: csharp
       mono: 5.8.0
       solution: Radegast.sln
+      install:
+        - nuget restore Radegast.sln
       script:
-        - xbuild /p:Configuration=ReleaseLinux Radegast.sln
+        - msbuild /t:Rebuild /p:Configuration=ReleaseLinux Radegast.sln
     - language: csharp
+      mono: 5.8.0
       dotnet: 2.0.0
       solution: Radegast.sln
       script:
