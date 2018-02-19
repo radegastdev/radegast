@@ -4,12 +4,8 @@ matrix:
       language: csharp
       solution: Radegast.sln
       script:
-        - xbuild /p:Configuration=ReleaseLinux Radegast.sln
-    - mono: 5.0.1
-      language: csharp
-      solution: Radegast.sln
-      script:
-        - xbuild /p:Configuration=ReleaseLinux Radegast.sln
+        - dotnet restore
+        - dotnet build -f netstandard2.0 --runtime linux-x64
 #    - language: objective-c
 #      env:
 #        global:
