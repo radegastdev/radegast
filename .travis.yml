@@ -7,13 +7,14 @@ matrix:
         - nuget restore Radegast.sln
       script:
         - msbuild /t:Rebuild /p:Configuration=ReleaseLinux Radegast.sln
-    - language: csharp
-      mono: 5.8.0
-      dotnet: 2.0.0
-      solution: Radegast.sln
-      script:
-        - dotnet restore
-        - dotnet build -f netstandard2.0 --runtime linux-x64
+#Travis-ci can't handle these quite right yet.
+#    - language: csharp
+#      mono: 5.8.0
+#      dotnet: 2.0.0
+#      solution: Radegast.sln
+#      script:
+#        - dotnet restore
+#        - dotnet build -f netstandard2.0 --runtime linux-x64
 #    - language: objective-c
 #      env:
 #        global:
