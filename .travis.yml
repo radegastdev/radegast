@@ -1,7 +1,7 @@
 matrix:
   include:
-    - mono: latest
-      language: csharp
+    - language: csharp
+      dotnet: 2.0.0
       solution: Radegast.sln
       script:
         - dotnet restore
