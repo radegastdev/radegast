@@ -568,7 +568,7 @@ namespace Radegast
                         {
                             if (!string.IsNullOrEmpty(rule.Option))
                             {
-                                InventoryFolder folder = FindFolder(rule.Option);
+                                InventoryNode folder = FindFolder(rule.Option);
                                 if (folder != null)
                                 {
                                     List<InventoryItem> allItems = new List<InventoryItem>();
