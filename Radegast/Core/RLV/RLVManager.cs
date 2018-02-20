@@ -563,7 +563,7 @@ namespace Radegast
                             }
                         }
                         break;
-                    case "detachall";
+                    case "detachall":
                         if (rule.Param == "force")
                         {
                             if (!string.IsNullOrEmpty(rule.Option))
