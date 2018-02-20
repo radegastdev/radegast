@@ -563,7 +563,34 @@ namespace Radegast
                             }
                         }
                         break;
-                    
+                    case "detachall";
+                        if (rule.Param == "force")
+                        {
+                            if (!string.IsNullOrEmpty(rule.Option))
+                            {
+                                InventoryFolder folder = FindFolder(rule.Option);
+                                if (folder != null)
+                                {
+                                    List<InventoryItem> allItems = new List<InventoryItem>();
+                                    AllSubfolderWearables(folder, ref allItems);
+                                    List<InventoryItem> allSubfolderWorn = List<InventoryItem>();
+                                    foreach (var n in allItems)
+                                    {
+                                        if (CurrentOutfitFolder.CanBeWorn(n))
+                                        {
+                                            if ((n is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, n)) ||
+                                                CurrentOutfitFolder.IsAttached(currentAttachments, n))
+                                            {
+                                                allSubfolderWorn.Add((InventoryItem)n.Data);
+                                            }
+                                        }
+                                    }
+                                    instance.COF.RemoveFromOutfit(outfit);
+                                }
+                            }
+                        }
+                        break;
+
                     case "remoutfit":
                         if (rule.Param == "force")
                         {
