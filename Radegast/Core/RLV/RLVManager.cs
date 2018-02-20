@@ -585,7 +585,7 @@ namespace Radegast
                                             }
                                         }
                                     }
-                                    instance.COF.RemoveFromOutfit(outfit);
+                                    instance.COF.RemoveFromOutfit(allSubfolderWorn);
                                 }
                             }
                         }
