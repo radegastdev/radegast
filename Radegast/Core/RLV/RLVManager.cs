@@ -573,7 +573,7 @@ namespace Radegast
                                 {
                                     List<InventoryItem> allItems = new List<InventoryItem>();
                                     AllSubfolderWearables(folder, ref allItems);
-                                    List<InventoryItem> allSubfolderWorn = List<InventoryItem>();
+                                    List<InventoryItem> allSubfolderWorn;
                                     foreach (var n in allItems)
                                     {
                                         if (CurrentOutfitFolder.CanBeWorn(n))
@@ -581,7 +581,7 @@ namespace Radegast
                                             if ((n is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, n)) ||
                                                 CurrentOutfitFolder.IsAttached(currentAttachments, n))
                                             {
-                                                allSubfolderWorn.Add((InventoryItem)n.Data);
+                                                allSubfolderWorn.Add(n);
                                             }
                                         }
                                     }
