@@ -580,11 +580,7 @@ namespace Radegast
                                     {
                                         if (CurrentOutfitFolder.CanBeWorn(n))
                                         {
-                                            if ((n is InventoryWearable && CurrentOutfitFolder.IsWorn(currentOutfit, n)) ||
-                                                CurrentOutfitFolder.IsAttached(currentAttachments, n))
-                                            {
-                                                allSubfolderWorn.Add(n);
-                                            }
+                                            allSubfolderWorn.Add(n);
                                         }
                                     }
                                     instance.COF.RemoveFromOutfit(allSubfolderWorn);
