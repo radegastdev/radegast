@@ -571,8 +571,6 @@ namespace Radegast
                                 InventoryNode folder = FindFolder(rule.Option);
                                 if (folder != null)
                                 {
-                                    var currentOutfit = new List<AppearanceManager.WearableData>(client.Appearance.GetWearables());
-                                    var currentAttachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
                                     List<InventoryItem> allItems = new List<InventoryItem>();
                                     AllSubfolderWearables(folder, ref allItems);
                                     List<InventoryItem> allSubfolderWorn = new List<InventoryItem>();
