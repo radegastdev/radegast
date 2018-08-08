@@ -1497,7 +1497,7 @@ namespace Radegast
                 }
                 ShowInTaskbar = false;
                 trayIcon.Visible = true;
-                trayIcon.BalloonTipText = "Radegast is runnig in the background";
+                trayIcon.BalloonTipText = "Radegast is running in the background";
                 trayIcon.ShowBalloonTip(2000);
             }
         }
