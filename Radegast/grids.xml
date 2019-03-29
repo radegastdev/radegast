@@ -62,19 +62,19 @@
       <key>platform</key>
       <string>OpenSim</string>
       <key>loginuri</key>
-      <string>http://hypergrid.org:8002/</string>
+      <string>http://login.metro.land/</string>
       <key>loginpage</key>
-      <string>http://metropolis.hypergrid.org</string>
+      <string>http://metro.land/splash/</string>
       <key>helperuri</key>
-      <string>http://metropolis.hypergrid.org/currency/helper/</string>
+      <string>http://metro.land/helper/</string>
       <key>website</key>
-      <string>http://metropolis.hypergrid.org</string>
+      <string>http://www.metro.land</string>
       <key>support</key>
-      <string>http://metropolis.hypergrid.org</string>
+      <string>http://www.metro.land</string>
       <key>register</key>
-      <string>http://metropolis.hypergrid.org/oswi.php</string>
+      <string>http://www.metro.land/metro_rg.php</string>
       <key>password</key>
-      <string>http://metropolis.hypergrid.org/oswi.php</string>
+      <string>http://www.metro.land/password.php</string>
       <key>version</key>
       <string>1</string>
     </map>
