@@ -508,11 +508,11 @@ namespace Radegast.Rendering
         public GLAvatar()
         {
             lock (_defaultmeshes) foreach (var kvp in _defaultmeshes)
-                {
-                    GLMesh mesh = new GLMesh(kvp.Value, this); // Instance our meshes
-                    _meshes.Add(kvp.Key, mesh);
+            {
+                GLMesh mesh = new GLMesh(kvp.Value, this); // Instance our meshes
+                _meshes.Add(kvp.Key, mesh);
 
-                }
+            }
         }
 
         public static void dumptweaks()
@@ -951,10 +951,10 @@ namespace Radegast.Rendering
             mBones = new Dictionary<string, Bone>();
 
             lock (Bone.mBones) foreach (Bone src in Bone.mBones.Values)
-                {
-                    Bone newbone = new Bone(src);
-                    mBones.Add(newbone.name, newbone);
-                }
+            {
+                Bone newbone = new Bone(src);
+                mBones.Add(newbone.name, newbone);
+            }
 
             //rebuild the skeleton structure on the new copy
             foreach (Bone src in mBones.Values)

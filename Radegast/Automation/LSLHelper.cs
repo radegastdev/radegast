@@ -46,7 +46,7 @@ namespace Radegast.Automation
         public LSLHelper(RadegastInstance instance)
         {
             this.instance = instance;
-            this.AllowedOwners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            AllowedOwners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void Dispose()

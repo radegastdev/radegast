@@ -30,7 +30,6 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
 using Thread = ThreadPoolUtil.Thread;

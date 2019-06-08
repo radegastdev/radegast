@@ -37,7 +37,7 @@ namespace Radegast
 {
     public class ClientSignatures
     {
-        public static Dictionary<UUID, string> Signatures { get; private set; }
+        public static Dictionary<UUID, string> Signatures { get; }
 
         static ClientSignatures()
         {

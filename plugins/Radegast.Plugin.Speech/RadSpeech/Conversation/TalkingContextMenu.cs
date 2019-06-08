@@ -63,7 +63,7 @@ namespace RadegastSpeech.Conversation
                     return true;
                 }
             }
-           return false;
+            return false;
         }
 
         internal void SetObjectName(string name)
