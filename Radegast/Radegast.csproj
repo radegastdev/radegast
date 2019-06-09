@@ -101,20 +101,20 @@
     <Reference Include="CommandLine, Version=2.5.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.2.5.0\lib\net461\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse, Version=1.2.6.203, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.1.2.6.203\lib\net461\LibreMetaverse.dll</HintPath>
+    <Reference Include="LibreMetaverse, Version=1.2.7.205, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.1.2.7.205\lib\net461\LibreMetaverse.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.PrimMesher, Version=1.2.6.203, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.PrimMesher.1.2.6.203\lib\net461\LibreMetaverse.PrimMesher.dll</HintPath>
+    <Reference Include="LibreMetaverse.PrimMesher, Version=1.2.7.205, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.PrimMesher.1.2.7.205\lib\net461\LibreMetaverse.PrimMesher.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.Rendering.Meshmerizer, Version=1.2.6.203, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.Rendering.Meshmerizer.1.2.6.203\lib\net461\LibreMetaverse.Rendering.Meshmerizer.dll</HintPath>
+    <Reference Include="LibreMetaverse.Rendering.Meshmerizer, Version=1.2.7.205, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.Rendering.Meshmerizer.1.2.7.205\lib\net461\LibreMetaverse.Rendering.Meshmerizer.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.StructuredData, Version=1.2.6.203, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.StructuredData.1.2.6.203\lib\net461\LibreMetaverse.StructuredData.dll</HintPath>
+    <Reference Include="LibreMetaverse.StructuredData, Version=1.2.7.205, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.StructuredData.1.2.7.205\lib\net461\LibreMetaverse.StructuredData.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.Types, Version=1.2.6.203, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\LibreMetaverse.Types.1.2.6.203\lib\net461\LibreMetaverse.Types.dll</HintPath>
+    <Reference Include="LibreMetaverse.Types, Version=1.2.7.205, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LibreMetaverse.Types.1.2.7.205\lib\net461\LibreMetaverse.Types.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
