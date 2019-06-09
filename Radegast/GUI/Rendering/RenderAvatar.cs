@@ -2042,7 +2042,7 @@ namespace Radegast.Rendering
                 }
                 else
                 {
-                    Logger.Log($"Warning duplicate tweakable paramater ID {count} {Name}", Helpers.LogLevel.Warning);
+                    Logger.Log($"Warning duplicate tweakable parameter ID {count} {Name}", Helpers.LogLevel.Warning);
                 }
                 count++;
             }
