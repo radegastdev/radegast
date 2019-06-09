@@ -282,7 +282,7 @@ namespace Radegast.Rendering
 
                 GL.Enable(EnableCap.Blend);
                 GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
                 #region Compatibility checks
                 OpenTK.Graphics.IGraphicsContextInternal context = glControl.Context as OpenTK.Graphics.IGraphicsContextInternal;
@@ -331,7 +331,7 @@ namespace Radegast.Rendering
                 // and will also invalidate the GL control
                 glControl_Resize(null, null);
 
-                var textureThread = new Thread(() => TextureThread())
+                var textureThread = new Thread(TextureThread)
                 {
                     IsBackground = true,
                     Name = "TextureLoadingThread"
@@ -578,8 +578,8 @@ namespace Radegast.Rendering
                     if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(RootPrimLocalID))
                     {
                         UpdatePrimBlocking(Client.Network.CurrentSim.ObjectsPrimitives[RootPrimLocalID]);
-                        var children = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => { return p.ParentID == RootPrimLocalID; });
-                        children.ForEach(p => UpdatePrimBlocking(p));
+                        var children = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == RootPrimLocalID);
+                        children.ForEach(UpdatePrimBlocking);
                     }
                 }
             );
@@ -608,44 +608,43 @@ namespace Radegast.Rendering
                 {
                     primNr++;
                     Primitive prim = mesh.Prim;
-                    if (!string.IsNullOrEmpty(prim.Text))
+                    if (string.IsNullOrEmpty(prim.Text)) continue;
+
+                    string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
+                    OpenTK.Vector3 screenPos = OpenTK.Vector3.Zero;
+                    OpenTK.Vector3 primPos = OpenTK.Vector3.Zero;
+
+                    // Is it child prim
+                    FacetedMesh parent = null;
+                    if (Prims.TryGetValue(prim.ParentID, out parent))
                     {
-                        string text = System.Text.RegularExpressions.Regex.Replace(prim.Text, "(\r?\n)+", "\n");
-                        OpenTK.Vector3 screenPos = OpenTK.Vector3.Zero;
-                        OpenTK.Vector3 primPos = OpenTK.Vector3.Zero;
-
-                        // Is it child prim
-                        FacetedMesh parent = null;
-                        if (Prims.TryGetValue(prim.ParentID, out parent))
-                        {
-                            var newPrimPos = prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
-                            primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
-                        }
-
-                        primPos.Z += prim.Scale.Z * 0.8f;
-                        if (!Math3D.GluProject(primPos, ModelMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
-                        screenPos.Y = glControl.Height - screenPos.Y;
-
-                        textRendering.Begin();
-
-                        Color color = Color.FromArgb((int)(prim.TextColor.A * 255), (int)(prim.TextColor.R * 255), (int)(prim.TextColor.G * 255), (int)(prim.TextColor.B * 255));
-                        TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.Top;
-
-                        using (Font f = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Regular))
-                        {
-                            var size = TextRendering.Measure(text, f, flags);
-                            screenPos.X -= size.Width / 2;
-                            screenPos.Y -= size.Height;
-
-                            // Shadow
-                            if (color != Color.Black)
-                            {
-                                textRendering.Print(text, f, Color.Black, new Rectangle((int)screenPos.X + 1, (int)screenPos.Y + 1, size.Width, size.Height), flags);
-                            }
-                            textRendering.Print(text, f, color, new Rectangle((int)screenPos.X, (int)screenPos.Y, size.Width, size.Height), flags);
-                        }
-                        textRendering.End();
+                        var newPrimPos = prim.Position * Matrix4.CreateFromQuaternion(parent.Prim.Rotation);
+                        primPos = new OpenTK.Vector3(newPrimPos.X, newPrimPos.Y, newPrimPos.Z);
                     }
+
+                    primPos.Z += prim.Scale.Z * 0.8f;
+                    if (!Math3D.GluProject(primPos, ModelMatrix, ProjectionMatrix, Viewport, out screenPos)) continue;
+                    screenPos.Y = glControl.Height - screenPos.Y;
+
+                    textRendering.Begin();
+
+                    Color color = Color.FromArgb((int)(prim.TextColor.A * 255), (int)(prim.TextColor.R * 255), (int)(prim.TextColor.G * 255), (int)(prim.TextColor.B * 255));
+                    TextFormatFlags flags = TextFormatFlags.HorizontalCenter | TextFormatFlags.Top;
+
+                    using (Font f = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Regular))
+                    {
+                        var size = TextRendering.Measure(text, f, flags);
+                        screenPos.X -= size.Width / 2;
+                        screenPos.Y -= size.Height;
+
+                        // Shadow
+                        if (color != Color.Black)
+                        {
+                            textRendering.Print(text, f, Color.Black, new Rectangle((int)screenPos.X + 1, (int)screenPos.Y + 1, size.Width, size.Height), flags);
+                        }
+                        textRendering.Print(text, f, color, new Rectangle((int)screenPos.X, (int)screenPos.Y, size.Width, size.Height), flags);
+                    }
+                    textRendering.End();
                 }
             }
         }
@@ -721,6 +720,7 @@ namespace Radegast.Rendering
                                 case Shininess.Low:
                                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 24f);
                                     break;
+                                case Shininess.None:
                                 default:
                                     GL.Material(MaterialFace.Front, MaterialParameter.Shininess, 0f);
                                     break;

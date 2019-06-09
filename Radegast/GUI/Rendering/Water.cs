@@ -173,7 +173,7 @@ namespace Radegast.Rendering
             GL.CopyTexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, 0, 0, textureSize, textureSize);
 
             GL.BindTexture(TextureTarget.Texture2D, depthTexture);
-            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, 0, 0, textureSize, textureSize, 0);
+            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, InternalFormat.DepthComponent, 0, 0, textureSize, textureSize, 0);
         }
 
         public void RenderWater()

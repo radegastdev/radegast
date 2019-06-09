@@ -685,7 +685,7 @@ namespace Radegast.Rendering
                 GL.MatrixMode(MatrixMode.Projection);
 
                 GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
                 // Compatibility checks
                 OpenTK.Graphics.IGraphicsContextInternal context = glControl.Context as OpenTK.Graphics.IGraphicsContextInternal;

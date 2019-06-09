@@ -51,10 +51,8 @@ namespace Radegast
             this.instance = instance;
             AddNetcomEvents();
 
-            if (instance.GlobalSettings["hide_login_graphics"].AsBoolean())
-                pnlSplash.BackgroundImage = null;
-            else
-                pnlSplash.BackgroundImage = Properties.Resources.radegast_main_screen2;
+            pnlSplash.BackgroundImage = instance.GlobalSettings["hide_login_graphics"].AsBoolean() 
+                ? null : Properties.Resources.radegast_main_screen2;
 
             if (!instance.GlobalSettings.ContainsKey("remember_login"))
             {
@@ -138,7 +136,7 @@ namespace Radegast
                 sl.CustomURI = string.Empty;
             }
 
-            string savedLoginsKey = string.Format("{0}%{1}", username, sl.GridID);
+            string savedLoginsKey = $"{username}%{sl.GridID}";
 
             if (!(s["saved_logins"] is OSDMap))
             {
@@ -160,14 +158,8 @@ namespace Radegast
                     sl.Password =Utils.MD5(txtPassword.Text);
                     s["password"] = Utils.MD5(txtPassword.Text);
                 }
-                if (cbxLocation.SelectedIndex == -1)
-                {
-                    sl.CustomStartLocation = cbxLocation.Text;
-                }
-                else
-                {
-                    sl.CustomStartLocation = string.Empty;
-                }
+                sl.CustomStartLocation = cbxLocation.SelectedIndex == -1 
+                    ? cbxLocation.Text : string.Empty;
                 sl.StartLocationType = cbxLocation.SelectedIndex;
                 ((OSDMap)s["saved_logins"])[savedLoginsKey] = sl.ToOSD();
             }
@@ -200,7 +192,7 @@ namespace Radegast
             for (int i = 0; i < instance.GridManger.Count; i++)
             {
                 cbxGrid.Items.Add(instance.GridManger[i]);
-                if (MainProgram.CommandLineOpts.Grid == instance.GridManger[i].ID)
+                if (MainProgram.s_CommandLineOpts.Grid == instance.GridManger[i].ID)
                     gridIx = i;
             }
             cbxGrid.Items.Add("Custom");
@@ -217,13 +209,13 @@ namespace Radegast
             // Setup login name
             string savedUsername;
 
-            if (string.IsNullOrEmpty(MainProgram.CommandLineOpts.Username))
+            if (string.IsNullOrEmpty(MainProgram.s_CommandLineOpts.Username))
             {
                 savedUsername = s["username"];
             }
             else
             {
-                savedUsername = MainProgram.CommandLineOpts.Username;
+                savedUsername = MainProgram.s_CommandLineOpts.Username;
             }
 
             cbxUsername.Items.Add(savedUsername);
@@ -249,19 +241,13 @@ namespace Radegast
             cbxUsername.SelectedIndex = 0;
 
             // Fill in saved password or use one specified on the command line
-            if (string.IsNullOrEmpty(MainProgram.CommandLineOpts.Password))
-            {
-                txtPassword.Text = s["password"].AsString();
-            }
-            else
-            {
-                txtPassword.Text = MainProgram.CommandLineOpts.Password;
-            }
+            txtPassword.Text = string.IsNullOrEmpty(MainProgram.s_CommandLineOpts.Password) 
+                ? s["password"].AsString() : MainProgram.s_CommandLineOpts.Password;
 
 
             // Setup login location either from the last used or
             // override from the command line
-            if (string.IsNullOrEmpty(MainProgram.CommandLineOpts.Location))
+            if (string.IsNullOrEmpty(MainProgram.s_CommandLineOpts.Location))
             {
                 // Use last location as default
                 if (s["login_location_type"].Type == OSDType.Unknown)
@@ -277,7 +263,7 @@ namespace Radegast
             }
             else
             {
-                switch (MainProgram.CommandLineOpts.Location)
+                switch (MainProgram.s_CommandLineOpts.Location)
                 {
                     case "home":
                         cbxLocation.SelectedIndex = 0;
@@ -289,20 +275,20 @@ namespace Radegast
 
                     default:
                         cbxLocation.SelectedIndex = -1;
-                        cbxLocation.Text = MainProgram.CommandLineOpts.Location;
+                        cbxLocation.Text = MainProgram.s_CommandLineOpts.Location;
                         break;
                 }
             }
 
 
             // Set grid dropdown to last used, or override from command line
-            if (string.IsNullOrEmpty(MainProgram.CommandLineOpts.Grid))
+            if (string.IsNullOrEmpty(MainProgram.s_CommandLineOpts.Grid))
             {
                 cbxGrid.SelectedIndex = s["login_grid"].AsInteger();
             }
             else if (gridIx == -1) // --grid specified but not found
             {
-                MessageBox.Show(string.Format("Grid specified with --grid {0} not found", MainProgram.CommandLineOpts.Grid),
+                MessageBox.Show($"Grid specified with --grid {MainProgram.s_CommandLineOpts.Grid} not found",
                     "Grid not found",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
@@ -310,18 +296,18 @@ namespace Radegast
             }
 
             // Restore login uri from settings, or command line
-            if (string.IsNullOrEmpty(MainProgram.CommandLineOpts.LoginUri))
+            if (string.IsNullOrEmpty(MainProgram.s_CommandLineOpts.LoginUri))
             {
                 txtCustomLoginUri.Text = s["login_uri"].AsString();
             }
             else
             {
-                txtCustomLoginUri.Text = MainProgram.CommandLineOpts.LoginUri;
+                txtCustomLoginUri.Text = MainProgram.s_CommandLineOpts.LoginUri;
                 cbxGrid.SelectedIndex = cbxGrid.Items.Count - 1;
             }
 
             // Start logging in if autologin enabled from command line
-            if (MainProgram.CommandLineOpts.AutoLogin)
+            if (MainProgram.s_CommandLineOpts.AutoLogin)
             {
                 BeginLogin();
             }
@@ -379,6 +365,9 @@ namespace Radegast
 
                     btnLogin.Text = "Retry";
                     break;
+                case LoginStatus.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -564,9 +553,9 @@ namespace Radegast
                 {
                     foreach (var item in cbxGrid.Items)
                     {
-                        if (item is Grid && ((Grid)item).ID == sl.GridID)
+                        if (item is Grid grid && grid.ID == sl.GridID)
                         {
-                            cbxGrid.SelectedItem = item;
+                            cbxGrid.SelectedItem = grid;
                             break;
                         }
                     }
@@ -588,13 +577,15 @@ namespace Radegast
 
         public OSDMap ToOSD()
         {
-            OSDMap ret = new OSDMap(4);
-            ret["username"] = Username;
-            ret["password"] = Password;
-            ret["grid"] = GridID;
-            ret["custom_url"] = CustomURI;
-            ret["location_type"] = StartLocationType;
-            ret["custom_location"] = CustomStartLocation;
+            OSDMap ret = new OSDMap(4)
+            {
+                ["username"] = Username,
+                ["password"] = Password,
+                ["grid"] = GridID,
+                ["custom_url"] = CustomURI,
+                ["location_type"] = StartLocationType,
+                ["custom_location"] = CustomStartLocation
+            };
             return ret;
         }
 
@@ -602,11 +593,13 @@ namespace Radegast
         {
             if (!(data is OSDMap)) return null;
             OSDMap map = (OSDMap)data;
-            SavedLogin ret = new SavedLogin();
-            ret.Username = map["username"];
-            ret.Password = map["password"];
-            ret.GridID = map["grid"];
-            ret.CustomURI = map["custom_url"];
+            SavedLogin ret = new SavedLogin
+            {
+                Username = map["username"],
+                Password = map["password"],
+                GridID = map["grid"],
+                CustomURI = map["custom_url"]
+            };
             if (map.ContainsKey("location_type"))
             {
                 ret.StartLocationType = map["location_type"];
@@ -635,7 +628,7 @@ namespace Radegast
             {
                 gridName = GridID;
             }
-            return string.Format("{0} -- {1}", Username, gridName);
+            return $"{Username} -- {gridName}";
         }
     }
 }

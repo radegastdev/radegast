@@ -44,7 +44,7 @@ using System.Threading;
 
 namespace Radegast
 {
-    public class CommandLineOpts
+    public class CommandLineOptions
     {
         [Option('u', "username", HelpText = "Username, use quotes to supply \"First Last\"")]
         public string Username { get; set; } = string.Empty;
@@ -52,13 +52,13 @@ namespace Radegast
         [Option('p', "password", HelpText = "Account password")]
         public string Password { get; set; } = string.Empty;
 
-        [Option('a', "autologin", HelpText = "Automatially login with provided user credentials")]
+        [Option('a', "autologin", HelpText = "Automatically login with provided user credentials")]
         public bool AutoLogin { get; set; } = false;
 
         [Option('g', "grid", HelpText = "Grid ID to login into, try --list-grids to see IDs used for this parameter")]
         public string Grid { get; set; } = string.Empty;
 
-        [Option('l', "location", HelpText = "Login location: last, home or regionname. Regioname can also be in format regionname/x/y/z")]
+        [Option('l', "location", HelpText = "Login location: last, home or region name. Region name can also be in format regionname/x/y/z")]
         public string Location { get; set; } = string.Empty;
 
         [Option("list-grids", HelpText = "Lists grid IDs used for --grid option")]
@@ -82,7 +82,7 @@ namespace Radegast
             return header;
         }
 
-        [HelpOption('h', "help", HelpText = "Display this help screen.")]
+        /*[HelpOption('h', "help", HelpText = "Display this help screen.")]
         public string GetUsage()
         {
             HelpText usage = GetHeader();
@@ -90,7 +90,7 @@ namespace Radegast
             usage.AddPostOptionsLine("Example: automatically login user called Some Resident to his last location on the Second Life main grid (agni)");
             usage.AddPostOptionsLine("Radegast -a -g agni -u \"Some Resident\" -p \"secret\"  -l last");
             return usage.ToString();
-        }
+        }*/
     }
 
     public static class MainProgram
@@ -98,7 +98,7 @@ namespace Radegast
         /// <summary>
         /// Parsed command line options
         /// </summary>
-        public static CommandLineOpts CommandLineOpts;
+        public static CommandLineOptions s_CommandLineOpts;
 
         static void RunRadegast(string[] args)
         {
@@ -116,19 +116,20 @@ namespace Radegast
             }
 
             // Read command line options
-            CommandLineOpts = new CommandLineOpts();
-            Parser.Default.ParseArguments(args, CommandLineOpts);
+            Parser.Default.ParseArguments<CommandLineOptions>(args)
+                .WithParsed(o => {  s_CommandLineOpts = o; });
 
             // Change current working directory to Radegast install dir
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) 
+                                          ?? throw new InvalidOperationException());
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             // See if we only wanted to display list of grids
-            if (CommandLineOpts.ListGrids)
+            if (s_CommandLineOpts.ListGrids)
             {
-                Console.WriteLine(CommandLineOpts.GetHeader());
+                Console.WriteLine(s_CommandLineOpts.GetHeader());
                 Console.WriteLine();
                 GridManager grids = new GridManager();
                 Console.WriteLine("Use Grid ID as the parameter for --grid");
@@ -180,10 +181,10 @@ namespace Radegast
 
                     OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
 
-                    string dlgMsg = "Radegast has encoutered an unrecoverable errror." + Environment.NewLine +
+                    string dlgMsg = "Radegast has encountered an unrecoverable error." + Environment.NewLine +
                         "Would you like to send the error report to help improve Radegast?";
 
-                    var res = MessageBox.Show(dlgMsg, "Unrecoverable error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                    var res = MessageBox.Show(dlgMsg, @"Unrecoverable error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
 
                     if (res == DialogResult.Yes)
                     {
