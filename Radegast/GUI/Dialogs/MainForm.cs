@@ -1162,12 +1162,12 @@ namespace Radegast
 
         private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessLink("https://metaverse.atlassian.net/browse/RAD");
+            ProcessLink("https://radegast.life/bugs/issue-entry/");
         }
 
         private void accessibilityGuideToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessLink("https://radegast.life/documentation/Accessibility_Guide");
+            ProcessLink("https://radegast.life/documentation/help/");
         }
 
         private void aboutRadegastToolStripMenuItem_Click(object sender, EventArgs e)
