@@ -130,9 +130,10 @@ namespace Radegast
             {
                 PendingLookups = new BlockingQueue<List<UUID>>();
                 lookupGate = new Semaphore(4, 4);
-                requestThread = new Thread(new ThreadStart(RequestThread));
-                requestThread.IsBackground = true;
-                requestThread.Name = "Display Name Request Thread";
+                requestThread = new Thread(new ThreadStart(RequestThread))
+                {
+                    IsBackground = true, Name = "Display Name Request Thread"
+                };
                 requestThread.Start();
             }
         }
@@ -160,18 +161,15 @@ namespace Radegast
 
             try
             {
-                if (useRequestThread)
+                if (!useRequestThread) return;
+                PendingLookups.Close();
+
+                if (requestThread == null) return;
+                if (!requestThread.Join(5 * 1000))
                 {
-                    PendingLookups.Close();
-                    if (requestThread != null)
-                    {
-                        if (!requestThread.Join(5 * 1000))
-                        {
-                            requestThread.Abort();
-                        }
-                        requestThread = null;
-                    }
+                    requestThread.Abort();
                 }
+                requestThread = null;
             }
             catch { }
         }
@@ -229,8 +227,9 @@ namespace Radegast
                 e.DisplayName.Updated = DateTime.Now;
                 names[e.DisplayName.ID] = e.DisplayName;
             }
-            Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
-            ret.Add(e.DisplayName.ID, FormatName(e.DisplayName));
+
+            Dictionary<UUID, string> ret = new Dictionary<UUID, string>
+                { {e.DisplayName.ID, FormatName(e.DisplayName)}};
             TriggerEvent(ret);
         }
 
@@ -253,35 +252,30 @@ namespace Radegast
                 {
                     if (!names.ContainsKey(kvp.Key))
                     {
-                        names[kvp.Key] = new AgentDisplayName();
-                        names[kvp.Key].ID = kvp.Key;
-                        names[kvp.Key].NextUpdate = UUIDNameOnly;
-                        names[kvp.Key].IsDefaultDisplayName = true;
+                        names[kvp.Key] = new AgentDisplayName
+                        {
+                            ID = kvp.Key,
+                            NextUpdate = UUIDNameOnly,
+                            IsDefaultDisplayName = true
+                        };
                     }
 
                     names[kvp.Key].Updated = DateTime.Now;
 
                     string[] parts = kvp.Value.Trim().Split(' ');
-                    if (parts.Length == 2)
+                    if (parts.Length != 2) continue;
+                    if (InvalidName(names[kvp.Key].DisplayName))
                     {
-                        if (InvalidName(names[kvp.Key].DisplayName))
-                        {
-                            names[kvp.Key].DisplayName = string.Format("{0} {1}", parts[0], parts[1]);
-                        }
-
-                        names[kvp.Key].LegacyFirstName = parts[0];
-                        names[kvp.Key].LegacyLastName = parts[1];
-                        if (names[kvp.Key].LegacyLastName == "Resident")
-                        {
-                            names[kvp.Key].UserName = names[kvp.Key].LegacyFirstName.ToLower();
-                        }
-                        else
-                        {
-                            names[kvp.Key].UserName = string.Format("{0}.{1}", parts[0], parts[1]).ToLower();
-                        }
-
-                        ret.Add(kvp.Key, FormatName(names[kvp.Key]));
+                        names[kvp.Key].DisplayName = string.Format("{0} {1}", parts[0], parts[1]);
                     }
+
+                    names[kvp.Key].LegacyFirstName = parts[0];
+                    names[kvp.Key].LegacyLastName = parts[1];
+                    names[kvp.Key].UserName = names[kvp.Key].LegacyLastName == "Resident" 
+                        ? names[kvp.Key].LegacyFirstName.ToLower() 
+                        : string.Format("{0}.{1}", parts[0], parts[1]).ToLower();
+
+                    ret.Add(kvp.Key, FormatName(names[kvp.Key]));
                 }
             }
 
@@ -297,14 +291,12 @@ namespace Radegast
                     return n.DisplayName;
 
                 case NameMode.Smart:
-                    if (n.IsDefaultDisplayName)
-                        return n.DisplayName;
-                    else
-                        return string.Format("{0} ({1})", n.DisplayName, n.UserName);
+                    return n.IsDefaultDisplayName ? n.DisplayName : $"{n.DisplayName} ({n.UserName})";
 
                 case NameMode.DisplayNameAndUserName:
-                    return string.Format("{0} ({1})", n.DisplayName, n.UserName);
+                    return $"{n.DisplayName} ({n.UserName})";
 
+                case NameMode.Standard:
                 default:
                     return n.LegacyFullName;
             }
@@ -312,18 +304,14 @@ namespace Radegast
 
         bool InvalidName(string displayName)
         {
-            if (string.IsNullOrEmpty(displayName) ||
-                displayName == "???" ||
-                displayName == RadegastInstance.INCOMPLETE_NAME)
-            {
-                return true;
-            }
-            return false;
+            return string.IsNullOrEmpty(displayName) ||
+                   displayName == "???" ||
+                   displayName == RadegastInstance.INCOMPLETE_NAME;
         }
 
         void ProcessDisplayNames(AgentDisplayName[] names)
         {
-            Dictionary<UUID, string> ret = new Dictionary<UUID, string>();
+            var ret = new Dictionary<UUID, string>();
 
             foreach (var name in names)
             {
@@ -350,7 +338,7 @@ namespace Radegast
 
         void MakeRequest(object sync)
         {
-            List<UUID> req = new List<UUID>();
+            var req = new List<UUID>();
             lock (requests)
             {
                 while (requests.Count > 0)
@@ -358,32 +346,30 @@ namespace Radegast
             }
 
 
-            if (req.Count > 0)
+            if (req.Count <= 0) return;
+            if (Mode == NameMode.Standard || (!client.Avatars.DisplayNamesAvailable()))
             {
-                if (Mode == NameMode.Standard || (!client.Avatars.DisplayNamesAvailable()))
+                client.Avatars.RequestAvatarNames(req);
+            }
+            else // Use display names
+            {
+                if (useRequestThread)
                 {
-                    client.Avatars.RequestAvatarNames(req);
+                    PendingLookups.Enqueue(new List<UUID>(req));
                 }
-                else // Use display names
+                else
                 {
-                    if (useRequestThread)
+                    client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
                     {
-                        PendingLookups.Enqueue(new List<UUID>(req));
-                    }
-                    else
-                    {
-                        client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
+                        if (success)
                         {
-                            if (success)
-                            {
-                                ProcessDisplayNames(names);
-                            }
-                            else
-                            {
-                                Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
-                            }
-                        });
-                    }
+                            ProcessDisplayNames(names);
+                        }
+                        else
+                        {
+                            Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
+                        }
+                    });
                 }
             }
         }
@@ -404,7 +390,7 @@ namespace Radegast
                 OSDMap cache = new OSDMap(1);
                 cache["names"] = namesOSD;
                 byte[] data = OSDParser.SerializeLLSDBinary(cache, false);
-                Logger.DebugLog(string.Format("Caching {0} avatar names to {1}", namesOSD.Count, cacheFileName));
+                Logger.DebugLog($"Caching {namesOSD.Count} avatar names to {cacheFileName}");
 
                 try
                 {
@@ -432,9 +418,9 @@ namespace Radegast
 
                     lock (names)
                     {
-                        for (int i = 0; i < namesOSD.Count; i++)
+                        foreach (var osdname in namesOSD)
                         {
-                            AgentDisplayName name = AgentDisplayName.FromOSD(namesOSD[i]);
+                            AgentDisplayName name = AgentDisplayName.FromOSD(osdname);
                             if (mode == NameMode.Standard || ((now - name.Updated) < maxAge))
                             {
                                 names[name.ID] = name;
@@ -442,7 +428,7 @@ namespace Radegast
                         }
                     }
 
-                    Logger.DebugLog(string.Format("Restored {0} names from the avatar name cache", names.Count));
+                    Logger.DebugLog($"Restored {names.Count} names from the avatar name cache");
                 }
                 catch (Exception ex)
                 {
@@ -679,10 +665,7 @@ namespace Radegast
                 return defaultValue;
 
             string name = Get(agentID);
-            if (name == RadegastInstance.INCOMPLETE_NAME)
-                return defaultValue;
-
-            return name;
+            return name == RadegastInstance.INCOMPLETE_NAME ? defaultValue : name;
         }
 
         /// <summary>
@@ -698,11 +681,7 @@ namespace Radegast
                 return defaultValue;
 
             string name = Get(agentID, blocking);
-            if (name == RadegastInstance.INCOMPLETE_NAME)
-                return defaultValue;
-
-            return name;
-
+            return name == RadegastInstance.INCOMPLETE_NAME ? defaultValue : name;
         }
 
         #endregion public methods
