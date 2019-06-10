@@ -81,16 +81,6 @@ namespace Radegast
             header.AddPreOptionsLine("https://radegast.life/");
             return header;
         }
-
-        /*[HelpOption('h', "help", HelpText = "Display this help screen.")]
-        public string GetUsage()
-        {
-            HelpText usage = GetHeader();
-            usage.AddOptions(this);
-            usage.AddPostOptionsLine("Example: automatically login user called Some Resident to his last location on the Second Life main grid (agni)");
-            usage.AddPostOptionsLine("Radegast -a -g agni -u \"Some Resident\" -p \"secret\"  -l last");
-            return usage.ToString();
-        }*/
     }
 
     public static class MainProgram
@@ -100,8 +90,9 @@ namespace Radegast
         /// </summary>
         public static CommandLineOptions s_CommandLineOpts;
 
-        static void RunRadegast(string[] args)
+        static void RunRadegast(CommandLineOptions args)
         {
+            s_CommandLineOpts = args;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             // Increase the number of IOCP threads available. Mono defaults to a tragically low number
@@ -114,10 +105,6 @@ namespace Radegast
                 if (iocpThreads < 1000) iocpThreads = 1000;
                 ThreadPool.SetMaxThreads(workerThreads, iocpThreads);
             }
-
-            // Read command line options
-            Parser.Default.ParseArguments<CommandLineOptions>(args)
-                .WithParsed(o => {  s_CommandLineOpts = o; });
 
             // Change current working directory to Radegast install dir
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) 
@@ -134,11 +121,11 @@ namespace Radegast
                 GridManager grids = new GridManager();
                 Console.WriteLine("Use Grid ID as the parameter for --grid");
                 Console.WriteLine("{0,-25} - {1}", "Grid ID", "Grid Name");
-                Console.WriteLine("========================================================");
+                Console.WriteLine(@"========================================================");
 
                 for (int i = 0; i < grids.Count; i++)
                 {
-                    Console.WriteLine("{0,-25} - {1}", grids[i].ID, grids[i].Name);
+                    Console.WriteLine(@"{0,-25} - {1}", grids[i].ID, grids[i].Name);
                 }
 
                 Environment.Exit(0);
@@ -165,13 +152,15 @@ namespace Radegast
         {
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                RunRadegast(args);
+                Parser.Default.ParseArguments<CommandLineOptions>(args)
+                    .WithParsed(RunRadegast);
             }
             else
             {
                 try
                 {
-                    RunRadegast(args);
+                    Parser.Default.ParseArguments<CommandLineOptions>(args)
+                        .WithParsed(RunRadegast);
                 }
                 catch (Exception e)
                 {
