@@ -209,12 +209,12 @@ Section /o "${APPNAME} Voice Pack (extra download)"
   IfFileExists "$INSTDIR\SLVoice.exe" voice_download_exists
 
   DetailPrint "Beginning download of Vivox Voicepack."
-  NSISdl::download /TIMEOUT=30000 "https://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  NSISdl::download /TIMEOUT=30000 "http://download.radegast.life/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $0
   DetailPrint "Result: $0"
   StrCmp $0 "success" voice_download_success
   StrCmp $0 "cancel" voice_download_cancelled
-  NSISdl::download /TIMEOUT=30000 /NOPROXY "https://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  NSISdl::download /TIMEOUT=30000 /NOPROXY "http://download.radegast.life/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $0
   DetailPrint "Result: $0"
   StrCmp $0 "success" voice_download_success
