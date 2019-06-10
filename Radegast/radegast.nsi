@@ -21,9 +21,8 @@ LangString LanguageCode ${LANG_ENGLISH}  "en"
 !define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
 
 !define APPNAME "Radegast"
-!define VERSION "2.25"
+!define VERSION "2.26"
 !define MAINEXEC "${APPNAME}.exe"
-!define DOTNET_VERSION "4.5"
 !define VOICEPACK "RadegastVoicepack-2.0.exe"
 !define UNINST_REG "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
@@ -206,12 +205,12 @@ Section /o "${APPNAME} Voice Pack (extra download)"
   IfFileExists "$INSTDIR\SLVoice.exe" voice_download_exists
 
   DetailPrint "Beginning download of Vivox Voicepack."
-  NSISdl::download /TIMEOUT=30000 "http://downloads.radegast.life/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  NSISdl::download /TIMEOUT=30000 "http://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $0
   DetailPrint "Result: $0"
   StrCmp $0 "success" voice_download_success
   StrCmp $0 "cancel" voice_download_cancelled
-  NSISdl::download /TIMEOUT=30000 /NOPROXY "http://downloads.radegast.life/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  NSISdl::download /TIMEOUT=30000 /NOPROXY "http://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $0
   DetailPrint "Result: $0"
   StrCmp $0 "success" voice_download_success
