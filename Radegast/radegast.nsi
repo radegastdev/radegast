@@ -63,12 +63,12 @@ Section ".NET check"
   ; Set output path to the installation directory.
   SetOutPath $TEMP
   ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\FULL" "Release"
-  IntCmp $0 378389 is_equal is_less is_greater
+  IntCmp $0 394802 is_equal is_less is_greater
 
   is_equal:
     goto NewDotNET
   is_greater:
-    goto NewDotNet
+    goto NewDotNET
   is_less:
 	goto CheckMSI
 
