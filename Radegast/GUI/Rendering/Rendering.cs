@@ -685,7 +685,7 @@ namespace Radegast.Rendering
                 GL.MatrixMode(MatrixMode.Projection);
 
                 GL.AlphaFunc(AlphaFunction.Greater, 0.5f);
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
                 // Compatibility checks
                 OpenTK.Graphics.IGraphicsContextInternal context = glControl.Context as OpenTK.Graphics.IGraphicsContextInternal;
@@ -1398,9 +1398,10 @@ namespace Radegast.Rendering
         {
             if (p.BoundingVolume == null
                 || !RenderSettings.HeavierDistanceChecking
-                || p.BoundingVolume.ScaledR < 10f
-                )
+                || p.BoundingVolume.ScaledR < 10f)
+            {
                 return Vector3.DistanceSquared(calcPos, p.RenderPosition);
+            }
 
             Vector3 posToCheckFrom = Vector3.Zero;
             //Get the bounding boxes for this prim

@@ -62,9 +62,9 @@ namespace Radegast.Commands
                        string args = String.Join(" ", cmdargs);
                        Help(args, writeline);
                        lock (InterpretersLoaded) foreach (ICommandInterpreter manager in InterpretersLoaded)
-                           {
-                               manager.Help(args, writeline);
-                           }
+                       {
+                           manager.Help(args, writeline);
+                       }
                    });
             _commandWorker = new Thread(CommandsManager_CommandWorker)
                                 {

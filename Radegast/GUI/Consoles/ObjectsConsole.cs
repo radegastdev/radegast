@@ -529,21 +529,16 @@ namespace Radegast
 
             UUID folderID = client.Inventory.CreateFolder(client.Inventory.Store.RootFolder.UUID, prim.Properties.Name);
 
-            for (int i = 0; i < items.Count; i++)
+            foreach (var item in items)
             {
-                client.Inventory.MoveTaskInventory(prim.LocalID, items[i].UUID, folderID, client.Network.CurrentSim);
+                client.Inventory.MoveTaskInventory(prim.LocalID, item.UUID, folderID, client.Network.CurrentSim);
             }
 
             instance.TabConsole.DisplayNotificationInChat("Items from object contents copied to new inventory folder " + prim.Properties.Name);
 
         }
 
-        void UpdateCurrentObject()
-        {
-            UpdateCurrentObject(true);
-        }
-
-        void UpdateCurrentObject(bool updateContents)
+        void UpdateCurrentObject(bool updateContents = true)
         {
             if (CurrentPrim.Properties == null) return;
 

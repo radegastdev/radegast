@@ -92,7 +92,7 @@ namespace Radegast
             var attemptedHoverHeight = 0.0;
             if (double.TryParse(sourceControl.Text, out attemptedHoverHeight))
             {
-                sourceControl.ForeColor = TextBox.DefaultForeColor;
+                sourceControl.ForeColor = DefaultForeColor;
                 if (attemptedHoverHeight < MinHoverHeight)
                 {
                     e.Value = MinHoverHeight;

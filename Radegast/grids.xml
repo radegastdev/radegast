@@ -62,19 +62,19 @@
       <key>platform</key>
       <string>OpenSim</string>
       <key>loginuri</key>
-      <string>http://hypergrid.org:8002/</string>
+      <string>http://login.metro.land/</string>
       <key>loginpage</key>
-      <string>http://metropolis.hypergrid.org</string>
+      <string>http://metro.land/splash/</string>
       <key>helperuri</key>
-      <string>http://metropolis.hypergrid.org/currency/helper/</string>
+      <string>http://metro.land/helper/</string>
       <key>website</key>
-      <string>http://metropolis.hypergrid.org</string>
+      <string>http://www.metro.land</string>
       <key>support</key>
-      <string>http://metropolis.hypergrid.org</string>
+      <string>http://www.metro.land</string>
       <key>register</key>
-      <string>http://metropolis.hypergrid.org/oswi.php</string>
+      <string>http://www.metro.land/metro_rg.php</string>
       <key>password</key>
-      <string>http://metropolis.hypergrid.org/oswi.php</string>
+      <string>http://www.metro.land/password.php</string>
       <key>version</key>
       <string>1</string>
     </map>
@@ -163,36 +163,6 @@
       <string>0</string>
     </map>
 
-    <!-- InWorldz -->
-
-    <map>
-      <key>gridname</key>
-      <string>Inworldz</string>
-      <key>gridnick</key>
-      <string>inworldz</string>
-      <key>platform</key>
-      <string>OpenSim</string>
-
-      <key>loginuri</key>
-      <string>http://inworldz.com:8002/</string>
-      <key>loginpage</key>
-      <string>http://inworldz.com/welcome</string>
-      <key>helperuri</key>
-      <string>http://inworldz.com/</string>
-      <key>password</key>
-      <string>http://inworldz.com/wpassword</string>
-
-      <key>register</key>
-      <string>http://inworldz.com/register</string>
-      <key>support</key>
-      <string>http://inworldz.com/help</string>
-      <key>website</key>
-      <string>http://inworldz.com/about/</string>
-      <key>version</key>
-      <string>0</string>
-
-    </map>
-
     <!-- Metavers Francophone FrancoGrid -->
     <map>
       <key>gridnick</key>
@@ -249,30 +219,6 @@
       <key>version</key>
       <string>0</string>
 
-    </map>
-
-    <!-- The Gor Grid -->
-    <map>
-      <key>gridnick</key>
-      <string>thegorgrid</string>
-
-      <key>gridname</key>
-      <string>The Gor Grid</string>
-      <key>platform</key>
-      <string>OpenSim</string>
-      <key>loginuri</key>
-      <string>http://thegorgrid.com:8002</string>
-      <key>loginpage</key>
-      <string>http://thegorgrid.com/loginscreen.php</string>
-      <key>website</key>
-      <string>http://thegorgrid.com/</string>
-
-      <key>register</key>
-      <string>http://thegorgrid.com/index.php?page=create</string>
-      <key>password</key>
-      <string>http://thegorgrid.com/index.php?page=change</string>
-      <key>version</key>
-      <string>0</string>
     </map>
 
     <!-- Local Host -->

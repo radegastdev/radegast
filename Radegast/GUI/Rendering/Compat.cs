@@ -137,7 +137,7 @@ namespace Radegast.Rendering
             }
             else
             {
-                GL.Arb.EndQuery((ArbOcclusionQuery)(int)target);
+                GL.Arb.EndQuery(target);
             }
         }
 
@@ -149,7 +149,7 @@ namespace Radegast.Rendering
             }
             else
             {
-                GL.Arb.GetQueryObject(id, (ArbOcclusionQuery)(int)param, out res);
+                GL.Arb.GetQueryObject(id, (QueryObjectParameterName)param, out res);
             }
         }
         #endregion Occlusion query functions

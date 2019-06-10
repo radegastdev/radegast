@@ -8,9 +8,8 @@ Current maintainer and lead developer:
 
 * **Cinder Roxley** (email cinder cinderblocks.biz)
 
-Developers:
+Alumni Developers:
 
-* **Nico Domagalla**
 * **Douglas R. Miles**
 * **Mojito Sorbet**
 * **Robin Cornelius**

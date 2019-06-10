@@ -260,19 +260,19 @@ namespace Radegast
         private void btnPlay_Click(object sender, EventArgs e)
         {
             lock (parcelMusicLock) if (!playing)
-                {
-                    currentURL = txtAudioURL.Text;
-                    Play();
-                }
+            {
+                currentURL = txtAudioURL.Text;
+                Play();
+            }
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
             lock (parcelMusicLock) if (playing)
-                {
-                    currentURL = string.Empty;
-                    Stop();
-                }
+            {
+                currentURL = string.Empty;
+                Stop();
+            }
         }
 
         private void UIVolume_Scroll(object sender, EventArgs e)

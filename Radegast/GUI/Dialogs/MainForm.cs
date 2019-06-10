@@ -63,28 +63,11 @@ namespace Radegast
 
         public TabsConsole TabConsole { get; private set; }
 
-        public MapConsole WorldMap
-        {
-            get
-            {
-                return (MapConsole) MapTab?.Control;
-            }
-        }
+        public MapConsole WorldMap => (MapConsole) MapTab?.Control;
 
-        public RadegastTab MapTab
-        {
-            get
-            {
-                if (TabConsole.TabExists("map"))
-                {
-                    return TabConsole.Tabs["map"];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        public RadegastTab MapTab =>
+            TabConsole.TabExists("map") 
+                ? TabConsole.Tabs["map"] : null;
 
         public MediaConsole MediaConsole { get; private set; }
 
@@ -234,17 +217,10 @@ namespace Radegast
             }
             else
             {
-                if (delta > 50)
-                {
-                    if (oldBalance > e.Balance)
-                    {
-                        instance.MediaManager.PlayUISound(UISounds.MoneyIn);
-                    }
-                    else
-                    {
-                        instance.MediaManager.PlayUISound(UISounds.MoneyOut);
-                    }
-                }
+                if (delta <= 50) return;
+
+                instance.MediaManager.PlayUISound(oldBalance > e.Balance 
+                    ? UISounds.MoneyIn : UISounds.MoneyOut);
             }
         }
 
@@ -267,13 +243,12 @@ namespace Radegast
 
         void Self_MoneyBalanceReply(object sender, MoneyBalanceReplyEventArgs e)
         {
-            if (!String.IsNullOrEmpty(e.Description))
-            {
-                if (instance.GlobalSettings["transaction_notification_dialog"].AsBoolean())
-                    AddNotification(new ntfGeneric(instance, e.Description));
-                if (instance.GlobalSettings["transaction_notification_chat"].AsBoolean())
-                    TabConsole.DisplayNotificationInChat(e.Description);
-            }
+            if (String.IsNullOrEmpty(e.Description)) return;
+
+            if (instance.GlobalSettings["transaction_notification_dialog"].AsBoolean())
+                AddNotification(new ntfGeneric(instance, e.Description));
+            if (instance.GlobalSettings["transaction_notification_chat"].AsBoolean())
+                TabConsole.DisplayNotificationInChat(e.Description);
         }
 
         public void InitializeControls()
@@ -281,11 +256,10 @@ namespace Radegast
             InitializeTabsConsole();
             uriParser = new SlUriParser();
 
-            if (instance.MediaManager.SoundSystemAvailable)
-            {
-                MediaConsole = new MediaConsole(instance);
-                tbtnMedia.Visible = true;
-            }
+            if (!instance.MediaManager.SoundSystemAvailable) return;
+
+            MediaConsole = new MediaConsole(instance);
+            tbtnMedia.Visible = true;
         }
 
         public bool InAutoReconnect { get; set; }
@@ -328,13 +302,12 @@ namespace Radegast
         {
             if (e.Status == LoginStatus.Failed)
             {
-                if (InAutoReconnect)
-                {
-                    if (instance.GlobalSettings["auto_reconnect"].AsBoolean() && e.FailReason != "tos")
-                        BeginAutoReconnect();
-                    else
-                        InAutoReconnect = false;
-                }
+                if (!InAutoReconnect) return;
+
+                if (instance.GlobalSettings["auto_reconnect"].AsBoolean() && e.FailReason != "tos")
+                    BeginAutoReconnect();
+                else
+                    InAutoReconnect = false;
             }
             else if (e.Status == LoginStatus.Success)
             {
@@ -389,7 +362,8 @@ namespace Radegast
         {
             if (instance.GlobalSettings["confirm_exit"].AsBoolean())
             {
-                if (MessageBox.Show("Are you sure you want to exit Radegast?", "Confirm Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                if (MessageBox.Show("Are you sure you want to exit Radegast?", "Confirm Exit",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 {
                     e.Cancel = true;
                     return;
@@ -417,18 +391,18 @@ namespace Radegast
                 MediaConsole = null;
             }
 
-            if (netcom.IsLoggedIn)
-            {
-                Thread saveInvToDisk = new Thread(new ThreadStart(
-                    delegate()
-                    {
-                        client.Inventory.Store.SaveToDisk(instance.InventoryCacheFileName);
-                    }));
-                saveInvToDisk.Name = "Save inventory to disk";
-                saveInvToDisk.Start();
+            if (!netcom.IsLoggedIn) return;
 
-                netcom.Logout();
-            }
+            Thread saveInvToDisk = new Thread(delegate()
+            {
+                client.Inventory.Store.SaveToDisk(instance.InventoryCacheFileName);
+            })
+            {
+                Name = "Save inventory to disk"
+            };
+            saveInvToDisk.Start();
+
+            netcom.Logout();
         }
         #endregion
 
@@ -448,35 +422,12 @@ namespace Radegast
             tlblParcel.Text = parcel.Name;
             tlblParcel.ToolTipText = parcel.Desc;
 
-            if ((parcel.Flags & ParcelFlags.AllowFly) != ParcelFlags.AllowFly)
-                icoNoFly.Visible = true;
-            else
-                icoNoFly.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.CreateObjects) != ParcelFlags.CreateObjects)
-                icoNoBuild.Visible = true;
-            else
-                icoNoBuild.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.AllowOtherScripts) != ParcelFlags.AllowOtherScripts)
-                icoNoScript.Visible = true;
-            else
-                icoNoScript.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.RestrictPushObject) == ParcelFlags.RestrictPushObject)
-                icoNoPush.Visible = true;
-            else
-                icoNoPush.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.AllowDamage) == ParcelFlags.AllowDamage)
-                icoHealth.Visible = true;
-            else
-                icoHealth.Visible = false;
-
-            if ((parcel.Flags & ParcelFlags.AllowVoiceChat) != ParcelFlags.AllowVoiceChat)
-                icoNoVoice.Visible = true;
-            else
-                icoNoVoice.Visible = false;
+            icoNoFly.Visible = (parcel.Flags & ParcelFlags.AllowFly) != ParcelFlags.AllowFly;
+            icoNoBuild.Visible = (parcel.Flags & ParcelFlags.CreateObjects) != ParcelFlags.CreateObjects;
+            icoNoScript.Visible = (parcel.Flags & ParcelFlags.AllowOtherScripts) != ParcelFlags.AllowOtherScripts;
+            icoNoPush.Visible = (parcel.Flags & ParcelFlags.RestrictPushObject) == ParcelFlags.RestrictPushObject;
+            icoHealth.Visible = (parcel.Flags & ParcelFlags.AllowDamage) == ParcelFlags.AllowDamage;
+            icoNoVoice.Visible = (parcel.Flags & ParcelFlags.AllowVoiceChat) != ParcelFlags.AllowVoiceChat;
         }
 
         private void RefreshStatusBar()
@@ -485,20 +436,20 @@ namespace Radegast
             {
                 tlblLoginName.Text = instance.Names.Get(client.Self.AgentID, client.Self.Name);
                 tlblMoneyBalance.Text = client.Self.Balance.ToString();
-                icoHealth.Text = client.Self.Health.ToString(CultureInfo.CurrentCulture) + "%";
+                icoHealth.Text = client.Self.Health.ToString(CultureInfo.CurrentCulture) + @"%";
 
                 var cs = client.Network.CurrentSim;
                 tlblRegionInfo.Text =
                     (cs == null ? "No region" : cs.Name) +
-                    " (" + Math.Floor(client.Self.SimPosition.X).ToString(CultureInfo.CurrentCulture) + ", " +
-                    Math.Floor(client.Self.SimPosition.Y).ToString(CultureInfo.CurrentCulture) + ", " +
-                    Math.Floor(client.Self.SimPosition.Z).ToString(CultureInfo.CurrentCulture) + ")";
+                    @" (" + Math.Floor(client.Self.SimPosition.X).ToString(CultureInfo.CurrentCulture) + @", " +
+                    Math.Floor(client.Self.SimPosition.Y).ToString(CultureInfo.CurrentCulture) + @", " +
+                    Math.Floor(client.Self.SimPosition.Z).ToString(CultureInfo.CurrentCulture) + @")";
             }
             else
             {
                 tlblLoginName.Text = "Offline";
-                tlblMoneyBalance.Text = "0";
-                icoHealth.Text = "0%";
+                tlblMoneyBalance.Text = @"0";
+                icoHealth.Text = @"0%";
                 tlblRegionInfo.Text = "No Region";
                 tlblParcel.Text = "No Parcel";
 
@@ -556,8 +507,7 @@ namespace Radegast
 
         private void InitializeStatusTimer()
         {
-            statusTimer = new System.Timers.Timer(250);
-            statusTimer.SynchronizingObject = this;
+            statusTimer = new System.Timers.Timer(250) {SynchronizingObject = this};
             statusTimer.Elapsed += new ElapsedEventHandler(statusTimer_Elapsed);
         }
 
@@ -576,8 +526,7 @@ namespace Radegast
         #region Initialization, configuration, and key shortcuts
         private void InitializeTabsConsole()
         {
-            TabConsole = new TabsConsole(instance);
-            TabConsole.Dock = DockStyle.Fill;
+            TabConsole = new TabsConsole(instance) {Dock = DockStyle.Fill};
             toolStripContainer1.ContentPanel.Controls.Add(TabConsole);
         }
 
@@ -714,29 +663,27 @@ namespace Radegast
 
         private void frmMain_Load(object sender, EventArgs e)
         {
-            if (firstLoad)
+            if (!firstLoad) return;
+
+            firstLoad = false;
+            TabConsole.SelectTab("login");
+            ResourceManager rm = Properties.Resources.ResourceManager;
+            ResourceSet set = rm.GetResourceSet(CultureInfo.CurrentCulture, true, true);
+            System.Collections.IDictionaryEnumerator de = set.GetEnumerator();
+            while (de.MoveNext())
             {
-                firstLoad = false;
-                TabConsole.SelectTab("login");
-                ResourceManager rm = Properties.Resources.ResourceManager;
-                ResourceSet set = rm.GetResourceSet(CultureInfo.CurrentCulture, true, true);
-                System.Collections.IDictionaryEnumerator de = set.GetEnumerator();
-                while (de.MoveNext())
+                if (de.Entry.Value is Image)
                 {
-                    if (de.Entry.Value is Image)
-                    {
-                        Bitmap bitMap = de.Entry.Value as Bitmap;
-                        ResourceImages.Images.Add(bitMap);
-                        ImageNames.Add(de.Entry.Key.ToString());
-                    }
+                    Bitmap bitMap = de.Entry.Value as Bitmap;
+                    ResourceImages.Images.Add(bitMap);
+                    ImageNames.Add(de.Entry.Key.ToString());
                 }
-                StartUpdateCheck(false);
+            }
+            StartUpdateCheck(false);
 
-                if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
-                {
-                    pnlDialog.BackColor = Color.FromArgb(120, 220, 255);
-                }
-
+            if (!instance.GlobalSettings["theme_compatibility_mode"] && instance.PlainColors)
+            {
+                pnlDialog.BackColor = Color.FromArgb(120, 220, 255);
             }
         }
         #endregion
@@ -899,11 +846,11 @@ namespace Radegast
 
         void ResizeNotificationByControl(Control active)
         {
-            int Width = active.Size.Width + 6;
-            int Height = notifications.Count > 1 ? active.Size.Height + 3 + btnDialogNextControl.Size.Height : active.Size.Height + 3;
-            pnlDialog.Size = new Size(Width, Height);
+            int width = active.Size.Width + 6;
+            int height = notifications.Count > 1 ? active.Size.Height + 3 + btnDialogNextControl.Size.Height : active.Size.Height + 3;
+            pnlDialog.Size = new Size(width, height);
             pnlDialog.Top = 0;
-            pnlDialog.Left = pnlDialog.Parent.ClientSize.Width - Width;
+            pnlDialog.Left = pnlDialog.Parent.ClientSize.Width - width;
 
             btnDialogNextControl.Top = btnDialogNextControl.Parent.ClientSize.Height - btnDialogNextControl.Size.Height;
             btnDialogNextControl.Left = btnDialogNextControl.Parent.ClientSize.Width - btnDialogNextControl.Size.Width;
@@ -1118,14 +1065,13 @@ namespace Radegast
 
         public void MapToCurrentLocation()
         {
-            if (MapTab != null && client.Network.Connected)
-            {
-                MapTab.Select();
-                WorldMap.DisplayLocation(client.Network.CurrentSim.Name,
-                    (int)client.Self.SimPosition.X,
-                    (int)client.Self.SimPosition.Y,
-                    (int)client.Self.SimPosition.Z);
-            }
+            if (MapTab == null || !client.Network.Connected) return;
+
+            MapTab.Select();
+            WorldMap.DisplayLocation(client.Network.CurrentSim.Name,
+                (int)client.Self.SimPosition.X,
+                (int)client.Self.SimPosition.Y,
+                (int)client.Self.SimPosition.Z);
         }
 
         private void standToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1159,8 +1105,7 @@ namespace Radegast
 
         private void scriptEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ScriptEditor se = new ScriptEditor(instance);
-            se.Dock = DockStyle.Fill;
+            ScriptEditor se = new ScriptEditor(instance) {Dock = DockStyle.Fill};
             se.ShowDetached();
         }
 
@@ -1175,8 +1120,7 @@ namespace Radegast
                 client.Network.CurrentSim.Name,
                 (int)client.Self.SimPosition.X,
                 (int)client.Self.SimPosition.Y,
-                (int)client.Self.SimPosition.Z
-                );
+                (int)client.Self.SimPosition.Z);
 
             string name = tlblParcel.Text;
             int maxLen = 63 - location.Length;
@@ -1200,9 +1144,10 @@ namespace Radegast
                     {
                         BeginInvoke(new MethodInvoker(() =>
                             {
-                                Landmark ln = new Landmark(instance, (InventoryLandmark)item);
-                                ln.Dock = DockStyle.Fill;
-                                ln.Detached = true;
+                                Landmark ln = new Landmark(instance, (InventoryLandmark) item)
+                                {
+                                    Dock = DockStyle.Fill, Detached = true
+                                };
                             }));
                     }
                 }
@@ -1217,12 +1162,12 @@ namespace Radegast
 
         private void reportBugsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessLink("https://metaverse.atlassian.net/browse/RAD");
+            ProcessLink("https://radegast.life/bugs/issue-entry/");
         }
 
         private void accessibilityGuideToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ProcessLink("https://radegast.life/documentation/Accessibility_Guide");
+            ProcessLink("https://radegast.life/documentation/help/");
         }
 
         private void aboutRadegastToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1454,11 +1399,10 @@ namespace Radegast
 
         private void reloadInventoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (TabConsole.TabExists("inventory"))
-            {
-                ((InventoryConsole)TabConsole.Tabs["inventory"].Control).ReloadInventory();
-                TabConsole.Tabs["inventory"].Select();
-            }
+            if (!TabConsole.TabExists("inventory")) return;
+
+            ((InventoryConsole)TabConsole.Tabs["inventory"].Control).ReloadInventory();
+            TabConsole.Tabs["inventory"].Select();
         }
 
         private void btnLoadScript_Click(object sender, EventArgs e)
@@ -1472,17 +1416,17 @@ namespace Radegast
 
         private void frmMain_Resize(object sender, EventArgs e)
         {
-            if (WindowState == FormWindowState.Minimized && instance.GlobalSettings["minimize_to_tray"].AsBoolean())
+            if (WindowState != FormWindowState.Minimized ||
+                !instance.GlobalSettings["minimize_to_tray"].AsBoolean()) return;
+
+            if (TabConsole.TabExists("scene_window") && !TabConsole.Tabs["scene_window"].Detached)
             {
-                if (TabConsole.TabExists("scene_window") && !TabConsole.Tabs["scene_window"].Detached)
-                {
-                    TabConsole.Tabs["scene_window"].Close();
-                }
-                ShowInTaskbar = false;
-                trayIcon.Visible = true;
-                trayIcon.BalloonTipText = "Radegast is runnig in the background";
-                trayIcon.ShowBalloonTip(2000);
+                TabConsole.Tabs["scene_window"].Close();
             }
+            ShowInTaskbar = false;
+            trayIcon.Visible = true;
+            trayIcon.BalloonTipText = "Radegast is running in the background";
+            trayIcon.ShowBalloonTip(2000);
         }
 
         private void treyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -1518,7 +1462,7 @@ namespace Radegast
             if (TabConsole.TabExists("current region info"))
             {
                 TabConsole.Tabs["current region info"].Select();
-                (TabConsole.Tabs["current region info"].Control as RegionInfo).UpdateDisplay();
+                (TabConsole.Tabs["current region info"].Control as RegionInfo)?.UpdateDisplay();
             }
             else
             {
@@ -1620,7 +1564,7 @@ namespace Radegast
 
         private void myAttachmentsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Avatar av = client.Network.CurrentSim.ObjectsAvatars.Find(a => { return a.ID == client.Self.AgentID; });
+            Avatar av = client.Network.CurrentSim.ObjectsAvatars.Find(a => a.ID == client.Self.AgentID);
 
             if (av == null)
             {
@@ -1644,8 +1588,7 @@ namespace Radegast
             }
             else
             {
-                var control = new Rendering.SceneWindow(instance);
-                control.Dock = DockStyle.Fill;
+                var control = new Rendering.SceneWindow(instance) {Dock = DockStyle.Fill};
                 instance.TabConsole.AddTab("scene_window", "Scene Viewer", control);
                 instance.TabConsole.Tabs["scene_window"].Floater = false;
                 instance.TabConsole.Tabs["scene_window"].CloseOnDetachedClose = true;
@@ -1741,11 +1684,10 @@ namespace Radegast
 
         private void SetHoverHeightFromSettings()
         {
-            if (instance.GlobalSettings.ContainsKey("AvatarHoverOffsetZ"))
-            {
-                var hoverHeight = instance.GlobalSettings["AvatarHoverOffsetZ"];
-                Client.Self.SetHoverHeight(hoverHeight);
-            }
+            if (!instance.GlobalSettings.ContainsKey("AvatarHoverOffsetZ")) return;
+
+            var hoverHeight = instance.GlobalSettings["AvatarHoverOffsetZ"];
+            Client.Self.SetHoverHeight(hoverHeight);
         }
     }
 }

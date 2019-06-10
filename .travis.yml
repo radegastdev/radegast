@@ -1,19 +1,24 @@
 matrix:
   include:
-    - mono: latest
-      language: csharp
+    - language: csharp
+      mono: 5.8.0
       solution: Radegast.sln
+      install:
+        - nuget restore Radegast.sln
       script:
-        - xbuild /p:Configuration=ReleaseLinux Radegast.sln
-    - mono: 5.0.1
-      language: csharp
-      solution: Radegast.sln
-      script:
-        - xbuild /p:Configuration=ReleaseLinux Radegast.sln
+        - msbuild /t:Rebuild /p:Configuration=ReleaseLinux Radegast.sln
+#Travis-ci can't handle these quite right yet.
+#    - language: csharp
+#      mono: 5.8.0
+#      dotnet: 2.0.0
+#      solution: Radegast.sln
+#      script:
+#        - dotnet restore
+#        - dotnet build -f netstandard2.0 --runtime linux-x64
 #    - language: objective-c
 #      env:
 #        global:
-#          - MONO_VERSION=5.2.0
+#          - MONO_VERSION=5.8.0
 #      install:
 #        - wget "http://download.mono-project.com/archive/${MONO_VERSION}/macos-10-universal/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.universal.pkg"
 #        - export PATH=$PATH:/Library/Frameworks/Mono.framework/Versions/Current/bin

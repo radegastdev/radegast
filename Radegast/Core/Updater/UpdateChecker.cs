@@ -60,11 +60,10 @@ namespace Radegast
 
         public void Dispose()
         {
-            if (client != null)
-            {
-                client.Dispose();
-                client = null;
-            }
+            if (client == null) return;
+
+            client.Dispose();
+            client = null;
         }
 
         public void StartCheck()
@@ -86,7 +85,7 @@ namespace Radegast
         {
             if (e.Error != null)
             {
-                Logger.Log("Failed fetching updatede information: ", Helpers.LogLevel.Warning, e.Error);
+                Logger.Log("Failed fetching updated information: ", Helpers.LogLevel.Warning, e.Error);
                 FireCallback(new UpdateCheckerArgs() { Success = false });
             }
             else
@@ -109,7 +108,7 @@ namespace Radegast
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("Failed decoding updatede information: ", Helpers.LogLevel.Warning, ex);
+                    Logger.Log("Failed decoding updated information: ", Helpers.LogLevel.Warning, ex);
                     FireCallback(new UpdateCheckerArgs() { Success = false });
                 }
             }
