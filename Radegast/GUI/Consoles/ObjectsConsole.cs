@@ -30,6 +30,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Timers;
 using System.Windows.Forms;
@@ -325,14 +326,14 @@ namespace Radegast
             entry.SubItems.Add("Loading...");
             lstContents.Items.Add(entry);
 
-            ContentsThread = new Thread(new ThreadStart(() =>
-                {
-                    lstContents.Tag = CurrentPrim;
-                    List<InventoryBase> items = client.Inventory.GetTaskInventory(CurrentPrim.ID, CurrentPrim.LocalID, 1000 * 30);
-                    lstContents.Invoke(new MethodInvoker(() => UpdateContentsList(items)));
-                }));
+            ContentsThread = new Thread(() =>
+            {
+                lstContents.Tag = CurrentPrim;
+                List<InventoryBase> items =
+                    client.Inventory.GetTaskInventory(CurrentPrim.ID, CurrentPrim.LocalID, 1000 * 30);
+                lstContents.Invoke(new MethodInvoker(() => UpdateContentsList(items)));
+            }) {IsBackground = true};
 
-            ContentsThread.IsBackground = true;
             ContentsThread.Start();
 
         }
@@ -348,7 +349,7 @@ namespace Radegast
             if (items == null)
             {
                 ListViewItem entry = new ListViewItem();
-                entry.SubItems.Add("(failied to fetch contents)");
+                entry.SubItems.Add("(failed to fetch contents)");
                 entry.SubItems[0].Font = new System.Drawing.Font(entry.SubItems[0].Font, System.Drawing.FontStyle.Italic);
                 lstContents.Items.Add(entry);
             }
@@ -365,15 +366,17 @@ namespace Radegast
                 {
                     btnOpen.Enabled = prim.Properties != null && prim.Properties.OwnerID == client.Self.AgentID;
 
-                    for (int i = 0; i < items.Count; i++)
+                    foreach (var i in items)
                     {
-                        if (items[i] is InventoryItem)
+                        if (i is InventoryItem item)
                         {
-                            InventoryItem item = (InventoryItem)items[i];
-                            ListViewItem entry = new ListViewItem();
+                            ListViewItem entry = new ListViewItem
+                            {
+                                ImageIndex =
+                                    InventoryConsole.GetItemImageIndex(item.AssetType.ToString().ToLower()),
+                                Tag = item
+                            };
 
-                            entry.ImageIndex = InventoryConsole.GetItemImageIndex(item.AssetType.ToString().ToLower());
-                            entry.Tag = item;
 
                             ListViewItem.ListViewSubItem sub;
 
@@ -420,10 +423,8 @@ namespace Radegast
             {
                 ListViewItem entry = lstContents.SelectedItems[0];
 
-                if (entry.Tag is InventoryItem)
+                if (entry.Tag is InventoryItem item)
                 {
-                    InventoryItem item = (InventoryItem)entry.Tag;
-
                     if (canModify)
                     {
                         switch (item.InventoryType)
@@ -456,8 +457,8 @@ namespace Radegast
                 ctxContents.Items.Add("Delete", null, (sd, ev) =>
                 {
                     foreach (ListViewItem i in lstContents.SelectedItems)
-                        if (i.Tag is InventoryItem)
-                            client.Inventory.RemoveTaskInventory(prim.LocalID, ((InventoryItem)i.Tag).UUID, client.Network.CurrentSim);
+                        if (i.Tag is InventoryItem it)
+                            client.Inventory.RemoveTaskInventory(prim.LocalID, it.UUID, client.Network.CurrentSim);
                 });
             }
 
@@ -488,16 +489,15 @@ namespace Radegast
                     {
                         foreach (InventoryBase oldItem in client.Inventory.Store.GetContents((InventoryFolder)instance.InventoryClipboard.Item))
                         {
-                            if (oldItem is InventoryItem)
+                            if (!(oldItem is InventoryItem item)) continue;
+
+                            if (item is InventoryLSL)
                             {
-                                if (oldItem is InventoryLSL)
-                                {
-                                    client.Inventory.CopyScriptToTask(prim.LocalID, (InventoryItem)oldItem, true);
-                                }
-                                else
-                                {
-                                    client.Inventory.UpdateTaskInventory(prim.LocalID, (InventoryItem)oldItem);
-                                }
+                                client.Inventory.CopyScriptToTask(prim.LocalID, item, true);
+                            }
+                            else
+                            {
+                                client.Inventory.UpdateTaskInventory(prim.LocalID, item);
                             }
                         }
                     });
@@ -521,8 +521,8 @@ namespace Radegast
 
             foreach (ListViewItem item in lstContents.Items)
             {
-                if (item.Tag is InventoryItem)
-                    items.Add(item.Tag as InventoryItem);
+                if (item.Tag is InventoryItem tag)
+                    items.Add(tag);
             }
 
             if (items.Count == 0) return;
@@ -594,19 +594,9 @@ namespace Radegast
             }
 
             txtPrims.Text = (client.Network.CurrentSim.ObjectsPrimitives.FindAll(
-                delegate(Primitive prim)
-                {
-                    return prim.ParentID == CurrentPrim.LocalID || prim.LocalID == CurrentPrim.LocalID;
-                })).Count.ToString();
+                prim => prim.ParentID == CurrentPrim.LocalID || prim.LocalID == CurrentPrim.LocalID)).Count.ToString();
 
-            if ((CurrentPrim.Flags & PrimFlags.Money) != 0)
-            {
-                btnPay.Enabled = true;
-            }
-            else
-            {
-                btnPay.Enabled = false;
-            }
+            btnPay.Enabled = (CurrentPrim.Flags & PrimFlags.Money) != 0;
 
             if (CurrentPrim.Properties.SaleType != SaleType.Not)
             {
@@ -754,14 +744,7 @@ namespace Radegast
             {
                 List<Primitive> killed = Prims.FindAll((p) =>
                 {
-                    for (int i = 0; i < e.ObjectLocalIDs.Length; i++)
-                    {
-                        if (p.LocalID == e.ObjectLocalIDs[i])
-                        {
-                            return true;
-                        }
-                    }
-                    return false;
+                    return e.ObjectLocalIDs.Any(t => p.LocalID == t);
                 });
 
                 foreach (Primitive prim in killed)
@@ -857,14 +840,7 @@ namespace Radegast
 
         private void btnSitOn_Click(object sender, EventArgs e)
         {
-            if (!instance.State.IsSitting)
-            {
-                instance.State.SetSitting(true, CurrentPrim.ID);
-            }
-            else
-            {
-                instance.State.SetSitting(false, CurrentPrim.ID);
-            }
+            instance.State.SetSitting(!instance.State.IsSitting, CurrentPrim.ID);
         }
 
         private void btnTouch_Click(object sender, EventArgs e)
@@ -996,12 +972,11 @@ namespace Radegast
         private void btnDetach_Click(object sender, EventArgs e)
         {
             var toDetach = CurrentOutfitFolder.GetAttachmentItem(CurrentPrim);
-            if (toDetach != UUID.Zero)
+            if (toDetach == UUID.Zero) return;
+
+            if (client.Inventory.Store.Contains(toDetach))
             {
-                if (client.Inventory.Store.Contains(toDetach))
-                {
-                    instance.COF.Detach(client.Inventory.Store[toDetach] as InventoryItem);
-                }
+                instance.COF.Detach(client.Inventory.Store[toDetach] as InventoryItem);
             }
         }
 
@@ -1240,15 +1215,13 @@ namespace Radegast
 
             ListViewItem contentItem = lstContents.SelectedItems[0];
 
-            if (contentItem.Tag is InventoryLSL)
+            if (contentItem.Tag is InventoryLSL inv1)
             {
-                InventoryLSL inv = (InventoryLSL)contentItem.Tag;
                 Primitive prim = (Primitive)lstContents.Tag;
-                new ScriptEditor(instance, inv, prim) { Detached = true };
+                new ScriptEditor(instance, inv1, prim) { Detached = true };
             }
-            else if (contentItem.Tag is InventoryNotecard)
+            else if (contentItem.Tag is InventoryNotecard inv)
             {
-                InventoryNotecard inv = (InventoryNotecard)contentItem.Tag;
                 Primitive prim = (Primitive)lstContents.Tag;
                 new Notecard(instance, inv, prim) { Detached = true };
             }
@@ -1301,14 +1274,7 @@ namespace Radegast
         {
             bool isMuted = null != client.Self.MuteList.Find(me => me.Type == MuteType.Object && me.ID == CurrentPrim.ID);
 
-            if (isMuted)
-            {
-                btnMute.Text = "Unmute";
-            }
-            else
-            {
-                btnMute.Text = "Mute";
-            }
+            btnMute.Text = isMuted ? "Unmute" : "Mute";
         }
 
         private void btnMute_Click(object sender, EventArgs e)
@@ -1391,9 +1357,7 @@ namespace Radegast
             }
 
             string name = GetObjectName(prim);
-            var item = new ListViewItem(name);
-            item.Tag = prim;
-            item.Name = prim.ID.ToString();
+            var item = new ListViewItem(name) {Tag = prim, Name = prim.ID.ToString()};
             e.Item = item;
         }
 
@@ -1474,8 +1438,7 @@ namespace Radegast
         public PropertiesQueue(RadegastInstance instance)
         {
             this.instance = instance;
-            qTimer = new System.Timers.Timer(2500);
-            qTimer.Enabled = true;
+            qTimer = new System.Timers.Timer(2500) {Enabled = true};
             qTimer.Elapsed += new ElapsedEventHandler(qTimer_Elapsed);
         }
 
