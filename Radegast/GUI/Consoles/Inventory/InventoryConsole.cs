@@ -1688,7 +1688,7 @@ namespace Radegast
                     case "refresh":
                         foreach (TreeNode old in invTree.SelectedNode.Nodes)
                         {
-                            if (!(old.Tag is InventoryFolder))
+                            if (old != null && !(old.Tag is InventoryFolder))
                             {
                                 removeNode(old);
                             }
