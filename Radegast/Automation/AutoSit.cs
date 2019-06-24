@@ -1,6 +1,7 @@
 ﻿// 
 // Radegast Metaverse Client
-//Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2019, Cinderblocks Design Co.
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -47,13 +48,12 @@ namespace Radegast.Automation
                 PrimitiveName = ""
             };
 
-            if (osd != null && osd.Type == OSDType.Map)
-            {
-                OSDMap map = (OSDMap)osd;
-                prefs.Primitive = map.ContainsKey("Primitive") ? map["Primitive"].AsUUID() : UUID.Zero;
-                prefs.PrimitiveName = prefs.Primitive != UUID.Zero && map.ContainsKey("PrimitiveName") ? map["PrimitiveName"].AsString() : "";
-                prefs.Enabled = map.ContainsKey("Enabled") && map["Enabled"].AsBoolean();
-            }
+            if (osd == null || osd.Type != OSDType.Map) return prefs;
+
+            OSDMap map = (OSDMap)osd;
+            prefs.Primitive = map.ContainsKey("Primitive") ? map["Primitive"].AsUUID() : UUID.Zero;
+            prefs.PrimitiveName = prefs.Primitive != UUID.Zero && map.ContainsKey("PrimitiveName") ? map["PrimitiveName"].AsString() : "";
+            prefs.Enabled = map.ContainsKey("Enabled") && map["Enabled"].AsBoolean();
 
             return prefs;
         }
@@ -64,11 +64,13 @@ namespace Radegast.Automation
 
         public static explicit operator OSDMap(AutoSitPreferences prefs)
         {
-            OSDMap map = new OSDMap(3);
+            OSDMap map = new OSDMap(3)
+            {
+                ["Primitive"] = prefs.Primitive,
+                ["PrimitiveName"] = prefs.PrimitiveName,
+                ["Enabled"] = prefs.Enabled
+            };
 
-            map["Primitive"] = prefs.Primitive;
-            map["PrimitiveName"] = prefs.PrimitiveName;
-            map["Enabled"] = prefs.Enabled;
 
             return map;
         }
@@ -140,40 +142,41 @@ namespace Radegast.Automation
 
         public void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)
         {
-            if (e.Properties.ObjectID == Preferences.Primitive)
-            {
-                Preferences = new AutoSitPreferences
-                {
-                    Primitive = Preferences.Primitive,
-                    PrimitiveName = e.Properties.Name,
-                    Enabled = Preferences.Enabled
-                };
+            if (e.Properties.ObjectID != Preferences.Primitive) return;
 
-                m_instance.Client.Objects.ObjectProperties -= Objects_ObjectProperties;
-            }
+            Preferences = new AutoSitPreferences
+            {
+                Primitive = Preferences.Primitive,
+                PrimitiveName = e.Properties.Name,
+                Enabled = Preferences.Enabled
+            };
+
+            m_instance.Client.Objects.ObjectProperties -= Objects_ObjectProperties;
         }
 
         public void TrySit()
         {
-            if (Preferences != null
-                && m_instance.Client.Network.Connected
-                && Preferences.Enabled
-                && Preferences.Primitive != UUID.Zero)
+            if (Preferences != null && m_instance.Client.Network.Connected)
             {
-                var sitTarget = m_instance.Client.Network.CurrentSim.ObjectsPrimitives.Find(n => n.ID == Preferences.Primitive);
-                if (sitTarget != null)
+                if (Preferences.Enabled && Preferences.Primitive != UUID.Zero)
                 {
                     if (!m_instance.State.IsSitting)
                     {
-                        m_instance.State.SetSitting(true, sitTarget.ID);
+                        m_instance.State.SetSitting(true, Preferences.Primitive);
+                        m_Timer.Enabled = true;
                     }
-                    else if (m_instance.Client.Self.SittingOn != sitTarget.LocalID && !m_instance.RLV.RestictionActive("unsit"))
+                    else
                     {
-                        m_instance.State.SetSitting(false, UUID.Zero);
+                        if (!m_instance.Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(m_instance.Client.Self.SittingOn))
+                        {
+                            m_instance.State.SetSitting(false, UUID.Zero);
+                        }
                     }
                 }
-
-                m_Timer.Enabled = true;
+                else
+                {
+                    m_Timer.Enabled = false;
+                }
             }
             else
             {

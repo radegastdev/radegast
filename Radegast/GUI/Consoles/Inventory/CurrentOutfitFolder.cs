@@ -1,6 +1,7 @@
 ﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2019, Cinderblocks Design Co.
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -381,9 +382,7 @@ namespace Radegast
         {
             if (COF == null) return;
 
-            bool linkExists = false;
-
-            linkExists = null != ContentLinks().Find(itemLink => itemLink.AssetUUID == item.UUID);
+            bool linkExists = null != ContentLinks().Find(itemLink => itemLink.AssetUUID == item.UUID);
 
             if (!linkExists)
             {
@@ -432,11 +431,10 @@ namespace Radegast
         public void Detach(InventoryItem item)
         {
             var realItem = RealInventoryItem(item);
-            if (Instance.RLV.AllowDetach(realItem))
-            {
-                Client.Appearance.Detach(item);
-                RemoveLink(item.UUID);
-            }
+            if (!Instance.RLV.AllowDetach(realItem)) return;
+
+            Client.Appearance.Detach(item);
+            RemoveLink(item.UUID);
         }
 
         public List<InventoryItem> GetWornAt(WearableType type)
@@ -445,13 +443,11 @@ namespace Radegast
             ContentLinks().ForEach(link =>
             {
                 var item = RealInventoryItem(link);
-                if (item is InventoryWearable)
+                if (!(item is InventoryWearable wearable)) return;
+
+                if (wearable.WearableType == type)
                 {
-                    var w = (InventoryWearable)item;
-                    if (w.WearableType == type)
-                    {
-                        ret.Add(item);
-                    }
+                    ret.Add(wearable);
                 }
             });
 
@@ -551,7 +547,7 @@ namespace Radegast
             foreach (var item in items)
             {
                 InventoryItem realItem = RealInventoryItem(item);
-                if (replace && realItem is InventoryWearable)
+                if (replace && realItem is InventoryWearable wearable)
                 {
                     foreach (var link in current)
                     {
@@ -563,7 +559,7 @@ namespace Radegast
                         else
                         {
                             var w = currentItem as InventoryWearable;
-                            if (w?.WearableType == ((InventoryWearable) realItem).WearableType)
+                            if (w?.WearableType == wearable.WearableType)
                             {
                                 toRemove.Add(link.UUID);
                             }
@@ -618,19 +614,13 @@ namespace Radegast
         public bool IsBodyPart(InventoryItem item)
         {
             var realItem = RealInventoryItem(item);
-            if (realItem is InventoryWearable)
-            {
-                var w = (InventoryWearable)realItem;
-                var t = w.WearableType;
-                if (t == WearableType.Shape ||
-                    t == WearableType.Skin ||
-                    t == WearableType.Eyes ||
-                    t == WearableType.Hair)
-                {
-                    return true;
-                }
-            }
-            return false;
+            if (!(realItem is InventoryWearable wearable)) return false;
+
+            var t = wearable.WearableType;
+            return t == WearableType.Shape ||
+                   t == WearableType.Skin ||
+                   t == WearableType.Eyes ||
+                   t == WearableType.Hair;
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ XPStyle on                  ; add an XP manifest to the installer
 RequestExecutionLevel admin	; on Vista we must be admin because we write to Program Files
 
 LangString LanguageCode ${LANG_ENGLISH}  "en"
-!define DOTNET_URL "https://download.microsoft.com/download/F/9/4/F942F07D-F26F-4F30-B4E3-EBD54FABA377/NDP462-KB3151800-x86-x64-AllOS-ENU.exe"
+!define DOTNET_URL "http://download.microsoft.com/download/F/9/4/F942F07D-F26F-4F30-B4E3-EBD54FABA377/NDP462-KB3151800-x86-x64-AllOS-ENU.exe"
 !define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
 
 !define APPNAME "Radegast"
@@ -28,7 +28,7 @@ LangString LanguageCode ${LANG_ENGLISH}  "en"
 
 ; The name of the installer
 Name "${APPNAME}"
-BrandingText "Made by a Cinder"
+BrandingText "Radegast - Lightweight Client"
 
 ; The file to write
 OutFile "..\${APPNAME}-${VERSION}-installer.exe"
@@ -62,11 +62,15 @@ Section ".NET check"
 
   ; Set output path to the installation directory.
   SetOutPath $TEMP
-  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4.5" "SP"
-  ${If} $0 < "1"
+  ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\FULL" "Release"
+  IntCmp $0 394802 is_equal is_less is_greater
+
+  is_equal:
+    goto NewDotNET
+  is_greater:
+    goto NewDotNET
+  is_less:
 	goto CheckMSI
-  ${EndIf}
-  goto NewDotNET
 
   CheckMSI:
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -205,12 +209,12 @@ Section /o "${APPNAME} Voice Pack (extra download)"
   IfFileExists "$INSTDIR\SLVoice.exe" voice_download_exists
 
   DetailPrint "Beginning download of Vivox Voicepack."
-  NSISdl::download /TIMEOUT=30000 "http://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  NSISdl::download /TIMEOUT=30000 "http://download.radegast.life/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $0
   DetailPrint "Result: $0"
   StrCmp $0 "success" voice_download_success
   StrCmp $0 "cancel" voice_download_cancelled
-  NSISdl::download /TIMEOUT=30000 /NOPROXY "http://bitbucket.org/cinderblocks/radegast/downloads/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
+  NSISdl::download /TIMEOUT=30000 /NOPROXY "http://download.radegast.life/${VOICEPACK}" "$INSTDIR\${VOICEPACK}" /END
   Pop $0
   DetailPrint "Result: $0"
   StrCmp $0 "success" voice_download_success
