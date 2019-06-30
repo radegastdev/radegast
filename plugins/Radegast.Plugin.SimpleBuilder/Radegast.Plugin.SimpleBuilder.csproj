@@ -69,14 +69,17 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LibreMetaverse, Version=1.3.0.214, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibreMetaverse.1.3.0.214-alpha\lib\net461\LibreMetaverse.dll</HintPath>
+    <Reference Include="LibreMetaverse, Version=1.2.12.220, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibreMetaverse.1.2.12.220\lib\net461\LibreMetaverse.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.StructuredData, Version=1.3.0.214, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibreMetaverse.StructuredData.1.3.0.214-alpha\lib\net461\LibreMetaverse.StructuredData.dll</HintPath>
+    <Reference Include="LibreMetaverse.PrimMesher, Version=1.2.12.220, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibreMetaverse.PrimMesher.1.2.12.220\lib\net461\LibreMetaverse.PrimMesher.dll</HintPath>
     </Reference>
-    <Reference Include="LibreMetaverse.Types, Version=1.3.0.214, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LibreMetaverse.Types.1.3.0.214-alpha\lib\net461\LibreMetaverse.Types.dll</HintPath>
+    <Reference Include="LibreMetaverse.StructuredData, Version=1.2.12.220, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibreMetaverse.StructuredData.1.2.12.220\lib\net461\LibreMetaverse.StructuredData.dll</HintPath>
+    </Reference>
+    <Reference Include="LibreMetaverse.Types, Version=1.2.12.220, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LibreMetaverse.Types.1.2.12.220\lib\net461\LibreMetaverse.Types.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>

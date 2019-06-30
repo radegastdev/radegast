@@ -386,7 +386,9 @@ namespace Radegast
 
             if (!linkExists)
             {
-                Client.Inventory.CreateLink(COF.UUID, item.UUID, item.Name, newDescription, AssetType.Link, item.InventoryType, UUID.Random(), (success, newItem) =>
+                Client.Inventory.CreateLink(COF.UUID, item.UUID, item.Name, newDescription, 
+                    AssetType.Link, item.InventoryType, UUID.Random(), 
+                    (success, newItem) =>
                 {
                     if (success)
                     {
