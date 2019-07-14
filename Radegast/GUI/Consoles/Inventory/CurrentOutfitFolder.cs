@@ -33,6 +33,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using LibreMetaverse;
 using OpenMetaverse;
 
 namespace Radegast
@@ -273,7 +274,7 @@ namespace Radegast
         /// <returns>List if InventoryItems that can be part of appearance (attachments, wearables)</returns>
         public List<InventoryItem> ContentLinks()
         {
-            List<InventoryItem> ret = new List<InventoryItem>();
+            var ret = new List<InventoryItem>();
             if (COF == null) return ret;
 
             Client.Inventory.Store.GetContents(COF)
@@ -310,7 +311,7 @@ namespace Radegast
         /// <returns>True if the inventory item is attached to avatar</returns>
         public static bool IsAttached(List<Primitive> attachments, InventoryItem item)
         {
-            foreach (Primitive prim in attachments)
+            foreach (var prim in attachments)
             {
                 if (GetAttachmentItem(prim) == item.UUID)
                 {
@@ -362,7 +363,7 @@ namespace Radegast
         {
             if (item.InventoryType == InventoryType.Wearable && !IsBodyPart(item))
             {
-                InventoryWearable w = (InventoryWearable)item;
+                var w = (InventoryWearable)item;
                 int layer = 0;
                 string desc = $"@{(int) w.WearableType}{layer:00}";
                 AddLink(item, desc);
@@ -415,9 +416,9 @@ namespace Radegast
         {
             if (COF == null) return;
 
-            List<UUID> toRemove = new List<UUID>();
+            var toRemove = new List<UUID>();
 
-            foreach (UUID itemID in itemIDs)
+            foreach (var itemID in itemIDs)
             {
                 var links = ContentLinks().FindAll(itemLink => itemLink.AssetUUID == itemID);
                 links.ForEach(item => toRemove.Add(item.UUID));
@@ -479,14 +480,14 @@ namespace Radegast
         public void ReplaceOutfit(List<InventoryItem> newOutfit)
         {
             // Resolve inventory links
-            List<InventoryItem> outfit = new List<InventoryItem>();
+            var outfit = new List<InventoryItem>();
             foreach (var item in newOutfit)
             {
                 outfit.Add(RealInventoryItem(item));
             }
 
             // Remove links to all exiting items
-            List<UUID> toRemove = new List<UUID>();
+            var toRemove = new List<UUID>();
             ContentLinks().ForEach(item =>
             {
                 if (IsBodyPart(item))
@@ -509,7 +510,7 @@ namespace Radegast
             Client.Inventory.Remove(toRemove, null);
 
             // Add links to new items
-            List<InventoryItem> newItems = outfit.FindAll(CanBeWorn);
+            var newItems = outfit.FindAll(CanBeWorn);
             foreach (var item in newItems)
             {
                 AddLink(item);
@@ -540,15 +541,15 @@ namespace Radegast
         /// <param name="replace">Should existing wearable of the same type be removed</param>
         public void AddToOutfit(List<InventoryItem> items, bool replace)
         {
-            List<InventoryItem> current = ContentLinks();
-            List<UUID> toRemove = new List<UUID>();
+            var current = ContentLinks();
+            var toRemove = new List<UUID>();
 
             // Resolve inventory links and remove wearables of the same type from COF
-            List<InventoryItem> outfit = new List<InventoryItem>();
+            var outfit = new List<InventoryItem>();
 
             foreach (var item in items)
             {
-                InventoryItem realItem = RealInventoryItem(item);
+                var realItem = RealInventoryItem(item);
                 if (replace && realItem is InventoryWearable wearable)
                 {
                     foreach (var link in current)
@@ -574,7 +575,7 @@ namespace Radegast
             Client.Inventory.Remove(toRemove, null);
 
             // Add links to new items
-            List<InventoryItem> newItems = outfit.FindAll(CanBeWorn);
+            var newItems = outfit.FindAll(CanBeWorn);
             foreach (var item in newItems)
             {
                 AddLink(item);
@@ -604,10 +605,10 @@ namespace Radegast
         public void RemoveFromOutfit(List<InventoryItem> items)
         {
             // Resolve inventory links
-            List<InventoryItem> outfit = items.Select(RealInventoryItem).Where(realItem => Instance.RLV.AllowDetach(realItem)).ToList();
+            var outfit = items.Select(RealInventoryItem).Where(realItem => Instance.RLV.AllowDetach(realItem)).ToList();
 
             // Remove links to all items that were removed
-            List<UUID> toRemove = outfit.FindAll(item => CanBeWorn(item) && !IsBodyPart(item)).Select(item => item.UUID).ToList();
+            var toRemove = outfit.FindAll(item => CanBeWorn(item) && !IsBodyPart(item)).Select(item => item.UUID).ToList();
             RemoveLink(toRemove);
 
             Client.Appearance.RemoveFromOutfit(outfit);
