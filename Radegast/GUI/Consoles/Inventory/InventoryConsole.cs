@@ -54,7 +54,7 @@ namespace Radegast
     public partial class InventoryConsole : UserControl
     {
         RadegastInstance instance;
-        GridClient client => instance.Client;
+        GridClient Client => instance.Client;
         Dictionary<UUID, TreeNode> FolderNodes = new Dictionary<UUID, TreeNode>();
 
         private InventoryManager Manager;
@@ -94,9 +94,9 @@ namespace Radegast
             TreeUpdateTimer.Elapsed += TreeUpdateTimerTick;
 
             this.instance = instance;
-            Manager = client.Inventory;
+            Manager = Client.Inventory;
             Inventory = Manager.Store;
-            Inventory.RootFolder.OwnerID = client.Self.AgentID;
+            Inventory.RootFolder.OwnerID = Client.Self.AgentID;
             invTree.ImageList = frmMain.ResourceImages;
             invRootNode = AddDir(null, Inventory.RootFolder);
             UpdateStatus("Reading cache");
@@ -109,7 +109,7 @@ namespace Radegast
         {
             WorkPool.QueueUserWorkItem(sync =>
             {
-                Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, client);
+                Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, Client);
                 Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
                 Init2();
             });
@@ -183,9 +183,9 @@ namespace Radegast
             Inventory.InventoryObjectUpdated += new EventHandler<InventoryObjectUpdatedEventArgs>(Inventory_InventoryObjectUpdated);
             Inventory.InventoryObjectRemoved += new EventHandler<InventoryObjectRemovedEventArgs>(Inventory_InventoryObjectRemoved);
 
-            client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
-            client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-            client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
+            Client.Objects.ObjectUpdate += new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
+            Client.Objects.KillObject += new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            Client.Appearance.AppearanceSet += new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
         }
 
         void InventoryConsole_Disposed(object sender, EventArgs e)
@@ -209,9 +209,9 @@ namespace Radegast
             Inventory.InventoryObjectUpdated -= new EventHandler<InventoryObjectUpdatedEventArgs>(Inventory_InventoryObjectUpdated);
             Inventory.InventoryObjectRemoved -= new EventHandler<InventoryObjectRemovedEventArgs>(Inventory_InventoryObjectRemoved);
 
-            client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
-            client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
-            client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
+            Client.Objects.ObjectUpdate -= new EventHandler<PrimEventArgs>(Objects_AttachmentUpdate);
+            Client.Objects.KillObject -= new EventHandler<KillObjectEventArgs>(Objects_KillObject);
+            Client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
         }
         #endregion
 
@@ -222,7 +222,7 @@ namespace Radegast
             if (appearanceWasBusy)
             {
                 appearanceWasBusy = false;
-                client.Appearance.RequestSetAppearance(true);
+                Client.Appearance.RequestSetAppearance(true);
             }
         }
 
@@ -251,8 +251,8 @@ namespace Radegast
         {
             Primitive prim = e.Prim;
 
-            if (client.Self.LocalID == 0 ||
-                prim.ParentID != client.Self.LocalID ||
+            if (Client.Self.LocalID == 0 ||
+                prim.ParentID != Client.Self.LocalID ||
                 prim.NameValues == null) return;
 
             for (int i = 0; i < prim.NameValues.Length; i++)
@@ -301,7 +301,7 @@ namespace Radegast
                         }
                         else
                         {
-                            client.Inventory.RequestFetchInventory(attachment.InventoryID, client.Self.AgentID);
+                            Client.Inventory.RequestFetchInventory(attachment.InventoryID, Client.Self.AgentID);
                         }
                     }
                 }
@@ -723,16 +723,16 @@ namespace Radegast
                     gotFolderEvent.Set();
                 }
 
-                client.Inventory.FolderUpdated += FolderUpdatedCB;
+                Client.Inventory.FolderUpdated += FolderUpdatedCB;
                 fetchFolder(f.UUID, f.OwnerID, true);
                 gotFolderEvent.WaitOne(30 * 1000, false);
-                client.Inventory.FolderUpdated -= FolderUpdatedCB;
+                Client.Inventory.FolderUpdated -= FolderUpdatedCB;
 
                 if (!success)
                 {
                     Logger.Log(
                         $"Failed fetching folder {f.Name}, got {Inventory.Items[f.UUID].Nodes.Count} items out of {((InventoryFolder) Inventory.Items[f.UUID].Data).DescendentCount}",
-                        Helpers.LogLevel.Error, client);
+                        Helpers.LogLevel.Error, Client);
                 }
             }
 
@@ -747,7 +747,7 @@ namespace Radegast
 
         private void StartTraverseNodes()
         {
-            if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
+            if (!Client.Network.CurrentSim.Caps.IsEventQueueRunning)
             {
                 AutoResetEvent EQRunning = new AutoResetEvent(false);
 
@@ -756,12 +756,12 @@ namespace Radegast
                     EQRunning.Set();
                 }
 
-                client.Network.EventQueueRunning += RunningHandler;
+                Client.Network.EventQueueRunning += RunningHandler;
                 EQRunning.WaitOne(10 * 1000, false);
-                client.Network.EventQueueRunning -= RunningHandler;
+                Client.Network.EventQueueRunning -= RunningHandler;
             }
 
-            if (!client.Network.CurrentSim.Caps.IsEventQueueRunning)
+            if (!Client.Network.CurrentSim.Caps.IsEventQueueRunning)
             {
                 return;
             }
@@ -799,13 +799,13 @@ namespace Radegast
                         gotFolder.Set();
                     }
 
-                    client.Inventory.FolderUpdated += updateHandler;
-                    client.Inventory.RequestFolderContents(folderID, client.Self.AgentID, true, true, InventorySortOrder.ByDate);
+                    Client.Inventory.FolderUpdated += updateHandler;
+                    Client.Inventory.RequestFolderContents(folderID, Client.Self.AgentID, true, true, InventorySortOrder.ByDate);
                     if (!gotFolder.WaitOne(15 * 1000, false))
                     {
                         success = false;
                     }
-                    client.Inventory.FolderUpdated -= updateHandler;
+                    Client.Inventory.FolderUpdated -= updateHandler;
                 });
             }
             while (QueuedFolders.Count > 0);
@@ -819,11 +819,11 @@ namespace Radegast
             UpdateStatus("OK");
             instance.TabConsole.DisplayNotificationInChat("Inventory update completed.");
 
-            if ((client.Network.LoginResponseData.FirstLogin) && !string.IsNullOrEmpty(client.Network.LoginResponseData.InitialOutfit))
+            if ((Client.Network.LoginResponseData.FirstLogin) && !string.IsNullOrEmpty(Client.Network.LoginResponseData.InitialOutfit))
             {
-                client.Self.SetAgentAccess("A");
+                Client.Self.SetAgentAccess("A");
                 var initOutfit = new InitialOutfit(instance);
-                initOutfit.SetInitialOutfit(client.Network.LoginResponseData.InitialOutfit);
+                initOutfit.SetInitialOutfit(Client.Network.LoginResponseData.InitialOutfit);
             }
 
             // Updated labels on clothes that we are wearing
@@ -843,13 +843,13 @@ namespace Radegast
                     }
                     else
                     {
-                        client.Inventory.RequestFetchInventory(a.InventoryID, client.Self.AgentID);
+                        Client.Inventory.RequestFetchInventory(a.InventoryID, Client.Self.AgentID);
                         return;
                     }
                 }
             }
 
-            Logger.Log("Finished updating inventory folders, saving cache...", Helpers.LogLevel.Debug, client);
+            Logger.Log("Finished updating inventory folders, saving cache...", Helpers.LogLevel.Debug, Client);
             GestureManager.Instance.BeginMonitoring();
 
             WorkPool.QueueUserWorkItem(state => Inventory.SaveToDisk(instance.InventoryCacheFileName));
@@ -1043,8 +1043,8 @@ namespace Radegast
             if (cbNextOwnTransfer.Checked) pm |= PermissionMask.Transfer;
             item.Permissions.NextOwnerMask = pm;
 
-            client.Inventory.RequestUpdateItem(item);
-            client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
+            Client.Inventory.RequestUpdateItem(item);
+            Client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
         }
 
         private void txtItemName_Leave(object sender, EventArgs e)
@@ -1058,8 +1058,8 @@ namespace Radegast
 
             item.Name = txtItemName.Text;
 
-            client.Inventory.RequestUpdateItem(item);
-            client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
+            Client.Inventory.RequestUpdateItem(item);
+            Client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
         }
 
         private void txtItemDescription_Leave(object sender, EventArgs e)
@@ -1073,8 +1073,8 @@ namespace Radegast
 
             item.Description = txtItemDescription.Text;
 
-            client.Inventory.RequestUpdateItem(item);
-            client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
+            Client.Inventory.RequestUpdateItem(item);
+            Client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
         }
 
         void invTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -1088,11 +1088,11 @@ namespace Radegast
 
                 case AssetType.Landmark:
                     instance.TabConsole.DisplayNotificationInChat("Teleporting to " + item.Name);
-                    client.Self.RequestTeleport(item.AssetUUID);
+                    Client.Self.RequestTeleport(item.AssetUUID);
                     break;
 
                 case AssetType.Gesture:
-                    client.Self.PlayGesture(item.AssetUUID);
+                    Client.Self.PlayGesture(item.AssetUUID);
                     break;
 
                 case AssetType.Notecard:
@@ -1144,13 +1144,13 @@ namespace Radegast
                     fetchedFolders.Add(folderID);
                 }
 
-                client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
+                Client.Inventory.RequestFolderContents(folderID, ownerID, true, true, InventorySortOrder.ByDate);
             }
         }
 
         public bool IsWorn(InventoryItem item)
         {
-            bool worn = client.Appearance.IsItemWorn(item) != WearableType.Invalid;
+            bool worn = Client.Appearance.IsItemWorn(item) != WearableType.Invalid;
 
             lock (WornItems)
             {
@@ -1175,7 +1175,7 @@ namespace Radegast
 
         public bool IsAttached(InventoryItem item)
         {
-            var myAtt = client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == client.Self.LocalID);
+            var myAtt = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(p => p.ParentID == Client.Self.LocalID);
             foreach (Primitive prim in myAtt)
             {
                 if (prim.NameValues == null) continue;
@@ -1504,7 +1504,7 @@ namespace Radegast
 
                     if (item.InventoryType == InventoryType.Animation)
                     {
-                        if (!client.Self.SignaledAnimations.ContainsKey(item.AssetUUID))
+                        if (!Client.Self.SignaledAnimations.ContainsKey(item.AssetUUID))
                         {
                             ctxItem = new ToolStripMenuItem("Play", null, OnInvContextClick) {Name = "animation_play"};
                             ctxInv.Items.Add(ctxItem);
@@ -1714,21 +1714,21 @@ namespace Radegast
 
                     case "new_folder":
                         newItemName = "New folder";
-                        client.Inventory.CreateFolder(folder.UUID, "New folder");
+                        Client.Inventory.CreateFolder(folder.UUID, "New folder");
                         break;
 
                     case "fix_type":
-                        client.Inventory.UpdateFolderProperties(folder.UUID, folder.ParentUUID, folder.Name, FolderType.None);
+                        Client.Inventory.UpdateFolderProperties(folder.UUID, folder.ParentUUID, folder.Name, FolderType.None);
                         invTree.Sort();
                         break;
 
                     case "new_notecard":
-                        client.Inventory.RequestCreateItem(folder.UUID, "New Note", "Radegast note: " + DateTime.Now.ToString(CultureInfo.InvariantCulture),
+                        Client.Inventory.RequestCreateItem(folder.UUID, "New Note", "Radegast note: " + DateTime.Now.ToString(CultureInfo.InvariantCulture),
                             AssetType.Notecard, UUID.Zero, InventoryType.Notecard, PermissionMask.All, NotecardCreated);
                         break;
 
                     case "new_script":
-                        client.Inventory.RequestCreateItem(folder.UUID, "New script", "Radegast script: " + DateTime.Now.ToString(CultureInfo.InvariantCulture),
+                        Client.Inventory.RequestCreateItem(folder.UUID, "New script", "Radegast script: " + DateTime.Now.ToString(CultureInfo.InvariantCulture),
                             AssetType.LSLText, UUID.Zero, InventoryType.LSL, PermissionMask.All, ScriptCreated);
                         break;
 
@@ -1750,21 +1750,21 @@ namespace Radegast
 
 
                     case "delete_folder":
-                        var trash = client.Inventory.FindFolderForType(FolderType.Trash);
+                        var trash = Client.Inventory.FindFolderForType(FolderType.Trash);
                         if (trash == Inventory.RootFolder.UUID)
                         {
                             WorkPool.QueueUserWorkItem(sync =>
                             {
                                 trashCreated.Reset();
-                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
+                                trash = Client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
                                 trashCreated.WaitOne(20 * 1000, false);
                                 Thread.Sleep(200);
-                                client.Inventory.MoveFolder(folder.UUID, trash);
+                                Client.Inventory.MoveFolder(folder.UUID, trash);
                             });
                             return;
                         }
 
-                        client.Inventory.MoveFolder(folder.UUID, trash);
+                        Client.Inventory.MoveFolder(folder.UUID, trash);
                         break;
 
                     case "empty_trash":
@@ -1772,7 +1772,7 @@ namespace Radegast
                             DialogResult res = MessageBox.Show("Are you sure you want to empty your trash?", "Confirmation", MessageBoxButtons.OKCancel);
                             if (res == DialogResult.OK)
                             {
-                                client.Inventory.EmptyTrash();
+                                Client.Inventory.EmptyTrash();
                             }
                         }
                         break;
@@ -1782,7 +1782,7 @@ namespace Radegast
                             DialogResult res = MessageBox.Show("Are you sure you want to empty your lost and found folder?", "Confirmation", MessageBoxButtons.OKCancel);
                             if (res == DialogResult.OK)
                             {
-                                client.Inventory.EmptyLostAndFound();
+                                Client.Inventory.EmptyLostAndFound();
                             }
                         }
                         break;
@@ -1798,7 +1798,7 @@ namespace Radegast
                             if (item is InventoryItem inventoryItem)
                                 newOutfit.Add(inventoryItem);
                         }
-                        appearanceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.ReplaceOutfit(newOutfit);
                         UpdateWornLabels();
                         break;
@@ -1810,7 +1810,7 @@ namespace Radegast
                             if (item is InventoryItem inventoryItem)
                                 addToOutfit.Add(inventoryItem);
                         }
-                        appearanceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.AddToOutfit(addToOutfit, true);
                         UpdateWornLabels();
                         break;
@@ -1822,7 +1822,7 @@ namespace Radegast
                             if (item is InventoryItem inventoryItem)
                                 removeFromOutfit.Add(inventoryItem);
                         }
-                        appearanceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.RemoveFromOutfit(removeFromOutfit);
                         UpdateWornLabels();
                         break;
@@ -1859,21 +1859,21 @@ namespace Radegast
                         break;
 
                     case "delete_item":
-                        var trash = client.Inventory.FindFolderForType(FolderType.Trash);
+                        var trash = Client.Inventory.FindFolderForType(FolderType.Trash);
                         if (trash == Inventory.RootFolder.UUID)
                         {
                             WorkPool.QueueUserWorkItem(sync =>
                             {
                                 trashCreated.Reset();
-                                trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
+                                trash = Client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
                                 trashCreated.WaitOne(20 * 1000, false);
                                 Thread.Sleep(200);
-                                client.Inventory.MoveItem(item.UUID, trash, item.Name);
+                                Client.Inventory.MoveItem(item.UUID, trash, item.Name);
                             });
                             return;
                         }
 
-                        client.Inventory.MoveItem(item.UUID, client.Inventory.FindFolderForType(FolderType.Trash), item.Name);
+                        Client.Inventory.MoveItem(item.UUID, Client.Inventory.FindFolderForType(FolderType.Trash), item.Name);
                         break;
 
                     case "rename_item":
@@ -1909,7 +1909,7 @@ namespace Radegast
                         break;
 
                     case "wearable_take_off":
-                        appearanceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.RemoveFromOutfit(item);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         lock (WornItems)
@@ -1922,20 +1922,20 @@ namespace Radegast
                         break;
 
                     case "wearable_wear":
-                        appearanceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.AddToOutfit(item, true);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 
                     case "wearable_add":
-                        appearanceWasBusy = client.Appearance.ManagerBusy;
+                        appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.AddToOutfit(item, false);
                         invTree.SelectedNode.Text = ItemLabel(item, false);
                         break;
 
                     case "lm_teleport":
                         instance.TabConsole.DisplayNotificationInChat("Teleporting to " + item.Name);
-                        client.Self.RequestTeleport(item.AssetUUID);
+                        Client.Self.RequestTeleport(item.AssetUUID);
                         break;
 
                     case "lm_info":
@@ -1951,7 +1951,7 @@ namespace Radegast
                         break;
 
                     case "gesture_play":
-                        client.Self.PlayGesture(item.AssetUUID);
+                        Client.Self.PlayGesture(item.AssetUUID);
                         break;
 
                     case "gesture_activate":
@@ -1967,20 +1967,20 @@ namespace Radegast
                     case "animation_play":
                         Dictionary<UUID, bool> anim = new Dictionary<UUID, bool>();
                         anim.Add(item.AssetUUID, true);
-                        client.Self.Animate(anim, true);
+                        Client.Self.Animate(anim, true);
                         break;
 
                     case "animation_stop":
                         Dictionary<UUID, bool> animStop = new Dictionary<UUID, bool>();
                         animStop.Add(item.AssetUUID, false);
-                        client.Self.Animate(animStop, true);
+                        Client.Self.Animate(animStop, true);
                         break;
 
                     case "rez_inworld":
                         instance.MediaManager.PlayUISound(UISounds.ObjectRez);
                         Vector3 rezpos = new Vector3(2, 0, 0);
-                        rezpos = client.Self.SimPosition + rezpos * client.Self.Movement.BodyRotation;
-                        client.Inventory.RequestRezFromInventory(client.Network.CurrentSim, Quaternion.Identity, rezpos, item);
+                        rezpos = Client.Self.SimPosition + rezpos * Client.Self.Movement.BodyRotation;
+                        Client.Inventory.RequestRezFromInventory(Client.Network.CurrentSim, Quaternion.Identity, rezpos, item);
                         break;
                 }
                 #endregion
@@ -2050,13 +2050,13 @@ namespace Radegast
                     switch (instance.InventoryClipboard.Item)
                     {
                         case InventoryItem _:
-                            client.Inventory.MoveItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name);
+                            Client.Inventory.MoveItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name);
                             break;
                         case InventoryFolder _:
                         {
                             if (instance.InventoryClipboard.Item.UUID != dest.UUID)
                             {
-                                client.Inventory.MoveFolder(instance.InventoryClipboard.Item.UUID, dest.UUID);
+                                Client.Inventory.MoveFolder(instance.InventoryClipboard.Item.UUID, dest.UUID);
                             }
 
                             break;
@@ -2068,7 +2068,7 @@ namespace Radegast
                 }
 
                 case ClipboardOperation.Copy when instance.InventoryClipboard.Item is InventoryItem:
-                    client.Inventory.RequestCopyItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name, instance.InventoryClipboard.Item.OwnerID, target =>
+                    Client.Inventory.RequestCopyItem(instance.InventoryClipboard.Item.UUID, dest.UUID, instance.InventoryClipboard.Item.Name, instance.InventoryClipboard.Item.OwnerID, target =>
                         {
                         }
                     );
@@ -2079,7 +2079,7 @@ namespace Radegast
                     {
                         WorkPool.QueueUserWorkItem(state =>
                             {
-                                UUID newFolderID = client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, FolderType.None);
+                                UUID newFolderID = Client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, FolderType.None);
                                 Thread.Sleep(500);
 
                                 // FIXME: for some reason copying a bunch of items in one operation does not work
@@ -2095,12 +2095,12 @@ namespace Radegast
                                     //names.Add(oldItem.Name);
                                     //items.Add(oldItem.UUID);
                                     //oldOwner = oldItem.OwnerID;
-                                    client.Inventory.RequestCopyItem(oldItem.UUID, newFolderID, oldItem.Name, oldItem.OwnerID, target => { });
+                                    Client.Inventory.RequestCopyItem(oldItem.UUID, newFolderID, oldItem.Name, oldItem.OwnerID, target => { });
                                 }
 
                                 //if (folders.Count > 0)
                                 //{
-                                //    client.Inventory.RequestCopyItems(items, folders, names, oldOwner, (InventoryBase target) => { });
+                                //    Client.Inventory.RequestCopyItems(items, folders, names, oldOwner, (InventoryBase target) => { });
                                 //}
                             }
                         );
@@ -2113,11 +2113,16 @@ namespace Radegast
 
         void PerformLinkOperation(InventoryFolder dest)
         {
-            if (instance.InventoryClipboard == null) return;
+            if (instance.InventoryClipboard == null || dest == null) return;
 
-            if (dest == null) return;
-
-            client.Inventory.CreateLink(dest.UUID, instance.InventoryClipboard.Item, (success, item) => { });
+            Client.Inventory.CreateLink(dest.UUID, instance.InventoryClipboard.Item,
+                (success, item) =>
+                {
+                    if (success)
+                    {
+                        Client.Inventory.RequestFetchInventory(item.UUID, item.OwnerID);
+                    }
+                });
         }
 
         #endregion
@@ -2140,7 +2145,7 @@ namespace Radegast
                 }
             }
             WornItems.Clear();
-            foreach (var wearable in client.Appearance.GetWearables())
+            foreach (var wearable in Client.Appearance.GetWearables())
             {
                 TreeNode node = findNodeForItem(wearable.ItemID);
                 if (node != null)
@@ -2225,13 +2230,13 @@ namespace Radegast
             if (e.Node.Tag is InventoryFolder folder)
             {
                 folder.Name = e.Label;
-                client.Inventory.MoveFolder(folder.UUID, folder.ParentUUID);
+                Client.Inventory.MoveFolder(folder.UUID, folder.ParentUUID);
             }
             else if (e.Node.Tag is InventoryItem item)
             {
                 item.Name = e.Label;
                 e.Node.Text = ItemLabel((InventoryBase)item, false);
-                client.Inventory.MoveItem(item.UUID, item.ParentUUID, item.Name);
+                Client.Inventory.MoveItem(item.UUID, item.ParentUUID, item.Name);
                 UpdateItemInfo(item);
             }
 
@@ -2252,20 +2257,20 @@ namespace Radegast
             }
             else if (e.KeyCode == Keys.Delete && invTree.SelectedNode != null)
             {
-                var trash = client.Inventory.FindFolderForType(FolderType.Trash);
+                var trash = Client.Inventory.FindFolderForType(FolderType.Trash);
                 if (trash == Inventory.RootFolder.UUID)
                 {
-                    trash = client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
+                    trash = Client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
                     Thread.Sleep(2000);
                 }
 
                 switch (invTree.SelectedNode.Tag)
                 {
                     case InventoryItem item:
-                        client.Inventory.MoveItem(item.UUID, trash);
+                        Client.Inventory.MoveItem(item.UUID, trash);
                         break;
                     case InventoryFolder folder:
-                        client.Inventory.MoveFolder(folder.UUID, trash);
+                        Client.Inventory.MoveFolder(folder.UUID, trash);
                         break;
                 }
             }
@@ -2317,12 +2322,12 @@ namespace Radegast
             if (sourceNode.Tag is InventoryItem)
             {
                 InventoryItem item = (InventoryItem)sourceNode.Tag;
-                client.Inventory.MoveItem(item.UUID, dest.UUID, item.Name);
+                Client.Inventory.MoveItem(item.UUID, dest.UUID, item.Name);
             }
             else if (sourceNode.Tag is InventoryFolder)
             {
                 InventoryFolder f = (InventoryFolder)sourceNode.Tag;
-                client.Inventory.MoveFolder(f.UUID, dest.UUID);
+                Client.Inventory.MoveFolder(f.UUID, dest.UUID);
             }
         }
 
