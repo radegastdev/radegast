@@ -39,7 +39,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Radegast Development Team")]
 [assembly: AssemblyProduct("Radegast Metaverse Client")]
-[assembly: AssemblyCopyright("Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2017, Cinder Roxley.")]
+[assembly: AssemblyCopyright("Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2019, Cinder Roxley.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

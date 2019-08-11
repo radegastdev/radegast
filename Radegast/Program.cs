@@ -77,7 +77,7 @@ namespace Radegast
             HelpText header = new HelpText(Properties.Resources.RadegastTitle)
             {
                 AdditionalNewLineAfterOption = true,
-                Copyright = new CopyrightInfo("Radegast Development Team", 2009, 2017)
+                Copyright = new CopyrightInfo("Radegast Development Team, Cinderblocks Design", 2009, 2019)
             };
             header.AddPreOptionsLine("https://radegast.life/");
             return header;
@@ -164,6 +164,9 @@ namespace Radegast
                             return h;
                         }, e => e);
                         Console.WriteLine(helpText);
+                        Console.WriteLine("Use Grid ID as the parameter for --grid");
+                        Console.WriteLine("{0,-25} - {1}", "Grid ID", "Grid Name");
+                        Console.WriteLine();
                     });
             }
             catch (Exception e)
