@@ -41,6 +41,7 @@ using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
 using System.Threading;
+using OpenTK.Graphics.OpenGL;
 
 namespace Radegast
 {
@@ -150,39 +151,44 @@ namespace Radegast
         [STAThread]
         static void Main(string[] args)
         {
-            if (System.Diagnostics.Debugger.IsAttached)
+            try
             {
-                Parser.Default.ParseArguments<CommandLineOptions>(args)
-                    .WithParsed(RunRadegast);
-            }
-            else
-            {
-                try
-                {
-                    Parser.Default.ParseArguments<CommandLineOptions>(args)
-                        .WithParsed(RunRadegast);
-                }
-                catch (Exception e)
-                {
-                    string errMsg = "Unhandled " + e + ": " +
-                        e.Message + Environment.NewLine +
-                        e.StackTrace + Environment.NewLine;
-
-                    OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
-
-                    string dlgMsg = "Radegast has encountered an unrecoverable error." + Environment.NewLine +
-                        "Would you like to send the error report to help improve Radegast?";
-
-                    var res = MessageBox.Show(dlgMsg, @"Unrecoverable error", MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-
-                    if (res == DialogResult.Yes)
+                var parser = new Parser(x => x.HelpWriter = null);
+                var result = parser.ParseArguments<CommandLineOptions>(args);
+                result.WithParsed(RunRadegast)
+                    .WithNotParsed(errs =>
                     {
-                        var reporter = new ErrorReporter("http://api.radegast.org/svc/error_report");
-                        reporter.SendExceptionReport(e);
-                    }
+                        var helpText = HelpText.AutoBuild(result, h =>
+                        {
+                            h.AdditionalNewLineAfterOption = false;
+                            return h;
+                        }, e => e);
+                        Console.WriteLine(helpText);
+                    });
+            }
+            catch (Exception e)
+            {
+                if (System.Diagnostics.Debugger.IsAttached){ throw e; }
 
-                    Environment.Exit(1);
+                string errMsg = "Unhandled " + e + ": " +
+                                e.Message + Environment.NewLine +
+                                e.StackTrace + Environment.NewLine;
+
+                OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
+
+                string dlgMsg = "Radegast has encountered an unrecoverable error." + Environment.NewLine +
+                                "Would you like to send the error report to help improve Radegast?";
+
+                var res = MessageBox.Show(dlgMsg, @"Unrecoverable error", 
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+
+                if (res == DialogResult.Yes)
+                {
+                    var reporter = new ErrorReporter("http://api.radegast.org/svc/error_report");
+                    reporter.SendExceptionReport(e);
                 }
+
+                Environment.Exit(1);
             }
         }
     }
