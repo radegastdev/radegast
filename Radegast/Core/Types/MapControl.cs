@@ -290,8 +290,7 @@ namespace Radegast
                     tileRequests.Add(handle);
 
 
-            Uri url = Client.Network.CurrentSim.Caps.CapabilityURI("GetTexture");
-
+            Uri url = Client.Network.CurrentSim.Caps.GetTextureCapURI();
             if (url != null)
             {
                 if (Client.Assets.Cache.HasAsset(imageID))
@@ -310,7 +309,7 @@ namespace Radegast
                 else
                 {
                     downloader.QueueDownlad(
-                        new Uri(string.Format("{0}/?texture_id={1}", url, imageID)),
+                        new Uri($"{url}/?texture_id={imageID}"),
                         30 * 1000,
                         "image/x-j2c",
                         null,
@@ -329,9 +328,12 @@ namespace Radegast
                             }
 
                             lock (tileRequests)
+                            {
                                 if (tileRequests.Contains(handle))
+                                {
                                     tileRequests.Remove(handle);
-
+                                }
+                            }
                         });
                 }
             }
@@ -347,7 +349,7 @@ namespace Radegast
                             return;
 
                         case TextureRequestState.Finished:
-                            if (assetTexture != null && assetTexture.AssetData != null)
+                            if (assetTexture?.AssetData != null)
                             {
                                 Image img;
                                 OpenMetaverse.Imaging.ManagedImage mi;

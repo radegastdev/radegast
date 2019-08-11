@@ -103,7 +103,7 @@ namespace Radegast.Media
                 Id,
                 AssetType.Sound,
                 false,
-                new AssetManager.AssetReceivedCallback(Assets_OnSoundReceived));
+                Assets_OnSoundReceived);
         }
 
         public static void Kill(UUID id)
@@ -170,7 +170,7 @@ namespace Radegast.Media
                 Id,
                 AssetType.Sound,
                 false,
-                new AssetManager.AssetReceivedCallback(Assets_OnSoundReceived));
+                Assets_OnSoundReceived);
         }
 
         /**
