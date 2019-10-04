@@ -1651,6 +1651,7 @@ namespace Radegast
                                 case WearableType.Tattoo:
                                 case WearableType.Underpants:
                                 case WearableType.Undershirt:
+                                case WearableType.Universal:
                                     ctxItem = new ToolStripMenuItem("Add to Worn", null, OnInvContextClick) { Name = "wearable_add" };
                                     ctxInv.Items.Add(ctxItem);
                                     goto default;
