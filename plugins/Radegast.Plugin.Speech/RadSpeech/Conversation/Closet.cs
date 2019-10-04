@@ -188,6 +188,7 @@ namespace RadegastSpeech.Conversation
                 case OpenMetaverse.WearableType.Gloves: return "gloves";
                 case OpenMetaverse.WearableType.Hair: return "hair";
                 case OpenMetaverse.WearableType.Shape: return "body shape";
+                //case OpenMetaverse.WearableType.Universal: 
                 default: return "clothes";
             }
         }

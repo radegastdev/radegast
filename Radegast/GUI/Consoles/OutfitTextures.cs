@@ -1,6 +1,7 @@
 // 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2019, Cinderblocks Design Co.
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -65,10 +66,7 @@ namespace Radegast
                     {
                         SLImageHandler img = new SLImageHandler(instance, face.TextureID, ((AvatarTextureIndex)j).ToString());
 
-                        GroupBox gbx = new GroupBox();
-                        gbx.Dock = DockStyle.Top;
-                        gbx.Text = img.Text;
-                        gbx.Height = 550;
+                        GroupBox gbx = new GroupBox {Dock = DockStyle.Top, Text = img.Text, Height = 550};
 
                         img.Dock = DockStyle.Fill;
                         gbx.Controls.Add(img);

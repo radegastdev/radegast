@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
@@ -172,9 +173,11 @@ namespace Radegast.Rendering
 
             UseMultiSampling = Instance.GlobalSettings["use_multi_sampling"];
 
-            genericTaskThread = new Thread(new ThreadStart(GenericTaskRunner));
-            genericTaskThread.IsBackground = true;
-            genericTaskThread.Name = "Generic task queue";
+            genericTaskThread = new Thread(new ThreadStart(GenericTaskRunner))
+            {
+                IsBackground = true,
+                Name = "Generic task queue"
+            };
             genericTaskThread.Start();
 
             renderer = new MeshmerizerR();
@@ -1842,8 +1845,12 @@ namespace Radegast.Rendering
 
 
                             // If we don't have a hair bake OR the hair bake is invisible don't render it
-                            if (mesh.Name == "hairMesh" && (av.data[(int)AvatarTextureIndex.HairBaked] == null || av.data[(int)AvatarTextureIndex.HairBaked].TextureInfo.IsInvisible))
+                            if (mesh.Name == "hairMesh" &&
+                                (av.data[(int) AvatarTextureIndex.HairBaked] == null
+                                 || av.data[(int) AvatarTextureIndex.HairBaked].TextureInfo.IsInvisible))
+                            {
                                 continue;
+                            }
 
                             GL.Color3(1f, 1f, 1f);
 
@@ -1851,11 +1858,11 @@ namespace Radegast.Rendering
                             {
                                 GL.Disable(EnableCap.Texture2D);
 
-                                for (int i = 0; i < av.data.Length; i++)
+                                foreach (var d in av.data)
                                 {
-                                    if (av.data[i] != null)
+                                    if (d != null)
                                     {
-                                        av.data[i].PickingID = avatarNr;
+                                        d.PickingID = avatarNr;
                                     }
                                 }
                                 byte[] primNrBytes = Utils.Int16ToBytes((short)avatarNr);
@@ -2643,14 +2650,9 @@ namespace Radegast.Rendering
                 {
                     foreach (var avatar in VisibleAvatars)
                     {
-                        for (int i = 0; i < avatar.data.Length; i++)
+                        if (avatar.data.Any(face => face != null && face.PickingID == primID))
                         {
-                            var face = avatar.data[i];
-                            if (face != null && face.PickingID == primID)
-                            {
-                                picked = avatar;
-                                break;
-                            }
+                            picked = avatar;
                         }
                     }
                 }
