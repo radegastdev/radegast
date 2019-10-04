@@ -1,6 +1,7 @@
 ﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2019, Cinderblocks Design Co.
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -71,7 +72,7 @@ namespace Radegast.Rendering
         /// Checks if VBOs are created, if they are, bind them, if not create new
         /// </summary>
         /// <param name="face">Which face's mesh is uploaded in this VBO</param>
-        /// <returns>True, if face data was succesfully uploaded to the graphics card memory</returns>
+        /// <returns>True, if face data was successfully uploaded to the graphics card memory</returns>
         public bool CheckVBO(Face face)
         {
             if (VertexVBO == -1)
@@ -123,7 +124,7 @@ namespace Radegast.Rendering
         float TotalTime = 0f;
 
         /// <summary>
-        /// Perform texture manupulation to implement texture animations
+        /// Perform texture manipulation to implement texture animations
         /// </summary>
         /// <param name="lastFrameTime">Time passed since the last run (in seconds)</param>
         public void Step(float lastFrameTime)
@@ -326,7 +327,7 @@ namespace Radegast.Rendering
     }
 
     /// <summary>
-    /// Class that handle rendering of objects: simple primitives, scupties, and meshes
+    /// Class that handle rendering of objects: simple primitives, sculpties, and meshes
     /// </summary>
     public class RenderPrimitive : SceneObject
     {
@@ -367,9 +368,8 @@ namespace Radegast.Rendering
             {
                 foreach (Face f in Faces)
                 {
-                    if (f.UserData != null && f.UserData is FaceData)
+                    if (f.UserData is FaceData data)
                     {
-                        FaceData data = (FaceData)f.UserData;
                         data.Dispose();
                         data = null;
                     }
@@ -389,14 +389,13 @@ namespace Radegast.Rendering
             {
                 Prim = value;
 
-                int TEHash = Prim.Textures == null ? 0 : Prim.Textures.GetHashCode();
-                int sculptHash, shapeHash;
+                int TEHash = Prim.Textures?.GetHashCode() ?? 0;
 
                 if (Meshed)
                 {
                     if (Prim.Type == PrimType.Sculpt || Prim.Type == PrimType.Mesh)
                     {
-                        sculptHash = Prim.Sculpt.GetHashCode();
+                        var sculptHash = Prim.Sculpt.GetHashCode();
                         if (Prim.Sculpt.GetHashCode() != prevSculptHash || TEHash != prevTEHash)
                         {
                             Meshed = false;
@@ -405,7 +404,7 @@ namespace Radegast.Rendering
                     }
                     else
                     {
-                        shapeHash = Prim.PrimData.GetHashCode();
+                        var shapeHash = Prim.PrimData.GetHashCode();
                         if (shapeHash != prevShapeHash)
                         {
                             Meshed = false;
@@ -444,7 +443,7 @@ namespace Radegast.Rendering
             // Individual prim matrix
             GL.PushMatrix();
 
-            // Prim roation and position and scale
+            // Prim rotation and position and scale
             GL.MultMatrix(Math3D.CreateSRTMatrix(Prim.Scale, RenderRotation, RenderPosition));
 
             // Do we have animated texture on this face
@@ -581,10 +580,7 @@ namespace Radegast.Rendering
                             data.AnimInfo.Step(time);
                             animatedTexture = true;
                         }
-                        else if (data.AnimInfo != null) // Face texture not animated. Do we have previous anim setting?
-                        {
-                            data.AnimInfo = null;
-                        }
+                        data.AnimInfo = null;
 
                         GL.Enable(EnableCap.Texture2D);
                         GL.BindTexture(TextureTarget.Texture2D, data.TextureInfo.TexturePointer);
@@ -658,7 +654,7 @@ namespace Radegast.Rendering
         {
             uint id = Prim == null ? 0 : Prim.LocalID;
             float distance = (float)Math.Sqrt(DistanceSquared);
-            return string.Format("LocalID: {0}, distance {1:0.00}", id, distance);
+            return $"LocalID: {id}, distance {distance:0.00}";
         }
     }
 }
