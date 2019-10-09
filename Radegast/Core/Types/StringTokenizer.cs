@@ -39,6 +39,7 @@
  **********************************************************/
 using System;
 using System.IO;
+using System.Linq;
 
 namespace Radegast
 {
@@ -443,12 +444,8 @@ namespace Radegast
 		/// checks whether c is a symbol character.
 		/// </summary>
 		protected bool IsSymbol(char c)
-		{
-			for (int i=0; i<SymbolChars.Length; i++)
-				if (SymbolChars[i] == c)
-					return true;
-
-			return false;
-		}
+        {
+            return SymbolChars.Any(t => t == c);
+        }
 	}
 }

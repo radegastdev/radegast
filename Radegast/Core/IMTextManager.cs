@@ -441,9 +441,9 @@ namespace Radegast
             }
 
             string[] lines = last.Split(Environment.NewLine.ToCharArray());
-            for (int i = 0; i < lines.Length; i++)
+            foreach (var line in lines)
             {
-                string msg = lines[i].Trim();
+                string msg = line.Trim();
                 if (!string.IsNullOrEmpty(msg))
                 {
                     if(fontSettings.ContainsKey("History"))

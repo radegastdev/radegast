@@ -75,10 +75,10 @@ namespace Radegast
             client.Avatars.AvatarPickerReply += new EventHandler<AvatarPickerReplyEventArgs>(Avatars_AvatarPickerReply);
 
             List<NearbyAvatar> nearAvatars = instance.TabConsole.NearbyAvatars;
-            for (int i = 0; i < nearAvatars.Count; i++)
+            foreach (var avatar in nearAvatars)
             {
-                string name = instance.Names.Get(nearAvatars[i].ID, nearAvatars[i].Name);
-                lvwNear.Items.Add(new ListViewItem() { Text = nearAvatars[i].Name, Tag = nearAvatars[i].ID });
+                string name = instance.Names.Get(avatar.ID, avatar.Name);
+                lvwNear.Items.Add(new ListViewItem() { Text = avatar.Name, Tag = avatar.ID });
             }
 
             GUI.GuiHelpers.ApplyGuiFixes(this);

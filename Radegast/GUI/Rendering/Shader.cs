@@ -110,9 +110,9 @@ namespace Radegast.Rendering
             }
 
             ID = GL.CreateProgram();
-            for (int i = 0; i < shaders.Length; i++)
+            foreach (var shader in shaders)
             {
-                GL.AttachShader(ID, shaders[i].ID);
+                GL.AttachShader(ID, shader.ID);
             }
             GL.LinkProgram(ID);
             int res;
@@ -123,7 +123,7 @@ namespace Radegast.Rendering
                 return false;
             }
 
-            Logger.DebugLog(string.Format("Linking shader program consitsting of {0} shaders successful", shaders.Length));
+            Logger.DebugLog($"Linking shader program consisting of {shaders.Length} shaders successful");
             return true;
         }
 
@@ -193,9 +193,9 @@ namespace Radegast.Rendering
 
             if (shaders != null)
             {
-                for (int i = 0; i < shaders.Length; i++)
+                foreach (var shader in shaders)
                 {
-                    shaders[i].Dispose();
+                    shader.Dispose();
                 }
             }
             shaders = null;

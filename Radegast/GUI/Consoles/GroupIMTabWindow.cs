@@ -194,13 +194,14 @@ namespace Radegast
                     if (client.Self.GroupChatSessions.TryGetValue(SessionId, out participants))
                     {
                         ChatSessionMember[] members = participants.ToArray();
-                        for (int i = 0; i < members.Length; i++)
+                        foreach (var participant in members)
                         {
-                            ChatSessionMember participant = members[i];
-                            ListViewItem item = new ListViewItem();
-                            item.Name = participant.AvatarKey.ToString();
-                            item.Text = instance.Names.Get(participant.AvatarKey);
-                            item.Tag = participant.AvatarKey;
+                            ListViewItem item = new ListViewItem
+                            {
+                                Name = participant.AvatarKey.ToString(),
+                                Text = instance.Names.Get(participant.AvatarKey),
+                                Tag = participant.AvatarKey
+                            };
 
                             if (participant.IsModerator)
                                 item.Font = new Font(item.Font, FontStyle.Bold);

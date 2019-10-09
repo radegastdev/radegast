@@ -110,20 +110,20 @@ namespace Radegast
             {
                 string sysGridsFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "grids.xml");
                 OSDArray sysGrids = (OSDArray)OSDParser.DeserializeLLSDXml(File.ReadAllText(sysGridsFile));
-                for (int i = 0; i < sysGrids.Count; i++)
+                foreach (var grid in sysGrids)
                 {
-                    RegisterGrid(Grid.FromOSD(sysGrids[i]));
+                    RegisterGrid(Grid.FromOSD(grid));
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log(string.Format("Error loading grid information: {0}", ex.Message), Helpers.LogLevel.Warning);
+                Logger.Log($"Error loading grid information: {ex.Message}", Helpers.LogLevel.Warning);
             }
         }
 
         public void RegisterGrid(Grid grid)
         {
-            int ix = Grids.FindIndex(g => { return g.ID == grid.ID; });
+            int ix = Grids.FindIndex(g => g.ID == grid.ID);
             if (ix < 0)
             {
                 Grids.Add(grid);

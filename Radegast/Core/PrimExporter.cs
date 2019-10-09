@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
 using Thread = ThreadPoolUtil.Thread;
@@ -128,42 +129,40 @@ namespace Radegast
 					
 					lock(Textures)
 					{
-						for (int i = 0; i < prims.Count; i++)
-						{
-							Primitive prim = prims[i];
-							UUID texture;
+						foreach (var prim in prims)
+                        {
+                            UUID texture;
 							
-							if (prim.Textures.DefaultTexture.TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
-							    !Textures.Contains(prim.Textures.DefaultTexture.TextureID))
-							{
-								texture = new UUID(prim.Textures.DefaultTexture.TextureID);
-								Textures.Add(texture);
-							}
+                            if (prim.Textures.DefaultTexture.TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
+                                !Textures.Contains(prim.Textures.DefaultTexture.TextureID))
+                            {
+                                texture = new UUID(prim.Textures.DefaultTexture.TextureID);
+                                Textures.Add(texture);
+                            }
 							
-							for (int j = 0; j < prim.Textures.FaceTextures.Length; j++)
-							{
-								if (prim.Textures.FaceTextures[j] != null &&
-								    prim.Textures.FaceTextures[j].TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
-								    !Textures.Contains(prim.Textures.FaceTextures[j].TextureID))
-								{
-									texture = new UUID(prim.Textures.FaceTextures[j].TextureID);
-									Textures.Add(texture);
-								}
-							}
+                            foreach (var tex in prim.Textures.FaceTextures)
+                            {
+                                if (tex != null &&
+                                    tex.TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
+                                    !Textures.Contains(tex.TextureID))
+                                {
+                                    texture = new UUID(tex.TextureID);
+                                    Textures.Add(texture);
+                                }
+                            }
 							
-							if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && !Textures.Contains(prim.Sculpt.SculptTexture))
-							{
-								texture = new UUID(prim.Sculpt.SculptTexture);
-								Textures.Add(texture);
-							}
-						}
+                            if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && !Textures.Contains(prim.Sculpt.SculptTexture))
+                            {
+                                texture = new UUID(prim.Sculpt.SculptTexture);
+                                Textures.Add(texture);
+                            }
+                        }
 						
 						FindImagesInInventory();
-						
-						for (int i = 0; i < Textures.Count; i++)
-							textureRequests.Add(new ImageRequest(Textures[i], ImageType.Normal, 1013000.0f, 0));
-						
-						foreach (ImageRequest request in textureRequests)
+
+                        textureRequests.AddRange(Textures.Select(t => new ImageRequest(t, ImageType.Normal, 1013000.0f, 0)));
+
+                        foreach (ImageRequest request in textureRequests)
 						{
 							Client.Assets.RequestImage(request.ImageID, request.Type, Assets_OnImageReceived);
 						}

@@ -81,15 +81,15 @@ namespace Radegast
 
                 if (res == DialogResult.OK)
                 {
-                    for (int i = 0; i < dlg.FileNames.Length; i++)
+                    foreach (var name in dlg.FileNames)
                     {
                         try
                         {
-                            instance.PluginManager.LoadPlugin(dlg.FileNames[i]);
+                            instance.PluginManager.LoadPlugin(name);
                         }
                         catch (Exception ex)
                         {
-                            instance.TabConsole.DisplayNotificationInChat($"ERROR unable to load plugin: {dlg.FileNames[i]} because {ex}", ChatBufferTextStyle.Error);
+                            instance.TabConsole.DisplayNotificationInChat($"ERROR unable to load plugin: {name} because {ex}", ChatBufferTextStyle.Error);
                         }
                     }
 
