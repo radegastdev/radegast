@@ -33,12 +33,7 @@ namespace Radegast
         /// <exception cref="ArgumentNullException"><paramref name="plugin"/> is <see langword="null"/></exception>
         public PluginInfo(string filename, IRadegastPlugin plugin)
         {
-            if (plugin == null)
-            {
-                throw new ArgumentNullException(nameof(plugin));
-            }
-
-            PluginInstance = plugin;
+            PluginInstance = plugin ?? throw new ArgumentNullException(nameof(plugin));
             FileName = filename;
             DisplayName = PluginInstance.GetType().Name;
 

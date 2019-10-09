@@ -38,9 +38,7 @@ namespace Radegast.Netcom
 
         public StartLocationParser(string location)
         {
-            if (location == null) throw new Exception("Location cannot be null.");
-
-            this.location = location;
+            this.location = location ?? throw new Exception("Location cannot be null.");
         }
 
         private string GetSim(string location)

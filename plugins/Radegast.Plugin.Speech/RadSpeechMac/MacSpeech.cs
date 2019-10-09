@@ -10,11 +10,6 @@ namespace RadegastSpeech
         #pragma warning disable 67
         public event SpeechEventHandler OnRecognition;
 
-        public MacSpeech()
-        {
-
-        }
-
         public void SpeechStart( PluginControl pc, string[] beeps)
         {
             synth = new MacSynth( pc, beeps);

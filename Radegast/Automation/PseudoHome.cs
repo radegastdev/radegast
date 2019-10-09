@@ -71,12 +71,14 @@ namespace Radegast.Automation
 
         public static explicit operator OSDMap(PseudoHomePreferences prefs)
         {
-            OSDMap map = new OSDMap(4);
+            OSDMap map = new OSDMap(4)
+            {
+                ["Enabled"] = prefs != null && prefs.Enabled,
+                ["Region"] = prefs?.Region != null ? prefs.Region.Trim() : string.Empty,
+                ["Position"] = prefs?.Position ?? Vector3.Zero,
+                ["Tolerance"] = prefs?.Tolerance ?? 256
+            };
 
-            map["Enabled"] = prefs != null ? prefs.Enabled : false;
-            map["Region"] = prefs != null && prefs.Region != null ? prefs.Region.Trim() : string.Empty;
-            map["Position"] = prefs != null ? prefs.Position : Vector3.Zero;
-            map["Tolerance"] = prefs != null ? prefs.Tolerance : 256;
 
             return map;
         }

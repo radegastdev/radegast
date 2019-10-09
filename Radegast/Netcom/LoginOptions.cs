@@ -35,11 +35,6 @@ namespace Radegast.Netcom
 {
     public class LoginOptions
     {
-        public LoginOptions()
-        {
-
-        }
-
         public static bool IsPasswordMD5(string pass)
         {
             return pass.Length == 35 && pass.StartsWith("$1$");

@@ -792,15 +792,13 @@ namespace Radegast
             TreeNode node = e.Data.GetData(typeof(TreeNode)) as TreeNode;
             if (node == null) return;
 
-            if (node.Tag is InventoryItem)
+            if (node.Tag is InventoryItem item)
             {
-                InventoryItem item = node.Tag as InventoryItem;
                 client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, (UUID)litem.Tag, true);
                 instance.TabConsole.DisplayNotificationInChat("Offered item " + item.Name + " to " + instance.Names.Get((UUID)litem.Tag) + ".");
             }
-            else if (node.Tag is InventoryFolder)
+            else if (node.Tag is InventoryFolder folder)
             {
-                InventoryFolder folder = node.Tag as InventoryFolder;
                 client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, (UUID)litem.Tag, true);
                 instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + instance.Names.Get((UUID)litem.Tag) + ".");
             }

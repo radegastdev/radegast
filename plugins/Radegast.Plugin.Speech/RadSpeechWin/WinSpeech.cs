@@ -14,11 +14,6 @@ namespace RadegastSpeech
 
         public event SpeechEventHandler OnRecognition;
 
-        public WinSpeech()
-        {
-
-        }
-
         #region Synthesis
         public void SpeechStart( PluginControl pc, string[] beeps)
         {

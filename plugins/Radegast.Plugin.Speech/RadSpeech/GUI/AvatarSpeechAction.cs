@@ -64,21 +64,18 @@ namespace RadegastSpeech.GUI
 
             // This action applies to avatars, which can come in
             // various forms.
-            if (target is FriendInfo)
+            if (target is FriendInfo f)
             {
-                FriendInfo f = target as FriendInfo;
                 name = f.Name;
                 id = f.UUID;
             }
-            else if (target is Avatar)
+            else if (target is Avatar a)
             {
-                Avatar a = target as Avatar;
                 name = a.Name;
                 id = a.ID;
             }
-            else if (target is ListViewItem)
+            else if (target is ListViewItem i)
             {
-                ListViewItem i = target as ListViewItem;
                 id = (UUID)i.Tag;
                 name = control.instance.Names.Get(id);
             }

@@ -26,10 +26,6 @@ namespace RadegastSpeech.Conversation
                 Assets_OnNotecardReceived);
         }
 
-        internal override void Stop()
-        {
-            base.Stop();
-        }
         internal override bool Hear(string cmd)
         {
             switch (cmd)

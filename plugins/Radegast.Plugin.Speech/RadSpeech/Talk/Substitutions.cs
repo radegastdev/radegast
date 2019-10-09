@@ -35,8 +35,7 @@ namespace RadegastSpeech.Talk
                 Add(@"http(s)*://[a-z0-9\./=%&?+-]+", ", a URL,");
 
             // Load custom substitutions
-            OSDMap subs = pc.config["substitutions"] as OSDMap;
-            if (subs != null)
+            if (pc.config["substitutions"] is OSDMap subs)
             {
                 foreach (string key in subs.Keys)
                 {

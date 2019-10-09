@@ -9,11 +9,6 @@ namespace RadegastSpeech
 
         public event SpeechEventHandler OnRecognition;
 
-        public LinSpeech(  )
-        {
-        }
-
- 
         #region Recognition
         // Speech recognition is not yet available on Linux
         public void RecogStart()

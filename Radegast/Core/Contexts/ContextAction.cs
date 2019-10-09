@@ -71,12 +71,7 @@ namespace Radegast
         public virtual RadegastInstance Instance
         {
             get => instance;
-            set
-            {
-                if (instance == value)
-                    return;
-                instance = value;
-            }
+            set => instance = value;
         }
 
         protected virtual GridClient Client => Instance.Client;
@@ -89,7 +84,7 @@ namespace Radegast
 
         public virtual bool IsEnabled(object target)
         {
-            return Enabled && Contributes(target,target!=null?target.GetType():null) || Enabled;
+            return Enabled && Contributes(target,target?.GetType()) || Enabled;
         }
 
         public virtual string ToolTipText(object target)

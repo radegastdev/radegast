@@ -103,10 +103,7 @@ namespace Radegast
 
 		public StringTokenizer(string data)
 		{
-			if (data == null)
-				throw new ArgumentNullException(nameof(data));
-
-			this.data = data;
+            this.data = data ?? throw new ArgumentNullException(nameof(data));
 
 			Reset();
 		}

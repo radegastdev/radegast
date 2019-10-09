@@ -22,11 +22,6 @@ namespace Radegast.Plugin.Alice
             return type == typeof(FriendInfo) || type == typeof(Avatar);
         }
 
-        public override object DeRef(object o)
-        {
-            return base.DeRef(o);
-        }
-
         public override bool IsEnabled(object target)
         {
             if (!IsEnabledInRadegast) return false;

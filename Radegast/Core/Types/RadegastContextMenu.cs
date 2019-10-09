@@ -243,8 +243,7 @@ namespace Radegast
 
         private void Rad_OnItemRemoved(object sender, ToolStripItemEventArgs e)
         {
-            ToolStripDropDownItem Item = e.Item as ToolStripDropDownItem;
-            if (Item != null)
+            if (e.Item is ToolStripDropDownItem Item)
                 lock (KnownItems)
                 {
                     DeregisterItemEvents(Item);
@@ -328,7 +327,7 @@ namespace Radegast
                 catch (Exception ex)
                 {
 
-                    throw ex;
+                    throw;
                 }
             }
         }
@@ -369,8 +368,7 @@ namespace Radegast
         /// <param name="sender"></param>
         private void SetMenuItemSelected(object sender)
         {
-            ToolStripDropDownItem stripDropDownItem = sender as ToolStripDropDownItem;
-            if (stripDropDownItem != null)
+            if (sender is ToolStripDropDownItem stripDropDownItem)
             {
                 // dereference a chain of dropdown items
                 if (stripDropDownItem.HasDropDownItems)
@@ -529,8 +527,7 @@ namespace Radegast
 
         private void Rad_Item_Leave(object sender, EventArgs e)
         {
-            ToolStripDropDownItem stripDropDownItem = sender as ToolStripDropDownItem;
-            if (stripDropDownItem != null)
+            if (sender is ToolStripDropDownItem stripDropDownItem)
             {
                 lock (_selectionLock)
                 {

@@ -59,7 +59,7 @@ namespace Radegast
 
             if (Control != null)
             {
-                if (Control.Parent != null && Control.Parent is Form)
+                if (Control.Parent is Form)
                 {
                     Control.Parent.Dispose();
                 }
