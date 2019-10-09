@@ -76,12 +76,9 @@ namespace Radegast
         {
             lock (contextEventHandlers)
             {
-                contextEventHandlers.RemoveAll(e =>
-                                                   {
-                                                       ContextAction ca = e as ContextAction;
-                                                       return ca != null && ca.Label == label &&
-                                                              libomvType == ca.ContextType;
-                                                   });
+                contextEventHandlers.RemoveAll(e => e is ContextAction ca 
+                                                    && ca.Label == label 
+                                                    && libomvType == ca.ContextType);
             }
         }
 
@@ -200,8 +197,7 @@ namespace Radegast
         /// <param name="o"></param>
         public void SetCurrentItem(ToolStripDropDown strip, object o)
         {
-            RadegastContextMenuStrip rmenu = strip as RadegastContextMenuStrip;
-            if (rmenu != null) rmenu.Selection = o;
+            if (strip is RadegastContextMenuStrip rmenu) rmenu.Selection = o;
         }
 
         private string ToString(object sender)
@@ -330,7 +326,7 @@ namespace Radegast
                 {
                     Logger.Log("ERROR in Radegast Command: " + type + " because " + ex.Message + " " + ex.StackTrace,
                                Helpers.LogLevel.Debug);
-                    throw ex;
+                    throw;
                 }
             }
             return false;

@@ -39,6 +39,7 @@
  **********************************************************/
 using System;
 using System.IO;
+using System.Linq;
 
 namespace Radegast
 {
@@ -103,10 +104,7 @@ namespace Radegast
 
 		public StringTokenizer(string data)
 		{
-			if (data == null)
-				throw new ArgumentNullException(nameof(data));
-
-			this.data = data;
+            this.data = data ?? throw new ArgumentNullException(nameof(data));
 
 			Reset();
 		}
@@ -446,12 +444,8 @@ namespace Radegast
 		/// checks whether c is a symbol character.
 		/// </summary>
 		protected bool IsSymbol(char c)
-		{
-			for (int i=0; i<SymbolChars.Length; i++)
-				if (SymbolChars[i] == c)
-					return true;
-
-			return false;
-		}
+        {
+            return SymbolChars.Any(t => t == c);
+        }
 	}
 }

@@ -830,13 +830,11 @@ namespace Radegast.Rendering
             int primNr = 0;
             foreach (FacetedMesh mesh in meshes.Values)
             {
-                for (int j = 0; j < mesh.Faces.Count; j++)
+                foreach (var face in mesh.Faces)
                 {
-                    Face face = mesh.Faces[j];
-
                     if (face.Vertices.Count > 2)
                     {
-                        string mtlName = String.Format("material{0}-{1}", primNr, face.ID);
+                        string mtlName = $"material{primNr}-{face.ID}";
                         Primitive.TextureEntryFace tex = face.TextureFace;
                         string texName = tex.TextureID + ".tga";
 
@@ -935,6 +933,7 @@ namespace Radegast.Rendering
                         #endregion Elements
                     }
                 }
+
                 primNr++;
             }
 

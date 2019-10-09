@@ -62,8 +62,8 @@ namespace Radegast.Plugin.IRC
                     toRemove.Add(tab);
             }
             
-            for (int i = 0; i < toRemove.Count; i++)
-                toRemove[i].Close();
+            foreach (var tab in toRemove)
+                tab.Close();
 
             if (IRCButton != null)
             {

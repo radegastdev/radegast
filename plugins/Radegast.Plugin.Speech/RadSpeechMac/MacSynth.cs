@@ -93,8 +93,9 @@ namespace RadegastSpeech
             Dictionary<string, AvailableVoice> names = new Dictionary<string, AvailableVoice>();
 
             NSArray insVoices = NSSpeechSynthesizer.AvailableVoices;
-            foreach (NSString name in insVoices)
+            foreach (var id in insVoices)
             {
+                var name = (NSString) id;
                 bool skip = false;
 
                 // Check for additional information about this voice

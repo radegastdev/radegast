@@ -202,7 +202,7 @@ namespace Radegast.Commands
                 {
                     Logger.Log("ERROR in Radegast Command: " + type + " because " + ex.Message + " " + ex.StackTrace,
                                Helpers.LogLevel.Debug);
-                    throw ex;
+                    throw;
                 }
                 return false;
             }
@@ -223,7 +223,7 @@ namespace Radegast.Commands
                     catch (Exception ex)
                     {
                         Logger.Log("ERROR in Radegast ICommandInterpreter: " + type + " because " + ex.Message + " " + ex.StackTrace, Helpers.LogLevel.Debug);
-                        throw ex;
+                        throw;
                     }
                 }
             }

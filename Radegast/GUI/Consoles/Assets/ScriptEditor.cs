@@ -647,8 +647,9 @@ namespace Radegast
             {
                 for (int i = position0; i < position1; ++i)
                     chars[count++] = original[i];
-                for (int i = 0; i < replacement.Length; ++i)
-                    chars[count++] = replacement[i];
+                foreach (var r in replacement)
+                    chars[count++] = r;
+
                 position0 = position1 + pattern.Length;
             }
             if (position0 == 0) return original;

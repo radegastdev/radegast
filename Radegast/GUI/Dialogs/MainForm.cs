@@ -194,7 +194,7 @@ namespace Radegast
                 UnregisterClientEvents(client);
             }
 
-            if (instance != null && instance.Names != null)
+            if (instance?.Names != null)
             {
                 instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             }

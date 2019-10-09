@@ -132,8 +132,7 @@ namespace Radegast.Media
             var objs = new List<MediaObject>(allChannels.Values);
             foreach (var obj in objs)
             {
-                if (obj is BufferSound)
-                    ((BufferSound)obj).StopSound();
+                (obj as BufferSound)?.StopSound();
             }
         }
 

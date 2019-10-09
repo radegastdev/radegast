@@ -421,9 +421,9 @@ namespace Radegast.Rendering
 
             lock (Prims)
             {
-                for (int i = 0; i < kill.ObjectData.Length; i++)
+                foreach (var obj in kill.ObjectData)
                 {
-                    uint id = kill.ObjectData[i].ID;
+                    uint id = obj.ID;
                     if (Prims.ContainsKey(id))
                     {
                         Prims[id].Dispose();
@@ -434,9 +434,9 @@ namespace Radegast.Rendering
 
             lock (Avatars)
             {
-                for (int i = 0; i < kill.ObjectData.Length; i++)
+                foreach (var ob in kill.ObjectData)
                 {
-                    uint id = kill.ObjectData[i].ID;
+                    uint id = ob.ID;
                     if (Avatars.ContainsKey(id))
                     {
                         Avatars[id].Dispose();
@@ -3060,10 +3060,8 @@ namespace Radegast.Rendering
             }
 
             // Was it prim that was right clicked
-            if (RightclickedObject != null && RightclickedObject is RenderPrimitive)
+            if (RightclickedObject is RenderPrimitive prim)
             {
-                RenderPrimitive prim = (RenderPrimitive)RightclickedObject;
-
                 // Sit button handling
                 if (!instance.State.IsSitting)
                 {
@@ -3124,10 +3122,8 @@ namespace Radegast.Rendering
                 instance.ContextActionManager.AddContributions(ctxMenu, typeof(Primitive), prim.Prim);
 
             } // We right clicked on an avatar, add some context menu items
-            else if (RightclickedObject != null && RightclickedObject is RenderAvatar)
+            else if (RightclickedObject is RenderAvatar av)
             {
-                RenderAvatar av = (RenderAvatar)RightclickedObject;
-
                 // Profile button
                 item = new ToolStripMenuItem("Profile", null, (sender, e) =>
                 {
@@ -3179,10 +3175,7 @@ namespace Radegast.Rendering
                 {
                     Control p = Parent;
                     instance.TabConsole.Tabs["scene_window"].AttachTo(instance.TabConsole.tstTabs, instance.TabConsole.toolStripContainer1.ContentPanel);
-                    if (p is Form)
-                    {
-                        ((Form)p).Close();
-                    }
+                    (p as Form)?.Close();
                 });
             }
             ctxMenu.Items.Add(item);

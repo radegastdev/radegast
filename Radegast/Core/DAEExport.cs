@@ -124,19 +124,18 @@ namespace Radegast
 
             OnProgress("Checking permissions");
             ExportablePrims = 0;
-            for (int i = 0; i < Prims.Count; i++)
+            foreach (var prim in Prims)
             {
-                if (!CanExport(Prims[i])) continue;
+                if (!CanExport(prim)) continue;
                 ExportablePrims++;
 
-                var defaultTexture = Prims[i].Textures.DefaultTexture;
+                var defaultTexture = prim.Textures.DefaultTexture;
                 if (defaultTexture != null && !Textures.Contains(defaultTexture.TextureID))
                 {
                     Textures.Add(defaultTexture.TextureID);
                 }
-                for (int j = 0; j < Prims[i].Textures.FaceTextures.Length; j++)
+                foreach (var te in prim.Textures.FaceTextures)
                 {
-                    var te = Prims[i].Textures.FaceTextures[j];
                     if (te == null) continue;
                     UUID id = te.TextureID;
                     if (!Textures.Contains(id))
@@ -176,11 +175,11 @@ namespace Radegast
                 {
                     SaveTextures();
                 }
-                for (int i = 0; i < Prims.Count; i++)
+                foreach (var prim in Prims)
                 {
-                    if (!CanExport(Prims[i])) continue;
+                    if (!CanExport(prim)) continue;
 
-                    FacetedMesh mesh = MeshPrim(Prims[i]);
+                    FacetedMesh mesh = MeshPrim(prim);
                     if (mesh == null) continue;
 
                     for (int j = 0; j < mesh.Faces.Count; j++)
@@ -192,14 +191,14 @@ namespace Radegast
 
 
                         // Sculpt UV vertically flipped compared to prims. Flip back
-                        if (Prims[i].Sculpt != null && Prims[i].Sculpt.SculptTexture != UUID.Zero && Prims[i].Sculpt.Type != SculptType.Mesh)
+                        if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && prim.Sculpt.Type != SculptType.Mesh)
                         {
                             teFace = (Primitive.TextureEntryFace)teFace.Clone();
                             teFace.RepeatV *= -1;
                         }
 
                         // Texture transform for this face
-                        Mesher.TransformTexCoords(face.Vertices, face.Center, teFace, Prims[i].Scale);
+                        Mesher.TransformTexCoords(face.Vertices, face.Center, teFace, prim.Scale);
 
                     }
                     MeshedPrims.Add(mesh);
@@ -562,9 +561,8 @@ namespace Radegast
 
         void GenerateImagesSection(XmlNode images)
         {
-            for (int i = 0; i < TextureNames.Length; i++)
+            foreach (var name in TextureNames)
             {
-                string name = TextureNames[i];
                 if (name == null) continue;
                 string colladaName = name + "_" + ImageFormat.ToLower();
                 var image = images.AppendChild(Doc.CreateElement("image"));

@@ -171,7 +171,7 @@ namespace Radegast
             }
             catch (Exception e)
             {
-                if (System.Diagnostics.Debugger.IsAttached){ throw e; }
+                if (System.Diagnostics.Debugger.IsAttached){ throw; }
 
                 string errMsg = "Unhandled " + e + ": " +
                                 e.Message + Environment.NewLine +

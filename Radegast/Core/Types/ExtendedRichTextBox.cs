@@ -1244,9 +1244,9 @@ namespace Radegast
                     EmfToWmfBitsFlags.EmfToWmfBitsFlagsDefault);
 
                 // Append the bits to the RTF string
-                for (int i = 0; i < _buffer.Length; ++i)
+                foreach (var t in _buffer)
                 {
-                    _rtf.Append(String.Format("{0:X2}", _buffer[i]));
+                    _rtf.Append(String.Format("{0:X2}", t));
                 }
 
                 return _rtf.ToString();

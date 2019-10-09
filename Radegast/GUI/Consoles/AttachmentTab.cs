@@ -78,10 +78,10 @@ namespace Radegast
                 }
             }
 
-            for (int i = 0; i < toRemove.Count; i++)
+            foreach (var control in toRemove)
             {
-                Controls.Remove(toRemove[i]);
-                toRemove[i].Dispose();
+                Controls.Remove(control);
+                control.Dispose();
             }
 
             List<UUID> added = new List<UUID>();

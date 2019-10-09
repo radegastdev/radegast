@@ -24,9 +24,8 @@ namespace Radegast.GUI
 
         private static void ApplyThemeCompatibilityModeRecursive(Object root)
         {
-            if (root is ToolStrip)
+            if (root is ToolStrip toolstrip)
             {
-                var toolstrip = root as ToolStrip;
                 toolstrip.RenderMode = ToolStripRenderMode.System;
                 toolstrip.BackColor = System.Drawing.SystemColors.Control;
                 toolstrip.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -37,9 +36,8 @@ namespace Radegast.GUI
                     ApplyThemeCompatibilityModeRecursive(item);
                 }
             }
-            else if (root is ToolStripDropDownItem)
+            else if (root is ToolStripDropDownItem dropDownItem)
             {
-                var dropDownItem = root as ToolStripDropDownItem;
                 dropDownItem.BackColor = System.Drawing.SystemColors.Control;
                 dropDownItem.ForeColor = System.Drawing.SystemColors.ControlText;
                 dropDownItem.DropDown.RenderMode = ToolStripRenderMode.System;
@@ -51,9 +49,8 @@ namespace Radegast.GUI
                     ApplyThemeCompatibilityModeRecursive(item);
                 }
             }
-            else if (root is Control && !(root is ProgressBar))
+            else if (root is Control control && !(control is ProgressBar))
             {
-                var control = root as Control;
                 control.BackColor = System.Drawing.SystemColors.Control;
                 control.ForeColor = System.Drawing.SystemColors.ControlText;
 

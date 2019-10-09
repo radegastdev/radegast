@@ -78,17 +78,17 @@ namespace RadegastSpeech.Conversation
         {
             if (base.Hear(cmd)) return true;
 
-            if (selected is InventoryNotecard && cmd == "read it")
+            if (selected is InventoryNotecard notecard && cmd == "read it")
             {
                 control.converse.AddInterruption(
-                    new InvNotecard(control, selected as InventoryNotecard));
+                    new InvNotecard(control, notecard));
                 return true;
             }
 
-            if (selected is InventoryLandmark && cmd == "go there")
+            if (selected is InventoryLandmark landmark && cmd == "go there")
             {
                 control.converse.AddInterruption(
-                    new InvLandmark( control, selected as InventoryLandmark));
+                    new InvLandmark( control, landmark));
                 return true;
             }
 
@@ -140,8 +140,8 @@ namespace RadegastSpeech.Conversation
              if (item is InventoryNotecard)
                  return name + ", a notecard";
 
-             if (item is InventoryWearable)
-                 return name + ", a " + WearableType(item as InventoryWearable);
+             if (item is InventoryWearable wearable)
+                 return name + ", a " + WearableType(wearable);
 
              if (item is InventoryLandmark)
                  return name + ", a landmark";

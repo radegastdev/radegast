@@ -311,7 +311,7 @@ namespace Radegast.Rendering
         {
             return (state, assetTexture) =>
             {
-                if (state == TextureRequestState.Finished && assetTexture != null && assetTexture.AssetData != null)
+                if (state == TextureRequestState.Finished && assetTexture?.AssetData != null)
                 {
                     Image img;
                     ManagedImage mi;

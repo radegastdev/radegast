@@ -123,14 +123,13 @@ namespace Radegast
             {
                 // Figure out what this menu applies to.
                 ListViewItem item = e.Menu.Selection as ListViewItem;
-                if (item?.Tag is VoiceParticipant)
+                if (item?.Tag is VoiceParticipant tag)
                 {
-                    selected = item.Tag as VoiceParticipant;
+                    selected = tag;
                     ToolStripButton muteButton;
-                    if (selected.IsMuted)
-                        muteButton = new ToolStripButton("Unmute", null, new EventHandler(OnUnMuteClick));
-                    else
-                        muteButton = new ToolStripButton("Mute", null, new EventHandler(OnMuteClick));
+                    muteButton = selected.IsMuted 
+                        ? new ToolStripButton("Unmute", null, OnUnMuteClick)
+                        : new ToolStripButton("Mute", null, OnMuteClick);
                     e.Menu.Items.Add(muteButton);
                 }
             }

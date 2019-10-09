@@ -819,19 +819,15 @@ namespace Radegast
 
         public X509Certificate2 ClientCert { get; set; }
 
-        public ParallelDownloader()
-        {
-        }
-
         public virtual void Dispose()
         {
             lock (activeDownloads)
             {
-                for (int i = 0; i < activeDownloads.Count; i++)
+                foreach (var download in activeDownloads)
                 {
                     try
                     {
-                        activeDownloads[i].Abort();
+                        download.Abort();
                     }
                     catch { }
                 }

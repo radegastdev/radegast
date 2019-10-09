@@ -58,7 +58,7 @@ namespace RadegastSpeech.Conversation
         {
             VoiceParticipant p = sender as VoiceParticipant;
 
-            string pName = (p.Name == null) ? control.instance.Names.Get(p.ID) : p.Name;
+            string pName = p.Name ?? control.instance.Names.Get(p.ID);
             control.talker.SayMore(pName + " is in voice range.");
         }
 

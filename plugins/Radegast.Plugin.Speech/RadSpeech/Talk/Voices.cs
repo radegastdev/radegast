@@ -141,8 +141,8 @@ namespace RadegastSpeech.Talk
              if (rgen == null)
                 rgen = new Random();
 
-            // This returns a value n such that 0 >= n < max
-            return rgen.Next(max);
+             // This returns a value n such that 0 >= n < max
+             return rgen.Next(max);
         }
 
         internal void RemoveIf(Dictionary<string, AvailableVoice> d, string key)

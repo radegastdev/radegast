@@ -458,7 +458,7 @@ namespace Radegast
 
         private void tbtbInvShow_Click(object sender, EventArgs e)
         {
-            if (tbtbInvShow.Tag == null || !(tbtbInvShow.Tag is InventoryItem)) return;
+            if (!(tbtbInvShow.Tag is InventoryItem)) return;
             
             InventoryItem item = (InventoryItem)tbtbInvShow.Tag;
 

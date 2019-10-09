@@ -112,13 +112,13 @@ namespace Radegast
 					    !Importer.Textures.ContainsKey(prim.Textures.DefaultTexture.TextureID))
 						Importer.Textures.Add(prim.Textures.DefaultTexture.TextureID,UUID.Zero);
 					
-					for (int j = 0; j < prim.Textures.FaceTextures.Length; j++)
-					{
-						if (prim.Textures.FaceTextures[j] != null &&
-						    prim.Textures.FaceTextures[j].TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
-						    !Importer.Textures.ContainsKey(prim.Textures.FaceTextures[j].TextureID))
-							Importer.Textures.Add(prim.Textures.FaceTextures[j].TextureID,UUID.Zero);
-					}
+					foreach (var tex in prim.Textures.FaceTextures)
+                    {
+                        if (tex != null &&
+                            tex.TextureID != Primitive.TextureEntry.WHITE_TEXTURE &&
+                            !Importer.Textures.ContainsKey(tex.TextureID))
+                            Importer.Textures.Add(tex.TextureID,UUID.Zero);
+                    }
 					
 					if (prim.Sculpt != null && prim.Sculpt.SculptTexture != UUID.Zero && !Importer.Textures.ContainsKey(prim.Sculpt.SculptTexture))
 						Importer.Textures.Add(prim.Sculpt.SculptTexture,UUID.Zero);

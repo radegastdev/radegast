@@ -187,13 +187,12 @@ namespace Radegast
         {
             pnlImages.Controls.Clear();
 
-            List<UUID> textures = new List<UUID>();
+            List<UUID> textures = new List<UUID> {selectedPrim.Textures.DefaultTexture.TextureID};
 
-            textures.Add(selectedPrim.Textures.DefaultTexture.TextureID);
-
-            for (int i = 0; i < selectedPrim.Textures.FaceTextures.Length; i++) {
-                if (selectedPrim.Textures.FaceTextures[i] != null && (!textures.Contains(selectedPrim.Textures.FaceTextures[i].TextureID))) {
-                    textures.Add(selectedPrim.Textures.FaceTextures[i].TextureID);
+            foreach (var te in selectedPrim.Textures.FaceTextures)
+            {
+                if (te != null && (!textures.Contains(te.TextureID))) {
+                    textures.Add(te.TextureID);
                 }
             }
 

@@ -135,7 +135,7 @@ namespace Radegast
             client.Groups.GroupRoleMembersReply -= new EventHandler<GroupRolesMembersReplyEventArgs>(Groups_GroupRoleMembersReply);
             client.Groups.GroupMemberEjected -= new EventHandler<GroupOperationEventArgs>(Groups_GroupMemberEjected);
             client.Self.IM -= new EventHandler<InstantMessageEventArgs>(Self_IM);
-            if (instance != null && instance.Names != null)
+            if (instance?.Names != null)
             {
                 instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             }
@@ -1135,9 +1135,8 @@ namespace Radegast
 
         private void btnPasteInv_Click(object sender, EventArgs e)
         {
-            if (instance.InventoryClipboard != null && instance.InventoryClipboard.Item is InventoryItem)
+            if (instance.InventoryClipboard?.Item is InventoryItem inv)
             {
-                InventoryItem inv = instance.InventoryClipboard.Item as InventoryItem;
                 txtNewNoteAtt.Text = inv.Name;
                 int icoIndx = InventoryConsole.GetItemImageIndex(inv.AssetType.ToString().ToLower());
                 if (icoIndx >= 0)
@@ -1160,12 +1159,14 @@ namespace Radegast
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            GroupNotice ntc = new GroupNotice();
-            ntc.Subject = txtNewNoticeTitle.Text;
-            ntc.Message = txtNewNoticeBody.Text;
-            if (txtNewNoteAtt.Tag != null && txtNewNoteAtt.Tag is InventoryItem)
+            GroupNotice ntc = new GroupNotice
             {
-                InventoryItem inv = txtNewNoteAtt.Tag as InventoryItem;
+                Subject = txtNewNoticeTitle.Text, 
+                Message = txtNewNoticeBody.Text
+            };
+
+            if (txtNewNoteAtt.Tag is InventoryItem inv)
+            {
                 ntc.OwnerID = inv.OwnerID;
                 ntc.AttachmentID = inv.UUID;
             }

@@ -62,9 +62,9 @@ namespace RadegastSpeech.GUI
 
             // This action applies to notecards, which can come in
             // various forms.
-            if (target is InventoryNotecard)
+            if (target is InventoryNotecard notecard)
             {
-                nc = target as InventoryNotecard;
+                nc = notecard;
             }
             else
             {

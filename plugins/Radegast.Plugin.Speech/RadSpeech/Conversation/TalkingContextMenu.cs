@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using OpenMetaverse;
 using Radegast;
 
 namespace RadegastSpeech.Conversation
@@ -89,34 +90,28 @@ namespace RadegastSpeech.Conversation
                 id = OpenMetaverse.UUID.Zero;
 
                 // Figure out what this menu applies to.
-                if (menuStrip.Selection is string)
+                if (menuStrip.Selection is string selection)
                 {
-                    menuFor = (string)menuStrip.Selection;
+                    menuFor = selection;
                 }
-                else if (menuStrip.Selection is ListViewItem)
+                else if (menuStrip.Selection is ListViewItem lv)
                 {
-                    ListViewItem lv = menuStrip.Selection as ListViewItem;
                     menuFor = lv.Text;
                 }
-                else if (menuStrip.Selection is OpenMetaverse.InventoryItem)
+                else if (menuStrip.Selection is InventoryItem item)
                 {
                     // Something in Inventory.
-                    menuFor = ((OpenMetaverse.InventoryItem)(menuStrip.Selection)).Name;
+                    menuFor = ((OpenMetaverse.InventoryItem)item).Name;
                 }
-                else if (menuStrip.Selection is OpenMetaverse.FriendInfo)
+                else if (menuStrip.Selection is FriendInfo f)
                 {
                     // A Friend.
-                    OpenMetaverse.FriendInfo f = menuStrip.Selection as OpenMetaverse.FriendInfo;
                     menuFor = f.Name;
                 }
-                else if (menuStrip.Selection is OpenMetaverse.Primitive)
+                else if (menuStrip.Selection is Primitive p)
                 {
                     // Something in the Objects list.
-                    OpenMetaverse.Primitive p = menuStrip.Selection as OpenMetaverse.Primitive;
-                    if (p.Properties != null)
-                        menuFor = p.Properties.Name;
-                    else
-                        menuFor = "Loading object";
+                    menuFor = p.Properties != null ? p.Properties.Name : "Loading object";
                 }
 
                 // Remove parenthesized distance, etc

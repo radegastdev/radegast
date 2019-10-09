@@ -37,10 +37,6 @@ namespace Radegast
     {
         public static readonly string NewlineMarker = new string('\u00b6', 1);
 
-        public ChatInputBox()
-        {
-        }
-
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)

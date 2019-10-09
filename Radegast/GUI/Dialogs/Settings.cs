@@ -205,10 +205,7 @@ namespace Radegast
 
             foreach (var item in chatFontSettings)
             {
-                if(item.Value.Name != item.Key)
-                {
-                    item.Value.Name = item.Key;
-                }
+                item.Value.Name = item.Key;
                 lbxColorItems.Items.Add(item.Value);
             }
             if(chatFontSettings.Count > 0)
@@ -802,9 +799,8 @@ namespace Radegast
             var graphics = e.Graphics;
             var bounds = e.Bounds;
 
-            if (e.Index >= 0 && sender is ComboBox)
+            if (e.Index >= 0 && sender is ComboBox sourceControl)
             {
-                var sourceControl = sender as ComboBox;
                 var selectedColor = (Color)sourceControl.Items[e.Index];
                 {
                     var brushPreview = new SolidBrush(selectedColor);
@@ -838,22 +834,16 @@ namespace Radegast
             var graphics = e.Graphics;
             var bounds = e.Bounds;
 
-            if (e.Index >= 0 && sender is ComboBox)
+            if (e.Index >= 0 && sender is ComboBox sourceControl)
             {
-                var sourceControl = sender as ComboBox;
                 var fontName = sourceControl.Items[e.Index].ToString();
                 var fontPreview = new Font(fontName, kPreviewFontSize);
 
                 e.DrawBackground();
 
-                if(e.State == DrawItemState.Selected)
-                {
-                    graphics.DrawRectangle(SystemPens.Highlight, bounds);
-                }
-                else
-                {
-                    graphics.DrawRectangle(SystemPens.Window, bounds);
-                }
+                graphics.DrawRectangle(e.State == DrawItemState.Selected 
+                        ? SystemPens.Highlight : SystemPens.Window,
+                    bounds);
 
                 graphics.DrawString(fontName,
                     fontPreview,
@@ -989,9 +979,8 @@ namespace Radegast
         private void lbxColorItems_SelectedIndexChanged(object sender, EventArgs e)
         {
             var sourceListbox = sender as ListBox;
-            if(sourceListbox?.SelectedItem is Settings.FontSetting)
+            if(sourceListbox?.SelectedItem is Settings.FontSetting fontSettings)
             {
-                var fontSettings = sourceListbox.SelectedItem as Settings.FontSetting;
                 UpdateSelection(fontSettings);
             }
         }
@@ -1000,14 +989,13 @@ namespace Radegast
         {
             if(e.Button != MouseButtons.None)
             {
-                ListBox sourceListbox = sender as ListBox;
-                if(sourceListbox != null)
+                if(sender is ListBox sourceListbox)
                 {
                     int itemIndex = sourceListbox.IndexFromPoint(new Point(e.X, e.Y));
                     if(itemIndex != -1)
                     {
-                        var selectedItem = sourceListbox.Items[itemIndex] as Settings.FontSetting;
-                        if(selectedItem != null && selectedItem != currentlySelectedFontSetting)
+                        if(sourceListbox.Items[itemIndex] is Settings.FontSetting selectedItem 
+                           && selectedItem != currentlySelectedFontSetting)
                         {
                             UpdateSelection(selectedItem);
                             sourceListbox.SelectedIndex = itemIndex;

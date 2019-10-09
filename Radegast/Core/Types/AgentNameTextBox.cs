@@ -73,13 +73,13 @@ namespace Radegast
 
         void SetupHandlers()
         {
-            if (instance == null || instance.Names == null) return;
+            if (instance?.Names == null) return;
             instance.Names.NameUpdated += new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
         }
 
         void CleanupHandlers(object sender, EventArgs e)
         {
-            if (instance != null && instance.Names != null)
+            if (instance?.Names != null)
             {
                 instance.Names.NameUpdated -= new EventHandler<UUIDNameReplyEventArgs>(Names_NameUpdated);
             }

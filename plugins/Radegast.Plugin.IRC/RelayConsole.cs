@@ -506,23 +506,23 @@ namespace Radegast.Plugin.IRC
         {
             string[] lines = Regex.Split(message, "\n+");
 
-            for (int l = 0; l < lines.Length; l++)
+            foreach (var line in lines)
             {
-                string[] words = lines[l].Split(' ');
+                string[] words = line.Split(' ');
                 string outstr = string.Empty;
 
-                for (int i = 0; i < words.Length; i++)
+                foreach (var word in words)
                 {
-                    outstr += words[i] + " ";
+                    outstr += word + " ";
                     if (outstr.Length > 380)
                     {
-                        PrintMsg(irc.Nickname, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
-                        irc.SendMessage(SendType.Message, txtChan.Text, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
+                        PrintMsg(irc.Nickname, $"{@from}: {outstr.Remove(outstr.Length - 1)}");
+                        irc.SendMessage(SendType.Message, txtChan.Text, $"{@from}: {outstr.Remove(outstr.Length - 1)}");
                         outstr = string.Empty;
                     }
                 }
-                PrintMsg(irc.Nickname, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
-                irc.SendMessage(SendType.Message, txtChan.Text, string.Format("{0}: {1}", from, outstr.Remove(outstr.Length - 1)));
+                PrintMsg(irc.Nickname, $"{@from}: {outstr.Remove(outstr.Length - 1)}");
+                irc.SendMessage(SendType.Message, txtChan.Text, $"{@from}: {outstr.Remove(outstr.Length - 1)}");
             }
         }
 

@@ -35,10 +35,6 @@ namespace Radegast
 {
     public class ListBoxCustomSort : ListBox
     {
-        public ListBoxCustomSort()
-        {
-        }
-
         public void PerformSort()
         {
             QuickSort(0, Items.Count - 1);
