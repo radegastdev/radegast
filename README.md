@@ -15,7 +15,6 @@ Alumni Developers:
 * **Robin Cornelius**
 * **Revolution Smythe**
 
-[![Travis CI Status](https://travis-ci.org/cinderblocks/radegast.svg?branch=master)](https://travis-ci.org/cinderblocks/radegast)
 [![AppVeyor Status](https://ci.appveyor.com/api/projects/status/ql37302tn67dvqih?svg=true)](https://ci.appveyor.com/project/cinderblocks57647/radegast)
 
 # License
