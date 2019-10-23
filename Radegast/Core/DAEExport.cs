@@ -33,6 +33,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using System.Drawing;
+using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using OpenMetaverse.Imaging;
@@ -169,7 +170,7 @@ namespace Radegast
                 return;
             }
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 if (ExportTextures)
                 {

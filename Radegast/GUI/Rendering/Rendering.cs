@@ -1159,7 +1159,7 @@ namespace Radegast.Rendering
         {
             if (!Client.Network.Connected) return;
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 if (RenderSettings.PrimitiveRenderingEnabled)
                 {
@@ -1198,7 +1198,7 @@ namespace Radegast.Rendering
 
         private void ControlLoaded(object sender, EventArgs e)
         {
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 InitAvatarData();
                 AvatarDataInitialzied();

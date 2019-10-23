@@ -31,6 +31,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
 using Thread = ThreadPoolUtil.Thread;
@@ -371,7 +372,7 @@ namespace Radegast
                 }
             }
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 try
                 {

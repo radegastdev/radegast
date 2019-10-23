@@ -107,7 +107,7 @@ namespace Radegast
 
         public void Init1()
         {
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 Logger.Log("Reading inventory cache from " + instance.InventoryCacheFileName, Helpers.LogLevel.Debug, Client);
                 Inventory.RestoreFromDisk(instance.InventoryCacheFileName);
@@ -852,7 +852,7 @@ namespace Radegast
             Logger.Log("Finished updating inventory folders, saving cache...", Helpers.LogLevel.Debug, Client);
             GestureManager.Instance.BeginMonitoring();
 
-            WorkPool.QueueUserWorkItem(state => Inventory.SaveToDisk(instance.InventoryCacheFileName));
+            ThreadPool.QueueUserWorkItem(state => Inventory.SaveToDisk(instance.InventoryCacheFileName));
 
             if (!instance.MonoRuntime || IsHandleCreated)
                 Invoke(new MethodInvoker(() =>
@@ -1754,7 +1754,7 @@ namespace Radegast
                         var trash = Client.Inventory.FindFolderForType(FolderType.Trash);
                         if (trash == Inventory.RootFolder.UUID)
                         {
-                            WorkPool.QueueUserWorkItem(sync =>
+                            ThreadPool.QueueUserWorkItem(sync =>
                             {
                                 trashCreated.Reset();
                                 trash = Client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
@@ -1863,7 +1863,7 @@ namespace Radegast
                         var trash = Client.Inventory.FindFolderForType(FolderType.Trash);
                         if (trash == Inventory.RootFolder.UUID)
                         {
-                            WorkPool.QueueUserWorkItem(sync =>
+                            ThreadPool.QueueUserWorkItem(sync =>
                             {
                                 trashCreated.Reset();
                                 trash = Client.Inventory.CreateFolder(Inventory.RootFolder.UUID, "Trash", FolderType.Trash);
@@ -2078,7 +2078,7 @@ namespace Radegast
                 {
                     if (instance.InventoryClipboard.Item is InventoryFolder)
                     {
-                        WorkPool.QueueUserWorkItem(state =>
+                        ThreadPool.QueueUserWorkItem(state =>
                             {
                                 UUID newFolderID = Client.Inventory.CreateFolder(dest.UUID, instance.InventoryClipboard.Item.Name, FolderType.None);
                                 Thread.Sleep(500);

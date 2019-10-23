@@ -31,6 +31,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
 #if (COGBOT_LIBOMV || USE_STHREADS)
@@ -99,7 +100,7 @@ namespace Radegast
 
         private void StartDisplayNameChage(string name)
         {
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
                 {
                     Client.Avatars.GetDisplayNames(new List<UUID>() { Client.Self.AgentID },
                         (success, names, badIDs) =>

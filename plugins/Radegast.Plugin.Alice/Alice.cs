@@ -30,6 +30,7 @@
 //
 using System;
 using System.Collections;
+using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
@@ -409,7 +410,7 @@ namespace Radegast.Plugin.Alice
 
             if (parseForResponse)
             {
-                WorkPool.QueueUserWorkItem(sync =>
+                ThreadPool.QueueUserWorkItem(sync =>
                 {
                     lock (syncChat)
                     {
@@ -501,7 +502,7 @@ namespace Radegast.Plugin.Alice
                 && Alice.isAcceptingUserInput                    // Alice bot loaded successfully
                 )
             {
-                WorkPool.QueueUserWorkItem(sync =>
+                ThreadPool.QueueUserWorkItem(sync =>
                 {
                     lock (syncChat)
                     {

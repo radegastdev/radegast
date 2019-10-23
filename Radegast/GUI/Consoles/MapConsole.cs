@@ -143,7 +143,7 @@ namespace Radegast
                 map.Navigating += new WebBrowserNavigatingEventHandler(map_Navigating);
             }
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
                 {
                     Thread.Sleep(1000);
                     if (InvokeRequired && (!instance.MonoRuntime || IsHandleCreated))
@@ -398,7 +398,7 @@ namespace Radegast
             lblStatus.Text = "Teleporting to " + txtRegion.Text;
             prgTeleport.Style = ProgressBarStyle.Marquee;
 
-            WorkPool.QueueUserWorkItem(state =>
+            ThreadPool.QueueUserWorkItem(state =>
                 {
                     if (!client.Self.Teleport(txtRegion.Text, new Vector3((int)nudX.Value, (int)nudY.Value, (int)nudZ.Value)))
                     {
@@ -425,7 +425,7 @@ namespace Radegast
             {
                 if (!regionHandles.ContainsKey(regionName))
                 {
-                    WorkPool.QueueUserWorkItem(sync =>
+                    ThreadPool.QueueUserWorkItem(sync =>
                         {
                             ManualResetEvent done = new ManualResetEvent(false);
                             EventHandler<GridRegionEventArgs> handler = (sender, e) =>

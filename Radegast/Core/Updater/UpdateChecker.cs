@@ -31,6 +31,7 @@
 using System;
 using System.Reflection;
 using System.Net;
+using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 #if (COGBOT_LIBOMV || USE_STHREADS)
@@ -74,7 +75,7 @@ namespace Radegast
                 client.DownloadStringCompleted += OnDownloadStringCompleted;
             }
 
-            WorkPool.QueueUserWorkItem(state =>
+            ThreadPool.QueueUserWorkItem(state =>
                 {
                     client.DownloadStringAsync(new Uri(Properties.Resources.UpdateCheckUri));
                 }

@@ -573,7 +573,7 @@ namespace Radegast.Rendering
         {
             SetupGLControl();
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
                 {
                     if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(RootPrimLocalID))
                     {

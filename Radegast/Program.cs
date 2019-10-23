@@ -135,14 +135,12 @@ namespace Radegast
             // Create main Radegast instance
             RadegastInstance instance = RadegastInstance.GlobalInstance;
             Application.Run(instance.MainForm);
-            OpenMetaverse.WorkPool.Shutdown();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var instance = RadegastInstance.GlobalInstance;
             instance.Client.Network.Logout();
-            OpenMetaverse.WorkPool.Shutdown();
         }
 
         /// <summary>
