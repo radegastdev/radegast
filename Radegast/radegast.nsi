@@ -2,7 +2,7 @@
 ;; Includes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 !include "LogicLib.nsh"
-!include WordFunc.nsh
+!include "WordFunc.nsh"
 !include "FileFunc.nsh"
 !insertmacro VersionCompare
 
@@ -16,19 +16,19 @@ SetDatablockOptimize off	; only saves us 0.1%, not worth it
 XPStyle on                  ; add an XP manifest to the installer
 RequestExecutionLevel admin	; on Vista we must be admin because we write to Program Files
 
-LangString LanguageCode ${LANG_ENGLISH}  "en"
-!define DOTNET_INSTALLER_EXE "NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
 !define DOTNET_URL "http://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
 !define MSI31_URL "http://download.microsoft.com/download/1/4/7/147ded26-931c-4daf-9095-ec7baf996f46/WindowsInstaller-KB893803-v2-x86.exe"
-
-!define APPNAME "Radegast"
-!define VERSION "2.29"
-!define MAINEXEC "${APPNAME}.exe"
-!define VOICEPACK "RadegastVoicepack-2.0.exe"
 !define UNINST_REG "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 
+!define DOTNET_INSTALLER_EXE "NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
+!define VOICEPACK "RadegastVoicepack-2.0.exe"
+
+!define APPNAME  "Radegast"
+!define MAINEXEC "${APPNAME}.exe"
+!define VERSION  "2.29"
+
 ; The name of the installer
-Name "${APPNAME}"
+Name "${APPNAME} ${VERSION}"
 BrandingText "Radegast - Lightweight Client"
 
 ; The file to write
