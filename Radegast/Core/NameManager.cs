@@ -183,7 +183,7 @@ namespace Radegast
             while (true)
             {
                 List<UUID> req = null;
-                if (!PendingLookups.Dequeue(Timeout.Infinite, ref req)) break;
+                if (!PendingLookups.Dequeue(Timeout.Infinite, out req)) break;
                 lookupGate.WaitOne(90 * 1000);
                 client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
                 {

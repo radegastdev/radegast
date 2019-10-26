@@ -1047,7 +1047,7 @@ namespace Radegast.Rendering
 
                 TextureLoadItem item = null;
 
-                if (!PendingTextures.Dequeue(Timeout.Infinite, ref item)) continue;
+                if (!PendingTextures.Dequeue(Timeout.Infinite, out item)) continue;
 
                 // Already have this one loaded
                 if (item.Data.TextureInfo.TexturePointer != 0) continue;
@@ -1149,7 +1149,7 @@ namespace Radegast.Rendering
             while (true)
             {
                 GenericTask task = null;
-                if (!PendingTasks.Dequeue(Timeout.Infinite, ref task)) break;
+                if (!PendingTasks.Dequeue(Timeout.Infinite, out task)) break;
                 task.Invoke();
             }
             Logger.DebugLog("Generic task thread exited");

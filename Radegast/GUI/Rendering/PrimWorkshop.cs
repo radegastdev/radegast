@@ -524,7 +524,7 @@ namespace Radegast.Rendering
             {
                 TextureLoadItem item = null;
 
-                if (!PendingTextures.Dequeue(Timeout.Infinite, ref item)) continue;
+                if (!PendingTextures.Dequeue(Timeout.Infinite, out item)) continue;
 
                 if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                 {
