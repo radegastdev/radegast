@@ -1,6 +1,7 @@
 // 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2019, Sjofn LLC
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,6 +32,7 @@
 
 #region Usings
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -128,12 +130,12 @@ namespace Radegast.Rendering
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
 
         delegate void GenericTask();
-        BlockingQueue<GenericTask> PendingTasks = new BlockingQueue<GenericTask>();
+        readonly ConcurrentQueue<GenericTask> PendingTasks = new ConcurrentQueue<GenericTask>();
         Thread genericTaskThread;
 
-        BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
+        readonly ConcurrentQueue<TextureLoadItem> PendingTextures = new ConcurrentQueue<TextureLoadItem>();
 
-        Dictionary<UUID, int> AssetFetchFailCount = new Dictionary<UUID, int>();
+        readonly Dictionary<UUID, int> AssetFetchFailCount = new Dictionary<UUID, int>();
 
         Font HoverTextFont = new Font(FontFamily.GenericSansSerif, 9f, FontStyle.Regular);
         Font AvatarTagFont = new Font(FontFamily.GenericSansSerif, 10f, FontStyle.Bold);
@@ -221,14 +223,10 @@ namespace Radegast.Rendering
             Application.Idle -= new EventHandler(Application_Idle);
             Instance.State.CameraTracksOwnAvatar = true;
             Instance.State.SetDefaultCamera();
-
-            if (!PendingTextures.Closed)
-            {
-                TextureThreadContextReady.Reset();
-                TextureThreadRunning = false;
-                PendingTextures.Close();
-                TextureThreadContextReady.WaitOne(5000, false);
-            }
+            
+            TextureThreadContextReady.Reset();
+            TextureThreadRunning = false;
+            TextureThreadContextReady.WaitOne(5000, false);
 
             if (chatOverlay != null)
             {
@@ -251,11 +249,6 @@ namespace Radegast.Rendering
             Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
             Client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
-
-            if (!PendingTasks.Closed)
-            {
-                PendingTasks.Close();
-            }
 
             if (genericTaskThread != null)
             {
@@ -1034,20 +1027,15 @@ namespace Radegast.Rendering
 
         void TextureThread()
         {
-            //OpenTK.INativeWindow window = new OpenTK.NativeWindow();
-            //OpenTK.Graphics.IGraphicsContext context = new OpenTK.Graphics.GraphicsContext(GLMode, window.WindowInfo);
-            //context.MakeCurrent(window.WindowInfo);
             TextureThreadContextReady.Set();
-            PendingTextures.Open();
+
             Logger.DebugLog("Started Texture Thread");
 
-            while (/*window.Exists &&*/ TextureThreadRunning)
+            while (TextureThreadRunning)
             {
-                //window.ProcessEvents();
-
                 TextureLoadItem item = null;
 
-                if (!PendingTextures.Dequeue(Timeout.Infinite, out item)) continue;
+                if (!PendingTextures.TryDequeue(out item)) continue;
 
                 // Already have this one loaded
                 if (item.Data.TextureInfo.TexturePointer != 0) continue;
@@ -1143,13 +1131,12 @@ namespace Radegast.Rendering
 
         void GenericTaskRunner()
         {
-            PendingTasks.Open();
             Logger.DebugLog("Started generic task thread");
 
             while (true)
             {
                 GenericTask task = null;
-                if (!PendingTasks.Dequeue(Timeout.Infinite, out task)) break;
+                if (!PendingTasks.TryDequeue(out task)) break;
                 task.Invoke();
             }
             Logger.DebugLog("Generic task thread exited");
