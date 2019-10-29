@@ -324,7 +324,7 @@ namespace Radegast
                 {
                     OnContentMenuOpening(sender, new ContextMenuEventArgs(this, MenuItem, Selection));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                     throw;

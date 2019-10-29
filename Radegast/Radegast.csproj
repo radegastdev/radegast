@@ -1,16 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F02F3C44-DCFC-964F-0516-85F7F141CCDD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Radegast</RootNamespace>
-    <AssemblyName>Radegast</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net472</TargetFramework>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -22,38 +13,32 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.0.0</ApplicationVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
+    <AssemblyTitle>Radegast-ng</AssemblyTitle>
+    <Company>Radegast Development Team</Company>
+    <Product>Radegast Metaverse Client</Product>
+    <Description>Radegast-ng - https://radegast.life/</Description>
+    <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2019, SJofn, LLC. All rights reserved.</Copyright>
+    <AssemblyVersion>3.0.0</AssemblyVersion>
+    <FileVersion>3.0.0</FileVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\bin\</OutputPath>
     <BaseIntermediateOutputPath>obj\x86\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <DebugType>portable</DebugType>
     <OutputPath>..\bin\</OutputPath>
     <BaseIntermediateOutputPath>obj\x86\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>radegast.ico</ApplicationIcon>
@@ -61,33 +46,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseLinux|x86'">
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
+    <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMacOS|x86'">
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
+    <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|x86'">
     <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
+    <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
@@ -96,1022 +72,867 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Local|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug Local\</OutputPath>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C5, Version=2.5.0.0, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
-      <HintPath>..\packages\C5.2.5.3\lib\net45\C5.dll</HintPath>
-    </Reference>
-    <Reference Include="CommandLine, Version=2.6.0.0, Culture=neutral, PublicKeyToken=5a870481e358d379, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandLineParser.2.6.0\lib\net461\CommandLine.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.GLControl.3.1.0\lib\net20\OpenTK.GLControl.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\protobuf-net.2.4.1\lib\net40\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
+    <PackageReference Include="C5" Version="2.5.3" />
+    <PackageReference Include="CommandLineParser" Version="2.6.0" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="OpenTK" Version="3.1.0" />
+    <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0" />
+    <PackageReference Include="System.Console" Version="4.3.1" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.Globalization" Version="4.3.0" />
+    <PackageReference Include="System.IO" Version="4.3.0" />
+    <PackageReference Include="System.Linq" Version="4.3.0" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.6.0" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
+    <PackageReference Include="System.Security.Cryptography.Encoding" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
+    <PackageReference Include="XmlRpcCs" Version="2.1.1.2" />
+    <PackageReference Include="zlib.net" Version="1.0.4.0" />
+    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.4" />
+  </ItemGroup>
+    <ItemGroup>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Console, Version=4.0.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Console.4.3.1\lib\net46\System.Console.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.NameResolution, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.NameResolution.4.3.0\lib\net46\System.Net.NameResolution.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.TypeExtensions, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.TypeExtensions.4.6.0\lib\net461\System.Reflection.TypeExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.4.3.1\lib\net462\System.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Extensions, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.Extensions.4.3.1\lib\net462\System.Runtime.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
     <Reference Include="Tools">
       <HintPath>assemblies\Tools.dll</HintPath>
     </Reference>
-    <Reference Include="XmlRpcCs, Version=2.1.1.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\XmlRpcCs.2.1.1.2\lib\net461\XmlRpcCs.dll</HintPath>
-    </Reference>
-    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\zlib.net-mutliplatform.1.0.4\lib\net461\zlib.net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Automation\AutoSit.cs" />
-    <Compile Include="Automation\LSLHelper.cs" />
-    <Compile Include="Automation\PseudoHome.cs" />
-    <Compile Include="Core\AutoPilot.cs" />
-    <Compile Include="Core\AutoPilot2.cs" />
-    <Compile Include="Core\ChatBufferItem.cs" />
-    <Compile Include="Core\ChatTextManager.cs" />
-    <Compile Include="Core\ClientSignatures.cs" />
-    <Compile Include="Core\Commands\CommandsManager.cs" />
-    <Compile Include="Core\Commands\FaceCommand.cs" />
-    <Compile Include="Core\Commands\FindCommand.cs" />
-    <Compile Include="Core\Commands\FollowCommand.cs" />
-    <Compile Include="Core\Commands\GoCommand.cs" />
-    <Compile Include="Core\Commands\ICommandInterpreter.cs" />
-    <Compile Include="Core\Commands\IRadegastCommand.cs" />
-    <Compile Include="Core\Commands\LoadPluginCommand.cs" />
-    <Compile Include="Core\Commands\ParcelInfoCommand.cs" />
-    <Compile Include="Core\Commands\RadegastCommand.cs" />
-    <Compile Include="Core\Commands\ScriptInfoCommand.cs" />
-    <Compile Include="Core\Commands\SimInfoCommand.cs" />
-    <Compile Include="Core\Commands\SitCommand.cs" />
-    <Compile Include="Core\Commands\StatusCommand.cs" />
-    <Compile Include="Core\Commands\TPComand.cs" />
-    <Compile Include="Core\Commands\ThreadCommand.cs" />
-    <Compile Include="Core\Commands\UnsitCommand.cs" />
-    <Compile Include="Core\Contexts\AvatarProfileAction.cs" />
-    <Compile Include="Core\Contexts\ContextAction.cs" />
-    <Compile Include="Core\Contexts\ContextActionsManager.cs" />
-    <Compile Include="Core\Contexts\DeRezObjectAction.cs" />
-    <Compile Include="Core\Contexts\IContextAction.cs" />
-    <Compile Include="Core\Contexts\OfferTeleportAction.cs" />
-    <Compile Include="Core\Contexts\PointAtAction.cs" />
-    <Compile Include="Core\Contexts\RequestTeleportAction.cs" />
-    <Compile Include="Core\Contexts\RezInventoryObjectAction.cs" />
-    <Compile Include="Core\Contexts\SitOnGroundAction.cs" />
-    <Compile Include="Core\Contexts\TeleportToAction.cs" />
-    <Compile Include="Core\Contexts\TurnToAction.cs" />
-    <Compile Include="Core\Contexts\WalkToAction.cs" />
-    <Compile Include="Core\DAEExport.cs" />
-    <Compile Include="Core\GestureManager.cs" />
-    <Compile Include="Core\GridManager.cs" />
-    <Compile Include="Core\IMTextManager.cs" />
-    <Compile Include="Core\ITextPrinter.cs" />
-    <Compile Include="Core\ImageUploader.cs" />
-    <Compile Include="Core\InitialOutfit.cs" />
-    <Compile Include="Core\Keyboard.cs" />
-    <Compile Include="Core\LSL\lsl.lexer.cs" />
-    <Compile Include="Core\LSL\lsl.parser.cs" />
-    <Compile Include="Core\LSLKeywordParser.cs" />
-    <Compile Include="Core\Media\BufferSound.cs" />
-    <Compile Include="Core\Media\MediaManager.cs" />
-    <Compile Include="Core\Media\MediaObject.cs" />
-    <Compile Include="Core\Media\Speech.cs" />
-    <Compile Include="Core\Media\Stream.cs" />
-    <Compile Include="Core\Media\UISounds.cs" />
-    <Compile Include="Core\NameManager.cs" />
-    <Compile Include="Core\PluginInterface\IRadegastPlugin.cs" />
-    <Compile Include="Core\PluginInterface\PluginAttribute.cs" />
-    <Compile Include="Core\PluginInterface\PluginInfo.cs" />
-    <Compile Include="Core\PluginInterface\PluginManager.cs" />
-    <Compile Include="Core\PrimDeserializer.cs" />
-    <Compile Include="Core\PrimExporter.cs" />
-    <Compile Include="Core\PrimImporter.cs" />
-    <Compile Include="Core\PrimSerializer.cs" />
-    <Compile Include="Core\RLV\RLVEventArgs.cs" />
-    <Compile Include="Core\RLV\RLVManager.cs" />
-    <Compile Include="Core\RLV\RLVRule.cs" />
-    <Compile Include="Core\RadegastInstance.cs" />
-    <Compile Include="Core\RadegastLogger.cs" />
-    <Compile Include="Core\RadegastMisc.cs" />
-    <Compile Include="Core\RadegastMovement.cs" />
-    <Compile Include="Core\RichTextBoxPrinter.cs" />
-    <Compile Include="Core\Settings.cs" />
-    <Compile Include="Core\SlUriParser.cs" />
-    <Compile Include="Core\StateManager.cs" />
-    <Compile Include="Core\Tabs\IRadegastTabControl.cs" />
-    <Compile Include="Core\Tabs\RadegastTab.cs" />
-    <Compile Include="Core\Tabs\RadegastTabEvents.cs" />
-    <Compile Include="Core\Types\AgentNameTextBox.cs">
+    <Compile Update="Core\Types\AgentNameTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\ChatInputBox.cs">
+    <Compile Update="Core\Types\ChatInputBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\CircularList.cs" />
-    <Compile Include="Core\Types\DettachableControl.cs">
+    <Compile Update="Core\Types\DettachableControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Core\Types\ExtendedRichTextBox.cs">
+    <Compile Update="Core\Types\ExtendedRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\LineNumberPanel.cs">
+    <Compile Update="Core\Types\LineNumberPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\ListBoxCustomSort.cs">
+    <Compile Update="Core\Types\ListBoxCustomSort.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\ListViewNoFlicker.cs">
+    <Compile Update="Core\Types\ListViewNoFlicker.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\MapControl.Designer.cs">
+    <Compile Update="Core\Types\MapControl.Designer.cs">
       <DependentUpon>MapControl.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="Core\Types\MapControl.cs">
+    <Compile Update="Core\Types\MapControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="Core\Types\MapControl.resx">
+    <EmbeddedResource Update="Core\Types\MapControl.resx">
       <DependentUpon>MapControl.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="Core\Types\RRichTextBox.cs">
+    <Compile Update="Core\Types\RRichTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\RadegastContextMenu.cs">
+    <Compile Update="Core\Types\RadegastContextMenu.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\RadegastForm.cs">
+    <Compile Update="Core\Types\RadegastForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Core\Types\RadegastTabControl.cs">
+    <Compile Update="Core\Types\RadegastTabControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Core\Types\StringTokenizer.cs" />
-    <Compile Include="Core\Types\ToolStripCheckBox.cs">
+    <Compile Update="Core\Types\ToolStripCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\TransparentButton.cs">
+    <Compile Update="Core\Types\TransparentButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Types\TransparentLabel.cs">
+    <Compile Update="Core\Types\TransparentLabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Core\Updater\ErrorReporter.cs" />
-    <Compile Include="Core\Updater\UpdateChecker.cs" />
-    <Compile Include="FMOD\fmod.cs" />
-    <Compile Include="FMOD\fmod_dsp.cs" />
-    <Compile Include="FMOD\fmod_errors.cs" />
-    <Compile Include="FormFlash.cs" />
-    <Compile Include="GUI\Consoles\AnimDetail.Designer.cs">
+    <Compile Update="GUI\Consoles\AnimDetail.Designer.cs">
       <DependentUpon>AnimDetail.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\AnimDetail.cs">
+    <Compile Update="GUI\Consoles\AnimDetail.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\AnimDetail.resx">
+    <EmbeddedResource Update="GUI\Consoles\AnimDetail.resx">
       <DependentUpon>AnimDetail.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\AnimTab.Designer.cs">
+    <Compile Update="GUI\Consoles\AnimTab.Designer.cs">
       <DependentUpon>AnimTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\AnimTab.cs">
+    <Compile Update="GUI\Consoles\AnimTab.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\AnimTab.resx">
+    <EmbeddedResource Update="GUI\Consoles\AnimTab.resx">
       <DependentUpon>AnimTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Assets\Gesture.Designer.cs">
+    <Compile Update="GUI\Consoles\Assets\Gesture.Designer.cs">
       <DependentUpon>Gesture.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Assets\Gesture.cs">
+    <Compile Update="GUI\Consoles\Assets\Gesture.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Assets\Gesture.resx">
+    <EmbeddedResource Update="GUI\Consoles\Assets\Gesture.resx">
       <DependentUpon>Gesture.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Assets\Landmark.Designer.cs">
+    <Compile Update="GUI\Consoles\Assets\Landmark.Designer.cs">
       <DependentUpon>Landmark.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Assets\Landmark.cs">
+    <Compile Update="GUI\Consoles\Assets\Landmark.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Assets\Landmark.resx">
+    <EmbeddedResource Update="GUI\Consoles\Assets\Landmark.resx">
       <DependentUpon>Landmark.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Assets\Notecard.Designer.cs">
+    <Compile Update="GUI\Consoles\Assets\Notecard.Designer.cs">
       <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Assets\Notecard.cs">
+    <Compile Update="GUI\Consoles\Assets\Notecard.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Assets\Notecard.resx">
+    <EmbeddedResource Update="GUI\Consoles\Assets\Notecard.resx">
       <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Assets\SLImageHandler.Designer.cs">
+    <Compile Update="GUI\Consoles\Assets\SLImageHandler.Designer.cs">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Assets\SLImageHandler.cs">
+    <Compile Update="GUI\Consoles\Assets\SLImageHandler.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Assets\SLImageHandler.resx">
+    <EmbeddedResource Update="GUI\Consoles\Assets\SLImageHandler.resx">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Assets\ScriptEditor.Designer.cs">
+    <Compile Update="GUI\Consoles\Assets\ScriptEditor.Designer.cs">
       <DependentUpon>ScriptEditor.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Assets\ScriptEditor.cs">
+    <Compile Update="GUI\Consoles\Assets\ScriptEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Assets\ScriptEditor.resx">
+    <EmbeddedResource Update="GUI\Consoles\Assets\ScriptEditor.resx">
       <DependentUpon>ScriptEditor.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\AttachmentDetail.Designer.cs">
+    <Compile Update="GUI\Consoles\AttachmentDetail.Designer.cs">
       <DependentUpon>AttachmentDetail.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\AttachmentDetail.cs">
+    <Compile Update="GUI\Consoles\AttachmentDetail.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\AttachmentDetail.resx">
+    <EmbeddedResource Update="GUI\Consoles\AttachmentDetail.resx">
       <DependentUpon>AttachmentDetail.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\AttachmentTab.Designer.cs">
+    <Compile Update="GUI\Consoles\AttachmentTab.Designer.cs">
       <DependentUpon>AttachmentTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\AttachmentTab.cs">
+    <Compile Update="GUI\Consoles\AttachmentTab.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\AttachmentTab.resx">
+    <EmbeddedResource Update="GUI\Consoles\AttachmentTab.resx">
       <DependentUpon>AttachmentTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\AvatarPicker.Designer.cs">
+    <Compile Update="GUI\Consoles\AvatarPicker.Designer.cs">
       <DependentUpon>AvatarPicker.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\AvatarPicker.cs">
+    <Compile Update="GUI\Consoles\AvatarPicker.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\AvatarPicker.resx">
+    <EmbeddedResource Update="GUI\Consoles\AvatarPicker.resx">
       <DependentUpon>AvatarPicker.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\ChatConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\ChatConsole.Designer.cs">
       <DependentUpon>ChatConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\ChatConsole.cs">
+    <Compile Update="GUI\Consoles\ChatConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\ChatConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\ChatConsole.resx">
       <DependentUpon>ChatConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\ConferenceIMTabWindow.Designer.cs">
+    <Compile Update="GUI\Consoles\ConferenceIMTabWindow.Designer.cs">
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\ConferenceIMTabWindow.cs">
+    <Compile Update="GUI\Consoles\ConferenceIMTabWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\ConferenceIMTabWindow.resx">
+    <EmbeddedResource Update="GUI\Consoles\ConferenceIMTabWindow.resx">
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\DebugConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\DebugConsole.Designer.cs">
       <DependentUpon>DebugConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\DebugConsole.cs">
+    <Compile Update="GUI\Consoles\DebugConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\DebugConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\DebugConsole.resx">
       <DependentUpon>DebugConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\ExportCollada.Designer.cs">
+    <Compile Update="GUI\Consoles\ExportCollada.Designer.cs">
       <DependentUpon>ExportCollada.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\ExportCollada.cs">
+    <Compile Update="GUI\Consoles\ExportCollada.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\ExportCollada.resx">
+    <EmbeddedResource Update="GUI\Consoles\ExportCollada.resx">
       <DependentUpon>ExportCollada.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\ExportConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\ExportConsole.Designer.cs">
       <DependentUpon>ExportConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\ExportConsole.cs">
+    <Compile Update="GUI\Consoles\ExportConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\ExportConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\ExportConsole.resx">
       <DependentUpon>ExportConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\FindPeopleConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\FindPeopleConsole.Designer.cs">
       <DependentUpon>FindPeopleConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\FindPeopleConsole.cs">
+    <Compile Update="GUI\Consoles\FindPeopleConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\FindPeopleConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\FindPeopleConsole.resx">
       <DependentUpon>FindPeopleConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\FriendsConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\FriendsConsole.Designer.cs">
       <DependentUpon>FriendsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\FriendsConsole.cs">
+    <Compile Update="GUI\Consoles\FriendsConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\FriendsConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\FriendsConsole.resx">
       <DependentUpon>FriendsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\GroupDetails.Designer.cs">
+    <Compile Update="GUI\Consoles\GroupDetails.Designer.cs">
       <DependentUpon>GroupDetails.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\GroupDetails.cs">
+    <Compile Update="GUI\Consoles\GroupDetails.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\GroupDetails.resx">
+    <EmbeddedResource Update="GUI\Consoles\GroupDetails.resx">
       <DependentUpon>GroupDetails.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\GroupIMTabWindow.Designer.cs">
+    <Compile Update="GUI\Consoles\GroupIMTabWindow.Designer.cs">
       <DependentUpon>GroupIMTabWindow.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\GroupIMTabWindow.cs">
+    <Compile Update="GUI\Consoles\GroupIMTabWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\GroupIMTabWindow.resx">
+    <EmbeddedResource Update="GUI\Consoles\GroupIMTabWindow.resx">
       <DependentUpon>GroupIMTabWindow.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\GroupsConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\GroupsConsole.Designer.cs">
       <DependentUpon>GroupsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\GroupsConsole.cs">
+    <Compile Update="GUI\Consoles\GroupsConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\GroupsConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\GroupsConsole.resx">
       <DependentUpon>GroupsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\IMTabWindow.Designer.cs">
+    <Compile Update="GUI\Consoles\IMTabWindow.Designer.cs">
       <DependentUpon>IMTabWindow.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\IMTabWindow.cs">
+    <Compile Update="GUI\Consoles\IMTabWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\IMTabWindow.resx">
+    <EmbeddedResource Update="GUI\Consoles\IMTabWindow.resx">
       <DependentUpon>IMTabWindow.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\ImageUploadConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\ImageUploadConsole.Designer.cs">
       <DependentUpon>ImageUploadConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\ImageUploadConsole.cs">
+    <Compile Update="GUI\Consoles\ImageUploadConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\ImageUploadConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\ImageUploadConsole.resx">
       <DependentUpon>ImageUploadConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\ImportConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\ImportConsole.Designer.cs">
       <DependentUpon>ImportConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\ImportConsole.cs">
+    <Compile Update="GUI\Consoles\ImportConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\ImportConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\ImportConsole.resx">
       <DependentUpon>ImportConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Inventory\CurrentOutfitFolder.cs" />
-    <Compile Include="GUI\Consoles\Inventory\FolderCopy.cs" />
-    <Compile Include="GUI\Consoles\Inventory\InventoryBackup.Designer.cs">
+    <Compile Update="GUI\Consoles\Inventory\InventoryBackup.Designer.cs">
       <DependentUpon>InventoryBackup.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Inventory\InventoryBackup.cs">
+    <Compile Update="GUI\Consoles\Inventory\InventoryBackup.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Inventory\InventoryBackup.resx">
+    <EmbeddedResource Update="GUI\Consoles\Inventory\InventoryBackup.resx">
       <DependentUpon>InventoryBackup.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\Inventory\InventoryClipboard.cs" />
-    <Compile Include="GUI\Consoles\Inventory\InventoryConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\Inventory\InventoryConsole.Designer.cs">
       <DependentUpon>InventoryConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\Inventory\InventoryConsole.cs">
+    <Compile Update="GUI\Consoles\Inventory\InventoryConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\Inventory\InventoryConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\Inventory\InventoryConsole.resx">
       <DependentUpon>InventoryConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\LoginConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\LoginConsole.Designer.cs">
       <DependentUpon>LoginConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\LoginConsole.cs">
+    <Compile Update="GUI\Consoles\LoginConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\LoginConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\LoginConsole.resx">
       <DependentUpon>LoginConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\MapConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\MapConsole.Designer.cs">
       <DependentUpon>MapConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\MapConsole.cs">
+    <Compile Update="GUI\Consoles\MapConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\MapConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\MapConsole.resx">
       <DependentUpon>MapConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\MasterTab.Designer.cs">
+    <Compile Update="GUI\Consoles\MasterTab.Designer.cs">
       <DependentUpon>MasterTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\MasterTab.cs">
+    <Compile Update="GUI\Consoles\MasterTab.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\MasterTab.resx">
+    <EmbeddedResource Update="GUI\Consoles\MasterTab.resx">
       <DependentUpon>MasterTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\MediaConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\MediaConsole.Designer.cs">
       <DependentUpon>MediaConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\MediaConsole.cs">
+    <Compile Update="GUI\Consoles\MediaConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\MediaConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\MediaConsole.resx">
       <DependentUpon>MediaConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\MeshUploadConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\MeshUploadConsole.Designer.cs">
       <DependentUpon>MeshUploadConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\MeshUploadConsole.cs">
+    <Compile Update="GUI\Consoles\MeshUploadConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\MeshUploadConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\MeshUploadConsole.resx">
       <DependentUpon>MeshUploadConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\MuteList.Designer.cs">
+    <Compile Update="GUI\Consoles\MuteList.Designer.cs">
       <DependentUpon>MuteList.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\MuteList.cs">
+    <Compile Update="GUI\Consoles\MuteList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\MuteList.resx">
+    <EmbeddedResource Update="GUI\Consoles\MuteList.resx">
       <DependentUpon>MuteList.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\ObjectsConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\ObjectsConsole.Designer.cs">
       <DependentUpon>ObjectsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\ObjectsConsole.cs">
+    <Compile Update="GUI\Consoles\ObjectsConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\ObjectsConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\ObjectsConsole.resx">
       <DependentUpon>ObjectsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\OutfitTextures.Designer.cs">
+    <Compile Update="GUI\Consoles\OutfitTextures.Designer.cs">
       <DependentUpon>OutfitTextures.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\OutfitTextures.cs">
+    <Compile Update="GUI\Consoles\OutfitTextures.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\OutfitTextures.resx">
+    <EmbeddedResource Update="GUI\Consoles\OutfitTextures.resx">
       <DependentUpon>OutfitTextures.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\PluginsTab.Designer.cs">
+    <Compile Update="GUI\Consoles\PluginsTab.Designer.cs">
       <DependentUpon>PluginsTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\PluginsTab.cs">
+    <Compile Update="GUI\Consoles\PluginsTab.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\PluginsTab.resx">
+    <EmbeddedResource Update="GUI\Consoles\PluginsTab.resx">
       <DependentUpon>PluginsTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\RegionInfo.Designer.cs">
+    <Compile Update="GUI\Consoles\RegionInfo.Designer.cs">
       <DependentUpon>RegionInfo.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\RegionInfo.cs">
+    <Compile Update="GUI\Consoles\RegionInfo.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\RegionInfo.resx">
+    <EmbeddedResource Update="GUI\Consoles\RegionInfo.resx">
       <DependentUpon>RegionInfo.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\SearchConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\SearchConsole.Designer.cs">
       <DependentUpon>SearchConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\SearchConsole.cs">
+    <Compile Update="GUI\Consoles\SearchConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\SearchConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\SearchConsole.resx">
       <DependentUpon>SearchConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\TabsConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\TabsConsole.Designer.cs">
       <DependentUpon>TabsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\TabsConsole.cs">
+    <Compile Update="GUI\Consoles\TabsConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\TabsConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\TabsConsole.resx">
       <DependentUpon>TabsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Consoles\VoiceConsole.Designer.cs">
+    <Compile Update="GUI\Consoles\VoiceConsole.Designer.cs">
       <DependentUpon>VoiceConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Consoles\VoiceConsole.cs">
+    <Compile Update="GUI\Consoles\VoiceConsole.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Consoles\VoiceConsole.resx">
+    <EmbeddedResource Update="GUI\Consoles\VoiceConsole.resx">
       <DependentUpon>VoiceConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\About.Designer.cs">
+    <Compile Update="GUI\Dialogs\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\About.cs">
+    <Compile Update="GUI\Dialogs\About.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\About.resx">
+    <EmbeddedResource Update="GUI\Dialogs\About.resx">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\BanGroupMember.Designer.cs">
+    <Compile Update="GUI\Dialogs\BanGroupMember.Designer.cs">
       <DependentUpon>BanGroupMember.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\BanGroupMember.cs">
+    <Compile Update="GUI\Dialogs\BanGroupMember.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\BanGroupMember.resx">
+    <EmbeddedResource Update="GUI\Dialogs\BanGroupMember.resx">
       <DependentUpon>BanGroupMember.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\DetachedTab.Designer.cs">
+    <Compile Update="GUI\Dialogs\DetachedTab.Designer.cs">
       <DependentUpon>DetachedTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\DetachedTab.cs">
+    <Compile Update="GUI\Dialogs\DetachedTab.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\DetachedTab.resx">
+    <EmbeddedResource Update="GUI\Dialogs\DetachedTab.resx">
       <DependentUpon>DetachedTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\DisplayNameChange.Designer.cs">
+    <Compile Update="GUI\Dialogs\DisplayNameChange.Designer.cs">
       <DependentUpon>DisplayNameChange.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\DisplayNameChange.cs">
+    <Compile Update="GUI\Dialogs\DisplayNameChange.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\DisplayNameChange.resx">
+    <EmbeddedResource Update="GUI\Dialogs\DisplayNameChange.resx">
       <DependentUpon>DisplayNameChange.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\GroupInfo.Designer.cs">
+    <Compile Update="GUI\Dialogs\GroupInfo.Designer.cs">
       <DependentUpon>GroupInfo.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\GroupInfo.cs">
+    <Compile Update="GUI\Dialogs\GroupInfo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\GroupInfo.resx">
+    <EmbeddedResource Update="GUI\Dialogs\GroupInfo.resx">
       <DependentUpon>GroupInfo.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\GroupInvite.Designer.cs">
+    <Compile Update="GUI\Dialogs\GroupInvite.Designer.cs">
       <DependentUpon>GroupInvite.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\GroupInvite.cs">
+    <Compile Update="GUI\Dialogs\GroupInvite.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\GroupInvite.resx">
+    <EmbeddedResource Update="GUI\Dialogs\GroupInvite.resx">
       <DependentUpon>GroupInvite.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\HoverHeight.cs">
+    <Compile Update="GUI\Dialogs\HoverHeight.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\HoverHeight.Designer.cs">
+    <Compile Update="GUI\Dialogs\HoverHeight.Designer.cs">
       <DependentUpon>HoverHeight.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Dialogs\KeyboardShortcuts.Designer.cs">
+    <Compile Update="GUI\Dialogs\KeyboardShortcuts.Designer.cs">
       <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\KeyboardShortcuts.cs">
+    <Compile Update="GUI\Dialogs\KeyboardShortcuts.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\HoverHeight.resx">
+    <EmbeddedResource Update="GUI\Dialogs\HoverHeight.resx">
       <DependentUpon>HoverHeight.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Dialogs\KeyboardShortcuts.resx">
+    <EmbeddedResource Update="GUI\Dialogs\KeyboardShortcuts.resx">
       <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\MainForm.Designer.cs">
+    <Compile Update="GUI\Dialogs\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\MainForm.cs">
+    <Compile Update="GUI\Dialogs\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\MainForm.resx">
+    <EmbeddedResource Update="GUI\Dialogs\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\MuteResident.Designer.cs">
+    <Compile Update="GUI\Dialogs\MuteResident.Designer.cs">
       <DependentUpon>MuteResident.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\MuteResident.cs">
+    <Compile Update="GUI\Dialogs\MuteResident.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\MuteResident.resx">
+    <EmbeddedResource Update="GUI\Dialogs\MuteResident.resx">
       <DependentUpon>MuteResident.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\Pay.Designer.cs">
+    <Compile Update="GUI\Dialogs\Pay.Designer.cs">
       <DependentUpon>Pay.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\Pay.cs">
+    <Compile Update="GUI\Dialogs\Pay.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\Pay.resx">
+    <EmbeddedResource Update="GUI\Dialogs\Pay.resx">
       <DependentUpon>Pay.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\Profile.Designer.cs">
+    <Compile Update="GUI\Dialogs\Profile.Designer.cs">
       <DependentUpon>Profile.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\Profile.cs">
+    <Compile Update="GUI\Dialogs\Profile.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\Profile.resx">
+    <EmbeddedResource Update="GUI\Dialogs\Profile.resx">
       <DependentUpon>Profile.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\Reconnect.Designer.cs">
+    <Compile Update="GUI\Dialogs\Reconnect.Designer.cs">
       <DependentUpon>Reconnect.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\Reconnect.cs">
+    <Compile Update="GUI\Dialogs\Reconnect.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\Reconnect.resx">
+    <EmbeddedResource Update="GUI\Dialogs\Reconnect.resx">
       <DependentUpon>Reconnect.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Dialogs\Settings.Designer.cs">
+    <Compile Update="GUI\Dialogs\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Dialogs\Settings.cs">
+    <Compile Update="GUI\Dialogs\Settings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Dialogs\Settings.resx">
+    <EmbeddedResource Update="GUI\Dialogs\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Floater.cs">
+    <Compile Update="GUI\Floater.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\GuiHelpers.cs" />
-    <Compile Include="GUI\Notifications\FriendshipOfferNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\FriendshipOfferNotification.Designer.cs">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\FriendshipOfferNotification.cs">
+    <Compile Update="GUI\Notifications\FriendshipOfferNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\FriendshipOfferNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\FriendshipOfferNotification.resx">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\GenericNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\GenericNotification.Designer.cs">
       <DependentUpon>GenericNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\GenericNotification.cs">
+    <Compile Update="GUI\Notifications\GenericNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\GenericNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\GenericNotification.resx">
       <DependentUpon>GenericNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\GroupInvitationNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\GroupInvitationNotification.Designer.cs">
       <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\GroupInvitationNotification.cs">
+    <Compile Update="GUI\Notifications\GroupInvitationNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\GroupInvitationNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\GroupInvitationNotification.resx">
       <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\GroupNoticeNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\GroupNoticeNotification.Designer.cs">
       <DependentUpon>GroupNoticeNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\GroupNoticeNotification.cs">
+    <Compile Update="GUI\Notifications\GroupNoticeNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\GroupNoticeNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\GroupNoticeNotification.resx">
       <DependentUpon>GroupNoticeNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\InventoryOfferNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\InventoryOfferNotification.Designer.cs">
       <DependentUpon>InventoryOfferNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\InventoryOfferNotification.cs">
+    <Compile Update="GUI\Notifications\InventoryOfferNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\InventoryOfferNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\InventoryOfferNotification.resx">
       <DependentUpon>InventoryOfferNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\LoadURLNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\LoadURLNotification.Designer.cs">
       <DependentUpon>LoadURLNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\LoadURLNotification.cs">
+    <Compile Update="GUI\Notifications\LoadURLNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\LoadURLNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\LoadURLNotification.resx">
       <DependentUpon>LoadURLNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\Notification.cs">
+    <Compile Update="GUI\Notifications\Notification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\PermissionsNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\PermissionsNotification.Designer.cs">
       <DependentUpon>PermissionsNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\PermissionsNotification.cs">
+    <Compile Update="GUI\Notifications\PermissionsNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\PermissionsNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\PermissionsNotification.resx">
       <DependentUpon>PermissionsNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\RequestLureNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\RequestLureNotification.Designer.cs">
       <DependentUpon>RequestLureNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\RequestLureNotification.cs">
+    <Compile Update="GUI\Notifications\RequestLureNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\RequestLureNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\RequestLureNotification.resx">
       <DependentUpon>RequestLureNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\ScriptDialog.Designer.cs">
+    <Compile Update="GUI\Notifications\ScriptDialog.Designer.cs">
       <DependentUpon>ScriptDialog.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\ScriptDialog.cs">
+    <Compile Update="GUI\Notifications\ScriptDialog.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\ScriptDialog.resx">
+    <EmbeddedResource Update="GUI\Notifications\ScriptDialog.resx">
       <DependentUpon>ScriptDialog.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\SendLureOffer.Designer.cs">
+    <Compile Update="GUI\Notifications\SendLureOffer.Designer.cs">
       <DependentUpon>SendLureOffer.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\SendLureOffer.cs">
+    <Compile Update="GUI\Notifications\SendLureOffer.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\SendLureOffer.resx">
+    <EmbeddedResource Update="GUI\Notifications\SendLureOffer.resx">
       <DependentUpon>SendLureOffer.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\SendLureRequest.Designer.cs">
+    <Compile Update="GUI\Notifications\SendLureRequest.Designer.cs">
       <DependentUpon>SendLureRequest.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\SendLureRequest.cs">
+    <Compile Update="GUI\Notifications\SendLureRequest.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\SendLureRequest.resx">
+    <EmbeddedResource Update="GUI\Notifications\SendLureRequest.resx">
       <DependentUpon>SendLureRequest.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Notifications\TeleportNotification.Designer.cs">
+    <Compile Update="GUI\Notifications\TeleportNotification.Designer.cs">
       <DependentUpon>TeleportNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Notifications\TeleportNotification.cs">
+    <Compile Update="GUI\Notifications\TeleportNotification.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Notifications\TeleportNotification.resx">
+    <EmbeddedResource Update="GUI\Notifications\TeleportNotification.resx">
       <DependentUpon>TeleportNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Rendering\ChatBox.cs">
+    <Compile Update="GUI\Rendering\ChatBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\Rendering\ChatOverlay.cs" />
-    <Compile Include="GUI\Rendering\Compat.cs" />
-    <Compile Include="GUI\Rendering\Frustum.cs" />
-    <Compile Include="GUI\Rendering\GraphicsPreferences.Designer.cs">
+    <Compile Update="GUI\Rendering\GraphicsPreferences.Designer.cs">
       <DependentUpon>GraphicsPreferences.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Rendering\GraphicsPreferences.cs">
+    <Compile Update="GUI\Rendering\GraphicsPreferences.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Rendering\GraphicsPreferences.resx">
+    <EmbeddedResource Update="GUI\Rendering\GraphicsPreferences.resx">
       <DependentUpon>GraphicsPreferences.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Rendering\ImageUtils.cs" />
-    <Compile Include="GUI\Rendering\Perlin.cs" />
-    <Compile Include="GUI\Rendering\PrimWorkshop.Designer.cs">
+    <Compile Update="GUI\Rendering\PrimWorkshop.Designer.cs">
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Rendering\PrimWorkshop.cs">
+    <Compile Update="GUI\Rendering\PrimWorkshop.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Rendering\PrimWorkshop.resx">
+    <EmbeddedResource Update="GUI\Rendering\PrimWorkshop.resx">
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Rendering\RenderAvatar.cs" />
-    <Compile Include="GUI\Rendering\RenderPrimitive.cs" />
-    <Compile Include="GUI\Rendering\RenderSettings.cs" />
-    <Compile Include="GUI\Rendering\RenderTerrain.cs" />
-    <Compile Include="GUI\Rendering\Rendering.Designer.cs">
+    <Compile Update="GUI\Rendering\Rendering.Designer.cs">
       <DependentUpon>Rendering.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Include="GUI\Rendering\Rendering.cs">
+    <Compile Update="GUI\Rendering\Rendering.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="GUI\Rendering\Rendering.resx">
+    <EmbeddedResource Update="GUI\Rendering\Rendering.resx">
       <DependentUpon>Rendering.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Include="GUI\Rendering\RenderingHelpers.cs" />
-    <Compile Include="GUI\Rendering\Shader.cs" />
-    <Compile Include="GUI\Rendering\TerrainSplat.cs" />
-    <Compile Include="GUI\Rendering\TextRendering.cs" />
-    <Compile Include="GUI\Rendering\Water.cs">
+    <Compile Update="GUI\Rendering\Water.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Netcom\Enums.cs" />
-    <Compile Include="Netcom\EventArgs\ChatSentEventArgs.cs" />
-    <Compile Include="Netcom\EventArgs\InstantMessageSentEventArgs.cs" />
-    <Compile Include="Netcom\EventArgs\OverrideEventArgs.cs" />
-    <Compile Include="Netcom\EventArgs\TeleportingEventArgs.cs" />
-    <Compile Include="Netcom\LoginOptions.cs" />
-    <Compile Include="Netcom\RadegastNetcom\NetCom.cs" />
-    <Compile Include="Netcom\RadegastNetcom\NetComEvents.cs" />
-    <Compile Include="Netcom\StartLocationParser.cs" />
     <Content Include="OpenMetaverse.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Settings.Designer.cs" />
-    <Compile Include="RadegastBuild.cs" />
     <Content Include="character\attentions.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -2416,45 +2237,23 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="OpenTK.dll.config" />
-    <None Include="packages.config" />
+    <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="obj\x86\ReleaseLinux\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="obj\x86\ReleaseLinux\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="obj\x86\ReleaseLinux\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="obj\x86\ReleaseMacOS\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="obj\x86\ReleaseMacOS\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="obj\x86\ReleaseMacOS\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\libremetaverse\LibreMetaverse.Rendering.Meshmerizer\LibreMetaverse.Rendering.Meshmerizer.csproj">
-      <Project>{95479b1d-0000-0000-0000-000000000000}</Project>
-      <Name>LibreMetaverse.Rendering.Meshmerizer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj">
-      <Project>{89d7a3e5-0000-0000-0000-000000000000}</Project>
-      <Name>LibreMetaverse.StructuredData</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj">
-      <Project>{b37b02ad-0000-0000-0000-000000000000}</Project>
-      <Name>LibreMetaverse.Types</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\libremetaverse\LibreMetaverse\LibreMetaverse.csproj">
-      <Project>{27c70f3a-0000-0000-0000-000000000000}</Project>
-      <Name>LibreMetaverse</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\libremetaverse\PrimMesher\LibreMetaverse.PrimMesher.csproj">
-      <Project>{2e2b643f-f18b-4791-ba4b-6e82d0e794b6}</Project>
-      <Name>LibreMetaverse.PrimMesher</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

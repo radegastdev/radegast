@@ -1048,7 +1048,7 @@ namespace Radegast
 
         private void cleanCacheToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 filesDeleted = 0;
                 try { deleteFolder(new DirectoryInfo(client.Settings.ASSET_CACHE_DIR)); }

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2013, Radegast Development Team
 // All rights reserved.
@@ -31,18 +31,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("Radegast-ng")]
-[assembly: AssemblyDescription("Radegast-ng - https://radegast.life/")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Radegast Development Team")]
-[assembly: AssemblyProduct("Radegast Metaverse Client")]
-[assembly: AssemblyCopyright("Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2019, Cinder Roxley.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
@@ -50,13 +38,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("9b31339a-b5e3-47ad-b6a3-0be444974cf2")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-[assembly: AssemblyVersion("3.0.0")]
-[assembly: AssemblyFileVersion("3.0.0")]

@@ -15,14 +15,15 @@ Alumni Developers:
 * **Robin Cornelius**
 * **Revolution Smythe**
 
-[![Travis CI Status](https://travis-ci.org/cinderblocks/radegast.svg?branch=master)](https://travis-ci.org/cinderblocks/radegast)
-[![AppVeyor Status](https://ci.appveyor.com/api/projects/status/ql37302tn67dvqih?svg=true)](https://ci.appveyor.com/project/cinderblocks57647/radegast)
+[![Build status](https://ci.appveyor.com/api/projects/status/g34olv3opd2vho32/branch/master?svg=true)](https://ci.appveyor.com/project/cinderblocks57647/radegast/branch/master)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/98684cbe995245f7ad1781cf254a742c)](https://www.codacy.com/manual/cinderblocks/radegast?utm_content=cinderblocks/radegast)
 
 # License
 
 **Radegast Metaverse Client**
 *Copyright © 2009-2018, Radegast Development Team*
-*Copyright © 2017, Cinderblocks Design Co.*
+*Copyright © 2017-2019, Sjofn, LLC.*
 *All rights reserved.*
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

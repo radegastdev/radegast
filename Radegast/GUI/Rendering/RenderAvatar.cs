@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
@@ -805,7 +806,7 @@ namespace Radegast.Rendering
             if (av.VisualParameters == null)
                 return;
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 int x = 0;
 

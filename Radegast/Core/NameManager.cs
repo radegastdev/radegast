@@ -1,6 +1,7 @@
 ﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2019, Sjofn LLC
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,6 +31,7 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
@@ -104,7 +106,7 @@ namespace Radegast
         Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
         Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
 
-        BlockingQueue<List<UUID>> PendingLookups;
+        ConcurrentQueue<List<UUID>> PendingLookups;
         Thread requestThread = null;
         Semaphore lookupGate;
         bool useRequestThread;
@@ -128,7 +130,7 @@ namespace Radegast
 
             if (useRequestThread)
             {
-                PendingLookups = new BlockingQueue<List<UUID>>();
+                PendingLookups = new ConcurrentQueue<List<UUID>>();
                 lookupGate = new Semaphore(4, 4);
                 requestThread = new Thread(new ThreadStart(RequestThread))
                 {
@@ -162,7 +164,10 @@ namespace Radegast
             try
             {
                 if (!useRequestThread) return;
-                PendingLookups.Close();
+                while (!PendingLookups.IsEmpty)
+                {
+                    PendingLookups.TryDequeue(out _);
+                }
 
                 if (requestThread == null) return;
                 if (!requestThread.Join(5 * 1000))
@@ -178,12 +183,10 @@ namespace Radegast
         #region private methods
         public void RequestThread()
         {
-            PendingLookups.Open();
-
             while (true)
             {
                 List<UUID> req = null;
-                if (!PendingLookups.Dequeue(Timeout.Infinite, ref req)) break;
+                if (!PendingLookups.TryDequeue(out req)) break;
                 lookupGate.WaitOne(90 * 1000);
                 client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
                 {
@@ -273,7 +276,7 @@ namespace Radegast
                     names[kvp.Key].LegacyLastName = parts[1];
                     names[kvp.Key].UserName = names[kvp.Key].LegacyLastName == "Resident" 
                         ? names[kvp.Key].LegacyFirstName.ToLower() 
-                        : string.Format("{0}.{1}", parts[0], parts[1]).ToLower();
+                        : $"{parts[0]}.{parts[1]}".ToLower();
 
                     ret.Add(kvp.Key, FormatName(names[kvp.Key]));
                 }
@@ -376,7 +379,7 @@ namespace Radegast
 
         void SaveCache(object sync)
         {
-            WorkPool.QueueUserWorkItem(syncx =>
+            ThreadPool.QueueUserWorkItem(syncx =>
             {
                 OSDArray namesOSD = new OSDArray(names.Count);
                 lock (names)
@@ -387,8 +390,7 @@ namespace Radegast
                     }
                 }
 
-                OSDMap cache = new OSDMap(1);
-                cache["names"] = namesOSD;
+                OSDMap cache = new OSDMap(1) {["names"] = namesOSD};
                 byte[] data = OSDParser.SerializeLLSDBinary(cache, false);
                 Logger.DebugLog($"Caching {namesOSD.Count} avatar names to {cacheFileName}");
 
@@ -405,7 +407,7 @@ namespace Radegast
 
         void LoadCachedNames()
         {
-            WorkPool.QueueUserWorkItem(syncx =>
+            ThreadPool.QueueUserWorkItem(syncx =>
             {
                 try
                 {

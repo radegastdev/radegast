@@ -32,6 +32,7 @@
 using System;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
+using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 
@@ -107,7 +108,7 @@ namespace Radegast.Rendering
         {
             if (sim == null || sim.Terrain == null) return;
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 int step = 1;
 
@@ -161,7 +162,7 @@ namespace Radegast.Rendering
             if (!fetchingTerrainTexture)
             {
                 fetchingTerrainTexture = true;
-                WorkPool.QueueUserWorkItem(sync =>
+                ThreadPool.QueueUserWorkItem(sync =>
                 {
                     Simulator sim = Client.Network.CurrentSim;
                     terrainImage = TerrainSplat.Splat(Instance, heightTable,

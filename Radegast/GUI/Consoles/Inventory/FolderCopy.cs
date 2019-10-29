@@ -25,7 +25,7 @@ namespace Radegast
 
             var destFolder = (InventoryFolder)Client.Inventory.Store[dest];
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 Instance.TabConsole.DisplayNotificationInChat("Starting copy operation...");
                 foreach (var node in f.Nodes.Values)

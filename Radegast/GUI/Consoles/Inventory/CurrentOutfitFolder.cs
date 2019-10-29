@@ -517,7 +517,7 @@ namespace Radegast
             }
 
             Client.Appearance.ReplaceOutfit(outfit, false);
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(2000);
                 Client.Appearance.RequestSetAppearance(true);
@@ -582,7 +582,7 @@ namespace Radegast
             }
 
             Client.Appearance.AddToOutfit(outfit, replace);
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 Thread.Sleep(2000);
                 Client.Appearance.RequestSetAppearance(true);

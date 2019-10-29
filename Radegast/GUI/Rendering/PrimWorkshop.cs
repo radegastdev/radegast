@@ -1,6 +1,7 @@
 // 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
+// Copyright (c) 2019, Sjofn LLC
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,6 +32,7 @@
 
 #region Usings
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -97,7 +99,7 @@ namespace Radegast.Rendering
         RadegastInstance instance;
         MeshmerizerR renderer;
         OpenTK.Graphics.GraphicsMode GLMode = null;
-        BlockingQueue<TextureLoadItem> PendingTextures = new BlockingQueue<TextureLoadItem>();
+        ConcurrentQueue<TextureLoadItem> PendingTextures = new ConcurrentQueue<TextureLoadItem>();
         float[] lightPos = new float[] { 0f, 0f, 1f, 0f };
         TextRendering textRendering;
         OpenTK.Matrix4 ModelMatrix;
@@ -248,7 +250,10 @@ namespace Radegast.Rendering
         void glControl_Disposed(object sender, EventArgs e)
         {
             TextureThreadRunning = false;
-            PendingTextures.Close();
+            while (!PendingTextures.IsEmpty)
+            {
+                PendingTextures.TryDequeue(out _);
+            }
         }
 
         void glControl_Load(object sender, EventArgs e)
@@ -517,14 +522,13 @@ namespace Radegast.Rendering
 
         void TextureThread()
         {
-            PendingTextures.Open();
             Logger.DebugLog("Started Texture Thread");
 
             while (TextureThreadRunning)
             {
                 TextureLoadItem item = null;
 
-                if (!PendingTextures.Dequeue(Timeout.Infinite, ref item)) continue;
+                if (!PendingTextures.TryDequeue(out item)) continue;
 
                 if (TexturesPtrMap.ContainsKey(item.TeFace.TextureID))
                 {
@@ -573,7 +577,7 @@ namespace Radegast.Rendering
         {
             SetupGLControl();
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
                 {
                     if (Client.Network.CurrentSim.ObjectsPrimitives.ContainsKey(RootPrimLocalID))
                     {
@@ -954,11 +958,13 @@ namespace Radegast.Rendering
             for (int j = 0; j < mesh.Faces.Count; j++)
             {
                 Face face = mesh.Faces[j];
-                FaceData data = new FaceData();
+                FaceData data = new FaceData
+                {
+                    Vertices = new float[face.Vertices.Count * 3], 
+                    Normals = new float[face.Vertices.Count * 3]
+                };
 
                 // Vertices for this face
-                data.Vertices = new float[face.Vertices.Count * 3];
-                data.Normals = new float[face.Vertices.Count * 3];
                 for (int k = 0; k < face.Vertices.Count; k++)
                 {
                     data.Vertices[k * 3 + 0] = face.Vertices[k].Position.X;
@@ -1080,7 +1086,7 @@ namespace Radegast.Rendering
             {
                 if (!instance.MonoRuntime || IsHandleCreated)
                 {
-                    BeginInvoke(new MethodInvoker(() => SafeInvalidate()));
+                    BeginInvoke(new MethodInvoker(SafeInvalidate));
                 }
                 return;
             }

@@ -30,6 +30,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Forms;
 using Radegast.Netcom;
 using OpenMetaverse;
@@ -667,7 +668,7 @@ namespace Radegast
 
         private void btnNewPick_Click(object sender, EventArgs e)
         {
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
                 {
                     UUID parcelID = client.Parcels.RequestRemoteParcelID(client.Self.SimPosition, client.Network.CurrentSim.Handle, client.Network.CurrentSim.ID);
                     newPickID = UUID.Random();

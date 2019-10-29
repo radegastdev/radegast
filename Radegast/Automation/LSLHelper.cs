@@ -77,9 +77,11 @@ namespace Radegast.Automation
             if (!client.Network.Connected) return;
             try
             {
-                OSDMap map = new OSDMap(2);
-                map["enabled"] = Enabled;
-                map["allowed_owner"] = string.Join(";", AllowedOwners);
+                OSDMap map = new OSDMap(2)
+                {
+                    ["enabled"] = Enabled, 
+                    ["allowed_owner"] = string.Join(";", AllowedOwners)
+                };
                 instance.ClientSettings["LSLHelper"] = map;
             }
             catch { }
@@ -145,9 +147,9 @@ namespace Radegast.Automation
                                     if (item == null)
                                         return false;
                                     client.Inventory.GiveItem(item.UUID, item.Name, item.AssetType, sendTo, true);
-                                    WorkPool.QueueUserWorkItem(sync =>
+                                    ThreadPool.QueueUserWorkItem(sync =>
                                         instance.TabConsole.DisplayNotificationInChat(
-                                            string.Format("Gave {0} to {1}", item.Name, instance.Names.Get(sendTo, true)),
+                                            $"Gave {item.Name} to {instance.Names.Get(sendTo, true)}",
                                             ChatBufferTextStyle.ObjectChat)
                                     );
                                     return true;
@@ -193,7 +195,7 @@ namespace Radegast.Automation
             if (args == null || args.Length < 4)
                 return;
 
-            WorkPool.QueueUserWorkItem(sync =>
+            ThreadPool.QueueUserWorkItem(sync =>
             {
                 try
                 {
@@ -224,13 +226,13 @@ namespace Radegast.Automation
                         if (Members != null && Members.ContainsKey(invitee))
                         {
                             instance.TabConsole.DisplayNotificationInChat(
-                                string.Format("Not inviting {0} ({1}) to {2} ({3}), already member", instance.Names.Get(invitee, true), invitee, instance.Groups[groupID].Name, groupID),
+                                $"Not inviting {instance.Names.Get(invitee, true)} ({invitee}) to {instance.Groups[groupID].Name} ({groupID}), already member",
                                 ChatBufferTextStyle.ObjectChat);
                         }
                         else
                         {
                             instance.TabConsole.DisplayNotificationInChat(
-                                string.Format("Inviting {0} ({1}) to {2} ({3})", instance.Names.Get(invitee, true), invitee, instance.Groups[groupID].Name, groupID),
+                                $"Inviting {instance.Names.Get(invitee, true)} ({invitee}) to {instance.Groups[groupID].Name} ({groupID})",
                                 ChatBufferTextStyle.ObjectChat);
                             client.Groups.Invite(groupID, new List<UUID>(1) { roleID }, invitee);
                         }
@@ -238,7 +240,7 @@ namespace Radegast.Automation
                     else
                     {
                         instance.TabConsole.DisplayNotificationInChat(
-                            string.Format("Cannot invite to group {0}, I don't appear to be in it.", groupID),
+                            $"Cannot invite to group {groupID}, I don't appear to be in it.",
                             ChatBufferTextStyle.Error);
                     }
                 }
