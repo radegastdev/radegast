@@ -541,7 +541,7 @@ namespace Radegast
         /// <param name="position">Insert position</param>
         public void InsertLink(string text, string hyperlink, int position)
         {
-            if (position < 0 || position > Text.Length)
+            if (position < 0 /* Commented out for now until we can find out why this is happening || position > Text.Length*/)
                 throw new ArgumentOutOfRangeException(nameof(position));
 
             SelectionStart = position;

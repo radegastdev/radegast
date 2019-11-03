@@ -542,7 +542,7 @@ namespace Radegast
             }
             else if (node.Tag is InventoryFolder folder)
             {
-                client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, AgentID, true);
+                client.Inventory.GiveFolder(folder.UUID, folder.Name, AgentID, true);
                 instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + fullName + ".");
             }
         }
@@ -613,7 +613,7 @@ namespace Radegast
             else if (inv is InventoryFolder)
             {
                 InventoryFolder folder = inv as InventoryFolder;
-                client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, AgentID, true);
+                client.Inventory.GiveFolder(folder.UUID, folder.Name, AgentID, true);
                 instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + fullName + ".");
             }
 
