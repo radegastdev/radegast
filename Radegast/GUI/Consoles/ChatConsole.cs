@@ -799,7 +799,7 @@ namespace Radegast
             }
             else if (node.Tag is InventoryFolder folder)
             {
-                client.Inventory.GiveFolder(folder.UUID, folder.Name, AssetType.Folder, (UUID)litem.Tag, true);
+                client.Inventory.GiveFolder(folder.UUID, folder.Name, (UUID)litem.Tag, true);
                 instance.TabConsole.DisplayNotificationInChat("Offered folder " + folder.Name + " to " + instance.Names.Get((UUID)litem.Tag) + ".");
             }
         }
