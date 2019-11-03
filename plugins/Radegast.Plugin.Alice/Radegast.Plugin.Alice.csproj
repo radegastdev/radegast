@@ -54,13 +54,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLBot" Version="2.0.0" />
-    <PackageReference Include="LibreMetaverse" Version="1.4.2.22" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.2.22" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.2.22" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.2.22" />
+    <PackageReference Include="LibreMetaverse" Version="1.4.3.33" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.3.33" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.3.33" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.4.3.33" />
     <PackageReference Include="LinkDotNet.NUniqueHardwareID" Version="0.4.1" />
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="protobuf-net" Version="2.4.1" />
+    <PackageReference Include="protobuf-net" Version="2.4.4" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
