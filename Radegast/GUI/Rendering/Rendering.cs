@@ -129,8 +129,11 @@ namespace Radegast.Rendering
         OpenTK.Graphics.GraphicsMode GLMode = null;
         AutoResetEvent TextureThreadContextReady = new AutoResetEvent(false);
 
+        private CancellationTokenSource cancellationTokenSource = null;
+
         delegate void GenericTask();
         readonly ConcurrentQueue<GenericTask> PendingTasks = new ConcurrentQueue<GenericTask>();
+        private readonly SemaphoreSlim PendingTasksAvailable = new SemaphoreSlim(0);
         Thread genericTaskThread;
 
         readonly ConcurrentQueue<TextureLoadItem> PendingTextures = new ConcurrentQueue<TextureLoadItem>();
@@ -174,6 +177,8 @@ namespace Radegast.Rendering
             Client = instance.Client;
 
             UseMultiSampling = Instance.GlobalSettings["use_multi_sampling"];
+
+            cancellationTokenSource = new CancellationTokenSource();
 
             genericTaskThread = new Thread(GenericTaskRunner)
             {
@@ -249,6 +254,13 @@ namespace Radegast.Rendering
             Client.Avatars.AvatarAnimation -= new EventHandler<AvatarAnimationEventArgs>(AvatarAnimationChanged);
             Client.Avatars.AvatarAppearance -= new EventHandler<AvatarAppearanceEventArgs>(Avatars_AvatarAppearance);
             Client.Appearance.AppearanceSet -= new EventHandler<AppearanceSetEventArgs>(Appearance_AppearanceSet);
+
+            if (cancellationTokenSource != null)
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                cancellationTokenSource = null;
+            }
 
             if (genericTaskThread != null)
             {
@@ -1133,12 +1145,26 @@ namespace Radegast.Rendering
         {
             Logger.DebugLog("Started generic task thread");
 
-            while (true)
+            try
             {
-                GenericTask task = null;
-                if (!PendingTasks.TryDequeue(out task)) break;
-                task.Invoke();
+                var token = cancellationTokenSource?.Token ?? throw new NullReferenceException();
+                while (true)
+                {
+                    PendingTasksAvailable.Wait(token);
+                    GenericTask task = null;
+                    if (!PendingTasks.TryDequeue(out task)) break;
+                    task.Invoke();
+                }
             }
+            catch (ObjectDisposedException e)
+            {
+                Logger.Log("GenericTaskRunner was cancelled", Helpers.LogLevel.Debug, e);
+            }
+            catch (OperationCanceledException e)
+            {
+                Logger.Log("GenericTaskRunner was cancelled", Helpers.LogLevel.Debug, e);
+            }
+
             Logger.DebugLog("Generic task thread exited");
         }
 
@@ -1156,7 +1182,7 @@ namespace Radegast.Rendering
                         UpdatePrimBlocking(mainPrim);
                         Client.Network.CurrentSim.ObjectsPrimitives
                             .FindAll(child => child.ParentID == mainPrim.LocalID)
-                            .ForEach(subPrim => UpdatePrimBlocking(subPrim));
+                            .ForEach(UpdatePrimBlocking);
                     }
                 }
 
@@ -1173,10 +1199,7 @@ namespace Radegast.Rendering
                                 UpdatePrimBlocking(attachedPrim);
                                 Client.Network.CurrentSim.ObjectsPrimitives
                                     .FindAll(child => child.ParentID == attachedPrim.LocalID)
-                                    .ForEach(attachedPrimChild =>
-                                    {
-                                        UpdatePrimBlocking(attachedPrimChild);
-                                    });
+                                    .ForEach(UpdatePrimBlocking);
                             });
                     }
                 }
@@ -1201,7 +1224,7 @@ namespace Radegast.Rendering
             // Ensure that this is done on the main thread
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(() => AvatarDataInitialzied()));
+                Invoke(new MethodInvoker(AvatarDataInitialzied));
                 return;
             }
 
@@ -1245,8 +1268,7 @@ namespace Radegast.Rendering
         Vector3 PrimPos(Primitive prim)
         {
             Vector3 pos;
-            Quaternion rot;
-            PrimPosAndRot(GetSceneObject(prim.LocalID), out pos, out rot);
+            PrimPosAndRot(GetSceneObject(prim.LocalID), out pos, out _);
             return pos;
         }
 
@@ -1285,7 +1307,7 @@ namespace Radegast.Rendering
         }
 
         /// <summary>
-        /// Calculates finar rendering position for objects on the scene
+        /// Calculates finer rendering position for objects on the scene
         /// </summary>
         /// <param name="obj">SceneObject whose position is calculated</param>
         /// <param name="pos">Rendering position</param>
@@ -2856,12 +2878,13 @@ namespace Radegast.Rendering
             else
             {
                 PendingTasks.Enqueue(GenerateSculptOrMeshPrim(rprim, prim));
+                PendingTasksAvailable.Release();
             }
         }
 
         private GenericTask GenerateSculptOrMeshPrim(RenderPrimitive rprim, Primitive prim)
         {
-            return new GenericTask(() =>
+            return () =>
             {
                 FacetedMesh mesh = null;
 
@@ -2926,40 +2949,47 @@ namespace Radegast.Rendering
                         Prims.Remove(rprim.BasePrim.LocalID);
                     }
                 }
-            });
+            };
         }
 
         private void UpdatePrimBlocking(Primitive prim)
         {
             if (!RenderingEnabled) return;
 
-            if (RenderSettings.AvatarRenderingEnabled && prim.PrimData.PCode == PCode.Avatar)
+            switch (prim.PrimData.PCode)
             {
-                AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
-                return;
+                case PCode.Avatar:
+                    AddAvatarToScene(Client.Network.CurrentSim.ObjectsAvatars[prim.LocalID]);
+                    return;
+                case PCode.Prim:
+                    if (!RenderSettings.PrimitiveRenderingEnabled) return;
+
+                    if (prim.Textures == null) return;
+
+                    RenderPrimitive rPrim = null;
+                    if (Prims.TryGetValue(prim.LocalID, out rPrim))
+                    {
+                        rPrim.AttachedStateKnown = false;
+                    }
+                    else
+                    {
+                        rPrim = new RenderPrimitive
+                        {
+                            Meshed = false,
+                            BoundingVolume = new BoundingVolume()
+                        };
+                        rPrim.BoundingVolume.FromScale(prim.Scale);
+                    }
+
+                    rPrim.BasePrim = prim;
+                    lock (Prims) Prims[prim.LocalID] = rPrim;
+                    break;
+                case PCode.ParticleSystem:
+                // todo
+                default:
+                    // unimplemented foliage
+                    break;
             }
-
-            // Skip foliage
-            if (prim.PrimData.PCode != PCode.Prim) return;
-            if (!RenderSettings.PrimitiveRenderingEnabled) return;
-
-            if (prim.Textures == null) return;
-
-            RenderPrimitive rPrim = null;
-            if (Prims.TryGetValue(prim.LocalID, out rPrim))
-            {
-                rPrim.AttachedStateKnown = false;
-            }
-            else
-            {
-                rPrim = new RenderPrimitive();
-                rPrim.Meshed = false;
-                rPrim.BoundingVolume = new BoundingVolume();
-                rPrim.BoundingVolume.FromScale(prim.Scale);
-            }
-
-            rPrim.BasePrim = prim;
-            lock (Prims) Prims[prim.LocalID] = rPrim;
         }
 
         private bool LoadTexture(UUID textureID, ref Image texture, bool removeAlpha)
