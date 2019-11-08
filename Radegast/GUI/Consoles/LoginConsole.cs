@@ -120,9 +120,9 @@ namespace Radegast
 
             string username = cbxUsername.Text;
 
-            if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin)
+            if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin login)
             {
-                username = ((SavedLogin)cbxUsername.SelectedItem).Username;
+                username = login.Username;
             }
 
             if (cbxGrid.SelectedIndex == cbxGrid.Items.Count - 1) // custom login uri
@@ -406,9 +406,9 @@ namespace Radegast
         {
             string username = cbxUsername.Text;
 
-            if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin)
+            if (cbxUsername.SelectedIndex > 0 && cbxUsername.SelectedItem is SavedLogin login)
             {
-                username = ((SavedLogin)cbxUsername.SelectedItem).Username;
+                username = login.Username;
             }
 
             string[] parts = System.Text.RegularExpressions.Regex.Split(username.Trim(), @"[. ]+");
