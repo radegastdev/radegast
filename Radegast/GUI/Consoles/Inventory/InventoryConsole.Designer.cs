@@ -102,6 +102,7 @@ namespace Radegast
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cbSrchRecent = new System.Windows.Forms.RadioButton();
             this.cbSrchWorn = new System.Windows.Forms.RadioButton();
+            this.cbSrchGestures = new System.Windows.Forms.RadioButton();
             this.rbSrchAll = new System.Windows.Forms.RadioButton();
             this.lblSearchStatus = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -319,7 +320,7 @@ namespace Radegast
             this.tabSearch.Location = new System.Drawing.Point(4, 22);
             this.tabSearch.Name = "tabSearch";
             this.tabSearch.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSearch.Size = new System.Drawing.Size(433, 457);
+            this.tabSearch.Size = new System.Drawing.Size(458, 457);
             this.tabSearch.TabIndex = 1;
             this.tabSearch.Text = "Search";
             this.tabSearch.UseVisualStyleBackColor = true;
@@ -338,7 +339,7 @@ namespace Radegast
             this.lstInventorySearch.Name = "lstInventorySearch";
             this.lstInventorySearch.OwnerDraw = true;
             this.lstInventorySearch.ShowGroups = false;
-            this.lstInventorySearch.Size = new System.Drawing.Size(427, 363);
+            this.lstInventorySearch.Size = new System.Drawing.Size(452, 363);
             this.lstInventorySearch.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lstInventorySearch.TabIndex = 30;
             this.lstInventorySearch.UseCompatibleStateImageBehavior = false;
@@ -366,11 +367,12 @@ namespace Radegast
             this.pnlSearchOptions.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSearchOptions.Location = new System.Drawing.Point(3, 3);
             this.pnlSearchOptions.Name = "pnlSearchOptions";
-            this.pnlSearchOptions.Size = new System.Drawing.Size(427, 88);
+            this.pnlSearchOptions.Size = new System.Drawing.Size(452, 88);
             this.pnlSearchOptions.TabIndex = 20;
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbSrchGestures);
             this.groupBox2.Controls.Add(this.cbSrchRecent);
             this.groupBox2.Controls.Add(this.cbSrchWorn);
             this.groupBox2.Controls.Add(this.rbSrchAll);
@@ -380,6 +382,17 @@ namespace Radegast
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Filter";
+            // 
+            // cbSrchGestures
+            // 
+            this.cbSrchGestures.AutoSize = true;
+            this.cbSrchGestures.Location = new System.Drawing.Point(167, 19);
+            this.cbSrchGestures.Name = "cbSrchGestures";
+            this.cbSrchGestures.Size = new System.Drawing.Size(60, 17);
+            this.cbSrchGestures.TabIndex = 3;
+            this.cbSrchGestures.Text = "Gestures";
+            this.cbSrchGestures.UseVisualStyleBackColor = true;
+            this.cbSrchGestures.CheckedChanged += new System.EventHandler(this.rbSrchAll_CheckedChanged);
             // 
             // cbSrchRecent
             // 
@@ -419,7 +432,7 @@ namespace Radegast
             // lblSearchStatus
             // 
             this.lblSearchStatus.AutoSize = true;
-            this.lblSearchStatus.Location = new System.Drawing.Point(335, 6);
+            this.lblSearchStatus.Location = new System.Drawing.Point(401, 6);
             this.lblSearchStatus.Name = "lblSearchStatus";
             this.lblSearchStatus.Size = new System.Drawing.Size(46, 13);
             this.lblSearchStatus.TabIndex = 3;
@@ -432,7 +445,7 @@ namespace Radegast
             this.groupBox1.Controls.Add(this.cbSrchName);
             this.groupBox1.Location = new System.Drawing.Point(236, 30);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(154, 49);
+            this.groupBox1.Size = new System.Drawing.Size(213, 49);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Search in";
@@ -478,14 +491,14 @@ namespace Radegast
             this.txtSearch.AccessibleName = "Search input";
             this.txtSearch.Location = new System.Drawing.Point(3, 3);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(227, 20);
+            this.txtSearch.Size = new System.Drawing.Size(293, 20);
             this.txtSearch.TabIndex = 0;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
             // 
             // btnInvSearch
             // 
-            this.btnInvSearch.Location = new System.Drawing.Point(236, 1);
+            this.btnInvSearch.Location = new System.Drawing.Point(302, 1);
             this.btnInvSearch.Name = "btnInvSearch";
             this.btnInvSearch.Size = new System.Drawing.Size(96, 23);
             this.btnInvSearch.TabIndex = 1;
@@ -676,6 +689,7 @@ namespace Radegast
             // 
             // txtCreator
             // 
+            this.txtCreator.AgentID = ((OpenMetaverse.UUID)(resources.GetObject("txtCreator.AgentID")));
             this.txtCreator.BackColor = System.Drawing.SystemColors.Window;
             this.txtCreator.Location = new System.Drawing.Point(80, 55);
             this.txtCreator.Name = "txtCreator";
@@ -768,6 +782,7 @@ namespace Radegast
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tstripInventory.ResumeLayout(false);
             this.tstripInventory.PerformLayout();
@@ -810,6 +825,7 @@ namespace Radegast
         public System.Windows.Forms.RadioButton rbSrchAll;
         public System.Windows.Forms.RadioButton cbSrchRecent;
         public System.Windows.Forms.RadioButton cbSrchWorn;
+        public System.Windows.Forms.RadioButton cbSrchGestures;
         public System.Windows.Forms.GroupBox gbxPerms;
         public System.Windows.Forms.TreeView invTree;
         public System.Windows.Forms.SplitContainer splitContainer1;

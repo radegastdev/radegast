@@ -2481,11 +2481,15 @@ namespace Radegast
                     }
 
                     if (cbSrchWorn.Checked && add &&
-                            !(
-                                (it.InventoryType == InventoryType.Wearable && IsWorn(it)) ||
-                                ((it.InventoryType == InventoryType.Attachment || it.InventoryType == InventoryType.Object) && IsAttached(it))
-                            )
-                    )
+                        !(it.InventoryType == InventoryType.Wearable && IsWorn(it) 
+                          || (it.InventoryType == InventoryType.Attachment 
+                              || it.InventoryType == InventoryType.Object) && IsAttached(it)))
+                    {
+                        add = false;
+                    }
+
+                    if (cbSrchGestures.Checked && add &&
+                        it.InventoryType != InventoryType.Gesture)
                     {
                         add = false;
                     }
@@ -2538,7 +2542,7 @@ namespace Radegast
             searchItemCache.Clear();
             PerformRecursiveSearch(0, Inventory.RootFolder.UUID);
             lstInventorySearch.VirtualListSize = searchRes.Count;
-            lblSearchStatus.Text = string.Format("{0} results", found);
+            lblSearchStatus.Text = $"{found} results";
         }
 
         private void lstInventorySearch_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
