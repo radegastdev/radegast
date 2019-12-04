@@ -52,10 +52,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LibreMetaverse" Version="1.4.3.33" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.3.33" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.3.33" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.3.33" />
+    <PackageReference Include="LibreMetaverse" Version="1.4.4.43" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.4.43" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.4.43" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.4.4.43" />
     <PackageReference Include="LinkDotNet.NUniqueHardwareID" Version="0.4.1" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="protobuf-net" Version="2.4.4" />
