@@ -3,6 +3,7 @@
     <!-- Version number will be overridden by the build process -->
     <?define productVersion="2.0.1.0" ?>
     <?define productName="Radegast"?>
+    <?define productDesc="A lightweight client for Second Life and OpenSimulator"?>
     <?define companyName="Sjofn, LLC"?>
     <?define totalFileSize="10"?>
 </Include>
