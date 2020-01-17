@@ -3,6 +3,7 @@ init:
   - ps: $env:TAG_VERSION = $env:TAG_VERSION -replace 'v',''
   - ps: Write-Host "Setting version to '$env:TAG_VERSION'"
   - ps: Update-AppveyorBuild -Version "$env:TAG_VERSION"
+  - ps: Install-Module -Name SignPath
 
 image: Visual Studio 2019
 
@@ -11,6 +12,11 @@ branches:
     - localbuilding
 
 configuration: Release
+
+environment:
+  SIGN_TOKEN:
+    secure: 1CtzaepYsuG1vKjlwJVLmjjIuhNHexDv/cJLjBKv83xQ98AquMUG/+v4mFoqXM6x
+
 
 pull_requests:
   do_not_increment_build_number: true
@@ -36,13 +42,10 @@ before_build:
 
 
 after_build:
-  - cmd: '"C:\Program Files (x86)\NSIS\makensis.exe" Radegast\Radegast.nsi'
   - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar bin\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
+ 
 
 artifacts:
-  - path: 'Radegast-*-installer.exe'
-    name: 'Radegast Installer'
-    type: Auto
   - path: 'Radegast-*.tbz'
     name: 'Radegast Linux'
     type: Auto

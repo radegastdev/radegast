@@ -12,3 +12,4 @@ compile.bat
 .vs
 .idea
 libremetaverse/
+/Install/RadegastSetup/ProductInstallFiles.wxs
