@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
     <!-- Version number will be overridden by the build process -->
-    <?define productVersion="2.0.1.0" ?>
+    <?define productVersion="2.30.0.0" ?>
     <?define productName="Radegast"?>
     <?define companyName="Sjofn, LLC"?>
     <?define totalFileSize="10"?>
