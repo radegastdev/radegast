@@ -9,7 +9,7 @@
         </BootstrapperApplicationRef>
         <Chain>
             <PackageGroupRef Id="NetFx472Redist"/>
-            <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)"/>
+            <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" />
 		</Chain>
 	</Bundle>
 </Wix>

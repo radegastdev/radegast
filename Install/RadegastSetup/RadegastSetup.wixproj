@@ -23,6 +23,7 @@
     <Compile Include="NetFx472.wxs" />
     <Compile Include="Product.wxs" />
     <Compile Include="ProductInstallFiles.wxs" />
+    <Compile Include="VoicePack.wxs" />
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixNetFxExtension">
@@ -42,6 +43,15 @@
     <Content Include="assets\license.rtf" />
     <Content Include="assets\radegast.ico" />
     <Content Include="BuildProperties.wxi" />
+    <Content Include="slvoice\DbgHelp.dll" />
+    <Content Include="slvoice\ortp.dll" />
+    <Content Include="slvoice\ortp.pdb" />
+    <Content Include="slvoice\SLVoice.exe" />
+    <Content Include="slvoice\vivoxsdk.dll" />
+    <Content Include="slvoice\vivoxsdk.lib" />
+    <Content Include="slvoice\vivoxsdk.pdb" />
+    <Content Include="slvoice\vivox_licenses.txt" />
+    <Content Include="slvoice\zlib1.dll" />
     <Content Include="UI.wxi" />
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets" />
+    <Folder Include="slvoice" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
