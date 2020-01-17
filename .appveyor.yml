@@ -11,7 +11,7 @@ branches:
   except:
     - localbuilding
 
-configuration: Release
+configuration: ReleaseWindows
 
 environment:
   SIGN_TOKEN:
