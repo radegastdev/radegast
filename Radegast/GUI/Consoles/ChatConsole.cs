@@ -767,11 +767,34 @@ namespace Radegast
             movement.MovingBackward = false;
         }
 
-        private void pnlMovement_Click(object sender, EventArgs e)
+        private void btnMoveUp_MouseDown(object Sender, MouseEventArgs e)
         {
-            client.Self.Jump(true);
-            System.Threading.Thread.Sleep(500);
-            client.Self.Jump(false);
+            movement.Jump = true;
+        }
+
+        private void btnMoveUp_MouseUp(object Sender, MouseEventArgs e)
+        {
+            movement.Jump = false;
+        }
+
+        private void btnMoveDown_MouseDown(object Sender, MouseEventArgs e)
+        {
+            movement.Crouch = true;
+        }
+
+        private void btnMoveDown_MouseUp(object Sender, MouseEventArgs e)
+        {
+            movement.Crouch = false;
+        }
+
+        private void btnFly_Click(object sender, EventArgs e)
+        {
+            movement.ToggleFlight();
+        }
+
+        private void btnRun_Click(object sender, EventArgs e)
+        {
+            movement.ToggleAlwaysRun();
         }
 
         private void lvwObjects_DragDrop(object sender, DragEventArgs e)

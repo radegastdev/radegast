@@ -34,6 +34,10 @@ namespace Radegast
         private bool turningRight = false;
         private bool movingForward = false;
         private bool movingBackward = false;
+        private bool crouching = false;
+        private bool flying = false;
+        private bool jumping = false;
+        private bool running = false;
 
         public bool TurningLeft
         {
@@ -99,6 +103,58 @@ namespace Radegast
                     
                 }
             }
+        }
+
+        public bool Jump
+        {
+            get => jumping;
+            set
+            {
+                jumping = value;
+                client.Self.Jump(value);
+            }
+        }
+
+        public bool Crouch
+        {
+            get => crouching;
+            set
+            {
+                crouching = value;
+                client.Self.Crouch(value);
+            }
+        }
+
+        public bool Fly
+        {
+            get => flying;
+            set
+            {
+                flying = value;
+                client.Self.Fly(value);
+            }
+        }
+
+        public bool AlwaysRun
+        {
+            get => running;
+            set
+            {
+                running = value;
+                client.Self.Movement.AlwaysRun = value;
+            }
+        }
+
+        public bool ToggleFlight()
+        {
+            Fly = !Fly;
+            return Fly;
+        }
+
+        public bool ToggleAlwaysRun()
+        {
+            AlwaysRun = !AlwaysRun;
+            return AlwaysRun;
         }
 
         public RadegastMovement(RadegastInstance instance)

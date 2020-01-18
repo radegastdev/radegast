@@ -85,6 +85,10 @@ namespace Radegast
             this.ctxEstateEject = new System.Windows.Forms.ToolStripMenuItem();
             this.muteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlMovement = new System.Windows.Forms.Panel();
+            this.btnRun = new System.Windows.Forms.Button();
+            this.btnFly = new System.Windows.Forms.Button();
+            this.btnJump = new System.Windows.Forms.Button();
+            this.btnCrouch = new System.Windows.Forms.Button();
             this.btnMoveBack = new System.Windows.Forms.Button();
             this.btnFwd = new System.Windows.Forms.Button();
             this.btnTurnRight = new System.Windows.Forms.Button();
@@ -161,7 +165,7 @@ namespace Radegast
             this.lvwObjects.Location = new System.Drawing.Point(0, 0);
             this.lvwObjects.MultiSelect = false;
             this.lvwObjects.Name = "lvwObjects";
-            this.lvwObjects.Size = new System.Drawing.Size(127, 317);
+            this.lvwObjects.Size = new System.Drawing.Size(127, 310);
             this.lvwObjects.TabIndex = 0;
             this.lvwObjects.UseCompatibleStateImageBehavior = false;
             this.lvwObjects.View = System.Windows.Forms.View.List;
@@ -333,26 +337,87 @@ namespace Radegast
             // 
             // pnlMovement
             // 
+            this.pnlMovement.Controls.Add(this.btnRun);
+            this.pnlMovement.Controls.Add(this.btnFly);
+            this.pnlMovement.Controls.Add(this.btnJump);
+            this.pnlMovement.Controls.Add(this.btnCrouch);
             this.pnlMovement.Controls.Add(this.btnMoveBack);
             this.pnlMovement.Controls.Add(this.btnFwd);
             this.pnlMovement.Controls.Add(this.btnTurnRight);
             this.pnlMovement.Controls.Add(this.btnTurnLeft);
             this.pnlMovement.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlMovement.Location = new System.Drawing.Point(0, 317);
+            this.pnlMovement.Location = new System.Drawing.Point(0, 310);
             this.pnlMovement.Name = "pnlMovement";
-            this.pnlMovement.Size = new System.Drawing.Size(127, 37);
+            this.pnlMovement.Size = new System.Drawing.Size(127, 44);
             this.pnlMovement.TabIndex = 11;
-            this.pnlMovement.Click += new System.EventHandler(this.pnlMovement_Click);
+            // 
+            // btnRun
+            // 
+            this.btnRun.AccessibleDescription = "";
+            this.btnRun.AccessibleName = "Run";
+            this.btnRun.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRun.Location = new System.Drawing.Point(64, 3);
+            this.btnRun.Margin = new System.Windows.Forms.Padding(0);
+            this.btnRun.Name = "btnRun";
+            this.btnRun.Size = new System.Drawing.Size(29, 19);
+            this.btnRun.TabIndex = 9;
+            this.btnRun.TabStop = false;
+            this.btnRun.Text = "🏃";
+            this.btnRun.Click += new System.EventHandler(this.btnRun_Click);
+            // 
+            // btnFly
+            // 
+            this.btnFly.AccessibleDescription = "";
+            this.btnFly.AccessibleName = "Fly";
+            this.btnFly.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnFly.Location = new System.Drawing.Point(6, 3);
+            this.btnFly.Margin = new System.Windows.Forms.Padding(0);
+            this.btnFly.Name = "btnFly";
+            this.btnFly.Size = new System.Drawing.Size(29, 19);
+            this.btnFly.TabIndex = 8;
+            this.btnFly.TabStop = false;
+            this.btnFly.Text = "✈️";
+            this.btnFly.Click += new System.EventHandler(this.btnFly_Click);
+            // 
+            // btnJump
+            // 
+            this.btnJump.AccessibleDescription = "";
+            this.btnJump.AccessibleName = "Jump/Up";
+            this.btnJump.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnJump.Location = new System.Drawing.Point(93, 3);
+            this.btnJump.Margin = new System.Windows.Forms.Padding(0);
+            this.btnJump.Name = "btnJump";
+            this.btnJump.Size = new System.Drawing.Size(29, 19);
+            this.btnJump.TabIndex = 6;
+            this.btnJump.TabStop = false;
+            this.btnJump.Text = "↑";
+            this.btnJump.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveUp_MouseDown);
+            this.btnJump.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveUp_MouseUp);
+            // 
+            // btnCrouch
+            // 
+            this.btnCrouch.AccessibleDescription = "";
+            this.btnCrouch.AccessibleName = "Crouch/Down";
+            this.btnCrouch.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCrouch.Location = new System.Drawing.Point(93, 22);
+            this.btnCrouch.Margin = new System.Windows.Forms.Padding(0);
+            this.btnCrouch.Name = "btnCrouch";
+            this.btnCrouch.Size = new System.Drawing.Size(29, 19);
+            this.btnCrouch.TabIndex = 5;
+            this.btnCrouch.TabStop = false;
+            this.btnCrouch.Text = "↓";
+            this.btnCrouch.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveDown_MouseDown);
+            this.btnCrouch.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveDown_MouseUp);
             // 
             // btnMoveBack
             // 
-            this.btnMoveBack.AccessibleDescription = "Walk backwards";
+            this.btnMoveBack.AccessibleDescription = "";
             this.btnMoveBack.AccessibleName = "Walk backwards";
             this.btnMoveBack.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMoveBack.Location = new System.Drawing.Point(36, 15);
+            this.btnMoveBack.Location = new System.Drawing.Point(35, 22);
             this.btnMoveBack.Margin = new System.Windows.Forms.Padding(0);
             this.btnMoveBack.Name = "btnMoveBack";
-            this.btnMoveBack.Size = new System.Drawing.Size(31, 19);
+            this.btnMoveBack.Size = new System.Drawing.Size(29, 19);
             this.btnMoveBack.TabIndex = 2;
             this.btnMoveBack.TabStop = false;
             this.btnMoveBack.Text = "▼";
@@ -361,13 +426,13 @@ namespace Radegast
             // 
             // btnFwd
             // 
-            this.btnFwd.AccessibleDescription = "Walk forward";
+            this.btnFwd.AccessibleDescription = "";
             this.btnFwd.AccessibleName = "Walk forward";
             this.btnFwd.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnFwd.Location = new System.Drawing.Point(36, 0);
+            this.btnFwd.Location = new System.Drawing.Point(35, 3);
             this.btnFwd.Margin = new System.Windows.Forms.Padding(0);
             this.btnFwd.Name = "btnFwd";
-            this.btnFwd.Size = new System.Drawing.Size(31, 19);
+            this.btnFwd.Size = new System.Drawing.Size(29, 19);
             this.btnFwd.TabIndex = 1;
             this.btnFwd.TabStop = false;
             this.btnFwd.Text = "▲";
@@ -376,13 +441,13 @@ namespace Radegast
             // 
             // btnTurnRight
             // 
-            this.btnTurnRight.AccessibleDescription = "Turn right";
+            this.btnTurnRight.AccessibleDescription = "";
             this.btnTurnRight.AccessibleName = "Turn right";
             this.btnTurnRight.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTurnRight.Location = new System.Drawing.Point(67, 15);
+            this.btnTurnRight.Location = new System.Drawing.Point(64, 22);
             this.btnTurnRight.Margin = new System.Windows.Forms.Padding(0);
             this.btnTurnRight.Name = "btnTurnRight";
-            this.btnTurnRight.Size = new System.Drawing.Size(31, 19);
+            this.btnTurnRight.Size = new System.Drawing.Size(29, 19);
             this.btnTurnRight.TabIndex = 4;
             this.btnTurnRight.TabStop = false;
             this.btnTurnRight.Text = "►";
@@ -391,13 +456,13 @@ namespace Radegast
             // 
             // btnTurnLeft
             // 
-            this.btnTurnLeft.AccessibleDescription = "Turn left";
+            this.btnTurnLeft.AccessibleDescription = "";
             this.btnTurnLeft.AccessibleName = "Turn left";
             this.btnTurnLeft.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTurnLeft.Location = new System.Drawing.Point(5, 15);
+            this.btnTurnLeft.Location = new System.Drawing.Point(6, 22);
             this.btnTurnLeft.Margin = new System.Windows.Forms.Padding(0);
             this.btnTurnLeft.Name = "btnTurnLeft";
-            this.btnTurnLeft.Size = new System.Drawing.Size(31, 19);
+            this.btnTurnLeft.Size = new System.Drawing.Size(29, 19);
             this.btnTurnLeft.TabIndex = 3;
             this.btnTurnLeft.TabStop = false;
             this.btnTurnLeft.Text = "◄";
@@ -500,5 +565,9 @@ namespace Radegast
         private ToolStripMenuItem goToToolStripMenuItem;
         private ToolStripMenuItem faceToolStripMenuItem;
         private ToolStripMenuItem ctxReqestLure;
+        public Button btnJump;
+        public Button btnCrouch;
+        public Button btnFly;
+        public Button btnRun;
     }
 }
