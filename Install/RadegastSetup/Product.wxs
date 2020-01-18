@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
     <?include BuildProperties.wxi?>
+    <?define productVersion="!(bind.fileVersion.Radegast.exe)"?>
 
     <Product Id="*" Name="$(var.productName) $(var.productVersion)" Language="1033" 
              Version="$(var.productVersion)" Manufacturer="$(var.companyName)" UpgradeCode="7dcb250d-4b4d-48b1-82e0-cca31315d145">
@@ -56,6 +57,14 @@
                 <Directory Id="ApplicationProgramsFolder" Name="$(var.productName)" />
             </Directory>
         </Directory>
+    </Fragment>
+
+    <Fragment>
+        <ComponentGroup Id="Runtime" Directory="APPLICATIONFOLDER">
+            <Component Id="RadegastExe">
+                <File Id="RadegastExe" KeyPath="yes" Checksum="yes" Source="$(var.Radegast.TargetPath)" />
+            </Component>
+        </ComponentGroup>
     </Fragment>
 
     <!-- Start menu -->

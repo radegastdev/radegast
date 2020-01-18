@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
     <?include BuildProperties.wxi?>
+    <?define productVersion="!(bind.packageVersion.RadegastSetup)"?>
 
     <Bundle Name="$(var.productName) $(var.productVersion)" Version="$(var.productVersion)" 
             Manufacturer="$(var.companyName)" UpgradeCode="cccc26b5-aa17-47d8-8d5d-707a78ec9a10">
