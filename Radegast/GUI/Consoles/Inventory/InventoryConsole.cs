@@ -2496,7 +2496,7 @@ namespace Radegast
                 }
             }
 
-            if (searchRes[searchRes.Count - 1].Inv == me)
+            if (searchRes[searchRes.Count - 1].Inv.Equals(me))
             {
                 searchRes.RemoveAt(searchRes.Count - 1);
             }
