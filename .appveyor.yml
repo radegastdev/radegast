@@ -46,6 +46,9 @@ after_build:
  
 
 artifacts:
+  - path: 'Install\RadegastSetup\bin\Release\RadegastSetup.msi'
+    name: 'Radegast Windows MSI'
+    type: Auto
   - path: 'Radegast-*.tbz'
     name: 'Radegast Linux'
     type: Auto
