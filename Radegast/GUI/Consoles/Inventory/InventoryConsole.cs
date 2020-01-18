@@ -1316,88 +1316,78 @@ namespace Radegast
                     if (folder.PreferredType >= FolderType.EnsembleStart &&
                         folder.PreferredType <= FolderType.EnsembleEnd)
                     {
-                        ctxItem = new ToolStripMenuItem("Fix type", null, OnInvContextClick);
-                        ctxItem.Name = "fix_type";
+                        ctxItem = new ToolStripMenuItem("Fix type", null, OnInvContextClick) {Name = "fix_type"};
                         ctxInv.Items.Add(ctxItem);
                         ctxInv.Items.Add(new ToolStripSeparator());
                     }
 
-                    ctxItem = new ToolStripMenuItem("New Folder", null, OnInvContextClick);
-                    ctxItem.Name = "new_folder";
+                    ctxItem = new ToolStripMenuItem("New Folder", null, OnInvContextClick) {Name = "new_folder"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("New Note", null, OnInvContextClick);
-                    ctxItem.Name = "new_notecard";
+                    ctxItem = new ToolStripMenuItem("New Note", null, OnInvContextClick) {Name = "new_notecard"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("New Script", null, OnInvContextClick);
-                    ctxItem.Name = "new_script";
+                    ctxItem = new ToolStripMenuItem("New Script", null, OnInvContextClick) {Name = "new_script"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
-                    ctxItem.Name = "refresh";
+                    ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick) {Name = "refresh"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Backup...", null, OnInvContextClick);
-                    ctxItem.Name = "backup";
+                    ctxItem = new ToolStripMenuItem("Backup...", null, OnInvContextClick) {Name = "backup"};
                     ctxInv.Items.Add(ctxItem);
 
                     ctxInv.Items.Add(new ToolStripSeparator());
 
-                    ctxItem = new ToolStripMenuItem("Expand", null, OnInvContextClick);
-                    ctxItem.Name = "expand";
+                    ctxItem = new ToolStripMenuItem("Expand", null, OnInvContextClick) {Name = "expand"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Expand All", null, OnInvContextClick);
-                    ctxItem.Name = "expand_all";
+                    ctxItem = new ToolStripMenuItem("Expand All", null, OnInvContextClick) {Name = "expand_all"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Collapse", null, OnInvContextClick);
-                    ctxItem.Name = "collapse";
+                    ctxItem = new ToolStripMenuItem("Collapse", null, OnInvContextClick) {Name = "collapse"};
                     ctxInv.Items.Add(ctxItem);
 
                     if (folder.PreferredType == FolderType.Trash)
                     {
-                        ctxItem = new ToolStripMenuItem("Empty Trash", null, OnInvContextClick);
-                        ctxItem.Name = "empty_trash";
+                        ctxItem = new ToolStripMenuItem("Empty Trash", null, OnInvContextClick) {Name = "empty_trash"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (folder.PreferredType == FolderType.LostAndFound)
                     {
-                        ctxItem = new ToolStripMenuItem("Empty Lost and Found", null, OnInvContextClick);
-                        ctxItem.Name = "empty_lost_found";
+                        ctxItem = new ToolStripMenuItem("Empty Lost and Found", null, OnInvContextClick)
+                        {
+                            Name = "empty_lost_found"
+                        };
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (folder.PreferredType == FolderType.None ||
                         folder.PreferredType == FolderType.Outfit)
                     {
-                        ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
-                        ctxItem.Name = "rename_folder";
+                        ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick) {Name = "rename_folder"};
                         ctxInv.Items.Add(ctxItem);
 
                         ctxInv.Items.Add(new ToolStripSeparator());
 
-                        ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick);
-                        ctxItem.Name = "cut_folder";
+                        ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick) {Name = "cut_folder"};
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick);
-                        ctxItem.Name = "copy_folder";
+                        ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick) {Name = "copy_folder"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (instance.InventoryClipboard != null)
                     {
-                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick);
-                        ctxItem.Name = "paste_folder";
+                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick) {Name = "paste_folder"};
                         ctxInv.Items.Add(ctxItem);
 
                         if (instance.InventoryClipboard.Item is InventoryItem)
                         {
-                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick);
-                            ctxItem.Name = "paste_folder_link";
+                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick)
+                            {
+                                Name = "paste_folder_link"
+                            };
                             ctxInv.Items.Add(ctxItem);
                         }
                     }
@@ -1405,8 +1395,7 @@ namespace Radegast
                     if (folder.PreferredType == FolderType.None ||
                         folder.PreferredType == FolderType.Outfit)
                     {
-                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
-                        ctxItem.Name = "delete_folder";
+                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick) {Name = "delete_folder"};
                         ctxInv.Items.Add(ctxItem);
 
                         ctxInv.Items.Add(new ToolStripSeparator());
@@ -1414,16 +1403,19 @@ namespace Radegast
 
                     if (folder.PreferredType == FolderType.None || folder.PreferredType == FolderType.Outfit)
                     {
-                        ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_take_off";
+                        ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick)
+                        {
+                            Name = "outfit_take_off"
+                        };
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_add";
+                        ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick) {Name = "outfit_add"};
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_replace";
+                        ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick)
+                        {
+                            Name = "outfit_replace"
+                        };
                         ctxInv.Items.Add(ctxItem);
                     }
 

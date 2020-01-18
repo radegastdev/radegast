@@ -39,10 +39,12 @@ namespace Radegast
         public static void ImportFromFile(GridClient client)
         {
             WindowWrapper mainWindow = new WindowWrapper(Form.ActiveForm.Handle);
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Open object file";
-            dlg.Filter = "XML file (*.xml)|*.xml";
-            dlg.Multiselect = false;
+            OpenFileDialog dlg = new OpenFileDialog
+            {
+                Title = "Open object file", 
+                Filter = "XML file (*.xml)|*.xml",
+                Multiselect = false
+            };
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
@@ -57,15 +59,16 @@ namespace Radegast
                         d.CreateObjectFromXml(primsXmls);
                         d.CleanUp();
                         d = null;
-                        MessageBox.Show(mainWindow, "Successfully imported " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(mainWindow, "Successfully imported " + dlg.FileName, "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception excp)
                     {
-                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
-                }));
+                })) {IsBackground = true};
 
-                t.IsBackground = true;
                 t.Start();
 
             }
@@ -193,8 +196,8 @@ namespace Radegast
                     if (linkset.Children.Count != 0)
                     {
                         // Create a list of the local IDs of the newly created prims
-                        List<uint> primIDs = new List<uint>(primsCreated.Count);
-                        primIDs.Add(rootLocalID); // Root prim is first in list.
+                        List<uint> primIDs = new List<uint>(primsCreated.Count) {rootLocalID};
+                        // Root prim is first in list.
                         foreach (Primitive prim in primsCreated)
                         {
                             if (prim.LocalID != rootLocalID)
@@ -210,7 +213,7 @@ namespace Radegast
 
                         if (!primDone.WaitOne(5000, false))
                         {
-                            Logger.Log(String.Format("Warning: Failed to link {0} prims", linkQueue.Count), Helpers.LogLevel.Warning);
+                            Logger.Log($"Warning: Failed to link {linkQueue.Count} prims", Helpers.LogLevel.Warning);
                         }
 
                         Client.Objects.SetPermissions(Client.Network.CurrentSim, primIDs,
@@ -219,8 +222,7 @@ namespace Radegast
                     }
                     else
                     {
-                        List<uint> primsForPerms = new List<uint>();
-                        primsForPerms.Add(rootLocalID);
+                        List<uint> primsForPerms = new List<uint> {rootLocalID};
                         Client.Objects.SetRotation(Client.Network.CurrentSim, rootLocalID, rootRotation);
                         Client.Objects.SetPermissions(Client.Network.CurrentSim, primsForPerms,
                             PermissionWho.NextOwner,

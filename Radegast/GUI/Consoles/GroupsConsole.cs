@@ -106,9 +106,7 @@ namespace Radegast
             lock (DisplaySyncRoot)
             {
 
-                Group none = new Group();
-                none.Name = "(none)";
-                none.ID = UUID.Zero;
+                Group none = new Group {Name = "(none)", ID = UUID.Zero};
 
                 listBox1.Items.Clear();
                 listBox1.Items.Add(none);
@@ -242,10 +240,12 @@ namespace Radegast
 
         private void btnCreateGroup_Click(object sender, EventArgs e)
         {
-            Group g = new Group();
-            g.Name = txtNewGroupName.Text;
-            g.Charter = txtNewGroupCharter.Text;
-            g.FounderID = client.Self.AgentID;
+            Group g = new Group
+            {
+                Name = txtNewGroupName.Text,
+                Charter = txtNewGroupCharter.Text, 
+                FounderID = client.Self.AgentID
+            };
             lblCreateStatus.Text = "Creating group...";
             client.Groups.RequestCreateGroup(g);
         }

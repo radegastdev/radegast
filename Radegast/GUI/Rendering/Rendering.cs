@@ -1614,9 +1614,7 @@ namespace Radegast.Rendering
                     GLAvatar ga = new GLAvatar();
 
                     //ga.morph(av);
-                    RenderAvatar ra = new RenderAvatar();
-                    ra.avatar = av;
-                    ra.glavatar = ga;
+                    RenderAvatar ra = new RenderAvatar {avatar = av, glavatar = ga};
                     updateAVtes(ra);
                     Avatars.Add(av.LocalID, ra);
                     ra.glavatar.morph(av);

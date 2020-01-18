@@ -202,31 +202,35 @@ namespace Radegast
             highlightColor = RtfColor.White;
 
             // Initialize the dictionary mapping color codes to definitions
-            rtfColor = new Dictionary<RtfColor, string>();
-            rtfColor[RtfColor.Aqua] = RtfColorDef.Aqua;
-            rtfColor[RtfColor.Black] = RtfColorDef.Black;
-            rtfColor[RtfColor.Blue] = RtfColorDef.Blue;
-            rtfColor[RtfColor.Fuchsia] = RtfColorDef.Fuchsia;
-            rtfColor[RtfColor.Gray] = RtfColorDef.Gray;
-            rtfColor[RtfColor.Green] = RtfColorDef.Green;
-            rtfColor[RtfColor.Lime] = RtfColorDef.Lime;
-            rtfColor[RtfColor.Maroon] = RtfColorDef.Maroon;
-            rtfColor[RtfColor.Navy] = RtfColorDef.Navy;
-            rtfColor[RtfColor.Olive] = RtfColorDef.Olive;
-            rtfColor[RtfColor.Purple] = RtfColorDef.Purple;
-            rtfColor[RtfColor.Red] = RtfColorDef.Red;
-            rtfColor[RtfColor.Silver] = RtfColorDef.Silver;
-            rtfColor[RtfColor.Teal] = RtfColorDef.Teal;
-            rtfColor[RtfColor.White] = RtfColorDef.White;
-            rtfColor[RtfColor.Yellow] = RtfColorDef.Yellow;
+            rtfColor = new Dictionary<RtfColor, string>
+            {
+                [RtfColor.Aqua] = RtfColorDef.Aqua,
+                [RtfColor.Black] = RtfColorDef.Black,
+                [RtfColor.Blue] = RtfColorDef.Blue,
+                [RtfColor.Fuchsia] = RtfColorDef.Fuchsia,
+                [RtfColor.Gray] = RtfColorDef.Gray,
+                [RtfColor.Green] = RtfColorDef.Green,
+                [RtfColor.Lime] = RtfColorDef.Lime,
+                [RtfColor.Maroon] = RtfColorDef.Maroon,
+                [RtfColor.Navy] = RtfColorDef.Navy,
+                [RtfColor.Olive] = RtfColorDef.Olive,
+                [RtfColor.Purple] = RtfColorDef.Purple,
+                [RtfColor.Red] = RtfColorDef.Red,
+                [RtfColor.Silver] = RtfColorDef.Silver,
+                [RtfColor.Teal] = RtfColorDef.Teal,
+                [RtfColor.White] = RtfColorDef.White,
+                [RtfColor.Yellow] = RtfColorDef.Yellow
+            };
 
             // Initialize the dictionary mapping default Framework font families to
             // RTF font families
-            rtfFontFamily = new Dictionary<string, string>();
-            rtfFontFamily[FontFamily.GenericMonospace.Name] = RtfFontFamilyDef.Modern;
-            rtfFontFamily[FontFamily.GenericSansSerif.Name] = RtfFontFamilyDef.Swiss;
-            rtfFontFamily[FontFamily.GenericSerif.Name] = RtfFontFamilyDef.Roman;
-            rtfFontFamily[FF_UNKNOWN] = RtfFontFamilyDef.Unknown;
+            rtfFontFamily = new Dictionary<string, string>
+            {
+                [FontFamily.GenericMonospace.Name] = RtfFontFamilyDef.Modern,
+                [FontFamily.GenericSansSerif.Name] = RtfFontFamilyDef.Swiss,
+                [FontFamily.GenericSerif.Name] = RtfFontFamilyDef.Roman,
+                [FF_UNKNOWN] = RtfFontFamilyDef.Unknown
+            };
 
             // Get the horizontal and vertical resolutions at which the object is
             // being displayed

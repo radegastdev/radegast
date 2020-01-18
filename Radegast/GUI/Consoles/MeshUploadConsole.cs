@@ -164,9 +164,11 @@ namespace Radegast
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            var o = new OpenFileDialog();
-            o.Filter = "Collada files (*.dae)|*.dae|All files (*.*)|*.*";
-            o.Multiselect = true;
+            var o = new OpenFileDialog
+            {
+                Filter = "Collada files (*.dae)|*.dae|All files (*.*)|*.*", 
+                Multiselect = true
+            };
             var res = o.ShowDialog();
 
             if (res != DialogResult.OK)
@@ -196,9 +198,10 @@ namespace Radegast
                 }
             }
 
-            UploadThread = new Thread(new ThreadStart(PerformUpload));
-            UploadThread.Name = "Mesh Upload Thread";
-            UploadThread.IsBackground = true;
+            UploadThread = new Thread(PerformUpload)
+            {
+                Name = "Mesh Upload Thread", IsBackground = true
+            };
             UploadThread.Start();
             txtUploadLog.Clear();
         }

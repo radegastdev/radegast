@@ -280,10 +280,12 @@ namespace Radegast
 
         private void tbtbSaveToDisk_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Save script";
-            dlg.Filter = "LSL script file (*.lsl)|*.lsl|Plain text file (*.txt)|*.txt";
-            dlg.FileName = RadegastMisc.SafeFileName(scriptName);
+            SaveFileDialog dlg = new SaveFileDialog
+            {
+                Title = "Save script",
+                Filter = "LSL script file (*.lsl)|*.lsl|Plain text file (*.txt)|*.txt",
+                FileName = RadegastMisc.SafeFileName(scriptName)
+            };
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
@@ -298,10 +300,12 @@ namespace Radegast
 
         private void tbtbLoadFromDisk_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Open script";
-            dlg.Filter = "LSL script files (*.lsl)|*.lsl|Plain text files (*.txt)|*.txt|All files (*.*)|*.*";
-            dlg.Multiselect = false;
+            OpenFileDialog dlg = new OpenFileDialog
+            {
+                Title = "Open script",
+                Filter = "LSL script files (*.lsl)|*.lsl|Plain text files (*.txt)|*.txt|All files (*.*)|*.*",
+                Multiselect = false
+            };
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
@@ -749,8 +753,7 @@ namespace Radegast
             txtStatus.Hide();
             txtStatus.Text = string.Empty;
 
-            AssetScriptText n = new AssetScriptText();
-            n.Source = rtb.Text;
+            AssetScriptText n = new AssetScriptText {Source = rtb.Text};
             n.Encode();
 
             if (prim != null)

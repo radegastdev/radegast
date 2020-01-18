@@ -183,17 +183,15 @@ namespace Radegast
             
             if (item is InventoryNotecard)
             {
-                Notecard nc = new Notecard(instance, (InventoryNotecard)item);
-                nc.pnlKeepDiscard.Visible = true;
+                Notecard nc = new Notecard(instance, (InventoryNotecard) item) {pnlKeepDiscard = {Visible = true}};
                 nc.ShowDetached();
             }
         }
 
         void attachmentMenuItem_Click(object sender, EventArgs e)
         {
-            if (sender is ToolStripMenuItem)
+            if (sender is ToolStripMenuItem titem)
             {
-                ToolStripMenuItem titem = (ToolStripMenuItem)sender;
                 InventoryItem item = (InventoryItem)titem.Tag;
 
                 switch (item.AssetType)
@@ -279,13 +277,15 @@ namespace Radegast
         {
             bool success = false;
             string message = "";
-            AssetNotecard n = new AssetNotecard();
-            n.BodyText = rtbContent.Text;
-            n.EmbeddedItems = new List<InventoryItem>();
+            AssetNotecard n = new AssetNotecard
+            {
+                BodyText = rtbContent.Text,
+                EmbeddedItems = new List<InventoryItem>()
+            };
 
             if (receivedNotecard != null)
             {
-                for (int i = 0; i < receivedNotecard.EmbeddedItems.Count; i++)
+                for (var i = 0; i < receivedNotecard.EmbeddedItems.Count; i++)
                 {
                     n.EmbeddedItems.Add(receivedNotecard.EmbeddedItems[i]);
                     int indexChar = 0xdc00 + i;

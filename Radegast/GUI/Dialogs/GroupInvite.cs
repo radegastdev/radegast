@@ -97,8 +97,7 @@ namespace Radegast
 
         private void btnIvite_Click(object sender, EventArgs e)
         {
-            List<UUID> roleID = new List<UUID>();
-            roleID.Add(((GroupRole)cmbRoles.SelectedItem).ID);
+            List<UUID> roleID = new List<UUID> {((GroupRole) cmbRoles.SelectedItem).ID};
 
             foreach (UUID key in picker.SelectedAvatars.Keys)
             {

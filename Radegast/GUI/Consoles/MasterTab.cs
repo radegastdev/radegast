@@ -224,7 +224,7 @@ namespace Radegast
 
             if (res == DialogResult.OK)
             {
-                Thread t = new Thread(new ThreadStart(delegate()
+                Thread t = new Thread(delegate()
                 {
                     try
                     {
@@ -233,14 +233,15 @@ namespace Radegast
                         System.IO.File.WriteAllText(dlg.FileName, primsXmls);
                         s.CleanUp();
                         s = null;
-                        MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(mainWindow, "Successfully saved " + dlg.FileName, "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception excp)
                     {
-                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
-                }));
-                t.IsBackground = true;
+                }) {IsBackground = true};
                 t.Start();
             }
         }

@@ -97,8 +97,7 @@ namespace Radegast
             }
 
             Prims.Clear();
-            Primitive root = new Primitive(RootPrim);
-            root.Position = Vector3.Zero;
+            Primitive root = new Primitive(RootPrim) {Position = Vector3.Zero};
             Prims.Add(root);
 
             sim.ObjectsPrimitives
@@ -592,12 +591,12 @@ namespace Radegast
 
             if (ret == null)
             {
-                ret = new MaterialInfo()
+                ret = new MaterialInfo
                 {
                     TextureID = te.TextureID,
-                    Color = te.RGBA
+                    Color = te.RGBA,
+                    Name = $"Material{AllMeterials.Count}"
                 };
-                ret.Name = string.Format("Material{0}", AllMeterials.Count);
                 AllMeterials.Add(ret);
             }
 

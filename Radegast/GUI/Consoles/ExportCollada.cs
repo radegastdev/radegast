@@ -68,14 +68,7 @@ namespace Radegast
         void UpdateInfo()
         {
             Primitive root = Exporter.Prims[0];
-            if (root.Properties != null)
-            {
-                objectName.Text = root.Properties.Name;
-            }
-            else
-            {
-                objectName.Text = "Object";
-            }
+            objectName.Text = root.Properties != null ? root.Properties.Name : "Object";
             objectUUID.Text = root.ID.ToString();
             primCount.Text = Exporter.Prims.Count.ToString();
             exportablePrims.Text = Exporter.ExportablePrims.ToString();
@@ -84,22 +77,19 @@ namespace Radegast
             texturesPanel.Controls.Clear();
             foreach (UUID textureID in Exporter.Textures)
             {
-                var img = new SLImageHandler(instance, textureID, string.Empty);
-                img.Height = 96;
-                img.Width = 96;
-                img.BorderStyle = BorderStyle.FixedSingle;
+                var img = new SLImageHandler(instance, textureID, string.Empty)
+                {
+                    Height = 96, Width = 96, BorderStyle = BorderStyle.FixedSingle
+                };
                 texturesPanel.Controls.Add(img);
             }
         }
 		
 		void ValidatePath(string fname)
-		{
-			string path = Path.GetDirectoryName(fname);
-			if (Directory.Exists(path))
-				btnExport.Enabled = true;
-			else
-				btnExport.Enabled = false;
-		}
+        {
+            string path = Path.GetDirectoryName(fname);
+            btnExport.Enabled = Directory.Exists(path);
+        }
 		#endregion
 		
 		#region Event Handlers
@@ -110,17 +100,13 @@ namespace Radegast
 		
 		void BtnBrowseClick(object sender, EventArgs e)
 		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.Title = "Export Collada File";
-            dlg.Filter = "Collada (*.dae)|*.dae|All Files (*.*)|*.*";
-            if (txtFileName.Text.Trim() == string.Empty)
+            SaveFileDialog dlg = new SaveFileDialog
             {
-                dlg.FileName = RadegastInstance.SafeFileName(objectName.Text);
-            }
-            else
-            {
-                dlg.FileName =  Path.GetFileName(txtFileName.Text);
-            }
+                Title = "Export Collada File", Filter = "Collada (*.dae)|*.dae|All Files (*.*)|*.*"
+            };
+            dlg.FileName = txtFileName.Text.Trim() == string.Empty 
+                ? RadegastInstance.SafeFileName(objectName.Text) 
+                : Path.GetFileName(txtFileName.Text);
 
 			DialogResult res = dlg.ShowDialog();
 			

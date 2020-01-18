@@ -1624,8 +1624,7 @@ namespace Radegast.Rendering
             if (bone.Name != "bone")
                 return;
 
-            Bone b = new Bone();
-            b.name = bone.Attributes.GetNamedItem("name").Value;
+            Bone b = new Bone {name = bone.Attributes.GetNamedItem("name").Value};
 
             string pos = bone.Attributes.GetNamedItem("pos").Value;
             string[] posparts = pos.Split(' ');

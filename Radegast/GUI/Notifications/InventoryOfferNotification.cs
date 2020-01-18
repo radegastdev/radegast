@@ -65,8 +65,7 @@ namespace Radegast
                 }
 
                 // Fire off event
-                NotificationEventArgs args = new NotificationEventArgs(instance);
-                args.Text = txtInfo.Text;
+                NotificationEventArgs args = new NotificationEventArgs(instance) {Text = txtInfo.Text};
                 args.Buttons.Add(btnAccept);
                 args.Buttons.Add(btnDiscard);
                 args.Buttons.Add(btnIgnore);

@@ -857,10 +857,8 @@ namespace Radegast.Rendering
                         mtl.AppendLine();
 
                         // Write the vertices, texture coordinates, and vertex normals for this side
-                        for (int k = 0; k < face.Vertices.Count; k++)
+                        foreach (var vertex in face.Vertices)
                         {
-                            Vertex vertex = face.Vertices[k];
-
                             #region Vertex
 
                             Vector3 pos = vertex.Position;
@@ -891,12 +889,17 @@ namespace Radegast.Rendering
                             #region Vertex Normal
 
                             // HACK: Sometimes normals are getting set to <NaN,NaN,NaN>
-                            if (!Single.IsNaN(vertex.Normal.X) && !Single.IsNaN(vertex.Normal.Y) && !Single.IsNaN(vertex.Normal.Z))
+                            if (!Single.IsNaN(vertex.Normal.X) && 
+                                !Single.IsNaN(vertex.Normal.Y) &&
+                                !Single.IsNaN(vertex.Normal.Z))
+                            {
                                 obj.AppendFormat("vn {0} {1} {2}{3}", vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z,
                                     Environment.NewLine);
+                            }
                             else
+                            {
                                 obj.AppendLine("vn 0.0 1.0 0.0");
-
+                            }
                             #endregion Vertex Normal
                         }
 

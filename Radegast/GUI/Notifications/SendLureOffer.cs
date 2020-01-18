@@ -45,8 +45,10 @@ namespace Radegast
             btnOffer.Focus();
 
             // Fire off event
-            NotificationEventArgs args = new NotificationEventArgs(instance);
-            args.Text = txtHead.Text + Environment.NewLine + txtMessage.Text;
+            NotificationEventArgs args = new NotificationEventArgs(instance)
+            {
+                Text = txtHead.Text + Environment.NewLine + txtMessage.Text
+            };
             args.Buttons.Add(btnOffer);
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);

@@ -293,19 +293,12 @@ namespace Radegast
 #endif
             }
 
-            ChatBufferItem item = new ChatBufferItem();
-            item.ID = e.SourceID;
-            item.RawMessage = e;
+            ChatBufferItem item = new ChatBufferItem {ID = e.SourceID, RawMessage = e};
             StringBuilder sb = new StringBuilder();
 
-            if (e.SourceType == ChatSourceType.Agent)
-            {
-                item.From = instance.Names.Get(e.SourceID, e.FromName);
-            }
-            else
-            {
-                item.From = e.FromName;
-            }
+            item.From = e.SourceType == ChatSourceType.Agent 
+                ? instance.Names.Get(e.SourceID, e.FromName) 
+                : e.FromName;
 
             bool isEmote = e.Message.ToLower().StartsWith("/me ");
 

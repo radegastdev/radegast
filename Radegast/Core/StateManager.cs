@@ -180,8 +180,7 @@ namespace Radegast
             PseudoHome = new PseudoHome(this.instance);
             LSLHelper = new LSLHelper(this.instance);
 
-            beamTimer = new System.Timers.Timer();
-            beamTimer.Enabled = false;
+            beamTimer = new System.Timers.Timer {Enabled = false};
             beamTimer.Elapsed += new ElapsedEventHandler(beamTimer_Elapsed);
 
             // Callbacks

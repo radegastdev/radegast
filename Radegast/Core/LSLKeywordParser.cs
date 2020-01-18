@@ -98,10 +98,12 @@ namespace Radegast
 
                 if ((m = keyWordRegex.Match(l)).Success)
                 {
-                    LSLKeyWord kw = new LSLKeyWord();
-                    kw.KeyWord = m.Groups[1].Value;
-                    kw.ToolTip = m.Groups[3].Value.Replace(@"\n", "\n");
-                    kw.Color = currentColor;
+                    LSLKeyWord kw = new LSLKeyWord
+                    {
+                        KeyWord = m.Groups[1].Value,
+                        ToolTip = m.Groups[3].Value.Replace(@"\n", "\n"),
+                        Color = currentColor
+                    };
 
                     if (valid)
                     {

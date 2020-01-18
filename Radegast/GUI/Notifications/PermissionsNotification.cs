@@ -51,8 +51,7 @@ namespace Radegast
             txtMessage.Text = "Object " + objectName + " owned by " + objectOwner + " is asking permission to " + questions + ". Do you accept?";
 
             // Fire off event
-            NotificationEventArgs args = new NotificationEventArgs(instance);
-            args.Text = txtMessage.Text;
+            NotificationEventArgs args = new NotificationEventArgs(instance) {Text = txtMessage.Text};
             args.Buttons.Add(btnYes);
             args.Buttons.Add(btnNo);
             args.Buttons.Add(btnMute);

@@ -1126,8 +1126,7 @@ namespace Radegast.Rendering
 
         private void oBJToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "OBJ files (*.obj)|*.obj";
+            SaveFileDialog dialog = new SaveFileDialog {Filter = "OBJ files (*.obj)|*.obj"};
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {

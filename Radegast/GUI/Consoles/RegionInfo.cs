@@ -164,8 +164,7 @@ namespace Radegast
 
             if (p.SnapshotID != UUID.Zero)
             {
-                SLImageHandler imgParcel = new SLImageHandler();
-                imgParcel.Dock = DockStyle.Fill;
+                SLImageHandler imgParcel = new SLImageHandler {Dock = DockStyle.Fill};
                 pnlParcelImage.Controls.Add(imgParcel);
                 imgParcel.Init(instance, p.SnapshotID, string.Empty);
             }

@@ -50,9 +50,8 @@ namespace Radegast
 		{
 			InitializeComponent();
 			Client = client;
-			Importer = new PrimImporter(client);
-			Importer.LogMessage = LogMessage;
-			sFileName = "";
+            Importer = new PrimImporter(client) {LogMessage = LogMessage};
+            sFileName = "";
 			objectName.Text = "";
 			primCount.Text = "";
 			textureCount.Text = "";
@@ -313,50 +312,53 @@ namespace Radegast
 				Importer.RezAt = Client.Self.SimPosition;
 				Importer.RezAt.Z += 3.5f;
 			}
-			
-			Thread t = new Thread(new ThreadStart(delegate()
-			{
-				try
-				{
-					start = DateTime.Now;
-					// First upload Images that will be needed by the Importer, if required by user.
-					if (Importer.TextureUse == PrimImporter.TextureSet.NewUUID || Importer.TextureUse == PrimImporter.TextureSet.SculptUUID)
-						UploadImages();
-					
-					// Check to see if there are any failed uploads.
-					if (FailedUploads.Count > 0)
-					{
-						DialogResult res = MessageBox.Show(String.Format("Failed to upload {0} textures, which to try again?",FailedUploads.Count),
-						                                   "Import - Upload Texture Error",MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-						if (res == DialogResult.Yes)
-							UploadImagesRetry();
-						
-						if (FailedUploads.Count != 0)
-						{
-							MessageBox.Show(String.Format("Failed to upload {0} textures on second try, aborting!",FailedUploads.Count),
-							                "Import - Upload Texture Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-							LogMessage("Failed to import object, due to texture error, review the log for further information");
-							return;
-						}
-					}
-					
-					LogMessage("Texture Upload completed");
-					LogMessage("Importing Prims...");
-					// If we get here, then we successfully uploaded the textures, continue with the upload of the Prims.
-					Importer.ImportFromFile(txtFileName.Text);
-					LogMessage("Import successful.");
-					LogMessage("Total Time: {0}",DateTime.Now.Subtract(start));
-				}
-				catch (Exception ex)
-				{
-					LogMessage("Import failed. Reason: {0}",ex.Message);
-					MessageBox.Show(ex.Message,"Importing failed.",MessageBoxButtons.OK,MessageBoxIcon.Error);
-				}
-				
-				BeginInvoke(new MethodInvoker(() => EnableWindow()));
-			}));
-			t.IsBackground = true;
-			t.Start();
+
+            Thread t = new Thread(delegate()
+            {
+                try
+                {
+                    start = DateTime.Now;
+                    // First upload Images that will be needed by the Importer, if required by user.
+                    if (Importer.TextureUse == PrimImporter.TextureSet.NewUUID ||
+                        Importer.TextureUse == PrimImporter.TextureSet.SculptUUID)
+                        UploadImages();
+
+                    // Check to see if there are any failed uploads.
+                    if (FailedUploads.Count > 0)
+                    {
+                        DialogResult res = MessageBox.Show(
+                            $"Failed to upload {FailedUploads.Count} textures, which to try again?",
+                            "Import - Upload Texture Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        if (res == DialogResult.Yes)
+                            UploadImagesRetry();
+
+                        if (FailedUploads.Count != 0)
+                        {
+                            MessageBox.Show(
+                                $"Failed to upload {FailedUploads.Count} textures on second try, aborting!",
+                                "Import - Upload Texture Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            LogMessage(
+                                "Failed to import object, due to texture error, review the log for further information");
+                            return;
+                        }
+                    }
+
+                    LogMessage("Texture Upload completed");
+                    LogMessage("Importing Prims...");
+                    // If we get here, then we successfully uploaded the textures, continue with the upload of the Prims.
+                    Importer.ImportFromFile(txtFileName.Text);
+                    LogMessage("Import successful.");
+                    LogMessage("Total Time: {0}", DateTime.Now.Subtract(start));
+                }
+                catch (Exception ex)
+                {
+                    LogMessage("Import failed. Reason: {0}", ex.Message);
+                    MessageBox.Show(ex.Message, "Importing failed.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                BeginInvoke(new MethodInvoker(() => EnableWindow()));
+            }) {IsBackground = true};
+            t.Start();
 		}
 		#endregion
 	}

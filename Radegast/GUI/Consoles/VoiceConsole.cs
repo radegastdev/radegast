@@ -63,8 +63,7 @@ namespace Radegast
             config = instance.GlobalSettings["voice"] as OSDMap;
             if (config == null)
             {
-                config = new OSDMap();
-                config["enabled"] = new OSDBoolean(false);
+                config = new OSDMap {["enabled"] = new OSDBoolean(false)};
                 instance.GlobalSettings["voice"] = config;
                 instance.GlobalSettings.Save();
             }
@@ -297,10 +296,10 @@ namespace Radegast
                 if (participants.Items.ContainsKey(p.ID.ToString()))
                     return;
 
-                ListViewItem item = new ListViewItem(p.Name);
-                item.Name = p.ID.ToString();
-                item.Tag = p;
-                item.StateImageIndex = (int)TalkState.Idle;
+                ListViewItem item = new ListViewItem(p.Name)
+                {
+                    Name = p.ID.ToString(), Tag = p, StateImageIndex = (int) TalkState.Idle
+                };
 
                 lock (participants)
                     participants.Items.Add(item);

@@ -219,9 +219,11 @@ namespace Radegast
             if (!AllowMerge) return;
             if (Merged) return;
 
-            SplitContainer container = new SplitContainer();
-            container.Dock = DockStyle.Fill;
-            container.BorderStyle = BorderStyle.Fixed3D;
+            SplitContainer container = new SplitContainer
+            {
+                Dock = DockStyle.Fill,
+                BorderStyle = BorderStyle.Fixed3D
+            };
             container.SplitterDistance = container.Width / 2;
             container.Panel1.Controls.Add(Control);
             container.Panel2.Controls.Add(tab.Control);

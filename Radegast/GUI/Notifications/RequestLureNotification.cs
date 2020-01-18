@@ -42,8 +42,10 @@ namespace Radegast
             btnTeleport.Focus();
 
             // Fire off event
-            NotificationEventArgs args = new NotificationEventArgs(instance);
-            args.Text = txtHead.Text + Environment.NewLine + txtMessage.Text;
+            NotificationEventArgs args = new NotificationEventArgs(instance)
+            {
+                Text = txtHead.Text + Environment.NewLine + txtMessage.Text
+            };
             args.Buttons.Add(btnTeleport);
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);

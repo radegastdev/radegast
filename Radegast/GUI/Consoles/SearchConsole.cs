@@ -60,8 +60,7 @@ namespace Radegast
             client.Directory.DirEventsReply += Directory_DirEventsReply;
             client.Directory.EventInfoReply += Directory_EventInfoReply;
             instance.Names.NameUpdated += Names_NameUpdated;
-            console = new FindPeopleConsole(instance, UUID.Random());
-            console.Dock = DockStyle.Fill;
+            console = new FindPeopleConsole(instance, UUID.Random()) {Dock = DockStyle.Fill};
             console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
             pnlFindPeople.Controls.Add(console);
             lvwPlaces.ListViewItemSorter = new PlaceSorter();
@@ -371,8 +370,8 @@ namespace Radegast
 
             if (lvwPlaces.SelectedItems.Count == 1)
             {
-                Landmark l = new Landmark(instance, ((DirectoryManager.DirectoryParcel)lvwPlaces.SelectedItems[0].Tag).ID);
-                l.Dock = DockStyle.Fill;
+                Landmark l = new Landmark(instance,
+                    ((DirectoryManager.DirectoryParcel) lvwPlaces.SelectedItems[0].Tag).ID) {Dock = DockStyle.Fill};
                 pnlPlaceDetail.Controls.Add(l);
             }
         }
@@ -402,10 +401,10 @@ namespace Radegast
             {
                 if (group.GroupID == UUID.Zero) continue;
 
-                ListViewItem item = new ListViewItem();
-                item.Name = group.GroupID.ToString();
-                item.Text = group.GroupName;
-                item.Tag = group;
+                ListViewItem item = new ListViewItem
+                {
+                    Name = @group.GroupID.ToString(), Text = @group.GroupName, Tag = @group
+                };
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, group.Members.ToString()));
 
                 lvwGroups.Items.Add(item);
@@ -482,8 +481,10 @@ namespace Radegast
                 try
                 {
                     DirectoryManager.GroupSearchData g = (DirectoryManager.GroupSearchData)lvwGroups.SelectedItems[0].Tag;
-                    GroupDetails grpPanel = new GroupDetails(instance, new Group() { ID = g.GroupID, Name = g.GroupName });
-                    grpPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    GroupDetails grpPanel = new GroupDetails(instance, new Group() {ID = g.GroupID, Name = g.GroupName})
+                    {
+                        Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                    };
                     grpPanel.Region = new System.Drawing.Region(
                         new System.Drawing.RectangleF(
                             grpPanel.tpGeneral.Left, grpPanel.tpGeneral.Top, grpPanel.tpGeneral.Width, grpPanel.tpGeneral.Height));
@@ -598,10 +599,7 @@ namespace Radegast
             {
                 if (evt.ID == 0) continue;
 
-                ListViewItem item = new ListViewItem();
-                item.Name = "evt" + evt.ID;
-                item.Text = evt.Name;
-                item.Tag = evt;
+                ListViewItem item = new ListViewItem {Name = "evt" + evt.ID, Text = evt.Name, Tag = evt};
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, evt.Date));
 
                 lvwEvents.Items.Add(item);
@@ -618,7 +616,8 @@ namespace Radegast
                 eventMatches -= 1;
 
             lblNrEvents.Visible = true;
-            lblNrEvents.Text = string.Format("{0} events found", eventMatches > eventsPerPage ? "More than " + (eventStart + eventsPerPage) : (eventStart + eventMatches).ToString());
+            lblNrEvents.Text =
+                $"{(eventMatches > eventsPerPage ? "More than " + (eventStart + eventsPerPage) : (eventStart + eventMatches).ToString())} events found";
         }
 
 

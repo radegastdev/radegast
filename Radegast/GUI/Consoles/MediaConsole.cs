@@ -181,10 +181,9 @@ namespace Radegast
             {
                 Stop();
                 playing = true;
-                parcelStream = new Stream();
-                parcelStream.Volume = audioVolume;
+                parcelStream = new Stream {Volume = audioVolume};
                 parcelStream.PlayStream(currentURL);
-                parcelStream.OnStreamInfo += new Stream.StreamInfoCallback(ParcelMusic_OnStreamInfo);
+                parcelStream.OnStreamInfo += ParcelMusic_OnStreamInfo;
             }
         }
 

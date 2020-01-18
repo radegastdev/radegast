@@ -59,8 +59,10 @@ namespace Radegast
 
             if (group.InsigniaID != UUID.Zero)
             {
-                SLImageHandler insignia = new SLImageHandler(instance, group.InsigniaID, string.Empty);
-                insignia.Dock = DockStyle.Fill;
+                SLImageHandler insignia = new SLImageHandler(instance, group.InsigniaID, string.Empty)
+                {
+                    Dock = DockStyle.Fill
+                };
                 pnlInsignia.Controls.Add(insignia);
             }
 
@@ -292,8 +294,10 @@ namespace Radegast
             group = e.Group;
             if (group.InsigniaID != UUID.Zero && pnlInsignia.Controls.Count == 0)
             {
-                SLImageHandler insignia = new SLImageHandler(instance, group.InsigniaID, string.Empty);
-                insignia.Dock = DockStyle.Fill;
+                SLImageHandler insignia = new SLImageHandler(instance, group.InsigniaID, string.Empty)
+                {
+                    Dock = DockStyle.Fill
+                };
                 pnlInsignia.Controls.Add(insignia);
             }
 
@@ -458,9 +462,7 @@ namespace Radegast
                 return;
             }
 
-            ListViewItem item = new ListViewItem(member.Name);
-            item.Tag = member;
-            item.Name = member.Base.ID.ToString();
+            ListViewItem item = new ListViewItem(member.Name) {Tag = member, Name = member.Base.ID.ToString()};
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Contribution.ToString()));
             if (member.LastOnline != DateTime.MinValue)
             {
@@ -482,19 +484,13 @@ namespace Radegast
                 e.Item = new ListViewItem();
                 return;
             }
-            ListViewItem item = new ListViewItem(member.Name);
 
-            item.Tag = member;
-            item.Name = member.Base.ID.ToString();
+            ListViewItem item = new ListViewItem(member.Name) {Tag = member, Name = member.Base.ID.ToString()};
+
             item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.Title));
-            if (member.LastOnline != DateTime.MinValue)
-            {
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus));
-            }
-            else
-            {
-                item.SubItems.Add(new ListViewItem.ListViewSubItem(item, "N/A"));
-            }
+            item.SubItems.Add(member.LastOnline != DateTime.MinValue
+                ? new ListViewItem.ListViewSubItem(item, member.Base.OnlineStatus)
+                : new ListViewItem.ListViewSubItem(item, "N/A"));
 
             e.Item = item;
         }
@@ -523,9 +519,7 @@ namespace Radegast
             {
                 foreach (GroupRole role in roles.Values)
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.Name = role.ID.ToString();
-                    item.Text = role.Name;
+                    ListViewItem item = new ListViewItem {Name = role.ID.ToString(), Text = role.Name};
                     item.SubItems.Add(role.Title);
                     item.SubItems.Add(role.ID.ToString());
                     item.Tag = role;
@@ -823,8 +817,7 @@ namespace Radegast
             lvwAssignedRoles.Items.Clear();
             lvwAssignedRoles.Tag = m;
 
-            ListViewItem defaultItem = new ListViewItem();
-            defaultItem.Name = "Everyone";
+            ListViewItem defaultItem = new ListViewItem {Name = "Everyone"};
             defaultItem.SubItems.Add(defaultItem.Name);
             defaultItem.Checked = true;
             lvwAssignedRoles.Items.Add(defaultItem);
@@ -843,11 +836,10 @@ namespace Radegast
                         continue;
                     }
 
-                    ListViewItem item = new ListViewItem();
-                    item.Name = role.Name;
+                    ListViewItem item = new ListViewItem {Name = role.Name};
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, role.Name));
                     item.Tag = role;
-                    var foundRole = roleMembers.Find(kvp => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                    var foundRole = roleMembers.Find(kvp => kvp.Value == m.Base.ID && kvp.Key == role.ID);
                     bool hasRole = foundRole.Value == m.Base.ID;
                     item.Checked = hasRole;
                     lvwAssignedRoles.Items.Add(item);
@@ -879,10 +871,10 @@ namespace Radegast
         private void UpdateMemberRoles()
         {
             EnhancedGroupMember m = (EnhancedGroupMember)lvwAssignedRoles.Tag;
-            GroupRoleChangesPacket p = new GroupRoleChangesPacket();
-            p.AgentData.AgentID = client.Self.AgentID;
-            p.AgentData.SessionID = client.Self.SessionID;
-            p.AgentData.GroupID = group.ID;
+            GroupRoleChangesPacket p = new GroupRoleChangesPacket
+            {
+                AgentData = {AgentID = client.Self.AgentID, SessionID = client.Self.SessionID, GroupID = @group.ID}
+            };
             List<GroupRoleChangesPacket.RoleChangeBlock> changes = new List<GroupRoleChangesPacket.RoleChangeBlock>();
 
             foreach (ListViewItem item in lvwAssignedRoles.Items)
@@ -891,7 +883,7 @@ namespace Radegast
                     continue;
 
                 GroupRole role = (GroupRole)item.Tag;
-                var foundRole = roleMembers.Find(kvp => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                var foundRole = roleMembers.Find(kvp => kvp.Value == m.Base.ID && kvp.Key == role.ID);
                 bool hasRole = foundRole.Value == m.Base.ID;
 
                 if (item.Checked != hasRole)
@@ -901,10 +893,10 @@ namespace Radegast
                     else
                         roleMembers.Remove(foundRole);
 
-                    var rc = new GroupRoleChangesPacket.RoleChangeBlock();
-                    rc.MemberID = m.Base.ID;
-                    rc.RoleID = role.ID;
-                    rc.Change = item.Checked ? 0u : 1u;
+                    var rc = new GroupRoleChangesPacket.RoleChangeBlock
+                    {
+                        MemberID = m.Base.ID, RoleID = role.ID, Change = item.Checked ? 0u : 1u
+                    };
                     changes.Add(rc);
                 }
             }
@@ -1042,8 +1034,7 @@ namespace Radegast
             {
                 if (p != GroupPowers.None)
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.Tag = p;
+                    ListViewItem item = new ListViewItem {Tag = p};
                     item.SubItems.Add(p.ToString());
                     item.Checked = (p & role.Powers) != 0;
                     lvwRoleAbilitis.Items.Add(item);
@@ -1063,18 +1054,16 @@ namespace Radegast
         {
             if (btnSaveRole.Tag == null) // new role
             {
-                GroupRole role = new GroupRole();
-                role.Name = txtRoleName.Text;
-                role.Title = txtRoleTitle.Text;
-                role.Description = txtRoleDescription.Text;
+                GroupRole role = new GroupRole
+                {
+                    Name = txtRoleName.Text, Title = txtRoleTitle.Text, Description = txtRoleDescription.Text
+                };
                 client.Groups.CreateRole(group.ID, role);
                 System.Threading.Thread.Sleep(100);
                 RefreshRoles();
             }
-            else if (btnSaveRole.Tag is GroupRole) // update role
+            else if (btnSaveRole.Tag is GroupRole role) // update role
             {
-                GroupRole role = (GroupRole)btnSaveRole.Tag;
-
                 if (HasPower(GroupPowers.ChangeActions))
                 {
                     role.Powers = GroupPowers.None;
@@ -1172,9 +1161,10 @@ namespace Radegast
 
         private void memberListContextMenuSave_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveMembers = new SaveFileDialog();
-            saveMembers.Filter = "CSV|.csv|JSON|.json";
-            saveMembers.Title = "Save visible group members";
+            SaveFileDialog saveMembers = new SaveFileDialog
+            {
+                Filter = "CSV|.csv|JSON|.json", Title = "Save visible group members"
+            };
             saveMembers.ShowDialog();
             if (saveMembers.FileName != string.Empty)
             {
@@ -1196,16 +1186,18 @@ namespace Radegast
                             OpenMetaverse.StructuredData.OSDArray members = new OpenMetaverse.StructuredData.OSDArray(GroupMembers.Count);
                             foreach (var item in GroupMembers)
                             {
-                                OpenMetaverse.StructuredData.OSDMap member = new OpenMetaverse.StructuredData.OSDMap(2);
-                                member["UUID"] = item.Base.ID;
-                                member["Name"] = item.Name;
+                                OpenMetaverse.StructuredData.OSDMap member = new OpenMetaverse.StructuredData.OSDMap(2)
+                                {
+                                    ["UUID"] = item.Base.ID, ["Name"] = item.Name
+                                };
                                 members.Add(member);
                             }
                             System.IO.File.WriteAllText(saveMembers.FileName, OpenMetaverse.StructuredData.OSDParser.SerializeJsonString(members));
                             break;
                     }
 
-                    instance.TabConsole.DisplayNotificationInChat(string.Format("Saved {0} members to {1}", GroupMembers.Count, saveMembers.FileName));
+                    instance.TabConsole.DisplayNotificationInChat(
+                        $"Saved {GroupMembers.Count} members to {saveMembers.FileName}");
                 }
                 catch (Exception ex)
                 {

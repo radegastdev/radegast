@@ -165,10 +165,10 @@ namespace Radegast
 					}
 					
 					// Create a list of the local IDs of the newly created prims
-					List<uint> primIDs = new List<uint>(primsCreated.Count);
-					primIDs.Add(rootLocalID); // Root prim is first in list.
-					
-					if (linkset.Children.Count != 0)
+                    List<uint> primIDs = new List<uint>(primsCreated.Count) {rootLocalID};
+                    
+
+                    if (linkset.Children.Count != 0)
 					{
 						// Add the rest of the prims to the list of local IDs)
 						foreach (Primitive prim in primsCreated)

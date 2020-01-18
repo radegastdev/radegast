@@ -42,8 +42,7 @@ namespace Radegast
             SetText();
 
             // Fire off event
-            NotificationEventArgs args = new NotificationEventArgs(instance);
-            args.Text = rtbText.Text;
+            NotificationEventArgs args = new NotificationEventArgs(instance) {Text = rtbText.Text};
             args.Buttons.Add(btnGoTo);
             args.Buttons.Add(btnCancel);
             FireNotificationCallback(args);

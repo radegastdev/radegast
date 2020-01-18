@@ -41,8 +41,7 @@ namespace Radegast
             this.instance = instance;
             Group = group;
 
-            GroupDetails = new GroupDetails(instance, group);
-            GroupDetails.Dock = DockStyle.Fill;
+            GroupDetails = new GroupDetails(instance, group) {Dock = DockStyle.Fill};
             ClientSize = new Size(GroupDetails.Width, GroupDetails.Height);
             MinimumSize = Size;
             Controls.Add(GroupDetails);

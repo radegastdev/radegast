@@ -329,9 +329,7 @@ namespace Radegast
                 && e.Region.Name.ToLower().Contains(txtRegion.Text.ToLower())
                 && !lstRegions.Items.ContainsKey(e.Region.Name))
             {
-                ListViewItem item = new ListViewItem(e.Region.Name);
-                item.Tag = e.Region;
-                item.Name = e.Region.Name;
+                ListViewItem item = new ListViewItem(e.Region.Name) {Tag = e.Region, Name = e.Region.Name};
                 lstRegions.Items.Add(item);
             }
 

@@ -31,7 +31,6 @@ using ThreadPool = ThreadPoolUtil.ThreadPool;
 using Monitor = ThreadPoolUtil.Monitor;
 #endif
 using System.Threading;
-using OpenTK.Graphics.OpenGL;
 
 namespace Radegast
 {

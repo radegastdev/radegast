@@ -126,7 +126,7 @@ namespace Radegast
                     backupThread = null;
                 }
 
-                backupThread = new Thread(new ThreadStart(() =>
+                backupThread = new Thread(() =>
                 {
                     TraverseDir(rootNode, Path.DirectorySeparatorChar.ToString());
                     if (csvFile != null)
@@ -136,20 +136,20 @@ namespace Radegast
                             csvFile.Close();
                             csvFile.Dispose();
                         }
-                        catch { }
+                        catch
+                        {
+                        }
                     }
-                    BeginInvoke(new MethodInvoker(() =>
-                    {
-                        lblStatus.Text = string.Format("Done ({0} items saved).", fetched);
-                        sbrProgress.Style = ProgressBarStyle.Blocks;
-                        btnFolder.Enabled = true;
-                    }
-                    ));
-                }
-                ));
 
-                backupThread.IsBackground = false;
-                backupThread.Name = "Inventory Backup";
+                    BeginInvoke(new MethodInvoker(() =>
+                        {
+                            lblStatus.Text = $"Done ({fetched} items saved).";
+                            sbrProgress.Style = ProgressBarStyle.Blocks;
+                            btnFolder.Enabled = true;
+                        }
+                    ));
+                }) {IsBackground = false, Name = "Inventory Backup"};
+
                 backupThread.Start();
 
             }
@@ -212,10 +212,10 @@ namespace Radegast
                             (item.AssetType == AssetType.Texture && cbImages.Checked)
                             )
                         {
-                            ListViewItem lvi = new ListViewItem();
-                            lvi.Text = n.Data.Name;
-                            lvi.Tag = n.Data;
-                            lvi.Name = n.Data.UUID.ToString();
+                            ListViewItem lvi = new ListViewItem
+                            {
+                                Text = n.Data.Name, Tag = n.Data, Name = n.Data.UUID.ToString()
+                            };
 
                             ListViewItem.ListViewSubItem fileName = new ListViewItem.ListViewSubItem(lvi, filePartial);
                             lvi.SubItems.Add(fileName);

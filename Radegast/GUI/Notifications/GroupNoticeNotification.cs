@@ -98,16 +98,18 @@ namespace Radegast
             lblSentBy.Text += ", " + group.Name;
 
             // Fire off event
-            NotificationEventArgs args = new NotificationEventArgs(instance);
-            args.Text = string.Format("{0}{1}{2}{3}{4}",
-                lblTitle.Text, System.Environment.NewLine,
-                lblSentBy.Text, System.Environment.NewLine,
-                txtNotice.Text
-                );
+            NotificationEventArgs args = new NotificationEventArgs(instance)
+            {
+                Text = string.Format("{0}{1}{2}{3}{4}",
+                    lblTitle.Text, System.Environment.NewLine,
+                    lblSentBy.Text, System.Environment.NewLine,
+                    txtNotice.Text
+                )
+            };
             if (btnSave.Visible)
             {
                 args.Buttons.Add(btnSave);
-                args.Text += string.Format("{0}Attachment: {1}", System.Environment.NewLine, txtItemName.Text);
+                args.Text += $"{System.Environment.NewLine}Attachment: {txtItemName.Text}";
             }
             args.Buttons.Add(btnOK);
             FireNotificationCallback(args);

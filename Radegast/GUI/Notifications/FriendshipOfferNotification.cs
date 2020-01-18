@@ -42,8 +42,7 @@ namespace Radegast
             btnYes.Focus();
 
             // Fire off event
-            NotificationEventArgs args = new NotificationEventArgs(instance);
-            args.Text = txtHead.Text;
+            NotificationEventArgs args = new NotificationEventArgs(instance) {Text = txtHead.Text};
             args.Buttons.Add(btnYes);
             args.Buttons.Add(btnNo);
             args.Buttons.Add(btnIgnore);

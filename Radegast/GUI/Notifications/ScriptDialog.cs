@@ -44,8 +44,7 @@ namespace Radegast
             descBox.BackColor = instance.MainForm.NotificationBackground;
             descBox.Text = firstName + " " + lastName + "'s " + objectName + "\r\n\r\n" + message.Replace("\n", "\r\n") + "\r\n";
 
-            NotificationEventArgs args = new NotificationEventArgs(instance);
-            args.Text = descBox.Text;
+            NotificationEventArgs args = new NotificationEventArgs(instance) {Text = descBox.Text};
 
             int btnWidth = 90;
             int btnHeight = 23;
@@ -61,11 +60,14 @@ namespace Radegast
             {
                 foreach (string label in buttons)
                 {
-                    Button b = new Button();
-                    b.Size = new Size(btnWidth, btnHeight);
-                    b.Text = label;
-                    b.Location = new Point(5 + (i % 3) * (btnWidth + 5), btnsPanel.Size.Height - (i / 3) * (btnHeight + 5) - (btnHeight + 5));
-                    b.Name = i.ToString();
+                    Button b = new Button
+                    {
+                        Size = new Size(btnWidth, btnHeight),
+                        Text = label,
+                        Location = new Point(5 + (i % 3) * (btnWidth + 5),
+                            btnsPanel.Size.Height - (i / 3) * (btnHeight + 5) - (btnHeight + 5)),
+                        Name = i.ToString()
+                    };
                     b.Click += new EventHandler(b_Click);
                     b.UseVisualStyleBackColor = true;
                     b.Margin = new Padding(0, 3, 0, 3);

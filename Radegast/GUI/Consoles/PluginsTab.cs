@@ -44,9 +44,7 @@ namespace Radegast
 
             foreach (PluginInfo plugin in plugins)
             {
-                ListViewItem item = new ListViewItem();
-                item.Text = plugin.Attribures.Name;
-                item.Tag = plugin;
+                ListViewItem item = new ListViewItem {Text = plugin.Attribures.Name, Tag = plugin};
                 item.SubItems.Add(plugin.Attribures.Description);
                 item.SubItems.Add(plugin.Attribures.Version);
                 lvwPlugins.Items.Add(item);

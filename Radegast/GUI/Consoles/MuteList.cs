@@ -101,8 +101,7 @@ namespace Radegast
                             case MuteType.Group: type = "Group"; break;
                         }
 
-                        var item = new ListViewItem(type);
-                        item.Tag = me;
+                        var item = new ListViewItem(type) {Tag = me};
                         item.SubItems.Add(new ListViewItem.ListViewSubItem(item, me.Name));
                         lvMuteList.Items.Add(item);
                     }

@@ -239,11 +239,13 @@ namespace Radegast
 
         private void btnLoad_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter =
-                "Image Files (*.jp2,*.j2c,*.jpg,*.jpeg,*.gif,*.png,*.bmp,*.tga,*.tif,*.tiff,*.ico,*.wmf,*.emf)|" +
-                "*.jp2;*.j2c;*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tga;*.tif;*.tiff;*.ico;*.wmf;*.emf|" +
-                "All files (*.*)|*.*";
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Filter =
+                    "Image Files (*.jp2,*.j2c,*.jpg,*.jpeg,*.gif,*.png,*.bmp,*.tga,*.tif,*.tiff,*.ico,*.wmf,*.emf)|" +
+                    "*.jp2;*.j2c;*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tga;*.tif;*.tiff;*.ico;*.wmf;*.emf|" +
+                    "All files (*.*)|*.*"
+            };
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -254,11 +256,14 @@ namespace Radegast
         private void btnSave_Click(object sender, EventArgs e)
         {
 
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.AddExtension = true;
-            dlg.RestoreDirectory = true;
-            dlg.Title = "Save image as...";
-            dlg.Filter = "PNG (*.png)|*.png|Targa (*.tga)|*.tga|Jpeg2000 (*.j2c)|*.j2c|Jpeg (*.jpg)|*.jpg|Bitmap (*.bmp)|*.bmp";
+            SaveFileDialog dlg = new SaveFileDialog
+            {
+                AddExtension = true,
+                RestoreDirectory = true,
+                Title = "Save image as...",
+                Filter =
+                    "PNG (*.png)|*.png|Targa (*.tga)|*.tga|Jpeg2000 (*.j2c)|*.j2c|Jpeg (*.jpg)|*.jpg|Bitmap (*.bmp)|*.bmp"
+            };
 
 
 
@@ -357,11 +362,9 @@ namespace Radegast
 
             TextureName = Path.GetFileNameWithoutExtension(FileName);
             if (tmp) TextureName += " (temp)";
-            TextureDescription = string.Format("Uploaded with Radegast on {0}", DateTime.Now.ToLongDateString());
+            TextureDescription = $"Uploaded with Radegast on {DateTime.Now.ToLongDateString()}";
 
-            Permissions perms = new Permissions();
-            perms.EveryoneMask = PermissionMask.All;
-            perms.NextOwnerMask = PermissionMask.All;
+            Permissions perms = new Permissions {EveryoneMask = PermissionMask.All, NextOwnerMask = PermissionMask.All};
 
             if (!tmp)
             {

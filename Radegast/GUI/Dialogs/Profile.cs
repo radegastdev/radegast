@@ -172,10 +172,7 @@ namespace Radegast
             {
                 if (!lvwGroups.Items.ContainsKey(g.GroupID.ToString()))
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.Name = g.GroupID.ToString();
-                    item.Text = g.GroupName;
-                    item.Tag = g;
+                    ListViewItem item = new ListViewItem {Name = g.GroupID.ToString(), Text = g.GroupName, Tag = g};
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, g.GroupTitle));
 
                     lvwGroups.Items.Add(item);
@@ -219,14 +216,16 @@ namespace Radegast
 
             foreach (KeyValuePair<UUID, string> PickInfo in picks)
             {
-                Button b = new Button();
-                b.AutoSize = false;
-                b.Tag = PickInfo.Key;
-                b.Name = PickInfo.Key.ToString();
-                b.Text = PickInfo.Value;
-                b.Width = 135;
-                b.Height = 25;
-                b.Left = 2;
+                Button b = new Button
+                {
+                    AutoSize = false,
+                    Tag = PickInfo.Key,
+                    Name = PickInfo.Key.ToString(),
+                    Text = PickInfo.Value,
+                    Width = 135,
+                    Height = 25,
+                    Left = 2
+                };
                 b.Top = i++ * b.Height + 5;
                 b.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
                 b.Click += new EventHandler(PickButtonClick);
@@ -284,9 +283,10 @@ namespace Radegast
 
             if (AgentID == client.Self.AgentID || e.Pick.SnapshotID != UUID.Zero)
             {
-                SLImageHandler img = new SLImageHandler(instance, e.Pick.SnapshotID, string.Empty);
-                img.Dock = DockStyle.Fill;
-                img.SizeMode = PictureBoxSizeMode.StretchImage;
+                SLImageHandler img = new SLImageHandler(instance, e.Pick.SnapshotID, string.Empty)
+                {
+                    Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.StretchImage
+                };
                 pickPicturePanel.Controls.Add(img);
 
                 if (AgentID == client.Self.AgentID)
@@ -400,8 +400,7 @@ namespace Radegast
 
             if (AgentID == client.Self.AgentID || FLImageID != UUID.Zero)
             {
-                SLImageHandler pic = new SLImageHandler(instance, FLImageID, "");
-                pic.Dock = DockStyle.Fill;
+                SLImageHandler pic = new SLImageHandler(instance, FLImageID, "") {Dock = DockStyle.Fill};
 
                 if (AgentID == client.Self.AgentID)
                 {
@@ -475,9 +474,7 @@ namespace Radegast
 
         private void btnWebView_Click(object sender, EventArgs e)
         {
-            WebBrowser web = new WebBrowser();
-            web.Dock = DockStyle.Fill;
-            web.Url = new Uri(txtWebURL.Text);
+            WebBrowser web = new WebBrowser {Dock = DockStyle.Fill, Url = new Uri(txtWebURL.Text)};
 
             pnlWeb.Controls.Add(web);
         }

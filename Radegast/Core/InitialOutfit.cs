@@ -161,16 +161,14 @@ namespace Radegast
 
         public void SetInitialOutfit(string outfit)
         {
-            Thread t = new Thread(() => PerformInit(outfit));
+            Thread t = new Thread(() => PerformInit(outfit)) {IsBackground = true, Name = "Initial outfit thread"};
 
-            t.IsBackground = true;
-            t.Name = "Initial outfit thread";
             t.Start();
         }
 
         void PerformInit(string initialOutfitName)
         {
-            Logger.Log("Starting intial outfit thread (first login)", Helpers.LogLevel.Debug);
+            Logger.Log("Starting initial outfit thread (first login)", Helpers.LogLevel.Debug);
             var outfitFolder = FindNodeMyName(Store.LibraryRootNode, initialOutfitName);
 
             if (outfitFolder == null)

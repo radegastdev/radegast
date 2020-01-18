@@ -139,10 +139,8 @@ namespace Radegast
 		
 		void BtnBrowseClick(object sender, EventArgs e)
 		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.Title = "Export object file";
-			dlg.Filter = "XML File (*.xml)|*.xml";
-			DialogResult res = dlg.ShowDialog();
+            SaveFileDialog dlg = new SaveFileDialog {Title = "Export object file", Filter = "XML File (*.xml)|*.xml"};
+            DialogResult res = dlg.ShowDialog();
 			
 			if (res == DialogResult.OK)
 			{
@@ -155,26 +153,25 @@ namespace Radegast
 		{
 			Enabled = false;
 			Exporter.LogMessage = LogMessage;
-			
-			Thread t = new Thread(new ThreadStart(delegate()
-			{
-				try
-				{
-					Exporter.ExportToFile(txtFileName.Text,uLocalID);
-					LogMessage("Export Successful.");
-					if (InvokeRequired)
-					{
-						BeginInvoke(new MethodInvoker(() => Enabled = true));
-					}
-				}
-				catch (Exception ex)
-				{
-					LogMessage("Export failed.  Reason: {0}",ex.Message);
-				}
-			}));
-			
-			t.IsBackground = true;
-			t.Start();
+
+            Thread t = new Thread(delegate()
+            {
+                try
+                {
+                    Exporter.ExportToFile(txtFileName.Text, uLocalID);
+                    LogMessage("Export Successful.");
+                    if (InvokeRequired)
+                    {
+                        BeginInvoke(new MethodInvoker(() => Enabled = true));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage("Export failed.  Reason: {0}", ex.Message);
+                }
+            }) {IsBackground = true};
+
+            t.Start();
 		}
 		#endregion
 	}

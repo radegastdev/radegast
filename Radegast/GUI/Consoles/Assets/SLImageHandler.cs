@@ -247,11 +247,14 @@ namespace Radegast
                 return;
             }
 
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.AddExtension = true;
-            dlg.RestoreDirectory = true;
-            dlg.Title = "Save image as...";
-            dlg.Filter = "Targa (*.tga)|*.tga|Jpeg2000 (*.j2c)|*.j2c|PNG (*.png)|*.png|Jpeg (*.jpg)|*.jpg|Bitmap (*.bmp)|*.bmp";
+            SaveFileDialog dlg = new SaveFileDialog
+            {
+                AddExtension = true,
+                RestoreDirectory = true,
+                Title = "Save image as...",
+                Filter =
+                    "Targa (*.tga)|*.tga|Jpeg2000 (*.j2c)|*.j2c|PNG (*.png)|*.png|Jpeg (*.jpg)|*.jpg|Bitmap (*.bmp)|*.bmp"
+            };
 
 
 
