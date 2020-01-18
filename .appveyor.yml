@@ -43,9 +43,13 @@ before_build:
 
 after_build:
   - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar bin\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
+  - cmd: 'msbuild "%APPVEYOR_BUILD_FOLDER%\radegast.sln" /t:RadegastBundle /p:Platform="x86" /p:BuildProjectReferences=false /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
  
 
 artifacts:
+  - path: 'Install\RadegastBundle\bin\Release\RadegastBundle.exe'
+    name: 'Radegast Windows Bundle'
+    type: Auto
   - path: 'Install\RadegastSetup\bin\Release\RadegastSetup.msi'
     name: 'Radegast Windows MSI'
     type: Auto
