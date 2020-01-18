@@ -15,7 +15,7 @@ configuration: ReleaseWindows
 
 environment:
   SIGN_TOKEN:
-    secure: CyWk15XNyUCCeNyNoWFUEseZw48+2hTdN1aLsCTGNMYcZgXDjPBhWrNXqSxTKiPQ
+    secure: 1CtzaepYsuG1vKjlwJVLmjjIuhNHexDv/cJLjBKv83xQ98AquMUG/+v4mFoqXM6x
 
 
 pull_requests:
@@ -40,12 +40,13 @@ dotnet_csproj:
 before_build:
   - nuget restore radegast.sln
 
+
 after_build:
   - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar bin\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
-  - ps: Submit-SigningRequest -InputArtifactPath "Install\RadegastSetup\bin\Release\RadegastSetup.msi" -CIUserToken "$env:SIGN_TOKEN" -OrganizationId "8446d24b-7c29-473d-b13c-83bac9d9db17" -ProjectKey "Radegast" -SigningPolicyKey "Radegast" -OutputArtifactPath "RadegastSetup-$env:TAG_VERSION.msi" -WaitForCompletion
+ 
 
 artifacts:
-  - path: 'RadegastSetup-*.msi'
+  - path: 'Install\RadegastSetup\bin\Release\RadegastSetup.msi'
     name: 'Radegast Windows MSI'
     type: Auto
   - path: 'Radegast-*.tbz'
