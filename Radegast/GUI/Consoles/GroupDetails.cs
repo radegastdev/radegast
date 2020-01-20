@@ -1253,8 +1253,7 @@ namespace Radegast
 
             foreach (var member in e.BannedAgents)
             {
-                var item = new ListViewItem(instance.Names.Get(member.Key));
-                item.Name = member.Key.ToString();
+                var item = new ListViewItem(instance.Names.Get(member.Key)) {Name = member.Key.ToString()};
                 item.SubItems.Add(member.Value.ToShortDateString());
                 lwBannedMembers.Items.Add(item);
             }

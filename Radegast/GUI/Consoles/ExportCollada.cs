@@ -102,13 +102,14 @@ namespace Radegast
 		{
             SaveFileDialog dlg = new SaveFileDialog
             {
-                Title = "Export Collada File", Filter = "Collada (*.dae)|*.dae|All Files (*.*)|*.*"
+                Title = "Export Collada File",
+                Filter = "Collada (*.dae)|*.dae|All Files (*.*)|*.*",
+                FileName = txtFileName.Text.Trim() == string.Empty
+                    ? RadegastInstance.SafeFileName(objectName.Text)
+                    : Path.GetFileName(txtFileName.Text)
             };
-            dlg.FileName = txtFileName.Text.Trim() == string.Empty 
-                ? RadegastInstance.SafeFileName(objectName.Text) 
-                : Path.GetFileName(txtFileName.Text);
 
-			DialogResult res = dlg.ShowDialog();
+            DialogResult res = dlg.ShowDialog();
 			
 			if (res == DialogResult.OK)
 			{
