@@ -611,7 +611,7 @@ namespace Radegast
         private void ddOnlineFriends_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ddOnlineFriends.SelectedIndex < 1) return;
-            mapFriend = client.Friends.FriendList.Find(f => { return f.Name == ddOnlineFriends.SelectedItem.ToString(); });
+            mapFriend = client.Friends.FriendList.Find(f => f.Name == ddOnlineFriends.SelectedItem.ToString());
             if (mapFriend != null)
             {
                 targetRegionHandle = 0;

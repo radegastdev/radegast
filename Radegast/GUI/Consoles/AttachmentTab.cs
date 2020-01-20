@@ -52,10 +52,7 @@ namespace Radegast
         public void RefreshList()
         {
             List<Primitive> attachments = client.Network.CurrentSim.ObjectsPrimitives.FindAll(
-                delegate(Primitive prim)
-                {
-                    return (prim.ParentID == av.LocalID);
-                }
+                prim => (prim.ParentID == av.LocalID)
             );
 
             List<Control> toRemove = new List<Control>();

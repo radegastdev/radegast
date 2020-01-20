@@ -132,7 +132,7 @@ namespace Radegast
             if (e.SourceID == avatar.ID && e.TargetID != UUID.Zero) {
                 selectedID = e.TargetID;
                 selectedPrim = client.Network.CurrentSim.ObjectsPrimitives.Find(
-                    delegate(Primitive prim) { return prim.ID == selectedID; }
+                    prim => prim.ID == selectedID
                 );
                 if (selectedPrim != null) {
                     client.Objects.SelectObject(client.Network.CurrentSim, selectedPrim.LocalID);
@@ -144,7 +144,7 @@ namespace Radegast
         private void objInfoBtn_Click(object sender, EventArgs e)
         {
             selectedPrim = client.Network.CurrentSim.ObjectsPrimitives.Find(
-                    delegate(Primitive prim) { return prim.LocalID == selectedPrim.ParentID; }
+                prim => prim.LocalID == selectedPrim.ParentID
             );
             selectedID = selectedPrim.ID;
             UpdateLLUUID();

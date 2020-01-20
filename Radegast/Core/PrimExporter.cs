@@ -104,11 +104,8 @@ namespace Radegast
 					}
 					
 					List<Primitive> prims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(
-						delegate(Primitive prim)
-						{
-							return (prim.LocalID == localid || prim.ParentID == localid);
-						}
-					);
+                        prim => (prim.LocalID == localid || prim.ParentID == localid)
+                    );
 					
 					bool complete = RequestObjectProperties(prims, 250);
 					

@@ -111,7 +111,7 @@ namespace Radegast
         private void InitializeFriendsList()
         {
             if (!Monitor.TryEnter(lockOneAtaTime)) return;
-            List<FriendInfo> friends = client.Friends.FriendList.FindAll(delegate(FriendInfo f) { return true; });
+            List<FriendInfo> friends = client.Friends.FriendList.FindAll((FriendInfo f) => true);
             
             friends.Sort((fi1, fi2) =>
                 {

@@ -62,12 +62,12 @@ namespace Radegast
                 return;
             }
 
-            groupBox1.Text = "Animation " + n + " (" + anim + ") for " + av.Name;
+            groupBox1.Text = $"Animation {n} ({anim}) for {av.Name}";
 
-            friends = instance.Client.Friends.FriendList.FindAll(delegate(FriendInfo f) { return true; });
+            friends = instance.Client.Friends.FriendList.FindAll((FriendInfo f) => true);
 
             pnlSave.Visible = false;
-            boxAnimName.Text = "Animation " + n;
+            boxAnimName.Text = $"Animation {n}";
             cbFriends.DropDownStyle = ComboBoxStyle.DropDownList;
 
             foreach (FriendInfo f in friends)

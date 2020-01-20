@@ -112,7 +112,7 @@ namespace Radegast
             if (font != null)
             {
                 float currentSize = font.Size;
-                if (currentSize != fontSize)
+                if (Math.Abs(currentSize - fontSize) > 0.01)
                 {
                     font = new Font(font.Name, fontSize,
                         font.Style, font.Unit,
@@ -133,8 +133,8 @@ namespace Radegast
                 List<UUID> ret = new List<UUID>();
                 foreach (ListViewItem item in lvwObjects.Items)
                 {
-                    if (item.Tag is UUID)
-                        ret.Add((UUID)item.Tag);
+                    if (item.Tag is UUID tag)
+                        ret.Add(tag);
                 }
                 return ret;
             }
@@ -310,9 +310,9 @@ namespace Radegast
                             continue;
                         }
 
-                        Avatar foundAvi = e.Simulator.ObjectsAvatars.Find(av => { return av.ID == key; });
+                        Avatar foundAvi = e.Simulator.ObjectsAvatars.Find(av => av.ID == key);
 
-                        // CoarseLocationUpdate gives us hight of 0 when actual height is
+                        // CoarseLocationUpdate gives us height of 0 when actual height is
                         // between 1024-4096m on OpenSim grids. 1020 on SL
                         bool unkownAltitude = instance.Netcom.LoginOptions.Grid.Platform == "SecondLife" ? pos.Z == 1020f : pos.Z == 0f;
                         if (unkownAltitude) 

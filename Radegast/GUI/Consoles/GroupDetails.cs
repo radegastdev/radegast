@@ -932,7 +932,7 @@ namespace Radegast
                         continue;
 
                     GroupRole role = (GroupRole)item.Tag;
-                    var foundRole = roleMembers.Find(kvp => { return kvp.Value == m.Base.ID && kvp.Key == role.ID; });
+                    var foundRole = roleMembers.Find(kvp => kvp.Value == m.Base.ID && kvp.Key == role.ID);
                     bool hasRole = foundRole.Value == m.Base.ID;
 
                     if (item.Checked != hasRole)
@@ -1020,7 +1020,7 @@ namespace Radegast
             }
             else if (roleMembers != null)
             {
-                var mmb = roleMembers.FindAll(kvp => { return kvp.Key == role.ID; });
+                var mmb = roleMembers.FindAll(kvp => kvp.Key == role.ID);
                 foreach (var m in mmb)
                 {
                     lvwAssignedMembers.Items.Add(instance.Names.Get(m.Value));

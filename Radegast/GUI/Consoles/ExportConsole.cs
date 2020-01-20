@@ -85,11 +85,8 @@ namespace Radegast
 					localid = exportPrim.LocalID;
 				
 				List<Primitive> prims = Client.Network.CurrentSim.ObjectsPrimitives.FindAll(
-					delegate(Primitive prim)
-					{
-						return (prim.LocalID == localid || prim.ParentID == localid);
-					}
-				);
+                    prim => (prim.LocalID == localid || prim.ParentID == localid)
+                );
 				
 				foreach (Primitive prim in prims)
 				{

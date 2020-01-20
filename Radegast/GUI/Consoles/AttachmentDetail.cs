@@ -98,13 +98,10 @@ namespace Radegast
             }
 
             List<Primitive> parts = client.Network.CurrentSim.ObjectsPrimitives.FindAll(
-                delegate(Primitive prim)
-                {
-                    return (prim.LocalID == attachment.LocalID || prim.ParentID == attachment.LocalID);
-                }
+                prim => (prim.LocalID == attachment.LocalID || prim.ParentID == attachment.LocalID)
             );
 
-            lblPrimCount.Text = "Prims: " + parts.Count;
+            lblPrimCount.Text = $"Prims: {parts.Count}";
         }
 
         void Objects_ObjectProperties(object sender, ObjectPropertiesEventArgs e)

@@ -50,19 +50,13 @@ namespace Radegast
         public string GetSerializedAttachmentPrims(Simulator sim, uint localID)
         {
             List<Primitive> prims = sim.ObjectsPrimitives.FindAll(
-                delegate(Primitive prim)
-                {
-                    return (prim.LocalID == localID || prim.ParentID == localID);
-                }
+                prim => (prim.LocalID == localID || prim.ParentID == localID)
             );
 
             RequestObjectProperties(prims, 500);
 
             int i = prims.FindIndex(
-                delegate(Primitive prim)
-                {
-                    return (prim.LocalID == localID);
-                }
+                prim => (prim.LocalID == localID)
             );
 
             if (i >= 0) {
@@ -84,10 +78,7 @@ namespace Radegast
             uint rootPrim = p.ParentID == 0 ? p.LocalID : p.ParentID;
 
             List<Primitive> prims = sim.ObjectsPrimitives.FindAll(
-                delegate(Primitive prim)
-                {
-                    return (prim.LocalID == rootPrim || prim.ParentID == rootPrim);
-                }
+                prim => (prim.LocalID == rootPrim || prim.ParentID == rootPrim)
             );
 
             RequestObjectProperties(prims, 500);
