@@ -254,7 +254,7 @@ namespace Radegast
                                         ? StateManager.ToVector3D(e.Simulator.Handle, e.Simulator.AvatarPositions[client.Self.AgentID])
                                         : client.Self.GlobalPosition;
 
-                    // CoarseLocationUpdate gives us hight of 0 when actual height is
+                    // CoarseLocationUpdate gives us height of 0 when actual height is
                     // between 1024-4096m.
                     if (mypos.Z < 0.1)
                     {
@@ -314,8 +314,8 @@ namespace Radegast
 
                         // CoarseLocationUpdate gives us height of 0 when actual height is
                         // between 1024-4096m on OpenSim grids. 1020 on SL
-                        bool unkownAltitude = instance.Netcom.LoginOptions.Grid.Platform == "SecondLife" ? pos.Z == 1020f : pos.Z == 0f;
-                        if (unkownAltitude) 
+                        bool unknownAltitude = instance.Netcom.LoginOptions.Grid.Platform == "SecondLife" ? pos.Z == 1020f : pos.Z == 0f;
+                        if (unknownAltitude) 
                         {
                             if (foundAvi != null)
                             {
@@ -341,13 +341,13 @@ namespace Radegast
                             continue;
                         }
 
-                        if (unkownAltitude)
+                        if (unknownAltitude)
                         {
                             item.Text = instance.Names.Get(key) + " (?m)";
                         }
                         else
                         {
-                            item.Text = instance.Names.Get(key) + " (" + d + "m)";
+                            item.Text = instance.Names.Get(key) + $" ({d}m)";
                         }
 
                         if (foundAvi != null)
@@ -460,15 +460,7 @@ namespace Radegast
 
             string msg;
 
-            if (input.Length >= 1000)
-            {
-                msg = input.Substring(0, 1000);
-            }
-            else
-            {
-                msg = input;
-            }
-
+            msg = input.Length >= 1000 ? input.Substring(0, 1000) : input;
             msg = msg.Replace(ChatInputBox.NewlineMarker, Environment.NewLine);
 
             if (instance.GlobalSettings["mu_emotes"].AsBoolean() && msg.StartsWith(":"))
@@ -610,7 +602,7 @@ namespace Radegast
             if (instance.State.FollowName == string.Empty)
             {
                 instance.State.Follow(av.Name, av.ID);
-                ctxFollow.Text = "Unfollow " + av.Name;
+                ctxFollow.Text = $"Unfollow {av.Name}";
             }
             else
             {
@@ -997,7 +989,7 @@ namespace Radegast
     {
         private static Regex distanceRegex = new Regex(@"\((?<dist>\d+)\s*m\)", RegexOptions.Compiled);
         private Match match;
-        RadegastInstance instance;
+        readonly RadegastInstance instance;
 
         public SorterClass(RadegastInstance instance)
         {
@@ -1012,10 +1004,10 @@ namespace Radegast
             ListViewItem item1 = (ListViewItem)x;
             ListViewItem item2 = (ListViewItem)y;
 
-            if ((item1.Tag is UUID) && ((UUID)item1.Tag == instance.Client.Self.AgentID))
+            if ((item1.Tag is UUID tag) && (tag == instance.Client.Self.AgentID))
                 return -1;
 
-            if ((item2.Tag is UUID) && ((UUID)item2.Tag == instance.Client.Self.AgentID))
+            if ((item2.Tag is UUID uuid) && (uuid == instance.Client.Self.AgentID))
                 return 1;
 
             int distance1 = int.MaxValue, distance2 = int.MaxValue;
