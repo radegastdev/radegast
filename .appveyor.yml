@@ -44,18 +44,15 @@ after_build:
   - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar bin\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
   - ps: Submit-SigningRequest -InputArtifactPath "Install\RadegastSetup\bin\Release\RadegastSetup.msi" -CIUserToken "$env:SIGN_TOKEN" -OrganizationId "8446d24b-7c29-473d-b13c-83bac9d9db17" -ProjectKey "Radegast" -SigningPolicyKey "Radegast" -OutputArtifactPath "Install\RadegastSetup\bin\Release\RadegastSetup.msi" -Force -WaitForCompletion
   - cmd: 'msbuild "%APPVEYOR_BUILD_FOLDER%\radegast.sln" /t:RadegastBundle /p:Platform="x86" /p:BuildProjectReferences=false /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
+  - ps: Submit-SigningRequest -InputArtifactPath "Install\RadegastBundle\bin\Release\RadegastBundle.exe" -CIUserToken "$env:SIGN_TOKEN" -OrganizationId "8446d24b-7c29-473d-b13c-83bac9d9db17" -ProjectKey "Radegast" -SigningPolicyKey "Radegast" -OutputArtifactPath "RadegastSetup-$env:TAG_VERSION.exe" -Force -WaitForCompletion
+  - cmd: copy Install\RadegastSetup\bin\Release\RadegastSetup.msi RadegastSetup-$env:TAG_VERSION.msi
 
-deploy:
-  - provider: Webhook
-    url: https://app.signpath.io/API/v1/8446d24b-7c29-473d-b13c-83bac9d9db17/Integrations/AppVeyor?ProjectKey=Radegast&SigningPolicyKey=Radegast
-    authorization:
-      secure: CyWk15XNyUCCeNyNoWFUEseZw48+2hTdN1aLsCTGNMYcZgXDjPBhWrNXqSxTKiPQ
 
 artifacts:
-  - path: 'Install\RadegastBundle\bin\Release\RadegastBundle.exe'
+  - path: 'RadegastSetup-*.exe'
     name: 'Radegast Windows Bundle'
     type: Auto
-  - path: 'Install\RadegastSetup\bin\Release\RadegastSetup.msi'
+  - path: 'RadegastSetup-*.msi'
     name: 'Radegast Windows MSI'
     type: Auto
   - path: 'Radegast-*.tbz'
