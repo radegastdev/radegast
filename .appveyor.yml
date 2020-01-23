@@ -13,10 +13,6 @@ branches:
 
 configuration: ReleaseWindows
 
-environment:
-  SIGN_TOKEN:
-    secure: CyWk15XNyUCCeNyNoWFUEseZw48+2hTdN1aLsCTGNMYcZgXDjPBhWrNXqSxTKiPQ
-
 pull_requests:
   do_not_increment_build_number: true
 
@@ -42,11 +38,9 @@ before_build:
 
 after_build:
   - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar bin\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
-  - ps: Submit-SigningRequest -InputArtifactPath "Install\RadegastSetup\bin\Release\RadegastSetup.msi" -CIUserToken "$env:SIGN_TOKEN" -OrganizationId "8446d24b-7c29-473d-b13c-83bac9d9db17" -ProjectKey "Radegast" -SigningPolicyKey "Radegast" -ArtifactConfigurationKey "MSI" -OutputArtifactPath "Install\RadegastSetup\bin\Release\RadegastSetup.msi" -Force -WaitForCompletion
   - cmd: 'msbuild "%APPVEYOR_BUILD_FOLDER%\radegast.sln" /t:RadegastBundle /p:Platform="x86" /p:BuildProjectReferences=false /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
-  - ps: Submit-SigningRequest -InputArtifactPath "Install\RadegastBundle\bin\Release\RadegastBundle.exe" -CIUserToken "$env:SIGN_TOKEN" -OrganizationId "8446d24b-7c29-473d-b13c-83bac9d9db17" -ProjectKey "Radegast" -SigningPolicyKey "Radegast" -ArtifactConfigurationKey "Bundle" -OutputArtifactPath "RadegastSetup-$env:TAG_VERSION.exe" -Force -WaitForCompletion
   - ps: Copy-Item Install\RadegastSetup\bin\Release\RadegastSetup.msi RadegastSetup-$env:TAG_VERSION.msi
-
+  - ps: Copy-Item Install\RadegastBundle\bin\Release\RadegastBundle.exe RadegastSetup-$env:TAG_VERSION.exe
 
 artifacts:
   - path: 'RadegastSetup-*.exe'
