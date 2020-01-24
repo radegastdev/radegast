@@ -80,12 +80,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="C5" Version="2.5.3" />
-    <PackageReference Include="CommandLineParser" Version="2.6.0" />
-    <PackageReference Include="LibreMetaverse" Version="1.4.5.48" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.5.48" />
-    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.4.5.48" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.5.48" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.5.48" />
+    <PackageReference Include="CommandLineParser" Version="2.7.82" />
+    <PackageReference Include="LibreMetaverse" Version="1.4.6.80" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.6.80" />
+    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.4.6.80" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.6.80" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.4.6.80" />
     <PackageReference Include="LinkDotNet.NUniqueHardwareID" Version="0.4.1" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="OpenTK" Version="3.1.0" />
