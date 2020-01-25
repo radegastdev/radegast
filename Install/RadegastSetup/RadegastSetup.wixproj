@@ -10,6 +10,15 @@
     <OutputType>Package</OutputType>
     <Name>RadegastSetup</Name>
   </PropertyGroup>
+  <PropertyGroup>
+    <Win10SDKInstallationFolder>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0@InstallationFolder)</Win10SDKInstallationFolder>
+    <Win10SDKProductVersion>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0@ProductVersion)</Win10SDKProductVersion>
+    <SignToolPath Condition=" ('$(SignToolPath)'=='') and Exists('$(Win10SDKInstallationFolder)bin\$(Win10SDKProductVersion).0\x86\signtool.exe') ">$(Win10SDKInstallationFolder)bin\$(Win10SDKProductVersion).0\x86\signtool.exe</SignToolPath>
+    <Win81SDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</Win81SDK>
+    <SignToolPath Condition=" ('$(SignToolPath)'=='') and Exists('$(Win81SDK)\bin\x86\signtool.exe') ">$(Win81SDK)\bin\x86\signtool.exe</SignToolPath>
+    <Win8SDK>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.0@InstallationFolder)</Win8SDK>
+    <SignToolPath Condition=" ('$(SignToolPath)'=='') and Exists('$(Win8SDK)\bin\x86\signtool.exe') ">$(Win8SDK)\bin\x86\signtool.exe</SignToolPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
@@ -22,6 +31,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <SignCabs>true</SignCabs>
+    <SignOutput>true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="NetFx472.wxs" />
@@ -80,10 +91,11 @@
   <Target Name="BeforeBuild">
     <HeatDirectory OutputFile="$(ProjectDir)\ProductInstallFiles.wxs" Directory="..\..\Radegast\bin\$(Configuration)\net472\" ComponentGroupName="ProductFilesComponentGroup" DirectoryRefId="APPLICATIONFOLDER" AutogenerateGuids="true" PreprocessorVariable="var.Radegast.TargetDir" SuppressRegistry="true" SuppressRootDirectory="true" SuppressUniqueIds="true" ToolPath="$(WixToolPath)" NoLogo="true" VerboseOutput="true" />
   </Target>
-  <!--
-	To modify your build process, add your task inside one of the targets below and uncomment it.
-	Other similar extension points exist, see Wix.targets.
-	<Target Name="AfterBuild">
-	</Target>
-	-->
+  <Import Project="$(WixTargetsPath)" />
+  <Target Name="SignCabs">
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /sha1 95AEDF70A4C4E6184F43CA8C1E17B6D838430184 /t http://timestamp.comodoca.com/authenticode &quot;%(SignCabs.FullPath)&quot;" />
+  </Target>
+  <Target Name="SignMsi">
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /sha1 95AEDF70A4C4E6184F43CA8C1E17B6D838430184 /t http://timestamp.comodoca.com/authenticode &quot;%(SignMsi.FullPath)&quot;" />
+  </Target>
 </Project>
