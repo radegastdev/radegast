@@ -9,7 +9,7 @@
             <bal:WixStandardBootstrapperApplication LicenseFile="assets\license.rtf" ShowVersion="yes" />
         </BootstrapperApplicationRef>
         <Chain>
-            <PackageGroupRef Id="NetFx472Redist"/>
+            <PackageGroupRef Id="NetFx471Redist"/>
             <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" />
 		</Chain>
 	</Bundle>

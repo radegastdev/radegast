@@ -1,7 +1,7 @@
 // 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
-// Copyright (c) 2019, Sjofn LLC
+// Copyright (c) 2019-2020, Sjofn LLC
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
