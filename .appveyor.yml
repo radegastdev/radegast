@@ -44,7 +44,7 @@ before_build:
   - nuget restore radegast.sln
 
 after_build:
-  - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar bin\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
+  - cmd: '7z a -ttar -so Radegast-%TAG_VERSION%.tar %APPVEYOR_BUILD_FOLDER%\Radegast\bin\Release\net471\ | 7z a -si Radegast-%TAG_VERSION%.tbz'
   - cmd: 'msbuild "%APPVEYOR_BUILD_FOLDER%\radegast.sln" /t:RadegastBundle /p:Platform="x86" /p:BuildProjectReferences=false /m /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
   - ps: Copy-Item Install\RadegastSetup\bin\Release\RadegastSetup.msi RadegastSetup-$env:TAG_VERSION.msi
   - ps: Copy-Item Install\RadegastBundle\bin\Release\RadegastBundle.exe RadegastSetup-$env:TAG_VERSION.exe
