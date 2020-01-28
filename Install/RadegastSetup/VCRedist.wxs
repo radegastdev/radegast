@@ -2,7 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Fragment>
         <DirectoryRef Id="TARGETDIR">
-            <Merge Id="VC_Redist" SourceFile="$(env.ProgramFiles)\Common Files\Merge Modules\Microsoft_VC120_CRT_x86.msm" DiskId="1" Language="0"/>
+            <Merge Id="VC_Redist" SourceFile="vcredist\Microsoft_VC120_CRT_x86.msm" DiskId="1" Language="0"/>
         </DirectoryRef>
     </Fragment>
 </Wix>
