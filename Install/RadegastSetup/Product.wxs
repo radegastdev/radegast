@@ -5,7 +5,7 @@
 
     <Product Id="*" Name="$(var.productName) $(var.productVersion)" Language="1033" 
              Version="$(var.productVersion)" Manufacturer="$(var.companyName)" UpgradeCode="7dcb250d-4b4d-48b1-82e0-cca31315d145">
-		<Package InstallerVersion="200" Compressed="yes" />
+		<Package InstallerVersion="405" Compressed="yes" />
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of $(var.productName) is already installed." />
         <Media Id="1" Cabinet="Radegast.cab" EmbedCab="yes" />
@@ -36,6 +36,10 @@
 
             <Feature Id="VoiceFeature" Title="VoicePack" Level="1">
                 <ComponentGroupRef Id="VoicePackComponentGroup" />
+                <Feature Id="VCRedist" Title="Visual C++ 2013 Runtime" 
+                         AllowAdvertise="no" Display="hidden" InstallDefault="followParent" Level="1">
+                    <MergeRef Id="VC_Redist" />
+                </Feature>
             </Feature>
         </Feature>
 

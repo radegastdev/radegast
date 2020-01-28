@@ -32,6 +32,7 @@
     <Compile Include="NetFx472.wxs" />
     <Compile Include="Product.wxs" />
     <Compile Include="ProductInstallFiles.wxs" />
+    <Compile Include="VCRedist.wxs" />
     <Compile Include="VoicePack.wxs" />
   </ItemGroup>
   <ItemGroup>
