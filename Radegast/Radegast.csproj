@@ -923,10 +923,7 @@
     <Compile Update="GUI\Rendering\Water.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Content Include="OpenMetaverse.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Compile Update="Properties\Resources.Designer.cs">
+      <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -1041,25 +1038,10 @@
     <Content Include="grids.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="libopenjpeg-dotnet-2-1.5.0-dotnet-1-i686.so">
+      <Content Include="license.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="libopenjpeg-dotnet-2-1.5.0-dotnet-1-x86_64.so">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="libopenjpeg-dotnet-2-1.5.0-dotnet-1.dylib">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="license.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="openjpeg-dotnet-x86_64.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="openjpeg-dotnet.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="openmetaverse_data\avatar_lad.xml">
+      <Content Include="openmetaverse_data\avatar_lad.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="openmetaverse_data\avatar_skeleton.xml">
