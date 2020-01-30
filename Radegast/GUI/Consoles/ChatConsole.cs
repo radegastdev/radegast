@@ -1,33 +1,23 @@
-// 
-// Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 
-//     * Redistributions of source code must retain the above copyright notice,
-//       this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of the application "Radegast", nor the names of its
-//       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// $Id$
-//
+/**
+ * Radegast Metaverse Client
+ * Copyright(c) 2009-2014, Radegast Development Team
+ * Copyright(c) 2016-2020, Sjofn, LLC
+ * All rights reserved.
+ *  
+ * Radegast is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.If not, see<https://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -122,7 +112,7 @@ namespace Radegast
             if (font != null)
             {
                 float currentSize = font.Size;
-                if (currentSize != fontSize)
+                if (Math.Abs(currentSize - fontSize) > 0.01)
                 {
                     font = new Font(font.Name, fontSize,
                         font.Style, font.Unit,
@@ -143,8 +133,8 @@ namespace Radegast
                 List<UUID> ret = new List<UUID>();
                 foreach (ListViewItem item in lvwObjects.Items)
                 {
-                    if (item.Tag is UUID)
-                        ret.Add((UUID)item.Tag);
+                    if (item.Tag is UUID tag)
+                        ret.Add(tag);
                 }
                 return ret;
             }
@@ -264,7 +254,7 @@ namespace Radegast
                                         ? StateManager.ToVector3D(e.Simulator.Handle, e.Simulator.AvatarPositions[client.Self.AgentID])
                                         : client.Self.GlobalPosition;
 
-                    // CoarseLocationUpdate gives us hight of 0 when actual height is
+                    // CoarseLocationUpdate gives us height of 0 when actual height is
                     // between 1024-4096m.
                     if (mypos.Z < 0.1)
                     {
@@ -320,12 +310,12 @@ namespace Radegast
                             continue;
                         }
 
-                        Avatar foundAvi = e.Simulator.ObjectsAvatars.Find(av => { return av.ID == key; });
+                        Avatar foundAvi = e.Simulator.ObjectsAvatars.Find(av => av.ID == key);
 
-                        // CoarseLocationUpdate gives us hight of 0 when actual height is
+                        // CoarseLocationUpdate gives us height of 0 when actual height is
                         // between 1024-4096m on OpenSim grids. 1020 on SL
-                        bool unkownAltitude = instance.Netcom.LoginOptions.Grid.Platform == "SecondLife" ? pos.Z == 1020f : pos.Z == 0f;
-                        if (unkownAltitude) 
+                        bool unknownAltitude = instance.Netcom.LoginOptions.Grid.Platform == "SecondLife" ? pos.Z == 1020f : pos.Z == 0f;
+                        if (unknownAltitude) 
                         {
                             if (foundAvi != null)
                             {
@@ -351,13 +341,13 @@ namespace Radegast
                             continue;
                         }
 
-                        if (unkownAltitude)
+                        if (unknownAltitude)
                         {
                             item.Text = instance.Names.Get(key) + " (?m)";
                         }
                         else
                         {
-                            item.Text = instance.Names.Get(key) + " (" + d + "m)";
+                            item.Text = instance.Names.Get(key) + $" ({d}m)";
                         }
 
                         if (foundAvi != null)
@@ -470,15 +460,7 @@ namespace Radegast
 
             string msg;
 
-            if (input.Length >= 1000)
-            {
-                msg = input.Substring(0, 1000);
-            }
-            else
-            {
-                msg = input;
-            }
-
+            msg = input.Length >= 1000 ? input.Substring(0, 1000) : input;
             msg = msg.Replace(ChatInputBox.NewlineMarker, Environment.NewLine);
 
             if (instance.GlobalSettings["mu_emotes"].AsBoolean() && msg.StartsWith(":"))
@@ -620,7 +602,7 @@ namespace Radegast
             if (instance.State.FollowName == string.Empty)
             {
                 instance.State.Follow(av.Name, av.ID);
-                ctxFollow.Text = "Unfollow " + av.Name;
+                ctxFollow.Text = $"Unfollow {av.Name}";
             }
             else
             {
@@ -777,11 +759,34 @@ namespace Radegast
             movement.MovingBackward = false;
         }
 
-        private void pnlMovement_Click(object sender, EventArgs e)
+        private void btnMoveUp_MouseDown(object Sender, MouseEventArgs e)
         {
-            client.Self.Jump(true);
-            System.Threading.Thread.Sleep(500);
-            client.Self.Jump(false);
+            movement.Jump = true;
+        }
+
+        private void btnMoveUp_MouseUp(object Sender, MouseEventArgs e)
+        {
+            movement.Jump = false;
+        }
+
+        private void btnMoveDown_MouseDown(object Sender, MouseEventArgs e)
+        {
+            movement.Crouch = true;
+        }
+
+        private void btnMoveDown_MouseUp(object Sender, MouseEventArgs e)
+        {
+            movement.Crouch = false;
+        }
+
+        private void btnFly_Click(object sender, EventArgs e)
+        {
+            movement.ToggleFlight();
+        }
+
+        private void btnRun_Click(object sender, EventArgs e)
+        {
+            movement.ToggleAlwaysRun();
         }
 
         private void lvwObjects_DragDrop(object sender, DragEventArgs e)
@@ -984,7 +989,7 @@ namespace Radegast
     {
         private static Regex distanceRegex = new Regex(@"\((?<dist>\d+)\s*m\)", RegexOptions.Compiled);
         private Match match;
-        RadegastInstance instance;
+        readonly RadegastInstance instance;
 
         public SorterClass(RadegastInstance instance)
         {
@@ -999,10 +1004,10 @@ namespace Radegast
             ListViewItem item1 = (ListViewItem)x;
             ListViewItem item2 = (ListViewItem)y;
 
-            if ((item1.Tag is UUID) && ((UUID)item1.Tag == instance.Client.Self.AgentID))
+            if ((item1.Tag is UUID tag) && (tag == instance.Client.Self.AgentID))
                 return -1;
 
-            if ((item2.Tag is UUID) && ((UUID)item2.Tag == instance.Client.Self.AgentID))
+            if ((item2.Tag is UUID uuid) && (uuid == instance.Client.Self.AgentID))
                 return 1;
 
             int distance1 = int.MaxValue, distance2 = int.MaxValue;

@@ -9,6 +9,7 @@
 /* ========================================================================================== */
 
 using System;
+using System.Text;
 using System.Runtime.InteropServices;
 
 namespace FMOD
@@ -150,7 +151,7 @@ namespace FMOD
         System::createDSPByType
     ]
     */
-    public enum DSP_TYPE
+    public enum DSP_TYPE : int
     {
         UNKNOWN,            /* This unit was created via a non FMOD plugin so has an unknown purpose. */
         MIXER,              /* This unit does nothing but take inputs and mix them together then feed the result to the soundcard unit. */

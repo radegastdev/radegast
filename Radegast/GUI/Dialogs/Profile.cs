@@ -1,33 +1,23 @@
-// 
-// Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 
-//     * Redistributions of source code must retain the above copyright notice,
-//       this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of the application "Radegast", nor the names of its
-//       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// $Id$
-//
+/**
+ * Radegast Metaverse Client
+ * Copyright(c) 2009-2014, Radegast Development Team
+ * Copyright(c) 2016-2020, Sjofn, LLC
+ * All rights reserved.
+ *  
+ * Radegast is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.If not, see<https://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -182,10 +172,7 @@ namespace Radegast
             {
                 if (!lvwGroups.Items.ContainsKey(g.GroupID.ToString()))
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.Name = g.GroupID.ToString();
-                    item.Text = g.GroupName;
-                    item.Tag = g;
+                    ListViewItem item = new ListViewItem {Name = g.GroupID.ToString(), Text = g.GroupName, Tag = g};
                     item.SubItems.Add(new ListViewItem.ListViewSubItem(item, g.GroupTitle));
 
                     lvwGroups.Items.Add(item);
@@ -229,14 +216,16 @@ namespace Radegast
 
             foreach (KeyValuePair<UUID, string> PickInfo in picks)
             {
-                Button b = new Button();
-                b.AutoSize = false;
-                b.Tag = PickInfo.Key;
-                b.Name = PickInfo.Key.ToString();
-                b.Text = PickInfo.Value;
-                b.Width = 135;
-                b.Height = 25;
-                b.Left = 2;
+                Button b = new Button
+                {
+                    AutoSize = false,
+                    Tag = PickInfo.Key,
+                    Name = PickInfo.Key.ToString(),
+                    Text = PickInfo.Value,
+                    Width = 135,
+                    Height = 25,
+                    Left = 2
+                };
                 b.Top = i++ * b.Height + 5;
                 b.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
                 b.Click += new EventHandler(PickButtonClick);
@@ -294,9 +283,10 @@ namespace Radegast
 
             if (AgentID == client.Self.AgentID || e.Pick.SnapshotID != UUID.Zero)
             {
-                SLImageHandler img = new SLImageHandler(instance, e.Pick.SnapshotID, string.Empty);
-                img.Dock = DockStyle.Fill;
-                img.SizeMode = PictureBoxSizeMode.StretchImage;
+                SLImageHandler img = new SLImageHandler(instance, e.Pick.SnapshotID, string.Empty)
+                {
+                    Dock = DockStyle.Fill, SizeMode = PictureBoxSizeMode.StretchImage
+                };
                 pickPicturePanel.Controls.Add(img);
 
                 if (AgentID == client.Self.AgentID)
@@ -410,8 +400,7 @@ namespace Radegast
 
             if (AgentID == client.Self.AgentID || FLImageID != UUID.Zero)
             {
-                SLImageHandler pic = new SLImageHandler(instance, FLImageID, "");
-                pic.Dock = DockStyle.Fill;
+                SLImageHandler pic = new SLImageHandler(instance, FLImageID, "") {Dock = DockStyle.Fill};
 
                 if (AgentID == client.Self.AgentID)
                 {
@@ -485,9 +474,7 @@ namespace Radegast
 
         private void btnWebView_Click(object sender, EventArgs e)
         {
-            WebBrowser web = new WebBrowser();
-            web.Dock = DockStyle.Fill;
-            web.Url = new Uri(txtWebURL.Text);
+            WebBrowser web = new WebBrowser {Dock = DockStyle.Fill, Url = new Uri(txtWebURL.Text)};
 
             pnlWeb.Controls.Add(web);
         }

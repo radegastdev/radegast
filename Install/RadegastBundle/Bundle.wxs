@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+    <?include BuildProperties.wxi?>
+    <?define productVersion="!(bind.packageVersion.RadegastSetup)"?>
+
+    <Bundle Name="$(var.productName) $(var.productVersion)" Version="$(var.productVersion)" 
+            Manufacturer="$(var.companyName)" UpgradeCode="cccc26b5-aa17-47d8-8d5d-707a78ec9a10">
+        <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
+            <bal:WixStandardBootstrapperApplication LicenseFile="assets\license.rtf" ShowVersion="yes" />
+        </BootstrapperApplicationRef>
+        <Chain>
+            <PackageGroupRef Id="NetFx471Redist"/>
+            <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" />
+		</Chain>
+	</Bundle>
+</Wix>

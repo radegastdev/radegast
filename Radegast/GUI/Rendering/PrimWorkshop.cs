@@ -1,7 +1,7 @@
 // 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
-// Copyright (c) 2019, Sjofn LLC
+// Copyright (c) 2019-2020, Sjofn LLC
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -1126,8 +1126,7 @@ namespace Radegast.Rendering
 
         private void oBJToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "OBJ files (*.obj)|*.obj";
+            SaveFileDialog dialog = new SaveFileDialog {Filter = "OBJ files (*.obj)|*.obj"};
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {

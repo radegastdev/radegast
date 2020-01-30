@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net471</TargetFramework>
     <AssemblyTitle>Radegast.Plugin.IRC</AssemblyTitle>
     <Company>Radegast Development Team</Company>
     <Product>Radegast.Plugin.IRC</Product>

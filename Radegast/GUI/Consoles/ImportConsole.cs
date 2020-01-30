@@ -1,33 +1,23 @@
-﻿// 
-// Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 
-//     * Redistributions of source code must retain the above copyright notice,
-//       this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of the application "Radegast", nor the names of its
-//       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// $Id$
-//
+﻿/**
+ * Radegast Metaverse Client
+ * Copyright(c) 2009-2014, Radegast Development Team
+ * Copyright(c) 2016-2020, Sjofn, LLC
+ * All rights reserved.
+ *  
+ * Radegast is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.If not, see<https://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,9 +50,8 @@ namespace Radegast
 		{
 			InitializeComponent();
 			Client = client;
-			Importer = new PrimImporter(client);
-			Importer.LogMessage = LogMessage;
-			sFileName = "";
+            Importer = new PrimImporter(client) {LogMessage = LogMessage};
+            sFileName = "";
 			objectName.Text = "";
 			primCount.Text = "";
 			textureCount.Text = "";
@@ -323,50 +312,53 @@ namespace Radegast
 				Importer.RezAt = Client.Self.SimPosition;
 				Importer.RezAt.Z += 3.5f;
 			}
-			
-			Thread t = new Thread(new ThreadStart(delegate()
-			{
-				try
-				{
-					start = DateTime.Now;
-					// First upload Images that will be needed by the Importer, if required by user.
-					if (Importer.TextureUse == PrimImporter.TextureSet.NewUUID || Importer.TextureUse == PrimImporter.TextureSet.SculptUUID)
-						UploadImages();
-					
-					// Check to see if there are any failed uploads.
-					if (FailedUploads.Count > 0)
-					{
-						DialogResult res = MessageBox.Show(String.Format("Failed to upload {0} textures, which to try again?",FailedUploads.Count),
-						                                   "Import - Upload Texture Error",MessageBoxButtons.YesNo, MessageBoxIcon.Error);
-						if (res == DialogResult.Yes)
-							UploadImagesRetry();
-						
-						if (FailedUploads.Count != 0)
-						{
-							MessageBox.Show(String.Format("Failed to upload {0} textures on second try, aborting!",FailedUploads.Count),
-							                "Import - Upload Texture Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-							LogMessage("Failed to import object, due to texture error, review the log for further information");
-							return;
-						}
-					}
-					
-					LogMessage("Texture Upload completed");
-					LogMessage("Importing Prims...");
-					// If we get here, then we successfully uploaded the textures, continue with the upload of the Prims.
-					Importer.ImportFromFile(txtFileName.Text);
-					LogMessage("Import successful.");
-					LogMessage("Total Time: {0}",DateTime.Now.Subtract(start));
-				}
-				catch (Exception ex)
-				{
-					LogMessage("Import failed. Reason: {0}",ex.Message);
-					MessageBox.Show(ex.Message,"Importing failed.",MessageBoxButtons.OK,MessageBoxIcon.Error);
-				}
-				
-				BeginInvoke(new MethodInvoker(() => EnableWindow()));
-			}));
-			t.IsBackground = true;
-			t.Start();
+
+            Thread t = new Thread(delegate()
+            {
+                try
+                {
+                    start = DateTime.Now;
+                    // First upload Images that will be needed by the Importer, if required by user.
+                    if (Importer.TextureUse == PrimImporter.TextureSet.NewUUID ||
+                        Importer.TextureUse == PrimImporter.TextureSet.SculptUUID)
+                        UploadImages();
+
+                    // Check to see if there are any failed uploads.
+                    if (FailedUploads.Count > 0)
+                    {
+                        DialogResult res = MessageBox.Show(
+                            $"Failed to upload {FailedUploads.Count} textures, which to try again?",
+                            "Import - Upload Texture Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        if (res == DialogResult.Yes)
+                            UploadImagesRetry();
+
+                        if (FailedUploads.Count != 0)
+                        {
+                            MessageBox.Show(
+                                $"Failed to upload {FailedUploads.Count} textures on second try, aborting!",
+                                "Import - Upload Texture Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            LogMessage(
+                                "Failed to import object, due to texture error, review the log for further information");
+                            return;
+                        }
+                    }
+
+                    LogMessage("Texture Upload completed");
+                    LogMessage("Importing Prims...");
+                    // If we get here, then we successfully uploaded the textures, continue with the upload of the Prims.
+                    Importer.ImportFromFile(txtFileName.Text);
+                    LogMessage("Import successful.");
+                    LogMessage("Total Time: {0}", DateTime.Now.Subtract(start));
+                }
+                catch (Exception ex)
+                {
+                    LogMessage("Import failed. Reason: {0}", ex.Message);
+                    MessageBox.Show(ex.Message, "Importing failed.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                BeginInvoke(new MethodInvoker(() => EnableWindow()));
+            }) {IsBackground = true};
+            t.Start();
 		}
 		#endregion
 	}

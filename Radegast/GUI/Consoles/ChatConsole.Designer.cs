@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
 // All rights reserved.
@@ -77,6 +77,7 @@ namespace Radegast
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxOfferTP = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxTeleportTo = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctxReqestLure = new System.Windows.Forms.ToolStripMenuItem();
             this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.faceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxEject = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,6 +85,10 @@ namespace Radegast
             this.ctxEstateEject = new System.Windows.Forms.ToolStripMenuItem();
             this.muteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlMovement = new System.Windows.Forms.Panel();
+            this.btnRun = new System.Windows.Forms.Button();
+            this.btnFly = new System.Windows.Forms.Button();
+            this.btnJump = new System.Windows.Forms.Button();
+            this.btnCrouch = new System.Windows.Forms.Button();
             this.btnMoveBack = new System.Windows.Forms.Button();
             this.btnFwd = new System.Windows.Forms.Button();
             this.btnTurnRight = new System.Windows.Forms.Button();
@@ -91,7 +96,7 @@ namespace Radegast
             this.pnlChatInput = new System.Windows.Forms.Panel();
             this.cbChatType = new System.Windows.Forms.ComboBox();
             this.cbxInput = new Radegast.ChatInputBox();
-            this.ctxReqestLure = new System.Windows.Forms.ToolStripMenuItem();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -160,7 +165,7 @@ namespace Radegast
             this.lvwObjects.Location = new System.Drawing.Point(0, 0);
             this.lvwObjects.MultiSelect = false;
             this.lvwObjects.Name = "lvwObjects";
-            this.lvwObjects.Size = new System.Drawing.Size(127, 317);
+            this.lvwObjects.Size = new System.Drawing.Size(127, 310);
             this.lvwObjects.TabIndex = 0;
             this.lvwObjects.UseCompatibleStateImageBehavior = false;
             this.lvwObjects.View = System.Windows.Forms.View.List;
@@ -191,13 +196,13 @@ namespace Radegast
             this.ctxEstateEject,
             this.muteToolStripMenuItem});
             this.avatarContext.Name = "avatarContext";
-            this.avatarContext.Size = new System.Drawing.Size(164, 422);
+            this.avatarContext.Size = new System.Drawing.Size(163, 400);
             this.avatarContext.Opening += new System.ComponentModel.CancelEventHandler(this.avatarContext_Opening);
             // 
             // ctxProfile
             // 
             this.ctxProfile.Name = "ctxProfile";
-            this.ctxProfile.Size = new System.Drawing.Size(163, 22);
+            this.ctxProfile.Size = new System.Drawing.Size(162, 22);
             this.ctxProfile.Text = "Profile";
             this.ctxProfile.Click += new System.EventHandler(this.tbtnProfile_Click);
             // 
@@ -205,63 +210,63 @@ namespace Radegast
             // 
             this.ctxPay.Enabled = false;
             this.ctxPay.Name = "ctxPay";
-            this.ctxPay.Size = new System.Drawing.Size(163, 22);
+            this.ctxPay.Size = new System.Drawing.Size(162, 22);
             this.ctxPay.Text = "Pay";
             this.ctxPay.Click += new System.EventHandler(this.ctxPay_Click);
             // 
             // ctxStartIM
             // 
             this.ctxStartIM.Name = "ctxStartIM";
-            this.ctxStartIM.Size = new System.Drawing.Size(163, 22);
+            this.ctxStartIM.Size = new System.Drawing.Size(162, 22);
             this.ctxStartIM.Text = "Start IM";
             this.ctxStartIM.Click += new System.EventHandler(this.tbtnStartIM_Click);
             // 
             // ctxFollow
             // 
             this.ctxFollow.Name = "ctxFollow";
-            this.ctxFollow.Size = new System.Drawing.Size(163, 22);
+            this.ctxFollow.Size = new System.Drawing.Size(162, 22);
             this.ctxFollow.Text = "Follow";
             this.ctxFollow.Click += new System.EventHandler(this.tbtnFollow_Click);
             // 
             // ctxTextures
             // 
             this.ctxTextures.Name = "ctxTextures";
-            this.ctxTextures.Size = new System.Drawing.Size(163, 22);
+            this.ctxTextures.Size = new System.Drawing.Size(162, 22);
             this.ctxTextures.Text = "Textures";
             this.ctxTextures.Click += new System.EventHandler(this.dumpOufitBtn_Click);
             // 
             // ctxAttach
             // 
             this.ctxAttach.Name = "ctxAttach";
-            this.ctxAttach.Size = new System.Drawing.Size(163, 22);
+            this.ctxAttach.Size = new System.Drawing.Size(162, 22);
             this.ctxAttach.Text = "Attachments";
             this.ctxAttach.Click += new System.EventHandler(this.tbtnAttach_Click);
             // 
             // ctxMaster
             // 
             this.ctxMaster.Name = "ctxMaster";
-            this.ctxMaster.Size = new System.Drawing.Size(163, 22);
+            this.ctxMaster.Size = new System.Drawing.Size(162, 22);
             this.ctxMaster.Text = "Master controls";
             this.ctxMaster.Click += new System.EventHandler(this.tbtnMaster_Click);
             // 
             // ctxAnim
             // 
             this.ctxAnim.Name = "ctxAnim";
-            this.ctxAnim.Size = new System.Drawing.Size(163, 22);
+            this.ctxAnim.Size = new System.Drawing.Size(162, 22);
             this.ctxAnim.Text = "Animations";
             this.ctxAnim.Click += new System.EventHandler(this.tbtnAnim_Click);
             // 
             // ctxPoint
             // 
             this.ctxPoint.Name = "ctxPoint";
-            this.ctxPoint.Size = new System.Drawing.Size(163, 22);
+            this.ctxPoint.Size = new System.Drawing.Size(162, 22);
             this.ctxPoint.Text = "Point at";
             this.ctxPoint.Click += new System.EventHandler(this.ctxPoint_Click);
             // 
             // ctxOfferTP
             // 
             this.ctxOfferTP.Name = "ctxOfferTP";
-            this.ctxOfferTP.Size = new System.Drawing.Size(163, 22);
+            this.ctxOfferTP.Size = new System.Drawing.Size(162, 22);
             this.ctxOfferTP.Text = "Offer Teleport";
             this.ctxOfferTP.ToolTipText = " Offer Teleport ";
             this.ctxOfferTP.Click += new System.EventHandler(this.ctxOfferTP_Click);
@@ -269,15 +274,23 @@ namespace Radegast
             // ctxTeleportTo
             // 
             this.ctxTeleportTo.Name = "ctxTeleportTo";
-            this.ctxTeleportTo.Size = new System.Drawing.Size(163, 22);
+            this.ctxTeleportTo.Size = new System.Drawing.Size(162, 22);
             this.ctxTeleportTo.Text = "Teleport To";
             this.ctxTeleportTo.ToolTipText = " Teleport To ";
             this.ctxTeleportTo.Click += new System.EventHandler(this.ctxTeleportTo_Click);
             // 
+            // ctxReqestLure
+            // 
+            this.ctxReqestLure.Name = "ctxReqestLure";
+            this.ctxReqestLure.Size = new System.Drawing.Size(162, 22);
+            this.ctxReqestLure.Text = "Request Teleport";
+            this.ctxReqestLure.ToolTipText = " Request Teleport ";
+            this.ctxReqestLure.Click += new System.EventHandler(this.ctxReqestLure_Click);
+            // 
             // goToToolStripMenuItem
             // 
             this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
-            this.goToToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.goToToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.goToToolStripMenuItem.Text = "Walk To";
             this.goToToolStripMenuItem.ToolTipText = " Walk To ";
             this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem_Click);
@@ -285,7 +298,7 @@ namespace Radegast
             // faceToolStripMenuItem
             // 
             this.faceToolStripMenuItem.Name = "faceToolStripMenuItem";
-            this.faceToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.faceToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.faceToolStripMenuItem.Text = "Face";
             this.faceToolStripMenuItem.ToolTipText = " Face Avatar";
             this.faceToolStripMenuItem.Click += new System.EventHandler(this.faceToolStripMenuItem_Click);
@@ -293,7 +306,7 @@ namespace Radegast
             // ctxEject
             // 
             this.ctxEject.Name = "ctxEject";
-            this.ctxEject.Size = new System.Drawing.Size(163, 22);
+            this.ctxEject.Size = new System.Drawing.Size(162, 22);
             this.ctxEject.Text = "Eject";
             this.ctxEject.ToolTipText = " Eject ";
             this.ctxEject.Click += new System.EventHandler(this.ctxEject_Click);
@@ -301,7 +314,7 @@ namespace Radegast
             // ctxBan
             // 
             this.ctxBan.Name = "ctxBan";
-            this.ctxBan.Size = new System.Drawing.Size(163, 22);
+            this.ctxBan.Size = new System.Drawing.Size(162, 22);
             this.ctxBan.Text = "Ban";
             this.ctxBan.ToolTipText = " Ban ";
             this.ctxBan.Click += new System.EventHandler(this.ctxBan_Click);
@@ -309,7 +322,7 @@ namespace Radegast
             // ctxEstateEject
             // 
             this.ctxEstateEject.Name = "ctxEstateEject";
-            this.ctxEstateEject.Size = new System.Drawing.Size(163, 22);
+            this.ctxEstateEject.Size = new System.Drawing.Size(162, 22);
             this.ctxEstateEject.Text = "Eject from estate";
             this.ctxEstateEject.ToolTipText = " Eject from estate ";
             this.ctxEstateEject.Click += new System.EventHandler(this.ctxEstateEject_Click);
@@ -317,77 +330,142 @@ namespace Radegast
             // muteToolStripMenuItem
             // 
             this.muteToolStripMenuItem.Name = "muteToolStripMenuItem";
-            this.muteToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.muteToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.muteToolStripMenuItem.Text = "Mute";
             this.muteToolStripMenuItem.ToolTipText = " Mute ";
             this.muteToolStripMenuItem.Click += new System.EventHandler(this.muteToolStripMenuItem_Click);
             // 
             // pnlMovement
             // 
+            this.pnlMovement.Controls.Add(this.btnRun);
+            this.pnlMovement.Controls.Add(this.btnFly);
+            this.pnlMovement.Controls.Add(this.btnJump);
+            this.pnlMovement.Controls.Add(this.btnCrouch);
             this.pnlMovement.Controls.Add(this.btnMoveBack);
             this.pnlMovement.Controls.Add(this.btnFwd);
             this.pnlMovement.Controls.Add(this.btnTurnRight);
             this.pnlMovement.Controls.Add(this.btnTurnLeft);
             this.pnlMovement.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlMovement.Location = new System.Drawing.Point(0, 317);
+            this.pnlMovement.Location = new System.Drawing.Point(0, 310);
             this.pnlMovement.Name = "pnlMovement";
-            this.pnlMovement.Size = new System.Drawing.Size(127, 37);
+            this.pnlMovement.Size = new System.Drawing.Size(127, 44);
             this.pnlMovement.TabIndex = 11;
-            this.pnlMovement.Click += new System.EventHandler(this.pnlMovement_Click);
+            // 
+            // btnRun
+            // 
+            this.btnRun.AccessibleDescription = "";
+            this.btnRun.AccessibleName = "Run";
+            this.btnRun.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRun.Location = new System.Drawing.Point(64, 3);
+            this.btnRun.Margin = new System.Windows.Forms.Padding(0);
+            this.btnRun.Name = "btnRun";
+            this.btnRun.Size = new System.Drawing.Size(29, 19);
+            this.btnRun.TabIndex = 9;
+            this.btnRun.TabStop = false;
+            this.btnRun.Text = "🏃";
+            this.btnRun.Click += new System.EventHandler(this.btnRun_Click);
+            // 
+            // btnFly
+            // 
+            this.btnFly.AccessibleDescription = "";
+            this.btnFly.AccessibleName = "Fly";
+            this.btnFly.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnFly.Location = new System.Drawing.Point(6, 3);
+            this.btnFly.Margin = new System.Windows.Forms.Padding(0);
+            this.btnFly.Name = "btnFly";
+            this.btnFly.Size = new System.Drawing.Size(29, 19);
+            this.btnFly.TabIndex = 8;
+            this.btnFly.TabStop = false;
+            this.btnFly.Text = "✈️";
+            this.btnFly.Click += new System.EventHandler(this.btnFly_Click);
+            // 
+            // btnJump
+            // 
+            this.btnJump.AccessibleDescription = "";
+            this.btnJump.AccessibleName = "Jump/Up";
+            this.btnJump.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnJump.Location = new System.Drawing.Point(93, 3);
+            this.btnJump.Margin = new System.Windows.Forms.Padding(0);
+            this.btnJump.Name = "btnJump";
+            this.btnJump.Size = new System.Drawing.Size(29, 19);
+            this.btnJump.TabIndex = 6;
+            this.btnJump.TabStop = false;
+            this.btnJump.Text = "↑";
+            this.btnJump.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveUp_MouseDown);
+            this.btnJump.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveUp_MouseUp);
+            // 
+            // btnCrouch
+            // 
+            this.btnCrouch.AccessibleDescription = "";
+            this.btnCrouch.AccessibleName = "Crouch/Down";
+            this.btnCrouch.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCrouch.Location = new System.Drawing.Point(93, 22);
+            this.btnCrouch.Margin = new System.Windows.Forms.Padding(0);
+            this.btnCrouch.Name = "btnCrouch";
+            this.btnCrouch.Size = new System.Drawing.Size(29, 19);
+            this.btnCrouch.TabIndex = 5;
+            this.btnCrouch.TabStop = false;
+            this.btnCrouch.Text = "↓";
+            this.btnCrouch.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveDown_MouseDown);
+            this.btnCrouch.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveDown_MouseUp);
             // 
             // btnMoveBack
             // 
+            this.btnMoveBack.AccessibleDescription = "";
             this.btnMoveBack.AccessibleName = "Walk backwards";
             this.btnMoveBack.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMoveBack.Location = new System.Drawing.Point(36, 15);
+            this.btnMoveBack.Location = new System.Drawing.Point(35, 22);
             this.btnMoveBack.Margin = new System.Windows.Forms.Padding(0);
             this.btnMoveBack.Name = "btnMoveBack";
-            this.btnMoveBack.Size = new System.Drawing.Size(31, 19);
+            this.btnMoveBack.Size = new System.Drawing.Size(29, 19);
             this.btnMoveBack.TabIndex = 2;
             this.btnMoveBack.TabStop = false;
-            this.btnMoveBack.Text = "R";
+            this.btnMoveBack.Text = "▼";
             this.btnMoveBack.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseDown);
             this.btnMoveBack.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnMoveBack_MouseUp);
             // 
             // btnFwd
             // 
+            this.btnFwd.AccessibleDescription = "";
             this.btnFwd.AccessibleName = "Walk forward";
             this.btnFwd.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnFwd.Location = new System.Drawing.Point(36, 0);
+            this.btnFwd.Location = new System.Drawing.Point(35, 3);
             this.btnFwd.Margin = new System.Windows.Forms.Padding(0);
             this.btnFwd.Name = "btnFwd";
-            this.btnFwd.Size = new System.Drawing.Size(31, 19);
+            this.btnFwd.Size = new System.Drawing.Size(29, 19);
             this.btnFwd.TabIndex = 1;
             this.btnFwd.TabStop = false;
-            this.btnFwd.Text = "^";
+            this.btnFwd.Text = "▲";
             this.btnFwd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseDown);
             this.btnFwd.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnFwd_MouseUp);
             // 
             // btnTurnRight
             // 
+            this.btnTurnRight.AccessibleDescription = "";
             this.btnTurnRight.AccessibleName = "Turn right";
             this.btnTurnRight.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTurnRight.Location = new System.Drawing.Point(67, 15);
+            this.btnTurnRight.Location = new System.Drawing.Point(64, 22);
             this.btnTurnRight.Margin = new System.Windows.Forms.Padding(0);
             this.btnTurnRight.Name = "btnTurnRight";
-            this.btnTurnRight.Size = new System.Drawing.Size(31, 19);
+            this.btnTurnRight.Size = new System.Drawing.Size(29, 19);
             this.btnTurnRight.TabIndex = 4;
             this.btnTurnRight.TabStop = false;
-            this.btnTurnRight.Text = ">>";
+            this.btnTurnRight.Text = "►";
             this.btnTurnRight.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseDown);
             this.btnTurnRight.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnRight_MouseUp);
             // 
             // btnTurnLeft
             // 
+            this.btnTurnLeft.AccessibleDescription = "";
             this.btnTurnLeft.AccessibleName = "Turn left";
             this.btnTurnLeft.Font = new System.Drawing.Font("Tahoma", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnTurnLeft.Location = new System.Drawing.Point(5, 15);
+            this.btnTurnLeft.Location = new System.Drawing.Point(6, 22);
             this.btnTurnLeft.Margin = new System.Windows.Forms.Padding(0);
             this.btnTurnLeft.Name = "btnTurnLeft";
-            this.btnTurnLeft.Size = new System.Drawing.Size(31, 19);
+            this.btnTurnLeft.Size = new System.Drawing.Size(29, 19);
             this.btnTurnLeft.TabIndex = 3;
             this.btnTurnLeft.TabStop = false;
-            this.btnTurnLeft.Text = "<<";
+            this.btnTurnLeft.Text = "◄";
             this.btnTurnLeft.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseDown);
             this.btnTurnLeft.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnTurnLeft_MouseUp);
             // 
@@ -432,14 +510,6 @@ namespace Radegast
             this.cbxInput.TextChanged += new System.EventHandler(this.cbxInput_TextChanged);
             this.cbxInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cbxInput_KeyDown);
             // 
-            // ctxReqestLure
-            // 
-            this.ctxReqestLure.Name = "ctxReqestLure";
-            this.ctxReqestLure.Size = new System.Drawing.Size(163, 22);
-            this.ctxReqestLure.Text = "Request Teleport";
-            this.ctxReqestLure.ToolTipText = " Request Teleport ";
-            this.ctxReqestLure.Click += new System.EventHandler(this.ctxReqestLure_Click);
-            // 
             // ChatConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -452,6 +522,7 @@ namespace Radegast
             this.VisibleChanged += new System.EventHandler(this.ChatConsole_VisibleChanged);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.avatarContext.ResumeLayout(false);
             this.pnlMovement.ResumeLayout(false);
@@ -494,5 +565,9 @@ namespace Radegast
         private ToolStripMenuItem goToToolStripMenuItem;
         private ToolStripMenuItem faceToolStripMenuItem;
         private ToolStripMenuItem ctxReqestLure;
+        public Button btnJump;
+        public Button btnCrouch;
+        public Button btnFly;
+        public Button btnRun;
     }
 }

@@ -17,11 +17,7 @@ namespace FMOD
     public class VERSION
     {
         public const int    number = 0x00010814;
-#if WIN64
         public const string dll    = "fmod64";
-#else
-        public const string dll    = "fmod";
-#endif
     }
 
     public class CONSTANTS
@@ -45,7 +41,7 @@ namespace FMOD
         [SEE_ALSO]
     ]
     */
-    public enum RESULT
+    public enum RESULT : int
     {
         OK,                        /* No errors. */
         ERR_BADCOMMAND,            /* Tried to call a function on a data type that does not allow this type of functionality (ie calling Sound::lock on a streaming sound). */
@@ -147,7 +143,7 @@ namespace FMOD
         ChannelGroup::setCallback
     ]
     */
-    public enum CHANNELCONTROL_TYPE
+    public enum CHANNELCONTROL_TYPE : int
     {
         CHANNEL,
         CHANNELGROUP
@@ -283,7 +279,7 @@ namespace FMOD
             FMOD_INITFLAGS
     ]
     */
-    public enum OUTPUTTYPE
+    public enum OUTPUTTYPE : int
     {
         AUTODETECT,      /* Picks the best output mode for the platform. This is the default. */
 
@@ -326,7 +322,7 @@ namespace FMOD
         FMOD_Debug_Initialize
     ]
     */
-    public enum DEBUG_MODE
+    public enum DEBUG_MODE : int
     {
         TTY,        /* Default log location per platform, i.e. Visual Studio output window, stderr, LogCat, etc */
         FILE,       /* Write log to specified file path */
@@ -488,7 +484,7 @@ namespace FMOD
         DSP::setChannelFormat
     ]
     */
-    public enum SPEAKERMODE
+    public enum SPEAKERMODE : int
     {
         DEFAULT,          /* Default speaker mode based on operating system/output mode.  Windows = control panel setting, Xbox = 5.1, PS3 = 7.1 etc. */
         RAW,              /* There is no specific speakermode.  Sound channels are mapped in order of input to output.  Use System::setSoftwareFormat to specify speaker count. See remarks for more information. */
@@ -515,7 +511,7 @@ namespace FMOD
         System::getSpeakerPosition
     ]
     */
-    public enum SPEAKER
+    public enum SPEAKER : int
     {
         FRONT_LEFT,
         FRONT_RIGHT,
@@ -587,7 +583,7 @@ namespace FMOD
         FMOD_CREATESOUNDEXINFO
     ]
     */
-    public enum CHANNELORDER
+    public enum CHANNELORDER : int
     {
         DEFAULT,              /* Left, Right, Center, LFE, Surround Left, Surround Right, Back Left, Back Right (see FMOD_SPEAKER enumeration)   */
         WAVEFORMAT,           /* Left, Right, Center, LFE, Back Left, Back Right, Surround Left, Surround Right (as per Microsoft .wav WAVEFORMAT structure master order) */
@@ -614,7 +610,7 @@ namespace FMOD
         System::unloadPlugin
     ]
     */
-    public enum PLUGINTYPE
+    public enum PLUGINTYPE : int
     {
         OUTPUT,          /* The plugin type is an output module.  FMOD mixed audio will play through one of these devices */
         CODEC,           /* The plugin type is a file format codec.  FMOD will use these codecs to load file formats for playback. */
@@ -740,7 +736,7 @@ namespace FMOD
         Sound::getFormat
     ]
     */
-    public enum SOUND_FORMAT
+    public enum SOUND_FORMAT : int
     {
         NONE,       /* Unitialized / unknown */
         PCM8,       /* 8bit integer PCM data */
@@ -844,7 +840,7 @@ namespace FMOD
         FMOD_MODE
     ]
     */
-    public enum OPENSTATE
+    public enum OPENSTATE : int
     {
         READY = 0,       /* Opened and ready to play */
         LOADING,         /* Initial load in progress */
@@ -878,7 +874,7 @@ namespace FMOD
         SoundGroup::getMuteFadeSpeed
     ]
     */
-    public enum SOUNDGROUP_BEHAVIOR
+    public enum SOUNDGROUP_BEHAVIOR : int
     {
         BEHAVIOR_FAIL,              /* Any sound played that puts the sound count over the SoundGroup::setMaxAudible setting, will simply fail during System::playSound. */
         BEHAVIOR_MUTE,              /* Any sound played that puts the sound count over the SoundGroup::setMaxAudible setting, will be silent, then if another sound in the group stops the sound that was silent before becomes audible again. */
@@ -906,7 +902,7 @@ namespace FMOD
         System::update
     ]
     */
-    public enum CHANNELCONTROL_CALLBACK_TYPE
+    public enum CHANNELCONTROL_CALLBACK_TYPE : int
     {
         END,                  /* Called when a sound ends. */
         VIRTUALVOICE,         /* Called when a voice is swapped out or swapped in. */
@@ -994,8 +990,8 @@ namespace FMOD
         private IntPtr                      functionname_internal;      /* Function that the error occurred on */
         private IntPtr                      functionparams_internal;    /* Function parameters that the error ocurred on */
 
-        public string functionname => Marshal.PtrToStringAnsi(functionname_internal);
-        public string functionparams => Marshal.PtrToStringAnsi(functionparams_internal);
+        public string functionname   { get { return Marshal.PtrToStringAnsi(functionname_internal); } }
+        public string functionparams { get { return Marshal.PtrToStringAnsi(functionparams_internal); } }
     }
 
     /*
@@ -1115,7 +1111,7 @@ namespace FMOD
         System::getSoftwareFormat
     ]
     */
-    public enum DSP_RESAMPLER
+    public enum DSP_RESAMPLER : int
     {
         DEFAULT,         /* Default interpolation method.  Currently equal to FMOD_DSP_RESAMPLER_LINEAR. */
         NOINTERP,        /* No interpolation.  High frequency aliasing hiss will be audible depending on the sample rate of the sound. */
@@ -1163,7 +1159,7 @@ namespace FMOD
         DSPConnection::getType
     ]
     */
-    public enum DSPCONNECTION_TYPE
+    public enum DSPCONNECTION_TYPE : int
     {
         STANDARD,          /* Default connection type.         Audio is mixed from the input to the output DSP's audible buffer.  */
         SIDECHAIN,         /* Sidechain connection type.       Audio is mixed from the input to the output DSP's sidechain buffer.  */
@@ -1185,7 +1181,7 @@ namespace FMOD
         Sound::getTag
     ]
     */
-    public enum TAGTYPE
+    public enum TAGTYPE : int
     {
         UNKNOWN = 0,
         ID3V1,
@@ -1215,7 +1211,7 @@ namespace FMOD
         Sound::getTag
     ]
     */
-    public enum TAGDATATYPE
+    public enum TAGDATATYPE : int
     {
         BINARY = 0,
         INT,
@@ -1255,7 +1251,7 @@ namespace FMOD
         public  uint              datalen;      /* [r] Length of the data contained in this tag */
         public  bool              updated;      /* [r] True if this tag has been updated since last being accessed with Sound::getTag */
 
-        public string name => Marshal.PtrToStringAnsi(name_internal);
+        public string name { get { return Marshal.PtrToStringAnsi(name_internal); } }
     }
 
 
@@ -1720,7 +1716,7 @@ namespace FMOD
         public static bool operator ==(HandleBase a, HandleBase b)
         {
             // If both are null, or both are same instance, return true.
-            if (ReferenceEquals(a, b))
+            if (Object.ReferenceEquals(a, b))
             {
                 return true;
             }
@@ -2027,7 +2023,8 @@ namespace FMOD
         {
             sound = null;
 
-            var stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
+            byte[] stringData;
+            stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
             
             exinfo.cbsize = Marshal.SizeOf(exinfo);
 
@@ -2060,7 +2057,8 @@ namespace FMOD
         {
             sound = null;
 
-            var stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
+            byte[] stringData;
+            stringData = Encoding.UTF8.GetBytes(name + Char.MinValue);
             
             exinfo.cbsize = Marshal.SizeOf(exinfo);
 
@@ -4314,7 +4312,7 @@ namespace FMOD
 
     class StringMarshalHelper
     {
-        internal static void NativeToBuilder(StringBuilder builder, IntPtr nativeMem)
+        static internal void NativeToBuilder(StringBuilder builder, IntPtr nativeMem)
         {
             byte[] bytes = new byte[builder.Capacity];
             Marshal.Copy(nativeMem, bytes, 0, builder.Capacity);

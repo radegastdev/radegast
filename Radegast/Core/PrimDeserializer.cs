@@ -1,33 +1,23 @@
-// 
-// Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 
-//     * Redistributions of source code must retain the above copyright notice,
-//       this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of the application "Radegast", nor the names of its
-//       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// $Id$
-//
+/**
+ * Radegast Metaverse Client
+ * Copyright(c) 2009-2014, Radegast Development Team
+ * Copyright(c) 2016-2020, Sjofn, LLC
+ * All rights reserved.
+ *  
+ * Radegast is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.If not, see<https://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 #if (COGBOT_LIBOMV || USE_STHREADS)
@@ -49,10 +39,12 @@ namespace Radegast
         public static void ImportFromFile(GridClient client)
         {
             WindowWrapper mainWindow = new WindowWrapper(Form.ActiveForm.Handle);
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Open object file";
-            dlg.Filter = "XML file (*.xml)|*.xml";
-            dlg.Multiselect = false;
+            OpenFileDialog dlg = new OpenFileDialog
+            {
+                Title = "Open object file", 
+                Filter = "XML file (*.xml)|*.xml",
+                Multiselect = false
+            };
             DialogResult res = dlg.ShowDialog();
 
             if (res == DialogResult.OK)
@@ -67,15 +59,16 @@ namespace Radegast
                         d.CreateObjectFromXml(primsXmls);
                         d.CleanUp();
                         d = null;
-                        MessageBox.Show(mainWindow, "Successfully imported " + dlg.FileName, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(mainWindow, "Successfully imported " + dlg.FileName, "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception excp)
                     {
-                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(mainWindow, excp.Message, "Saving failed", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
-                }));
+                })) {IsBackground = true};
 
-                t.IsBackground = true;
                 t.Start();
 
             }
@@ -203,8 +196,8 @@ namespace Radegast
                     if (linkset.Children.Count != 0)
                     {
                         // Create a list of the local IDs of the newly created prims
-                        List<uint> primIDs = new List<uint>(primsCreated.Count);
-                        primIDs.Add(rootLocalID); // Root prim is first in list.
+                        List<uint> primIDs = new List<uint>(primsCreated.Count) {rootLocalID};
+                        // Root prim is first in list.
                         foreach (Primitive prim in primsCreated)
                         {
                             if (prim.LocalID != rootLocalID)
@@ -220,7 +213,7 @@ namespace Radegast
 
                         if (!primDone.WaitOne(5000, false))
                         {
-                            Logger.Log(String.Format("Warning: Failed to link {0} prims", linkQueue.Count), Helpers.LogLevel.Warning);
+                            Logger.Log($"Warning: Failed to link {linkQueue.Count} prims", Helpers.LogLevel.Warning);
                         }
 
                         Client.Objects.SetPermissions(Client.Network.CurrentSim, primIDs,
@@ -229,8 +222,7 @@ namespace Radegast
                     }
                     else
                     {
-                        List<uint> primsForPerms = new List<uint>();
-                        primsForPerms.Add(rootLocalID);
+                        List<uint> primsForPerms = new List<uint> {rootLocalID};
                         Client.Objects.SetRotation(Client.Network.CurrentSim, rootLocalID, rootRotation);
                         Client.Objects.SetPermissions(Client.Network.CurrentSim, primsForPerms,
                             PermissionWho.NextOwner,

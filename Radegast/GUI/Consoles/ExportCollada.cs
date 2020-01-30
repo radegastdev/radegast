@@ -1,33 +1,23 @@
-﻿// 
-// Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 
-//     * Redistributions of source code must retain the above copyright notice,
-//       this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of the application "Radegast", nor the names of its
-//       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// $Id$
-//
+﻿/**
+ * Radegast Metaverse Client
+ * Copyright(c) 2009-2014, Radegast Development Team
+ * Copyright(c) 2016-2020, Sjofn, LLC
+ * All rights reserved.
+ *  
+ * Radegast is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.If not, see<https://www.gnu.org/licenses/>.
+ */
+
 using System;
 #if (COGBOT_LIBOMV || USE_STHREADS)
 using ThreadPoolUtil;
@@ -78,14 +68,7 @@ namespace Radegast
         void UpdateInfo()
         {
             Primitive root = Exporter.Prims[0];
-            if (root.Properties != null)
-            {
-                objectName.Text = root.Properties.Name;
-            }
-            else
-            {
-                objectName.Text = "Object";
-            }
+            objectName.Text = root.Properties != null ? root.Properties.Name : "Object";
             objectUUID.Text = root.ID.ToString();
             primCount.Text = Exporter.Prims.Count.ToString();
             exportablePrims.Text = Exporter.ExportablePrims.ToString();
@@ -94,22 +77,19 @@ namespace Radegast
             texturesPanel.Controls.Clear();
             foreach (UUID textureID in Exporter.Textures)
             {
-                var img = new SLImageHandler(instance, textureID, string.Empty);
-                img.Height = 96;
-                img.Width = 96;
-                img.BorderStyle = BorderStyle.FixedSingle;
+                var img = new SLImageHandler(instance, textureID, string.Empty)
+                {
+                    Height = 96, Width = 96, BorderStyle = BorderStyle.FixedSingle
+                };
                 texturesPanel.Controls.Add(img);
             }
         }
 		
 		void ValidatePath(string fname)
-		{
-			string path = Path.GetDirectoryName(fname);
-			if (Directory.Exists(path))
-				btnExport.Enabled = true;
-			else
-				btnExport.Enabled = false;
-		}
+        {
+            string path = Path.GetDirectoryName(fname);
+            btnExport.Enabled = Directory.Exists(path);
+        }
 		#endregion
 		
 		#region Event Handlers
@@ -120,19 +100,16 @@ namespace Radegast
 		
 		void BtnBrowseClick(object sender, EventArgs e)
 		{
-			SaveFileDialog dlg = new SaveFileDialog();
-			dlg.Title = "Export Collada File";
-            dlg.Filter = "Collada (*.dae)|*.dae|All Files (*.*)|*.*";
-            if (txtFileName.Text.Trim() == string.Empty)
+            SaveFileDialog dlg = new SaveFileDialog
             {
-                dlg.FileName = RadegastInstance.SafeFileName(objectName.Text);
-            }
-            else
-            {
-                dlg.FileName =  Path.GetFileName(txtFileName.Text);
-            }
+                Title = "Export Collada File",
+                Filter = "Collada (*.dae)|*.dae|All Files (*.*)|*.*",
+                FileName = txtFileName.Text.Trim() == string.Empty
+                    ? RadegastInstance.SafeFileName(objectName.Text)
+                    : Path.GetFileName(txtFileName.Text)
+            };
 
-			DialogResult res = dlg.ShowDialog();
+            DialogResult res = dlg.ShowDialog();
 			
 			if (res == DialogResult.OK)
 			{

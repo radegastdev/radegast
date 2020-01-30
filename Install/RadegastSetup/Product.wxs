@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+    <?include BuildProperties.wxi?>
+    <?define productVersion="!(bind.fileVersion.Radegast.exe)"?>
+
+    <Product Id="*" Name="$(var.productName) $(var.productVersion)" Language="1033" 
+             Version="$(var.productVersion)" Manufacturer="$(var.companyName)" UpgradeCode="7dcb250d-4b4d-48b1-82e0-cca31315d145">
+		<Package InstallerVersion="405" Compressed="yes" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of $(var.productName) is already installed." />
+        <Media Id="1" Cabinet="Radegast.cab" EmbedCab="yes" />
+
+        <Property Id="ApplicationFolderName" Value="$(var.productName)" />
+        <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+
+        <!-- Windows Add/Remove Programs properties -->
+        <Property Id="ARPCOMMENTS">$(var.productDesc)</Property>
+        <Property Id="ARPCONTACT">$(var.companyName)</Property>
+        <Property Id="ARPHELPLINK">https://radegast.life/</Property>
+        <Property Id="ARPURLINFOABOUT">https://radegast.life/</Property>
+        <Property Id="ARPURLUPDATEINFO">https://radegast.life/</Property>
+        <!--<Property Id="ARPHELPTELEPHONE"></Property>-->
+        <Property Id="ARPREADME">https://radegast.life/</Property>
+        <Property Id="ARPSIZE">$(var.totalFileSize)</Property>
+        <!-- Update this value with the install size in Kb -->
+        <Property Id="ARPPRODUCTICON">ICO_File</Property>
+        <!-- This refers to the Id attribute of the <Icon> element -->
+        <!--<Property Id="ARPNOMODIFY">1</Property>-->
+        <!-- Prevent the Modify feature in Add/Remove Programs -->
+        <!--<Property Id="ARPNOREPAIR">1</Property>-->
+        <!-- Prevent the Repair feature in Add/Remove Programs -->
+
+        <Feature Id="ProductFeature" Title="Radegast" Level="1">
+            <ComponentGroupRef Id="ProductFilesComponentGroup" />
+            <ComponentRef Id="ApplicationShortcut" />
+
+            <Feature Id="VoiceFeature" Title="VoicePack" Level="1">
+                <ComponentGroupRef Id="VoicePackComponentGroup" />
+                <Feature Id="VCRedist" Title="Visual C++ 2013 Runtime" 
+                         AllowAdvertise="no" Display="hidden" InstallDefault="followParent" Level="1">
+                    <MergeRef Id="VC_Redist" />
+                </Feature>
+            </Feature>
+        </Feature>
+
+        <PropertyRef Id="WIX_IS_NETFRAMEWORK_471_OR_LATER_INSTALLED"/>
+        <Condition Message="$(var.productName) requires .NET Framework 4.7.1. Please install the .NET Framework then run this installer again.">
+            <![CDATA[WIX_IS_NETFRAMEWORK_471_OR_LATER_INSTALLED]]>
+        </Condition>
+
+        <?include UI.wxi?>
+    </Product>
+
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder" Name="PFiles">
+                <Directory Id="APPLICATIONFOLDER" Name="$(var.productName)" />
+                <Directory Id="ProductFilesComponentGroup" />
+            </Directory>
+            <Directory Id="ProgramMenuFolder">
+                <Directory Id="ApplicationProgramsFolder" Name="$(var.productName)" />
+            </Directory>
+        </Directory>
+    </Fragment>
+
+    <Fragment>
+        <ComponentGroup Id="Runtime" Directory="APPLICATIONFOLDER">
+            <Component Id="RadegastExe">
+                <File Id="RadegastExe" KeyPath="yes" Checksum="yes" Source="$(var.Radegast.TargetPath)" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+
+    <!-- Start menu -->
+    <Fragment>
+        <DirectoryRef Id="ApplicationProgramsFolder">
+            <Component Id="ApplicationShortcut">
+                <Shortcut Id="ApplicationStartMenuShortcut"
+                          Name="$(var.productName)"
+                          Description="$(var.productDesc)"
+                          Target="[APPLICATIONFOLDER]Radegast.exe"
+                          WorkingDirectory="APPLICATIONFOLDER"/>
+                <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+                <RegistryValue Root="HKCU" Key="Software\$(var.companyName)\$(var.productName)" 
+                               Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+            </Component>
+        </DirectoryRef>
+    </Fragment>
+</Wix>

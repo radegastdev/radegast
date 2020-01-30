@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+    <WixVariable Id="WixUILicenseRtf" Value="assets\license.rtf" />
+    <!--<WixVariable Id="WixUIBannerBmp" Value="assets\banner.bmp"/>
+    <WixVariable Id="WixUIDialogBmp" Value="assets\dialog.bmp"/>>-->
+
+    <UIRef Id="WixUI_Advanced" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Icon Id="ICO_File" SourceFile="assets\radegast.ico" />
+
+</Include>

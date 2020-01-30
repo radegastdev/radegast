@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <ComponentGroup Id="VoicePackComponentGroup">
+            <Component Id="SLVoice.exe" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="SLVoice.exe" Source="slvoice\SLVoice.exe" KeyPath="yes" Checksum="yes" />
+            </Component>
+            <Component Id="DbgHelp.dll" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="DbgHelp.dll" Source="slvoice\DbgHelp.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="ortp.dll" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="ortp.dll" Source="slvoice\ortp.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="ortp.pdb" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="ortp.pdb" Source="slvoice\ortp.pdb" />
+            </Component>
+            <Component Id="vivoxsdk.dll" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="vivoxsdk.dll" Source="slvoice\vivoxsdk.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="vivoxsdk.lib" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="vivoxsdk.lib" Source="slvoice\vivoxsdk.lib" KeyPath="yes" />
+            </Component>
+            <Component Id="vivoxsdk.pdb" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="vivoxsdk.pdb" Source="slvoice\vivoxsdk.pdb" />
+            </Component>
+            <Component Id="zlib1.dll" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="zlib1.dll" Source="slvoice\zlib1.dll" KeyPath="yes" />
+            </Component>
+            <Component Id="vivox_licenses.txt" Directory="APPLICATIONFOLDER" Guid="*">
+                <File Id="vivox_licenses.txt" Source="slvoice\vivox_licenses.txt" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+</Wix>

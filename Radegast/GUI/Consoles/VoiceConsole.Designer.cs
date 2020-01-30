@@ -184,7 +184,7 @@ namespace Radegast
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 26;
-            this.label3.Text = "Voice conection status";
+            this.label3.Text = "Voice connection status";
             // 
             // label1
             // 

@@ -1,7 +1,7 @@
 // 
 // Radegast Metaverse Client
 // Copyright (c) 2009-2014, Radegast Development Team
-// Copyright (c) 2019, Sjofn LLC
+// Copyright (c) 2019-2020, Sjofn LLC
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -1614,9 +1614,7 @@ namespace Radegast.Rendering
                     GLAvatar ga = new GLAvatar();
 
                     //ga.morph(av);
-                    RenderAvatar ra = new RenderAvatar();
-                    ra.avatar = av;
-                    ra.glavatar = ga;
+                    RenderAvatar ra = new RenderAvatar {avatar = av, glavatar = ga};
                     updateAVtes(ra);
                     Avatars.Add(av.LocalID, ra);
                     ra.glavatar.morph(av);

@@ -1,33 +1,23 @@
-// 
-// Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 
-//     * Redistributions of source code must retain the above copyright notice,
-//       this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of the application "Radegast", nor the names of its
-//       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// $Id$
-//
+/**
+ * Radegast Metaverse Client
+ * Copyright(c) 2009-2014, Radegast Development Team
+ * Copyright(c) 2016-2020, Sjofn, LLC
+ * All rights reserved.
+ *  
+ * Radegast is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.If not, see<https://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -70,8 +60,7 @@ namespace Radegast
             client.Directory.DirEventsReply += Directory_DirEventsReply;
             client.Directory.EventInfoReply += Directory_EventInfoReply;
             instance.Names.NameUpdated += Names_NameUpdated;
-            console = new FindPeopleConsole(instance, UUID.Random());
-            console.Dock = DockStyle.Fill;
+            console = new FindPeopleConsole(instance, UUID.Random()) {Dock = DockStyle.Fill};
             console.SelectedIndexChanged += new EventHandler(console_SelectedIndexChanged);
             pnlFindPeople.Controls.Add(console);
             lvwPlaces.ListViewItemSorter = new PlaceSorter();
@@ -381,8 +370,8 @@ namespace Radegast
 
             if (lvwPlaces.SelectedItems.Count == 1)
             {
-                Landmark l = new Landmark(instance, ((DirectoryManager.DirectoryParcel)lvwPlaces.SelectedItems[0].Tag).ID);
-                l.Dock = DockStyle.Fill;
+                Landmark l = new Landmark(instance,
+                    ((DirectoryManager.DirectoryParcel) lvwPlaces.SelectedItems[0].Tag).ID) {Dock = DockStyle.Fill};
                 pnlPlaceDetail.Controls.Add(l);
             }
         }
@@ -412,10 +401,10 @@ namespace Radegast
             {
                 if (group.GroupID == UUID.Zero) continue;
 
-                ListViewItem item = new ListViewItem();
-                item.Name = group.GroupID.ToString();
-                item.Text = group.GroupName;
-                item.Tag = group;
+                ListViewItem item = new ListViewItem
+                {
+                    Name = @group.GroupID.ToString(), Text = @group.GroupName, Tag = @group
+                };
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, group.Members.ToString()));
 
                 lvwGroups.Items.Add(item);
@@ -492,8 +481,10 @@ namespace Radegast
                 try
                 {
                     DirectoryManager.GroupSearchData g = (DirectoryManager.GroupSearchData)lvwGroups.SelectedItems[0].Tag;
-                    GroupDetails grpPanel = new GroupDetails(instance, new Group() { ID = g.GroupID, Name = g.GroupName });
-                    grpPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    GroupDetails grpPanel = new GroupDetails(instance, new Group() {ID = g.GroupID, Name = g.GroupName})
+                    {
+                        Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+                    };
                     grpPanel.Region = new System.Drawing.Region(
                         new System.Drawing.RectangleF(
                             grpPanel.tpGeneral.Left, grpPanel.tpGeneral.Top, grpPanel.tpGeneral.Width, grpPanel.tpGeneral.Height));
@@ -608,10 +599,7 @@ namespace Radegast
             {
                 if (evt.ID == 0) continue;
 
-                ListViewItem item = new ListViewItem();
-                item.Name = "evt" + evt.ID;
-                item.Text = evt.Name;
-                item.Tag = evt;
+                ListViewItem item = new ListViewItem {Name = "evt" + evt.ID, Text = evt.Name, Tag = evt};
                 item.SubItems.Add(new ListViewItem.ListViewSubItem(item, evt.Date));
 
                 lvwEvents.Items.Add(item);
@@ -628,7 +616,8 @@ namespace Radegast
                 eventMatches -= 1;
 
             lblNrEvents.Visible = true;
-            lblNrEvents.Text = string.Format("{0} events found", eventMatches > eventsPerPage ? "More than " + (eventStart + eventsPerPage) : (eventStart + eventMatches).ToString());
+            lblNrEvents.Text =
+                $"{(eventMatches > eventsPerPage ? "More than " + (eventStart + eventsPerPage) : (eventStart + eventMatches).ToString())} events found";
         }
 
 

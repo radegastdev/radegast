@@ -1,34 +1,23 @@
-// 
-// Radegast Metaverse Client
-// Copyright (c) 2009-2014, Radegast Development Team
-// Copyright (c) 2019, Cinderblocks Design Co.
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-// 
-//     * Redistributions of source code must retain the above copyright notice,
-//       this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of the application "Radegast", nor the names of its
-//       contributors may be used to endorse or promote products derived from
-//       this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-// $Id$
-//
+/**
+ * Radegast Metaverse Client
+ * Copyright(c) 2009-2014, Radegast Development Team
+ * Copyright(c) 2016-2020, Sjofn, LLC
+ * All rights reserved.
+ *  
+ * Radegast is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.If not, see<https://www.gnu.org/licenses/>.
+ */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1327,88 +1316,78 @@ namespace Radegast
                     if (folder.PreferredType >= FolderType.EnsembleStart &&
                         folder.PreferredType <= FolderType.EnsembleEnd)
                     {
-                        ctxItem = new ToolStripMenuItem("Fix type", null, OnInvContextClick);
-                        ctxItem.Name = "fix_type";
+                        ctxItem = new ToolStripMenuItem("Fix type", null, OnInvContextClick) {Name = "fix_type"};
                         ctxInv.Items.Add(ctxItem);
                         ctxInv.Items.Add(new ToolStripSeparator());
                     }
 
-                    ctxItem = new ToolStripMenuItem("New Folder", null, OnInvContextClick);
-                    ctxItem.Name = "new_folder";
+                    ctxItem = new ToolStripMenuItem("New Folder", null, OnInvContextClick) {Name = "new_folder"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("New Note", null, OnInvContextClick);
-                    ctxItem.Name = "new_notecard";
+                    ctxItem = new ToolStripMenuItem("New Note", null, OnInvContextClick) {Name = "new_notecard"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("New Script", null, OnInvContextClick);
-                    ctxItem.Name = "new_script";
+                    ctxItem = new ToolStripMenuItem("New Script", null, OnInvContextClick) {Name = "new_script"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick);
-                    ctxItem.Name = "refresh";
+                    ctxItem = new ToolStripMenuItem("Refresh", null, OnInvContextClick) {Name = "refresh"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Backup...", null, OnInvContextClick);
-                    ctxItem.Name = "backup";
+                    ctxItem = new ToolStripMenuItem("Backup...", null, OnInvContextClick) {Name = "backup"};
                     ctxInv.Items.Add(ctxItem);
 
                     ctxInv.Items.Add(new ToolStripSeparator());
 
-                    ctxItem = new ToolStripMenuItem("Expand", null, OnInvContextClick);
-                    ctxItem.Name = "expand";
+                    ctxItem = new ToolStripMenuItem("Expand", null, OnInvContextClick) {Name = "expand"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Expand All", null, OnInvContextClick);
-                    ctxItem.Name = "expand_all";
+                    ctxItem = new ToolStripMenuItem("Expand All", null, OnInvContextClick) {Name = "expand_all"};
                     ctxInv.Items.Add(ctxItem);
 
-                    ctxItem = new ToolStripMenuItem("Collapse", null, OnInvContextClick);
-                    ctxItem.Name = "collapse";
+                    ctxItem = new ToolStripMenuItem("Collapse", null, OnInvContextClick) {Name = "collapse"};
                     ctxInv.Items.Add(ctxItem);
 
                     if (folder.PreferredType == FolderType.Trash)
                     {
-                        ctxItem = new ToolStripMenuItem("Empty Trash", null, OnInvContextClick);
-                        ctxItem.Name = "empty_trash";
+                        ctxItem = new ToolStripMenuItem("Empty Trash", null, OnInvContextClick) {Name = "empty_trash"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (folder.PreferredType == FolderType.LostAndFound)
                     {
-                        ctxItem = new ToolStripMenuItem("Empty Lost and Found", null, OnInvContextClick);
-                        ctxItem.Name = "empty_lost_found";
+                        ctxItem = new ToolStripMenuItem("Empty Lost and Found", null, OnInvContextClick)
+                        {
+                            Name = "empty_lost_found"
+                        };
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (folder.PreferredType == FolderType.None ||
                         folder.PreferredType == FolderType.Outfit)
                     {
-                        ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick);
-                        ctxItem.Name = "rename_folder";
+                        ctxItem = new ToolStripMenuItem("Rename", null, OnInvContextClick) {Name = "rename_folder"};
                         ctxInv.Items.Add(ctxItem);
 
                         ctxInv.Items.Add(new ToolStripSeparator());
 
-                        ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick);
-                        ctxItem.Name = "cut_folder";
+                        ctxItem = new ToolStripMenuItem("Cut", null, OnInvContextClick) {Name = "cut_folder"};
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick);
-                        ctxItem.Name = "copy_folder";
+                        ctxItem = new ToolStripMenuItem("Copy", null, OnInvContextClick) {Name = "copy_folder"};
                         ctxInv.Items.Add(ctxItem);
                     }
 
                     if (instance.InventoryClipboard != null)
                     {
-                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick);
-                        ctxItem.Name = "paste_folder";
+                        ctxItem = new ToolStripMenuItem("Paste", null, OnInvContextClick) {Name = "paste_folder"};
                         ctxInv.Items.Add(ctxItem);
 
                         if (instance.InventoryClipboard.Item is InventoryItem)
                         {
-                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick);
-                            ctxItem.Name = "paste_folder_link";
+                            ctxItem = new ToolStripMenuItem("Paste as Link", null, OnInvContextClick)
+                            {
+                                Name = "paste_folder_link"
+                            };
                             ctxInv.Items.Add(ctxItem);
                         }
                     }
@@ -1416,8 +1395,7 @@ namespace Radegast
                     if (folder.PreferredType == FolderType.None ||
                         folder.PreferredType == FolderType.Outfit)
                     {
-                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick);
-                        ctxItem.Name = "delete_folder";
+                        ctxItem = new ToolStripMenuItem("Delete", null, OnInvContextClick) {Name = "delete_folder"};
                         ctxInv.Items.Add(ctxItem);
 
                         ctxInv.Items.Add(new ToolStripSeparator());
@@ -1425,16 +1403,19 @@ namespace Radegast
 
                     if (folder.PreferredType == FolderType.None || folder.PreferredType == FolderType.Outfit)
                     {
-                        ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_take_off";
+                        ctxItem = new ToolStripMenuItem("Take off Items", null, OnInvContextClick)
+                        {
+                            Name = "outfit_take_off"
+                        };
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_add";
+                        ctxItem = new ToolStripMenuItem("Add to Outfit", null, OnInvContextClick) {Name = "outfit_add"};
                         ctxInv.Items.Add(ctxItem);
 
-                        ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick);
-                        ctxItem.Name = "outfit_replace";
+                        ctxItem = new ToolStripMenuItem("Replace Outfit", null, OnInvContextClick)
+                        {
+                            Name = "outfit_replace"
+                        };
                         ctxInv.Items.Add(ctxItem);
                     }
 
@@ -2507,7 +2488,7 @@ namespace Radegast
                 }
             }
 
-            if (searchRes[searchRes.Count - 1].Inv == me)
+            if (searchRes[searchRes.Count - 1].Inv.Equals(me))
             {
                 searchRes.RemoveAt(searchRes.Count - 1);
             }
