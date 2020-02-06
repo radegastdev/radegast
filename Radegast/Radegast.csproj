@@ -28,14 +28,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>obj\x86\Debug\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>portable</DebugType>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>obj\x86\Release\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
@@ -44,7 +44,7 @@
     <ApplicationIcon>radegast.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseLinux|x86'">
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
@@ -52,7 +52,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMacOS|x86'">
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
@@ -60,7 +60,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseWindows|x86'">
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>portable</DebugType>
@@ -77,6 +77,9 @@
     <DebugType>full</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="C5" Version="2.5.3" />

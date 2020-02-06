@@ -94,6 +94,7 @@ namespace Radegast
             this.ctxPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxSource = new System.Windows.Forms.ToolStripMenuItem();
             this.TalkStates = new System.Windows.Forms.ImageList(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -182,7 +183,7 @@ namespace Radegast
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(230, 10);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(114, 13);
+            this.label3.Size = new System.Drawing.Size(120, 13);
             this.label3.TabIndex = 26;
             this.label3.Text = "Voice connection status";
             // 
@@ -198,6 +199,7 @@ namespace Radegast
             // 
             // button1
             // 
+            this.button1.AccessibleName = "Push To Talk";
             this.button1.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.button1.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(81, 281);
@@ -220,6 +222,7 @@ namespace Radegast
             // 
             // spkrMute
             // 
+            this.spkrMute.AccessibleName = "Listen Mute";
             this.spkrMute.AutoSize = true;
             this.spkrMute.Location = new System.Drawing.Point(92, 112);
             this.spkrMute.Name = "spkrMute";
@@ -230,6 +233,7 @@ namespace Radegast
             // 
             // micMute
             // 
+            this.micMute.AccessibleName = "Talk Mute";
             this.micMute.AutoSize = true;
             this.micMute.Checked = true;
             this.micMute.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -253,6 +257,7 @@ namespace Radegast
             // 
             // progressBar1
             // 
+            this.progressBar1.AccessibleName = "ConnectionStatus";
             this.progressBar1.Location = new System.Drawing.Point(212, 26);
             this.progressBar1.Maximum = 8;
             this.progressBar1.Name = "progressBar1";
@@ -271,6 +276,7 @@ namespace Radegast
             // 
             // micLevel
             // 
+            this.micLevel.AccessibleName = "Talk Level";
             this.micLevel.BackColor = System.Drawing.SystemColors.Control;
             this.micLevel.LargeChange = 20;
             this.micLevel.Location = new System.Drawing.Point(14, 274);
@@ -285,6 +291,7 @@ namespace Radegast
             // 
             // spkrLevel
             // 
+            this.spkrLevel.AccessibleName = "Listen Level";
             this.spkrLevel.Location = new System.Drawing.Point(405, 274);
             this.spkrLevel.Maximum = 100;
             this.spkrLevel.Minimum = -100;
@@ -297,6 +304,7 @@ namespace Radegast
             // 
             // spkrDevice
             // 
+            this.spkrDevice.AccessibleName = "Listen Device Selector";
             this.spkrDevice.FormattingEnabled = true;
             this.spkrDevice.Location = new System.Drawing.Point(158, 112);
             this.spkrDevice.Name = "spkrDevice";
@@ -306,6 +314,7 @@ namespace Radegast
             // 
             // micDevice
             // 
+            this.micDevice.AccessibleName = "Talk Device Selector";
             this.micDevice.FormattingEnabled = true;
             this.micDevice.Location = new System.Drawing.Point(158, 67);
             this.micDevice.Name = "micDevice";
@@ -430,6 +439,7 @@ namespace Radegast
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
