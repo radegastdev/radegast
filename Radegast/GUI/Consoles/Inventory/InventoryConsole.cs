@@ -2177,9 +2177,9 @@ namespace Radegast
 
         private void invTree_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
-            if (!(e.Node?.Tag is InventoryBase) || (e.Node.Tag is InventoryFolder &&
-                 ((InventoryFolder)e.Node.Tag).PreferredType != FolderType.None &&
-                 ((InventoryFolder)e.Node.Tag).PreferredType != FolderType.Outfit))
+            if (!(e.Node?.Tag is InventoryBase) || (e.Node.Tag is InventoryFolder folder
+                 && folder.PreferredType != FolderType.None
+                 && folder.PreferredType != FolderType.Outfit))
             {
                 e.CancelEdit = true;
                 return;
@@ -2212,7 +2212,7 @@ namespace Radegast
             if (e.Node.Tag is InventoryFolder folder)
             {
                 folder.Name = e.Label;
-                Client.Inventory.MoveFolder(folder.UUID, folder.ParentUUID);
+                Client.Inventory.UpdateFolderProperties(folder.UUID, folder.ParentUUID, folder.Name, folder.PreferredType);
             }
             else if (e.Node.Tag is InventoryItem item)
             {
