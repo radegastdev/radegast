@@ -55,10 +55,10 @@
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LibreMetaverse" Version="1.4.7.84" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.7.84" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.7.84" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.7.84" />
+    <PackageReference Include="LibreMetaverse" Version="1.4.8.89" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.8.89" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.8.89" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.4.8.89" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
