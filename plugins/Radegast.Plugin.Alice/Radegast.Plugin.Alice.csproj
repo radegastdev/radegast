@@ -57,10 +57,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AIMLBot" Version="2.0.0" />
-    <PackageReference Include="LibreMetaverse" Version="1.4.8.89" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.8.89" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.8.89" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.8.89" />
+    <PackageReference Include="LibreMetaverse" Version="1.4.9.107" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.9.107" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.9.107" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.4.9.107" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />

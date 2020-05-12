@@ -83,14 +83,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="C5" Version="2.5.3" />
-    <PackageReference Include="CommandLineParser" Version="2.7.82" />
-    <PackageReference Include="LibreMetaverse" Version="1.4.8.89" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.8.89" />
-    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.4.8.89" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.8.89" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.8.89" />
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="LibreMetaverse" Version="1.4.9.107" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.9.107" />
+    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.4.9.107" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.9.107" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.4.9.107" />
     <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="OpenTK" Version="3.1.0" />
+    <PackageReference Include="OpenTK" Version="3.2.0" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
