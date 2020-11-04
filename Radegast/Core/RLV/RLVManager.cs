@@ -427,12 +427,12 @@ namespace Radegast
                         break;
 
                     case "tpto":
-                        var coord = rule.Option.Split('/');
-
                         if (rule.Param == "force")
                         {
                             try
                             {
+                                var coord = rule.Option.Split(new[] {'/',';'});
+
                                 if (coord.Length == 3) // 3 params is a global coordinate teleport: @tpto:<X>/<Y>/<Z>=force
                                 {
                                     float gx = float.Parse(coord[0], Utils.EnUsCulture);
@@ -444,7 +444,7 @@ namespace Radegast
                                     ulong h = Helpers.GlobalPosToRegionHandle(gx, gy, out x, out y);
                                     client.Self.RequestTeleport(h, new Vector3(x, y, z));
                                 }
-                                else if (coord.Length == 4) // 4 params is a region-local coordinate teleport (no ;lookat support): @tpto:<region_name>/<X_local>/<Y_local>/<Z_local>[;lookat]=force
+                                else if (coord.Length == 4 || coord.Length == 5) // 4/5 params is a region-local coordinate teleport (no ;lookat support): @tpto:<region_name>/<X_local>/<Y_local>/<Z_local>[;lookat]=force
                                 {
                                     string n = coord[0];
                                     float x = float.Parse(coord[1], Utils.EnUsCulture);
