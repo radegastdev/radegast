@@ -244,7 +244,7 @@ namespace Radegast
                 var rule = new RLVRule
                 {
                     Behaviour = m.Groups["behaviour"].ToString().ToLower(),
-                    Option = m.Groups["option"].ToString().ToLower(),
+                    Option = m.Groups["option"].ToString(),
                     Param = m.Groups["param"].ToString().ToLower(),
                     Sender = e.SourceID,
                     SenderName = e.FromName
@@ -429,18 +429,38 @@ namespace Radegast
                     case "tpto":
                         var coord = rule.Option.Split('/');
 
-                        try
+                        if (rule.Param == "force")
                         {
-                            float gx = float.Parse(coord[0], Utils.EnUsCulture);
-                            float gy = float.Parse(coord[1], Utils.EnUsCulture);
-                            float z = float.Parse(coord[2], Utils.EnUsCulture);
-                            float x = 0, y = 0;
+                            try
+                            {
+                                if (coord.Length == 3) // 3 params is a global coordinate teleport: @tpto:<X>/<Y>/<Z>=force
+                                {
+                                    float gx = float.Parse(coord[0], Utils.EnUsCulture);
+                                    float gy = float.Parse(coord[1], Utils.EnUsCulture);
+                                    float z = float.Parse(coord[2], Utils.EnUsCulture);
+                                    float x = 0, y = 0;
 
-                            instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
-                            ulong h = Helpers.GlobalPosToRegionHandle(gx, gy, out x, out y);
-                            client.Self.RequestTeleport(h, new Vector3(x, y, z));
+                                    instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
+                                    ulong h = Helpers.GlobalPosToRegionHandle(gx, gy, out x, out y);
+                                    client.Self.RequestTeleport(h, new Vector3(x, y, z));
+                                }
+                                else if (coord.Length == 4) // 4 params is a region-local coordinate teleport (no ;lookat support): @tpto:<region_name>/<X_local>/<Y_local>/<Z_local>[;lookat]=force
+                                {
+                                    string n = coord[0];
+                                    float x = float.Parse(coord[1], Utils.EnUsCulture);
+                                    float y = float.Parse(coord[2], Utils.EnUsCulture);
+                                    float z = float.Parse(coord[3], Utils.EnUsCulture);
+
+                                    GridRegion r;
+                                    client.Grid.GetGridRegion(n, GridLayerType.Objects, out r);
+
+                                    instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
+                                    client.Self.RequestTeleport(r.RegionHandle, new Vector3(x, y, z));
+                                }
+
+                            }
+                            catch (Exception) { }
                         }
-                        catch (Exception) { }
 
                         break;
 
