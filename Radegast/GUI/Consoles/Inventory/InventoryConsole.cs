@@ -1774,36 +1774,21 @@ namespace Radegast
                         break;
 
                     case "outfit_replace":
-                        List<InventoryItem> newOutfit = new List<InventoryItem>();
-                        foreach (InventoryBase item in Inventory.GetContents(folder))
-                        {
-                            if (item is InventoryItem inventoryItem)
-                                newOutfit.Add(inventoryItem);
-                        }
+                        List<InventoryItem> newOutfit = GetInventoryItemsForOutFit(folder);
                         appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.ReplaceOutfit(newOutfit);
                         UpdateWornLabels();
                         break;
 
                     case "outfit_add":
-                        List<InventoryItem> addToOutfit = new List<InventoryItem>();
-                        foreach (InventoryBase item in Inventory.GetContents(folder))
-                        {
-                            if (item is InventoryItem inventoryItem)
-                                addToOutfit.Add(inventoryItem);
-                        }
+                        List<InventoryItem> addToOutfit = GetInventoryItemsForOutFit(folder);
                         appearanceWasBusy = Client.Appearance.ManagerBusy;
-                        instance.COF.AddToOutfit(addToOutfit, true);
+                        instance.COF.AddToOutfit(addToOutfit, false);
                         UpdateWornLabels();
                         break;
 
                     case "outfit_take_off":
-                        List<InventoryItem> removeFromOutfit = new List<InventoryItem>();
-                        foreach (InventoryBase item in Inventory.GetContents(folder))
-                        {
-                            if (item is InventoryItem inventoryItem)
-                                removeFromOutfit.Add(inventoryItem);
-                        }
+                        List<InventoryItem> removeFromOutfit = GetInventoryItemsForOutFit(folder);
                         appearanceWasBusy = Client.Appearance.ManagerBusy;
                         instance.COF.RemoveFromOutfit(removeFromOutfit);
                         UpdateWornLabels();
@@ -1967,6 +1952,22 @@ namespace Radegast
                 }
                 #endregion
             }
+        }
+        List<InventoryItem> GetInventoryItemsForOutFit(InventoryFolder folder)
+        {
+            List<InventoryItem> outfitItems = new List<InventoryItem>();
+            foreach (InventoryBase item in Inventory.GetContents(folder))
+            {
+                if (item is InventoryItem inventoryItem)
+                {
+                    outfitItems.Add(inventoryItem);
+                }
+                if (item is InventoryFolder inventoryFolder)
+                {
+                    outfitItems.AddRange(GetInventoryItemsForOutFit(inventoryFolder));
+                }
+            }
+            return outfitItems;
         }
 
         void NotecardCreated(bool success, InventoryItem item)
