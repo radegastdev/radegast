@@ -379,28 +379,10 @@ namespace Radegast
                                 {
                                     Respond(chan, "getpathnew: ");
                                 }
-
                             }
-                            //if (!string.IsNullOrEmpty(rule.Option))
-                            //{
-                            //    var w = RLVWearables.Find(a => a.Name == rule.Option);
-                            //    if (w.Name == rule.Option)
-                            //    {
-                            //        var items = instance.COF.GetWornAt(w.Type);
-                            //        var paths = new List<string>();
-                            //        foreach (InventoryItem item in items) {
-                            //            var node = client.Inventory.Store.Items[item.UUID];
-                            //            paths.Add(FindFullInventoryPath(node, "").Substring(5));
-                            //        }
-                            //        Respond(chan, "getpathnew: " + string.Join(", ", paths));
-                            //    }
-                            //}
-                            //else
-                            //{
-                            //Respond(chan, "getpathnew: ");
-                            //}
                         }
                         break;
+
                     case "getsitid":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
