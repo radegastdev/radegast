@@ -343,6 +343,46 @@ namespace Radegast
                         }
                         break;
 
+                    case "getpath":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            var attachment = client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ParentID == client.Self.LocalID && p.ID == rule.Sender);
+                            if (attachment != null && client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                            {
+                                var item = client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)];
+                                var path = FindFullInventoryPath(item, "").Substring(5);
+                                Respond(chan, path);
+                            }
+                        }
+                        break;
+
+                    case "getpathnew":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            if (UUID.TryParse(rule.Option, out UUID uuid) && uuid != UUID.Zero)
+                            {
+                                var attachment = client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ParentID == client.Self.LocalID && p.ID == uuid);
+                                if (attachment != null && client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                                {
+                                    var item = client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)];
+                                    var path = FindFullInventoryPath(item, "");
+                                    if (path.StartsWith("#RLV"))
+                                    {
+                                        Respond(chan, "getpathnew: " + path.Substring(5));
+                                    }
+                                    else
+                                    {
+                                        Respond(chan, "getpathnew: ");
+                                    }
+                                }
+                                else
+                                {
+                                    Respond(chan, "getpathnew: ");
+                                }
+                            }
+                        }
+                        break;
+
                     case "getsitid":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
@@ -592,6 +632,23 @@ namespace Radegast
                                         }
                                     }
                                     instance.COF.RemoveFromOutfit(allSubfolderWorn);
+                                }
+                            }
+                        }
+                        break;
+
+                    case "detachallthis":
+                        if (rule.Param == "force")
+                        {
+                            var attachment = client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ParentID == client.Self.LocalID && p.ID == rule.Sender);
+                            if (attachment != null && client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                            {
+                                var folder = client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)].Parent;
+                                if (folder != null)
+                                {
+                                    List<InventoryItem> outfit = new List<InventoryItem>();
+                                    GetAllItems(folder, true, ref outfit);
+                                    instance.COF.RemoveFromOutfit(outfit);
                                 }
                             }
                         }

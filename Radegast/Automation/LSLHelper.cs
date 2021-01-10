@@ -104,7 +104,7 @@ namespace Radegast.Automation
                         string[] args = e.IM.Message.Trim().Split('^');
                         if (args.Length < 1) return false;
 
-                        switch (args[0].Trim())
+                        switch (args[0].Trim().ToLower())
                         {
                             case "group_invite":
                                 {
