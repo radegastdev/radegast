@@ -75,15 +75,17 @@ namespace Radegast
             if (script != null)
             {
                 scriptName = script.Name;
+                var transferID = UUID.Random();
                 if (prim != null)
                 {
-                    client.Assets.RequestInventoryAsset(script.AssetUUID, script.UUID, prim.ID, prim.OwnerID, script.AssetType, true, Assets_OnAssetReceived);
+                    client.Assets.RequestInventoryAsset(script.AssetUUID, script.UUID, prim.ID, prim.OwnerID, script.AssetType, 
+                        true, transferID, Assets_OnAssetReceived);
                     client.Inventory.RequestGetScriptRunning(prim.ID, script.UUID);
                     client.Inventory.ScriptRunningReply += OnScriptRunningReplyReceived;
                 }
                 else
                 {
-                    client.Assets.RequestInventoryAsset(script, true, Assets_OnAssetReceived);
+                    client.Assets.RequestInventoryAsset(script, true, transferID, Assets_OnAssetReceived);
                 }
                 rtb.Text = lblScripStatus.Text = "Loading script...";
             }
@@ -123,14 +125,12 @@ namespace Radegast
                 return;
             }
 
-            if (!transfer.Success || asset.AssetType != AssetType.LSLText)
-            {
+            if (!transfer.Success || asset.AssetType != AssetType.LSLText) {
                 lblScripStatus.Text = rtb.Text = "Failed to download.";
                 return;
-            }
-            else
+            } else {
                 lblScripStatus.Text = rtb.Text = "OK";
-
+            }
             asset.Decode();
             rtb.Text = ((AssetScriptText)asset).Source;
             lineNubersForRtb.Invalidate();

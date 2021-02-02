@@ -165,7 +165,7 @@ namespace Tools
         {
           token = (TOKEN) cs0syntax.Parse(braceIfFound);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
         }
         if (token == null)

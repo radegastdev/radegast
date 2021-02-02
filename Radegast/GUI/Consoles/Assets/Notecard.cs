@@ -62,13 +62,15 @@ namespace Radegast
                 rtbContent.Text = " ";
                 UpdateStatus("Loading...");
 
+                var transferID = UUID.Random();
                 if (prim == null)
                 {
-                    client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
+                    client.Assets.RequestInventoryAsset(notecard, true, transferID, Assets_OnAssetReceived);
                 }
                 else
                 {
-                    client.Assets.RequestInventoryAsset(notecard.AssetUUID, notecard.UUID, prim.ID, prim.OwnerID, notecard.AssetType, true, Assets_OnAssetReceived);
+                    client.Assets.RequestInventoryAsset(notecard.AssetUUID, notecard.UUID, prim.ID, prim.OwnerID, 
+                        notecard.AssetType, true, transferID, Assets_OnAssetReceived);
                 }
             }
 
@@ -223,7 +225,8 @@ namespace Radegast
             if (notecard.AssetUUID == UUID.Zero) return;
 
             rtbContent.Text = "Loading...";
-            client.Assets.RequestInventoryAsset(notecard, true, Assets_OnAssetReceived);
+            var transferID = UUID.Random();
+            client.Assets.RequestInventoryAsset(notecard, true, transferID, Assets_OnAssetReceived);
         }
 
         private void rtbContent_LinkClicked(object sender, LinkClickedEventArgs e)

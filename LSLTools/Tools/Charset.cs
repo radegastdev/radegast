@@ -58,7 +58,7 @@ namespace Tools
           return Encoding.GetEncoding(int.Parse(enc));
         return Encoding.GetEncoding(enc);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         erh.Error(new CSToolsException(43, "Warning: Encoding " + enc + " unknown: ignored"));
       }

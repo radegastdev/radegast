@@ -254,9 +254,10 @@ namespace Radegast
                                 }
                                 else
                                 {
-                                    client.Assets.RequestInventoryAsset(item, true, (transfer, asset) =>
+                                    var transferID = UUID.Random();
+                                    client.Assets.RequestInventoryAsset(item, true, transferID, (transfer, asset) =>
                                         {
-                                            if (transfer.Success)
+                                            if (transfer.Success && transfer.ID == transferID)
                                             {
                                                 receivedAsset = asset;
                                             }

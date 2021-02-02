@@ -241,7 +241,7 @@ namespace Tools
       {
         return (object) Encoding.GetEncoding(name);
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         throw new Exception("Unknown encoding");
       }
