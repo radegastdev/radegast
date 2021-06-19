@@ -1591,7 +1591,7 @@ namespace Radegast.Rendering
 
         public Bone(Bone source)
         {
-            name = String.Copy(source.name);
+            name = source.name;
             pos = new Vector3(source.pos);
             rot = new Quaternion(source.rot);
             scale = new Vector3(source.scale);
