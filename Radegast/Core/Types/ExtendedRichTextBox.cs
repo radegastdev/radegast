@@ -195,7 +195,7 @@ namespace Radegast
         {
 
             myToolTip = new ToolTip();
-            ContextMenu = new ContextMenu();
+            ContextMenuStrip = new ContextMenuStrip();
 
             // Initialize default text and background colors
             textColor = RtfColor.Black;

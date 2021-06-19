@@ -22,11 +22,11 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Text;
+using System.Text.Json;
 using System.IO;
 using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using System.Web.Script.Serialization;
 using System.Collections.Generic;
 
 namespace Radegast
@@ -62,7 +62,6 @@ namespace Radegast
         private void InitializeConfig()
         {
             Settings s = instance.GlobalSettings;
-            var serializer = new JavaScriptSerializer();
 
             if (s["im_timestamps"].Type == OSDType.Unknown)
             {
@@ -72,7 +71,7 @@ namespace Radegast
             {
                 try
                 {
-                    s["chat_fonts"] = serializer.Serialize(Settings.DefaultFontSettings);
+                    s["chat_fonts"] = JsonSerializer.Serialize(Settings.DefaultFontSettings);
                 }
                 catch (Exception ex)
                 {
@@ -82,7 +81,7 @@ namespace Radegast
 
             try
             {
-                fontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(s["chat_fonts"]);
+                fontSettings = JsonSerializer.Deserialize<Dictionary<string, Settings.FontSetting>>(s["chat_fonts"]);
             }
             catch (Exception ex)
             {
@@ -105,8 +104,7 @@ namespace Radegast
             {
                 try
                 {
-                    var serializer = new JavaScriptSerializer();
-                    fontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(e.Value);
+                    fontSettings = JsonSerializer.Deserialize<Dictionary<string, Settings.FontSetting>>(e.Value);
                 }
                 catch (Exception ex)
                 {

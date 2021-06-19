@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyTitle>RadegastSpeech</AssemblyTitle>
     <Product>RadegastSpeech</Product>
     <Description>Speech plugin for Radegast</Description>
@@ -55,10 +55,10 @@
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LibreMetaverse" Version="1.4.14.137" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.14.137" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.14.137" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.14.137" />
+    <PackageReference Include="LibreMetaverse" Version="1.6.0.157" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.6.0.157" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.6.0.157" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.6.0.157" />
     <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
@@ -67,6 +67,7 @@
     <PackageReference Include="System.Security.Cryptography.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
+    <PackageReference Include="System.Speech" Version="5.0.0" />
     <PackageReference Include="XmlRpcCs" Version="2.1.1.2" />
     <PackageReference Include="zlib.net" Version="1.0.4.0" />
     <PackageReference Include="zlib.net-mutliplatform" Version="1.0.4" />
@@ -94,9 +95,7 @@
       <DependentUpon>VoiceAssignment.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\VoiceAssignment.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\VoiceAssignment.cs" />
     <EmbeddedResource Update="GUI\VoiceAssignment.resx">
       <DependentUpon>VoiceAssignment.cs</DependentUpon>
       <SubType>DesignerType</SubType>

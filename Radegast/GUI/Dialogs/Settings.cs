@@ -28,7 +28,7 @@ using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 
 using Radegast.Automation;
-using System.Web.Script.Serialization;
+using System.Text.Json;
 
 namespace Radegast
 {
@@ -183,9 +183,8 @@ namespace Radegast
             var chatFontsJson = Instance.GlobalSettings["chat_fonts"];
             if (chatFontsJson.Type != OSDType.Unknown)
             {
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
                 Dictionary<string, Settings.FontSetting> unpacked = new Dictionary<string, Settings.FontSetting>();
-                chatFontSettings = serializer.Deserialize<Dictionary<string, Settings.FontSetting>>(chatFontsJson);
+                chatFontSettings = JsonSerializer.Deserialize<Dictionary<string, Settings.FontSetting>>(chatFontsJson);
             }
             else
             {
@@ -918,8 +917,7 @@ namespace Radegast
 
                     chatFontSettings[currentlySelectedFontSetting.Name] = previewFontSettings;
 
-                    JavaScriptSerializer serializer = new JavaScriptSerializer();
-                    var json = serializer.Serialize(chatFontSettings);
+                    var json = JsonSerializer.Serialize(chatFontSettings);
                     Instance.GlobalSettings["chat_fonts"] = json;
                     Instance.GlobalSettings.Save();
 
@@ -938,8 +936,7 @@ namespace Radegast
         {
             try
             {
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                var json = serializer.Serialize(Settings.DefaultFontSettings);
+                var json = JsonSerializer.Serialize(Settings.DefaultFontSettings);
                 Instance.GlobalSettings["chat_fonts"] = json;
                 Instance.GlobalSettings.Save();
                 ReloadFontSettings();

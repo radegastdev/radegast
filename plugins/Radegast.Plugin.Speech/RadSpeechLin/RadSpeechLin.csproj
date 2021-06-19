@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyTitle>RadSpeechLin</AssemblyTitle>
     <Company>Hewlett-Packard Company</Company>
     <Product>RadSpeechLin</Product>
@@ -52,10 +52,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LibreMetaverse" Version="1.4.14.137" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.4.14.137" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.4.14.137" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.4.14.137" />
+    <PackageReference Include="LibreMetaverse" Version="1.6.0.157" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.6.0.157" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.6.0.157" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.6.0.157" />
     <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
