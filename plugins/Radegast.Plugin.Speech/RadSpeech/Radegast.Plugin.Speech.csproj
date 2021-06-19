@@ -69,14 +69,7 @@
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
     <PackageReference Include="System.Speech" Version="5.0.0" />
     <PackageReference Include="XmlRpcCs" Version="2.1.1.2" />
-    <PackageReference Include="zlib.net" Version="1.0.4.0" />
-    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.4" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Data.DataSetExtensions" />
+    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.5" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BadBeep.wav">

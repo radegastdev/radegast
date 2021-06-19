@@ -67,13 +67,7 @@
     <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
     <PackageReference Include="XmlRpcCs" Version="2.1.1.2" />
-    <PackageReference Include="zlib.net" Version="1.0.4.0" />
-    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.4" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Windows.Forms" />
+    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.5" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="SimpleBuilder.Designer.cs">

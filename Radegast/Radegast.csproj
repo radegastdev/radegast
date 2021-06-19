@@ -114,16 +114,10 @@
     <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
     <PackageReference Include="XmlRpcCs" Version="2.1.1.2" />
-    <PackageReference Include="zlib.net" Version="1.0.4.0" />
-    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.4" />
+    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.5" />
   </ItemGroup>
     <ItemGroup>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Core\Types\AgentNameTextBox.cs" />
