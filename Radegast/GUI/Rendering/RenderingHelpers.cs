@@ -341,8 +341,8 @@ namespace Radegast.Rendering
     public static class RHelp
     {
         public static readonly Vector3 InvalidPosition = new Vector3(99999f, 99999f, 99999f);
-        static float t1 = 0.075f;
-        static float t2 = t1 / 5.7f;
+        static readonly float t1 = 0.075f;
+        static readonly float t2 = t1 / 5.7f;
 
         public static Vector3 Smoothed1stOrder(Vector3 curPos, Vector3 targetPos, float lastFrameTime)
         {
@@ -461,11 +461,9 @@ namespace Radegast.Rendering
                     i += 16;
 
                     tgaData = new byte[uncompressedSize];
-                    using (var compressed = new DeflateStream(f, CompressionMode.Decompress))
-                    {
-                        int read = 0;
-                        while ((read = compressed.Read(tgaData, read, uncompressedSize - read)) > 0) { }
-                    }
+                    using var compressed = new DeflateStream(f, CompressionMode.Decompress);
+                    int read = 0;
+                    while ((read = compressed.Read(tgaData, read, uncompressedSize - read)) > 0) { }
                 }
 
                 return true;
@@ -513,10 +511,8 @@ namespace Radegast.Rendering
                     i += 16;
 
                     // compressed texture data
-                    using (var compressed = new DeflateStream(f, CompressionMode.Compress))
-                    {
-                        compressed.Write(tgaData, 0, tgaData.Length);
-                    }
+                    using var compressed = new DeflateStream(f, CompressionMode.Compress);
+                    compressed.Write(tgaData, 0, tgaData.Length);
                 }
                 return true;
             }
@@ -568,7 +564,7 @@ namespace Radegast.Rendering
         public static int GLLoadImage(Bitmap bitmap, bool hasAlpha, bool useMipmap)
         {
             useMipmap = useMipmap && RenderSettings.HasMipmap;
-            int ret = -1;
+            int ret;
             GL.GenTextures(1, out ret);
             GL.BindTexture(TextureTarget.Texture2D, ret);
 
@@ -968,9 +964,9 @@ namespace Radegast.Rendering
             float[] mat = new float[16];
 
             // Transpose the quaternion (don't ask me why)
-            q.X = q.X * -1f;
-            q.Y = q.Y * -1f;
-            q.Z = q.Z * -1f;
+            q.X *= -1f;
+            q.Y *= -1f;
+            q.Z *= -1f;
 
             float x2 = q.X + q.X;
             float y2 = q.Y + q.Y;
@@ -1013,9 +1009,9 @@ namespace Radegast.Rendering
             float[] mat = new float[16];
 
             // Transpose the quaternion (don't ask me why)
-            q.X = q.X * -1f;
-            q.Y = q.Y * -1f;
-            q.Z = q.Z * -1f;
+            q.X *= -1f;
+            q.Y *= -1f;
+            q.Z *= -1f;
 
             float x2 = q.X + q.X;
             float y2 = q.Y + q.Y;
@@ -1189,7 +1185,7 @@ namespace Radegast.Rendering
         public int mSize;
         public AssetType mAssetType;
 
-        public int readblock(byte[] blockdata, int offset)
+        public int Readblock(byte[] blockdata, int offset)
         {
 
             BitPack input = new BitPack(blockdata, offset);
@@ -1209,9 +1205,9 @@ namespace Radegast.Rendering
 
     }
 
-    public class staticVFS
+    public class StaticVFS
     {
-        public static void readVFSheaders(string datafile, string indexfile)
+        public static void ReadVFSheaders(string datafile, string indexfile)
         {
             FileStream datastream;
             FileStream indexstream;
@@ -1227,7 +1223,7 @@ namespace Radegast.Rendering
             while (offset < indexstream.Length)
             {
                 VFSblock block = new VFSblock();
-                offset = block.readblock(blockdata, offset);
+                offset = block.Readblock(blockdata, offset);
 
                 FileStream writer = File.Open(OpenMetaverse.Settings.RESOURCE_DIR + System.IO.Path.DirectorySeparatorChar + block.mFileID, FileMode.Create);
                 byte[] data = new byte[block.mSize];
