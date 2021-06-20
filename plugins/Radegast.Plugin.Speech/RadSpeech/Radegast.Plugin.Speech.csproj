@@ -4,7 +4,7 @@
     <AssemblyTitle>RadegastSpeech</AssemblyTitle>
     <Product>RadegastSpeech</Product>
     <Description>Speech plugin for Radegast</Description>
-    <Copyright>Copyright (c) 2009, Mojito Sorbet. Copyright (c) 2019-2020, SJofn, LLC. All rights reserved.</Copyright>
+    <Copyright>Copyright (c) 2009, Mojito Sorbet. Copyright (c) 2019-2021, SJofn, LLC. All rights reserved.</Copyright>
     <AssemblyVersion>3.0.0</AssemblyVersion>
     <FileVersion>3.0.0</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
