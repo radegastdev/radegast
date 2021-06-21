@@ -39,15 +39,17 @@ namespace Radegast
         private static readonly List<string> PluginBlackList = new List<string>(new string[]
         {
             "AIMLbot.dll",
+            "C5.dll",
             "CommandLine.dll",
             "fmod.dll",
+            "fmod64.dll",
             "fmodstudio.dll",
             "IKVM.",
             "LibreMetaverse.PrimMesher.dll",
             "LibreMetaverse.Rendering.Meshmerizer.dll",
             "LibreMetaverse.StructuredData.dll",
+            "LibreMetaverse.Types.dll",
             "LibreMetaverse.dll",
-            "LibreMetaverseTypes.dll",
             "log4net.dll",
             "Meebey.SmartIrc4net.dll",
             "Monobjc.Cocoa.dll",
@@ -69,9 +71,7 @@ namespace Radegast
             "SmartThreadPool",
             "Tao.OpenGl.dll",
             "Tao.Platform.Windows.dll",
-            "Tools.dll",
-            "XMLRPC.dll",
-            "XmlRpcCs.dll",
+            "XmlRpcCore.dll",
             "zlib.net.dll",
         });
 
@@ -83,9 +83,12 @@ namespace Radegast
             "LibreMetaverse.dll",
             "Radegast.exe",
             "System.dll",
+            "System.ComponentModel.Composition.dll",
             "System.Core.dll",
             "System.Xml.dll",
             "System.Drawing.dll",
+            "System.Drawing.Common.dll",
+            "System.Threading.Channels.dll",
             "System.Windows.Forms.dll",
         };
 
