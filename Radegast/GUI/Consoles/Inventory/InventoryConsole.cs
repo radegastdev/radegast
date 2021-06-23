@@ -30,6 +30,7 @@ using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using Radegast.Core;
+using System.Threading.Tasks;
 
 namespace Radegast
 {
@@ -54,7 +55,7 @@ namespace Radegast
         private bool TreeUpdateInProgress = false;
         private Dictionary<UUID, TreeNode> UUID2NodeCache = new Dictionary<UUID, TreeNode>();
         private int updateInterval = 1000;
-        private Thread InventoryUpdate;
+        private CancellationTokenSource inventoryUpdateCancelToken;
         private List<UUID> WornItems = new List<UUID>();
         private bool appearanceWasBusy;
         private InvNodeSorter sorter;
@@ -147,11 +148,11 @@ namespace Radegast
             }
 
             saveAllTToolStripMenuItem.Enabled = false;
-            InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes))
-            {
-                Name = "InventoryUpdate", IsBackground = true
-            };
-            InventoryUpdate.Start();
+
+            inventoryUpdateCancelToken = new CancellationTokenSource();
+
+            Task inventoryUpdateTask = Task.Factory.StartNew(new Action(StartTraverseNodes),
+                inventoryUpdateCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
 
             invRootNode.Expand();
 
@@ -181,12 +182,12 @@ namespace Radegast
                 TreeUpdateTimer.Dispose();
                 TreeUpdateTimer = null;
             }
-            if (InventoryUpdate != null)
+            try
             {
-                if (InventoryUpdate.IsAlive)
-                    InventoryUpdate.Abort();
-                InventoryUpdate = null;
+                inventoryUpdateCancelToken.Cancel();
+                inventoryUpdateCancelToken.Dispose();
             }
+            catch (ObjectDisposedException) { }
 
             Inventory.InventoryObjectAdded -= new EventHandler<InventoryObjectAddedEventArgs>(Inventory_InventoryObjectAdded);
             Inventory.InventoryObjectUpdated -= new EventHandler<InventoryObjectUpdatedEventArgs>(Inventory_InventoryObjectUpdated);
@@ -852,8 +853,7 @@ namespace Radegast
             if (TreeUpdateInProgress)
             {
                 TreeUpdateTimer.Stop();
-                InventoryUpdate.Abort();
-                InventoryUpdate = null;
+                inventoryUpdateCancelToken.Cancel();
             }
 
             saveAllTToolStripMenuItem.Enabled = false;
@@ -866,12 +866,9 @@ namespace Radegast
             invRootNode = AddDir(null, Inventory.RootFolder);
             Inventory.RootNode.NeedsUpdate = true;
 
-            InventoryUpdate = new Thread(new ThreadStart(StartTraverseNodes))
-            {
-                Name = "InventoryUpdate",
-                IsBackground = true
-            };
-            InventoryUpdate.Start();
+            Task inventoryUpdateTask = Task.Factory.StartNew(new Action(StartTraverseNodes), 
+                inventoryUpdateCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Current);
+
             invRootNode.Expand();
         }
 
