@@ -88,10 +88,6 @@ namespace Radegast
         Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
         Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
 
-        ConcurrentQueue<List<UUID>> PendingLookups;
-        CancellationTokenSource nameRequestCancelToken;
-        Semaphore lookupGate;
-
         #endregion private fields and properties
 
         #region construction and disposal
@@ -131,27 +127,6 @@ namespace Radegast
         #endregion construction and disposal
 
         #region private methods
-        public void RequestThread()
-        {
-            while (true)
-            {
-                List<UUID> req = null;
-                if (!PendingLookups.TryDequeue(out req)) break;
-                lookupGate.WaitOne(90 * 1000);
-                client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
-                {
-                    if (success)
-                    {
-                        ProcessDisplayNames(names);
-                    }
-                    else
-                    {
-                        Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
-                    }
-                    lookupGate.Release(1);
-                });
-            }
-        }
 
         void RegisterEvents(GridClient c)
         {
