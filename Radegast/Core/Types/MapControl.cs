@@ -25,12 +25,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 using System.Net;
 using System.IO;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using System.Threading;
 using OpenMetaverse;
 using OpenMetaverse.Http;

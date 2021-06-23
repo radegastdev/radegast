@@ -25,12 +25,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Xml;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using Path = System.IO.Path;
