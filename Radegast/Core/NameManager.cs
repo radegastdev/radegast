@@ -89,9 +89,8 @@ namespace Radegast
         Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
 
         ConcurrentQueue<List<UUID>> PendingLookups;
-        Thread requestThread = null;
+        CancellationTokenSource nameRequestCancelToken;
         Semaphore lookupGate;
-        bool useRequestThread;
 
         #endregion private fields and properties
 
@@ -106,20 +105,6 @@ namespace Radegast
             LoadCachedNames();
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterEvents(client);
-
-            // Mono HTTPWebRequest sucks balls
-            useRequestThread = instance.MonoRuntime;
-
-            if (useRequestThread)
-            {
-                PendingLookups = new ConcurrentQueue<List<UUID>>();
-                lookupGate = new Semaphore(4, 4);
-                requestThread = new Thread(new ThreadStart(RequestThread))
-                {
-                    IsBackground = true, Name = "Display Name Request Thread"
-                };
-                requestThread.Start();
-            }
         }
 
         public void Dispose()
@@ -142,23 +127,6 @@ namespace Radegast
                 cacheTimer.Dispose();
                 cacheTimer = null;
             }
-
-            try
-            {
-                if (!useRequestThread) return;
-                while (!PendingLookups.IsEmpty)
-                {
-                    PendingLookups.TryDequeue(out _);
-                }
-
-                if (requestThread == null) return;
-                if (!requestThread.Join(5 * 1000))
-                {
-                    requestThread.Abort();
-                }
-                requestThread = null;
-            }
-            catch { }
         }
         #endregion construction and disposal
 
@@ -338,24 +306,17 @@ namespace Radegast
             }
             else // Use display names
             {
-                if (useRequestThread)
+                client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
                 {
-                    PendingLookups.Enqueue(new List<UUID>(req));
-                }
-                else
-                {
-                    client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
+                    if (success)
                     {
-                        if (success)
-                        {
-                            ProcessDisplayNames(names);
-                        }
-                        else
-                        {
-                            Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
-                        }
-                    });
-                }
+                        ProcessDisplayNames(names);
+                    }
+                    else
+                    {
+                        Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
+                    }
+                });
             }
         }
 
