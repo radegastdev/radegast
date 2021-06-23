@@ -23,20 +23,19 @@ using System.Collections.Generic;
 using FMOD;
 using System.Threading;
 using OpenMetaverse;
-
+using System.Threading.Tasks;
 
 namespace Radegast.Media
 {
     public class MediaManager : MediaObject
     {
         /// <summary>
-        /// Indicated wheather spund sytem is ready for use
+        /// Indicated wheather sound sytem is ready for use
         /// </summary>
         public bool SoundSystemAvailable { get; private set; } = false;
-
-        private Thread soundThread;
-        private Thread listenerThread;
         public RadegastInstance Instance;
+
+        private CancellationTokenSource soundCancelToken;
 
         private List<MediaObject> sounds = new List<MediaObject>();
         ManualResetEvent initDone = new ManualResetEvent(false);
@@ -55,21 +54,14 @@ namespace Radegast.Media
             endCallback = new CHANNEL_CALLBACK(DispatchEndCallback);
             allBuffers = new Dictionary<UUID, BufferSound>();
 
-            // Start the background thread that does all the FMOD calls.
-            soundThread = new Thread(CommandLoop)
-            {
-                IsBackground = true,
-                Name = "SoundThread"
-            };
-            soundThread.Start();
+            soundCancelToken = new CancellationTokenSource();
 
+            // Start the background thread that does the audio calls.
+            Task soundTask = Task.Factory.StartNew(new Action(CommandLoop), 
+                soundCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             // Start the background thread that updates listerner position.
-            listenerThread = new Thread(ListenerUpdate)
-            {
-                IsBackground = true,
-                Name = "ListenerThread"
-            };
-            listenerThread.Start();
+            Task listenerTask = Task.Factory.StartNew(new Action(ListenerUpdate), 
+                soundCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
             Instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(Instance_ClientChanged);
 
@@ -135,6 +127,10 @@ namespace Radegast.Media
 
             while (true)
             {
+                if (soundCancelToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 // Wait for something to show up in the queue.
                 lock (queue)
                 {
@@ -145,6 +141,10 @@ namespace Radegast.Media
                     action = queue.Dequeue();
                 }
 
+                if (soundCancelToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 // We have an action, so call it.
                 try
                 {
@@ -298,19 +298,8 @@ namespace Radegast.Media
                 system = null;
             }
 
-            if (listenerThread != null)
-            {
-                if (listenerThread.IsAlive)
-                    listenerThread.Abort();
-                listenerThread = null;
-            }
-
-            if (soundThread != null)
-            {
-                if (soundThread.IsAlive)
-                    soundThread.Abort();
-                soundThread = null;
-            }
+            soundCancelToken.Cancel();
+            soundCancelToken.Dispose();
 
             base.Dispose();
         }
@@ -327,6 +316,10 @@ namespace Radegast.Media
 
             while (true)
             {
+                if (soundCancelToken.IsCancellationRequested)
+                {
+                    break;
+                }
                 // Two updates per second.
                 Thread.Sleep(500);
 
