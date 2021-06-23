@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using OpenMetaverse;
+using System.Threading.Tasks;
 
 namespace Radegast
 {
@@ -33,7 +34,7 @@ namespace Radegast
         bool Running = false;
         bool UploadImages;
         Queue<string> FileNames = new Queue<string>();
-        Thread UploadThread;
+        CancellationTokenSource uploadCancelToken;
 
         public MeshUploadConsole()
         {
@@ -52,21 +53,16 @@ namespace Radegast
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
             UpdateButtons();
 
+            uploadCancelToken = new CancellationTokenSource();
+
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void MeshUploadConsole_Disposed(object sender, EventArgs e)
         {
-            if (UploadThread != null && UploadThread.IsAlive)
-            {
-                try
-                {
-                    UploadThread.Abort();
-                }
-                catch { }
-                UploadThread = null;
-                Running = false;
-            }
+            uploadCancelToken.Cancel();
+            uploadCancelToken.Dispose();
+            Running = false;
         }
 
         void Netcom_ClientDisconnected(object sender, DisconnectedEventArgs e)
@@ -80,16 +76,9 @@ namespace Radegast
                 return;
             }
 
-            if (UploadThread != null && UploadThread.IsAlive)
-            {
-                try
-                {
-                    UploadThread.Abort();
-                }
-                catch { }
-                UploadThread = null;
-                Running = false;
-            }
+            uploadCancelToken.Cancel();
+            uploadCancelToken.Dispose();
+            Running = false;
 
             UpdateButtons();
         }
@@ -198,65 +187,71 @@ namespace Radegast
                 }
             }
 
-            UploadThread = new Thread(PerformUpload)
-            {
-                Name = "Mesh Upload Thread", IsBackground = true
-            };
-            UploadThread.Start();
+            Task uploadTask = Task.Run(new Action(PerformUpload), uploadCancelToken.Token);
+
             txtUploadLog.Clear();
         }
 
         void PerformUpload()
         {
-            Running = true;
-            UpdateButtons();
-
-            while (FileNames.Count > 0)
+            try
             {
-                Msg(string.Empty);
+                Running = true;
+                UpdateButtons();
 
-                string filename;
-                lock (FileNames)
+                while (FileNames.Count > 0)
                 {
-                    filename = FileNames.Dequeue();
-                }
-                Msg($"Processing: {filename}");
+                    Msg(string.Empty);
 
-                var parser = new OpenMetaverse.ImportExport.ColladaLoader();
-                var prims = parser.Load(filename, UploadImages);
-                if (prims == null || prims.Count == 0)
-                {
-                    Msg("Error: Failed to parse collada file");
-                    continue;
-                }
-
-                Msg($"Parse collada file success, found {prims.Count} objects");
-                Msg("Uploading...");
-
-                var uploader = new OpenMetaverse.ImportExport.ModelUploader(client, prims, Path.GetFileNameWithoutExtension(filename), "Radegast " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
-                var uploadDone = new AutoResetEvent(false);
-
-                uploader.IncludePhysicsStub = true;
-                uploader.UseModelAsPhysics = false;
-
-                uploader.Upload((res =>
-                {
-                    if (res == null)
+                    string filename;
+                    lock (FileNames)
                     {
-                        Msg("Upload failed.");
+                        filename = FileNames.Dequeue();
                     }
-                    else
+                    Msg($"Processing: {filename}");
+
+                    var parser = new OpenMetaverse.ImportExport.ColladaLoader();
+                    var prims = parser.Load(filename, UploadImages);
+                    if (prims == null || prims.Count == 0)
                     {
-                        Msg("Upload success.");
+                        Msg("Error: Failed to parse collada file");
+                        continue;
                     }
 
-                    uploadDone.Set();
-                }));
+                    Msg($"Parse collada file success, found {prims.Count} objects");
+                    Msg("Uploading...");
 
-                if (!uploadDone.WaitOne(4 * 60 * 1000))
-                {
-                    Msg("Message upload timeout");
+                    uploadCancelToken.Token.ThrowIfCancellationRequested();
+
+                    var uploader = new OpenMetaverse.ImportExport.ModelUploader(client, prims, Path.GetFileNameWithoutExtension(filename), "Radegast " + DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                    var uploadDone = new AutoResetEvent(false);
+
+                    uploader.IncludePhysicsStub = true;
+                    uploader.UseModelAsPhysics = false;
+
+                    uploader.Upload((res =>
+                    {
+                        if (res == null)
+                        {
+                            Msg("Upload failed.");
+                        }
+                        else
+                        {
+                            Msg("Upload success.");
+                        }
+
+                        uploadDone.Set();
+                    }));
+
+                    if (!uploadDone.WaitOne(4 * 60 * 1000))
+                    {
+                        Msg("Message upload timeout");
+                    }
                 }
+            } 
+            catch (OperationCanceledException)
+            {
+                Msg("Operation cancelled");
             }
 
             Running = false;
