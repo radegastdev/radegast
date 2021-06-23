@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2021, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ using System.Timers;
 using System.Windows.Forms;
 using System.Threading;
 using OpenMetaverse;
+using System.Threading.Tasks;
 
 namespace Radegast
 {
@@ -37,11 +38,10 @@ namespace Radegast
         private GridClient client => instance.Client;
 
         private float searchRadius = 40.0f;
-        //public List<InventoryBase> subitems;
         PropertiesQueue propRequester;
-        private Thread ContentsThread;
         private ObjectConsoleFilter filter;
         private ObjectSorter PrimSorter;
+        CancellationTokenSource contentsDownloadCancelToken;
 
         public Primitive CurrentPrim { get; private set; } = new Primitive();
 
@@ -80,10 +80,7 @@ namespace Radegast
                 btnRefresh_Click(null, null);
             };
 
-            //if (instance.MonoRuntime)
-            //{
-            //    btnView.Visible = false;
-            //}
+            contentsDownloadCancelToken = new CancellationTokenSource();
 
             // Callbacks
             instance.Netcom.ClientDisconnected += new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
@@ -102,11 +99,11 @@ namespace Radegast
 
         void frmObjects_Disposed(object sender, EventArgs e)
         {
-            if (ContentsThread != null)
+            try
             {
-                if (ContentsThread.IsAlive) ContentsThread.Abort();
-                ContentsThread = null;
-            }
+                contentsDownloadCancelToken.Cancel();
+                contentsDownloadCancelToken.Dispose();
+            } catch (ObjectDisposedException) { }
 
             propRequester.Dispose();
             instance.Netcom.ClientDisconnected -= new EventHandler<DisconnectedEventArgs>(Netcom_ClientDisconnected);
@@ -299,27 +296,18 @@ namespace Radegast
 
         void UpdateObjectContents()
         {
-            if (ContentsThread != null)
-            {
-                if (ContentsThread.IsAlive) ContentsThread.Abort();
-                ContentsThread = null;
-            }
-
             lstContents.Items.Clear();
             ListViewItem entry = new ListViewItem();
             entry.SubItems.Add("Loading...");
             lstContents.Items.Add(entry);
 
-            ContentsThread = new Thread(() =>
+            Task contentsTask = Task.Run(() =>
             {
                 lstContents.Tag = CurrentPrim;
                 List<InventoryBase> items =
                     client.Inventory.GetTaskInventory(CurrentPrim.ID, CurrentPrim.LocalID, 1000 * 30);
                 lstContents.Invoke(new MethodInvoker(() => UpdateContentsList(items)));
-            }) {IsBackground = true};
-
-            ContentsThread.Start();
-
+            }, contentsDownloadCancelToken.Token);
         }
 
         void UpdateContentsList(List<InventoryBase> items)
