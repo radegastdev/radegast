@@ -63,7 +63,11 @@ namespace Radegast
 
         void InventoryBackup_Disposed(object sender, EventArgs e)
         {
-
+            try
+            {
+                backupTaskCancelToken.Cancel();
+                backupTaskCancelToken.Dispose();
+            } catch (ObjectDisposedException) { }
         }
 
         private void WriteCSVLine(params object[] args)
@@ -363,8 +367,11 @@ namespace Radegast
 
         private void InventoryBackup_FormClosing(object sender, FormClosingEventArgs e)
         {
-            backupTaskCancelToken.Cancel();
-            backupTaskCancelToken.Dispose();
+            try
+            {
+                backupTaskCancelToken.Cancel();
+                backupTaskCancelToken.Dispose();
+            } catch (ObjectDisposedException) { }
         }
 
         private void lvwFiles_DoubleClick(object sender, EventArgs e)

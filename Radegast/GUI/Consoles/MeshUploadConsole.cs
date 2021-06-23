@@ -60,8 +60,11 @@ namespace Radegast
 
         void MeshUploadConsole_Disposed(object sender, EventArgs e)
         {
-            uploadCancelToken.Cancel();
-            uploadCancelToken.Dispose();
+            try
+            {
+                uploadCancelToken.Cancel();
+                uploadCancelToken.Dispose();
+            } catch (ObjectDisposedException) { }
             Running = false;
         }
 
@@ -75,9 +78,12 @@ namespace Radegast
                 }
                 return;
             }
-
-            uploadCancelToken.Cancel();
-            uploadCancelToken.Dispose();
+            try
+            {
+                uploadCancelToken.Cancel();
+                uploadCancelToken.Dispose();
+            }
+            catch (ObjectDisposedException) { }
             Running = false;
 
             UpdateButtons();
