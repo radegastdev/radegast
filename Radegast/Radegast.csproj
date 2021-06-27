@@ -82,11 +82,11 @@
     <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
     <PackageReference Include="C5" Version="2.5.3" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="LibreMetaverse" Version="1.6.0.157" />
-    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.6.0.157" />
-    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.6.0.157" />
-    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.6.0.157" />
-    <PackageReference Include="LibreMetaverse.Types" Version="1.6.0.157" />
+    <PackageReference Include="LibreMetaverse" Version="1.6.1.160" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.6.1.160" />
+    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.6.1.160" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.6.1.160" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.6.1.160" />
     <PackageReference Include="log4net" Version="2.0.12" />
     <PackageReference Include="OpenTK" Version="3.3.1" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
