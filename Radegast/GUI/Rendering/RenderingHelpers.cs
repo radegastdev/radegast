@@ -461,9 +461,11 @@ namespace Radegast.Rendering
                     i += 16;
 
                     tgaData = new byte[uncompressedSize];
-                    using var compressed = new DeflateStream(f, CompressionMode.Decompress);
-                    int read = 0;
-                    while ((read = compressed.Read(tgaData, read, uncompressedSize - read)) > 0) { }
+                    using (var compressed = new DeflateStream(f, CompressionMode.Decompress))
+                    {
+                        int read = 0;
+                        while ((read = compressed.Read(tgaData, read, uncompressedSize - read)) > 0) { }
+                    }
                 }
 
                 return true;
@@ -511,8 +513,10 @@ namespace Radegast.Rendering
                     i += 16;
 
                     // compressed texture data
-                    using var compressed = new DeflateStream(f, CompressionMode.Compress);
-                    compressed.Write(tgaData, 0, tgaData.Length);
+                    using (var compressed = new DeflateStream(f, CompressionMode.Compress))
+                    {
+                        compressed.Write(tgaData, 0, tgaData.Length);
+                    }
                 }
                 return true;
             }

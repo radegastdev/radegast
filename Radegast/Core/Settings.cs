@@ -27,7 +27,6 @@ using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System.Drawing;
 using System.ComponentModel;
-using System.Text.Json;
 using System.Runtime.Serialization;
 
 namespace Radegast

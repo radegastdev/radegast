@@ -22,12 +22,12 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Text;
-using System.Text.Json;
 using System.IO;
 using Radegast.Netcom;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Radegast
 {
@@ -71,7 +71,7 @@ namespace Radegast
             {
                 try
                 {
-                    s["chat_fonts"] = JsonSerializer.Serialize(Settings.DefaultFontSettings);
+                    s["chat_fonts"] = JsonConvert.SerializeObject(Settings.DefaultFontSettings);
                 }
                 catch (Exception ex)
                 {
@@ -81,7 +81,7 @@ namespace Radegast
 
             try
             {
-                fontSettings = JsonSerializer.Deserialize<Dictionary<string, Settings.FontSetting>>(s["chat_fonts"]);
+                fontSettings = JsonConvert.DeserializeObject<Dictionary<string, Settings.FontSetting>>(s["chat_fonts"]);
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace Radegast
             {
                 try
                 {
-                    fontSettings = JsonSerializer.Deserialize<Dictionary<string, Settings.FontSetting>>(e.Value);
+                    fontSettings = JsonConvert.DeserializeObject<Dictionary<string, Settings.FontSetting>>(e.Value);
                 }
                 catch (Exception ex)
                 {

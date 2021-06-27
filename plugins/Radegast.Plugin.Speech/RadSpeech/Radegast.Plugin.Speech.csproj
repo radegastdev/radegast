@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
+	<UseWindowsForms>true</UseWindowsForms>
     <AssemblyTitle>RadegastSpeech</AssemblyTitle>
     <Product>RadegastSpeech</Product>
     <Description>Speech plugin for Radegast</Description>
@@ -57,6 +58,7 @@
     <PackageReference Include="LibreMetaverse.StructuredData" Version="1.6.1.160" />
     <PackageReference Include="LibreMetaverse.Types" Version="1.6.1.160" />
     <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Speech" Version="5.0.0" />
   </ItemGroup>

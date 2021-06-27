@@ -87,7 +87,7 @@ namespace Radegast
         public event EventHandler<SitEventArgs> SitStateChanged;
 
         static List<KnownHeading> m_Headings;
-        public static List<KnownHeading> KnownHeadings => m_Headings ??= new List<KnownHeading>(16)
+        public static List<KnownHeading> KnownHeadings => m_Headings ?? (m_Headings = new List<KnownHeading>(16)
         {
             new KnownHeading("E", "East", new Quaternion(0.00000f, 0.00000f, 0.00000f, 1.00000f)),
             new KnownHeading("ENE", "East by Northeast",
@@ -113,7 +113,7 @@ namespace Radegast
             new KnownHeading("SE", "Southeast", new Quaternion(0.00000f, 0.00000f, 0.38268f, -0.92388f)),
             new KnownHeading("ESE", "East by Southeast",
                 new Quaternion(0.00000f, 0.00000f, 0.19509f, -0.98078f))
-        };
+        });
 
         public static Vector3 RotToEuler(Quaternion r)
         {

@@ -29,6 +29,7 @@
   <ItemGroup>
     <Compile Include="Bundle.wxs" />
     <Compile Include="NetCore31.wxs" />
+    <Compile Include="NetFx48.wxs" />
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixUtilExtension">
