@@ -51,7 +51,7 @@ namespace Radegast.Media
                 return;
             }
 
-            endCallback = new CHANNEL_CALLBACK(DispatchEndCallback);
+            endCallback = new CHANNELCONTROL_CALLBACK(DispatchEndCallback);
             allBuffers = new Dictionary<UUID, BufferSound>();
 
             soundCancelToken = new CancellationTokenSource();
@@ -291,11 +291,11 @@ namespace Radegast.Media
 
             sounds = null;
 
-            if (system != null)
+            if (system.hasHandle())
             {
                 Logger.Log("FMOD interface stopping", Helpers.LogLevel.Info);
                 system.release();
-                system = null;
+                system.clearHandle();
             }
 
             soundCancelToken.Cancel();
@@ -321,9 +321,9 @@ namespace Radegast.Media
                     break;
                 }
                 // Two updates per second.
-                Thread.Sleep(500);
+                System.Threading.Thread.Sleep(500);
 
-                if (system == null) continue;
+                if (!system.hasHandle()) continue;
 
                 var my = Instance.Client.Self;
                 Vector3 newPosition = new Vector3(my.SimPosition);

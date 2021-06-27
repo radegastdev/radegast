@@ -49,15 +49,15 @@ namespace Radegast.Media
 
         // A SOUND represents the data (buffer or stream)
         public Sound FMODSound => sound;
-        protected Sound sound = null;
+        protected Sound sound;
 
         // A CHANNEL represents a playback instance of a sound.
         public Channel FMODChannel => channel;
-        protected Channel channel = null;
+        protected Channel channel;
 
         // Additional info for callbacks goes here.
         protected CREATESOUNDEXINFO extraInfo;
-        protected static CHANNEL_CALLBACK endCallback;
+        protected static CHANNELCONTROL_CALLBACK endCallback;
 
         // Vectors used for orienting spatial axes.
         protected static VECTOR UpVector;
@@ -66,7 +66,7 @@ namespace Radegast.Media
         /// <summary>
         /// Base FMOD system object, of which there is only one.
         /// </summary>
-        protected static FMOD.System system = null;
+        protected static FMOD.System system;
         public FMOD.System FMODSystem => system;
 
         protected static float AllObjectVolume = 0.8f;
@@ -81,16 +81,16 @@ namespace Radegast.Media
         protected bool Cloned = false;
         public virtual void Dispose()
         {
-            if (!Cloned && sound != null)
+            if (!Cloned && sound.hasHandle())
             {
                 sound.release();
-                sound = null;
+                sound.clearHandle();
             }
 
             Disposed = true;
         }
 
-        public bool Active => (sound != null);
+        public bool Active => (sound.hasHandle());
 
         /// <summary>
         /// Put a delegate call on the command queue.  These will be executed on
@@ -121,7 +121,7 @@ namespace Radegast.Media
             set
             {
                 volume = value;
-                if (channel == null) return;
+                if (!channel.hasHandle()) return;
 
                 invoke(new SoundDelegate(delegate
                 {
@@ -132,7 +132,7 @@ namespace Radegast.Media
                     catch (Exception ex)
                     {
                         Logger.Log(
-                            $"Error on volume change on channel {channel.getRaw().ToString("X")} sound {sound.getRaw().ToString("X")} finished {finished}",
+                            $"Error on volume change on channel {channel.handle.ToString("X")} sound {sound.handle.ToString("X")} finished {finished}",
                              Helpers.LogLevel.Error,
                              ex);
                     }
@@ -149,7 +149,7 @@ namespace Radegast.Media
             set
             {
                 position = FromOMVSpace(value);
-                if (channel == null) return;
+                if (!channel.hasHandle()) return;
 
                 invoke(new SoundDelegate(delegate
                     {
@@ -157,13 +157,12 @@ namespace Radegast.Media
                         {
                             FMODExec(channel.set3DAttributes(
                                 ref position,
-                                ref ZeroVector,
                                 ref ZeroVector));
                         }
                         catch (Exception ex)
                         {
                             Logger.Log(
-                                $"Error on position change on channel {channel.getRaw().ToString("X")} sound {sound.getRaw().ToString("X")} finished {finished}",
+                                $"Error on position change on channel {channel.handle.ToString("X")} sound {sound.handle.ToString("X")} finished {finished}",
                                 Helpers.LogLevel.Error, ex);
                         }
                     }));
@@ -173,7 +172,7 @@ namespace Radegast.Media
 
         public void Stop()
         {
-            if (channel != null)
+            if (channel.hasHandle())
             {
                 invoke(new SoundDelegate(delegate
                 {
@@ -204,22 +203,22 @@ namespace Radegast.Media
         protected static Dictionary<IntPtr, MediaObject> allChannels;
         protected void RegisterSound(Sound sound)
         {
-            IntPtr raw = sound.getRaw();
+            IntPtr raw = sound.handle;
             if (allSounds.ContainsKey(raw))
                 allSounds.Remove(raw);
             allSounds.Add(raw, this);
         }
         protected void RegisterChannel(Channel channel)
         {
-            IntPtr raw = channel.getRaw();
+            IntPtr raw = channel.handle;
             if (allChannels.ContainsKey(raw))
                 allChannels.Remove(raw);
             allChannels.Add(raw, this);
         }
         protected void UnRegisterSound()
         {
-            if (sound == null) return;
-            IntPtr raw = sound.getRaw();
+            if (sound.handle == null) return;
+            IntPtr raw = sound.handle;
             if (allSounds.ContainsKey( raw ))
             {
                 allSounds.Remove( raw );
@@ -227,8 +226,8 @@ namespace Radegast.Media
         }
         protected void UnRegisterChannel()
         {
-            if (channel == null) return;
-            IntPtr raw = channel.getRaw();
+            if (channel.handle == null) return;
+            IntPtr raw = channel.handle;
             if (allChannels.ContainsKey(raw))
             {
                 allChannels.Remove(raw);
