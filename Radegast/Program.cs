@@ -132,6 +132,7 @@ namespace Radegast
         [STAThread]
         static void Main(string[] args)
         {
+            Core.NativeMethods.Init();
             try
             {
                 var parser = new Parser(x => x.HelpWriter = null);

@@ -2062,6 +2062,6 @@
     <ProjectReference Include="..\LSLTools\LSLTools.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y &quot;$(ProjectDir)assemblies&quot; &quot;$(OutDir)&quot;" />
+    <Exec Command="xcopy /y &quot;$(ProjectDir)assemblies&quot; &quot;$(OutDir)dll&quot; /E/I" />
   </Target>
 </Project>

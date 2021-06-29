@@ -20,6 +20,7 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
+    <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
