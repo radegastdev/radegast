@@ -11,7 +11,7 @@
         <Variable Name="InstallFolder" Type="string" Value="[ProgramFiles6432Folder]$(var.productName)" Persisted="yes" />
         <Chain>
 			<PackageGroupRef Id="NetFx48Redist"/>
-            <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" Vital="yes">
+            <MsiPackage Id="RadegastSetup" SourceFile="$(var.RadegastSetup.TargetPath)" Vital="yes" After="NetFx48Redist">
                 <MsiProperty Name="APPLICATIONFOLDER" Value="[InstallFolder]" />
             </MsiPackage>
 		</Chain>
