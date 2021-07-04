@@ -37,7 +37,6 @@ namespace Radegast
         private UUID imageID;
 
         byte[] jpegdata;
-        ManagedImage imgManaged;
         Image image;
         bool allowSave = false;
 
@@ -184,8 +183,7 @@ namespace Radegast
                 {
                     if (reader.ReadHeader())
                     {
-                        var img = reader.DecodeToBitmap();
-                        pictureBox1.Image = img;
+                        pictureBox1.Image = reader.DecodeToBitmap();
                         pictureBox1.Enabled = true;
                     }
                     else
@@ -259,11 +257,6 @@ namespace Radegast
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (imgManaged == null)
-            {
-                return;
-            }
-
             SaveFileDialog dlg = new SaveFileDialog
             {
                 AddExtension = true,
@@ -284,7 +277,7 @@ namespace Radegast
                 }
                 else if (type == 1)
                 { // targa
-                    File.WriteAllBytes(dlg.FileName, imgManaged.ExportTGA());
+                    //File.WriteAllBytes(dlg.FileName, imgManaged.ExportTGA());
                 }
                 else if (type == 3)
                 { // png

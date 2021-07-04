@@ -1065,8 +1065,15 @@ namespace Radegast.Rendering
                     using (var reader = new LibreMetaverse.Imaging.J2KReader(item.TextureData))
                     {
                         if (!reader.ReadHeader()) { continue; }
-                        ManagedImage mi = new ManagedImage(reader.DecodeToBitmap());
-
+                        ManagedImage mi;
+                        try
+                        {
+                            mi = new ManagedImage(reader.DecodeToBitmap());
+                        }
+                        catch (NotSupportedException)
+                        {
+                            continue;
+                        }
                         bool hasAlpha = false;
                         bool fullAlpha = false;
                         bool isMask = false;
@@ -3014,17 +3021,21 @@ namespace Radegast.Rendering
                                 {
                                     if (reader.ReadHeader())
                                     {
-                                        ManagedImage mi = new ManagedImage(reader.DecodeToBitmap());
-                                        if (removeAlpha)
-                                        {
-                                            if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                        try {
+                                            ManagedImage mi = new ManagedImage(reader.DecodeToBitmap());
+                                            if (removeAlpha)
                                             {
-                                                mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                                if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                                {
+                                                    mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                                }
                                             }
+                                            tgaData = mi.ExportTGA();
+                                            img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
+                                            RHelp.SaveCachedImage(tgaData, textureID, (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0, false, false);
+                                        } catch (NotSupportedException) {
+                                            Logger.Log("Failed to decode texture " + assetTexture.AssetID, Helpers.LogLevel.Warning, instance.Client);
                                         }
-                                        tgaData = mi.ExportTGA();
-                                        img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
-                                        RHelp.SaveCachedImage(tgaData, textureID, (mi.Channels & ManagedImage.ImageChannels.Alpha) != 0, false, false);
                                     }
                                 }
                                 

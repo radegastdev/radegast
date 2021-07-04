@@ -160,7 +160,7 @@ namespace Radegast
                         bitmap = LoadTGAClass.LoadTGA(FileName);
                         break;
                     default:
-                        bitmap = (Bitmap)Image.FromFile(FileName);
+                        bitmap = Image.FromFile(FileName) as Bitmap;
                         break;
                 }
 
@@ -196,13 +196,9 @@ namespace Radegast
 
                 txtStatus.AppendText("Encoding image...\n");
 
-                using (var writer = new LibreMetaverse.Imaging.J2KWriter(UploadData))
+                using (var writer = new LibreMetaverse.Imaging.J2KWriter(bitmap))
                 {
-                    if (writer.WriteHeader(new OpenJpegDotNet.IO.Parameter {
-                        Compression = chkLossless.Checked ? 1 : 0 }))
-                    {
-                        UploadData = writer.Encode(bitmap);
-                    }
+                    UploadData = writer.Encode();
                 }
 
                 txtStatus.AppendText("Finished encoding.\n");

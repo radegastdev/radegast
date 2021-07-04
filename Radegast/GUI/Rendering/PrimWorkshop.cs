@@ -1040,7 +1040,12 @@ namespace Radegast.Rendering
                                 // what the fk is going on here? lol
                                 using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
                                 {
-                                    if (reader.ReadHeader())
+                                    if (!reader.ReadHeader())
+                                    {
+                                        throw new Exception("Failed to decode texture header " + assetTexture.AssetID.ToString());
+                                    }
+
+                                    try
                                     {
                                         ManagedImage mi = new ManagedImage(reader.DecodeToBitmap());
                                         if (removeAlpha)
@@ -1051,6 +1056,10 @@ namespace Radegast.Rendering
                                             }
                                         }
                                         img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
+                                    }
+                                    catch (NotSupportedException)
+                                    {
+                                        img = null;
                                     }
                                 }    
                             }
