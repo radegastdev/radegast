@@ -114,6 +114,7 @@ namespace Radegast
             this.setAppearanceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rebakeTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.myAttachmentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miniMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbnPlugins = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnPluginsTab = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -494,7 +495,8 @@ namespace Radegast
             this.reloadInventoryToolStripMenuItem,
             this.setAppearanceToolStripMenuItem,
             this.rebakeTexturesToolStripMenuItem,
-            this.myAttachmentsToolStripMenuItem});
+            this.myAttachmentsToolStripMenuItem,
+            this.miniMapToolStripMenuItem });
             this.tbnTools.Enabled = false;
             this.tbnTools.Image = ((System.Drawing.Image)(resources.GetObject("tbnTools.Image")));
             this.tbnTools.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -544,6 +546,13 @@ namespace Radegast
             this.myAttachmentsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.myAttachmentsToolStripMenuItem.Text = "My Attachments";
             this.myAttachmentsToolStripMenuItem.Click += new System.EventHandler(this.myAttachmentsToolStripMenuItem_Click);
+            //
+            // miniMapToolStripMenuItem
+            //
+            this.miniMapToolStripMenuItem.Name = "miniMapToolStripMenuItem";
+            this.miniMapToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.miniMapToolStripMenuItem.Text = "Mini Map";
+            this.miniMapToolStripMenuItem.Click += new System.EventHandler(this.openMiniMapToolStripMenuItem_Click);
             // 
             // tbnPlugins
             // 
@@ -1071,6 +1080,7 @@ namespace Radegast
         public System.Windows.Forms.ToolStripMenuItem uploadImageToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem muteListToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem myAttachmentsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miniMapToolStripMenuItem;
         public System.Windows.Forms.ToolStripButton tsb3D;
         public System.Windows.Forms.ToolStripMenuItem loginToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem accessibilityGuideToolStripMenuItem;
