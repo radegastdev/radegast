@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net48</TargetFramework>
         <Company>Radegast Development Team</Company>
         <Authors>Radegast</Authors>
         <Product>Radegast Metaverse Client</Product>
         <Description>Radegast-ng - https://radegast.life/</Description>
-        <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2019, SJofn, LLC. All rights reserved.</Copyright>
+        <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, SJofn, LLC. All rights reserved.</Copyright>
         <RootNamespace>Tools</RootNamespace>
     </PropertyGroup>
 </Project>

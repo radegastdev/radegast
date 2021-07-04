@@ -21,12 +21,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using System.Threading;
 using System.IO;
 using OpenMetaverse;
@@ -94,11 +88,6 @@ namespace Radegast
         Dictionary<UUID, AgentDisplayName> names = new Dictionary<UUID, AgentDisplayName>();
         Dictionary<UUID, int> activeRequests = new Dictionary<UUID, int>();
 
-        ConcurrentQueue<List<UUID>> PendingLookups;
-        Thread requestThread = null;
-        Semaphore lookupGate;
-        bool useRequestThread;
-
         #endregion private fields and properties
 
         #region construction and disposal
@@ -112,20 +101,6 @@ namespace Radegast
             LoadCachedNames();
             instance.ClientChanged += new EventHandler<ClientChangedEventArgs>(instance_ClientChanged);
             RegisterEvents(client);
-
-            // Mono HTTPWebRequest sucks balls
-            useRequestThread = instance.MonoRuntime;
-
-            if (useRequestThread)
-            {
-                PendingLookups = new ConcurrentQueue<List<UUID>>();
-                lookupGate = new Semaphore(4, 4);
-                requestThread = new Thread(new ThreadStart(RequestThread))
-                {
-                    IsBackground = true, Name = "Display Name Request Thread"
-                };
-                requestThread.Start();
-            }
         }
 
         public void Dispose()
@@ -148,48 +123,10 @@ namespace Radegast
                 cacheTimer.Dispose();
                 cacheTimer = null;
             }
-
-            try
-            {
-                if (!useRequestThread) return;
-                while (!PendingLookups.IsEmpty)
-                {
-                    PendingLookups.TryDequeue(out _);
-                }
-
-                if (requestThread == null) return;
-                if (!requestThread.Join(5 * 1000))
-                {
-                    requestThread.Abort();
-                }
-                requestThread = null;
-            }
-            catch { }
         }
         #endregion construction and disposal
 
         #region private methods
-        public void RequestThread()
-        {
-            while (true)
-            {
-                List<UUID> req = null;
-                if (!PendingLookups.TryDequeue(out req)) break;
-                lookupGate.WaitOne(90 * 1000);
-                client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
-                {
-                    if (success)
-                    {
-                        ProcessDisplayNames(names);
-                    }
-                    else
-                    {
-                        Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
-                    }
-                    lookupGate.Release(1);
-                });
-            }
-        }
 
         void RegisterEvents(GridClient c)
         {
@@ -344,24 +281,17 @@ namespace Radegast
             }
             else // Use display names
             {
-                if (useRequestThread)
+                client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
                 {
-                    PendingLookups.Enqueue(new List<UUID>(req));
-                }
-                else
-                {
-                    client.Avatars.GetDisplayNames(req, (success, names, badIDs) =>
+                    if (success)
                     {
-                        if (success)
-                        {
-                            ProcessDisplayNames(names);
-                        }
-                        else
-                        {
-                            Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
-                        }
-                    });
-                }
+                        ProcessDisplayNames(names);
+                    }
+                    else
+                    {
+                        Logger.Log("Failed fetching display names", Helpers.LogLevel.Warning, client);
+                    }
+                });
             }
         }
 

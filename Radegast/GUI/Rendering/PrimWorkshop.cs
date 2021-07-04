@@ -37,12 +37,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using System.Threading;
 using OpenTK.Graphics.OpenGL;
 using OpenMetaverse;
@@ -115,7 +109,7 @@ namespace Radegast.Rendering
             RootPrimLocalID = rootLocalID;
 
             InitializeComponent();
-            Disposed += new EventHandler(frmPrimWorkshop_Disposed);
+            Disposed += new EventHandler(FrmPrimWorkshop_Disposed);
             AutoSavePosition = true;
             UseMultiSampling = cbAA.Checked = instance.GlobalSettings["use_multi_sampling"];
             cbAA.CheckedChanged += cbAA_CheckedChanged;
@@ -132,7 +126,7 @@ namespace Radegast.Rendering
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
-        void frmPrimWorkshop_Disposed(object sender, EventArgs e)
+        void FrmPrimWorkshop_Disposed(object sender, EventArgs e)
         {
             if (textRendering != null)
             {
@@ -360,7 +354,7 @@ namespace Radegast.Rendering
 
             glControl.SwapBuffers();
 
-            Primitive prim = null;
+            Primitive prim;
             string objName = string.Empty;
 
             if (Client.Network.CurrentSim.ObjectsPrimitives.TryGetValue(RootPrimLocalID, out prim))
@@ -573,7 +567,7 @@ namespace Radegast.Rendering
         }
         #endregion Texture thread
 
-        private void frmPrimWorkshop_Shown(object sender, EventArgs e)
+        private void FrmPrimWorkshop_Shown(object sender, EventArgs e)
         {
             SetupGLControl();
 
@@ -1096,24 +1090,24 @@ namespace Radegast.Rendering
         #endregion Private methods (the meat)
 
         #region Form controls handlers
-        private void scroll_ValueChanged(object sender, EventArgs e)
+        private void Scroll_ValueChanged(object sender, EventArgs e)
         {
             SafeInvalidate();
         }
 
-        private void scrollZoom_ValueChanged(object sender, EventArgs e)
+        private void ScrollZoom_ValueChanged(object sender, EventArgs e)
         {
             glControl_Resize(null, null);
             SafeInvalidate();
         }
 
-        private void chkWireFrame_CheckedChanged(object sender, EventArgs e)
+        private void ChkWireFrame_CheckedChanged(object sender, EventArgs e)
         {
             Wireframe = chkWireFrame.Checked;
             SafeInvalidate();
         }
 
-        private void btnReset_Click(object sender, EventArgs e)
+        private void BtnReset_Click(object sender, EventArgs e)
         {
             scrollYaw.Value = 90;
             scrollPitch.Value = 0;
@@ -1124,7 +1118,7 @@ namespace Radegast.Rendering
             SafeInvalidate();
         }
 
-        private void oBJToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OBJToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialog = new SaveFileDialog {Filter = "OBJ files (*.obj)|*.obj"};
 
@@ -1147,7 +1141,7 @@ namespace Radegast.Rendering
         #endregion Form controls handlers
 
         #region Context menu
-        private void ctxObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void CtxObjects_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = false;
 
@@ -1176,7 +1170,7 @@ namespace Radegast.Rendering
             }
         }
 
-        private void touchToolStripMenuItem_Click(object sender, EventArgs e)
+        private void TouchToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
             Client.Self.Grab(RightclickedPrim.Prim.LocalID, Vector3.Zero, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
@@ -1184,7 +1178,7 @@ namespace Radegast.Rendering
             Client.Self.DeGrab(RightclickedPrim.Prim.LocalID, Vector3.Zero, Vector3.Zero, RightclickedFaceID, Vector3.Zero, Vector3.Zero, Vector3.Zero);
         }
 
-        private void sitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (!instance.State.IsSitting)
             {
@@ -1196,24 +1190,24 @@ namespace Radegast.Rendering
             }
         }
 
-        private void takeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void TakeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
             Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID);
             Close();
         }
 
-        private void returnToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ReturnToolStripMenuItem_Click(object sender, EventArgs e)
         {
             instance.MediaManager.PlayUISound(UISounds.ObjectDelete);
             Client.Inventory.RequestDeRezToInventory(RightclickedPrim.Prim.LocalID, DeRezDestination.ReturnToOwner, UUID.Zero, UUID.Random());
             Close();
         }
 
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DeleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (RightclickedPrim.Prim.Properties != null && RightclickedPrim.Prim.Properties.OwnerID != Client.Self.AgentID)
-                returnToolStripMenuItem_Click(sender, e);
+                ReturnToolStripMenuItem_Click(sender, e);
             else
             {
                 instance.MediaManager.PlayUISound(UISounds.ObjectDelete);

@@ -178,7 +178,6 @@ namespace Radegast.Rendering
     {
         Vector3 Min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         Vector3 Max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-        float R = 0f;
 
         public Vector3 ScaledMin = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
         public Vector3 ScaledMax = new Vector3(float.MinValue, float.MinValue, float.MinValue);
@@ -206,7 +205,6 @@ namespace Radegast.Rendering
             }
 
             Vector3 dist = Max - Min;
-            R = dist.Length();
             mesh.Center = Min + (dist / 2);
             CalcScaled(scale);
         }
@@ -229,7 +227,6 @@ namespace Radegast.Rendering
             if (vol.Max.Y > Max.Y) Max.Y = vol.Max.Y;
             if (vol.Max.Z > Max.Z) Max.Z = vol.Max.Z;
             Vector3 dist = Max - Min;
-            R = dist.Length();
             CalcScaled(scale);
         }
 

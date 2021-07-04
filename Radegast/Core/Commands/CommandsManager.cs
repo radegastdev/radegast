@@ -20,13 +20,8 @@
 
 using System;
 using System.Collections.Generic;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using System.Threading;
+using System.Threading.Tasks;
 using OpenMetaverse;
 
 namespace Radegast.Commands
@@ -41,7 +36,7 @@ namespace Radegast.Commands
         public Queue<KeyValuePair<string, ThreadStart>> CommandQueue = new Queue<KeyValuePair<string, ThreadStart>>();
         public AutoResetEvent CommandQueued = new AutoResetEvent(false);
 
-        private Thread _commandWorker;
+        private CancellationTokenSource commandWorkerCancelToken;
 
         public CommandsManager(RadegastInstance inst)
         {
@@ -49,65 +44,56 @@ namespace Radegast.Commands
             AddCmd("help", "Shows help info", "help help",
                    (name, cmdargs, writeline) =>
                    {
-                       string args = String.Join(" ", cmdargs);
+                       string args = string.Join(" ", cmdargs);
                        Help(args, writeline);
                        lock (InterpretersLoaded) foreach (ICommandInterpreter manager in InterpretersLoaded)
                        {
                            manager.Help(args, writeline);
                        }
                    });
-            _commandWorker = new Thread(CommandsManager_CommandWorker)
-                                {
-                                    Name = "CommandsManager Worker",
-                                    IsBackground = true
-                                };
-            _commandWorker.Start();
+            commandWorkerCancelToken = new CancellationTokenSource();
+            Task task = Task.Factory.StartNew(new Action(CommandWorker), 
+                commandWorkerCancelToken.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        void CommandsManager_CommandWorker()
+        void CommandWorker()
         {
-            try
+            while (true)
             {
-                while (true)
+                if (commandWorkerCancelToken.Token.IsCancellationRequested) 
+                {
+                    break;
+                }
+                if (CommandQueue.Count == 0)
+                {
+                    CommandQueued.WaitOne();
+                }
+                if (commandWorkerCancelToken.Token.IsCancellationRequested)
+                {
+                    break;
+                }
+                KeyValuePair<string, ThreadStart> todo;
+                lock (CommandQueue)
                 {
                     if (CommandQueue.Count == 0)
-                        CommandQueued.WaitOne();
-                    KeyValuePair<string, ThreadStart> todo;
-                    lock (CommandQueue)
                     {
-                        if (CommandQueue.Count == 0)
-                        {
-                            continue;
-                        }
-                        todo = CommandQueue.Dequeue();
+                        continue;
                     }
-                    try
-                    {
-
-                        todo.Value();
-                    }
-                    catch (ThreadAbortException)
-                    {
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        instance.TabConsole.DisplayNotificationInChat(
-                            string.Format("Command error: {0} \n{1} {2} ", todo.Key, ex.Message, ex.StackTrace));
-                    }
+                    todo = CommandQueue.Dequeue();
                 }
-            }
-            finally
-            {
-                CommandQueue.Clear();
                 try
                 {
-                    CommandQueued?.Close();
+
+                    todo.Value();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    instance.TabConsole.DisplayNotificationInChat(
+                        string.Format("Command error: {0} \n{1} {2} ", todo.Key, ex.Message, ex.StackTrace));
                 }
             }
+            CommandQueue.Clear();
+            CommandQueued?.Close();
         }
 
         public void EnqueueCommand(string name, ThreadStart ts)
@@ -333,8 +319,8 @@ namespace Radegast.Commands
                 InterpretersLoaded.Clear();
             }
             CommandsByName.Clear();
-            _commandWorker.Abort();
-            _commandWorker = null;
+            commandWorkerCancelToken.Cancel();
+            commandWorkerCancelToken.Dispose();
             CommandQueued = null;
         }
 

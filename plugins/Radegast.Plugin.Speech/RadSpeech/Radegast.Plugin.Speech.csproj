@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
+	<UseWindowsForms>true</UseWindowsForms>
     <AssemblyTitle>RadegastSpeech</AssemblyTitle>
     <Product>RadegastSpeech</Product>
     <Description>Speech plugin for Radegast</Description>
-    <Copyright>Copyright (c) 2009, Mojito Sorbet. Copyright (c) 2019-2020, SJofn, LLC. All rights reserved.</Copyright>
+    <Copyright>Copyright (c) 2009, Mojito Sorbet. Copyright (c) 2019-2021, SJofn, LLC. All rights reserved.</Copyright>
     <AssemblyVersion>3.0.0</AssemblyVersion>
     <FileVersion>3.0.0</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
@@ -44,34 +46,21 @@
     <DebugType>portable</DebugType>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Local|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
-    <DebugType>full</DebugType>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="LibreMetaverse" Version="1.6.2.162" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.6.2.162" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.6.2.162" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.6.2.162" />
+    <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
-    <PackageReference Include="System.Security.Cryptography.Encoding" Version="4.3.0" />
-    <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-    <PackageReference Include="XmlRpcCs" Version="2.1.1.2" />
-    <PackageReference Include="zlib.net" Version="1.0.4.0" />
-    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.4" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Data.DataSetExtensions" />
+    <PackageReference Include="System.Speech" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BadBeep.wav">
@@ -90,9 +79,7 @@
       <DependentUpon>VoiceAssignment.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\VoiceAssignment.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\VoiceAssignment.cs" />
     <EmbeddedResource Update="GUI\VoiceAssignment.resx">
       <DependentUpon>VoiceAssignment.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -117,9 +104,6 @@
     <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
-    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />

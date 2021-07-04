@@ -177,7 +177,7 @@ namespace Tools
           return new ChTest(new CatTest(unicodeCategory).Test);
         }
       }
-      catch (Exception ex)
+      catch (Exception)
       {
       }
       string str1 = name;

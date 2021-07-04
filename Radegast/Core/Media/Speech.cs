@@ -57,10 +57,10 @@ namespace Radegast.Media
         /// </summary>
         public override void Dispose()
         {
-            if (sound != null)
+            if (sound.hasHandle())
             {
                 sound.release();
-                sound = null;
+                sound.clearHandle();
             }
             base.Dispose();
         }
@@ -114,7 +114,9 @@ namespace Radegast.Media
                         FMODExec(sound.getLength(out len, TIMEUNIT.MS));
 
                         // Allocate a channel, initially paused.
-                        FMODExec(system.playSound(sound, null, true, out channel));
+                        ChannelGroup masterChannelGroup;
+                        system.getMasterChannelGroup(out masterChannelGroup);
+                        FMODExec(system.playSound(sound, masterChannelGroup, true, out channel));
 
                         // Set general Speech volume.
                         //TODO Set this in the GUI
@@ -138,7 +140,6 @@ namespace Radegast.Media
                             position = FromOMVSpace(speakerPos);
                             FMODExec(channel.set3DAttributes(
                                ref position,
-                               ref ZeroVector,
                                ref ZeroVector));
 
                             Logger.Log($"Speech at <{position.x:0.0},{position.y:0.0},{position.z:0.0}>", Helpers.LogLevel.Debug);
@@ -175,10 +176,10 @@ namespace Radegast.Media
                  delegate
                  {
                      UnRegisterChannel();
-                     channel = null;
+                     channel.clearHandle();
                      UnRegisterSound();
                      FMODExec(sound.release());
-                     sound = null;
+                     sound.clearHandle();
 
                      // Tell speech control the file has been played.  Note
                      // the event is dispatched on FMOD's thread, to make sure

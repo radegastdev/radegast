@@ -35,7 +35,7 @@ namespace Radegast.Media
     {
         private UUID Id;
         private UUID ContainerId;
-        private Boolean prefetchOnly = false;
+        private bool prefetchOnly = false;
         private MODE mode;
         public Sound Sound => sound;
         private bool loopSound = false;
@@ -211,7 +211,9 @@ namespace Radegast.Media
                         }
 
                         // Allocate a channel and set initial volume.  Initially paused.
-                        FMODExec(system.playSound(sound, null, true, out channel));
+                        ChannelGroup masterChannelGroup;
+                        system.getMasterChannelGroup(out masterChannelGroup);
+                        FMODExec(system.playSound(sound, masterChannelGroup, true, out channel));
 #if TRACE_SOUND
                     Logger.Log(
                         String.Format("Channel {0} for {1} assigned to {2}",
@@ -233,7 +235,7 @@ namespace Radegast.Media
                                     100.0f));     // Further than this gets no softer.
 
                         // Set the sound point of origin.  This is in SIM coordinates.
-                        FMODExec(channel.set3DAttributes(ref position, ref ZeroVector, ref ZeroVector));
+                        FMODExec(channel.set3DAttributes(ref position, ref ZeroVector));
 
                         // Turn off pause mode.  The sound will start playing now.
                         FMODExec(channel.setPaused(false));
@@ -280,20 +282,20 @@ namespace Radegast.Media
                 string soundStr = "none";
 
                 // Release the buffer to avoid a big memory leak.
-                if (channel != null)
+                if (channel.hasHandle())
                 {
                     lock (allChannels)
-                        allChannels.Remove(channel.getRaw());
-                    chanStr = channel.getRaw().ToString("X");
+                        allChannels.Remove(channel.handle);
+                    chanStr = channel.handle.ToString("X");
                     channel.stop();
-                    channel = null;
+                    channel.clearHandle();
                 }
 
-                if (sound != null)
+                if (sound.hasHandle())
                 {
-                    soundStr = sound.getRaw().ToString("X");
+                    soundStr = sound.handle.ToString("X");
                     sound.release();
-                    sound = null;
+                    sound.clearHandle();
                 }
 #if TRACE_SOUND
                 Logger.Log(String.Format("Removing channel {0} sound {1} ID {2}",

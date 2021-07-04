@@ -72,7 +72,7 @@ namespace Radegast.Media
                 updateTimer = null;
             }
 
-            if (channel == null) return;
+            if (!channel.hasHandle()) return;
             ManualResetEvent stopped = new ManualResetEvent(false);
             invoke(new SoundDelegate(
                 delegate
@@ -80,10 +80,10 @@ namespace Radegast.Media
                     try
                     {
                         FMODExec(channel.stop());
-                        channel = null;
+                        channel.clearHandle();
                         UnRegisterSound();
                         FMODExec(sound.release());
-                        sound = null;
+                        sound.clearHandle();
                     }
                     catch { }
                     stopped.Set();
@@ -119,10 +119,9 @@ namespace Radegast.Media
                         RegisterSound(sound);
 
                         // Allocate a channel and set initial volume.
-                        FMODExec(system.playSound(
-                            sound,
-                            null,
-                            false,
+                        ChannelGroup masterChannelGroup;
+                        system.getMasterChannelGroup(out masterChannelGroup);
+                        FMODExec(system.playSound(sound, masterChannelGroup, false,
                             out channel), "Stream channel");
                         FMODExec(channel.setVolume(volume), "Stream volume");
 
@@ -142,7 +141,7 @@ namespace Radegast.Media
 
         private void Update(object sender)
         {
-            if (sound == null) return;
+            if (!sound.hasHandle()) return;
 
             invoke(new SoundDelegate(() =>
             {
@@ -175,7 +174,7 @@ namespace Radegast.Media
 
                         // Tell listeners about the Stream tag.  This can be
                         // displayed to the user.
-                        OnStreamInfo?.Invoke(this, new StreamInfoArgs(tag.name.ToLower(), Marshal.PtrToStringAnsi(tag.data)));
+                        OnStreamInfo?.Invoke(this, new StreamInfoArgs(tag.name.ToString().ToLower(), Marshal.PtrToStringAnsi(tag.data)));
                     }
                 }
                 catch (Exception ex)

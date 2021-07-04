@@ -6509,8 +6509,10 @@ namespace YYClass
     public override object Action(Parser yyq, SYMBOL yysym, int yyact)
     {
       if (yyact == -1)
-        ;
-      return (object) null;
+#pragma warning disable CS0642 // Possible mistaken empty statement
+                ;
+#pragma warning restore CS0642 // Possible mistaken empty statement
+            return (object) null;
     }
 
     public static object Name_factory(Parser yyp)

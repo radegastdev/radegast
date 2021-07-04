@@ -145,8 +145,16 @@ namespace Radegast
                 }
                 else
                 {
-                    sl.Password =Utils.MD5(txtPassword.Text);
-                    s["password"] = Utils.MD5(txtPassword.Text);
+                    if (txtPassword.Text.Length > 16)
+                    {
+                        sl.Password = Utils.MD5(txtPassword.Text.Substring(0, 16));
+                        s["password"] = Utils.MD5(txtPassword.Text.Substring(0, 16));
+                    }
+                    else
+                    {
+                        sl.Password = Utils.MD5(txtPassword.Text);
+                        s["password"] = Utils.MD5(txtPassword.Text);
+                    }
                 }
                 sl.CustomStartLocation = cbxLocation.SelectedIndex == -1 
                     ? cbxLocation.Text : string.Empty;

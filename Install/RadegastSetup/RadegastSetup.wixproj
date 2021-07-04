@@ -20,6 +20,7 @@
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
+    <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
@@ -28,8 +29,8 @@
     <SignOutput>true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="NetFx471.wxs" />
-    <Compile Include="NetFx472.wxs" />
+    <Compile Include="NetCore31.wxs" />
+    <Compile Include="NetFx48.wxs" />
     <Compile Include="Product.wxs" />
     <Compile Include="ProductInstallFiles.wxs" />
     <Compile Include="VCRedist.wxs" />
@@ -84,7 +85,7 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <Target Name="BeforeBuild">
-    <HeatDirectory OutputFile="$(ProjectDir)\ProductInstallFiles.wxs" Directory="..\..\bin\$(Configuration)\net471\" ComponentGroupName="ProductFilesComponentGroup" DirectoryRefId="APPLICATIONFOLDER" AutogenerateGuids="true" PreprocessorVariable="var.Radegast.TargetDir" SuppressRegistry="true" SuppressRootDirectory="true" SuppressUniqueIds="true" ToolPath="$(WixToolPath)" NoLogo="true" VerboseOutput="true" />
+    <HeatDirectory OutputFile="$(ProjectDir)\ProductInstallFiles.wxs" Directory="..\..\bin\$(Configuration)\" ComponentGroupName="ProductFilesComponentGroup" DirectoryRefId="APPLICATIONFOLDER" AutogenerateGuids="true" PreprocessorVariable="var.Radegast.TargetDir" SuppressRegistry="true" SuppressRootDirectory="true" SuppressUniqueIds="true" ToolPath="$(WixToolPath)" NoLogo="true" VerboseOutput="true" />
   </Target>
   <Target Name="FindSignTool">
     <PropertyGroup>

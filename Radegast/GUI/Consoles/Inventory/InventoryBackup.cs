@@ -21,13 +21,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
@@ -40,12 +35,12 @@ namespace Radegast
         private RadegastInstance instance;
         GridClient client => instance.Client;
         private Inventory inv;
-        private Thread backupThread;
         private string folderName;
         private int fetched = 0;
         private TextWriter csvFile = null;
         private int traversed = 0;
         private InventoryNode rootNode;
+        private CancellationTokenSource backupTaskCancelToken;
 
         public InventoryBackup(RadegastInstance instance, UUID rootFolder)
         {
@@ -61,12 +56,18 @@ namespace Radegast
                 rootNode = inv.GetNodeFor(rootFolder);
             }
 
+            backupTaskCancelToken = new CancellationTokenSource();
+
             GUI.GuiHelpers.ApplyGuiFixes(this);
         }
 
         void InventoryBackup_Disposed(object sender, EventArgs e)
         {
-
+            try
+            {
+                backupTaskCancelToken.Cancel();
+                backupTaskCancelToken.Dispose();
+            } catch (ObjectDisposedException) { }
         }
 
         private void WriteCSVLine(params object[] args)
@@ -119,14 +120,7 @@ namespace Radegast
                 sbrProgress.Style = ProgressBarStyle.Marquee;
                 fetched = 0;
 
-                if (backupThread != null)
-                {
-                    if (backupThread.IsAlive)
-                        backupThread.Abort();
-                    backupThread = null;
-                }
-
-                backupThread = new Thread(() =>
+                Task backupTask = Task.Run(() =>
                 {
                     TraverseDir(rootNode, Path.DirectorySeparatorChar.ToString());
                     if (csvFile != null)
@@ -140,7 +134,7 @@ namespace Radegast
                         {
                         }
                     }
-
+                    if (backupTaskCancelToken.IsCancellationRequested) { return; }
                     BeginInvoke(new MethodInvoker(() =>
                         {
                             lblStatus.Text = $"Done ({fetched} items saved).";
@@ -148,10 +142,7 @@ namespace Radegast
                             btnFolder.Enabled = true;
                         }
                     ));
-                }) {IsBackground = false, Name = "Inventory Backup"};
-
-                backupThread.Start();
-
+                }, backupTaskCancelToken.Token);
             }
 
         }
@@ -164,6 +155,7 @@ namespace Radegast
                 traversed++;
                 try
                 {
+                    backupTaskCancelToken.Token.ThrowIfCancellationRequested();
                     if (IsHandleCreated && (traversed % 13 == 0))
                     {
                         BeginInvoke(new MethodInvoker(() =>
@@ -230,6 +222,8 @@ namespace Radegast
                             //    status.Text = "Cached";
                             //}
 
+                            backupTaskCancelToken.Token.ThrowIfCancellationRequested();
+
                             BeginInvoke(new MethodInvoker(() =>
                             {
                                 lvwFiles.Items.Add(lvi);
@@ -237,6 +231,7 @@ namespace Radegast
                             }));
 
                             //if (cached) continue;
+                            backupTaskCancelToken.Token.ThrowIfCancellationRequested();
 
                             Asset receivedAsset = null;
                             using (AutoResetEvent done = new AutoResetEvent(false))
@@ -254,9 +249,10 @@ namespace Radegast
                                 }
                                 else
                                 {
-                                    client.Assets.RequestInventoryAsset(item, true, (transfer, asset) =>
+                                    var transferID = UUID.Random();
+                                    client.Assets.RequestInventoryAsset(item, true, transferID, (transfer, asset) =>
                                         {
-                                            if (transfer.Success)
+                                            if (transfer.Success && transfer.ID == transferID)
                                             {
                                                 receivedAsset = asset;
                                             }
@@ -265,11 +261,13 @@ namespace Radegast
                                     );
                                 }
 
+                                backupTaskCancelToken.Token.ThrowIfCancellationRequested();
                                 done.WaitOne(30 * 1000, false);
                             }
 
                             client.Settings.USE_ASSET_CACHE = true;
 
+                            backupTaskCancelToken.Token.ThrowIfCancellationRequested();
                             if (receivedAsset == null)
                             {
                                 BeginInvoke(new MethodInvoker(() => status.Text = "Failed to fetch asset"));
@@ -280,6 +278,7 @@ namespace Radegast
 
                                 try
                                 {
+                                    backupTaskCancelToken.Token.ThrowIfCancellationRequested();
                                     if (!Directory.Exists(dirName))
                                     {
                                         Directory.CreateDirectory(dirName);
@@ -344,6 +343,11 @@ namespace Radegast
                                     }));
 
                                 }
+                                catch (OperationCanceledException)
+                                {
+                                    BeginInvoke(new MethodInvoker(() => status.Text = "Operation cancelled."));
+                                    return;
+                                }
                                 catch (Exception ex)
                                 {
                                     BeginInvoke(new MethodInvoker(() => status.Text = "Failed to save " + Path.GetFileName(fullName) + ": " + ex.Message));
@@ -353,21 +357,21 @@ namespace Radegast
                         }
                     }
                 }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
                 catch { }
             }
         }
 
         private void InventoryBackup_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (backupThread != null)
+            try
             {
-                if (backupThread.IsAlive)
-                {
-                    backupThread.Abort();
-                    Thread.Sleep(1000);
-                }
-                backupThread = null;
-            }
+                backupTaskCancelToken.Cancel();
+                backupTaskCancelToken.Dispose();
+            } catch (ObjectDisposedException) { }
         }
 
         private void lvwFiles_DoubleClick(object sender, EventArgs e)

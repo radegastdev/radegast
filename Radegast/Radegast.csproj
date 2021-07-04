@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
+	<UseWindowsForms>true</UseWindowsForms>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -21,10 +22,11 @@
     <Company>Radegast Development Team</Company>
     <Product>Radegast Metaverse Client</Product>
     <Description>Radegast-ng - https://radegast.life/</Description>
-    <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2019, SJofn, LLC. All rights reserved.</Copyright>
+    <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, Sjofn, LLC. All rights reserved.</Copyright>
     <AssemblyVersion>3.0.0</AssemblyVersion>
     <FileVersion>3.0.0</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
@@ -70,25 +72,28 @@
   <PropertyGroup>
     <StartupObject>Radegast.MainProgram</StartupObject>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Local|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
-    <DebugType>full</DebugType>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="AIMLbot-Radegast" Version="2.5.1.1" />
     <PackageReference Include="C5" Version="2.5.3" />
-    <PackageReference Include="CommandLineParser" Version="2.7.82" />
-    <PackageReference Include="log4net" Version="2.0.8" />
-    <PackageReference Include="OpenTK" Version="3.1.0" />
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="LibreMetaverse" Version="1.6.2.162" />
+    <PackageReference Include="LibreMetaverse.PrimMesher" Version="1.6.2.162" />
+    <PackageReference Include="LibreMetaverse.Rendering.Meshmerizer" Version="1.6.2.162" />
+    <PackageReference Include="LibreMetaverse.StructuredData" Version="1.6.2.162" />
+    <PackageReference Include="LibreMetaverse.Types" Version="1.6.2.162" />
+    <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="OpenTK" Version="3.3.1" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="5.0.0" />
     <PackageReference Include="System.Console" Version="4.3.1" />
     <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
     <PackageReference Include="System.Globalization" Version="4.3.0" />
@@ -107,79 +112,40 @@
     <PackageReference Include="System.Security.Cryptography.Encoding" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
-    <PackageReference Include="XmlRpcCs" Version="2.1.1.2" />
-    <PackageReference Include="zlib.net" Version="1.0.4.0" />
-    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.4" />
+    <PackageReference Include="zlib.net-mutliplatform" Version="1.0.5" />
   </ItemGroup>
     <ItemGroup>
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Core\Types\AgentNameTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\ChatInputBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\DettachableControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Core\Types\ExtendedRichTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\LineNumberPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\ListBoxCustomSort.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\ListViewNoFlicker.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="Core\Types\AgentNameTextBox.cs" />
+    <Compile Update="Core\Types\ChatInputBox.cs" />
+    <Compile Update="Core\Types\DettachableControl.cs" />
+    <Compile Update="Core\Types\ExtendedRichTextBox.cs" />
+    <Compile Update="Core\Types\LineNumberPanel.cs" />
+    <Compile Update="Core\Types\ListBoxCustomSort.cs" />
+    <Compile Update="Core\Types\ListViewNoFlicker.cs" />
     <Compile Update="Core\Types\MapControl.Designer.cs">
       <DependentUpon>MapControl.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="Core\Types\MapControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="Core\Types\MapControl.cs" />
     <EmbeddedResource Update="Core\Types\MapControl.resx">
       <DependentUpon>MapControl.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Update="Core\Types\RRichTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\RadegastContextMenu.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\RadegastForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Core\Types\RadegastTabControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Core\Types\ToolStripCheckBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\TransparentButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="Core\Types\TransparentLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="Core\Types\RRichTextBox.cs" />
+    <Compile Update="Core\Types\RadegastContextMenu.cs" />
+    <Compile Update="Core\Types\RadegastForm.cs" />
+    <Compile Update="Core\Types\RadegastTabControl.cs" />
+    <Compile Update="Core\Types\ToolStripCheckBox.cs" />
+    <Compile Update="Core\Types\TransparentButton.cs" />
+    <Compile Update="Core\Types\TransparentLabel.cs" />
     <Compile Update="GUI\Consoles\AnimDetail.Designer.cs">
       <DependentUpon>AnimDetail.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\AnimDetail.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\AnimDetail.cs" />
     <EmbeddedResource Update="GUI\Consoles\AnimDetail.resx">
       <DependentUpon>AnimDetail.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -188,9 +154,7 @@
       <DependentUpon>AnimTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\AnimTab.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\AnimTab.cs" />
     <EmbeddedResource Update="GUI\Consoles\AnimTab.resx">
       <DependentUpon>AnimTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -199,9 +163,7 @@
       <DependentUpon>Gesture.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\Assets\Gesture.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\Assets\Gesture.cs" />
     <EmbeddedResource Update="GUI\Consoles\Assets\Gesture.resx">
       <DependentUpon>Gesture.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -210,9 +172,7 @@
       <DependentUpon>Landmark.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\Assets\Landmark.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\Assets\Landmark.cs" />
     <EmbeddedResource Update="GUI\Consoles\Assets\Landmark.resx">
       <DependentUpon>Landmark.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -221,9 +181,7 @@
       <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\Assets\Notecard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\Assets\Notecard.cs" />
     <EmbeddedResource Update="GUI\Consoles\Assets\Notecard.resx">
       <DependentUpon>Notecard.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -232,9 +190,7 @@
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\Assets\SLImageHandler.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\Assets\SLImageHandler.cs" />
     <EmbeddedResource Update="GUI\Consoles\Assets\SLImageHandler.resx">
       <DependentUpon>SLImageHandler.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -243,9 +199,7 @@
       <DependentUpon>ScriptEditor.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\Assets\ScriptEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\Assets\ScriptEditor.cs" />
     <EmbeddedResource Update="GUI\Consoles\Assets\ScriptEditor.resx">
       <DependentUpon>ScriptEditor.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -254,9 +208,7 @@
       <DependentUpon>AttachmentDetail.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\AttachmentDetail.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\AttachmentDetail.cs" />
     <EmbeddedResource Update="GUI\Consoles\AttachmentDetail.resx">
       <DependentUpon>AttachmentDetail.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -265,9 +217,7 @@
       <DependentUpon>AttachmentTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\AttachmentTab.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\AttachmentTab.cs" />
     <EmbeddedResource Update="GUI\Consoles\AttachmentTab.resx">
       <DependentUpon>AttachmentTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -276,9 +226,7 @@
       <DependentUpon>AvatarPicker.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\AvatarPicker.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\AvatarPicker.cs" />
     <EmbeddedResource Update="GUI\Consoles\AvatarPicker.resx">
       <DependentUpon>AvatarPicker.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -287,9 +235,7 @@
       <DependentUpon>ChatConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\ChatConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\ChatConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\ChatConsole.resx">
       <DependentUpon>ChatConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -298,9 +244,7 @@
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\ConferenceIMTabWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\ConferenceIMTabWindow.cs" />
     <EmbeddedResource Update="GUI\Consoles\ConferenceIMTabWindow.resx">
       <DependentUpon>ConferenceIMTabWindow.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -309,9 +253,7 @@
       <DependentUpon>DebugConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\DebugConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\DebugConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\DebugConsole.resx">
       <DependentUpon>DebugConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -320,9 +262,7 @@
       <DependentUpon>ExportCollada.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\ExportCollada.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\ExportCollada.cs" />
     <EmbeddedResource Update="GUI\Consoles\ExportCollada.resx">
       <DependentUpon>ExportCollada.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -331,9 +271,7 @@
       <DependentUpon>ExportConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\ExportConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\ExportConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\ExportConsole.resx">
       <DependentUpon>ExportConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -342,9 +280,7 @@
       <DependentUpon>FindPeopleConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\FindPeopleConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\FindPeopleConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\FindPeopleConsole.resx">
       <DependentUpon>FindPeopleConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -353,9 +289,7 @@
       <DependentUpon>FriendsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\FriendsConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\FriendsConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\FriendsConsole.resx">
       <DependentUpon>FriendsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -364,9 +298,7 @@
       <DependentUpon>GroupDetails.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\GroupDetails.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\GroupDetails.cs" />
     <EmbeddedResource Update="GUI\Consoles\GroupDetails.resx">
       <DependentUpon>GroupDetails.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -375,9 +307,7 @@
       <DependentUpon>GroupIMTabWindow.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\GroupIMTabWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\GroupIMTabWindow.cs" />
     <EmbeddedResource Update="GUI\Consoles\GroupIMTabWindow.resx">
       <DependentUpon>GroupIMTabWindow.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -386,9 +316,7 @@
       <DependentUpon>GroupsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\GroupsConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\GroupsConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\GroupsConsole.resx">
       <DependentUpon>GroupsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -397,9 +325,7 @@
       <DependentUpon>IMTabWindow.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\IMTabWindow.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\IMTabWindow.cs" />
     <EmbeddedResource Update="GUI\Consoles\IMTabWindow.resx">
       <DependentUpon>IMTabWindow.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -408,9 +334,7 @@
       <DependentUpon>ImageUploadConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\ImageUploadConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\ImageUploadConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\ImageUploadConsole.resx">
       <DependentUpon>ImageUploadConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -419,9 +343,7 @@
       <DependentUpon>ImportConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\ImportConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\ImportConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\ImportConsole.resx">
       <DependentUpon>ImportConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -430,9 +352,7 @@
       <DependentUpon>InventoryBackup.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\Inventory\InventoryBackup.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\Inventory\InventoryBackup.cs" />
     <EmbeddedResource Update="GUI\Consoles\Inventory\InventoryBackup.resx">
       <DependentUpon>InventoryBackup.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -441,9 +361,7 @@
       <DependentUpon>InventoryConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\Inventory\InventoryConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\Inventory\InventoryConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\Inventory\InventoryConsole.resx">
       <DependentUpon>InventoryConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -452,9 +370,7 @@
       <DependentUpon>LoginConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\LoginConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\LoginConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\LoginConsole.resx">
       <DependentUpon>LoginConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -463,9 +379,7 @@
       <DependentUpon>MapConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\MapConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\MapConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\MapConsole.resx">
       <DependentUpon>MapConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -474,9 +388,7 @@
       <DependentUpon>MasterTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\MasterTab.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\MasterTab.cs" />
     <EmbeddedResource Update="GUI\Consoles\MasterTab.resx">
       <DependentUpon>MasterTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -485,9 +397,7 @@
       <DependentUpon>MediaConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\MediaConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\MediaConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\MediaConsole.resx">
       <DependentUpon>MediaConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -496,9 +406,7 @@
       <DependentUpon>MeshUploadConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\MeshUploadConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\MeshUploadConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\MeshUploadConsole.resx">
       <DependentUpon>MeshUploadConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -507,9 +415,7 @@
       <DependentUpon>MuteList.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\MuteList.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\MuteList.cs" />
     <EmbeddedResource Update="GUI\Consoles\MuteList.resx">
       <DependentUpon>MuteList.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -518,9 +424,7 @@
       <DependentUpon>ObjectsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\ObjectsConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\ObjectsConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\ObjectsConsole.resx">
       <DependentUpon>ObjectsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -529,9 +433,7 @@
       <DependentUpon>OutfitTextures.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\OutfitTextures.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\OutfitTextures.cs" />
     <EmbeddedResource Update="GUI\Consoles\OutfitTextures.resx">
       <DependentUpon>OutfitTextures.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -540,9 +442,7 @@
       <DependentUpon>PluginsTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\PluginsTab.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\PluginsTab.cs" />
     <EmbeddedResource Update="GUI\Consoles\PluginsTab.resx">
       <DependentUpon>PluginsTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -551,9 +451,7 @@
       <DependentUpon>RegionInfo.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\RegionInfo.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\RegionInfo.cs" />
     <EmbeddedResource Update="GUI\Consoles\RegionInfo.resx">
       <DependentUpon>RegionInfo.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -562,9 +460,7 @@
       <DependentUpon>SearchConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\SearchConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\SearchConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\SearchConsole.resx">
       <DependentUpon>SearchConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -573,9 +469,7 @@
       <DependentUpon>TabsConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\TabsConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\TabsConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\TabsConsole.resx">
       <DependentUpon>TabsConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -584,9 +478,7 @@
       <DependentUpon>VoiceConsole.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Consoles\VoiceConsole.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Consoles\VoiceConsole.cs" />
     <EmbeddedResource Update="GUI\Consoles\VoiceConsole.resx">
       <DependentUpon>VoiceConsole.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -595,9 +487,7 @@
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\About.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\About.cs" />
     <EmbeddedResource Update="GUI\Dialogs\About.resx">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -606,9 +496,7 @@
       <DependentUpon>BanGroupMember.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\BanGroupMember.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\BanGroupMember.cs" />
     <EmbeddedResource Update="GUI\Dialogs\BanGroupMember.resx">
       <DependentUpon>BanGroupMember.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -617,9 +505,7 @@
       <DependentUpon>DetachedTab.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\DetachedTab.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\DetachedTab.cs" />
     <EmbeddedResource Update="GUI\Dialogs\DetachedTab.resx">
       <DependentUpon>DetachedTab.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -628,9 +514,7 @@
       <DependentUpon>DisplayNameChange.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\DisplayNameChange.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\DisplayNameChange.cs" />
     <EmbeddedResource Update="GUI\Dialogs\DisplayNameChange.resx">
       <DependentUpon>DisplayNameChange.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -639,9 +523,7 @@
       <DependentUpon>GroupInfo.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\GroupInfo.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\GroupInfo.cs" />
     <EmbeddedResource Update="GUI\Dialogs\GroupInfo.resx">
       <DependentUpon>GroupInfo.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -650,16 +532,12 @@
       <DependentUpon>GroupInvite.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\GroupInvite.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\GroupInvite.cs" />
     <EmbeddedResource Update="GUI\Dialogs\GroupInvite.resx">
       <DependentUpon>GroupInvite.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Update="GUI\Dialogs\HoverHeight.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\HoverHeight.cs" />
     <Compile Update="GUI\Dialogs\HoverHeight.Designer.cs">
       <DependentUpon>HoverHeight.cs</DependentUpon>
     </Compile>
@@ -667,9 +545,7 @@
       <DependentUpon>KeyboardShortcuts.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\KeyboardShortcuts.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\KeyboardShortcuts.cs" />
     <EmbeddedResource Update="GUI\Dialogs\HoverHeight.resx">
       <DependentUpon>HoverHeight.cs</DependentUpon>
     </EmbeddedResource>
@@ -681,9 +557,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\MainForm.cs" />
     <EmbeddedResource Update="GUI\Dialogs\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -692,9 +566,7 @@
       <DependentUpon>MuteResident.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\MuteResident.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\MuteResident.cs" />
     <EmbeddedResource Update="GUI\Dialogs\MuteResident.resx">
       <DependentUpon>MuteResident.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -703,9 +575,7 @@
       <DependentUpon>Pay.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\Pay.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\Pay.cs" />
     <EmbeddedResource Update="GUI\Dialogs\Pay.resx">
       <DependentUpon>Pay.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -714,9 +584,7 @@
       <DependentUpon>Profile.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\Profile.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\Profile.cs" />
     <EmbeddedResource Update="GUI\Dialogs\Profile.resx">
       <DependentUpon>Profile.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -725,9 +593,7 @@
       <DependentUpon>Reconnect.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\Reconnect.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\Reconnect.cs" />
     <EmbeddedResource Update="GUI\Dialogs\Reconnect.resx">
       <DependentUpon>Reconnect.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -736,23 +602,17 @@
       <DependentUpon>Settings.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Dialogs\Settings.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Dialogs\Settings.cs" />
     <EmbeddedResource Update="GUI\Dialogs\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Update="GUI\Floater.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Floater.cs" />
     <Compile Update="GUI\Notifications\FriendshipOfferNotification.Designer.cs">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\FriendshipOfferNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\FriendshipOfferNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\FriendshipOfferNotification.resx">
       <DependentUpon>FriendshipOfferNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -761,9 +621,7 @@
       <DependentUpon>GenericNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\GenericNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\GenericNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\GenericNotification.resx">
       <DependentUpon>GenericNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -772,9 +630,7 @@
       <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\GroupInvitationNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\GroupInvitationNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\GroupInvitationNotification.resx">
       <DependentUpon>GroupInvitationNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -783,9 +639,7 @@
       <DependentUpon>GroupNoticeNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\GroupNoticeNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\GroupNoticeNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\GroupNoticeNotification.resx">
       <DependentUpon>GroupNoticeNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -794,9 +648,7 @@
       <DependentUpon>InventoryOfferNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\InventoryOfferNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\InventoryOfferNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\InventoryOfferNotification.resx">
       <DependentUpon>InventoryOfferNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -805,23 +657,17 @@
       <DependentUpon>LoadURLNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\LoadURLNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\LoadURLNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\LoadURLNotification.resx">
       <DependentUpon>LoadURLNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Update="GUI\Notifications\Notification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\Notification.cs" />
     <Compile Update="GUI\Notifications\PermissionsNotification.Designer.cs">
       <DependentUpon>PermissionsNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\PermissionsNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\PermissionsNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\PermissionsNotification.resx">
       <DependentUpon>PermissionsNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -830,9 +676,7 @@
       <DependentUpon>RequestLureNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\RequestLureNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\RequestLureNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\RequestLureNotification.resx">
       <DependentUpon>RequestLureNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -841,9 +685,7 @@
       <DependentUpon>ScriptDialog.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\ScriptDialog.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\ScriptDialog.cs" />
     <EmbeddedResource Update="GUI\Notifications\ScriptDialog.resx">
       <DependentUpon>ScriptDialog.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -852,9 +694,7 @@
       <DependentUpon>SendLureOffer.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\SendLureOffer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\SendLureOffer.cs" />
     <EmbeddedResource Update="GUI\Notifications\SendLureOffer.resx">
       <DependentUpon>SendLureOffer.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -863,9 +703,7 @@
       <DependentUpon>SendLureRequest.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\SendLureRequest.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\SendLureRequest.cs" />
     <EmbeddedResource Update="GUI\Notifications\SendLureRequest.resx">
       <DependentUpon>SendLureRequest.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -874,23 +712,17 @@
       <DependentUpon>TeleportNotification.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Notifications\TeleportNotification.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Notifications\TeleportNotification.cs" />
     <EmbeddedResource Update="GUI\Notifications\TeleportNotification.resx">
       <DependentUpon>TeleportNotification.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Update="GUI\Rendering\ChatBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Update="GUI\Rendering\ChatBox.cs" />
     <Compile Update="GUI\Rendering\GraphicsPreferences.Designer.cs">
       <DependentUpon>GraphicsPreferences.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Rendering\GraphicsPreferences.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Rendering\GraphicsPreferences.cs" />
     <EmbeddedResource Update="GUI\Rendering\GraphicsPreferences.resx">
       <DependentUpon>GraphicsPreferences.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -899,9 +731,7 @@
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Rendering\PrimWorkshop.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="GUI\Rendering\PrimWorkshop.cs" />
     <EmbeddedResource Update="GUI\Rendering\PrimWorkshop.resx">
       <DependentUpon>PrimWorkshop.cs</DependentUpon>
       <SubType>DesignerType</SubType>
@@ -910,16 +740,12 @@
       <DependentUpon>Rendering.cs</DependentUpon>
       <SubType>Dependency</SubType>
     </Compile>
-    <Compile Update="GUI\Rendering\Rendering.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Rendering\Rendering.cs" />
     <EmbeddedResource Update="GUI\Rendering\Rendering.resx">
       <DependentUpon>Rendering.cs</DependentUpon>
       <SubType>DesignerType</SubType>
     </EmbeddedResource>
-    <Compile Update="GUI\Rendering\Water.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="GUI\Rendering\Water.cs" />
       <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -2219,9 +2045,6 @@
     <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Remove="obj\x86\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
-    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Remove="obj\x86\Debug Local\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Remove="obj\x86\Release\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
@@ -2236,15 +2059,9 @@
     <Compile Remove="obj\x86\ReleaseWindows\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libremetaverse\LibreMetaverse.Rendering.Meshmerizer\LibreMetaverse.Rendering.Meshmerizer.csproj" />
-    <ProjectReference Include="..\libremetaverse\LibreMetaverse.StructuredData\LibreMetaverse.StructuredData.csproj" />
-    <ProjectReference Include="..\libremetaverse\LibreMetaverseTypes\LibreMetaverse.Types.csproj" />
-    <ProjectReference Include="..\libremetaverse\LibreMetaverse\LibreMetaverse.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\LSLTools\LSLTools.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /y &quot;$(ProjectDir)assemblies&quot; &quot;$(OutDir)&quot;" />
+    <Exec Command="xcopy /y &quot;$(ProjectDir)assemblies&quot; &quot;$(OutDir)dll&quot; /E/I" />
   </Target>
 </Project>

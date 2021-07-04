@@ -39,11 +39,51 @@ namespace RadegastSpeech.Conversation
         internal override void Start()
         {
             base.Start();
+            var transferID = UUID.Random();
             Talker.SayMore("Reading " + asset.Name + ". Just a moment.");
             Client.Assets.RequestInventoryAsset(
                 asset,
                 true,
-                Assets_OnNotecardReceived);
+                transferID,
+                (AssetDownload transfer, Asset asset) =>
+                {
+                    if (transfer.Success && transfer.ID == transferID)
+                    {
+                        AssetNotecard n = (AssetNotecard)asset;
+                        n.Decode();
+                        AssetNotecard recievedNotecard = n;
+
+                        text = string.Empty;
+
+                        for (int i = 0; i < n.BodyText.Length; i++)
+                        {
+                            char c = n.BodyText[i];
+
+                            // Special marker for embedded things.
+                            if ((int)c == 0xdbc0)
+                            {
+                                int index = (int)n.BodyText[++i] - 0xdc00;
+                                InventoryItem e = n.EmbeddedItems[index];
+                                text += " (embedded) ";
+                            }
+                            else
+                            {
+                                text += c;
+                            }
+                        }
+
+                        // TODO put in controls to stop, back up etc
+                        StopPosition = 0;
+                        NextSection();
+                        control.instance.MainForm.KeyDown +=
+                            new System.Windows.Forms.KeyEventHandler(MainForm_KeyPress);
+                    }
+                    else
+                    {
+                        Talker.Say("Failed to download the notecard.", Talk.BeepType.Bad);
+                    }
+                }
+            );
         }
 
         internal override bool Hear(string cmd)
@@ -68,46 +108,6 @@ namespace RadegastSpeech.Conversation
                     return true;
             }
             return false;
-        }
-
-        void Assets_OnNotecardReceived(AssetDownload transfer, Asset asset)
-        {
-
-            if (transfer.Success)
-            {
-                AssetNotecard n = (AssetNotecard)asset;
-                n.Decode();
-                AssetNotecard recievedNotecard = n;
-
-                text = string.Empty;
-
-                for (int i = 0; i < n.BodyText.Length; i++)
-                {
-                    char c = n.BodyText[i];
-
-                    // Special marker for embedded things.
-                    if ((int)c == 0xdbc0)
-                    {
-                        int index = (int)n.BodyText[++i] - 0xdc00;
-                        InventoryItem e = n.EmbeddedItems[index];
-                        text += " (embedded) ";
-                    }
-                    else
-                    {
-                        text += c;
-                    }
-                }
-
-                // TODO put in controls to stop, back up etc
-                StopPosition = 0;
-                NextSection();
-                control.instance.MainForm.KeyDown +=
-                    new System.Windows.Forms.KeyEventHandler(MainForm_KeyPress);
-            }
-            else
-            {
-                Talker.Say("Failed to download the notecard.", Talk.BeepType.Bad);
-            }
         }
 
         void MainForm_KeyPress(object sender, System.Windows.Forms.KeyEventArgs e)

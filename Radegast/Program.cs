@@ -24,12 +24,6 @@ using System.IO;
 using System.Reflection;
 using CommandLine;
 using CommandLine.Text;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using System.Threading;
 
 namespace Radegast
@@ -138,6 +132,7 @@ namespace Radegast
         [STAThread]
         static void Main(string[] args)
         {
+            Core.NativeMethods.Init();
             try
             {
                 var parser = new Parser(x => x.HelpWriter = null);

@@ -39,12 +39,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using System.Threading;
 using OpenTK.Graphics.OpenGL;
 using OpenMetaverse;
@@ -503,12 +497,12 @@ namespace Radegast.Rendering
             }
         }
 
-        void animRecievedCallback(AssetDownload transfer, Asset asset)
+        void AnimRecievedCallback(AssetDownload transfer, Asset asset)
         {
 
             if (InvokeRequired)
             {
-                BeginInvoke(new MethodInvoker(() => animRecievedCallback(transfer, asset)));
+                BeginInvoke(new MethodInvoker(() => AnimRecievedCallback(transfer, asset)));
                 return;
             }
 
@@ -847,7 +841,7 @@ namespace Radegast.Rendering
 
         #region Mouse handling
         bool dragging = false;
-        int dragX, dragY, downX, downY;
+        int dragX, dragY;
 
         private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -865,17 +859,17 @@ namespace Radegast.Rendering
             if (e.Button == MouseButtons.Left)
             {
                 dragging = true;
-                downX = dragX = e.X;
-                downY = dragY = e.Y;
+                int downX = dragX = e.X;
+                int downY = dragY = e.Y;
 
                 if (ModifierKeys == Keys.None)
                 {
                     object picked;
                     if (TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
                     {
-                        if (picked is RenderPrimitive)
+                        if (picked is RenderPrimitive primitive)
                         {
-                            TryTouchObject((RenderPrimitive)picked);
+                            TryTouchObject(primitive);
                         }
                     }
                 }
@@ -963,11 +957,15 @@ namespace Radegast.Rendering
                         int LeftclickedFaceID;
                         if (TryPick(e.X, e.Y, out picked, out LeftclickedFaceID))
                         {
-                            if (picked is RenderPrimitive)
-                                TryTouchObject((RenderPrimitive)picked);
+                            if (picked is RenderPrimitive primitive)
+                            {
+                                TryTouchObject(primitive);
+                            }
                         }
                         else
+                        {
                             TryEndTouchObject();
+                        }
                     }
 
                     // Pan
@@ -1354,11 +1352,9 @@ namespace Radegast.Rendering
                     pos = parentPos + obj.InterpolatedPosition * parentRot;
                     rot = parentRot * obj.InterpolatedRotation;
                 }
-                else if (p is RenderAvatar)
+                else if (p is RenderAvatar parentav) // Calculating position and rotation of the root prim of an attachment here
+                                                     // (our parent is an avatar here)
                 {
-                    // Calculating position and rotation of the root prim of an attachment here
-                    // (our parent is an avatar here)
-                    RenderAvatar parentav = (RenderAvatar)p;
 
                     // Check for invalid attachment point
                     int attachment_index = (int)obj.BasePrim.PrimData.AttachmentPoint;
@@ -1605,7 +1601,7 @@ namespace Radegast.Rendering
                 if (Avatars.ContainsKey(av.LocalID))
                 {
                     // flag we got an update??
-                    updateAVtes(Avatars[av.LocalID]);
+                    UpdateAVtes(Avatars[av.LocalID]);
                     Avatars[av.LocalID].glavatar.morph(av);
                     UpdateAvatarAnimations(Avatars[av.LocalID]);
                 }
@@ -1615,7 +1611,7 @@ namespace Radegast.Rendering
 
                     //ga.morph(av);
                     RenderAvatar ra = new RenderAvatar {avatar = av, glavatar = ga};
-                    updateAVtes(ra);
+                    UpdateAVtes(ra);
                     Avatars.Add(av.LocalID, ra);
                     ra.glavatar.morph(av);
 
@@ -1666,7 +1662,7 @@ namespace Radegast.Rendering
 
                 Logger.Log("Requesting new animation asset " + anim.AnimationID, Helpers.LogLevel.Info);
 
-                Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, animRecievedCallback);
+                Client.Assets.RequestAsset(anim.AnimationID, AssetType.Animation, false, SourceType.Asset, tid, AnimRecievedCallback);
             }
 
             av.glavatar.skel.flushanimationsfinal();
@@ -1674,7 +1670,7 @@ namespace Radegast.Rendering
 
         }
 
-        private void updateAVtes(RenderAvatar ra)
+        private void UpdateAVtes(RenderAvatar ra)
         {
             if (ra.avatar.Textures == null)
                 return;
@@ -1985,11 +1981,11 @@ namespace Radegast.Rendering
 
                 if (Client.Self.Movement.TurnLeft)
                 {
-                    Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, time);
+                    Client.Self.Movement.BodyRotation *= Quaternion.CreateFromAxisAngle(Vector3.UnitZ, time);
                 }
                 else if (client.Self.Movement.TurnRight)
                 {
-                    Client.Self.Movement.BodyRotation = Client.Self.Movement.BodyRotation * Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -time);
+                    Client.Self.Movement.BodyRotation *= Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -time);
                 }
 
                 if (Instance.Keyboard.IsKeyDown(Keys.Escape))
@@ -2760,22 +2756,22 @@ namespace Radegast.Rendering
                             }
                             else if (!item.Data.TextureInfo.FetchFailed)
                             {
-                                TextureDownloadCallback handler = (state, asset) =>
+                                void handler(TextureRequestState state, AssetTexture asset)
+                                {
+                                    switch (state)
                                     {
-                                        switch (state)
-                                        {
-                                            case TextureRequestState.Finished:
-                                                item.TextureData = asset.AssetData;
-                                                PendingTextures.Enqueue(item);
-                                                break;
+                                        case TextureRequestState.Finished:
+                                            item.TextureData = asset.AssetData;
+                                            PendingTextures.Enqueue(item);
+                                            break;
 
-                                            case TextureRequestState.Aborted:
-                                            case TextureRequestState.NotFound:
-                                            case TextureRequestState.Timeout:
-                                                item.Data.TextureInfo.FetchFailed = true;
-                                                break;
-                                        }
-                                    };
+                                        case TextureRequestState.Aborted:
+                                        case TextureRequestState.NotFound:
+                                        case TextureRequestState.Timeout:
+                                            item.Data.TextureInfo.FetchFailed = true;
+                                            break;
+                                    }
+                                }
 
                                 if (item.ImageType == ImageType.ServerBaked && !string.IsNullOrEmpty(item.BakeName))
                                 { // Server side bake
@@ -2964,7 +2960,7 @@ namespace Radegast.Rendering
 
                     if (prim.Textures == null) return;
 
-                    RenderPrimitive rPrim = null;
+                    RenderPrimitive rPrim;
                     if (Prims.TryGetValue(prim.LocalID, out rPrim))
                     {
                         rPrim.AttachedStateKnown = false;

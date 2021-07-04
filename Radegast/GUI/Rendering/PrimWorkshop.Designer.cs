@@ -88,7 +88,7 @@ namespace Radegast.Rendering
             this.scrollRoll.Name = "scrollRoll";
             this.scrollRoll.Size = new System.Drawing.Size(200, 16);
             this.scrollRoll.TabIndex = 9;
-            this.scrollRoll.ValueChanged += new System.EventHandler(this.scroll_ValueChanged);
+            this.scrollRoll.ValueChanged += new System.EventHandler(this.Scroll_ValueChanged);
             // 
             // scrollPitch
             // 
@@ -97,7 +97,7 @@ namespace Radegast.Rendering
             this.scrollPitch.Name = "scrollPitch";
             this.scrollPitch.Size = new System.Drawing.Size(200, 16);
             this.scrollPitch.TabIndex = 10;
-            this.scrollPitch.ValueChanged += new System.EventHandler(this.scroll_ValueChanged);
+            this.scrollPitch.ValueChanged += new System.EventHandler(this.Scroll_ValueChanged);
             // 
             // scrollYaw
             // 
@@ -107,7 +107,7 @@ namespace Radegast.Rendering
             this.scrollYaw.Size = new System.Drawing.Size(200, 16);
             this.scrollYaw.TabIndex = 11;
             this.scrollYaw.Value = 90;
-            this.scrollYaw.ValueChanged += new System.EventHandler(this.scroll_ValueChanged);
+            this.scrollYaw.ValueChanged += new System.EventHandler(this.Scroll_ValueChanged);
             // 
             // scrollZoom
             // 
@@ -119,7 +119,7 @@ namespace Radegast.Rendering
             this.scrollZoom.Size = new System.Drawing.Size(200, 16);
             this.scrollZoom.TabIndex = 19;
             this.scrollZoom.Value = -30;
-            this.scrollZoom.ValueChanged += new System.EventHandler(this.scrollZoom_ValueChanged);
+            this.scrollZoom.ValueChanged += new System.EventHandler(this.ScrollZoom_ValueChanged);
             // 
             // gbZoom
             // 
@@ -157,7 +157,7 @@ namespace Radegast.Rendering
             this.btnResetView.TabIndex = 22;
             this.btnResetView.Text = "Reset View";
             this.btnResetView.UseVisualStyleBackColor = true;
-            this.btnResetView.Click += new System.EventHandler(this.btnReset_Click);
+            this.btnResetView.Click += new System.EventHandler(this.BtnReset_Click);
             // 
             // cbAA
             // 
@@ -178,7 +178,7 @@ namespace Radegast.Rendering
             this.chkWireFrame.TabIndex = 21;
             this.chkWireFrame.Text = "Wireframe";
             this.chkWireFrame.UseVisualStyleBackColor = true;
-            this.chkWireFrame.CheckedChanged += new System.EventHandler(this.chkWireFrame_CheckedChanged);
+            this.chkWireFrame.CheckedChanged += new System.EventHandler(this.ChkWireFrame_CheckedChanged);
             // 
             // label1
             // 
@@ -200,21 +200,21 @@ namespace Radegast.Rendering
             this.deleteToolStripMenuItem});
             this.ctxObjects.Name = "ctxObjects";
             this.ctxObjects.Size = new System.Drawing.Size(110, 120);
-            this.ctxObjects.Opening += new System.ComponentModel.CancelEventHandler(this.ctxObjects_Opening);
+            this.ctxObjects.Opening += new System.ComponentModel.CancelEventHandler(this.CtxObjects_Opening);
             // 
             // touchToolStripMenuItem
             // 
             this.touchToolStripMenuItem.Name = "touchToolStripMenuItem";
             this.touchToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.touchToolStripMenuItem.Text = "Touch";
-            this.touchToolStripMenuItem.Click += new System.EventHandler(this.touchToolStripMenuItem_Click);
+            this.touchToolStripMenuItem.Click += new System.EventHandler(this.TouchToolStripMenuItem_Click);
             // 
             // sitToolStripMenuItem
             // 
             this.sitToolStripMenuItem.Name = "sitToolStripMenuItem";
             this.sitToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.sitToolStripMenuItem.Text = "Sit";
-            this.sitToolStripMenuItem.Click += new System.EventHandler(this.sitToolStripMenuItem_Click);
+            this.sitToolStripMenuItem.Click += new System.EventHandler(this.SitToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -226,21 +226,21 @@ namespace Radegast.Rendering
             this.takeToolStripMenuItem.Name = "takeToolStripMenuItem";
             this.takeToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.takeToolStripMenuItem.Text = "Take";
-            this.takeToolStripMenuItem.Click += new System.EventHandler(this.takeToolStripMenuItem_Click);
+            this.takeToolStripMenuItem.Click += new System.EventHandler(this.TakeToolStripMenuItem_Click);
             // 
             // returnToolStripMenuItem
             // 
             this.returnToolStripMenuItem.Name = "returnToolStripMenuItem";
             this.returnToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.returnToolStripMenuItem.Text = "Return";
-            this.returnToolStripMenuItem.Click += new System.EventHandler(this.returnToolStripMenuItem_Click);
+            this.returnToolStripMenuItem.Click += new System.EventHandler(this.ReturnToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(109, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.DeleteToolStripMenuItem_Click);
             // 
             // frmPrimWorkshop
             // 
@@ -251,7 +251,7 @@ namespace Radegast.Rendering
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmPrimWorkshop";
             this.Text = "Object Viewer";
-            this.Shown += new System.EventHandler(this.frmPrimWorkshop_Shown);
+            this.Shown += new System.EventHandler(this.FrmPrimWorkshop_Shown);
             this.gbZoom.ResumeLayout(false);
             this.gbZoom.PerformLayout();
             this.ctxObjects.ResumeLayout(false);

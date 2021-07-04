@@ -25,12 +25,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Xml;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 using OpenMetaverse;
 using OpenMetaverse.Rendering;
 using Path = System.IO.Path;
@@ -1591,7 +1585,7 @@ namespace Radegast.Rendering
 
         public Bone(Bone source)
         {
-            name = String.Copy(source.name);
+            name = source.name;
             pos = new Vector3(source.pos);
             rot = new Quaternion(source.rot);
             scale = new Vector3(source.scale);

@@ -26,8 +26,8 @@ using System.Xml;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using System.Drawing;
-using System.Web.Script.Serialization;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace Radegast
 {
@@ -141,16 +141,16 @@ namespace Radegast
 
         public class FontSetting
         {
-            [ScriptIgnore]
+            [IgnoreDataMember]
             public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 8.0f);
 
-            [ScriptIgnore]
+            [IgnoreDataMember]
             public Font Font;
 
-            [ScriptIgnore]
+            [IgnoreDataMember]
             public Color ForeColor;
 
-            [ScriptIgnore]
+            [IgnoreDataMember]
             public Color BackColor;
 
 

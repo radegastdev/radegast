@@ -23,12 +23,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using OpenMetaverse;
-#if (COGBOT_LIBOMV || USE_STHREADS)
-using ThreadPoolUtil;
-using Thread = ThreadPoolUtil.Thread;
-using ThreadPool = ThreadPoolUtil.ThreadPool;
-using Monitor = ThreadPoolUtil.Monitor;
-#endif
 
 
 namespace Radegast

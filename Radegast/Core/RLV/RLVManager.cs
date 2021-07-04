@@ -244,7 +244,7 @@ namespace Radegast
                 var rule = new RLVRule
                 {
                     Behaviour = m.Groups["behaviour"].ToString().ToLower(),
-                    Option = m.Groups["option"].ToString().ToLower(),
+                    Option = m.Groups["option"].ToString(),
                     Param = m.Groups["param"].ToString().ToLower(),
                     Sender = e.SourceID,
                     SenderName = e.FromName
@@ -343,6 +343,46 @@ namespace Radegast
                         }
                         break;
 
+                    case "getpath":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            var attachment = client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ParentID == client.Self.LocalID && p.ID == rule.Sender);
+                            if (attachment != null && client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                            {
+                                var item = client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)];
+                                var path = FindFullInventoryPath(item, "").Substring(5);
+                                Respond(chan, path);
+                            }
+                        }
+                        break;
+
+                    case "getpathnew":
+                        if (int.TryParse(rule.Param, out chan) && chan > 0)
+                        {
+                            if (UUID.TryParse(rule.Option, out UUID uuid) && uuid != UUID.Zero)
+                            {
+                                var attachment = client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ParentID == client.Self.LocalID && p.ID == uuid);
+                                if (attachment != null && client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                                {
+                                    var item = client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)];
+                                    var path = FindFullInventoryPath(item, "");
+                                    if (path.StartsWith("#RLV"))
+                                    {
+                                        Respond(chan, "getpathnew: " + path.Substring(5));
+                                    }
+                                    else
+                                    {
+                                        Respond(chan, "getpathnew: ");
+                                    }
+                                }
+                                else
+                                {
+                                    Respond(chan, "getpathnew: ");
+                                }
+                            }
+                        }
+                        break;
+
                     case "getsitid":
                         if (int.TryParse(rule.Param, out chan) && chan > 0)
                         {
@@ -427,20 +467,40 @@ namespace Radegast
                         break;
 
                     case "tpto":
-                        var coord = rule.Option.Split('/');
-
-                        try
+                        if (rule.Param == "force")
                         {
-                            float gx = float.Parse(coord[0], Utils.EnUsCulture);
-                            float gy = float.Parse(coord[1], Utils.EnUsCulture);
-                            float z = float.Parse(coord[2], Utils.EnUsCulture);
-                            float x = 0, y = 0;
+                            try
+                            {
+                                var coord = rule.Option.Split(new[] {'/',';'});
 
-                            instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
-                            ulong h = Helpers.GlobalPosToRegionHandle(gx, gy, out x, out y);
-                            client.Self.RequestTeleport(h, new Vector3(x, y, z));
+                                if (coord.Length == 3) // 3 params is a global coordinate teleport: @tpto:<X>/<Y>/<Z>=force
+                                {
+                                    float gx = float.Parse(coord[0], Utils.EnUsCulture);
+                                    float gy = float.Parse(coord[1], Utils.EnUsCulture);
+                                    float z = float.Parse(coord[2], Utils.EnUsCulture);
+                                    float x = 0, y = 0;
+
+                                    instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
+                                    ulong h = Helpers.GlobalPosToRegionHandle(gx, gy, out x, out y);
+                                    client.Self.RequestTeleport(h, new Vector3(x, y, z));
+                                }
+                                else if (coord.Length == 4 || coord.Length == 5) // 4/5 params is a region-local coordinate teleport (no ;lookat support): @tpto:<region_name>/<X_local>/<Y_local>/<Z_local>[;lookat]=force
+                                {
+                                    string n = coord[0];
+                                    float x = float.Parse(coord[1], Utils.EnUsCulture);
+                                    float y = float.Parse(coord[2], Utils.EnUsCulture);
+                                    float z = float.Parse(coord[3], Utils.EnUsCulture);
+
+                                    GridRegion r;
+                                    client.Grid.GetGridRegion(n, GridLayerType.Objects, out r);
+
+                                    instance.TabConsole.DisplayNotificationInChat("Starting teleport...");
+                                    client.Self.RequestTeleport(r.RegionHandle, new Vector3(x, y, z));
+                                }
+
+                            }
+                            catch (Exception) { }
                         }
-                        catch (Exception) { }
 
                         break;
 
@@ -572,6 +632,23 @@ namespace Radegast
                                         }
                                     }
                                     instance.COF.RemoveFromOutfit(allSubfolderWorn);
+                                }
+                            }
+                        }
+                        break;
+
+                    case "detachallthis":
+                        if (rule.Param == "force")
+                        {
+                            var attachment = client.Network.CurrentSim.ObjectsPrimitives.Find(p => p.ParentID == client.Self.LocalID && p.ID == rule.Sender);
+                            if (attachment != null && client.Inventory.Store.Items.ContainsKey(CurrentOutfitFolder.GetAttachmentItem(attachment)))
+                            {
+                                var folder = client.Inventory.Store.Items[CurrentOutfitFolder.GetAttachmentItem(attachment)].Parent;
+                                if (folder != null)
+                                {
+                                    List<InventoryItem> outfit = new List<InventoryItem>();
+                                    GetAllItems(folder, true, ref outfit);
+                                    instance.COF.RemoveFromOutfit(outfit);
                                 }
                             }
                         }
