@@ -226,19 +226,28 @@ namespace Radegast
 
                 OnProgress("Fetching texture" + id);
 
-                ManagedImage mImage = null;
                 Image wImage = null;
                 byte[] jpegData = null;
 
                 try
                 {
-                    System.Threading.AutoResetEvent gotImage = new System.Threading.AutoResetEvent(false);
+                    AutoResetEvent gotImage = new AutoResetEvent(false);
                     Client.Assets.RequestImage(id, ImageType.Normal, (state, asset) =>
                     {
                         if (state == TextureRequestState.Finished && asset != null)
                         {
                             jpegData = asset.AssetData;
-                            OpenJPEG.DecodeToImage(jpegData, out mImage, out wImage);
+                            using (var reader = new LibreMetaverse.Imaging.J2KReader(jpegData))
+                            {
+                                if (reader.ReadHeader())
+                                {
+                                    wImage = reader.DecodeToBitmap();
+                                }
+                                else
+                                {
+                                    throw new Exception("Cannot read J2K header");
+                                }
+                            }
                             gotImage.Set();
                         }
                         else if (state != TextureRequestState.Pending && state != TextureRequestState.Started && state != TextureRequestState.Progress)
@@ -266,7 +275,7 @@ namespace Radegast
                                 File.WriteAllBytes(fullFileName, jpegData);
                                 break;
                             case "TGA":
-                                File.WriteAllBytes(fullFileName, mImage.ExportTGA());
+                                //File.WriteAllBytes(fullFileName, mImage.ExportTGA());
                                 break;
                             default:
                                 throw new Exception("Unsupported image format");
@@ -397,19 +406,24 @@ namespace Radegast
                 byte[] tgaData;
                 Client.Assets.RequestImage(textureID, (state, assetTexture) =>
                 {
-                    ManagedImage mi;
-                    if (state == TextureRequestState.Finished && OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi))
+                    if (state == TextureRequestState.Finished)
                     {
-
-                        if (removeAlpha)
+                        using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
                         {
-                            if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                            if (reader.ReadHeader())
                             {
-                                mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                ManagedImage image = new ManagedImage(reader.DecodeToBitmap());
+                                if (removeAlpha)
+                                {
+                                    if ((image.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                    {
+                                        image.ConvertChannels(image.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                    }
+                                }
+                                tgaData = image.ExportTGA();
+                                img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
                             }
-                        }
-                        tgaData = mi.ExportTGA();
-                        img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
+                        }   
                     }
                     gotImage.Set();
                 });

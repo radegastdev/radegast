@@ -1037,18 +1037,22 @@ namespace Radegast.Rendering
                         {
                             if (state == TextureRequestState.Finished)
                             {
-                                ManagedImage mi;
-                                OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi);
-
-                                if (removeAlpha)
+                                // what the fk is going on here? lol
+                                using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
                                 {
-                                    if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                    if (reader.ReadHeader())
                                     {
-                                        mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                        ManagedImage mi = new ManagedImage(reader.DecodeToBitmap());
+                                        if (removeAlpha)
+                                        {
+                                            if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
+                                            {
+                                                mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
+                                            }
+                                        }
+                                        img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
                                     }
-                                }
-
-                                img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
+                                }    
                             }
                         }
                         finally
