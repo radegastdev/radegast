@@ -132,7 +132,7 @@ namespace Radegast
             if (String.IsNullOrEmpty(FileName))
                 return;
 
-            txtStatus.AppendText("Loading...\n");
+            txtStatus.AppendText("Loading..." + Environment.NewLine);
 
             string extension = Path.GetExtension(FileName).ToLower();
 
@@ -154,7 +154,7 @@ namespace Radegast
                             }
                         }
 
-                        txtStatus.AppendText("Loaded raw JPEG2000 data " + FileName + "\n");
+                        txtStatus.AppendText("Loaded raw JPEG2000 data " + FileName + Environment.NewLine);
                         break;
                     case ".tga":
                         bitmap = LoadTGAClass.LoadTGA(FileName);
@@ -164,7 +164,7 @@ namespace Radegast
                         break;
                 }
 
-                txtStatus.AppendText("Loaded image " + FileName + "\n");
+                txtStatus.AppendText("Loaded image " + FileName + Environment.NewLine);
 
                 int width = bitmap.Width;
                 int height = bitmap.Height;
@@ -172,7 +172,7 @@ namespace Radegast
                 // Handle resizing to prevent excessively large images and irregular dimensions
                 if (!IsPowerOfTwo((uint)width) || !IsPowerOfTwo((uint)height) || width > 1024 || height > 1024)
                 {
-                    txtStatus.AppendText("Image has irregular dimensions " + width + "x" + height + "\n");
+                    txtStatus.AppendText("Image has irregular dimensions " + width + "x" + height + Environment.NewLine);
 
                     width = ClosestPowerOwTwo(width);
                     height = ClosestPowerOwTwo(height);
@@ -180,7 +180,7 @@ namespace Radegast
                     width = width > 1024 ? 1024 : width;
                     height = height > 1024 ? 1024 : height;
 
-                    txtStatus.AppendText("Resizing to " + width + "x" + height + "\n");
+                    txtStatus.AppendText("Resizing to " + width + "x" + height + Environment.NewLine);
 
                     Bitmap resized = new Bitmap(width, height, bitmap.PixelFormat);
                     Graphics graphics = Graphics.FromImage(resized);
@@ -194,14 +194,14 @@ namespace Radegast
                     bitmap = resized;
                 }
 
-                txtStatus.AppendText("Encoding image...\n");
+                txtStatus.AppendText("Encoding image..." + Environment.NewLine);
 
                 using (var writer = new LibreMetaverse.Imaging.J2KWriter(bitmap))
                 {
                     UploadData = writer.Encode();
                 }
 
-                txtStatus.AppendText("Finished encoding.\n");
+                txtStatus.AppendText("Finished encoding." + Environment.NewLine);
                 ImageLoaded = true;
                 UpdateButtons();
                 txtAssetID.Text = UUID.Zero.ToString();
@@ -214,7 +214,8 @@ namespace Radegast
                 UploadData = null;
                 btnSave.Enabled = false;
                 btnUpload.Enabled = false;
-                txtStatus.AppendText(string.Format("Failed to load the image:\n{0}\n", ex.Message));
+                txtStatus.AppendText(string.Format("Failed to load the image:" + Environment.NewLine 
+                    + "{ 0}" + Environment.NewLine, ex.Message));
             }
         }
 
@@ -325,12 +326,12 @@ namespace Radegast
 
             if (!success)
             {
-                txtStatus.AppendText("Upload failed.\n");
+                txtStatus.AppendText("Upload failed." + Environment.NewLine);
                 return;
             }
 
-            txtStatus.AppendText("Upload success.\n");
-            txtStatus.AppendText("New image ID: " + AssetID + "\n");
+            txtStatus.AppendText("Upload success." + Environment.NewLine);
+            txtStatus.AppendText("New image ID: " + AssetID + Environment.NewLine);
         }
 
         private void UploadHandler(bool success, string status, UUID itemID, UUID assetID)
@@ -354,18 +355,18 @@ namespace Radegast
 
             if (!success)
             {
-                txtStatus.AppendText("Upload failed: " + status + "\n");
+                txtStatus.AppendText("Upload failed: " + status + Environment.NewLine);
                 return;
             }
 
-            txtStatus.AppendText("Upload success.\n");
-            txtStatus.AppendText("New image ID: " + AssetID + "\n");
+            txtStatus.AppendText("Upload success." + Environment.NewLine);
+            txtStatus.AppendText("New image ID: " + AssetID + Environment.NewLine);
         }
 
         private void btnUpload_Click(object sender, EventArgs e)
         {
             bool tmp = chkTemp.Checked;
-            txtStatus.AppendText("Uploading...");
+            txtStatus.AppendText("Uploading..." + Environment.NewLine);
             btnLoad.Enabled = false;
             btnUpload.Enabled = false;
             AssetID = InventoryID = UUID.Zero;
