@@ -7,5 +7,6 @@
         <Description>Radegast-ng - https://radegast.life/</Description>
         <Copyright>Copyright (c) 2009-2015, Radegast Development Team. Copyright (c) 2016-2021, SJofn, LLC. All rights reserved.</Copyright>
         <RootNamespace>Tools</RootNamespace>
+        <Platforms>AnyCPU;x64;x86</Platforms>
     </PropertyGroup>
 </Project>
