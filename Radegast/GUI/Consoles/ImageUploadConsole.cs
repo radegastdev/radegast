@@ -222,24 +222,8 @@ namespace Radegast
         void UpdateButtons()
         {
             btnLoad.Enabled = true;
-
-            if (ImageLoaded)
-            {
-                btnSave.Enabled = true;
-            }
-            else
-            {
-                btnSave.Enabled = false;
-            }
-
-            if (ImageLoaded && client.Network.Connected)
-            {
-                btnUpload.Enabled = true;
-            }
-            else
-            {
-                btnUpload.Enabled = false;
-            }
+            btnSave.Enabled = ImageLoaded;
+            btnUpload.Enabled = ImageLoaded && client.Network.Connected;
         }
 
 
@@ -365,29 +349,21 @@ namespace Radegast
 
         private void btnUpload_Click(object sender, EventArgs e)
         {
-            bool tmp = chkTemp.Checked;
             txtStatus.AppendText("Uploading..." + Environment.NewLine);
             btnLoad.Enabled = false;
             btnUpload.Enabled = false;
             AssetID = InventoryID = UUID.Zero;
 
             TextureName = Path.GetFileNameWithoutExtension(FileName);
-            if (tmp) TextureName += " (temp)";
             TextureDescription = $"Uploaded with Radegast on {DateTime.Now.ToLongDateString()}";
 
             Permissions perms = new Permissions {EveryoneMask = PermissionMask.All, NextOwnerMask = PermissionMask.All};
 
-            if (!tmp)
-            {
-                client.Settings.CAPS_TIMEOUT = 180 * 1000;
-                client.Inventory.RequestCreateItemFromAsset(UploadData, TextureName, TextureDescription, AssetType.Texture, InventoryType.Texture,
-                    client.Inventory.FindFolderForType(AssetType.Texture), perms, UploadHandler);
-            }
-            else
-            {
-                TransactionID = UUID.Random();
-                client.Assets.RequestUpload(out AssetID, AssetType.Texture, UploadData, true, TransactionID);
-            }
+
+            client.Settings.CAPS_TIMEOUT = 180 * 1000;
+            client.Inventory.RequestCreateItemFromAsset(UploadData, TextureName, TextureDescription, 
+                AssetType.Texture, InventoryType.Texture,
+                client.Inventory.FindFolderForType(AssetType.Texture), perms, UploadHandler);
         }
     }
 }
