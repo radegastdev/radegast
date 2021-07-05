@@ -143,14 +143,16 @@ namespace Radegast
                 {
                     case ".jp2":
                     case ".j2c":
-                        Image image;
-                        ManagedImage managedImage;
-
                         // Upload JPEG2000 images untouched
                         UploadData = File.ReadAllBytes(FileName);
 
-                        OpenJPEG.DecodeToImage(UploadData, out managedImage, out image);
-                        bitmap = (Bitmap)image;
+                        using (var reader = new LibreMetaverse.Imaging.J2KReader(UploadData))
+                        {
+                            if (reader.ReadHeader())
+                            {
+                                bitmap = reader.DecodeToBitmap();
+                            }
+                        }
 
                         txtStatus.AppendText("Loaded raw JPEG2000 data " + FileName + "\n");
                         break;
@@ -158,7 +160,7 @@ namespace Radegast
                         bitmap = LoadTGAClass.LoadTGA(FileName);
                         break;
                     default:
-                        bitmap = (Bitmap)Image.FromFile(FileName);
+                        bitmap = Image.FromFile(FileName) as Bitmap;
                         break;
                 }
 
@@ -194,7 +196,10 @@ namespace Radegast
 
                 txtStatus.AppendText("Encoding image...\n");
 
-                UploadData = OpenJPEG.EncodeFromImage(bitmap, chkLossless.Checked);
+                using (var writer = new LibreMetaverse.Imaging.J2KWriter(bitmap))
+                {
+                    UploadData = writer.Encode();
+                }
 
                 txtStatus.AppendText("Finished encoding.\n");
                 ImageLoaded = true;
@@ -276,9 +281,14 @@ namespace Radegast
                 }
                 else if (type == 2)
                 { // targa
-                    ManagedImage imgManaged;
-                    OpenJPEG.DecodeToImage(UploadData, out imgManaged);
-                    File.WriteAllBytes(dlg.FileName, imgManaged.ExportTGA());
+                    using (var reader = new LibreMetaverse.Imaging.J2KReader(UploadData))
+                    {
+                        if (reader.ReadHeader())
+                        {
+                            ManagedImage img = new ManagedImage(reader.DecodeToBitmap());
+                            File.WriteAllBytes(dlg.FileName, img.ExportTGA());
+                        }
+                    }
                 }
                 else if (type == 1)
                 { // png

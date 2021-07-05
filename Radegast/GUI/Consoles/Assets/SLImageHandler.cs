@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2021, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Imaging;
 using OpenMetaverse.Assets;
+using LibreMetaverse.Imaging;
 using System.IO;
 
 namespace Radegast
@@ -36,7 +37,6 @@ namespace Radegast
         private UUID imageID;
 
         byte[] jpegdata;
-        ManagedImage imgManaged;
         Image image;
         bool allowSave = false;
 
@@ -130,7 +130,7 @@ namespace Radegast
                 }
                 else if (state == TextureRequestState.Progress)
                 {
-                    // DisplayPartialImage(assetTexture);
+                    DisplayPartialImage(assetTexture);
                 }
             },
             true);
@@ -164,7 +164,7 @@ namespace Radegast
             {
                 return;
             }
-            lblProgress.Text = String.Format("{0} of {1}KB ({2}%)", (int)e.Received / 1024, (int)e.Total / 1024, pct);
+            lblProgress.Text = string.Format("{0} of {1}KB ({2}%)", (int)e.Received / 1024, (int)e.Total / 1024, pct);
             progressBar1.Value = pct;
         }
 
@@ -179,15 +179,23 @@ namespace Radegast
 
             try
             {
-                ManagedImage tmp;
-                Image img;
-                if (OpenJPEG.DecodeToImage(assetTexture.AssetData, out tmp, out img))
+                using (var reader = new J2KReader(assetTexture.AssetData))
                 {
-                    pictureBox1.Image = img;
-                    pictureBox1.Enabled = true;
+                    if (reader.ReadHeader())
+                    {
+                        pictureBox1.Image = reader.DecodeToBitmap();
+                        pictureBox1.Enabled = true;
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to read J2K header");
+                    }
                 }
             }
-            catch (Exception) { }
+            catch (Exception e) {
+                Hide();
+                Console.WriteLine("Error decoding image: " + e.Message);
+            }
         }
 
         private void Assets_OnImageReceived(AssetTexture assetTexture)
@@ -209,9 +217,16 @@ namespace Radegast
                 progressBar1.Hide();
                 lblProgress.Hide();
 
-                if (!OpenJPEG.DecodeToImage(assetTexture.AssetData, out imgManaged, out image))
+                using (var reader = new J2KReader(assetTexture.AssetData))
                 {
-                    throw new Exception("decoding failure");
+                    if (reader.ReadHeader())
+                    {
+                        image = reader.DecodeToBitmap();
+                    } 
+                    else
+                    {
+                        throw new Exception("Failed to read J2K header");
+                    }
                 }
 
                 Text = Text; // yeah, really ;)
@@ -224,10 +239,10 @@ namespace Radegast
                     ClientSize = pictureBox1.Size = new Size(image.Width, image.Height);
                 }
             }
-            catch (Exception excp)
+            catch (Exception e)
             {
                 Hide();
-                Console.WriteLine("Error decoding image: " + excp.Message);
+                Console.WriteLine("Error decoding image: " + e.Message);
             }
         }
 
@@ -242,11 +257,6 @@ namespace Radegast
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (imgManaged == null)
-            {
-                return;
-            }
-
             SaveFileDialog dlg = new SaveFileDialog
             {
                 AddExtension = true,
@@ -267,7 +277,7 @@ namespace Radegast
                 }
                 else if (type == 1)
                 { // targa
-                    File.WriteAllBytes(dlg.FileName, imgManaged.ExportTGA());
+                    //File.WriteAllBytes(dlg.FileName, imgManaged.ExportTGA());
                 }
                 else if (type == 3)
                 { // png
@@ -330,9 +340,9 @@ namespace Radegast
             if (node.Tag is InventorySnapshot || node.Tag is InventoryTexture)
             {
                 UUID imgID = UUID.Zero;
-                if (node.Tag is InventorySnapshot)
+                if (node.Tag is InventorySnapshot snapshot)
                 {
-                    imgID = ((InventorySnapshot)node.Tag).AssetUUID;
+                    imgID = snapshot.AssetUUID;
                 }
                 else
                 {

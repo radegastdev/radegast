@@ -309,16 +309,27 @@ namespace Radegast
             {
                 if (Client.Assets.Cache.HasAsset(imageID))
                 {
-                    Image img;
-                    OpenMetaverse.Imaging.ManagedImage mi;
-                    if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(Client.Assets.Cache.GetCachedAssetBytes(imageID), out mi, out img))
+                    using (var reader = new LibreMetaverse.Imaging.J2KReader(
+                        Client.Assets.Cache.GetCachedAssetBytes(imageID)))
                     {
-                        regionTiles[handle] = img;
-                        needRepaint = true;
+                        if (reader.ReadHeader())
+                        {
+                            regionTiles[handle] = reader.DecodeToBitmap();
+                            needRepaint = true;
+                        }
+                        else
+                        {
+                            throw new Exception("Cannot read J2K header");
+                        }
                     }
+
                     lock (tileRequests)
+                    {
                         if (tileRequests.Contains(handle))
+                        {
                             tileRequests.Remove(handle);
+                        }
+                    }
                 }
                 else
                 {
@@ -331,13 +342,18 @@ namespace Radegast
                         {
                             if (error == null && responseData != null)
                             {
-                                Image img;
-                                OpenMetaverse.Imaging.ManagedImage mi;
-                                if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(responseData, out mi, out img))
+                                using (var reader = new LibreMetaverse.Imaging.J2KReader(responseData))
                                 {
-                                    regionTiles[handle] = img;
-                                    needRepaint = true;
-                                    Client.Assets.Cache.SaveAssetToCache(imageID, responseData);
+                                    if (reader.ReadHeader())
+                                    {
+                                        regionTiles[handle] = reader.DecodeToBitmap();
+                                        needRepaint = true;
+                                        Client.Assets.Cache.SaveAssetToCache(imageID, responseData);
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Cannot read J2K header");
+                                    }
                                 }
                             }
 
@@ -365,12 +381,17 @@ namespace Radegast
                         case TextureRequestState.Finished:
                             if (assetTexture?.AssetData != null)
                             {
-                                Image img;
-                                OpenMetaverse.Imaging.ManagedImage mi;
-                                if (OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img))
+                                using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
                                 {
-                                    regionTiles[handle] = img;
-                                    needRepaint = true;
+                                    if (reader.ReadHeader())
+                                    {
+                                        regionTiles[handle] = reader.DecodeToBitmap();
+                                        needRepaint = true;
+                                    }
+                                    else
+                                    {
+                                        throw new Exception("Cannot read J2K header");
+                                    }
                                 }
                             }
                             lock (tileRequests)

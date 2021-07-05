@@ -298,10 +298,17 @@ namespace Radegast.Rendering
             {
                 if (state == TextureRequestState.Finished && assetTexture?.AssetData != null)
                 {
-                    Image img;
-                    ManagedImage mi;
-                    OpenJPEG.DecodeToImage(assetTexture.AssetData, out mi, out img);
-                    detailTexture[i] = (Bitmap)img;
+                    using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
+                    {
+                        if (reader.ReadHeader())
+                        {
+                            detailTexture[i] = reader.DecodeToBitmap();
+                        }
+                        else
+                        {
+                            throw new Exception("Cannot read J2K header");
+                        }
+                    }
                 }
                 textureDone.Set();
             };
