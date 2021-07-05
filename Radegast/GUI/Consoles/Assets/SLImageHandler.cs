@@ -23,7 +23,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using OpenMetaverse;
-using OpenMetaverse.Imaging;
 using OpenMetaverse.Assets;
 using LibreMetaverse.Imaging;
 using System.IO;
@@ -36,7 +35,7 @@ namespace Radegast
         private GridClient client => instance.Client;
         private UUID imageID;
 
-        byte[] jpegdata;
+        byte[] j2kdata;
         Image image;
         bool allowSave = false;
 
@@ -233,7 +232,7 @@ namespace Radegast
 
                 pictureBox1.Image = image;
                 pictureBox1.Enabled = true;
-                jpegdata = assetTexture.AssetData;
+                j2kdata = assetTexture.AssetData;
                 if (Detached)
                 {
                     ClientSize = pictureBox1.Size = new Size(image.Width, image.Height);
@@ -272,12 +271,13 @@ namespace Radegast
             {
                 int type = dlg.FilterIndex;
                 if (type == 2)
-                { // jpeg200
-                    File.WriteAllBytes(dlg.FileName, jpegdata);
+                { // jpeg2000
+                    File.WriteAllBytes(dlg.FileName, j2kdata);
                 }
                 else if (type == 1)
                 { // targa
-                    //File.WriteAllBytes(dlg.FileName, imgManaged.ExportTGA());
+                    var mi = new OpenMetaverse.Imaging.ManagedImage((Bitmap)image);
+                    File.WriteAllBytes(dlg.FileName, mi.ExportTGA());
                 }
                 else if (type == 3)
                 { // png
