@@ -1062,7 +1062,7 @@ namespace Radegast.Rendering
                         item.TextureData = Client.Assets.Cache.GetCachedAssetBytes(item.Data.TextureInfo.TextureID);
                     }
                     
-                    using (var reader = new LibreMetaverse.Imaging.J2KReader(item.TextureData))
+                    using (var reader = new OpenJpegDotNet.IO.Reader(item.TextureData))
                     {
                         if (!reader.ReadHeader()) { continue; }
                         ManagedImage mi;
@@ -3017,7 +3017,7 @@ namespace Radegast.Rendering
                         {
                             if (state == TextureRequestState.Finished)
                             {
-                                using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
+                                using (var reader = new OpenJpegDotNet.IO.Reader(assetTexture.AssetData))
                                 {
                                     if (reader.ReadHeader())
                                     {

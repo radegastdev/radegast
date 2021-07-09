@@ -298,7 +298,7 @@ namespace Radegast.Rendering
             {
                 if (state == TextureRequestState.Finished && assetTexture?.AssetData != null)
                 {
-                    using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
+                    using (var reader = new OpenJpegDotNet.IO.Reader(assetTexture.AssetData))
                     {
                         if (reader.ReadHeader())
                         {

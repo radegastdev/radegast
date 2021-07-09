@@ -24,7 +24,6 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using OpenMetaverse;
 using OpenMetaverse.Assets;
-using LibreMetaverse.Imaging;
 using System.IO;
 
 namespace Radegast
@@ -178,7 +177,7 @@ namespace Radegast
 
             try
             {
-                using (var reader = new J2KReader(assetTexture.AssetData))
+                using (var reader = new OpenJpegDotNet.IO.Reader(assetTexture.AssetData))
                 {
                     if (reader.ReadHeader())
                     {
@@ -216,7 +215,7 @@ namespace Radegast
                 progressBar1.Hide();
                 lblProgress.Hide();
 
-                using (var reader = new J2KReader(assetTexture.AssetData))
+                using (var reader = new OpenJpegDotNet.IO.Reader(assetTexture.AssetData))
                 {
                     if (reader.ReadHeader())
                     {

@@ -309,7 +309,7 @@ namespace Radegast
             {
                 if (Client.Assets.Cache.HasAsset(imageID))
                 {
-                    using (var reader = new LibreMetaverse.Imaging.J2KReader(
+                    using (var reader = new OpenJpegDotNet.IO.Reader(
                         Client.Assets.Cache.GetCachedAssetBytes(imageID)))
                     {
                         if (reader.ReadHeader())
@@ -342,7 +342,7 @@ namespace Radegast
                         {
                             if (error == null && responseData != null)
                             {
-                                using (var reader = new LibreMetaverse.Imaging.J2KReader(responseData))
+                                using (var reader = new OpenJpegDotNet.IO.Reader(responseData))
                                 {
                                     if (reader.ReadHeader())
                                     {
@@ -381,7 +381,7 @@ namespace Radegast
                         case TextureRequestState.Finished:
                             if (assetTexture?.AssetData != null)
                             {
-                                using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
+                                using (var reader = new OpenJpegDotNet.IO.Reader(assetTexture.AssetData))
                                 {
                                     if (reader.ReadHeader())
                                     {

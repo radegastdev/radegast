@@ -1038,7 +1038,7 @@ namespace Radegast.Rendering
                             if (state == TextureRequestState.Finished)
                             {
                                 // what the fk is going on here? lol
-                                using (var reader = new LibreMetaverse.Imaging.J2KReader(assetTexture.AssetData))
+                                using (var reader = new OpenJpegDotNet.IO.Reader(assetTexture.AssetData))
                                 {
                                     if (!reader.ReadHeader())
                                     {
