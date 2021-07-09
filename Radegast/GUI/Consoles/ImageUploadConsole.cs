@@ -146,7 +146,7 @@ namespace Radegast
                         // Upload JPEG2000 images untouched
                         UploadData = File.ReadAllBytes(FileName);
 
-                        using (var reader = new LibreMetaverse.Imaging.J2KReader(UploadData))
+                        using (var reader = new OpenJpegDotNet.IO.Reader(UploadData))
                         {
                             if (reader.ReadHeader())
                             {
@@ -196,7 +196,7 @@ namespace Radegast
 
                 txtStatus.AppendText("Encoding image..." + Environment.NewLine);
 
-                using (var writer = new LibreMetaverse.Imaging.J2KWriter(bitmap))
+                using (var writer = new OpenJpegDotNet.IO.Writer(bitmap))
                 {
                     UploadData = writer.Encode();
                 }
@@ -266,12 +266,12 @@ namespace Radegast
                 }
                 else if (type == 2)
                 { // targa
-                    using (var reader = new LibreMetaverse.Imaging.J2KReader(UploadData))
+                    using (var reader = new OpenJpegDotNet.IO.Reader(UploadData))
                     {
                         if (reader.ReadHeader())
                         {
-                            ManagedImage img = new ManagedImage(reader.DecodeToBitmap());
-                            File.WriteAllBytes(dlg.FileName, img.ExportTGA());
+                            OpenJpegDotNet.RawImage tga = reader.Decode().ToTarga();
+                            File.WriteAllBytes(dlg.FileName, tga.Bytes);
                         }
                     }
                 }
