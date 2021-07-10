@@ -270,8 +270,7 @@ namespace Radegast
                     {
                         if (reader.ReadHeader())
                         {
-                            OpenJpegDotNet.RawImage tga = reader.Decode().ToTarga();
-                            File.WriteAllBytes(dlg.FileName, tga.Bytes);
+                            File.WriteAllBytes(dlg.FileName, reader.Decode().ToTarga().Bytes);
                         }
                     }
                 }

@@ -403,7 +403,6 @@ namespace Radegast
             try
             {
                 gotImage.Reset();
-                byte[] tgaData;
                 Client.Assets.RequestImage(textureID, (state, assetTexture) =>
                 {
                     if (state == TextureRequestState.Finished)
@@ -412,16 +411,7 @@ namespace Radegast
                         {
                             if (reader.ReadHeader())
                             {
-                                ManagedImage image = new ManagedImage(reader.DecodeToBitmap());
-                                if (removeAlpha)
-                                {
-                                    if ((image.Channels & ManagedImage.ImageChannels.Alpha) != 0)
-                                    {
-                                        image.ConvertChannels(image.Channels & ~ManagedImage.ImageChannels.Alpha);
-                                    }
-                                }
-                                tgaData = image.ExportTGA();
-                                img = LoadTGAClass.LoadTGA(new MemoryStream(tgaData));
+                                img = reader.Decode().ToBitmap(!removeAlpha);
                             }
                         }   
                     }
