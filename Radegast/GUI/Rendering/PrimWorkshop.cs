@@ -1047,15 +1047,7 @@ namespace Radegast.Rendering
 
                                     try
                                     {
-                                        ManagedImage mi = new ManagedImage(reader.DecodeToBitmap());
-                                        if (removeAlpha)
-                                        {
-                                            if ((mi.Channels & ManagedImage.ImageChannels.Alpha) != 0)
-                                            {
-                                                mi.ConvertChannels(mi.Channels & ~ManagedImage.ImageChannels.Alpha);
-                                            }
-                                        }
-                                        img = LoadTGAClass.LoadTGA(new MemoryStream(mi.ExportTGA()));
+                                        img = reader.Decode().ToBitmap(!removeAlpha);
                                     }
                                     catch (NotSupportedException)
                                     {
