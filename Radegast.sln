@@ -250,7 +250,9 @@ Global
 		{CCCC26B5-AA17-47D8-8D5D-707A78EC9A10}.ReleaseMacOS|x86.ActiveCfg = ReleaseWindows|x86
 		{CCCC26B5-AA17-47D8-8D5D-707A78EC9A10}.ReleaseMacOS|x86.Build.0 = ReleaseWindows|x86
 		{CCCC26B5-AA17-47D8-8D5D-707A78EC9A10}.ReleaseWindows|x64.ActiveCfg = ReleaseWindows|x86
+		{CCCC26B5-AA17-47D8-8D5D-707A78EC9A10}.ReleaseWindows|x64.Build.0 = ReleaseWindows|x86
 		{CCCC26B5-AA17-47D8-8D5D-707A78EC9A10}.ReleaseWindows|x86.ActiveCfg = ReleaseWindows|x86
+		{CCCC26B5-AA17-47D8-8D5D-707A78EC9A10}.ReleaseWindows|x86.Build.0 = ReleaseWindows|x86
 		{0F0271AF-0841-45A5-8737-9239550839B7}.Debug|x64.ActiveCfg = Debug|x86
 		{0F0271AF-0841-45A5-8737-9239550839B7}.Debug|x86.ActiveCfg = Debug|x86
 		{0F0271AF-0841-45A5-8737-9239550839B7}.Release|x64.ActiveCfg = Release|x86
@@ -264,7 +266,9 @@ Global
 		{0F0271AF-0841-45A5-8737-9239550839B7}.ReleaseMacOS|x86.ActiveCfg = ReleaseWindows|x86
 		{0F0271AF-0841-45A5-8737-9239550839B7}.ReleaseMacOS|x86.Build.0 = ReleaseWindows|x86
 		{0F0271AF-0841-45A5-8737-9239550839B7}.ReleaseWindows|x64.ActiveCfg = ReleaseWindows|x86
+		{0F0271AF-0841-45A5-8737-9239550839B7}.ReleaseWindows|x64.Build.0 = ReleaseWindows|x86
 		{0F0271AF-0841-45A5-8737-9239550839B7}.ReleaseWindows|x86.ActiveCfg = ReleaseWindows|x86
+		{0F0271AF-0841-45A5-8737-9239550839B7}.ReleaseWindows|x86.Build.0 = ReleaseWindows|x86
 		{2F86472E-B089-4782-BB20-5560B69B6BDD}.Debug|x64.ActiveCfg = Debug|x64
 		{2F86472E-B089-4782-BB20-5560B69B6BDD}.Debug|x64.Build.0 = Debug|x64
 		{2F86472E-B089-4782-BB20-5560B69B6BDD}.Debug|x86.ActiveCfg = Debug|x86
