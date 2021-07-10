@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>0f0271af-0841-45a5-8737-9239550839b7</ProjectGuid>
@@ -9,11 +9,6 @@
     <OutputName>RadegastSetup</OutputName>
     <OutputType>Package</OutputType>
     <Name>RadegastSetup</Name>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
@@ -23,10 +18,12 @@
     <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x86' ">
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
+    <SuppressValidation>False</SuppressValidation>
+    <SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="NetCore31.wxs" />
@@ -85,7 +82,7 @@
     <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
   </Target>
   <Target Name="BeforeBuild">
-    <HeatDirectory OutputFile="$(ProjectDir)\ProductInstallFiles.wxs" Directory="..\..\bin\$(Configuration)\" ComponentGroupName="ProductFilesComponentGroup" DirectoryRefId="APPLICATIONFOLDER" AutogenerateGuids="true" PreprocessorVariable="var.Radegast.TargetDir" SuppressRegistry="true" SuppressRootDirectory="true" SuppressUniqueIds="true" ToolPath="$(WixToolPath)" NoLogo="true" VerboseOutput="true" />
+    <HeatDirectory OutputFile="$(ProjectDir)\ProductInstallFiles.wxs" Directory="..\..\bin\Release\" ComponentGroupName="ProductFilesComponentGroup" DirectoryRefId="APPLICATIONFOLDER" AutogenerateGuids="true" PreprocessorVariable="var.Radegast.TargetDir" SuppressRegistry="true" SuppressRootDirectory="true" SuppressUniqueIds="true" ToolPath="$(WixToolPath)" NoLogo="true" VerboseOutput="true" />
   </Target>
   <Target Name="FindSignTool">
     <PropertyGroup>
