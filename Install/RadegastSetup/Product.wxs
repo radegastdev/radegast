@@ -53,7 +53,7 @@
 
     <Fragment>
         <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="ProgramFilesFolder" Name="PFiles">
+            <Directory Id="ProgramFiles64Folder" Name="PFiles">
                 <Directory Id="APPLICATIONFOLDER" Name="$(var.productName)" />
                 <Directory Id="ProductFilesComponentGroup" />
             </Directory>

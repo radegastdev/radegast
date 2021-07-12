@@ -6,13 +6,14 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>0f0271af-0841-45a5-8737-9239550839b7</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>RadegastSetup</OutputName>
+    <OutputName>RadegastSetup_$(Platform)</OutputName>
     <OutputType>Package</OutputType>
     <Name>RadegastSetup</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+	<InstallerPlatform>x86</InstallerPlatform>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
     <SuppressIces>ICE99</SuppressIces>
@@ -20,10 +21,28 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x86' ">
     <OutputPath>..\..\bin\Release\</OutputPath>
     <IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+	<InstallerPlatform>x86</InstallerPlatform>
     <SignCabs>true</SignCabs>
     <SignOutput>true</SignOutput>
     <SuppressValidation>False</SuppressValidation>
     <SuppressIces>ICE99</SuppressIces>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+	<OutputPath>..\..\bin\$(Configuration)\</OutputPath>
+	<IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+	<InstallerPlatform>x64</InstallerPlatform>
+	<SignCabs>true</SignCabs>
+	<SignOutput>true</SignOutput>
+	<SuppressIces>ICE99</SuppressIces>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWindows|x64' ">
+	<OutputPath>..\..\bin\Release\</OutputPath>
+	<IntermediateOutputPath>obj\Release\</IntermediateOutputPath>
+	<InstallerPlatform>x64</InstallerPlatform>
+	<SignCabs>true</SignCabs>
+	<SignOutput>true</SignOutput>
+	<SuppressValidation>False</SuppressValidation>
+	<SuppressIces>ICE99</SuppressIces>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="NetCore31.wxs" />
