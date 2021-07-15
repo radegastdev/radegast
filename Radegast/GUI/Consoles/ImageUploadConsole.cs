@@ -308,6 +308,11 @@ namespace Radegast
             dlg.Dispose();
         }
 
+        private void chkLossless_Click(object sender, EventArgs e)
+        {
+            LoadImage(FileName);
+        }
+
         private void TempUploadHandler(bool success, InventoryItem item)
         {
             if (InvokeRequired)
