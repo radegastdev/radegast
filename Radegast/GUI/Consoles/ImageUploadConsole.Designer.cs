@@ -135,6 +135,7 @@ namespace Radegast
             this.chkLossless.TabIndex = 4;
             this.chkLossless.Text = "Lossless";
             this.chkLossless.UseVisualStyleBackColor = true;
+            this.chkLossless.Click += new System.EventHandler(this.chkLossless_Click);
             // 
             // lblSize
             // 
