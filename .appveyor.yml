@@ -10,10 +10,6 @@ environment:
     platform: x64
     appveyor_build_worker_image: Visual Studio 2019
     configuration: ReleaseWindows
-  - job_name: Windows x86 Build
-    platform: x86
-    appveyor_build_worker_image: Visual Studio 2019
-    configuration: ReleaseWindows
 
   PfxDownloadUrl:
     secure: 6zETilPjqhwgznp0rOyu2lloNy/uIU0coJBWCW+ADBiofQTU8ZuU3BCIEifEPI1R
