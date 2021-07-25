@@ -1,7 +1,7 @@
 ﻿/**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2021, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -61,7 +61,6 @@ namespace Radegast
                 AddStacktrace(ref report, ex);
                 AddPostField("report", report.ToString());
                 AddPostField("version", Assembly.GetExecutingAssembly().GetName().Version.ToString());
-                AddPostField("build", RadegastBuild.BuildName);
 
                 // Send the request
                 WebRequest request = WebRequest.Create(url);

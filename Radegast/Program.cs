@@ -1,7 +1,7 @@
 /**
  * Radegast Metaverse Client
  * Copyright(c) 2009-2014, Radegast Development Team
- * Copyright(c) 2016-2020, Sjofn, LLC
+ * Copyright(c) 2016-2021, Sjofn, LLC
  * All rights reserved.
  *  
  * Radegast is free software: you can redistribute it and/or modify
@@ -60,7 +60,7 @@ namespace Radegast
             HelpText header = new HelpText(Properties.Resources.RadegastTitle)
             {
                 AdditionalNewLineAfterOption = true,
-                Copyright = new CopyrightInfo("Radegast Development Team, Cinderblocks Design", 2009, 2019)
+                Copyright = new CopyrightInfo("Radegast Development Team, Cinderblocks Design", 2009, 2021)
             };
             header.AddPreOptionsLine("https://radegast.life/");
             return header;
@@ -160,18 +160,6 @@ namespace Radegast
                                 e.StackTrace + Environment.NewLine;
 
                 OpenMetaverse.Logger.Log(errMsg, OpenMetaverse.Helpers.LogLevel.Error);
-
-                string dlgMsg = "Radegast has encountered an unrecoverable error." + Environment.NewLine +
-                                "Would you like to send the error report to help improve Radegast?";
-
-                var res = MessageBox.Show(dlgMsg, @"Unrecoverable error", 
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
-
-                if (res == DialogResult.Yes)
-                {
-                    var reporter = new ErrorReporter("http://api.radegast.org/svc/error_report");
-                    reporter.SendExceptionReport(e);
-                }
 
                 Environment.Exit(1);
             }
