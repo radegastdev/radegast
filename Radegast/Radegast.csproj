@@ -32,15 +32,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugType>full</DebugType>
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>obj\x86\Debug\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;SMARTHREADPOOL_REF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>portable</DebugType>
     <OutputPath>..\bin\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>obj\x86\Release\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <DefineConstants>TRACE;SMARTHREADPOOL_REF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
